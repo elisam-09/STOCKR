@@ -321,7 +321,7 @@ function render() {
 function renderHomeView(alerts, articles, totalStockValue, totalSales) {
     return `
         <div class="header">
-            <div class="header-title">Mon Boutique</div>
+            <div class="header-title">STOCKR</div>
             <div class="header-subtitle">Gestion de stock simplifiée</div>
             <div class="stats-grid">
                 <div class="stat-card">
