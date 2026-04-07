@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from sqlalchemy import delete as sql_delete
 from models import db, Product, Article, product_articles, token_required
 
 
@@ -42,3 +43,38 @@ def create_product(current_user):
     
     db.session.commit()
     return jsonify(product.to_dict()), 201
+
+@product_bp.route('/<int:product_id>', methods=['DELETE'])
+@token_required
+def delete_product(current_user, product_id):
+    product = Product.query.filter_by(id=product_id, user_id=current_user.id).first_or_404()
+    db.session.delete(product)
+    db.session.commit()
+    return jsonify({'message': 'Produit supprimé'}), 200
+
+@product_bp.route('/<int:product_id>', methods=['PUT'])
+@token_required
+def update_product(current_user, product_id):
+    product = Product.query.filter_by(id=product_id, user_id=current_user.id).first_or_404()
+    data = request.json
+    if 'name' in data: product.name = data['name']
+    if 'price' in data: product.price = data['price']
+    if 'composition' in data:
+        # Vider via l'ORM pour garder le cache SQLAlchemy cohérent
+        product.composition.clear()
+        db.session.flush()
+        for comp in data['composition']:
+            article = Article.query.filter_by(
+                id=comp['article_id'],
+                user_id=current_user.id
+            ).first()
+            if article:
+                product.composition.append(article)
+                db.session.flush()
+                stmt = product_articles.update().where(
+                    product_articles.c.product_id == product.id,
+                    product_articles.c.article_id == article.id
+                ).values(quantity_used=comp.get('quantity_used', 1.0))
+                db.session.execute(stmt)
+    db.session.commit()
+    return jsonify(product.to_dict()), 200

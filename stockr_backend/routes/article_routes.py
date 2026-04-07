@@ -35,10 +35,18 @@ def update_article(current_user, article_id):
     """Met à jour un article (vérifie qu'il appartient à l'utilisateur)"""
     article = Article.query.filter_by(id=article_id, user_id=current_user.id).first_or_404()
     data = request.json
-    
+
     for key, value in data.items():
         if hasattr(article, key):
             setattr(article, key, value)
-    
+
     db.session.commit()
     return jsonify(article.to_dict())
+
+@article_bp.route('/<int:article_id>', methods=['DELETE'])
+@token_required
+def delete_article(current_user, article_id):
+    article = Article.query.filter_by(id=article_id, user_id=current_user.id).first_or_404()
+    db.session.delete(article)
+    db.session.commit()
+    return jsonify({'message': 'Article supprimé'}), 200
