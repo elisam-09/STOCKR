@@ -1,0 +1,106 @@
+STOCKR — Journal des actions Claude
+====================================
+Format : DATE · HEURE | PROBLÈME | CE QUI A ÉTÉ FAIT
+====================================
+
+2026-04-03 | AUTHENTIFICATION (login/register/logout)
+  Problème : pas d'authentification dans le frontend www2, tout était accessible sans compte.
+  Action : ajout d'un écran auth complet avec localStorage. Fonctions doLogin(), doRegister(),
+  doLogout(). Session persistée dans localStorage (clé 'stockr_session'). Render() redirige
+  vers l'écran auth si pas de session.
+
+2026-04-03 | SUPPRESSION D'ARTICLES
+  Problème : pas de bouton pour supprimer un article dans la vue détail.
+  Action : ajout d'un bouton "Supprimer cet article" dans vDetail() avec confirmDelete(id)
+  qui retire l'article de S.articles et nettoie les compositions de produits qui l'utilisaient.
+
+2026-04-03 | SEUIL D'ALERTE AUTOMATIQUE
+  Problème : le seuil (min) était calculé manuellement ou avec une formule incorrecte.
+  Action : implémentation de recalcMin(articleId) qui additionne les comp.qty de tous les
+  produits utilisant cet article. recalcAllMins() appelé à chaque saveProduct().
+
+2026-04-03 | FORMULAIRE ARTICLE NETTOYÉ
+  Problème : le formulaire d'ajout d'article avait des champs "prix" et "demande journalière"
+  inutiles dans ce contexte.
+  Action : suppression de ces champs dans vAdd() et dans S.form.
+
+2026-04-03 | SUPPRESSION SCROLLBAR VISIBLE
+  Problème : une scrollbar apparaissait sur le côté et l'utilisateur voulait la cacher.
+  Action : ajout de CSS global : * { scrollbar-width: none; } *::-webkit-scrollbar { display: none; }
+
+2026-04-03 | BUG : BOUTON "VOIR MOT DE PASSE" RÉINITIALISAIT LE FORMULAIRE
+  Problème : cliquer sur l'œil pour afficher le mot de passe vidait tous les champs du formulaire.
+  Cause : le bouton appelait render() qui recréait tout le DOM, perdant les valeurs saisies.
+  Action 1 (tentative) : manipulation DOM directe sans render() — n'a pas fonctionné car
+    changer input.type de 'password' à 'text' efface la valeur dans Safari/WebKit.
+  Action 2 (tentative) : CSS -webkit-text-security: disc sur type="text" + re-render après
+    avoir sauvegardé les valeurs en state via oninput — n'a pas fonctionné (fichier au mauvais
+    chemin : /STOCKR/www2/ au lieu de /STOCKR/stockr_frontend/www2/).
+  Action 3 (solution finale) : correction du chemin + fonction toggleAuthPwd() qui fait DOM
+    direct uniquement (classList.toggle 'pwd-masked', innerHTML pour l'icône) sans render().
+    L'input reste type="text" en permanence, masqué par -webkit-text-security: disc via CSS.
+
+2026-04-03 | ERREUR DE CHEMIN DE FICHIER (bug structurel)
+  Problème : les fichiers sont dans /STOCKR/stockr_frontend/www2/ mais les edits allaient
+  dans /STOCKR/www2/ (inexistant depuis un renommage du dossier stockr_capacitor).
+  Action : identification du bon chemin via find, correction du launch.json et de tous les
+  edits suivants ciblant le bon fichier.
+
+2026-04-03 | BUG AUTH : CONNEXION EMAIL/MDP NE FONCTIONNAIT PAS
+  Problème : impossible de se connecter avec email + mot de passe après inscription.
+  Cause (liée au bug ci-dessus) : les corrections de doLogin() n'avaient pas été appliquées
+  au bon fichier. De plus, doLogin() lisait depuis le DOM (pouvait être vide après re-render).
+  Action : doLogin() et doRegister() lisent maintenant depuis S.authEmail, S.authPwd etc.
+  (sauvegardés via oninput sur chaque champ) plutôt que directement depuis le DOM.
+
+2026-04-03 | HOME — DERNIÈRES VENTES AU LIEU DES ARTICLES RÉCENTS
+  Problème : la page d'accueil affichait les derniers articles du stock, moins utile au quotidien.
+  Action : remplacement de la section "Articles récents" par "Dernières ventes" (S.sales.slice(0,4))
+  affichant nom du produit, date relative (fmtDate) et total FCFA.
+
+2026-04-03 | SETTINGS — MODIFICATION DES INFOS DU COMPTE
+  Problème : les infos du compte (nom, commerce, email) étaient en lecture seule dans Paramètres.
+  Action : ajout de S.settingsEdit (bool). En mode édition, affichage de champs inputs
+  #set-name, #set-biz, #set-email. saveAccountInfo() met à jour S.session, localStorage
+  (stockr_users + stockr_session) et revient en mode lecture.
+
+2026-04-03 | COMBOBOX UNITÉS DANS AJOUT D'ARTICLE
+  Problème : le champ "Unité de mesure" était un input texte libre sans suggestion.
+  Action : remplacement par un combobox — input texte + chevron + dropdown filtré en temps réel.
+  Unités disponibles : g, kg, t, ml, cl, l, m³, cm, m, m², pce, lot, sac, carton, h, j, mois.
+  Logique conditionnelle : si sac → chips "25 kg / 50 kg / 100 kg / Autre", si lot → "6/12/24/Autre",
+  si carton → "6/12/24/48/Autre". Si Autre → input numérique entier.
+
+2026-04-03 | BUG COMBOBOX — NE S'OUVRAIT PAS
+  Problème : le dropdown du combobox se fermait immédiatement dès qu'on tapait.
+  Cause : openUnitDrop() appelait render() → DOM recréé → input perdait le focus →
+    onblur déclenchait closeUnitDrop() → dropdown fermé instantanément.
+  Action : refonte complète en DOM direct. openUnitDrop() crée le dropdown via createElement
+  (id="unit-dropdown"). updateUnitDrop() met à jour son innerHTML en filtrant UNITS.
+  closeUnitDrop() le supprime. Zéro render() pendant la frappe. render() uniquement lors
+  de selectUnit() pour afficher/cacher la section conditionnelle.
+
+2026-04-03 | CONVERSION D'UNITÉS DANS COMPOSITION PRODUIT
+  Problème : lors de la création d'un produit, la quantité d'article dans la composition
+  ne pouvait être saisie que dans l'unité native de l'article (ex: toujours en g).
+  Action : ajout d'un <select> par article dans la composition listant les unités compatibles
+  (même famille : masse, volume, longueur, temps). convertQty(qty, from, to) utilise
+  UNIT_FACTORS pour convertir automatiquement vers l'unité native avant de sauvegarder.
+
+2026-04-03 | PANIER DANS LES VENTES
+  Problème : impossible d'enregistrer plusieurs produits en une seule vente.
+  Action : ajout de S.cart (array). addToCart() ajoute un produit au panier (ou incrémente
+  si déjà présent). removeFromCart(idx) le retire. confirmCart() vérifie les stocks pour
+  tous les items, débite le stock, crée les entrées dans S.sales, vide le panier.
+  Interface : section "Ajouter au panier" + section "Panier actuel" avec total et validation.
+
+2026-04-03 | COMBOBOX UNITÉS — VALEUR PAR DÉFAUT RETIRÉE
+  Problème : le champ unité s'initialisait à "pcs" au lieu d'être vide.
+  Action : S.form.unit = '' (était 'pcs').
+
+====================================
+NOTE IMPORTANTE — 2026-04-03
+  Le frontend www2 n'est PAS connecté au backend Flask. Toutes les données (comptes,
+  articles, produits, ventes) vivent dans localStorage du navigateur. La connexion
+  au backend (/api/auth, /api/articles, etc.) reste à faire.
+====================================
