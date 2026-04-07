@@ -1,6 +1,6 @@
 # STOCKR
 
-Application de gestion de stock mobile-first pour petits commerçants africains.
+Application de gestion de stock mobile-first pour PME.
 Stack : Flask (Python) + SQLite + Vanilla JS (SPA)
 
 ---
