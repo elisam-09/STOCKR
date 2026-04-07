@@ -3,10 +3,10 @@
   "configurations": [
     {
       "name": "stockr-proposal",
-      "runtimeExecutable": "npx",
-      "runtimeArgs": ["serve", "-l", "3456", "."],
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "3456"],
       "port": 3456,
-      "cwd": "/Users/MacdeElisam/STOCKR/www2"
+      "cwd": "/Users/MacdeElisam/STOCKR/stockr_frontend/www2"
     }
   ]
 }
