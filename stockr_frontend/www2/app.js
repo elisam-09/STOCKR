@@ -1208,9 +1208,39 @@ function vAuthStep2() {
 function vHome() {
   const low     = S.articles.filter(a => a.stock < a.min && a.min > 0);
   const totalCA = S.sales.reduce((s,v) => s+v.total, 0);
+  const totalProfit = S.sales.reduce((s,v) => s+(v.profit||0), 0);
+  const avgMargin = totalCA > 0 ? Math.round((totalProfit / totalCA) * 100) : 0;
+  const stockVal = S.articles.reduce((s,a) => s+a.stock*(a.price||0), 0);
   const today   = new Date().toDateString();
-  const todayCA = S.sales.filter(s => new Date(s.date).toDateString()===today).reduce((s,v)=>s+v.total,0);
-  const todayProfit = S.sales.filter(s => new Date(s.date).toDateString()===today).reduce((s,v)=>s+(v.profit||0),0);
+  const todaySales = S.sales.filter(s => new Date(s.date).toDateString()===today);
+  const todayCA = todaySales.reduce((s,v)=>s+v.total,0);
+  const todayProfit = todaySales.reduce((s,v)=>s+(v.profit||0),0);
+
+  // Top products by revenue
+  const prodStats = {};
+  S.sales.forEach(s => {
+    if (!prodStats[s.productName]) prodStats[s.productName] = { qty:0, rev:0, profit:0 };
+    prodStats[s.productName].qty += s.qty;
+    prodStats[s.productName].rev += s.total;
+    prodStats[s.productName].profit += (s.profit||0);
+  });
+  const topProducts = Object.entries(prodStats).sort((a,b)=>b[1].rev-a[1].rev).slice(0,3);
+  const maxRev = topProducts.length ? topProducts[0][1].rev : 1;
+
+  // Best margin products
+  const bestMargin = S.products.filter(p => p.purchasePrice > 0 && p.price > 0)
+    .map(p => ({ name: p.name, margin: marginPct(p), profit: profitUnit(p), price: p.price }))
+    .sort((a,b) => b.margin - a.margin).slice(0, 3);
+
+  // Week sales trend (last 7 days)
+  const weekDays = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    const ds = d.toDateString();
+    const dayCA = S.sales.filter(s => new Date(s.date).toDateString() === ds).reduce((s,v)=>s+v.total, 0);
+    weekDays.push({ label: d.toLocaleDateString('fr', {weekday:'short'}).slice(0,3), ca: dayCA });
+  }
+  const maxDay = Math.max(...weekDays.map(d=>d.ca), 1);
 
   return `
   <div class="hero anim">
@@ -1236,7 +1266,7 @@ function vHome() {
       </div>
       <div class="hero-stat">
         <div class="hero-stat-val" style="color:#34d399">${fmt(todayProfit)}</div>
-        <div class="hero-stat-lbl">Bénéf. Auj.</div>
+        <div class="hero-stat-lbl">Bénéf.</div>
       </div>
     </div>
   </div>
@@ -1266,6 +1296,88 @@ function vHome() {
         </div>
       </div>`).join('')}`;
     })()}
+
+    <div class="section-hd"><div class="section-lbl">Vue d'ensemble</div></div>
+    <div class="metric-grid">
+      <div class="metric-card anim" style="animation-delay:0s">
+        <div class="metric-val">${fmt(totalCA)}</div>
+        <div class="metric-lbl">CA Total</div>
+      </div>
+      <div class="metric-card anim" style="animation-delay:0.04s">
+        <div class="metric-val" style="color:var(--success)">${fmt(totalProfit)}</div>
+        <div class="metric-lbl">Bénéfice</div>
+      </div>
+      <div class="metric-card anim" style="animation-delay:0.08s">
+        <div class="metric-val" style="color:${avgMargin>=20?'var(--success)':avgMargin>=0?'var(--warning)':'var(--danger)'}">${avgMargin}%</div>
+        <div class="metric-lbl">Marge moy.</div>
+      </div>
+    </div>
+    <div class="metric-grid">
+      <div class="metric-card anim" style="animation-delay:0.12s">
+        <div class="metric-val">${fmt(stockVal)}</div>
+        <div class="metric-lbl">Val. stock</div>
+      </div>
+      <div class="metric-card anim" style="animation-delay:0.16s">
+        <div class="metric-val">${S.products.length}</div>
+        <div class="metric-lbl">Produits</div>
+      </div>
+      <div class="metric-card anim" style="animation-delay:0.20s">
+        <div class="metric-val">${S.sales.length}</div>
+        <div class="metric-lbl">Ventes</div>
+      </div>
+    </div>
+
+    ${S.sales.length > 0 ? `
+    <div class="section-hd"><div class="section-lbl">Tendance 7 jours</div></div>
+    <div class="card anim" style="animation-delay:0.1s">
+      <div style="display:flex;align-items:flex-end;gap:4px;height:80px;padding:4px 0">
+        ${weekDays.map(d => `
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+          <div style="width:100%;background:${d.ca>0?'var(--accent)':'var(--gray-2)'};border-radius:4px 4px 0 0;min-height:4px;height:${Math.max(4, (d.ca/maxDay)*60)}px;transition:height .3s"></div>
+          <div style="font-size:10px;color:var(--text-3);white-space:nowrap">${d.label}</div>
+        </div>`).join('')}
+      </div>
+      <div style="text-align:center;font-size:11px;color:var(--text-3);margin-top:6px">
+        Total semaine : <strong style="color:var(--text-1)">${fmt(weekDays.reduce((s,d)=>s+d.ca,0))} FCFA</strong>
+      </div>
+    </div>` : ''}
+
+    ${topProducts.length > 0 ? `
+    <div class="section-hd">
+      <div class="section-lbl">Top produits</div>
+      <button class="section-act" onclick="nav('financial')">Détails</button>
+    </div>
+    <div class="card anim" style="animation-delay:0.15s">
+      ${topProducts.map(([name, d], i) => `
+      <div style="display:flex;align-items:center;gap:10px;${i>0?'margin-top:12px;padding-top:12px;border-top:1px solid var(--border)':''}">
+        <div style="width:28px;height:28px;border-radius:8px;background:${i===0?'var(--accent)':i===1?'var(--gray-6)':'var(--gray-4)'};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:var(--white);flex-shrink:0">${i+1}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:700;color:var(--text-1)">${name}</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:4px">
+            <div style="flex:1;height:6px;background:var(--gray-2);border-radius:3px;overflow:hidden">
+              <div style="height:100%;width:${Math.round((d.rev/maxRev)*100)}%;background:${i===0?'var(--accent)':i===1?'var(--gray-6)':'var(--gray-4)'};border-radius:3px;transition:width .4s"></div>
+            </div>
+          </div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-size:13px;font-weight:700;color:var(--text-1)">${fmt(d.rev)} FCFA</div>
+          ${d.profit > 0 ? `<div style="font-size:11px;color:var(--success)">+${fmt(d.profit)} bénéf.</div>` : ''}
+        </div>
+      </div>`).join('')}
+    </div>` : ''}
+
+    ${bestMargin.length > 0 ? `
+    <div class="section-hd"><div class="section-lbl">Meilleures marges</div></div>
+    <div class="card anim" style="animation-delay:0.2s">
+      ${bestMargin.map((p, i) => `
+      <div style="display:flex;align-items:center;gap:10px;${i>0?'margin-top:10px;padding-top:10px;border-top:1px solid var(--border)':''}">
+        <div style="width:40px;height:40px;border-radius:50%;background:${p.margin>=30?'rgba(5,150,105,.12)':p.margin>=15?'rgba(217,119,6,.12)':'rgba(220,38,38,.12)'};display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:${p.margin>=30?'var(--success)':p.margin>=15?'var(--warning)':'var(--danger)'};flex-shrink:0">${p.margin}%</div>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:600;color:var(--text-1)">${p.name}</div>
+          <div style="font-size:11px;color:var(--text-3)">Vente ${fmt(p.price)} · Bénéf. ${fmt(p.profit)} FCFA/u</div>
+        </div>
+      </div>`).join('')}
+    </div>` : ''}
 
     <div class="section-hd"><div class="section-lbl">Navigation</div></div>
     <div class="quick-grid">
@@ -1307,7 +1419,7 @@ function vHome() {
         </div>
         <div class="sale-right">
           <div class="sale-total">${fmt(s.total)} FCFA</div>
-          <div class="sale-qty">×${s.qty}</div>
+          <div class="sale-qty">×${s.qty}${s.profit ? ` · <span style="color:var(--success)">+${fmt(s.profit)}</span>` : ''}</div>
         </div>
       </div>
     </div>`).join('')}
