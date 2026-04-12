@@ -1,0 +1,22 @@
+# ── STOCKR — Render Backend Deployment ───────
+# Connecte ce repo GitHub sur render.com → "New Web Service"
+# Root directory : laisser vide (racine du repo)
+
+services:
+  - type: web
+    name: stockr-api
+    env: python
+    region: frankfurt          # le plus proche de l'Afrique de l'Ouest
+    plan: free
+    rootDir: stockr_backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 1 --timeout 120
+    healthCheckPath: /api/auth/profile
+
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true     # Render génère automatiquement une clé sécurisée
+      - key: FLASK_ENV
+        value: production
+      - key: FLASK_DEBUG
+        value: "0"

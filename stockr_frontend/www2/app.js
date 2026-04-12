@@ -93,7 +93,9 @@ function fmtQty(n) {
 }
 
 // ── API base ──────────────────────────────────
-const API_BASE = 'http://localhost:5001';
+const API_BASE = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+  ? 'http://localhost:5001'
+  : (window.__STOCKR_API_URL__ || 'https://stockr-api.onrender.com');
 
 // ── Facture & WhatsApp ────────────────────────
 function _invNum(id) { return 'INV-' + String(id).slice(-6).toUpperCase(); }
