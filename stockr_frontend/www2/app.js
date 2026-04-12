@@ -442,7 +442,7 @@ async function api(method, path, body) {
     }
     return res.json();
   } catch(e) {
-    if (e.message === 'Failed to fetch' || e.name === 'TypeError') {
+    if (e.message === 'Failed to fetch' || e.name === 'TypeError' || e.message.includes('503')) {
       USE_LOCAL = true;
       showToast('Mode hors-ligne activé', '');
       return _localApi(method, path, body);

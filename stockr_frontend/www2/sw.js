@@ -2,7 +2,7 @@
 // Stratégie : Cache-first pour assets statiques,
 //             Network-first pour l'API
 
-const CACHE_NAME = 'stockr-v1';
+const CACHE_NAME = 'stockr-v2';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -54,7 +54,13 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // API → network-first, erreur JSON si hors-ligne
+  // Requêtes cross-origin (backend API externe) → ne pas intercepter
+  // Laisse le navigateur gérer directement pour que le fallback localStorage fonctionne
+  if (url.origin !== self.location.origin) {
+    return;
+  }
+
+  // API same-origin → network-first, erreur JSON si hors-ligne
   if (url.pathname.startsWith('/api/')) {
     event.respondWith(
       fetch(event.request).catch(() =>
