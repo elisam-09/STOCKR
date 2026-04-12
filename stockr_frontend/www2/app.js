@@ -93,6 +93,80 @@ function fmtQty(n) {
 // ── API base ──────────────────────────────────
 const API_BASE = 'http://localhost:5001';
 
+// ── Chart ─────────────────────────────────────
+let _chart = null;
+
+function buildChartData() {
+  const now = new Date();
+  if (S.period === 'today') {
+    const labels = ['0h','3h','6h','9h','12h','15h','18h','21h'];
+    const data = labels.map((_, i) => {
+      const start = i * 3, end = (i + 1) * 3;
+      return S.sales
+        .filter(s => { const d = new Date(s.date); return d.toDateString() === now.toDateString() && d.getHours() >= start && d.getHours() < end; })
+        .reduce((sum, s) => sum + s.total, 0);
+    });
+    return { labels, data };
+  }
+  const days = S.period === '30d' ? 30 : 7;
+  const labels = [], data = [];
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date(now - i * 86400000);
+    labels.push(d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }));
+    data.push(S.sales.filter(s => new Date(s.date).toDateString() === d.toDateString()).reduce((sum, s) => sum + s.total, 0));
+  }
+  return { labels, data };
+}
+
+function renderRevenueChart() {
+  const canvas = document.getElementById('revenue-chart');
+  if (!canvas || typeof Chart === 'undefined') return;
+  if (_chart) { _chart.destroy(); _chart = null; }
+  const { labels, data } = buildChartData();
+  const isDark = S.darkMode;
+  const gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
+  const tickColor = isDark ? '#6A6A6A' : '#8A8A8A';
+  _chart = new Chart(canvas.getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        data,
+        backgroundColor: 'rgba(79,70,229,0.15)',
+        borderColor: '#4F46E5',
+        borderWidth: 2,
+        borderRadius: 6,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#1e1b4b',
+          titleFont: { size: 11 },
+          bodyFont: { size: 12, weight: '700' },
+          callbacks: { label: ctx => `  ${Math.round(ctx.raw).toLocaleString('fr-FR')} FCFA` }
+        }
+      },
+      scales: {
+        y: {
+          grid: { color: gridColor },
+          border: { display: false },
+          ticks: { color: tickColor, font: { size: 9 }, callback: v => v >= 1000 ? (v/1000).toFixed(0)+'k' : v }
+        },
+        x: {
+          grid: { display: false },
+          border: { display: false },
+          ticks: { color: tickColor, font: { size: 9 }, maxRotation: 0 }
+        }
+      }
+    }
+  });
+}
+
 // ── State ─────────────────────────────────────
 const S = {
   // Auth
@@ -703,6 +777,8 @@ function render() {
   viewEl.innerHTML = (map[S.view] || vHome)();
   viewEl.scrollTop = 0;
 
+  if (S.view === 'financial') requestAnimationFrame(renderRevenueChart);
+
   const hideNav = ['detail','add','add-product','edit-product'].includes(S.view);
   navEl.style.display = hideNav ? 'none' : '';
   if (!hideNav) navEl.innerHTML = renderNav();
@@ -1166,12 +1242,16 @@ function vFinancial() {
   <div class="sub-hero">
     <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('home')">${IC.left}</button>
     <div class="sub-hero-title">Bilan financier</div>
-    <div class="sub-hero-big">${fmt(totalCA)} <span style="font-size:16px;color:var(--gray-5)">FCFA</span></div>
+    <div class="sub-hero-big">${fmt(totalCA)} <span style="font-size:16px;color:var(--accent-muted)">FCFA</span></div>
     <div class="sub-hero-sub">${filtered.length} vente(s) · période sélectionnée</div>
   </div>
   <div class="container">
     <div class="period-tabs">
       ${periods.map(p=>`<button class="period-tab ${S.period===p.key?'active':''}" onclick="S.period='${p.key}';render()">${p.label}</button>`).join('')}
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Chiffre d'affaires</div>
+      <div class="chart-wrap"><canvas id="revenue-chart"></canvas></div>
     </div>
     <div class="metric-grid">
       <div class="metric-card"><div class="metric-val">${fmt(totalCA)}</div><div class="metric-lbl">CA</div></div>
@@ -1820,7 +1900,8 @@ document.addEventListener('DOMContentLoaded', () => {
   window.spectraReset    = spectraReset;
   window.doLogout      = doLogout;
   window.showToast     = showToast;
-  window.loadData      = loadData;
+  window.loadData           = loadData;
+  window.renderRevenueChart = renderRevenueChart;
 
   // Restaurer la session + token si existants
   const saved = getSession();
