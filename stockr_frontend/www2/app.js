@@ -2112,8 +2112,69 @@ function vSettings() {
       </div>
     </div>
 
-    <div style="text-align:center;padding:24px 0 8px;font-size:11px;color:var(--text-3)">STOCKR · v0.3.0 · 2026</div>
+    ${_deferredInstall ? `
+    <div class="settings-section">
+      <div class="settings-label">Application</div>
+      <div class="settings-row-block">
+        <div class="settings-row" onclick="installPWA()">
+          <div class="settings-row-inner">
+            <span class="settings-row-ico" style="color:var(--accent)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            </span>
+            <div>
+              <div class="settings-row-lbl" style="color:var(--accent)">Installer STOCKR</div>
+              <div class="settings-row-sub">Ajouter à l'écran d'accueil</div>
+            </div>
+          </div>
+          ${IC.chevron}
+        </div>
+      </div>
+    </div>` : ''}
+
+    <div style="text-align:center;padding:24px 0 8px;font-size:11px;color:var(--text-3)">STOCKR · v0.4.0 · 2026</div>
   </div>`;
+}
+
+// ── PWA — Service Worker & Install ───────────
+let _deferredInstall = null;
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  _deferredInstall = e;
+  // Afficher le bouton install dans les settings
+  render();
+});
+
+window.addEventListener('appinstalled', () => {
+  _deferredInstall = null;
+  showToast('STOCKR installé sur votre écran d\'accueil !');
+  render();
+});
+
+async function installPWA() {
+  if (!_deferredInstall) return;
+  _deferredInstall.prompt();
+  const { outcome } = await _deferredInstall.userChoice;
+  if (outcome === 'accepted') showToast('Installation en cours…');
+  _deferredInstall = null;
+  render();
+}
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg => {
+        reg.addEventListener('updatefound', () => {
+          const newSW = reg.installing;
+          newSW.addEventListener('statechange', () => {
+            if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
+              showToast('Mise à jour disponible — rechargez l\'app');
+            }
+          });
+        });
+      })
+      .catch(() => {}); // silencieux si localhost sans HTTPS
+  });
 }
 
 // ── Init ──────────────────────────────────────
@@ -2154,6 +2215,7 @@ document.addEventListener('DOMContentLoaded', () => {
   window.showToast     = showToast;
   window.loadData           = loadData;
   window.renderRevenueChart  = renderRevenueChart;
+  window.installPWA          = installPWA;
   window.generateInvoicePDF  = generateInvoicePDF;
   window.shareViaWhatsApp    = shareViaWhatsApp;
   window.showReceiptBanner   = showReceiptBanner;
