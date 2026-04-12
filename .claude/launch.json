@@ -2,6 +2,13 @@
   "version": "0.0.1",
   "configurations": [
     {
+      "name": "stockr-frontend",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "3456"],
+      "port": 3456,
+      "cwd": "stockr_frontend/www2"
+    },
+    {
       "name": "stockr-proposal",
       "runtimeExecutable": "python3",
       "runtimeArgs": ["-m", "http.server", "3456"],
