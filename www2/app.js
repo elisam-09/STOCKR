@@ -35,8 +35,6 @@ const IC = {
   trash:    `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>`,
   eye:      `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`,
   eyeOff:   `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`,
-  whatsapp: `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>`,
-  pdf:      `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>`,
   camera:   `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>`,
   cameraLg: `<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>`,
   logo:     `<svg width="22" height="22" viewBox="0 0 576 512" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M316.9 18C311.6 7 300.4 0 288.1 0s-23.4 7-28.8 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3l128.3-68.5 128.3 68.5c10.8 5.7 23.9 4.9 33.8-2.3s14.9-19.3 12.9-31.3L438.5 329 542.7 225.9c8.6-8.5 11.7-21.2 7.9-32.7s-13.7-19.9-25.7-21.7L381.2 150.3 316.9 18zM288 102.2l52.8 107.5c4.6 9.3 13.4 15.8 23.7 17.3l118.1 17.2-85.5 83.5c-7.4 7.2-10.8 17.6-9 27.8L411 473.1l-105.6-56.3c-9.3-5-20.4-5-29.7 0L170.1 473.1l20.2-117.6c1.8-10.2-1.6-20.6-9-27.8L95.8 244.2l118.1-17.2c10.3-1.5 19.1-8 23.7-17.3L288 102.2zm195.2-61.7c-5.6-11.2-16.9-18.5-29.5-18.5s-23.9 7.2-29.5 18.5l-21.8 44.4-48.8 7.1c-12.1 1.8-22.2 10.2-25.9 21.8s-.7 24.4 7.9 32.9l35.4 34.5-8.3 48.8c-2.1 12.1 3 24.4 13 31.6s23.2 8.1 34.1 2.3l43.8-23 43.8 23c10.9 5.7 24.1 4.9 34.1-2.3s15.1-19.5 13-31.6l-8.4-48.8 35.4-34.5c8.6-8.5 11.7-21.4 7.9-32.9s-13.8-20-25.9-21.8l-48.8-7.1-21.5-44.3z"/></svg>`,
@@ -93,188 +91,7 @@ function fmtQty(n) {
 }
 
 // ── API base ──────────────────────────────────
-const API_BASE = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
-  ? 'http://localhost:5001'
-  : (window.__STOCKR_API_URL__ || 'https://stockr-api.onrender.com');
-
-// ── Facture & WhatsApp ────────────────────────
-function _invNum(id) { return 'INV-' + String(id).slice(-6).toUpperCase(); }
-
-function generateInvoicePDF(sales) {
-  if (!Array.isArray(sales)) sales = [sales];
-  if (typeof window.jspdf === 'undefined') { showToast('PDF non disponible (hors-ligne)', 'error'); return; }
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({ unit: 'mm', format: 'a4' });
-  const sym  = S.session?.currency_symbol || 'FCFA';
-  const biz  = S.session?.business || S.session?.name || 'Mon Commerce';
-  const invId = _invNum(sales[0].id);
-  const date  = new Date(sales[0].date).toLocaleDateString('fr-FR', { day:'numeric', month:'long', year:'numeric' });
-
-  // ── Header indigo ──
-  doc.setFillColor(79, 70, 229);
-  doc.rect(0, 0, 210, 42, 'F');
-
-  doc.setTextColor(255, 255, 255);
-  doc.setFontSize(26); doc.setFont('helvetica', 'bold');
-  doc.text('STOCKR', 16, 18);
-  doc.setFontSize(10); doc.setFont('helvetica', 'normal');
-  doc.text(biz, 16, 27);
-  doc.setFontSize(9);
-  doc.text('Gestion de stock intelligente', 16, 34);
-
-  doc.setFontSize(18); doc.setFont('helvetica', 'bold');
-  doc.text('FACTURE', 195, 18, { align: 'right' });
-  doc.setFontSize(10); doc.setFont('helvetica', 'normal');
-  doc.text('N° ' + invId, 195, 27, { align: 'right' });
-  doc.text('Date : ' + date, 195, 34, { align: 'right' });
-
-  // ── Ligne séparatrice ──
-  doc.setDrawColor(229, 231, 235);
-  doc.line(16, 52, 194, 52);
-
-  // ── En-tête tableau ──
-  doc.setFillColor(238, 242, 255);
-  doc.roundedRect(16, 56, 178, 8, 1, 1, 'F');
-  doc.setTextColor(79, 70, 229); doc.setFontSize(8); doc.setFont('helvetica', 'bold');
-  doc.text('DÉSIGNATION', 20, 61.5);
-  doc.text('QTÉ',   130, 61.5, { align: 'center' });
-  doc.text('PRIX U.', 158, 61.5, { align: 'right' });
-  doc.text('TOTAL',   192, 61.5, { align: 'right' });
-
-  // ── Lignes produits ──
-  let y = 72; let grandTotal = 0;
-  doc.setTextColor(30, 30, 30); doc.setFont('helvetica', 'normal'); doc.setFontSize(9);
-  sales.forEach((s, i) => {
-    const unitPrice = s.qty > 0 ? Math.round(s.total / s.qty) : 0;
-    grandTotal += s.total;
-    if (i % 2 === 1) { doc.setFillColor(249, 250, 251); doc.rect(16, y - 5, 178, 8, 'F'); }
-    doc.text(s.productName, 20, y);
-    doc.text(String(s.qty), 130, y, { align: 'center' });
-    doc.text(fmt(unitPrice) + ' ' + sym, 158, y, { align: 'right' });
-    doc.setFont('helvetica', 'bold');
-    doc.text(fmt(s.total) + ' ' + sym, 192, y, { align: 'right' });
-    doc.setFont('helvetica', 'normal');
-    y += 10;
-  });
-
-  // ── Total ──
-  doc.setDrawColor(229, 231, 235); doc.line(16, y, 194, y); y += 8;
-  const taxRate = parseFloat(S.session?.tax_rate) || 0;
-  if (taxRate > 0) {
-    const tva = Math.round(grandTotal * taxRate / 100);
-    doc.setFontSize(9); doc.setTextColor(100, 100, 100);
-    doc.text('Sous-total HT', 140, y, { align: 'right' });
-    doc.text(fmt(grandTotal) + ' ' + sym, 192, y, { align: 'right' }); y += 7;
-    doc.text(`TVA (${taxRate}%)`, 140, y, { align: 'right' });
-    doc.text(fmt(tva) + ' ' + sym, 192, y, { align: 'right' }); y += 7;
-    grandTotal += tva;
-  }
-  doc.setFillColor(79, 70, 229);
-  doc.roundedRect(120, y - 1, 74, 10, 1, 1, 'F');
-  doc.setTextColor(255, 255, 255); doc.setFontSize(10); doc.setFont('helvetica', 'bold');
-  doc.text('TOTAL TTC', 140, y + 6, { align: 'right' });
-  doc.text(fmt(grandTotal) + ' ' + sym, 192, y + 6, { align: 'right' });
-
-  // ── Pied de page ──
-  doc.setTextColor(160, 160, 160); doc.setFontSize(7); doc.setFont('helvetica', 'normal');
-  doc.text('Merci pour votre confiance !', 105, 280, { align: 'center' });
-  doc.text('Document généré par STOCKR · Gestion de stock pour PME', 105, 285, { align: 'center' });
-
-  doc.save(`Facture-${invId}.pdf`);
-  showToast('Facture téléchargée');
-}
-
-function shareViaWhatsApp(sales) {
-  if (!Array.isArray(sales)) sales = [sales];
-  const sym  = S.session?.currency_symbol || 'FCFA';
-  const biz  = S.session?.business || S.session?.name || 'Mon Commerce';
-  const date = new Date(sales[0].date).toLocaleDateString('fr-FR');
-  const invId = _invNum(sales[0].id);
-  const total = sales.reduce((s, v) => s + v.total, 0);
-
-  const lines = ['🧾 *REÇU DE VENTE*', `📍 *${biz}*`, `📅 ${date}  •  N° ${invId}`, ''];
-  sales.forEach(s => {
-    const u = s.qty > 0 ? Math.round(s.total / s.qty) : 0;
-    lines.push(`▸ ${s.productName}  ×${s.qty}  =  *${fmt(s.total)} ${sym}*`);
-  });
-  lines.push('', `✅ *TOTAL : ${fmt(total)} ${sym}*`, '', '_Géré avec STOCKR_');
-
-  window.open('https://wa.me/?text=' + encodeURIComponent(lines.join('\n')), '_blank');
-}
-
-// ── Chart ─────────────────────────────────────
-let _chart = null;
-
-function buildChartData() {
-  const now = new Date();
-  if (S.period === 'today') {
-    const labels = ['0h','3h','6h','9h','12h','15h','18h','21h'];
-    const data = labels.map((_, i) => {
-      const start = i * 3, end = (i + 1) * 3;
-      return S.sales
-        .filter(s => { const d = new Date(s.date); return d.toDateString() === now.toDateString() && d.getHours() >= start && d.getHours() < end; })
-        .reduce((sum, s) => sum + s.total, 0);
-    });
-    return { labels, data };
-  }
-  const days = S.period === '30d' ? 30 : 7;
-  const labels = [], data = [];
-  for (let i = days - 1; i >= 0; i--) {
-    const d = new Date(now - i * 86400000);
-    labels.push(d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }));
-    data.push(S.sales.filter(s => new Date(s.date).toDateString() === d.toDateString()).reduce((sum, s) => sum + s.total, 0));
-  }
-  return { labels, data };
-}
-
-function renderRevenueChart() {
-  const canvas = document.getElementById('revenue-chart');
-  if (!canvas || typeof Chart === 'undefined') return;
-  if (_chart) { _chart.destroy(); _chart = null; }
-  const { labels, data } = buildChartData();
-  const isDark = S.darkMode;
-  const gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
-  const tickColor = isDark ? '#6A6A6A' : '#8A8A8A';
-  _chart = new Chart(canvas.getContext('2d'), {
-    type: 'bar',
-    data: {
-      labels,
-      datasets: [{
-        data,
-        backgroundColor: 'rgba(79,70,229,0.15)',
-        borderColor: '#4F46E5',
-        borderWidth: 2,
-        borderRadius: 6,
-        borderSkipped: false,
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          backgroundColor: '#1e1b4b',
-          titleFont: { size: 11 },
-          bodyFont: { size: 12, weight: '700' },
-          callbacks: { label: ctx => `  ${Math.round(ctx.raw).toLocaleString('fr-FR')} FCFA` }
-        }
-      },
-      scales: {
-        y: {
-          grid: { color: gridColor },
-          border: { display: false },
-          ticks: { color: tickColor, font: { size: 9 }, callback: v => v >= 1000 ? (v/1000).toFixed(0)+'k' : v }
-        },
-        x: {
-          grid: { display: false },
-          border: { display: false },
-          ticks: { color: tickColor, font: { size: 9 }, maxRotation: 0 }
-        }
-      }
-    }
-  });
-}
+const API_BASE = 'http://localhost:5001';
 
 // ── State ─────────────────────────────────────
 const S = {
@@ -327,128 +144,22 @@ const S = {
   },
 };
 
-// ── Mode local (localStorage) ─────────────────
-let USE_LOCAL = false; // basculé automatiquement si l'API n'est pas joignable
-
-const LS_USERS   = 'stockr_users_v2';
-const LS_SESSION = 'stockr_session';
-
-function _lsUsers()         { try { return JSON.parse(localStorage.getItem(LS_USERS)) || []; } catch { return []; } }
-function _lsSave(users)     { localStorage.setItem(LS_USERS, JSON.stringify(users)); }
-function _lsData(uid)       { try { return JSON.parse(localStorage.getItem('stockr_data_' + uid)) || { articles:[], products:[], sales:[] }; } catch { return { articles:[], products:[], sales:[] }; } }
-function _lsSaveData(uid,d) { localStorage.setItem('stockr_data_' + uid, JSON.stringify(d)); }
-function _uid()             { return S.session?.id; }
-
-function _localApi(method, path, body) {
-  // ── Auth ──
-  if (path === '/api/auth/register' && method === 'POST') {
-    const users = _lsUsers();
-    if (users.find(u => u.email === body.email)) throw new Error('Email déjà utilisé');
-    const user = { id: Date.now(), email: body.email, _pwd: body.password, name: body.name, business_name: body.business_name || body.name, currency: body.currency || 'XOF', country: body.country || 'SN', language: body.language || 'fr', profile: body.profile || 'transformer', tax_rate: parseFloat(body.tax_rate) || 0, auth_token: 'local_' + Date.now() };
-    users.push(user);
-    _lsSave(users);
-    _lsSaveData(user.id, { articles: [], products: [], sales: [] });
-    return { user };
-  }
-  if (path === '/api/auth/login' && method === 'POST') {
-    const user = _lsUsers().find(u => u.email === body.email && u._pwd === body.password);
-    if (!user) throw new Error('Email ou mot de passe incorrect');
-    return { user: { ...user, auth_token: 'local_' + user.id } };
-  }
-  if (path === '/api/auth/profile' && method === 'GET') {
-    return _lsUsers().find(u => u.id === _uid()) || {};
-  }
-  if (path === '/api/auth/profile' && method === 'PUT') {
-    const users = _lsUsers(); const u = users.find(u => u.id === _uid());
-    if (u) { Object.assign(u, body); _lsSave(users); }
-    return u;
-  }
-  if (path === '/api/auth/logout' && method === 'POST') { return {}; }
-
-  const d = _lsData(_uid());
-
-  // ── Articles ──
-  if (path === '/api/articles/' && method === 'GET') return d.articles;
-  if (path === '/api/articles/' && method === 'POST') {
-    const a = { id: Date.now(), name: body.name, quantity: body.quantity || 0, unit: body.unit || 'pcs', alert_threshold: body.alert_threshold || 0, lead_time_days: body.lead_time_days || 7, daily_avg_demand: 0 };
-    d.articles.push(a); _lsSaveData(_uid(), d); return a;
-  }
-  const artId = path.match(/\/api\/articles\/(\d+)/)?.[1];
-  if (artId && method === 'PUT') {
-    const a = d.articles.find(a => a.id === parseInt(artId));
-    if (a) { Object.assign(a, { quantity: body.quantity ?? a.quantity, alert_threshold: body.alert_threshold ?? a.alert_threshold, lead_time_days: body.lead_time_days ?? a.lead_time_days }); _lsSaveData(_uid(), d); }
-    return a;
-  }
-  if (artId && method === 'DELETE') {
-    d.articles = d.articles.filter(a => a.id !== parseInt(artId)); _lsSaveData(_uid(), d); return {};
-  }
-
-  // ── Products ──
-  if (path === '/api/products/' && method === 'GET') return d.products.map(p => ({ ...p, composition: (p.composition||[]).map(c => ({ article: d.articles.find(a=>a.id===c.article_id)||{id:c.article_id,name:'?',unit:'pcs'}, quantity_used: c.quantity_used })) }));
-  if (path === '/api/products/' && method === 'POST') {
-    const p = { id: Date.now(), name: body.name, price: body.price || 0, purchase_price: body.purchase_price || 0, composition: body.composition || [] };
-    d.products.push(p); _lsSaveData(_uid(), d);
-    return { ...p, composition: p.composition.map(c => ({ article: d.articles.find(a=>a.id===c.article_id)||{id:c.article_id,name:'?',unit:'pcs'}, quantity_used: c.quantity_used })) };
-  }
-  const prodId = path.match(/\/api\/products\/(\d+)/)?.[1];
-  if (prodId && method === 'PUT') {
-    const p = d.products.find(p => p.id === parseInt(prodId));
-    if (p) { p.name = body.name || p.name; p.price = body.price ?? p.price; p.purchase_price = body.purchase_price ?? p.purchase_price ?? 0; p.composition = body.composition || p.composition; _lsSaveData(_uid(), d); }
-    return { ...p, composition: (p.composition||[]).map(c => ({ article: d.articles.find(a=>a.id===c.article_id)||{id:c.article_id,name:'?',unit:'pcs'}, quantity_used: c.quantity_used })) };
-  }
-  if (prodId && method === 'DELETE') {
-    d.products = d.products.filter(p => p.id !== parseInt(prodId)); _lsSaveData(_uid(), d); return {};
-  }
-
-  // ── Sales ──
-  if (path === '/api/sales/' && method === 'GET') return d.sales;
-  if (path === '/api/sales/' && method === 'POST') {
-    const p = d.products.find(p => p.id === body.product_id);
-    if (!p) throw new Error('Produit introuvable');
-    for (const c of (p.composition||[])) {
-      const art = d.articles.find(a => a.id === c.article_id);
-      if (!art || art.quantity < c.quantity_used * body.quantity) throw new Error(`Stock insuffisant : ${art?.name||'?'}`);
-    }
-    for (const c of (p.composition||[])) {
-      const art = d.articles.find(a => a.id === c.article_id);
-      if (art) art.quantity = Math.round((art.quantity - c.quantity_used * body.quantity) * 10) / 10;
-    }
-    const sale = { id: Date.now(), product_id: body.product_id, product_name: p.name, quantity: body.quantity, timestamp: new Date().toISOString() };
-    d.sales.unshift(sale); _lsSaveData(_uid(), d);
-    return { sale };
-  }
-
-  // ── Predictions (stub local) ──
-  if (path === '/api/predictions/') return [];
-
-  throw new Error('Route locale non supportée : ' + path);
-}
-
 // ── API helper ────────────────────────────────
 async function api(method, path, body) {
-  if (USE_LOCAL) {
-    try { return _localApi(method, path, body); }
-    catch(e) { throw new Error(e.message); }
+  const res = await fetch(API_BASE + path, {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(S.token ? { 'Authorization': `Bearer ${S.token}` } : {})
+    },
+    body: body ? JSON.stringify(body) : undefined
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    const errMsg = typeof err.error === 'string' ? err.error : (err.error?.error || err.message || `Erreur ${res.status}`);
+    throw new Error(errMsg);
   }
-  try {
-    const res = await fetch(API_BASE + path, {
-      method,
-      headers: { 'Content-Type': 'application/json', ...(S.token ? { 'Authorization': `Bearer ${S.token}` } : {}) },
-      body: body ? JSON.stringify(body) : undefined
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(typeof err.error === 'string' ? err.error : (err.error?.error || err.message || `Erreur ${res.status}`));
-    }
-    return res.json();
-  } catch(e) {
-    if (e.message === 'Failed to fetch' || e.name === 'TypeError' || e.message.includes('503')) {
-      USE_LOCAL = true;
-      showToast('Mode hors-ligne activé', '');
-      return _localApi(method, path, body);
-    }
-    throw e;
-  }
+  return res.json();
 }
 
 // ── Mapping API → state ───────────────────────
@@ -457,21 +168,13 @@ function articleFromAPI(a) {
 }
 function productFromAPI(p) {
   return {
-    id: p.id, name: p.name, price: p.price, purchasePrice: p.purchase_price || 0,
+    id: p.id, name: p.name, price: p.price,
     composition: (p.composition || []).map(c => ({ id: c.article.id, qty: c.quantity_used }))
   };
 }
-function marginPct(p) {
-  return p.price > 0 ? Math.round(((p.price - p.purchasePrice) / p.price) * 100) : 0;
-}
-function profitUnit(p) {
-  return p.price - p.purchasePrice;
-}
 function saleFromAPI(s) {
   const product = S.products.find(p => p.id === s.product_id);
-  const price = product ? product.price : 0;
-  const cost  = product ? product.purchasePrice : 0;
-  return { id: s.id, productId: s.product_id, productName: s.product_name, qty: s.quantity, total: price * s.quantity, profit: (price - cost) * s.quantity, date: s.timestamp };
+  return { id: s.id, productId: s.product_id, productName: s.product_name, qty: s.quantity, total: (product ? product.price : 0) * s.quantity, date: s.timestamp };
 }
 
 // ── Charger données depuis l'API ──────────────
@@ -783,11 +486,9 @@ async function saveProduct() {
     }
   });
   try {
-    const costEl = $('prod-cost');
     const data = await api('POST', '/api/products/', {
-      name:           nameEl.value.trim(),
-      purchase_price: parseFloat(costEl?.value) || 0,
-      price:          parseFloat(priceEl?.value) || 0,
+      name:        nameEl.value.trim(),
+      price:       parseFloat(priceEl?.value) || 0,
       composition
     });
     S.products.push(productFromAPI(data));
@@ -796,65 +497,6 @@ async function saveProduct() {
     nav('products');
   } catch(e) {
     showToast(e.message, 'error');
-  }
-}
-
-// ── Export CSV ────────────────────────────────
-function downloadCSV(filename, rows) {
-  const BOM = '\uFEFF';
-  const csv = BOM + rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = filename; a.click();
-  URL.revokeObjectURL(url);
-  showToast(`${filename} téléchargé`);
-}
-
-function exportArticlesCSV() {
-  const rows = [['Nom', 'Stock', 'Unité', 'Seuil alerte', 'Délai (j)']];
-  S.articles.forEach(a => rows.push([a.name, a.stock, a.unit, a.min, a.lead || '']));
-  downloadCSV(`stockr_articles_${new Date().toISOString().slice(0,10)}.csv`, rows);
-}
-
-function exportProductsCSV() {
-  const rows = [['Nom', 'Prix achat', 'Prix vente', 'Marge %', 'Bénéfice/u', 'Composition']];
-  S.products.forEach(p => {
-    const comp = p.composition.map(c => {
-      const a = S.articles.find(a => a.id === c.id);
-      return a ? `${c.qty} ${a.unit} ${a.name}` : '';
-    }).filter(Boolean).join(' + ');
-    rows.push([p.name, p.purchasePrice || 0, p.price, marginPct(p) + '%', profitUnit(p), comp]);
-  });
-  downloadCSV(`stockr_produits_${new Date().toISOString().slice(0,10)}.csv`, rows);
-}
-
-function exportSalesCSV() {
-  const rows = [['Date', 'Produit', 'Quantité', 'Total', 'Bénéfice']];
-  S.sales.forEach(s => rows.push([fmtDate(s.date), s.productName, s.qty, s.total, s.profit || 0]));
-  downloadCSV(`stockr_ventes_${new Date().toISOString().slice(0,10)}.csv`, rows);
-}
-
-function exportAllCSV() {
-  exportArticlesCSV();
-  setTimeout(() => exportProductsCSV(), 300);
-  setTimeout(() => exportSalesCSV(), 600);
-}
-
-function updateMarginPreview() {
-  const cost = parseFloat($('prod-cost')?.value) || 0;
-  const price = parseFloat($('prod-price')?.value) || 0;
-  const box = document.getElementById('margin-preview');
-  const val = document.getElementById('margin-val');
-  if (!box || !val) return;
-  if (price > 0) {
-    const pct = Math.round(((price - cost) / price) * 100);
-    const profit = price - cost;
-    val.innerHTML = `${pct}% · bénéfice ${fmt(profit)} FCFA/unité`;
-    val.style.color = pct >= 20 ? 'var(--success)' : pct >= 0 ? 'var(--warning)' : 'var(--danger)';
-    box.style.display = '';
-  } else {
-    box.style.display = 'none';
   }
 }
 
@@ -896,16 +538,13 @@ async function saveEditProduct() {
     }
   });
   try {
-    const costEl = $('prod-cost');
     const data = await api('PUT', `/api/products/${p.id}`, {
-      name:           nameEl.value.trim(),
-      purchase_price: parseFloat(costEl?.value) || 0,
-      price:          parseFloat(priceEl?.value) || 0,
+      name:  nameEl.value.trim(),
+      price: parseFloat(priceEl?.value) || 0,
       composition,
     });
     p.name  = data.name;
     p.price = data.price;
-    p.purchasePrice = data.purchase_price || 0;
     p.composition = (data.composition || []).map(c => ({ id: c.article.id, qty: c.quantity_used }));
     recalcAllMins();
     showToast(`"${p.name}" mis à jour`);
@@ -938,7 +577,7 @@ function addToCart() {
   const qty = Math.max(1, parseInt(qtyEl?.value) || 1);
   const existing = S.cart.find(c => c.productId === product.id);
   if (existing) { existing.qty += qty; }
-  else { S.cart.push({ productId:product.id, productName:product.name, qty, unitPrice:product.price, unitCost:product.purchasePrice }); }
+  else { S.cart.push({ productId:product.id, productName:product.name, qty, unitPrice:product.price }); }
   showToast(`${product.name} ajouté au panier`);
   render();
 }
@@ -951,21 +590,17 @@ function removeFromCart(idx) {
 async function confirmCart() {
   if (!S.cart.length) { showToast('Le panier est vide', 'error'); return; }
   try {
-    let total = 0, count = 0, newSales = [];
+    let total = 0, count = 0;
     for (const item of S.cart) {
       const data = await api('POST', '/api/sales/', { product_id: item.productId, quantity: item.qty });
       const product = S.products.find(p => p.id === item.productId);
       const lineTotal = (product?.price || 0) * item.qty;
-      const lineProfit = ((product?.price || 0) - (product?.purchasePrice || 0)) * item.qty;
       total += lineTotal;
       count += item.qty;
-      const newSale = { id: data.sale.id, productId: data.sale.product_id, productName: data.sale.product_name, qty: data.sale.quantity, total: lineTotal, profit: lineProfit, date: data.sale.timestamp };
-      S.sales.unshift(newSale);
-      newSales.push(newSale);
+      S.sales.unshift({ id: data.sale.id, productId: data.sale.product_id, productName: data.sale.product_name, qty: data.sale.quantity, total: lineTotal, date: data.sale.timestamp });
     }
     S.cart = [];
     showToast(`${count} unité(s) vendue(s) — ${fmt(total)} FCFA`);
-    showReceiptBanner(newSales, total);
     // Recharger les articles pour avoir les stocks à jour
     const arts = await api('GET', '/api/articles/');
     S.articles = arts.map(articleFromAPI);
@@ -1038,35 +673,6 @@ function toggleDark() {
   render();
 }
 
-// ── Bannière reçu post-vente ──────────────────
-function showReceiptBanner(sales, total) {
-  const existing = document.getElementById('receipt-banner');
-  if (existing) existing.remove();
-  const sym = S.session?.currency_symbol || 'FCFA';
-  const el = document.createElement('div');
-  el.id = 'receipt-banner';
-  el.className = 'receipt-banner';
-  // Stocker les ventes dans un attribut data sérialisé
-  const sid = 'rb_' + Date.now();
-  window[sid] = sales;
-  el.innerHTML = `
-    <div class="receipt-banner-left">
-      <div class="receipt-banner-title">Vente confirmée</div>
-      <div class="receipt-banner-total">${fmt(total)} ${sym}</div>
-    </div>
-    <div class="receipt-banner-btns">
-      <button class="rb-btn rb-pdf" onclick="generateInvoicePDF(window['${sid}']);document.getElementById('receipt-banner').remove()">
-        ${IC.pdf} PDF
-      </button>
-      <button class="rb-btn rb-wa" onclick="shareViaWhatsApp(window['${sid}']);document.getElementById('receipt-banner').remove()">
-        ${IC.whatsapp} WhatsApp
-      </button>
-      <button class="rb-close" onclick="document.getElementById('receipt-banner').remove()">✕</button>
-    </div>`;
-  document.body.appendChild(el);
-  setTimeout(() => { const b = document.getElementById('receipt-banner'); if (b) b.remove(); }, 10000);
-}
-
 // ── Navigate ──────────────────────────────────
 function nav(view, extra={}) {
   Object.assign(S, extra);
@@ -1096,8 +702,6 @@ function render() {
   };
   viewEl.innerHTML = (map[S.view] || vHome)();
   viewEl.scrollTop = 0;
-
-  if (S.view === 'financial') requestAnimationFrame(renderRevenueChart);
 
   const hideNav = ['detail','add','add-product','edit-product'].includes(S.view);
   navEl.style.display = hideNav ? 'none' : '';
@@ -1250,39 +854,8 @@ function vAuthStep2() {
 function vHome() {
   const low     = S.articles.filter(a => a.stock < a.min && a.min > 0);
   const totalCA = S.sales.reduce((s,v) => s+v.total, 0);
-  const totalProfit = S.sales.reduce((s,v) => s+(v.profit||0), 0);
-  const avgMargin = totalCA > 0 ? Math.round((totalProfit / totalCA) * 100) : 0;
-  const stockVal = S.articles.reduce((s,a) => s+a.stock*(a.price||0), 0);
   const today   = new Date().toDateString();
-  const todaySales = S.sales.filter(s => new Date(s.date).toDateString()===today);
-  const todayCA = todaySales.reduce((s,v)=>s+v.total,0);
-  const todayProfit = todaySales.reduce((s,v)=>s+(v.profit||0),0);
-
-  // Top products by revenue
-  const prodStats = {};
-  S.sales.forEach(s => {
-    if (!prodStats[s.productName]) prodStats[s.productName] = { qty:0, rev:0, profit:0 };
-    prodStats[s.productName].qty += s.qty;
-    prodStats[s.productName].rev += s.total;
-    prodStats[s.productName].profit += (s.profit||0);
-  });
-  const topProducts = Object.entries(prodStats).sort((a,b)=>b[1].rev-a[1].rev).slice(0,3);
-  const maxRev = topProducts.length ? topProducts[0][1].rev : 1;
-
-  // Best margin products
-  const bestMargin = S.products.filter(p => p.purchasePrice > 0 && p.price > 0)
-    .map(p => ({ name: p.name, margin: marginPct(p), profit: profitUnit(p), price: p.price }))
-    .sort((a,b) => b.margin - a.margin).slice(0, 3);
-
-  // Week sales trend (last 7 days)
-  const weekDays = [];
-  for (let i = 6; i >= 0; i--) {
-    const d = new Date(); d.setDate(d.getDate() - i);
-    const ds = d.toDateString();
-    const dayCA = S.sales.filter(s => new Date(s.date).toDateString() === ds).reduce((s,v)=>s+v.total, 0);
-    weekDays.push({ label: d.toLocaleDateString('fr', {weekday:'short'}).slice(0,3), ca: dayCA });
-  }
-  const maxDay = Math.max(...weekDays.map(d=>d.ca), 1);
+  const todayCA = S.sales.filter(s => new Date(s.date).toDateString()===today).reduce((s,v)=>s+v.total,0);
 
   return `
   <div class="hero anim">
@@ -1305,10 +878,6 @@ function vHome() {
       <div class="hero-stat">
         <div class="hero-stat-val">${fmt(todayCA)}</div>
         <div class="hero-stat-lbl">CA Auj.</div>
-      </div>
-      <div class="hero-stat">
-        <div class="hero-stat-val" style="color:#34d399">${fmt(todayProfit)}</div>
-        <div class="hero-stat-lbl">Bénéf.</div>
       </div>
     </div>
   </div>
@@ -1338,88 +907,6 @@ function vHome() {
         </div>
       </div>`).join('')}`;
     })()}
-
-    <div class="section-hd"><div class="section-lbl">Vue d'ensemble</div></div>
-    <div class="metric-grid">
-      <div class="metric-card anim" style="animation-delay:0s">
-        <div class="metric-val">${fmt(totalCA)}</div>
-        <div class="metric-lbl">CA Total</div>
-      </div>
-      <div class="metric-card anim" style="animation-delay:0.04s">
-        <div class="metric-val" style="color:var(--success)">${fmt(totalProfit)}</div>
-        <div class="metric-lbl">Bénéfice</div>
-      </div>
-      <div class="metric-card anim" style="animation-delay:0.08s">
-        <div class="metric-val" style="color:${avgMargin>=20?'var(--success)':avgMargin>=0?'var(--warning)':'var(--danger)'}">${avgMargin}%</div>
-        <div class="metric-lbl">Marge moy.</div>
-      </div>
-    </div>
-    <div class="metric-grid">
-      <div class="metric-card anim" style="animation-delay:0.12s">
-        <div class="metric-val">${fmt(stockVal)}</div>
-        <div class="metric-lbl">Val. stock</div>
-      </div>
-      <div class="metric-card anim" style="animation-delay:0.16s">
-        <div class="metric-val">${S.products.length}</div>
-        <div class="metric-lbl">Produits</div>
-      </div>
-      <div class="metric-card anim" style="animation-delay:0.20s">
-        <div class="metric-val">${S.sales.length}</div>
-        <div class="metric-lbl">Ventes</div>
-      </div>
-    </div>
-
-    ${S.sales.length > 0 ? `
-    <div class="section-hd"><div class="section-lbl">Tendance 7 jours</div></div>
-    <div class="card anim" style="animation-delay:0.1s">
-      <div style="display:flex;align-items:flex-end;gap:4px;height:80px;padding:4px 0">
-        ${weekDays.map(d => `
-        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
-          <div style="width:100%;background:${d.ca>0?'var(--accent)':'var(--gray-2)'};border-radius:4px 4px 0 0;min-height:4px;height:${Math.max(4, (d.ca/maxDay)*60)}px;transition:height .3s"></div>
-          <div style="font-size:10px;color:var(--text-3);white-space:nowrap">${d.label}</div>
-        </div>`).join('')}
-      </div>
-      <div style="text-align:center;font-size:11px;color:var(--text-3);margin-top:6px">
-        Total semaine : <strong style="color:var(--text-1)">${fmt(weekDays.reduce((s,d)=>s+d.ca,0))} FCFA</strong>
-      </div>
-    </div>` : ''}
-
-    ${topProducts.length > 0 ? `
-    <div class="section-hd">
-      <div class="section-lbl">Top produits</div>
-      <button class="section-act" onclick="nav('financial')">Détails</button>
-    </div>
-    <div class="card anim" style="animation-delay:0.15s">
-      ${topProducts.map(([name, d], i) => `
-      <div style="display:flex;align-items:center;gap:10px;${i>0?'margin-top:12px;padding-top:12px;border-top:1px solid var(--border)':''}">
-        <div style="width:28px;height:28px;border-radius:8px;background:${i===0?'var(--accent)':i===1?'var(--gray-6)':'var(--gray-4)'};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:var(--white);flex-shrink:0">${i+1}</div>
-        <div style="flex:1;min-width:0">
-          <div style="font-size:13px;font-weight:700;color:var(--text-1)">${name}</div>
-          <div style="display:flex;align-items:center;gap:8px;margin-top:4px">
-            <div style="flex:1;height:6px;background:var(--gray-2);border-radius:3px;overflow:hidden">
-              <div style="height:100%;width:${Math.round((d.rev/maxRev)*100)}%;background:${i===0?'var(--accent)':i===1?'var(--gray-6)':'var(--gray-4)'};border-radius:3px;transition:width .4s"></div>
-            </div>
-          </div>
-        </div>
-        <div style="text-align:right;flex-shrink:0">
-          <div style="font-size:13px;font-weight:700;color:var(--text-1)">${fmt(d.rev)} FCFA</div>
-          ${d.profit > 0 ? `<div style="font-size:11px;color:var(--success)">+${fmt(d.profit)} bénéf.</div>` : ''}
-        </div>
-      </div>`).join('')}
-    </div>` : ''}
-
-    ${bestMargin.length > 0 ? `
-    <div class="section-hd"><div class="section-lbl">Meilleures marges</div></div>
-    <div class="card anim" style="animation-delay:0.2s">
-      ${bestMargin.map((p, i) => `
-      <div style="display:flex;align-items:center;gap:10px;${i>0?'margin-top:10px;padding-top:10px;border-top:1px solid var(--border)':''}">
-        <div style="width:40px;height:40px;border-radius:50%;background:${p.margin>=30?'rgba(5,150,105,.12)':p.margin>=15?'rgba(217,119,6,.12)':'rgba(220,38,38,.12)'};display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:${p.margin>=30?'var(--success)':p.margin>=15?'var(--warning)':'var(--danger)'};flex-shrink:0">${p.margin}%</div>
-        <div style="flex:1">
-          <div style="font-size:13px;font-weight:600;color:var(--text-1)">${p.name}</div>
-          <div style="font-size:11px;color:var(--text-3)">Vente ${fmt(p.price)} · Bénéf. ${fmt(p.profit)} FCFA/u</div>
-        </div>
-      </div>`).join('')}
-    </div>` : ''}
 
     <div class="section-hd"><div class="section-lbl">Navigation</div></div>
     <div class="quick-grid">
@@ -1461,7 +948,7 @@ function vHome() {
         </div>
         <div class="sale-right">
           <div class="sale-total">${fmt(s.total)} FCFA</div>
-          <div class="sale-qty">×${s.qty}${s.profit ? ` · <span style="color:var(--success)">+${fmt(s.profit)}</span>` : ''}</div>
+          <div class="sale-qty">×${s.qty}</div>
         </div>
       </div>
     </div>`).join('')}
@@ -1556,8 +1043,7 @@ function vProducts() {
           <div class="article-avatar">${initials(p.name)}</div>
           <div class="article-info">
             <div class="article-name">${p.name}</div>
-            <div class="article-meta" style="font-weight:700;color:var(--text-2)">${fmt(p.price)} FCFA${p.purchasePrice > 0 ? ` <span style="font-size:11px;font-weight:600;color:${marginPct(p)>=20?'var(--success)':marginPct(p)>=0?'var(--warning)':'var(--danger)'};margin-left:6px">${marginPct(p)}% marge</span>` : ''}</div>
-            ${p.purchasePrice > 0 ? `<div class="article-meta" style="margin-top:1px;font-size:11px;color:var(--text-3)">Coût: ${fmt(p.purchasePrice)} · Bénéf: ${fmt(profitUnit(p))} FCFA/u</div>` : ''}
+            <div class="article-meta" style="font-weight:700;color:var(--text-2)">${fmt(p.price)} FCFA</div>
             ${recipeNames ? `<div class="article-meta" style="margin-top:2px;color:var(--text-3)">${recipeNames}</div>` : ''}
           </div>
           <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
@@ -1632,10 +1118,7 @@ function vSales() {
       <div class="empty-ico">${IC.dollarLg}</div>
       <div class="empty-title">Aucune vente</div>
       <div class="empty-text">Les ventes apparaîtront ici.</div>
-    </div>` : S.sales.map(s=>{
-      const sid = 'sale_' + s.id;
-      window[sid] = s;
-      return `
+    </div>` : S.sales.map(s=>`
     <div class="sale-item">
       <div class="sale-dot"></div>
       <div class="sale-info">
@@ -1643,14 +1126,10 @@ function vSales() {
         <div class="sale-date">${fmtDate(s.date)}</div>
       </div>
       <div class="sale-right">
-        <div class="sale-total">${fmt(s.total)} ${S.session?.currency_symbol||'FCFA'}</div>
-        <div class="sale-qty">×${s.qty}${s.profit ? ` · <span style="color:var(--success)">+${fmt(s.profit)}</span>` : ''}</div>
+        <div class="sale-total">${fmt(s.total)} FCFA</div>
+        <div class="sale-qty">×${s.qty}</div>
       </div>
-      <div class="sale-actions">
-        <button class="sale-act-btn" title="Facture PDF" onclick="generateInvoicePDF(window['${sid}'])">${IC.pdf}</button>
-        <button class="sale-act-btn sale-act-wa" title="Partager WhatsApp" onclick="shareViaWhatsApp(window['${sid}'])">${IC.whatsapp}</button>
-      </div>
-    </div>`;}).join('')}
+    </div>`).join('')}
   </div>`;
 }
 
@@ -1658,17 +1137,14 @@ function vSales() {
 function vFinancial() {
   const filtered = salesForPeriod();
   const totalCA  = filtered.reduce((s,v)=>s+v.total,0);
-  const totalProfit = filtered.reduce((s,v)=>s+(v.profit||0),0);
-  const avgMargin = totalCA > 0 ? Math.round((totalProfit / totalCA) * 100) : 0;
   const avg      = filtered.length ? Math.round(totalCA/filtered.length) : 0;
   const stockVal = S.articles.reduce((s,a)=>s+a.stock*(a.price||0),0);
 
   const stats = {};
   filtered.forEach(s => {
-    if (!stats[s.productName]) stats[s.productName]={qty:0,rev:0,profit:0};
+    if (!stats[s.productName]) stats[s.productName]={qty:0,rev:0};
     stats[s.productName].qty += s.qty;
     stats[s.productName].rev += s.total;
-    stats[s.productName].profit += (s.profit||0);
   });
   const top    = Object.entries(stats).sort((a,b)=>b[1].rev-a[1].rev).slice(0,5);
   const recos  = S.articles
@@ -1690,25 +1166,21 @@ function vFinancial() {
   <div class="sub-hero">
     <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('home')">${IC.left}</button>
     <div class="sub-hero-title">Bilan financier</div>
-    <div class="sub-hero-big">${fmt(totalCA)} <span style="font-size:16px;color:var(--accent-muted)">FCFA</span></div>
+    <div class="sub-hero-big">${fmt(totalCA)} <span style="font-size:16px;color:var(--gray-5)">FCFA</span></div>
     <div class="sub-hero-sub">${filtered.length} vente(s) · période sélectionnée</div>
   </div>
   <div class="container">
     <div class="period-tabs">
       ${periods.map(p=>`<button class="period-tab ${S.period===p.key?'active':''}" onclick="S.period='${p.key}';render()">${p.label}</button>`).join('')}
     </div>
-    <div class="chart-card">
-      <div class="chart-title">Chiffre d'affaires</div>
-      <div class="chart-wrap"><canvas id="revenue-chart"></canvas></div>
-    </div>
     <div class="metric-grid">
       <div class="metric-card"><div class="metric-val">${fmt(totalCA)}</div><div class="metric-lbl">CA</div></div>
-      <div class="metric-card"><div class="metric-val" style="color:var(--success)">${fmt(totalProfit)}</div><div class="metric-lbl">Bénéfice</div></div>
-      <div class="metric-card"><div class="metric-val" style="color:${avgMargin>=20?'var(--success)':avgMargin>=0?'var(--warning)':'var(--danger)'}">${avgMargin}%</div><div class="metric-lbl">Marge moy.</div></div>
-    </div>
-    <div class="metric-grid">
       <div class="metric-card"><div class="metric-val">${filtered.length}</div><div class="metric-lbl">Ventes</div></div>
       <div class="metric-card"><div class="metric-val">${fmt(avg)}</div><div class="metric-lbl">Ticket moy.</div></div>
+    </div>
+    <div class="metric-grid">
+      <div class="metric-card"><div class="metric-val">${S.articles.length}</div><div class="metric-lbl">Articles</div></div>
+      <div class="metric-card"><div class="metric-val">${S.articles.filter(a=>a.stock<a.min&&a.min>0).length}</div><div class="metric-lbl">Alertes</div></div>
       <div class="metric-card"><div class="metric-val">${fmt(stockVal)}</div><div class="metric-lbl">Val. stock</div></div>
     </div>
     <div class="card">
@@ -1718,7 +1190,7 @@ function vFinancial() {
         : top.map(([name,d],i)=>`
           <div class="rank-item">
             <div class="rank-num ${i===0?'r1':''}">${i+1}</div>
-            <div class="rank-name">${name}${d.profit>0?`<div style="font-size:11px;color:var(--success);font-weight:400">+${fmt(d.profit)} bénéf.</div>`:''}</div>
+            <div class="rank-name">${name}</div>
             <div class="rank-rev">${fmt(d.rev)} FCFA</div>
           </div>`).join('')}
     </div>
@@ -1917,18 +1389,9 @@ function vAddProduct() {
         <label class="form-label">Nom du produit *</label>
         <input class="input" id="prod-name" type="text" placeholder="ex: Boubou, Robe, Jupe…">
       </div>
-      <div style="display:flex;gap:10px">
-        <div class="form-group" style="flex:1">
-          <label class="form-label">Prix d'achat (FCFA)</label>
-          <input class="input" id="prod-cost" type="number" placeholder="0" step="100" oninput="updateMarginPreview()">
-        </div>
-        <div class="form-group" style="flex:1">
-          <label class="form-label">Prix de vente (FCFA)</label>
-          <input class="input" id="prod-price" type="number" placeholder="0" step="100" oninput="updateMarginPreview()">
-        </div>
-      </div>
-      <div id="margin-preview" style="background:var(--gray-1);border:1px solid var(--border);border-radius:var(--r-md);padding:10px 12px;font-size:13px;color:var(--text-3);margin-bottom:14px;display:none">
-        Marge : <strong id="margin-val">—</strong>
+      <div class="form-group">
+        <label class="form-label">Prix de vente (FCFA)</label>
+        <input class="input" id="prod-price" type="number" placeholder="0" step="100">
       </div>
       ${S.articles.length>0 ? `
       <div class="form-group">
@@ -1971,18 +1434,9 @@ function vEditProduct() {
         <label class="form-label">Nom du produit *</label>
         <input class="input" id="prod-name" type="text" value="${p.name.replace(/"/g,'&quot;')}">
       </div>
-      <div style="display:flex;gap:10px">
-        <div class="form-group" style="flex:1">
-          <label class="form-label">Prix d'achat (FCFA)</label>
-          <input class="input" id="prod-cost" type="number" placeholder="0" step="100" value="${p.purchasePrice || ''}">
-        </div>
-        <div class="form-group" style="flex:1">
-          <label class="form-label">Prix de vente (FCFA)</label>
-          <input class="input" id="prod-price" type="number" placeholder="0" step="100" value="${p.price}">
-        </div>
-      </div>
-      <div id="margin-preview" style="background:var(--gray-1);border:1px solid var(--border);border-radius:var(--r-md);padding:10px 12px;font-size:13px;color:var(--text-3);margin-bottom:14px;${p.price > 0 ? '' : 'display:none'}">
-        Marge : <strong id="margin-val">${p.price > 0 ? Math.round(((p.price - (p.purchasePrice||0)) / p.price) * 100) + '%' : '—'}</strong>
+      <div class="form-group">
+        <label class="form-label">Prix de vente (FCFA)</label>
+        <input class="input" id="prod-price" type="number" placeholder="0" step="100" value="${p.price}">
       </div>
       ${S.articles.length > 0 ? `
       <div class="form-group">
@@ -2314,28 +1768,6 @@ function vSettings() {
     </div>
 
     <div class="settings-section">
-      <div class="settings-label">Exporter (CSV)</div>
-      <div class="settings-row-block">
-        <div class="settings-row" onclick="exportArticlesCSV()">
-          <div class="settings-row-inner"><span class="settings-row-ico">${IC.download}</span><div class="settings-row-lbl">Articles</div></div>
-          ${IC.chevron}
-        </div>
-        <div class="settings-row" onclick="exportProductsCSV()">
-          <div class="settings-row-inner"><span class="settings-row-ico">${IC.download}</span><div class="settings-row-lbl">Produits + marges</div></div>
-          ${IC.chevron}
-        </div>
-        <div class="settings-row" onclick="exportSalesCSV()">
-          <div class="settings-row-inner"><span class="settings-row-ico">${IC.download}</span><div class="settings-row-lbl">Historique ventes</div></div>
-          ${IC.chevron}
-        </div>
-        <div class="settings-row" onclick="exportAllCSV()">
-          <div class="settings-row-inner"><span class="settings-row-ico" style="color:var(--accent)">${IC.download}</span><div class="settings-row-lbl" style="color:var(--accent)">Tout exporter</div></div>
-          ${IC.chevron}
-        </div>
-      </div>
-    </div>
-
-    <div class="settings-section">
       <div class="settings-label">Session</div>
       <div class="settings-row-block">
         <div class="settings-row" onclick="doLogout()">
@@ -2348,69 +1780,8 @@ function vSettings() {
       </div>
     </div>
 
-    ${_deferredInstall ? `
-    <div class="settings-section">
-      <div class="settings-label">Application</div>
-      <div class="settings-row-block">
-        <div class="settings-row" onclick="installPWA()">
-          <div class="settings-row-inner">
-            <span class="settings-row-ico" style="color:var(--accent)">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            </span>
-            <div>
-              <div class="settings-row-lbl" style="color:var(--accent)">Installer STOCKR</div>
-              <div class="settings-row-sub">Ajouter à l'écran d'accueil</div>
-            </div>
-          </div>
-          ${IC.chevron}
-        </div>
-      </div>
-    </div>` : ''}
-
-    <div style="text-align:center;padding:24px 0 8px;font-size:11px;color:var(--text-3)">STOCKR · v0.4.0 · 2026</div>
+    <div style="text-align:center;padding:24px 0 8px;font-size:11px;color:var(--text-3)">STOCKR · v0.3.0 · 2026</div>
   </div>`;
-}
-
-// ── PWA — Service Worker & Install ───────────
-let _deferredInstall = null;
-
-window.addEventListener('beforeinstallprompt', e => {
-  e.preventDefault();
-  _deferredInstall = e;
-  // Afficher le bouton install dans les settings
-  render();
-});
-
-window.addEventListener('appinstalled', () => {
-  _deferredInstall = null;
-  showToast('STOCKR installé sur votre écran d\'accueil !');
-  render();
-});
-
-async function installPWA() {
-  if (!_deferredInstall) return;
-  _deferredInstall.prompt();
-  const { outcome } = await _deferredInstall.userChoice;
-  if (outcome === 'accepted') showToast('Installation en cours…');
-  _deferredInstall = null;
-  render();
-}
-
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js')
-      .then(reg => {
-        reg.addEventListener('updatefound', () => {
-          const newSW = reg.installing;
-          newSW.addEventListener('statechange', () => {
-            if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
-              showToast('Mise à jour disponible — rechargez l\'app');
-            }
-          });
-        });
-      })
-      .catch(() => {}); // silencieux si localhost sans HTTPS
-  });
 }
 
 // ── Init ──────────────────────────────────────
@@ -2449,17 +1820,7 @@ document.addEventListener('DOMContentLoaded', () => {
   window.spectraReset    = spectraReset;
   window.doLogout      = doLogout;
   window.showToast     = showToast;
-  window.loadData           = loadData;
-  window.renderRevenueChart  = renderRevenueChart;
-  window.installPWA          = installPWA;
-  window.generateInvoicePDF  = generateInvoicePDF;
-  window.shareViaWhatsApp    = shareViaWhatsApp;
-  window.showReceiptBanner   = showReceiptBanner;
-  window.updateMarginPreview = updateMarginPreview;
-  window.exportArticlesCSV    = exportArticlesCSV;
-  window.exportProductsCSV    = exportProductsCSV;
-  window.exportSalesCSV       = exportSalesCSV;
-  window.exportAllCSV         = exportAllCSV;
+  window.loadData      = loadData;
 
   // Restaurer la session + token si existants
   const saved = getSession();
