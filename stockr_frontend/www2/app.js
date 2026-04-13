@@ -30,6 +30,7 @@ const IC = {
   users:    `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
   usersLg:  `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
   phone:    `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`,
+  bell:     `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>`,
   moon:     `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`,
   sun:      `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`,
   logout:   `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>`,
@@ -167,6 +168,12 @@ const LANGS = {
     lastPurchase:'Dernier achat', noPurchases:'Aucun achat', clientOf:'client(s)',
     selectClient:'— Client (optionnel) —', topClients:'Meilleurs clients',
     addClientSub:'Enregistrer un nouveau client',
+    // Notifications
+    notifications:'Notifications', noNotifs:'Tout est en ordre !',
+    noNotifsSub:'Aucune alerte pour le moment.',
+    stockAlert:'Alerte stock', outOfStockAlert:'Rupture de stock',
+    lowStockAlert:'Stock faible', orderSuggestion:'Commander',
+    unitsRemaining:'restant(s)', belowThreshold:'sous le seuil de',
     // Misc
     required:'requis', fillAll:'Remplis tous les champs', pwdMismatch:'Les mots de passe ne correspondent pas',
     pwdShort:'Mot de passe trop court (min. 6 caractères)',
@@ -227,6 +234,11 @@ const LANGS = {
     lastPurchase:'Last purchase', noPurchases:'No purchases', clientOf:'client(s)',
     selectClient:'— Client (optional) —', topClients:'Top Clients',
     addClientSub:'Register a new client',
+    notifications:'Notifications', noNotifs:'All clear!',
+    noNotifsSub:'No alerts at the moment.',
+    stockAlert:'Stock alert', outOfStockAlert:'Out of stock',
+    lowStockAlert:'Low stock', orderSuggestion:'Order',
+    unitsRemaining:'remaining', belowThreshold:'below threshold of',
     required:'required', fillAll:'Fill in all fields', pwdMismatch:'Passwords don\'t match',
     pwdShort:'Password too short (min 6 characters)',
     welcome:'Welcome', offlineMode:'Offline mode activated', delete:'Delete',
@@ -1257,14 +1269,14 @@ function render() {
     detail: vDetail, add: vAdd, 'add-product': vAddProduct,
     'edit-product': vEditProduct, settings: vSettings,
     spectra: vSpectra, clients: vClients, 'add-client': vAddClient,
-    'client-detail': vClientDetail,
+    'client-detail': vClientDetail, notifications: vNotifications,
   };
   viewEl.innerHTML = (map[S.view] || vHome)();
   viewEl.scrollTop = 0;
 
   if (S.view === 'financial') requestAnimationFrame(renderRevenueChart);
 
-  const hideNav = ['detail','add','add-product','edit-product','add-client','client-detail'].includes(S.view);
+  const hideNav = ['detail','add','add-product','edit-product','add-client','client-detail','notifications'].includes(S.view);
   navEl.style.display = hideNav ? 'none' : '';
   if (!hideNav) navEl.innerHTML = renderNav();
 }
@@ -1460,7 +1472,10 @@ function vHome() {
         <div class="hero-greeting">${t('hello')}, ${S.session.name.split(' ')[0]}</div>
         <div class="hero-name">${S.session.business || S.session.name}</div>
       </div>
-      <button class="hero-btn" onclick="nav('settings')">${IC.settings}</button>
+      <div style="display:flex;gap:8px">
+        <button class="hero-btn" onclick="nav('notifications')" style="position:relative">${IC.bell}${low.length>0?`<span style="position:absolute;top:-2px;right:-2px;width:18px;height:18px;border-radius:50%;background:var(--danger);color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center">${low.length}</span>`:''}</button>
+        <button class="hero-btn" onclick="nav('settings')">${IC.settings}</button>
+      </div>
     </div>
     <div class="hero-stats">
       <div class="hero-stat">
@@ -2188,6 +2203,53 @@ function vEditProduct() {
       </div>` : ''}
       <button class="btn btn-primary" onclick="saveEditProduct()">${t('update')}</button>
     </div>
+  </div>`;
+}
+
+// ── NOTIFICATIONS ────────────────────────────
+function vNotifications() {
+  const outOfStock = S.articles.filter(a => a.stock === 0);
+  const lowStock = S.articles.filter(a => a.stock > 0 && a.min > 0 && a.stock < a.min);
+  const allAlerts = [
+    ...outOfStock.map(a => ({ type: 'out', article: a, priority: 0 })),
+    ...lowStock.map(a => ({ type: 'low', article: a, priority: 1 })),
+  ].sort((a, b) => a.priority - b.priority);
+
+  return `
+  <div class="sub-hero">
+    <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('home')">${IC.left}</button>
+    <div class="sub-hero-title">${t('notifications')}</div>
+    <div class="sub-hero-sub">${allAlerts.length} ${t('stockAlert').toLowerCase()}</div>
+  </div>
+  <div class="container">
+    ${allAlerts.length === 0 ? `
+    <div class="empty">
+      <div class="empty-ico" style="color:var(--success)">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div class="empty-title">${t('noNotifs')}</div>
+      <div class="empty-text">${t('noNotifsSub')}</div>
+    </div>` : allAlerts.map((n, i) => {
+      const a = n.article;
+      const isOut = n.type === 'out';
+      const toOrder = Math.max(0, Math.ceil(a.min - a.stock));
+      return `
+    <div class="card card-tap anim" style="animation-delay:${i*0.04}s;border-left:4px solid ${isOut?'var(--danger)':'var(--warning)'}" onclick="nav('detail',{selectedId:${a.id}})">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:40px;height:40px;border-radius:10px;background:${isOut?'rgba(220,38,38,.1)':'rgba(217,119,6,.1)'};display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <span style="font-size:18px">${isOut?'🔴':'🟡'}</span>
+        </div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:14px;font-weight:700;color:var(--text-1)">${a.name}</div>
+          <div style="font-size:12px;color:${isOut?'var(--danger)':'var(--warning)'};font-weight:600;margin-top:2px">
+            ${isOut ? t('outOfStockAlert') : `${a.stock} ${a.unit} ${t('unitsRemaining')} — ${t('belowThreshold')} ${a.min}`}
+          </div>
+          ${!isOut && a.lead > 0 ? `<div style="font-size:11px;color:var(--text-3);margin-top:2px">${t('deliveryTime')} : ${a.lead}j · ${t('orderSuggestion')} ~${toOrder} ${a.unit}</div>` : ''}
+        </div>
+        <div style="color:var(--gray-4)">${IC.chevron}</div>
+      </div>
+    </div>`;
+    }).join('')}
   </div>`;
 }
 
