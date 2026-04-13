@@ -97,6 +97,102 @@ const API_BASE = (location.hostname === 'localhost' || location.hostname === '12
   ? 'http://localhost:5001'
   : (window.__STOCKR_API_URL__ || 'https://stockr-api.onrender.com');
 
+// ── i18n ─────────────────────────────────────
+const LANGS = {
+  fr: {
+    // Nav
+    home:'Accueil', stock:'Stock', products:'Produits', sales:'Ventes', bilan:'Bilan',
+    // Auth
+    login:'Connexion', register:"S'inscrire", loginSub:'Accède à ton espace', registerSub:'Crée ton compte',
+    email:'Email', password:'Mot de passe', confirmPwd:'Confirmer', name:'Nom complet',
+    noAccount:'Pas encore de compte ?', hasAccount:'Déjà un compte ?',
+    loginBtn:'Se connecter', registerBtn:'Créer mon compte', next:'Suivant',
+    // Home
+    hello:'Bonjour', alerts:'Alertes', caToday:'CA Auj.', profitToday:'Bénéf.',
+    overview:'Vue d\'ensemble', caTotal:'CA Total', profit:'Bénéfice', avgMargin:'Marge moy.',
+    stockVal:'Val. stock', salesCount:'Ventes', trend7d:'Tendance 7 jours', weekTotal:'Total semaine',
+    topProducts:'Top produits', details:'Détails', bestMargins:'Meilleures marges',
+    nav:'Navigation', recentSales:'Dernières ventes', viewAll:'Voir tout', noSalesYet:'Aucune vente pour l\'instant',
+    restockAlert:'à réapprovisionner', aiPredictions:'Prédictions IA',
+    // Products
+    finishedProducts:'Produits finis', newProduct:'Nouveau produit', editProduct:'Modifier le produit',
+    productName:'Nom du produit', purchasePrice:'Prix d\'achat', sellingPrice:'Prix de vente',
+    composition:'Composition', perUnit:'quantité par unité produite', create:'Créer ce produit',
+    update:'Mettre à jour', margin:'marge', costLabel:'Coût', profitUnit:'Bénéf.',
+    available:'fab.', unavailable:'Indispo', noProducts:'Aucun produit',
+    noProductsSub:'Crée un produit fini à partir de tes articles en stock.',
+    createProduct:'Créer un produit', productSub:'Produit fini composé d\'articles',
+    // Sales
+    newSale:'Nouvelle vente', product:'Produit', quantity:'Quantité', confirm:'Confirmer',
+    cartQuestion:'Faire un panier ?', closeCart:'Fermer panier', cart:'Panier',
+    emptyCart:'Panier vide — ajoute des produits ci-dessus.', total:'Total',
+    validateSale:'Valider la vente', history:'Historique', noSales:'Aucune vente',
+    noSalesSub:'Les ventes apparaîtront ici.', today:'Aujourd\'hui', select:'— Sélectionner —',
+    // Financial
+    financialTitle:'Bilan financier', period:'période sélectionnée', avgTicket:'Ticket moy.',
+    articles:'Articles',
+    // Stock
+    addArticle:'Ajouter un article', articleName:'Nom de l\'article', unit:'Unité',
+    initialStock:'Stock initial', alertThreshold:'Seuil d\'alerte', deliveryDays:'Délai livraison (j)',
+    addThisArticle:'Ajouter cet article', all:'Tout', outOfStock:'Rupture', low:'Faible', ok:'OK',
+    // Settings
+    settings:'Paramètres', myAccount:'Mon compte', modify:'Modifier', appearance:'Apparence',
+    darkMode:'Mode sombre', lightMode:'Mode clair', data:'Données', exportCSV:'Exporter (CSV)',
+    exportArticles:'Articles', exportProducts:'Produits + marges', exportSales:'Historique ventes',
+    exportAll:'Tout exporter', session:'Session', logout:'Se déconnecter',
+    save:'Sauvegarder', cancel:'Annuler', business:'Commerce',
+    installApp:'Installer STOCKR', installSub:'Ajouter à l\'écran d\'accueil',
+    language:'Langue',
+    // Misc
+    required:'requis', fillAll:'Remplis tous les champs', pwdMismatch:'Les mots de passe ne correspondent pas',
+    pwdShort:'Mot de passe trop court (min. 6 caractères)',
+    welcome:'Bienvenue', offlineMode:'Mode hors-ligne activé', delete:'Supprimer',
+  },
+  en: {
+    home:'Home', stock:'Stock', products:'Products', sales:'Sales', bilan:'Reports',
+    login:'Login', register:'Sign up', loginSub:'Access your workspace', registerSub:'Create your account',
+    email:'Email', password:'Password', confirmPwd:'Confirm', name:'Full name',
+    noAccount:'Don\'t have an account?', hasAccount:'Already have an account?',
+    loginBtn:'Sign in', registerBtn:'Create my account', next:'Next',
+    hello:'Hello', alerts:'Alerts', caToday:'Rev. Today', profitToday:'Profit',
+    overview:'Overview', caTotal:'Revenue', profit:'Profit', avgMargin:'Avg Margin',
+    stockVal:'Stock Val.', salesCount:'Sales', trend7d:'7-Day Trend', weekTotal:'Week total',
+    topProducts:'Top Products', details:'Details', bestMargins:'Best Margins',
+    nav:'Navigation', recentSales:'Recent Sales', viewAll:'View all', noSalesYet:'No sales yet',
+    restockAlert:'to restock', aiPredictions:'AI Predictions',
+    finishedProducts:'Finished Products', newProduct:'New Product', editProduct:'Edit Product',
+    productName:'Product name', purchasePrice:'Purchase price', sellingPrice:'Selling price',
+    composition:'Composition', perUnit:'quantity per unit produced', create:'Create product',
+    update:'Update', margin:'margin', costLabel:'Cost', profitUnit:'Profit',
+    available:'avail.', unavailable:'Unavail.', noProducts:'No products',
+    noProductsSub:'Create a finished product from your stock items.',
+    createProduct:'Create a product', productSub:'Finished product made from articles',
+    newSale:'New Sale', product:'Product', quantity:'Quantity', confirm:'Confirm',
+    cartQuestion:'Make a cart?', closeCart:'Close cart', cart:'Cart',
+    emptyCart:'Cart empty — add products above.', total:'Total',
+    validateSale:'Confirm sale', history:'History', noSales:'No sales',
+    noSalesSub:'Sales will appear here.', today:'Today', select:'— Select —',
+    financialTitle:'Financial Report', period:'selected period', avgTicket:'Avg ticket',
+    articles:'Articles',
+    addArticle:'Add Article', articleName:'Article name', unit:'Unit',
+    initialStock:'Initial stock', alertThreshold:'Alert threshold', deliveryDays:'Delivery time (d)',
+    addThisArticle:'Add this article', all:'All', outOfStock:'Out', low:'Low', ok:'OK',
+    settings:'Settings', myAccount:'My Account', modify:'Edit', appearance:'Appearance',
+    darkMode:'Dark mode', lightMode:'Light mode', data:'Data', exportCSV:'Export (CSV)',
+    exportArticles:'Articles', exportProducts:'Products + margins', exportSales:'Sales history',
+    exportAll:'Export all', session:'Session', logout:'Sign out',
+    save:'Save', cancel:'Cancel', business:'Business',
+    installApp:'Install STOCKR', installSub:'Add to home screen',
+    language:'Language',
+    required:'required', fillAll:'Fill in all fields', pwdMismatch:'Passwords don\'t match',
+    pwdShort:'Password too short (min 6 characters)',
+    welcome:'Welcome', offlineMode:'Offline mode activated', delete:'Delete',
+  }
+};
+let _lang = localStorage.getItem('stockr_lang') || 'fr';
+function t(k) { return (LANGS[_lang] || LANGS.fr)[k] || (LANGS.fr)[k] || k; }
+function setLang(l) { _lang = l; localStorage.setItem('stockr_lang', l); render(); }
+
 // ── Facture & WhatsApp ────────────────────────
 function _invNum(id) { return 'INV-' + String(id).slice(-6).toUpperCase(); }
 
@@ -1106,11 +1202,11 @@ function render() {
 
 function renderNav() {
   const tabs = [
-    { id:'home',      icon:IC.home,   label:'Accueil'  },
-    { id:'pantry',    icon:IC.box,    label:'Stock'    },
-    { id:'products',  icon:IC.tag,    label:'Produits' },
-    { id:'sales',     icon:IC.dollar, label:'Ventes'   },
-    { id:'financial', icon:IC.bar,    label:'Bilan'    },
+    { id:'home',      icon:IC.home,   label:t('home')     },
+    { id:'pantry',    icon:IC.box,    label:t('stock')    },
+    { id:'products',  icon:IC.tag,    label:t('products') },
+    { id:'sales',     icon:IC.dollar, label:t('sales')    },
+    { id:'financial', icon:IC.bar,    label:t('bilan')    },
   ];
   return tabs.map(t => `
     <button class="nav-tab ${S.view===t.id?'active':''}" onclick="nav('${t.id}')">
@@ -1128,8 +1224,12 @@ function vAuth() {
   <div class="auth-wrap">
     <div class="auth-card">
       <div class="auth-logo">${IC.box}<span>STOCKR</span></div>
-      <div class="auth-title">${isLogin ? 'Connexion' : 'Créer un compte'}</div>
-      <div class="auth-sub">${isLogin ? 'Accède à ton espace' : 'Étape 1 sur 2 — Tes informations'}</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
+        <button onclick="setLang('fr')" style="padding:4px 10px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid ${_lang==='fr'?'var(--accent)':'var(--border)'};background:${_lang==='fr'?'var(--accent-light)':'transparent'};color:${_lang==='fr'?'var(--accent)':'var(--text-3)'}">FR</button>
+        <button onclick="setLang('en')" style="padding:4px 10px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid ${_lang==='en'?'var(--accent)':'var(--border)'};background:${_lang==='en'?'var(--accent-light)':'transparent'};color:${_lang==='en'?'var(--accent)':'var(--text-3)'}">EN</button>
+      </div>
+      <div class="auth-title">${isLogin ? t('login') : t('register')}</div>
+      <div class="auth-sub">${isLogin ? t('loginSub') : 'Étape 1/2'}</div>
 
       ${!isLogin ? `
       <div class="form-group">
@@ -1161,12 +1261,12 @@ function vAuth() {
       </div>` : ''}
 
       <button class="btn btn-primary" style="margin-top:8px" onclick="${isLogin ? 'doLogin()' : 'authNextStep()'}">
-        ${isLogin ? 'Se connecter' : 'Continuer →'}
+        ${isLogin ? t('loginBtn') : t('next') + ' →'}
       </button>
       <div class="auth-switch">
-        ${isLogin ? 'Pas encore de compte ?' : 'Déjà un compte ?'}
+        ${isLogin ? t('noAccount') : t('hasAccount')}
         <button onclick="S.authView='${isLogin?'register':'login'}';S.authStep=1;S.authShowPwd=false;render()">
-          ${isLogin ? "S'inscrire" : 'Se connecter'}
+          ${isLogin ? t('register') : t('loginBtn')}
         </button>
       </div>
     </div>
@@ -1288,7 +1388,7 @@ function vHome() {
   <div class="hero anim">
     <div class="hero-top">
       <div>
-        <div class="hero-greeting">Bonjour, ${S.session.name.split(' ')[0]}</div>
+        <div class="hero-greeting">${t('hello')}, ${S.session.name.split(' ')[0]}</div>
         <div class="hero-name">${S.session.business || S.session.name}</div>
       </div>
       <button class="hero-btn" onclick="nav('settings')">${IC.settings}</button>
@@ -1296,19 +1396,19 @@ function vHome() {
     <div class="hero-stats">
       <div class="hero-stat">
         <div class="hero-stat-val">${S.articles.length}</div>
-        <div class="hero-stat-lbl">Articles</div>
+        <div class="hero-stat-lbl">${t('articles')}</div>
       </div>
       <div class="hero-stat ${low.length>0?'warn':''}">
         <div class="hero-stat-val">${low.length}</div>
-        <div class="hero-stat-lbl">Alertes</div>
+        <div class="hero-stat-lbl">${t('alerts')}</div>
       </div>
       <div class="hero-stat">
         <div class="hero-stat-val">${fmt(todayCA)}</div>
-        <div class="hero-stat-lbl">CA Auj.</div>
+        <div class="hero-stat-lbl">${t('caToday')}</div>
       </div>
       <div class="hero-stat">
         <div class="hero-stat-val" style="color:#34d399">${fmt(todayProfit)}</div>
-        <div class="hero-stat-lbl">Bénéf.</div>
+        <div class="hero-stat-lbl">${t('profitToday')}</div>
       </div>
     </div>
   </div>
@@ -1339,33 +1439,33 @@ function vHome() {
       </div>`).join('')}`;
     })()}
 
-    <div class="section-hd"><div class="section-lbl">Vue d'ensemble</div></div>
+    <div class="section-hd"><div class="section-lbl">${t('overview')}</div></div>
     <div class="metric-grid">
       <div class="metric-card anim" style="animation-delay:0s">
         <div class="metric-val">${fmt(totalCA)}</div>
-        <div class="metric-lbl">CA Total</div>
+        <div class="metric-lbl">${t('caTotal')}</div>
       </div>
       <div class="metric-card anim" style="animation-delay:0.04s">
         <div class="metric-val" style="color:var(--success)">${fmt(totalProfit)}</div>
-        <div class="metric-lbl">Bénéfice</div>
+        <div class="metric-lbl">${t('profit')}</div>
       </div>
       <div class="metric-card anim" style="animation-delay:0.08s">
         <div class="metric-val" style="color:${avgMargin>=20?'var(--success)':avgMargin>=0?'var(--warning)':'var(--danger)'}">${avgMargin}%</div>
-        <div class="metric-lbl">Marge moy.</div>
+        <div class="metric-lbl">${t('avgMargin')}</div>
       </div>
     </div>
     <div class="metric-grid">
       <div class="metric-card anim" style="animation-delay:0.12s">
         <div class="metric-val">${fmt(stockVal)}</div>
-        <div class="metric-lbl">Val. stock</div>
+        <div class="metric-lbl">${t('stockVal')}</div>
       </div>
       <div class="metric-card anim" style="animation-delay:0.16s">
         <div class="metric-val">${S.products.length}</div>
-        <div class="metric-lbl">Produits</div>
+        <div class="metric-lbl">${t('products')}</div>
       </div>
       <div class="metric-card anim" style="animation-delay:0.20s">
         <div class="metric-val">${S.sales.length}</div>
-        <div class="metric-lbl">Ventes</div>
+        <div class="metric-lbl">${t('salesCount')}</div>
       </div>
     </div>
 
