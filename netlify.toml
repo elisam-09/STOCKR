@@ -1,0 +1,33 @@
+# ── STOCKR — Netlify Frontend Deployment ─────
+# Connecte ce repo GitHub sur netlify.com → "New site from Git"
+# Publish directory : stockr_frontend/www2
+
+[build]
+  publish = "stockr_frontend/www2"
+  # Pas de build command — site statique pur
+
+# ── SPA routing (toutes les routes → index.html)
+[[redirects]]
+  from   = "/*"
+  to     = "/index.html"
+  status = 200
+
+# ── Headers de sécurité
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options        = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy        = "strict-origin-when-cross-origin"
+
+# ── Service Worker : ne pas mettre en cache côté CDN
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+# ── Manifeste PWA
+[[headers]]
+  for = "/manifest.json"
+  [headers.values]
+    Content-Type = "application/manifest+json"

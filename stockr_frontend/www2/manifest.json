@@ -1,0 +1,42 @@
+{
+  "name": "STOCKR — Gestion de Stock",
+  "short_name": "STOCKR",
+  "description": "Gestion de stock intelligente pour PME africaines",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F2F2F2",
+  "theme_color": "#4F46E5",
+  "lang": "fr",
+  "categories": ["business", "finance", "productivity"],
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Nouveau stock",
+      "short_name": "Stock",
+      "description": "Ajouter un article au stock",
+      "url": "/?view=add"
+    },
+    {
+      "name": "Nouvelle vente",
+      "short_name": "Vente",
+      "description": "Enregistrer une vente",
+      "url": "/?view=sales"
+    }
+  ]
+}
