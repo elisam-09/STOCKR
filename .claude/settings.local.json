@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(index\")",
+      "Bash(pip install:*)",
+      "Bash(node -c app.js)"
+    ]
+  }
+}
