@@ -736,6 +736,27 @@ body.dark .pred-card.critical { background: rgba(220,38,38,0.1); }
 body.dark .pred-card.warning  { background: rgba(217,119,6,0.1); }
 body.dark .pred-card.ok       { background: rgba(5,150,105,0.1); }
 body.dark .btn-primary { box-shadow: 0 4px 14px rgba(79,70,229,0.35); }
+body.dark .input:focus { background: var(--surface); color: var(--text); }
+body.dark .input { background: var(--gray-1); color: var(--text); border-color: var(--border); }
+body.dark select.input { background: var(--gray-1); color: var(--text); }
+body.dark select.input option { background: var(--surface); color: var(--text); }
+body.dark .card { background: var(--surface); }
+body.dark .metric-card { background: var(--surface); }
+body.dark .quick-btn { background: var(--surface); border-color: var(--border); }
+body.dark .settings-row { background: var(--surface); border-color: var(--border); }
+body.dark .toggle-btn { background: var(--gray-1); border-color: var(--border); }
+body.dark .toggle-btn.t-active { border-color: var(--accent); }
+body.dark .nav-tab { color: var(--text-3); }
+body.dark .nav-tab.active { color: var(--accent); }
+body.dark .filter-chip { background: var(--gray-1); border-color: var(--border); color: var(--text-2); }
+body.dark .period-tab { background: var(--gray-1); color: var(--text-2); }
+body.dark .section-lbl { color: var(--text-3); }
+body.dark .article-name { color: var(--text); }
+body.dark .sale-prod { color: var(--text); }
+body.dark .sale-total { color: var(--text); }
+body.dark .page-title { color: var(--text); }
+body.dark textarea.input { background: var(--gray-1); color: var(--text); }
+body.dark textarea.input:focus { background: var(--surface); color: var(--text); }
 
 /* ── Unit Combobox ── */
 .unit-combo {

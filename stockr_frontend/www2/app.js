@@ -174,10 +174,42 @@ const LANGS = {
     stockAlert:'Alerte stock', outOfStockAlert:'Rupture de stock',
     lowStockAlert:'Stock faible', orderSuggestion:'Commander',
     unitsRemaining:'restant(s)', belowThreshold:'sous le seuil de',
+    // Search
+    searchAll:'Rechercher articles, produits, clients…', searchResults:'Résultats',
+    // Locations
+    locations:'Emplacements', allLocations:'Tous les emplacements', addLocation:'Ajouter',
+    locationName:'Nom de l\'emplacement', noLocations:'Aucun emplacement',
+    manageLocations:'Gérer les emplacements', currentLocation:'Emplacement actuel',
+    locationPlaceholder:'Ex: Riviera, Plateau, Marcory…',
+    // Spectra
+    spectraTitle:'Spectra — Scanner', spectraCapture:'Scanner le stock',
+    spectraScan:'Prendre une photo', spectraAnalyzing:'Analyse en cours…',
+    spectraDetected:'Articles détectés', spectraConfirm:'Confirmer', spectraSkip:'Ignorer',
+    spectraDone:'Inventaire mis à jour', spectraViewStock:'Voir le stock',
+    spectraNoDetection:'Aucun article détecté — réessaie avec une meilleure photo',
+    spectraInventory:'Inventaire rapide', spectraCompare:'Comparer au stock',
+    spectraMatch:'Correspond', spectraMissing:'Manquant', spectraExtra:'Excédent',
+    spectraScanSub:'Scanne tes étagères pour vérifier le stock rapidement.',
+    // Invoice
+    invoice:'Facture', invoiceNumber:'N° Facture', invoiceDate:'Date',
+    invoiceClient:'Client', invoiceItems:'Articles', invoiceQty:'Qté',
+    invoiceUnitPrice:'Prix unit.', invoiceTotal:'Total', invoiceSubtotal:'Sous-total',
+    invoiceTax:'TVA', invoiceThankYou:'Merci pour votre confiance !',
+    invoicePayment:'Mode de paiement', invoiceCash:'Espèces', invoiceMobile:'Mobile Money',
+    invoiceGenerate:'Générer facture', invoiceShare:'Partager',
+    saleConfirmed:'Vente confirmée', unitsSold:'unité(s) vendue(s)',
+    businessLogo:'Logo entreprise', uploadLogo:'Télécharger un logo',
+    // Catalog
+    catalog:'Catalogue', createCatalog:'Créer un catalogue', selectProducts:'Sélectionner',
+    catalogTitle:'Catalogue WhatsApp', catalogSub:'Partager sur WhatsApp',
+    catalogGenerate:'Générer', catalogShare:'Partager sur WhatsApp',
+    catalogFomo:'Alerte stock faible !', catalogFomoSub:'Articles bientôt épuisés',
+    catalogLastPieces:'Dernières pièces !', catalogHurry:'Faites vite !',
     // Misc
     required:'requis', fillAll:'Remplis tous les champs', pwdMismatch:'Les mots de passe ne correspondent pas',
     pwdShort:'Mot de passe trop court (min. 6 caractères)',
     welcome:'Bienvenue', offlineMode:'Mode hors-ligne activé', delete:'Supprimer',
+    emptyCartMsg:'Le panier est vide', search:'Rechercher…',
   },
   en: {
     home:'Home', stock:'Stock', products:'Products', sales:'Sales', bilan:'Reports',
@@ -239,9 +271,36 @@ const LANGS = {
     stockAlert:'Stock alert', outOfStockAlert:'Out of stock',
     lowStockAlert:'Low stock', orderSuggestion:'Order',
     unitsRemaining:'remaining', belowThreshold:'below threshold of',
+    searchAll:'Search articles, products, clients…', searchResults:'Results',
+    locations:'Locations', allLocations:'All locations', addLocation:'Add',
+    locationName:'Location name', noLocations:'No locations',
+    manageLocations:'Manage locations', currentLocation:'Current location',
+    locationPlaceholder:'E.g. Downtown, Mall, Branch 2…',
+    spectraTitle:'Spectra — Scanner', spectraCapture:'Scan stock',
+    spectraScan:'Take a photo', spectraAnalyzing:'Analyzing…',
+    spectraDetected:'Detected items', spectraConfirm:'Confirm', spectraSkip:'Skip',
+    spectraDone:'Inventory updated', spectraViewStock:'View stock',
+    spectraNoDetection:'No items detected — try a better photo',
+    spectraInventory:'Quick inventory', spectraCompare:'Compare to stock',
+    spectraMatch:'Match', spectraMissing:'Missing', spectraExtra:'Extra',
+    spectraScanSub:'Scan your shelves to quickly verify stock.',
+    invoice:'Invoice', invoiceNumber:'Invoice #', invoiceDate:'Date',
+    invoiceClient:'Client', invoiceItems:'Items', invoiceQty:'Qty',
+    invoiceUnitPrice:'Unit price', invoiceTotal:'Total', invoiceSubtotal:'Subtotal',
+    invoiceTax:'Tax', invoiceThankYou:'Thank you for your business!',
+    invoicePayment:'Payment method', invoiceCash:'Cash', invoiceMobile:'Mobile Money',
+    invoiceGenerate:'Generate invoice', invoiceShare:'Share',
+    saleConfirmed:'Sale confirmed', unitsSold:'unit(s) sold',
+    businessLogo:'Business logo', uploadLogo:'Upload a logo',
+    catalog:'Catalog', createCatalog:'Create catalog', selectProducts:'Select',
+    catalogTitle:'WhatsApp Catalog', catalogSub:'Share on WhatsApp',
+    catalogGenerate:'Generate', catalogShare:'Share on WhatsApp',
+    catalogFomo:'Low stock alert!', catalogFomoSub:'Items running out soon',
+    catalogLastPieces:'Last pieces!', catalogHurry:'Hurry up!',
     required:'required', fillAll:'Fill in all fields', pwdMismatch:'Passwords don\'t match',
     pwdShort:'Password too short (min 6 characters)',
     welcome:'Welcome', offlineMode:'Offline mode activated', delete:'Delete',
+    emptyCartMsg:'Cart is empty', search:'Search…',
   }
 };
 let _lang = localStorage.getItem('stockr_lang') || 'fr';
@@ -259,80 +318,110 @@ function generateInvoicePDF(sales) {
   const sym  = S.session?.currency_symbol || 'FCFA';
   const biz  = S.session?.business || S.session?.name || 'Mon Commerce';
   const invId = _invNum(sales[0].id);
-  const date  = new Date(sales[0].date).toLocaleDateString('fr-FR', { day:'numeric', month:'long', year:'numeric' });
+  const locale = _lang === 'en' ? 'en-US' : 'fr-FR';
+  const date  = new Date(sales[0].date).toLocaleDateString(locale, { day:'numeric', month:'long', year:'numeric' });
+  const clientName = sales[0]?.clientName || null;
+  const logoData = localStorage.getItem('stockr_logo') || null;
+  const loc = S.currentLocation ? S.locations.find(l => l.id === S.currentLocation) : null;
 
   // ── Header indigo ──
   doc.setFillColor(79, 70, 229);
-  doc.rect(0, 0, 210, 42, 'F');
+  doc.rect(0, 0, 210, 46, 'F');
+
+  // Logo if available
+  let logoX = 16;
+  if (logoData) {
+    try { doc.addImage(logoData, 'JPEG', 16, 6, 18, 18); logoX = 38; } catch(e) {}
+  }
 
   doc.setTextColor(255, 255, 255);
-  doc.setFontSize(26); doc.setFont('helvetica', 'bold');
-  doc.text('STOCKR', 16, 18);
-  doc.setFontSize(10); doc.setFont('helvetica', 'normal');
-  doc.text(biz, 16, 27);
-  doc.setFontSize(9);
-  doc.text('Gestion de stock intelligente', 16, 34);
+  doc.setFontSize(22); doc.setFont('helvetica', 'bold');
+  doc.text(biz, logoX, 16);
+  doc.setFontSize(9); doc.setFont('helvetica', 'normal');
+  doc.text(S.session?.email || '', logoX, 23);
+  if (loc) doc.text(loc.name, logoX, 29);
 
-  doc.setFontSize(18); doc.setFont('helvetica', 'bold');
-  doc.text('FACTURE', 195, 18, { align: 'right' });
+  doc.setFontSize(16); doc.setFont('helvetica', 'bold');
+  doc.text(t('invoice').toUpperCase(), 195, 16, { align: 'right' });
   doc.setFontSize(10); doc.setFont('helvetica', 'normal');
-  doc.text('N° ' + invId, 195, 27, { align: 'right' });
-  doc.text('Date : ' + date, 195, 34, { align: 'right' });
+  doc.text(t('invoiceNumber') + ' ' + invId, 195, 24, { align: 'right' });
+  doc.text(t('invoiceDate') + ' : ' + date, 195, 31, { align: 'right' });
+  if (clientName) {
+    doc.text(t('invoiceClient') + ' : ' + clientName, 195, 38, { align: 'right' });
+  }
 
-  // ── Ligne séparatrice ──
-  doc.setDrawColor(229, 231, 235);
-  doc.line(16, 52, 194, 52);
+  // ── Client info block ──
+  let y = 56;
+  if (clientName) {
+    doc.setFillColor(248, 250, 252);
+    doc.roundedRect(16, y - 4, 178, 12, 2, 2, 'F');
+    doc.setTextColor(60, 60, 60); doc.setFontSize(9); doc.setFont('helvetica', 'bold');
+    doc.text(t('invoiceClient') + ':', 20, y + 3);
+    doc.setFont('helvetica', 'normal');
+    doc.text(clientName, 50, y + 3);
+    y += 16;
+  }
 
   // ── En-tête tableau ──
   doc.setFillColor(238, 242, 255);
-  doc.roundedRect(16, 56, 178, 8, 1, 1, 'F');
+  doc.roundedRect(16, y, 178, 8, 1, 1, 'F');
   doc.setTextColor(79, 70, 229); doc.setFontSize(8); doc.setFont('helvetica', 'bold');
-  doc.text('DÉSIGNATION', 20, 61.5);
-  doc.text('QTÉ',   130, 61.5, { align: 'center' });
-  doc.text('PRIX U.', 158, 61.5, { align: 'right' });
-  doc.text('TOTAL',   192, 61.5, { align: 'right' });
+  doc.text(t('invoiceItems').toUpperCase(), 20, y + 5.5);
+  doc.text(t('invoiceQty').toUpperCase(), 120, y + 5.5, { align: 'center' });
+  doc.text(t('invoiceUnitPrice').toUpperCase(), 155, y + 5.5, { align: 'right' });
+  doc.text(t('invoiceTotal').toUpperCase(), 192, y + 5.5, { align: 'right' });
 
   // ── Lignes produits ──
-  let y = 72; let grandTotal = 0;
+  y += 14; let grandTotal = 0; let totalProfit = 0;
   doc.setTextColor(30, 30, 30); doc.setFont('helvetica', 'normal'); doc.setFontSize(9);
   sales.forEach((s, i) => {
     const unitPrice = s.qty > 0 ? Math.round(s.total / s.qty) : 0;
     grandTotal += s.total;
-    if (i % 2 === 1) { doc.setFillColor(249, 250, 251); doc.rect(16, y - 5, 178, 8, 'F'); }
+    totalProfit += (s.profit || 0);
+    if (i % 2 === 1) { doc.setFillColor(249, 250, 251); doc.rect(16, y - 5, 178, 9, 'F'); }
     doc.text(s.productName, 20, y);
-    doc.text(String(s.qty), 130, y, { align: 'center' });
-    doc.text(fmt(unitPrice) + ' ' + sym, 158, y, { align: 'right' });
+    doc.text(String(s.qty), 120, y, { align: 'center' });
+    doc.text(fmt(unitPrice) + ' ' + sym, 155, y, { align: 'right' });
     doc.setFont('helvetica', 'bold');
     doc.text(fmt(s.total) + ' ' + sym, 192, y, { align: 'right' });
     doc.setFont('helvetica', 'normal');
     y += 10;
   });
 
-  // ── Total ──
+  // ── Totals block ──
   doc.setDrawColor(229, 231, 235); doc.line(16, y, 194, y); y += 8;
   const taxRate = parseFloat(S.session?.tax_rate) || 0;
+  doc.setFontSize(9); doc.setTextColor(100, 100, 100);
+  doc.text(t('invoiceSubtotal'), 155, y, { align: 'right' });
+  doc.text(fmt(grandTotal) + ' ' + sym, 192, y, { align: 'right' }); y += 7;
   if (taxRate > 0) {
     const tva = Math.round(grandTotal * taxRate / 100);
-    doc.setFontSize(9); doc.setTextColor(100, 100, 100);
-    doc.text('Sous-total HT', 140, y, { align: 'right' });
-    doc.text(fmt(grandTotal) + ' ' + sym, 192, y, { align: 'right' }); y += 7;
-    doc.text(`TVA (${taxRate}%)`, 140, y, { align: 'right' });
+    doc.text(`${t('invoiceTax')} (${taxRate}%)`, 155, y, { align: 'right' });
     doc.text(fmt(tva) + ' ' + sym, 192, y, { align: 'right' }); y += 7;
     grandTotal += tva;
   }
+  doc.text(t('articles') + ': ' + sales.length, 20, y);
+  doc.text(t('invoiceQty') + ': ' + sales.reduce((s,v) => s + v.qty, 0), 60, y);
+
   doc.setFillColor(79, 70, 229);
   doc.roundedRect(120, y - 1, 74, 10, 1, 1, 'F');
-  doc.setTextColor(255, 255, 255); doc.setFontSize(10); doc.setFont('helvetica', 'bold');
-  doc.text('TOTAL TTC', 140, y + 6, { align: 'right' });
+  doc.setTextColor(255, 255, 255); doc.setFontSize(11); doc.setFont('helvetica', 'bold');
+  doc.text(t('invoiceTotal').toUpperCase(), 140, y + 6, { align: 'right' });
   doc.text(fmt(grandTotal) + ' ' + sym, 192, y + 6, { align: 'right' });
+
+  // ── Payment method ──
+  y += 18;
+  doc.setTextColor(80, 80, 80); doc.setFontSize(8); doc.setFont('helvetica', 'normal');
+  doc.text(t('invoicePayment') + ' : ' + t('invoiceCash') + ' / ' + t('invoiceMobile'), 16, y);
 
   // ── Pied de page ──
   doc.setTextColor(160, 160, 160); doc.setFontSize(7); doc.setFont('helvetica', 'normal');
-  doc.text('Merci pour votre confiance !', 105, 280, { align: 'center' });
-  doc.text('Document généré par STOCKR · Gestion de stock pour PME', 105, 285, { align: 'center' });
+  doc.text(t('invoiceThankYou'), 105, 275, { align: 'center' });
+  doc.text('STOCKR — ' + biz, 105, 280, { align: 'center' });
+  doc.text(S.session?.email || '', 105, 285, { align: 'center' });
 
-  doc.save(`Facture-${invId}.pdf`);
-  showToast('Facture téléchargée');
+  doc.save(`${t('invoice')}-${invId}.pdf`);
+  showToast(t('invoice') + ' PDF');
 }
 
 function shareViaWhatsApp(sales) {
@@ -470,7 +559,15 @@ const S = {
   selectedClientId: null,
   clientSearch:  '',
   saleClientFilter: null,
+  globalSearch:  '',
   predictions:   [],
+  // Locations
+  locations:        JSON.parse(localStorage.getItem('stockr_locations') || '[]'),
+  currentLocation:  localStorage.getItem('stockr_current_location') || null,
+  locationAdd:      false,
+  // Catalog
+  catalogView:      'select', // 'select' | 'preview'
+  catalogSelected:  [],
   form: { name: '', stock: 0, min: 0, unit: '', lead: 7 },
   spectra: {
     step:      'camera',   // 'camera' | 'loading' | 'confirm' | 'done'
@@ -1123,7 +1220,7 @@ function removeFromCart(idx) {
 }
 
 async function confirmCart() {
-  if (!S.cart.length) { showToast('Le panier est vide', 'error'); return; }
+  if (!S.cart.length) { showToast(t('emptyCartMsg'), 'error'); return; }
   const clientSel = $('sale-client');
   const clientId = clientSel ? parseInt(clientSel.value) || null : null;
   const client = clientId ? S.clients.find(c => c.id === clientId) : null;
@@ -1141,7 +1238,7 @@ async function confirmCart() {
       newSales.push(newSale);
     }
     S.cart = [];
-    showToast(`${count} unité(s) vendue(s) — ${fmt(total)} FCFA`);
+    showToast(`${count} ${t('unitsSold')} — ${fmt(total)} FCFA`);
     showReceiptBanner(newSales, total);
     // Recharger les articles pour avoir les stocks à jour
     const arts = await api('GET', '/api/articles/');
@@ -1158,7 +1255,7 @@ function _unitDropHTML() {
   const q = (S.form.unit || '').toLowerCase();
   const safe = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const filtered = UNITS.filter(u => u.toLowerCase().includes(q));
-  if (!filtered.length) return '<div class="unit-opt" style="color:var(--text-3);cursor:default">Aucun résultat</div>';
+  if (!filtered.length) return `<div class="unit-opt" style="color:var(--text-3);cursor:default">${t('noResults')}</div>`;
   return filtered.map(u => {
     const hi = q ? u.replace(new RegExp(safe,'gi'), m => `<strong>${m}</strong>`) : u;
     return `<div class="unit-opt" onmousedown="event.preventDefault()" onclick="selectUnit('${u}')">${hi}</div>`;
@@ -1228,7 +1325,7 @@ function showReceiptBanner(sales, total) {
   window[sid] = sales;
   el.innerHTML = `
     <div class="receipt-banner-left">
-      <div class="receipt-banner-title">Vente confirmée</div>
+      <div class="receipt-banner-title">${t('saleConfirmed')}</div>
       <div class="receipt-banner-total">${fmt(total)} ${sym}</div>
     </div>
     <div class="receipt-banner-btns">
@@ -1271,13 +1368,20 @@ function render() {
     'edit-product': vEditProduct, settings: vSettings,
     spectra: vSpectra, clients: vClients, 'add-client': vAddClient,
     'client-detail': vClientDetail, notifications: vNotifications,
+    catalog: vCatalog,
   };
   viewEl.innerHTML = (map[S.view] || vHome)();
-  viewEl.scrollTop = 0;
+  if (!S.globalSearch) viewEl.scrollTop = 0;
 
   if (S.view === 'financial') requestAnimationFrame(renderRevenueChart);
 
-  const hideNav = ['detail','add','add-product','edit-product','add-client','client-detail','notifications'].includes(S.view);
+  // Restore focus on global search after re-render
+  if (S.view === 'home' && S.globalSearch) {
+    const gs = $('global-search');
+    if (gs) { gs.focus(); gs.setSelectionRange(gs.value.length, gs.value.length); }
+  }
+
+  const hideNav = ['detail','add','add-product','edit-product','add-client','client-detail','notifications','catalog'].includes(S.view);
   navEl.style.display = hideNav ? 'none' : '';
   if (!hideNav) navEl.innerHTML = renderNav();
 }
@@ -1288,6 +1392,7 @@ function renderNav() {
     { id:'pantry',    icon:IC.box,    label:t('stock')    },
     { id:'products',  icon:IC.tag,    label:t('products') },
     { id:'sales',     icon:IC.dollar, label:t('sales')    },
+    { id:'clients',   icon:IC.users,  label:t('clients')  },
     { id:'financial', icon:IC.bar,    label:t('bilan')    },
   ];
   return tabs.map(t => `
@@ -1466,6 +1571,26 @@ function vHome() {
   }
   const maxDay = Math.max(...weekDays.map(d=>d.ca), 1);
 
+  // Global search
+  const _gq = S.globalSearch.trim().toLowerCase();
+  const _showSearch = _gq.length >= 2;
+  let _searchHTML = '';
+  if (_showSearch) {
+    const ma = S.articles.filter(a => a.name.toLowerCase().includes(_gq)).slice(0,4);
+    const mp = S.products.filter(p => p.name.toLowerCase().includes(_gq)).slice(0,4);
+    const mc = S.clients.filter(c => c.name.toLowerCase().includes(_gq) || (c.phone||'').includes(_gq)).slice(0,4);
+    const ms = S.sales.filter(s => s.productName.toLowerCase().includes(_gq) || (s.clientName||'').toLowerCase().includes(_gq)).slice(0,4);
+    const total = ma.length + mp.length + mc.length + ms.length;
+    if (total === 0) {
+      _searchHTML = `<div class="card" style="text-align:center;padding:32px 18px;color:var(--text-3)"><div style="font-size:32px;margin-bottom:8px">🔍</div><div style="font-size:13px">${t('noResults')}</div></div>`;
+    } else {
+      if (ma.length) _searchHTML += `<div class="section-hd"><div class="section-lbl">${t('articles')} (${ma.length})</div></div>` + ma.map(a => `<div class="card card-tap" style="margin-bottom:4px" onclick="nav('detail',{selectedId:${a.id}})"><div class="article-row"><div class="article-avatar">${initials(a.name)}</div><div class="article-info"><div class="article-name">${a.name}</div><div class="article-meta">${fmtQty(a.stock)} ${a.unit}</div></div><div style="color:var(--gray-4)">${IC.chevron}</div></div></div>`).join('');
+      if (mp.length) _searchHTML += `<div class="section-hd"><div class="section-lbl">${t('products')} (${mp.length})</div></div>` + mp.map(p => `<div class="card card-tap" style="margin-bottom:4px" onclick="nav('products')"><div class="article-row"><div class="article-avatar">${initials(p.name)}</div><div class="article-info"><div class="article-name">${p.name}</div><div class="article-meta">${fmt(p.price)} FCFA</div></div><div style="color:var(--gray-4)">${IC.chevron}</div></div></div>`).join('');
+      if (mc.length) _searchHTML += `<div class="section-hd"><div class="section-lbl">${t('clients')} (${mc.length})</div></div>` + mc.map(c => `<div class="card card-tap" style="margin-bottom:4px" onclick="nav('client-detail',{selectedClientId:${c.id}})"><div class="article-row"><div class="article-avatar">${initials(c.name)}</div><div class="article-info"><div class="article-name">${c.name}</div><div class="article-meta">${c.phone||c.email||''}</div></div><div style="color:var(--gray-4)">${IC.chevron}</div></div></div>`).join('');
+      if (ms.length) _searchHTML += `<div class="section-hd"><div class="section-lbl">${t('sales')} (${ms.length})</div></div>` + ms.map(s => `<div class="card" style="margin-bottom:4px"><div class="sale-item" style="padding:0"><div class="sale-dot"></div><div class="sale-info"><div class="sale-prod">${s.productName}</div><div class="sale-date">${fmtDate(s.date)}${s.clientName?' · '+s.clientName:''}</div></div><div class="sale-right"><div class="sale-total">${fmt(s.total)} FCFA</div></div></div></div>`).join('');
+    }
+  }
+
   return `
   <div class="hero anim">
     <div class="hero-top">
@@ -1499,21 +1624,27 @@ function vHome() {
   </div>
 
   <div class="container">
-    ${low.length > 0 ? `
+    <div class="search-wrap" style="margin-bottom:12px">
+      <span class="search-ico">${IC.search}</span>
+      <input class="input input-search" type="text" placeholder="    ${t('searchAll')}" value="${S.globalSearch.replace(/"/g,'&quot;')}" oninput="S.globalSearch=this.value;render()" id="global-search">
+    </div>
+    ${_showSearch ? _searchHTML : ''}
+    ${!_showSearch && low.length > 0 ? `
     <div class="alert-banner" onclick="nav('pantry',{filter:'low'})">
       <div class="alert-ico">${IC.alert}</div>
       <div style="flex:1">
-        <div class="alert-title">${low.length} article${low.length>1?'s':''} à réapprovisionner</div>
+        <div class="alert-title">${low.length} ${t('lowStockAlert')}</div>
         <div class="alert-sub">${low.slice(0,3).map(a=>a.name).join(' · ')}</div>
       </div>
       <div class="alert-arrow">${IC.chevron}</div>
     </div>` : ''}
 
     ${(() => {
+      if (_showSearch) return '';
       const critical = S.predictions.filter(p => p.status === 'critical');
       if (!critical.length) return '';
       return `
-      <div class="section-hd"><div class="section-lbl">Prédictions IA</div></div>
+      <div class="section-hd"><div class="section-lbl">${t('aiPredictions')}</div></div>
       ${critical.slice(0, 3).map((p, i) => `
       <div class="pred-card critical" style="animation-delay:${i * 0.06}s">
         <div class="pred-dot"></div>
@@ -1524,7 +1655,7 @@ function vHome() {
       </div>`).join('')}`;
     })()}
 
-    <div class="section-hd"><div class="section-lbl">${t('overview')}</div></div>
+    ${_showSearch ? '' : `<div class="section-hd"><div class="section-lbl">${t('overview')}</div></div>
     <div class="metric-grid">
       <div class="metric-card anim" style="animation-delay:0s">
         <div class="metric-val">${fmt(totalCA)}</div>
@@ -1552,9 +1683,9 @@ function vHome() {
         <div class="metric-val">${S.sales.length}</div>
         <div class="metric-lbl">${t('salesCount')}</div>
       </div>
-    </div>
+    </div>`}
 
-    ${S.sales.length > 0 ? `
+    ${!_showSearch && S.sales.length > 0 ? `
     <div class="section-hd"><div class="section-lbl">${t('trend7d')}</div></div>
     <div class="card anim" style="animation-delay:0.1s">
       <div style="display:flex;align-items:flex-end;gap:4px;height:80px;padding:4px 0">
@@ -1569,7 +1700,7 @@ function vHome() {
       </div>
     </div>` : ''}
 
-    ${topProducts.length > 0 ? `
+    ${!_showSearch && topProducts.length > 0 ? `
     <div class="section-hd">
       <div class="section-lbl">${t('topProducts')}</div>
       <button class="section-act" onclick="nav('financial')">${t('details')}</button>
@@ -1593,7 +1724,7 @@ function vHome() {
       </div>`).join('')}
     </div>` : ''}
 
-    ${bestMargin.length > 0 ? `
+    ${!_showSearch && bestMargin.length > 0 ? `
     <div class="section-hd"><div class="section-lbl">${t('bestMargins')}</div></div>
     <div class="card anim" style="animation-delay:0.2s">
       ${bestMargin.map((p, i) => `
@@ -1607,6 +1738,7 @@ function vHome() {
     </div>` : ''}
 
     ${(() => {
+      if (_showSearch) return '';
       const cs = {};
       S.sales.forEach(s => { if (!s.clientId) return; if (!cs[s.clientId]) cs[s.clientId] = { name: s.clientName, total: 0, count: 0 }; cs[s.clientId].total += s.total; cs[s.clientId].count += s.qty; });
       const topC = Object.entries(cs).sort((a,b) => b[1].total - a[1].total).slice(0,3);
@@ -1637,7 +1769,7 @@ function vHome() {
     </div>`;
     })()}
 
-    <div class="section-hd"><div class="section-lbl">${t('nav')}</div></div>
+    ${!_showSearch ? `<div class="section-hd"><div class="section-lbl">${t('nav')}</div></div>
     <div class="quick-grid">
       <button class="quick-btn" onclick="nav('pantry')">
         <span class="quick-ico">${IC.box}</span>
@@ -1664,6 +1796,16 @@ function vHome() {
         <div class="quick-label">${t('clients')}</div>
         <div class="quick-sub">${S.clients.length} ${t('clientOf')}</div>
       </button>
+      <button class="quick-btn" onclick="nav('spectra')">
+        <span class="quick-ico">${IC.camera}</span>
+        <div class="quick-label">Spectra</div>
+        <div class="quick-sub">${t('spectraScan')}</div>
+      </button>
+      <button class="quick-btn" onclick="nav('catalog')">
+        <span class="quick-ico">${IC.whatsapp}</span>
+        <div class="quick-label">${t('catalog')}</div>
+        <div class="quick-sub">${t('catalogSub')}</div>
+      </button>
     </div>
 
     <div class="section-hd">
@@ -1685,7 +1827,7 @@ function vHome() {
           <div class="sale-qty">×${s.qty}${s.profit ? ` · <span style="color:var(--success)">+${fmt(s.profit)}</span>` : ''}</div>
         </div>
       </div>
-    </div>`).join('')}
+    </div>`).join('')}` : ''}
   </div>`;
 }
 
@@ -1709,7 +1851,7 @@ function vPantry() {
     </div>
     <div class="search-wrap">
       <span class="search-ico">${IC.search}</span>
-      <input class="input input-search" type="text" placeholder="    Rechercher…" value="${S.search.replace(/"/g,'&quot;')}" oninput="S.search=this.value;render()">
+      <input class="input input-search" type="text" placeholder="    ${t('search')}" value="${S.search.replace(/"/g,'&quot;')}" oninput="S.search=this.value;render()">
     </div>
     <div class="filter-row">
       <button class="filter-chip ${S.filter==='all'?'active':''}" onclick="S.filter='all';render()">${t('all')} (${S.articles.length})</button>
@@ -1859,11 +2001,11 @@ function vSales() {
     ${S.clients.length > 0 ? `
     <div class="filter-row" style="margin-bottom:10px">
       <button class="filter-chip ${!S.saleClientFilter?'active':''}" onclick="S.saleClientFilter=null;render()">${t('all')}</button>
-      ${S.clients.filter(c => S.sales.some(s => s.clientId === c.id)).map(c => `
+      ${S.clients.filter(c => S.sales.some(s => s.clientId && String(s.clientId) === String(c.id))).map(c => `
       <button class="filter-chip ${S.saleClientFilter===c.id?'active':''}" onclick="S.saleClientFilter=${c.id};render()">${c.name}</button>`).join('')}
     </div>` : ''}
     ${(() => {
-      const filtered = S.saleClientFilter ? S.sales.filter(s => s.clientId === S.saleClientFilter) : S.sales;
+      const filtered = S.saleClientFilter ? S.sales.filter(s => s.clientId && String(s.clientId) === String(S.saleClientFilter)) : S.sales;
       if (filtered.length === 0) return `
     <div class="empty">
       <div class="empty-ico">${IC.dollarLg}</div>
@@ -1919,10 +2061,10 @@ function vFinancial() {
     });
 
   const periods = [
-    { key:'today', label:"Auj."  },
-    { key:'7d',    label:"7 j"   },
-    { key:'30d',   label:"30 j"  },
-    { key:'all',   label:"Tout"  },
+    { key:'today', label: t('today') },
+    { key:'7d',    label: _lang==='fr'?"7 j":"7 d" },
+    { key:'30d',   label: _lang==='fr'?"30 j":"30 d" },
+    { key:'all',   label: t('all') },
   ];
 
   return `
@@ -2304,10 +2446,11 @@ function vClients() {
   const clientStats = {};
   S.sales.forEach(s => {
     if (!s.clientId) return;
-    if (!clientStats[s.clientId]) clientStats[s.clientId] = { total: 0, count: 0, last: null };
-    clientStats[s.clientId].total += s.total;
-    clientStats[s.clientId].count += s.qty;
-    if (!clientStats[s.clientId].last || s.date > clientStats[s.clientId].last) clientStats[s.clientId].last = s.date;
+    const ckey = String(s.clientId);
+    if (!clientStats[ckey]) clientStats[ckey] = { total: 0, count: 0, last: null };
+    clientStats[ckey].total += s.total;
+    clientStats[ckey].count += 1;
+    if (!clientStats[ckey].last || s.date > clientStats[ckey].last) clientStats[ckey].last = s.date;
   });
 
   return `
@@ -2319,7 +2462,7 @@ function vClients() {
     </div>
     <div class="search-wrap">
       <span class="search-ico">${IC.search}</span>
-      <input class="input input-search" type="text" placeholder="    Rechercher…" value="${S.clientSearch.replace(/"/g,'&quot;')}" oninput="S.clientSearch=this.value;render()">
+      <input class="input input-search" type="text" placeholder="    ${t('search')}" value="${S.clientSearch.replace(/"/g,'&quot;')}" oninput="S.clientSearch=this.value;render()">
     </div>
   </div>
   <div class="container">
@@ -2330,7 +2473,7 @@ function vClients() {
       <div class="empty-text">${S.clients.length === 0 ? t('noClientsSub') : t('noResultsSub')}</div>
       ${S.clients.length === 0 ? `<button class="btn btn-primary" style="width:auto;padding:11px 24px" onclick="nav('add-client')">${t('addClient')}</button>` : ''}
     </div>` : list.map((c, i) => {
-      const st = clientStats[c.id] || { total: 0, count: 0, last: null };
+      const st = clientStats[String(c.id)] || { total: 0, count: 0, last: null };
       return `
       <div class="card card-tap anim" style="animation-delay:${i*0.04}s" onclick="nav('client-detail',{selectedClientId:${c.id}})">
         <div class="article-row">
@@ -2406,7 +2549,7 @@ async function deleteClient(id) {
 function vClientDetail() {
   const client = S.clients.find(c => c.id === S.selectedClientId);
   if (!client) { nav('clients'); return ''; }
-  const clientSales = S.sales.filter(s => s.clientId === client.id);
+  const clientSales = S.sales.filter(s => s.clientId && String(s.clientId) === String(client.id));
   const totalSpent = clientSales.reduce((s,v) => s + v.total, 0);
   const totalProfit = clientSales.reduce((s,v) => s + (v.profit||0), 0);
 
@@ -2484,29 +2627,112 @@ function vClientDetail() {
 function vSpectra() {
   const sp = S.spectra;
 
+  // ── Inventory compare mode ──
+  if (sp.step === 'compare') {
+    const artMap = {};
+    S.articles.forEach(a => { artMap[a.name.toLowerCase()] = a; });
+    const detected = sp.compareResults || [];
+    const matches = [], missing = [], extra = [];
+    detected.forEach(d => {
+      const art = artMap[(d.matched_name || d.detected_name).toLowerCase()];
+      if (art) {
+        if (Math.abs(art.stock - d.quantity) <= 1) matches.push({ name: art.name, stock: art.stock, scanned: d.quantity });
+        else if (d.quantity < art.stock) missing.push({ name: art.name, stock: art.stock, scanned: d.quantity, diff: art.stock - d.quantity });
+        else extra.push({ name: art.name, stock: art.stock, scanned: d.quantity, diff: d.quantity - art.stock });
+      } else {
+        extra.push({ name: d.matched_name || d.detected_name, stock: 0, scanned: d.quantity, diff: d.quantity });
+      }
+    });
+    S.articles.forEach(a => {
+      if (!detected.some(d => (d.matched_name || d.detected_name).toLowerCase() === a.name.toLowerCase())) {
+        if (a.stock > 0) missing.push({ name: a.name, stock: a.stock, scanned: 0, diff: a.stock });
+      }
+    });
+
+    return `
+  <div class="spectra-wrap">
+    <button class="back-btn" onclick="spectraReset()" style="align-self:flex-start;margin-bottom:8px">${IC.left}</button>
+    <div class="spectra-hero" style="margin-bottom:12px">
+      <div class="spectra-title">${t('spectraCompare')}</div>
+      <div class="spectra-sub">${detected.length} ${t('spectraDetected').toLowerCase()}</div>
+    </div>
+
+    <div class="metric-grid" style="margin-bottom:12px">
+      <div class="metric-card" style="border-left:3px solid var(--success)">
+        <div class="metric-val" style="color:var(--success)">${matches.length}</div>
+        <div class="metric-lbl">${t('spectraMatch')}</div>
+      </div>
+      <div class="metric-card" style="border-left:3px solid var(--danger)">
+        <div class="metric-val" style="color:var(--danger)">${missing.length}</div>
+        <div class="metric-lbl">${t('spectraMissing')}</div>
+      </div>
+      <div class="metric-card" style="border-left:3px solid var(--warning)">
+        <div class="metric-val" style="color:var(--warning)">${extra.length}</div>
+        <div class="metric-lbl">${t('spectraExtra')}</div>
+      </div>
+    </div>
+
+    ${missing.length > 0 ? `
+    <div class="section-hd"><div class="section-lbl" style="color:var(--danger)">${t('spectraMissing')} (${missing.length})</div></div>
+    ${missing.map(m => `<div class="card" style="margin-bottom:4px;border-left:3px solid var(--danger)">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div><div style="font-weight:700;font-size:13px">${m.name}</div><div style="font-size:11px;color:var(--text-3)">${t('stock')}: ${m.stock} | ${t('spectraScan')}: ${m.scanned}</div></div>
+        <div style="font-weight:800;color:var(--danger)">-${m.diff}</div>
+      </div>
+    </div>`).join('')}` : ''}
+
+    ${extra.length > 0 ? `
+    <div class="section-hd"><div class="section-lbl" style="color:var(--warning)">${t('spectraExtra')} (${extra.length})</div></div>
+    ${extra.map(m => `<div class="card" style="margin-bottom:4px;border-left:3px solid var(--warning)">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div><div style="font-weight:700;font-size:13px">${m.name}</div><div style="font-size:11px;color:var(--text-3)">${t('stock')}: ${m.stock} | ${t('spectraScan')}: ${m.scanned}</div></div>
+        <div style="font-weight:800;color:var(--warning)">+${m.diff}</div>
+      </div>
+    </div>`).join('')}` : ''}
+
+    ${matches.length > 0 ? `
+    <div class="section-hd"><div class="section-lbl" style="color:var(--success)">${t('spectraMatch')} (${matches.length})</div></div>
+    ${matches.map(m => `<div class="card" style="margin-bottom:4px;border-left:3px solid var(--success)">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="font-weight:600;font-size:13px">${m.name}</div>
+        <div style="font-weight:700;color:var(--success)">${m.scanned}</div>
+      </div>
+    </div>`).join('')}` : ''}
+
+    <button class="btn btn-primary" style="margin-top:16px" onclick="spectraReset();nav('pantry')">${t('spectraViewStock')}</button>
+  </div>`;
+  }
+
   // ── Étape : caméra ──
   if (sp.step === 'camera') return `
   <div class="spectra-wrap">
     <button class="back-btn" onclick="nav('home')" style="align-self:flex-start;margin-bottom:8px">${IC.left}</button>
     <div class="spectra-hero">
       <div class="spectra-logo">${IC.cameraLg}</div>
-      <div class="spectra-title">Spectra</div>
-      <div class="spectra-sub">Prends une photo de ton stock.<br>L'IA identifie et comptabilise tout.</div>
+      <div class="spectra-title">${t('spectraTitle')}</div>
+      <div class="spectra-sub">${t('spectraScanSub')}</div>
     </div>
-    <label class="btn btn-primary spectra-capture-btn" for="spectra-file">
-      ${IC.camera} &nbsp; Scanner le stock
-    </label>
+
+    <div style="display:flex;flex-direction:column;gap:10px;width:100%;max-width:320px">
+      <label class="btn btn-primary spectra-capture-btn" for="spectra-file" style="margin:0">
+        ${IC.camera} &nbsp; ${t('spectraCapture')}
+      </label>
+      <button class="btn btn-ghost" onclick="spectraStartCompare()" style="border:1px solid var(--border)">
+        ${IC.bar} &nbsp; ${t('spectraCompare')} — ${t('spectraInventory')}
+      </button>
+    </div>
+
     <input id="spectra-file" type="file" accept="image/*" capture="environment"
            style="display:none" onchange="spectraOnFile(this)">
-    <div class="spectra-hint">L'image ne quitte jamais ton appareil — seule l'analyse est envoyée.</div>
+    <div class="spectra-hint">${_lang === 'fr' ? "L'image ne quitte jamais ton appareil." : "The image never leaves your device."}</div>
   </div>`;
 
   // ── Étape : chargement ──
   if (sp.step === 'loading') return `
   <div class="spectra-wrap spectra-center">
     <div class="spectra-spinner"></div>
-    <div class="spectra-loading-title">Spectra analyse…</div>
-    <div class="spectra-sub">Le modèle YOLOv8 est en train de traiter l'image.</div>
+    <div class="spectra-loading-title">${t('spectraAnalyzing')}</div>
+    <div class="spectra-sub">Spectra AI</div>
   </div>`;
 
   // ── Étape : confirmation ──
@@ -2525,30 +2751,29 @@ function vSpectra() {
     <div class="spectra-confirm-card">
       <div class="spectra-conf-badge">${progress}</div>
       <div class="spectra-conf-icon">${IC.cameraLg}</div>
-      <div class="spectra-conf-label">Article détecté</div>
+      <div class="spectra-conf-label">${t('spectraDetected')}</div>
       <div class="spectra-conf-name">${label}</div>
       <div class="spectra-conf-meta">
-        <span class="spectra-pill">×${item.quantity}</span>
-        <span class="spectra-pill">${item.confidence}% confiance</span>
-        ${item.matched_name ? `<span class="spectra-pill spectra-pill-match">En base</span>` : `<span class="spectra-pill spectra-pill-new">Nouvel article</span>`}
+        <span class="spectra-pill">${item.quantity}</span>
+        <span class="spectra-pill">${item.confidence}%</span>
+        ${item.matched_name ? `<span class="spectra-pill spectra-pill-match">${t('spectraMatch')}</span>` : `<span class="spectra-pill spectra-pill-new">${t('newArticle')}</span>`}
       </div>
-      <div class="spectra-conf-question">C'est bien ça ?</div>
 
       ${sp.naming ? `
         <div class="spectra-name-input-wrap">
           <input id="spectra-name-input" class="spectra-name-input" type="text"
-                 placeholder="Nom de l'article…" autocomplete="off">
+                 placeholder="${t('articleName')}…" autocomplete="off">
           <button class="btn btn-primary" style="margin-top:10px;width:100%" onclick="spectraSubmitName()">
-            Confirmer
+            ${t('spectraConfirm')}
           </button>
         </div>
       ` : `
         <div class="spectra-conf-actions">
           <button class="btn spectra-btn-yes" onclick="spectraConfirmYes()">
-            ${IC.check}&nbsp; Oui, c'est ça
+            ${IC.check}&nbsp; ${t('spectraConfirm')}
           </button>
           <button class="btn spectra-btn-no" onclick="spectraConfirmNo()">
-            ${IC.xmark}&nbsp; Non
+            ${IC.xmark}&nbsp; ${t('spectraSkip')}
           </button>
         </div>
       `}
@@ -2564,22 +2789,21 @@ function vSpectra() {
     <div class="spectra-done-icon">
       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
     </div>
-    <div class="spectra-loading-title">Stock mis à jour !</div>
-    <div class="spectra-sub">${total} article${total !== 1 ? 's' : ''} ajouté${total !== 1 ? 's' : ''} au stock.</div>
+    <div class="spectra-loading-title">${t('spectraDone')}</div>
+    <div class="spectra-sub">${total} ${t('articles').toLowerCase()}</div>
     <div class="spectra-results">
       ${sp.results.map(r => `
         <div class="spectra-result-row">
           <span class="spectra-result-name">${r.name}</span>
           <span class="spectra-result-qty">+${r.new_qty} ${r.unit}</span>
-          <span class="spectra-result-action">${r.action === 'created' ? 'Créé' : 'Mis à jour'}</span>
         </div>
       `).join('')}
     </div>
     <button class="btn btn-primary" style="margin-top:24px" onclick="spectraReset();nav('pantry')">
-      Voir le stock
+      ${t('spectraViewStock')}
     </button>
     <button class="btn" style="margin-top:10px" onclick="spectraReset()">
-      Scanner à nouveau
+      ${t('spectraCapture')}
     </button>
   </div>`;
   }
@@ -2602,7 +2826,7 @@ async function spectraOnFile(input) {
     try {
       const data = await api('POST', '/api/spectra/scan', { image: e.target.result });
       if (!data.detections || data.detections.length === 0) {
-        showToast('Aucun article détecté — réessaie avec une meilleure photo', 'error');
+        showToast(t('spectraNoDetection'), 'error');
         S.spectra.step = 'camera';
         render();
         return;
@@ -2687,8 +2911,191 @@ function spectraReset() {
   S.spectra = {
     step: 'camera', queue: [], current: 0,
     confirmed: [], naming: false, results: [],
+    compareResults: [],
   };
   render();
+}
+
+function spectraStartCompare() {
+  // Create file input for compare mode
+  const input = document.createElement('input');
+  input.type = 'file'; input.accept = 'image/*'; input.capture = 'environment';
+  input.onchange = () => {
+    const file = input.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      S.spectra.step = 'loading'; render();
+      try {
+        const data = await api('POST', '/api/spectra/scan', { image: e.target.result });
+        if (!data.detections || data.detections.length === 0) {
+          showToast(t('spectraNoDetection'), 'error');
+          S.spectra.step = 'camera'; render(); return;
+        }
+        S.spectra.compareResults = data.detections;
+        S.spectra.step = 'compare';
+        render();
+      } catch (err) {
+        showToast(err.message || 'Error', 'error');
+        S.spectra.step = 'camera'; render();
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+  input.click();
+}
+
+// ── LOCATIONS ────────────────────────────────
+function addLocation() {
+  const input = document.getElementById('loc-name');
+  const name = input?.value?.trim();
+  if (!name) return;
+  const loc = { id: Date.now(), name };
+  S.locations.push(loc);
+  localStorage.setItem('stockr_locations', JSON.stringify(S.locations));
+  S.locationAdd = false;
+  render();
+}
+
+function removeLocation(id) {
+  S.locations = S.locations.filter(l => l.id !== id);
+  localStorage.setItem('stockr_locations', JSON.stringify(S.locations));
+  if (S.currentLocation === id) {
+    S.currentLocation = null;
+    localStorage.removeItem('stockr_current_location');
+  }
+  render();
+}
+
+function setLocation(id) {
+  S.currentLocation = id || null;
+  if (id) localStorage.setItem('stockr_current_location', String(id));
+  else localStorage.removeItem('stockr_current_location');
+  render();
+}
+
+// ── BUSINESS LOGO ────────────────────────────
+function uploadLogo() {
+  const input = document.createElement('input');
+  input.type = 'file'; input.accept = 'image/*';
+  input.onchange = () => {
+    const file = input.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      // Resize to 200x200 max
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const size = Math.min(img.width, img.height, 200);
+        canvas.width = size; canvas.height = size;
+        const ctx = canvas.getContext('2d');
+        const sx = (img.width - size) / 2, sy = (img.height - size) / 2;
+        ctx.drawImage(img, sx, sy, size, size, 0, 0, size, size);
+        const data = canvas.toDataURL('image/jpeg', 0.8);
+        localStorage.setItem('stockr_logo', data);
+        showToast(t('businessLogo') + ' OK');
+        render();
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  };
+  input.click();
+}
+
+function removeLogo() {
+  localStorage.removeItem('stockr_logo');
+  render();
+}
+
+// ── CATALOG (WhatsApp) ───────────────────────
+function vCatalog() {
+  const prods = S.products.filter(p => p.price > 0);
+  const sym = S.session?.currency_symbol || 'FCFA';
+  const biz = S.session?.business || S.session?.name || '';
+  const low = S.articles.filter(a => a.stock > 0 && a.stock < a.min && a.min > 0);
+
+  if (S.catalogView === 'preview') {
+    const selected = prods.filter(p => S.catalogSelected.includes(p.id));
+    return `
+    <div class="sub-hero">
+      <button class="back-btn-dark" style="margin-bottom:14px" onclick="S.catalogView='select';render()">${IC.left}</button>
+      <div class="sub-hero-title">${t('catalogTitle')}</div>
+    </div>
+    <div class="container">
+      <div class="card" style="padding:20px;text-align:center">
+        <div style="font-size:20px;font-weight:800;margin-bottom:4px">${biz}</div>
+        <div style="font-size:12px;color:var(--text-3);margin-bottom:14px">${t('catalog')}</div>
+        ${selected.map(p => `
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
+          <div style="font-weight:600;font-size:14px">${p.name}</div>
+          <div style="font-weight:800;color:var(--accent)">${fmt(p.price)} ${sym}</div>
+        </div>`).join('')}
+      </div>
+      <button class="btn btn-primary" style="margin-top:12px" onclick="shareCatalogWhatsApp()">
+        ${IC.whatsapp} &nbsp; ${t('catalogShare')}
+      </button>
+    </div>`;
+  }
+
+  return `
+  <div class="sub-hero">
+    <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('home')">${IC.left}</button>
+    <div class="sub-hero-title">${t('catalogTitle')}</div>
+    <div class="sub-hero-sub">${t('catalogSub')}</div>
+  </div>
+  <div class="container">
+    ${low.length > 0 ? `
+    <div class="section-hd"><div class="section-lbl" style="color:var(--danger)">${t('catalogFomo')} — ${t('catalogLastPieces')}</div></div>
+    ${low.slice(0,4).map(a => `
+    <div class="card" style="margin-bottom:4px;border-left:3px solid var(--danger)">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div><div style="font-weight:700;font-size:13px">${a.name}</div><div style="font-size:11px;color:var(--text-3)">${a.stock} ${t('unitsRemaining')}</div></div>
+        <button class="btn btn-ghost" style="font-size:11px;padding:6px 10px" onclick="shareFOMO('${a.name.replace(/'/g,"\\'")}',${a.stock})">
+          ${IC.whatsapp}
+        </button>
+      </div>
+    </div>`).join('')}` : ''}
+
+    <div class="section-hd" style="margin-top:8px"><div class="section-lbl">${t('selectProducts')}</div></div>
+    ${prods.length === 0 ? `<div class="card" style="text-align:center;padding:18px;color:var(--text-3);font-size:13px">${t('noProducts')}</div>` : prods.map(p => `
+    <div class="card card-tap" style="margin-bottom:4px" onclick="toggleCatalogProduct(${p.id})">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:22px;height:22px;border-radius:6px;border:2px solid ${S.catalogSelected.includes(p.id)?'var(--accent)':'var(--border)'};background:${S.catalogSelected.includes(p.id)?'var(--accent)':'transparent'};display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s">
+          ${S.catalogSelected.includes(p.id) ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>' : ''}
+        </div>
+        <div style="flex:1"><div style="font-weight:600;font-size:13px">${p.name}</div></div>
+        <div style="font-weight:700;color:var(--accent);font-size:13px">${fmt(p.price)} ${sym}</div>
+      </div>
+    </div>`).join('')}
+
+    ${S.catalogSelected.length > 0 ? `
+    <button class="btn btn-primary" style="margin-top:14px" onclick="S.catalogView='preview';render()">
+      ${t('catalogGenerate')} (${S.catalogSelected.length})
+    </button>` : ''}
+  </div>`;
+}
+
+function toggleCatalogProduct(id) {
+  const idx = S.catalogSelected.indexOf(id);
+  if (idx === -1) S.catalogSelected.push(id);
+  else S.catalogSelected.splice(idx, 1);
+  render();
+}
+
+function shareCatalogWhatsApp() {
+  const sym = S.session?.currency_symbol || 'FCFA';
+  const biz = S.session?.business || S.session?.name || '';
+  const selected = S.products.filter(p => S.catalogSelected.includes(p.id));
+  const lines = [`*${biz}*`, `_${t('catalog')}_`, ''];
+  selected.forEach(p => lines.push(`${p.name} — *${fmt(p.price)} ${sym}*`));
+  lines.push('', `_${t('invoiceThankYou')}_`);
+  window.open('https://wa.me/?text=' + encodeURIComponent(lines.join('\n')), '_blank');
+}
+
+function shareFOMO(name, stock) {
+  const biz = S.session?.business || S.session?.name || '';
+  const msg = `*${biz}*\n\n${t('catalogLastPieces')} ${t('catalogHurry')}\n\n${name} — ${stock} ${t('unitsRemaining')}\n\n_STOCKR_`;
+  window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
 }
 
 // ── SETTINGS ──────────────────────────────────
@@ -2783,6 +3190,59 @@ function vSettings() {
             </div>
           </div>
         </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-label">${t('businessLogo')}</div>
+      <div class="settings-row-block">
+        <div class="settings-row" style="cursor:default">
+          <div class="settings-row-inner">
+            ${localStorage.getItem('stockr_logo') ? `<img src="${localStorage.getItem('stockr_logo')}" style="width:32px;height:32px;border-radius:8px;object-fit:cover;margin-right:8px">` : `<span class="settings-row-ico">${IC.camera}</span>`}
+            <div class="settings-row-lbl">${localStorage.getItem('stockr_logo') ? (S.session?.business || 'Logo') : t('uploadLogo')}</div>
+          </div>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-ghost" style="padding:6px 12px;font-size:12px" onclick="uploadLogo()">${localStorage.getItem('stockr_logo') ? t('modify') : t('uploadLogo')}</button>
+            ${localStorage.getItem('stockr_logo') ? `<button class="btn btn-ghost" style="padding:6px 8px;font-size:12px;color:var(--danger)" onclick="removeLogo()">✕</button>` : ''}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-label">${t('locations')}</div>
+      <div class="settings-row-block">
+        <div class="settings-row ${!S.currentLocation?'':'card-tap'}" onclick="setLocation(null)" style="${!S.currentLocation?'background:var(--accent-light)':''}">
+          <div class="settings-row-inner">
+            <span class="settings-row-ico">${IC.home}</span>
+            <div class="settings-row-lbl" style="${!S.currentLocation?'color:var(--accent);font-weight:700':''}">${t('allLocations')}</div>
+          </div>
+          ${!S.currentLocation ? '<div style="color:var(--accent);font-size:12px;font-weight:700">✓</div>' : ''}
+        </div>
+        ${S.locations.map(l => `
+        <div class="settings-row ${String(S.currentLocation)===String(l.id)?'':'card-tap'}" onclick="setLocation(${l.id})" style="${String(S.currentLocation)===String(l.id)?'background:var(--accent-light)':''}">
+          <div class="settings-row-inner">
+            <span class="settings-row-ico">${IC.box}</span>
+            <div class="settings-row-lbl" style="${String(S.currentLocation)===String(l.id)?'color:var(--accent);font-weight:700':''}">${l.name}</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px">
+            ${String(S.currentLocation)===String(l.id) ? '<div style="color:var(--accent);font-size:12px;font-weight:700">✓</div>' : ''}
+            <button onclick="event.stopPropagation();removeLocation(${l.id})" style="background:none;border:none;cursor:pointer;color:var(--danger);font-size:14px;padding:4px">✕</button>
+          </div>
+        </div>`).join('')}
+        ${S.locationAdd ? `
+        <div class="settings-row" style="cursor:default;padding:8px 12px">
+          <input class="input" id="loc-name" type="text" placeholder="${t('locationPlaceholder')}" style="flex:1;margin-right:8px">
+          <button class="btn btn-primary" style="padding:8px 14px;font-size:12px" onclick="addLocation()">${t('addLocation')}</button>
+          <button class="btn btn-ghost" style="padding:8px 10px;font-size:12px;margin-left:4px" onclick="S.locationAdd=false;render()">${t('cancel')}</button>
+        </div>` : `
+        <div class="settings-row" onclick="S.locationAdd=true;render()">
+          <div class="settings-row-inner">
+            <span class="settings-row-ico" style="color:var(--accent)">${IC.plus}</span>
+            <div class="settings-row-lbl" style="color:var(--accent)">${t('addLocation')}</div>
+          </div>
+          ${IC.chevron}
+        </div>`}
       </div>
     </div>
 
@@ -2951,6 +3411,15 @@ document.addEventListener('DOMContentLoaded', () => {
   window.setLang              = setLang;
   window.saveClient           = saveClient;
   window.deleteClient         = deleteClient;
+  window.addLocation          = addLocation;
+  window.removeLocation       = removeLocation;
+  window.setLocation          = setLocation;
+  window.uploadLogo           = uploadLogo;
+  window.removeLogo           = removeLogo;
+  window.toggleCatalogProduct = toggleCatalogProduct;
+  window.shareCatalogWhatsApp = shareCatalogWhatsApp;
+  window.shareFOMO            = shareFOMO;
+  window.spectraStartCompare  = spectraStartCompare;
 
   // Restaurer la session + token si existants
   const saved = getSession();

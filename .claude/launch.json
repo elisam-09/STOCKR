@@ -6,7 +6,7 @@
       "runtimeExecutable": "python",
       "runtimeArgs": ["-m", "http.server", "3456"],
       "port": 3456,
-      "cwd": "stockr_frontend/www2"
+      "cwd": "C:\\Users\\ELITEBOOK\\STOCKR\\.claude\\worktrees\\flamboyant-cartwright\\stockr_frontend\\www2"
     },
     {
       "name": "stockr-proposal",
