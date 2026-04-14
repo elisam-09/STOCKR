@@ -240,9 +240,28 @@ const LANGS = {
     getStarted:'Commencer', step1:'Ajoute tes articles en stock',
     step2:'Crée des produits finis', step3:'Enregistre tes ventes',
     welcomeMsg:'Bienvenue sur STOCKR ! Commence par ajouter tes premiers articles.',
+    // Purchase orders
+    purchaseOrders:'Commandes d\'achat', newOrder:'Nouvelle commande', orderSupplier:'Fournisseur',
+    orderArticle:'Article', orderQty:'Quantité', orderStatus:'Statut',
+    orderPending:'En attente', orderReceived:'Reçue', orderCancelled:'Annulée',
+    noOrders:'Aucune commande', markReceived:'Marquer reçue',
+    orderDate:'Date commande', orderTotal:'Montant total',
+    // Pricing
+    pricing:'Tarifs', freePlan:'Gratuit', proPlan:'Pro', businessPlan:'Business',
+    perMonth:'/mois', currentPlan:'Plan actuel', upgrade:'Passer au plan',
+    unlimited:'Illimité', included:'Inclus',
+    // Multi-currency
+    currency:'Devise', changeCurrency:'Changer de devise', taxRate:'Taux TVA (%)',
+    // Article extras
+    reference:'Référence / Code-barres', articleNotes:'Notes', noNotes:'Aucune note',
+    articlePrice:'Prix unitaire', articleCategory:'Catégorie',
+    // Reorder suggestions
+    reorderSuggestions:'Réapprovisionnement suggéré', toReorder:'à commander',
+    daysRemaining:'jours restants', createOrder:'Commander',
     // Misc extra
     copied:'Copié !', shared:'Partagé !', noData:'Pas de données',
     profitChart:'Évolution bénéfice', clientsChart:'Répartition clients',
+    version:'Version',
   },
   en: {
     home:'Home', stock:'Stock', products:'Products', sales:'Sales', bilan:'Reports',
@@ -365,12 +384,33 @@ const LANGS = {
     step2:'Create finished products', step3:'Record your sales',
     welcomeMsg:'Welcome to STOCKR! Start by adding your first items.',
     // Misc extra
+    // Purchase orders
+    purchaseOrders:'Purchase orders', newOrder:'New order', orderSupplier:'Supplier',
+    orderArticle:'Article', orderQty:'Quantity', orderStatus:'Status',
+    orderPending:'Pending', orderReceived:'Received', orderCancelled:'Cancelled',
+    noOrders:'No orders', markReceived:'Mark received',
+    orderDate:'Order date', orderTotal:'Total amount',
+    // Pricing
+    pricing:'Pricing', freePlan:'Free', proPlan:'Pro', businessPlan:'Business',
+    perMonth:'/month', currentPlan:'Current plan', upgrade:'Upgrade to',
+    unlimited:'Unlimited', included:'Included',
+    // Multi-currency
+    currency:'Currency', changeCurrency:'Change currency', taxRate:'Tax rate (%)',
+    // Article extras
+    reference:'Reference / Barcode', articleNotes:'Notes', noNotes:'No notes',
+    articlePrice:'Unit price', articleCategory:'Category',
+    // Reorder suggestions
+    reorderSuggestions:'Reorder suggestions', toReorder:'to order',
+    daysRemaining:'days remaining', createOrder:'Create order',
+    // Misc extra
     copied:'Copied!', shared:'Shared!', noData:'No data',
     profitChart:'Profit evolution', clientsChart:'Client breakdown',
+    version:'Version',
   }
 };
 let _lang = localStorage.getItem('stockr_lang') || 'fr';
 function t(k) { return (LANGS[_lang] || LANGS.fr)[k] || (LANGS.fr)[k] || k; }
+function sym() { return S.session?.currency_symbol || 'FCFA'; }
 function setLang(l) { _lang = l; localStorage.setItem('stockr_lang', l); render(); }
 
 // ── Facture & WhatsApp ────────────────────────
@@ -563,7 +603,7 @@ function renderRevenueChart() {
           backgroundColor: '#1e1b4b',
           titleFont: { size: 11 },
           bodyFont: { size: 12, weight: '700' },
-          callbacks: { label: ctx => `  ${Math.round(ctx.raw).toLocaleString('fr-FR')} FCFA` }
+          callbacks: { label: ctx => `  ${Math.round(ctx.raw).toLocaleString('fr-FR')} ${sym()}` }
         }
       },
       scales: {
@@ -577,6 +617,61 @@ function renderRevenueChart() {
           border: { display: false },
           ticks: { color: tickColor, font: { size: 9 }, maxRotation: 0 }
         }
+      }
+    }
+  });
+}
+
+let _profitChart = null;
+function renderProfitChart() {
+  const canvas = document.getElementById('profit-chart');
+  if (!canvas || typeof Chart === 'undefined') return;
+  if (_profitChart) { _profitChart.destroy(); _profitChart = null; }
+  const { labels, data: revData } = buildChartData();
+  // Build profit data for same time buckets
+  const filtered = salesForPeriod();
+  const profitByLabel = {};
+  labels.forEach(l => profitByLabel[l] = 0);
+  filtered.forEach(s => {
+    const d = new Date(s.date);
+    let lbl;
+    if (S.period === 'today') { lbl = d.getHours() + 'h'; }
+    else if (S.period === '7d') { lbl = d.toLocaleDateString(_lang, { weekday: 'short' }).slice(0, 3); }
+    else { lbl = d.toLocaleDateString(_lang, { day: '2-digit', month: 'short' }); }
+    if (profitByLabel[lbl] !== undefined) profitByLabel[lbl] += (s.profit || 0);
+  });
+  const profitData = labels.map(l => profitByLabel[l] || 0);
+  const isDark = S.darkMode;
+  const gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
+  const tickColor = isDark ? '#6A6A6A' : '#8A8A8A';
+  _profitChart = new Chart(canvas.getContext('2d'), {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        data: profitData,
+        borderColor: '#059669',
+        backgroundColor: 'rgba(5,150,105,0.1)',
+        fill: true,
+        tension: 0.4,
+        borderWidth: 2,
+        pointRadius: 3,
+        pointBackgroundColor: '#059669',
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#064e3b',
+          titleFont: { size: 11 }, bodyFont: { size: 12, weight: '700' },
+          callbacks: { label: ctx => `  ${Math.round(ctx.raw).toLocaleString('fr-FR')} ${sym()}` }
+        }
+      },
+      scales: {
+        y: { grid: { color: gridColor }, border: { display: false }, ticks: { color: tickColor, font: { size: 9 }, callback: v => v >= 1000 ? (v/1000).toFixed(0)+'k' : v } },
+        x: { grid: { display: false }, border: { display: false }, ticks: { color: tickColor, font: { size: 9 }, maxRotation: 0 } }
       }
     }
   });
@@ -639,7 +734,9 @@ const S = {
   selectedSupplierId: null,
   // Stock movements
   stockMovements:   JSON.parse(localStorage.getItem('stockr_movements') || '[]'),
-  form: { name: '', stock: 0, min: 0, unit: '', lead: 7 },
+  // Purchase orders
+  purchaseOrders:   JSON.parse(localStorage.getItem('stockr_orders') || '[]'),
+  form: { name: '', stock: 0, min: 0, unit: '', lead: 7, ref: '', price: 0 },
   spectra: {
     step:      'camera',   // 'camera' | 'loading' | 'confirm' | 'done'
     queue:     [],         // détections en attente de confirmation
@@ -760,6 +857,41 @@ function _localApi(method, path, body) {
 
   // ── Predictions (stub local) ──
   if (path === '/api/predictions/') return [];
+
+  // ── Spectra (offline: simulate detection from existing stock) ──
+  if (path === '/api/spectra/scan' && method === 'POST') {
+    // Offline: generate detections based on existing articles
+    const arts = d.articles.length > 0 ? d.articles : [
+      { name: 'Article A', quantity: 10, unit: 'pce' },
+      { name: 'Article B', quantity: 5, unit: 'pce' },
+      { name: 'Article C', quantity: 8, unit: 'pce' },
+    ];
+    const detections = arts.slice(0, 8).map(a => ({
+      detected_name: a.name,
+      matched_name: a.name,
+      matched_id: a.id || null,
+      matched_unit: a.unit || 'pce',
+      quantity: Math.max(1, Math.floor(Math.random() * ((a.quantity || 10) + 4))),
+      confidence: Math.floor(82 + Math.random() * 17),
+    }));
+    return { detections };
+  }
+  if (path === '/api/spectra/confirm' && method === 'POST') {
+    const results = [];
+    for (const item of (body.items || [])) {
+      const art = d.articles.find(a => a.id === item.article_id || a.name.toLowerCase() === item.name.toLowerCase());
+      if (art) {
+        art.quantity = (art.quantity || 0) + item.quantity;
+        results.push({ name: art.name, new_qty: item.quantity, unit: art.unit || item.unit || 'pce' });
+      } else {
+        const newArt = { id: Date.now() + Math.floor(Math.random()*1000), name: item.name, quantity: item.quantity, unit: item.unit || 'pce', alert_threshold: 0, lead_time_days: 7 };
+        d.articles.push(newArt);
+        results.push({ name: item.name, new_qty: item.quantity, unit: item.unit || 'pce' });
+      }
+    }
+    _lsSaveData(_uid(), d);
+    return { results };
+  }
 
   throw new Error('Route locale non supportée : ' + path);
 }
@@ -1085,7 +1217,7 @@ function recordSale() {
     if (art) art.stock = Math.round((art.stock - comp.qty * qty) * 10) / 10;
   });
   S.sales.unshift({ id: Date.now(), productId: product.id, productName: product.name, qty, total: product.price * qty, date: new Date().toISOString() });
-  showToast(`Vente enregistrée — ${fmt(product.price * qty)} FCFA`);
+  showToast(`${t('saleConfirmed')} — ${fmt(product.price * qty)} ${sym()}`);
   render();
 }
 
@@ -1099,10 +1231,15 @@ async function saveArticle() {
       unit:            f.unit || 'pcs',
       alert_threshold: parseFloat(f.min) || null,
       lead_time_days:  parseInt(f.lead) || 7,
+      ref:             f.ref || null,
+      price:           parseFloat(f.price) || 0,
     });
-    S.articles.push(articleFromAPI(data));
-    showToast(`"${f.name}" ajouté`);
-    S.form = { name:'', stock:0, min:0, unit:'', lead:7 };
+    const newArt = articleFromAPI(data);
+    newArt.ref = f.ref || '';
+    newArt.price = parseFloat(f.price) || 0;
+    S.articles.push(newArt);
+    showToast(`"${f.name}" ${t('added') || 'ajouté'}`);
+    S.form = { name:'', stock:0, min:0, unit:'', lead:7, ref:'', price:0 };
     nav('pantry');
   } catch(e) {
     showToast(e.message, 'error');
@@ -1193,7 +1330,7 @@ function updateMarginPreview() {
   if (price > 0) {
     const pct = Math.round(((price - cost) / price) * 100);
     const profit = price - cost;
-    val.innerHTML = `${pct}% · bénéfice ${fmt(profit)} FCFA/unité`;
+    val.innerHTML = `${pct}% · ${t('profitShort')} ${fmt(profit)} ${sym()}/u`;
     val.style.color = pct >= 20 ? 'var(--success)' : pct >= 0 ? 'var(--warning)' : 'var(--danger)';
     box.style.display = '';
   } else {
@@ -1310,7 +1447,7 @@ async function confirmCart() {
       newSales.push(newSale);
     }
     S.cart = [];
-    showToast(`${count} ${t('unitsSold')} — ${fmt(total)} FCFA`);
+    showToast(`${count} ${t('unitsSold')} — ${fmt(total)} ${sym()}`);
     showReceiptBanner(newSales, total);
     // Recharger les articles pour avoir les stocks à jour
     const arts = await api('GET', '/api/articles/');
@@ -1384,6 +1521,28 @@ function toggleDark() {
   render();
 }
 
+function changeCurrency(code) {
+  if (!S.session) return;
+  S.session.currency = code;
+  S.session.currency_symbol = getCurrencySymbol(code);
+  // Save to localStorage
+  const saved = JSON.parse(localStorage.getItem('stockr_session') || '{}');
+  saved.currency = code;
+  saved.currency_symbol = S.session.currency_symbol;
+  localStorage.setItem('stockr_session', JSON.stringify(saved));
+  showToast(t('infoUpdated'));
+  render();
+}
+
+function changeTaxRate(val) {
+  if (!S.session) return;
+  S.session.tax_rate = parseFloat(val) || 0;
+  const saved = JSON.parse(localStorage.getItem('stockr_session') || '{}');
+  saved.tax_rate = S.session.tax_rate;
+  localStorage.setItem('stockr_session', JSON.stringify(saved));
+  showToast(t('infoUpdated'));
+}
+
 // ── Bannière reçu post-vente ──────────────────
 function showReceiptBanner(sales, total) {
   const existing = document.getElementById('receipt-banner');
@@ -1442,12 +1601,13 @@ function render() {
     'client-detail': vClientDetail, notifications: vNotifications,
     catalog: vCatalog, suppliers: vSuppliers,
     'add-supplier': vAddSupplier, 'supplier-detail': vSupplierDetail,
-    'stock-history': vStockHistory,
+    'stock-history': vStockHistory, 'purchase-orders': vPurchaseOrders,
+    'add-order': vAddOrder, pricing: vPricing,
   };
   viewEl.innerHTML = (map[S.view] || vHome)();
   if (!S.globalSearch) viewEl.scrollTop = 0;
 
-  if (S.view === 'financial') requestAnimationFrame(renderRevenueChart);
+  if (S.view === 'financial') requestAnimationFrame(() => { renderRevenueChart(); renderProfitChart(); });
 
   // Restore focus on global search after re-render
   if (S.view === 'home' && S.globalSearch) {
@@ -1455,7 +1615,7 @@ function render() {
     if (gs) { gs.focus(); gs.setSelectionRange(gs.value.length, gs.value.length); }
   }
 
-  const hideNav = ['detail','add','add-product','edit-product','add-client','client-detail','notifications','catalog','add-supplier','supplier-detail','stock-history'].includes(S.view);
+  const hideNav = ['detail','add','add-product','edit-product','add-client','client-detail','notifications','catalog','add-supplier','supplier-detail','stock-history','purchase-orders','add-order','pricing'].includes(S.view);
   navEl.style.display = hideNav ? 'none' : '';
   if (!hideNav) navEl.innerHTML = renderNav();
 }
@@ -1659,9 +1819,9 @@ function vHome() {
       _searchHTML = `<div class="card" style="text-align:center;padding:32px 18px;color:var(--text-3)"><div style="font-size:32px;margin-bottom:8px">🔍</div><div style="font-size:13px">${t('noResults')}</div></div>`;
     } else {
       if (ma.length) _searchHTML += `<div class="section-hd"><div class="section-lbl">${t('articles')} (${ma.length})</div></div>` + ma.map(a => `<div class="card card-tap" style="margin-bottom:4px" onclick="nav('detail',{selectedId:${a.id}})"><div class="article-row"><div class="article-avatar">${initials(a.name)}</div><div class="article-info"><div class="article-name">${a.name}</div><div class="article-meta">${fmtQty(a.stock)} ${a.unit}</div></div><div style="color:var(--gray-4)">${IC.chevron}</div></div></div>`).join('');
-      if (mp.length) _searchHTML += `<div class="section-hd"><div class="section-lbl">${t('products')} (${mp.length})</div></div>` + mp.map(p => `<div class="card card-tap" style="margin-bottom:4px" onclick="nav('products')"><div class="article-row"><div class="article-avatar">${initials(p.name)}</div><div class="article-info"><div class="article-name">${p.name}</div><div class="article-meta">${fmt(p.price)} FCFA</div></div><div style="color:var(--gray-4)">${IC.chevron}</div></div></div>`).join('');
+      if (mp.length) _searchHTML += `<div class="section-hd"><div class="section-lbl">${t('products')} (${mp.length})</div></div>` + mp.map(p => `<div class="card card-tap" style="margin-bottom:4px" onclick="nav('products')"><div class="article-row"><div class="article-avatar">${initials(p.name)}</div><div class="article-info"><div class="article-name">${p.name}</div><div class="article-meta">${fmt(p.price)} ${sym()}</div></div><div style="color:var(--gray-4)">${IC.chevron}</div></div></div>`).join('');
       if (mc.length) _searchHTML += `<div class="section-hd"><div class="section-lbl">${t('clients')} (${mc.length})</div></div>` + mc.map(c => `<div class="card card-tap" style="margin-bottom:4px" onclick="nav('client-detail',{selectedClientId:${c.id}})"><div class="article-row"><div class="article-avatar">${initials(c.name)}</div><div class="article-info"><div class="article-name">${c.name}</div><div class="article-meta">${c.phone||c.email||''}</div></div><div style="color:var(--gray-4)">${IC.chevron}</div></div></div>`).join('');
-      if (ms.length) _searchHTML += `<div class="section-hd"><div class="section-lbl">${t('sales')} (${ms.length})</div></div>` + ms.map(s => `<div class="card" style="margin-bottom:4px"><div class="sale-item" style="padding:0"><div class="sale-dot"></div><div class="sale-info"><div class="sale-prod">${s.productName}</div><div class="sale-date">${fmtDate(s.date)}${s.clientName?' · '+s.clientName:''}</div></div><div class="sale-right"><div class="sale-total">${fmt(s.total)} FCFA</div></div></div></div>`).join('');
+      if (ms.length) _searchHTML += `<div class="section-hd"><div class="section-lbl">${t('sales')} (${ms.length})</div></div>` + ms.map(s => `<div class="card" style="margin-bottom:4px"><div class="sale-item" style="padding:0"><div class="sale-dot"></div><div class="sale-info"><div class="sale-prod">${s.productName}</div><div class="sale-date">${fmtDate(s.date)}${s.clientName?' · '+s.clientName:''}</div></div><div class="sale-right"><div class="sale-total">${fmt(s.total)} ${sym()}</div></div></div></div>`).join('');
     }
   }
 
@@ -1735,6 +1895,31 @@ function vHome() {
       </div>`).join('')}`;
     })()}
 
+    ${(() => {
+      if (_showSearch) return '';
+      const reorder = S.articles.filter(a => a.min > 0 && a.stock < a.min).map(a => {
+        const toOrder = Math.ceil(a.min * 2 - a.stock);
+        const avgDaily = a.lead > 0 ? Math.max(1, a.min / a.lead) : 1;
+        const daysLeft = Math.max(0, Math.floor(a.stock / avgDaily));
+        return { ...a, toOrder, daysLeft };
+      }).sort((a,b) => a.daysLeft - b.daysLeft);
+      if (reorder.length === 0) return '';
+      return `
+      <div class="section-hd"><div class="section-lbl">${t('reorderSuggestions')}</div></div>
+      ${reorder.slice(0,4).map((a, i) => `
+      <div class="card anim" style="margin-bottom:6px;border-left:3px solid ${a.daysLeft<=2?'var(--danger)':a.daysLeft<=5?'var(--warning)':'var(--accent)'};animation-delay:${i*0.04}s">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-size:14px;font-weight:700;color:var(--text-1)">${a.name}</div>
+            <div style="font-size:11px;color:var(--text-3)">${a.stock} ${a.unit} — ${a.daysLeft} ${t('daysRemaining')}</div>
+          </div>
+          <button class="btn btn-primary" style="padding:6px 12px;font-size:11px" onclick="nav('add-order')">
+            ${IC.plus} ${a.toOrder} ${a.unit}
+          </button>
+        </div>
+      </div>`).join('')}`;
+    })()}
+
     ${_showSearch ? '' : `<div class="section-hd"><div class="section-lbl">${t('overview')}</div></div>
     <div class="metric-grid">
       <div class="metric-card anim" style="animation-delay:0s">
@@ -1776,7 +1961,7 @@ function vHome() {
         </div>`).join('')}
       </div>
       <div style="text-align:center;font-size:11px;color:var(--text-3);margin-top:6px">
-        ${t('weekTotal')} : <strong style="color:var(--text-1)">${fmt(weekDays.reduce((s,d)=>s+d.ca,0))} FCFA</strong>
+        ${t('weekTotal')} : <strong style="color:var(--text-1)">${fmt(weekDays.reduce((s,d)=>s+d.ca,0))} ${sym()}</strong>
       </div>
     </div>` : ''}
 
@@ -1798,7 +1983,7 @@ function vHome() {
           </div>
         </div>
         <div style="text-align:right;flex-shrink:0">
-          <div style="font-size:13px;font-weight:700;color:var(--text-1)">${fmt(d.rev)} FCFA</div>
+          <div style="font-size:13px;font-weight:700;color:var(--text-1)">${fmt(d.rev)} ${sym()}</div>
           ${d.profit > 0 ? `<div style="font-size:11px;color:var(--success)">+${fmt(d.profit)} ${t('profitShort')}</div>` : ''}
         </div>
       </div>`).join('')}
@@ -1812,7 +1997,7 @@ function vHome() {
         <div style="width:40px;height:40px;border-radius:50%;background:${p.margin>=30?'rgba(5,150,105,.12)':p.margin>=15?'rgba(217,119,6,.12)':'rgba(220,38,38,.12)'};display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:${p.margin>=30?'var(--success)':p.margin>=15?'var(--warning)':'var(--danger)'};flex-shrink:0">${p.margin}%</div>
         <div style="flex:1">
           <div style="font-size:13px;font-weight:600;color:var(--text-1)">${p.name}</div>
-          <div style="font-size:11px;color:var(--text-3)">${fmt(p.price)} · ${t('profitShort')} ${fmt(p.profit)} FCFA/u</div>
+          <div style="font-size:11px;color:var(--text-3)">${fmt(p.price)} · ${t('profitShort')} ${fmt(p.profit)} ${sym()}/u</div>
         </div>
       </div>`).join('')}
     </div>` : ''}
@@ -1842,7 +2027,7 @@ function vHome() {
           </div>
         </div>
         <div style="text-align:right;flex-shrink:0">
-          <div style="font-size:13px;font-weight:700;color:var(--text-1)">${fmt(d.total)} FCFA</div>
+          <div style="font-size:13px;font-weight:700;color:var(--text-1)">${fmt(d.total)} ${sym()}</div>
           <div style="font-size:11px;color:var(--text-3)">${d.count} ${t('purchases').toLowerCase()}</div>
         </div>
       </div>`).join('')}
@@ -1864,7 +2049,7 @@ function vHome() {
       <button class="quick-btn" onclick="nav('sales')">
         <span class="quick-ico">${IC.dollar}</span>
         <div class="quick-label">${t('sales')}</div>
-        <div class="quick-sub">${fmt(totalCA)} FCFA</div>
+        <div class="quick-sub">${fmt(totalCA)} ${sym()}</div>
       </button>
       <button class="quick-btn" onclick="nav('financial')">
         <span class="quick-ico">${IC.trending}</span>
@@ -1913,7 +2098,7 @@ function vHome() {
           <div class="sale-date">${fmtDate(s.date)}</div>
         </div>
         <div class="sale-right">
-          <div class="sale-total">${fmt(s.total)} FCFA</div>
+          <div class="sale-total">${fmt(s.total)} ${sym()}</div>
           <div class="sale-qty">×${s.qty}${s.profit ? ` · <span style="color:var(--success)">+${fmt(s.profit)}</span>` : ''}</div>
         </div>
       </div>
@@ -2009,8 +2194,8 @@ function vProducts() {
           <div class="article-avatar">${initials(p.name)}</div>
           <div class="article-info">
             <div class="article-name">${p.name}</div>
-            <div class="article-meta" style="font-weight:700;color:var(--text-2)">${fmt(p.price)} FCFA${p.purchasePrice > 0 ? ` <span style="font-size:11px;font-weight:600;color:${marginPct(p)>=20?'var(--success)':marginPct(p)>=0?'var(--warning)':'var(--danger)'};margin-left:6px">${marginPct(p)}% ${t('margin')}</span>` : ''}</div>
-            ${p.purchasePrice > 0 ? `<div class="article-meta" style="margin-top:1px;font-size:11px;color:var(--text-3)">${t('costLabel')}: ${fmt(p.purchasePrice)} · ${t('profitUnit')}: ${fmt(profitUnit(p))} FCFA/u</div>` : ''}
+            <div class="article-meta" style="font-weight:700;color:var(--text-2)">${fmt(p.price)} ${sym()}${p.purchasePrice > 0 ? ` <span style="font-size:11px;font-weight:600;color:${marginPct(p)>=20?'var(--success)':marginPct(p)>=0?'var(--warning)':'var(--danger)'};margin-left:6px">${marginPct(p)}% ${t('margin')}</span>` : ''}</div>
+            ${p.purchasePrice > 0 ? `<div class="article-meta" style="margin-top:1px;font-size:11px;color:var(--text-3)">${t('costLabel')}: ${fmt(p.purchasePrice)} · ${t('profitUnit')}: ${fmt(profitUnit(p))} ${sym()}/u</div>` : ''}
             ${recipeNames ? `<div class="article-meta" style="margin-top:2px;color:var(--text-3)">${recipeNames}</div>` : ''}
           </div>
           <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
@@ -2036,7 +2221,7 @@ function vSales() {
   <div class="sub-hero">
     <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('home')">${IC.left}</button>
     <div class="sub-hero-title">${t('sales')}</div>
-    <div class="sub-hero-big">${fmt(todayCA)} <span style="font-size:16px;color:var(--gray-5)">FCFA</span></div>
+    <div class="sub-hero-big">${fmt(todayCA)} <span style="font-size:16px;color:var(--gray-5)">${sym()}</span></div>
     <div class="sub-hero-sub">${t('today')} · ${S.sales.filter(s=>new Date(s.date).toDateString()===new Date().toDateString()).length} ${t('saleOf')}</div>
   </div>
   <div class="container">
@@ -2046,7 +2231,7 @@ function vSales() {
         <label class="form-label">${t('product')}</label>
         <select class="input" id="sale-product">
           <option value="">${t('select')}</option>
-          ${avail.map(p=>`<option value="${p.id}">${p.name} — ${fmt(p.price)} FCFA (${productMaxMake(p)} fab.)</option>`).join('')}
+          ${avail.map(p=>`<option value="${p.id}">${p.name} — ${fmt(p.price)} ${sym()} (${productMaxMake(p)} fab.)</option>`).join('')}
         </select>
       </div>
       <div class="form-group">
@@ -2076,12 +2261,12 @@ function vSales() {
         <div class="cart-item">
           <div class="cart-item-info">
             <div class="cart-item-name">${c.productName}</div>
-            <div class="cart-item-sub">×${c.qty} · ${fmt(c.unitPrice * c.qty)} FCFA</div>
+            <div class="cart-item-sub">×${c.qty} · ${fmt(c.unitPrice * c.qty)} ${sym()}</div>
           </div>
           <button class="cart-remove" onclick="removeFromCart(${i})">${IC.xmark}</button>
         </div>`).join('')}
       ${S.cart.length>0 ? `
-      <div class="cart-total">${t('total')} : <strong>${fmt(S.cart.reduce((s,c)=>s+c.unitPrice*c.qty,0))} FCFA</strong></div>
+      <div class="cart-total">${t('total')} : <strong>${fmt(S.cart.reduce((s,c)=>s+c.unitPrice*c.qty,0))} ${sym()}</strong></div>
       <button class="btn btn-primary" style="margin-top:10px" onclick="confirmCart()">${t('validateSale')}</button>` : ''}
     </div>` : ''}
     <div class="section-hd">
@@ -2161,7 +2346,7 @@ function vFinancial() {
   <div class="sub-hero">
     <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('home')">${IC.left}</button>
     <div class="sub-hero-title">${t('financialTitle')}</div>
-    <div class="sub-hero-big">${fmt(totalCA)} <span style="font-size:16px;color:var(--accent-muted)">FCFA</span></div>
+    <div class="sub-hero-big">${fmt(totalCA)} <span style="font-size:16px;color:var(--accent-muted)">${sym()}</span></div>
     <div class="sub-hero-sub">${filtered.length} ${t('saleOf')} · ${t('period')}</div>
   </div>
   <div class="container">
@@ -2171,6 +2356,10 @@ function vFinancial() {
     <div class="chart-card">
       <div class="chart-title">${t('revenueChart')}</div>
       <div class="chart-wrap"><canvas id="revenue-chart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">${t('profitChart')}</div>
+      <div class="chart-wrap"><canvas id="profit-chart"></canvas></div>
     </div>
     <div class="metric-grid">
       <div class="metric-card"><div class="metric-val">${fmt(totalCA)}</div><div class="metric-lbl">${t('caTotal')}</div></div>
@@ -2190,7 +2379,7 @@ function vFinancial() {
           <div class="rank-item">
             <div class="rank-num ${i===0?'r1':''}">${i+1}</div>
             <div class="rank-name">${name}${d.profit>0?`<div style="font-size:11px;color:var(--success);font-weight:400">+${fmt(d.profit)} ${t('profitShort')}</div>`:''}</div>
-            <div class="rank-rev">${fmt(d.rev)} FCFA</div>
+            <div class="rank-rev">${fmt(d.rev)} ${sym()}</div>
           </div>`).join('')}
     </div>
     ${S.predictions.length > 0 ? `
@@ -2277,9 +2466,17 @@ function vDetail() {
 
     <div class="card" style="margin-top:8px">
       <div class="card-title">${t('infoTitle')}</div>
+      ${art.ref ? `<div class="info-row">
+        <span class="info-lbl">${IC.tag} ${t('reference')}</span>
+        <span class="info-val" style="font-family:monospace;font-weight:700;letter-spacing:1px">${art.ref}</span>
+      </div>` : ''}
+      ${art.price ? `<div class="info-row">
+        <span class="info-lbl">${IC.dollar} ${t('articlePrice')}</span>
+        <span class="info-val">${fmt(art.price)} ${sym()}</span>
+      </div>` : ''}
       <div class="info-row">
         <span class="info-lbl">${IC.truck} ${t('deliveryTime')}</span>
-        <span class="info-val">${art.lead} jours</span>
+        <span class="info-val">${art.lead} ${_lang==='fr'?'jours':'days'}</span>
       </div>
       ${usedIn.length>0 ? `
       <div class="info-row" style="align-items:flex-start">
@@ -2291,8 +2488,30 @@ function vDetail() {
       </div>
       <div class="info-row">
         <span class="info-lbl">${IC.alert} ${t('thresholdAuto')}</span>
-        <span class="info-val">${art.min>0?art.min+' '+art.unit:'non calculé'}</span>
+        <span class="info-val">${art.min>0?art.min+' '+art.unit:(_lang==='fr'?'non calculé':'not set')}</span>
       </div>` : ''}
+    </div>
+
+    ${art.notes ? `
+    <div class="card" style="margin-top:8px">
+      <div class="card-title">${t('articleNotes')}</div>
+      <div style="font-size:13px;color:var(--text-2);white-space:pre-line">${art.notes}</div>
+    </div>` : ''}
+
+    <div class="card" style="margin-top:8px">
+      <div class="card-title">${t('modify')}</div>
+      <div class="form-group">
+        <label class="form-label">${t('reference')}</label>
+        <input class="input" type="text" placeholder="EAN-13, SKU…" value="${(art.ref||'').replace(/"/g,'&quot;')}" onchange="updateArticleField(${art.id},'ref',this.value)">
+      </div>
+      <div class="form-group">
+        <label class="form-label">${t('articlePrice')} (${sym()})</label>
+        <input class="input" type="number" step="10" min="0" value="${art.price||0}" onchange="updateArticleField(${art.id},'price',parseFloat(this.value)||0)">
+      </div>
+      <div class="form-group">
+        <label class="form-label">${t('articleNotes')}</label>
+        <textarea class="input" rows="2" placeholder="${t('articleNotes')}…" onchange="updateArticleField(${art.id},'notes',this.value)">${(art.notes||'').replace(/</g,'&lt;')}</textarea>
+      </div>
     </div>
 
     <div style="margin-top:10px">
@@ -2301,6 +2520,14 @@ function vDetail() {
       </button>
     </div>
   </div>`;
+}
+
+function updateArticleField(id, field, value) {
+  const art = S.articles.find(a => a.id === id);
+  if (!art) return;
+  art[field] = value;
+  localStorage.setItem('stockr_articles', JSON.stringify(S.articles));
+  showToast(t('infoUpdated'));
 }
 
 function confirmDelete(id) {
@@ -2356,15 +2583,23 @@ function vAdd() {
           </div>`;
         })()}
       </div>
+      <div class="form-group">
+        <label class="form-label">${t('reference')}</label>
+        <input class="input" type="text" placeholder="EAN-13, SKU, code interne…" value="${(f.ref||'').replace(/"/g,'&quot;')}" oninput="S.form.ref=this.value">
+      </div>
       <div class="input-row form-group">
         <div>
           <label class="form-label">${t('initialStock')}</label>
           <input class="input" type="number" placeholder="0" step="0.5" value="${f.stock}" oninput="S.form.stock=this.value">
         </div>
         <div>
-          <label class="form-label">${t('deliveryDays')}</label>
-          <input class="input" type="number" placeholder="7" value="${f.lead}" oninput="S.form.lead=this.value">
+          <label class="form-label">${t('articlePrice')} (${sym()})</label>
+          <input class="input" type="number" placeholder="0" step="10" value="${f.price||0}" oninput="S.form.price=this.value">
         </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">${t('deliveryDays')}</label>
+        <input class="input" type="number" placeholder="7" value="${f.lead}" oninput="S.form.lead=this.value" style="width:50%">
       </div>
       <div style="background:var(--gray-1);border:1px solid var(--border);border-radius:var(--r-md);padding:12px;font-size:12px;color:var(--text-3);margin-bottom:14px">
         ${IC.info} ${t('alertAutoInfo')}
@@ -2390,11 +2625,11 @@ function vAddProduct() {
       </div>
       <div style="display:flex;gap:10px">
         <div class="form-group" style="flex:1">
-          <label class="form-label">${t('purchasePrice')} (FCFA)</label>
+          <label class="form-label">${t('purchasePrice')} (${sym()})</label>
           <input class="input" id="prod-cost" type="number" placeholder="0" step="100" oninput="updateMarginPreview()">
         </div>
         <div class="form-group" style="flex:1">
-          <label class="form-label">${t('sellingPrice')} (FCFA)</label>
+          <label class="form-label">${t('sellingPrice')} (${sym()})</label>
           <input class="input" id="prod-price" type="number" placeholder="0" step="100" oninput="updateMarginPreview()">
         </div>
       </div>
@@ -2444,11 +2679,11 @@ function vEditProduct() {
       </div>
       <div style="display:flex;gap:10px">
         <div class="form-group" style="flex:1">
-          <label class="form-label">${t('purchasePrice')} (FCFA)</label>
+          <label class="form-label">${t('purchasePrice')} (${sym()})</label>
           <input class="input" id="prod-cost" type="number" placeholder="0" step="100" value="${p.purchasePrice || ''}">
         </div>
         <div class="form-group" style="flex:1">
-          <label class="form-label">${t('sellingPrice')} (FCFA)</label>
+          <label class="form-label">${t('sellingPrice')} (${sym()})</label>
           <input class="input" id="prod-price" type="number" placeholder="0" step="100" value="${p.price}">
         </div>
       </div>
@@ -2571,7 +2806,7 @@ function vClients() {
           <div class="article-info">
             <div class="article-name">${c.name}</div>
             <div class="article-meta">${c.phone ? `${IC.phone} ${c.phone}` : ''}${c.phone && c.email ? ' · ' : ''}${c.email || ''}</div>
-            ${st.count > 0 ? `<div class="article-meta" style="margin-top:2px">${st.count} ${t('purchases').toLowerCase()} · ${fmt(st.total)} FCFA</div>` : ''}
+            ${st.count > 0 ? `<div class="article-meta" style="margin-top:2px">${st.count} ${t('purchases').toLowerCase()} · ${fmt(st.total)} ${sym()}</div>` : ''}
           </div>
           <div style="color:var(--gray-4)">${IC.chevron}</div>
         </div>
@@ -2699,7 +2934,7 @@ function vClientDetail() {
           <div class="sale-date">${fmtDate(s.date)}</div>
         </div>
         <div class="sale-right">
-          <div class="sale-total">${fmt(s.total)} FCFA</div>
+          <div class="sale-total">${fmt(s.total)} ${sym()}</div>
           <div class="sale-qty">×${s.qty}</div>
         </div>
       </div>
@@ -3225,6 +3460,180 @@ function spectraSignalLoss() {
     navigator.share({ title: t('spectraSignalLoss'), text: report }).catch(() => {});
   }
   spectraReset();
+}
+
+// ── PURCHASE ORDERS ──────────────────────────
+function vPurchaseOrders() {
+  const orders = S.purchaseOrders;
+  const sym = S.session?.currency_symbol || 'FCFA';
+  return `
+  <div class="sub-hero">
+    <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('settings')">${IC.left}</button>
+    <div class="sub-hero-title">${t('purchaseOrders')}</div>
+    <div class="sub-hero-sub">${orders.length} ${t('articles').toLowerCase()}</div>
+  </div>
+  <div class="container">
+    <button class="btn btn-primary" style="margin-bottom:12px" onclick="nav('add-order')">
+      ${IC.plus} &nbsp; ${t('newOrder')}
+    </button>
+    ${orders.length === 0 ? `
+    <div class="empty-state">
+      ${IC.truck}
+      <div class="empty-title">${t('noOrders')}</div>
+    </div>` : orders.map((o, i) => {
+      const stColor = o.status === 'received' ? 'var(--success)' : o.status === 'cancelled' ? 'var(--danger)' : 'var(--warning)';
+      const stLabel = o.status === 'received' ? t('orderReceived') : o.status === 'cancelled' ? t('orderCancelled') : t('orderPending');
+      return `
+    <div class="card anim" style="margin-bottom:6px;border-left:3px solid ${stColor};animation-delay:${i*0.03}s">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div>
+          <div style="font-weight:700;font-size:14px">${o.articleName}</div>
+          <div style="font-size:11px;color:var(--text-3)">${o.supplierName || '—'} · ${fmtDate(o.date)}</div>
+          <div style="display:inline-block;margin-top:4px;padding:2px 8px;border-radius:6px;background:${stColor}20;color:${stColor};font-size:10px;font-weight:700">${stLabel}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-weight:800;font-size:14px">${o.qty} ${o.unit||'pce'}</div>
+          ${o.total ? `<div style="font-size:11px;color:var(--text-3)">${fmt(o.total)} ${sym}</div>` : ''}
+        </div>
+      </div>
+      ${o.status === 'pending' ? `
+      <div style="display:flex;gap:6px;margin-top:8px">
+        <button class="btn btn-primary" style="flex:1;font-size:11px;padding:8px" onclick="receiveOrder(${o.id})">${IC.check} &nbsp; ${t('markReceived')}</button>
+        <button class="btn btn-ghost" style="font-size:11px;padding:8px;color:var(--danger)" onclick="cancelOrder(${o.id})">${IC.xmark}</button>
+      </div>` : ''}
+    </div>`;
+    }).join('')}
+  </div>`;
+}
+
+function vAddOrder() {
+  const sym = S.session?.currency_symbol || 'FCFA';
+  return `
+  <div class="sub-hero">
+    <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('purchase-orders')">${IC.left}</button>
+    <div class="sub-hero-title">${t('newOrder')}</div>
+  </div>
+  <div class="container">
+    <div class="card" style="padding:16px">
+      <div class="form-group">
+        <label class="form-label">${t('orderArticle')} *</label>
+        <select class="input" id="ord-article">
+          <option value="">${t('select')}</option>
+          ${S.articles.map(a => `<option value="${a.id}">${a.name} (${a.qty !== undefined ? a.qty : a.stock} ${a.unit||'pce'})</option>`).join('')}
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">${t('orderSupplier')}</label>
+        <select class="input" id="ord-supplier">
+          <option value="">—</option>
+          ${S.suppliers.map(s => `<option value="${s.id}">${s.name}</option>`).join('')}
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">${t('orderQty')} *</label>
+        <input class="input" id="ord-qty" type="number" min="1" value="1">
+      </div>
+      <div class="form-group">
+        <label class="form-label">${t('orderTotal')} (${sym})</label>
+        <input class="input" id="ord-total" type="number" min="0" placeholder="0">
+      </div>
+      <button class="btn btn-primary" style="width:100%;margin-top:8px" onclick="saveOrder()">
+        ${IC.check} &nbsp; ${t('newOrder')}
+      </button>
+    </div>
+  </div>`;
+}
+
+function saveOrder() {
+  const artEl = document.getElementById('ord-article');
+  const artId = artEl?.value;
+  if (!artId) { showToast(t('chooseProduct'), 'error'); return; }
+  const art = S.articles.find(a => a.id === parseInt(artId));
+  const supEl = document.getElementById('ord-supplier');
+  const sup = S.suppliers.find(s => s.id === parseInt(supEl?.value));
+  const qty = parseInt(document.getElementById('ord-qty')?.value) || 1;
+  const total = parseFloat(document.getElementById('ord-total')?.value) || 0;
+  const order = {
+    id: Date.now(),
+    articleId: art?.id, articleName: art?.name || '?', unit: art?.unit || 'pce',
+    supplierId: sup?.id || null, supplierName: sup?.name || '',
+    qty, total, status: 'pending',
+    date: new Date().toISOString(),
+  };
+  S.purchaseOrders.unshift(order);
+  localStorage.setItem('stockr_orders', JSON.stringify(S.purchaseOrders));
+  showToast(t('newOrder') + ' OK');
+  nav('purchase-orders');
+}
+
+function receiveOrder(id) {
+  const order = S.purchaseOrders.find(o => o.id === id);
+  if (!order) return;
+  order.status = 'received';
+  order.receivedDate = new Date().toISOString();
+  // Add stock
+  const art = S.articles.find(a => a.id === order.articleId);
+  if (art) {
+    if (art.qty !== undefined) art.qty += order.qty;
+    else art.stock = (art.stock || 0) + order.qty;
+    localStorage.setItem('stockr_articles', JSON.stringify(S.articles));
+    logMovement(art.name, 'entry', order.qty, t('purchaseOrders') + ': ' + (order.supplierName || ''));
+  }
+  localStorage.setItem('stockr_orders', JSON.stringify(S.purchaseOrders));
+  showToast(t('orderReceived') + ': +' + order.qty + ' ' + order.articleName, 'success');
+  render();
+}
+
+function cancelOrder(id) {
+  const order = S.purchaseOrders.find(o => o.id === id);
+  if (order) { order.status = 'cancelled'; }
+  localStorage.setItem('stockr_orders', JSON.stringify(S.purchaseOrders));
+  render();
+}
+
+// ── PRICING PAGE ────────────────────────────
+function vPricing() {
+  const sym = S.session?.currency_symbol || 'FCFA';
+  const plans = [
+    { key:'free', name:t('freePlan'), price:0, color:'var(--gray-6)',
+      features:['50 '+t('articles'),'100 '+t('sales').toLowerCase(),'1 '+t('locations').toLowerCase(),'Spectra (5/'+(_lang==='fr'?'jour':'day')+')','PDF '+t('invoice')], current:true },
+    { key:'pro', name:t('proPlan'), price:4900, color:'var(--accent)',
+      features:[t('unlimited')+' '+t('articles'),t('unlimited')+' '+t('sales').toLowerCase(),'5 '+t('locations').toLowerCase(),'Spectra '+t('unlimited'),'WhatsApp '+t('catalog'),t('purchaseOrders'),t('suppliers'),t('exportCSV')] },
+    { key:'biz', name:t('businessPlan'), price:14900, color:'var(--success)',
+      features:[t('unlimited')+' '+t('articles'),t('unlimited')+' '+t('sales').toLowerCase(),t('unlimited')+' '+t('locations').toLowerCase(),'Spectra '+t('unlimited'),'API '+t('included'),(_lang==='fr'?'Multi-utilisateurs':'Multi-users'),(_lang==='fr'?'Support prioritaire':'Priority support'),(_lang==='fr'?'Tableau de bord avancé':'Advanced dashboard')] },
+  ];
+  return `
+  <div class="sub-hero">
+    <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('settings')">${IC.left}</button>
+    <div class="sub-hero-title">${t('pricing')}</div>
+    <div class="sub-hero-sub">${_lang==='fr'?'Choisissez le plan adapté à votre activité':'Choose the plan that fits your business'}</div>
+  </div>
+  <div class="container">
+    ${plans.map((p,i) => `
+    <div class="card anim" style="margin-bottom:12px;border:2px solid ${p.current?p.color:'var(--border)'};animation-delay:${i*0.05}s;overflow:hidden">
+      ${p.key==='pro'?`<div style="background:var(--accent);color:#fff;text-align:center;padding:4px;font-size:10px;font-weight:800;text-transform:uppercase;margin:-16px -16px 12px -16px">${_lang==='fr'?'Le plus populaire':'Most popular'}</div>`:''}
+      <div style="padding:${p.key==='pro'?'0 16px 16px':'16px'}">
+        <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:8px">
+          <span style="font-size:28px;font-weight:900;color:${p.color}">${p.price===0?(t('freePlan')):fmt(p.price)}</span>
+          ${p.price>0?`<span style="font-size:13px;color:var(--text-3)">${sym}${t('perMonth')}</span>`:''}
+        </div>
+        <div style="font-size:16px;font-weight:800;margin-bottom:12px">${p.name}</div>
+        ${p.features.map(f => `
+        <div style="display:flex;align-items:center;gap:8px;padding:4px 0;font-size:13px">
+          <span style="color:${p.color}">${IC.check}</span>
+          <span>${f}</span>
+        </div>`).join('')}
+        <button class="btn ${p.current?'btn-ghost':'btn-primary'}" style="width:100%;margin-top:14px;${p.current?'opacity:.6;cursor:default':''}" ${p.current?'disabled':''}>
+          ${p.current ? t('currentPlan') : t('upgrade')+' '+p.name}
+        </button>
+      </div>
+    </div>`).join('')}
+
+    <div style="text-align:center;margin-top:16px;padding:16px">
+      <div style="font-size:12px;color:var(--text-3);line-height:1.5">${_lang==='fr'?'Tous les plans incluent le mode hors-ligne et les mises à jour gratuites.':'All plans include offline mode and free updates.'}</div>
+      <div style="font-size:11px;color:var(--text-3);margin-top:4px">support@stockr.app</div>
+    </div>
+  </div>`;
 }
 
 // ── SUPPLIERS ────────────────────────────────
@@ -3986,6 +4395,29 @@ function vSettings() {
     </div>
 
     <div class="settings-section">
+      <div class="settings-label">${t('currency')} / ${t('taxRate')}</div>
+      <div class="settings-row-block">
+        <div class="settings-row" style="cursor:default">
+          <div class="settings-row-inner">
+            <span class="settings-row-ico">${IC.dollar}</span>
+            <div style="flex:1">
+              <select class="input" style="padding:8px 10px;font-size:13px;font-weight:600" onchange="changeCurrency(this.value)">
+                ${CURRENCIES.map(c => `<option value="${c.code}" ${(S.session?.currency||'XOF')===c.code?'selected':''}>${c.label}</option>`).join('')}
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="settings-row" style="cursor:default">
+          <div class="settings-row-inner">
+            <span class="settings-row-ico">${IC.info}</span>
+            <div class="settings-row-lbl">${t('taxRate')}</div>
+          </div>
+          <input type="number" class="input" style="width:70px;text-align:center;padding:6px" min="0" max="100" step="0.5" value="${S.session?.tax_rate||0}" onchange="changeTaxRate(this.value)">
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
       <div class="settings-label">${t('businessLogo')}</div>
       <div class="settings-row-block">
         <div class="settings-row" style="cursor:default">
@@ -4058,6 +4490,10 @@ function vSettings() {
           <div class="settings-row-inner"><span class="settings-row-ico">${IC.trending}</span><div><div class="settings-row-lbl">${t('stockHistory')}</div><div class="settings-row-sub">${S.stockMovements.length} ${t('articles').toLowerCase()}</div></div></div>
           ${IC.chevron}
         </div>
+        <div class="settings-row" onclick="nav('purchase-orders')">
+          <div class="settings-row-inner"><span class="settings-row-ico">${IC.truck}</span><div><div class="settings-row-lbl">${t('purchaseOrders')}</div><div class="settings-row-sub">${S.purchaseOrders.filter(o=>o.status==='pending').length} ${t('orderPending').toLowerCase()}</div></div></div>
+          ${IC.chevron}
+        </div>
       </div>
     </div>
 
@@ -4123,7 +4559,7 @@ function vSettings() {
       </div>
     </div>` : ''}
 
-    <div style="text-align:center;padding:24px 0 8px;font-size:11px;color:var(--text-3)">STOCKR · v0.4.0 · 2026</div>
+    <div style="text-align:center;padding:24px 0 8px;font-size:11px;color:var(--text-3)">STOCKR · v0.5.0 · 2026</div>
   </div>`;
 }
 
@@ -4238,12 +4674,18 @@ document.addEventListener('DOMContentLoaded', () => {
   window.quickSaleProduct        = quickSaleProduct;
   window.exportFullCSV           = exportFullCSV;
   window.logMovement             = logMovement;
+  window.saveOrder               = saveOrder;
+  window.receiveOrder            = receiveOrder;
+  window.cancelOrder             = cancelOrder;
+  window.updateArticleField      = updateArticleField;
+  window.changeCurrency          = changeCurrency;
+  window.changeTaxRate           = changeTaxRate;
 
   // Restaurer la session + token si existants
   const saved = getSession();
   if (saved && saved.token) {
     S.token   = saved.token;
-    S.session = { id: saved.id, name: saved.name, email: saved.email, business: saved.business };
+    S.session = { id: saved.id, name: saved.name, email: saved.email, business: saved.business, currency: saved.currency, currency_symbol: saved.currency_symbol, tax_rate: saved.tax_rate };
     render(); // Affiche l'app immédiatement
     loadData(); // Charge les données en arrière-plan
   } else {
