@@ -258,6 +258,32 @@ const LANGS = {
     // Reorder suggestions
     reorderSuggestions:'Réapprovisionnement suggéré', toReorder:'à commander',
     daysRemaining:'jours restants', createOrder:'Commander',
+    // Subscriptions
+    subscription:'Abonnement', myPlan:'Mon plan', activePlan:'Plan actif',
+    planFeatures:'Fonctionnalités incluses', choosePlan:'Choisir ce plan',
+    planActivated:'Plan activé avec succès !', planFree:'Plan gratuit actif',
+    trialDays:'jours d\'essai restants', subscriptionManage:'Gérer l\'abonnement',
+    paymentMethod:'Moyen de paiement', billingCycle:'Cycle de facturation',
+    monthly:'Mensuel', yearly:'Annuel', yearlyDiscount:'2 mois offerts',
+    cancelPlan:'Résilier', confirmCancel:'Confirmer la résiliation',
+    renewDate:'Prochain renouvellement',
+    // Expiry tracking
+    expiryDate:'Date de péremption', expiresIn:'Expire dans',
+    expired:'Expiré', daysLeft:'jours', expiryAlerts:'Alertes péremption',
+    noExpiry:'Pas de date de péremption', expiringSoon:'Bientôt périmé',
+    expiryToday:'Expire aujourd\'hui !', addExpiry:'Ajouter date péremption',
+    // Quick actions
+    quickActions:'Actions rapides', scanStock:'Scanner', addSale:'Vente',
+    newArticleShort:'Article', viewReport:'Rapport',
+    // Activity feed
+    activityFeed:'Activité récente', activitySale:'Vente enregistrée',
+    activityStock:'Stock modifié', activityNewArt:'Article ajouté',
+    activityNewClient:'Client ajouté', activityOrder:'Commande créée',
+    justNow:'À l\'instant', minutesAgo:'min', hoursAgo:'h',
+    // Advanced metrics
+    stockTurnover:'Rotation stock', salesVelocity:'Vélocité ventes',
+    avgDailySales:'Ventes/jour moy.', bestDay:'Meilleur jour',
+    worstDay:'Pire jour', growthRate:'Croissance',
     // Misc extra
     copied:'Copié !', shared:'Partagé !', noData:'Pas de données',
     profitChart:'Évolution bénéfice', clientsChart:'Répartition clients',
@@ -402,6 +428,32 @@ const LANGS = {
     // Reorder suggestions
     reorderSuggestions:'Reorder suggestions', toReorder:'to order',
     daysRemaining:'days remaining', createOrder:'Create order',
+    // Subscriptions
+    subscription:'Subscription', myPlan:'My plan', activePlan:'Active plan',
+    planFeatures:'Included features', choosePlan:'Choose this plan',
+    planActivated:'Plan activated successfully!', planFree:'Free plan active',
+    trialDays:'trial days remaining', subscriptionManage:'Manage subscription',
+    paymentMethod:'Payment method', billingCycle:'Billing cycle',
+    monthly:'Monthly', yearly:'Yearly', yearlyDiscount:'2 months free',
+    cancelPlan:'Cancel', confirmCancel:'Confirm cancellation',
+    renewDate:'Next renewal',
+    // Expiry tracking
+    expiryDate:'Expiry date', expiresIn:'Expires in',
+    expired:'Expired', daysLeft:'days', expiryAlerts:'Expiry alerts',
+    noExpiry:'No expiry date', expiringSoon:'Expiring soon',
+    expiryToday:'Expires today!', addExpiry:'Add expiry date',
+    // Quick actions
+    quickActions:'Quick actions', scanStock:'Scan', addSale:'Sale',
+    newArticleShort:'Article', viewReport:'Report',
+    // Activity feed
+    activityFeed:'Recent activity', activitySale:'Sale recorded',
+    activityStock:'Stock modified', activityNewArt:'Article added',
+    activityNewClient:'Client added', activityOrder:'Order created',
+    justNow:'Just now', minutesAgo:'min', hoursAgo:'h',
+    // Advanced metrics
+    stockTurnover:'Stock turnover', salesVelocity:'Sales velocity',
+    avgDailySales:'Avg daily sales', bestDay:'Best day',
+    worstDay:'Worst day', growthRate:'Growth',
     // Misc extra
     copied:'Copied!', shared:'Shared!', noData:'No data',
     profitChart:'Profit evolution', clientsChart:'Client breakdown',
@@ -736,7 +788,11 @@ const S = {
   stockMovements:   JSON.parse(localStorage.getItem('stockr_movements') || '[]'),
   // Purchase orders
   purchaseOrders:   JSON.parse(localStorage.getItem('stockr_orders') || '[]'),
-  form: { name: '', stock: 0, min: 0, unit: '', lead: 7, ref: '', price: 0 },
+  // Subscription
+  subscription: JSON.parse(localStorage.getItem('stockr_subscription') || '{"plan":"free","activated":null,"billing":"monthly"}'),
+  // Activity feed
+  activities: JSON.parse(localStorage.getItem('stockr_activities') || '[]'),
+  form: { name: '', stock: 0, min: 0, unit: '', lead: 7, ref: '', price: 0, expiry: '' },
   spectra: {
     step:      'camera',   // 'camera' | 'loading' | 'confirm' | 'done'
     queue:     [],         // détections en attente de confirmation
@@ -1023,6 +1079,77 @@ function recalcAllMins() {
   S.articles.forEach(a => recalcMin(a.id));
 }
 
+// ── Activity Feed ─────────────────────────────
+function logActivity(type, detail, extra = {}) {
+  const act = { id: Date.now(), type, detail, date: new Date().toISOString(), ...extra };
+  S.activities.unshift(act);
+  if (S.activities.length > 100) S.activities = S.activities.slice(0, 100);
+  localStorage.setItem('stockr_activities', JSON.stringify(S.activities));
+}
+function fmtTimeAgo(iso) {
+  const diff = Date.now() - new Date(iso).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return t('justNow');
+  if (mins < 60) return `${mins} ${t('minutesAgo')}`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs} ${t('hoursAgo')}`;
+  return new Date(iso).toLocaleDateString(_lang === 'en' ? 'en-US' : 'fr-FR', { day:'numeric', month:'short' });
+}
+
+// ── Subscription Manager ──────────────────────
+function activatePlan(planKey) {
+  S.subscription = {
+    plan: planKey,
+    activated: new Date().toISOString(),
+    billing: S.subscription.billing || 'monthly',
+    trialEnd: planKey !== 'free' ? new Date(Date.now() + 14 * 86400000).toISOString() : null,
+  };
+  localStorage.setItem('stockr_subscription', JSON.stringify(S.subscription));
+  logActivity('plan', t('planActivated') + ' ' + planKey.toUpperCase());
+  showToast(t('planActivated'));
+  render();
+}
+function cancelPlan() {
+  if (!confirm(t('confirmCancel') + ' ?')) return;
+  S.subscription = { plan: 'free', activated: null, billing: 'monthly' };
+  localStorage.setItem('stockr_subscription', JSON.stringify(S.subscription));
+  showToast(t('planFree'));
+  render();
+}
+function setBilling(cycle) {
+  S.subscription.billing = cycle;
+  localStorage.setItem('stockr_subscription', JSON.stringify(S.subscription));
+  render();
+}
+function getPlanLimits(plan) {
+  const limits = {
+    free:     { articles: 50, sales: 100, locations: 1, spectra: 5, suppliers: 3, orders: 10 },
+    pro:      { articles: -1, sales: -1, locations: 5, spectra: -1, suppliers: -1, orders: -1 },
+    business: { articles: -1, sales: -1, locations: -1, spectra: -1, suppliers: -1, orders: -1 },
+  };
+  return limits[plan] || limits.free;
+}
+
+// ── Expiry Date Helpers ───────────────────────
+function getExpiryStatus(expiryDate) {
+  if (!expiryDate) return null;
+  const now = new Date(); now.setHours(0,0,0,0);
+  const exp = new Date(expiryDate); exp.setHours(0,0,0,0);
+  const diff = Math.ceil((exp - now) / 86400000);
+  if (diff < 0) return { status: 'expired', days: Math.abs(diff), color: 'var(--danger)', label: t('expired') };
+  if (diff === 0) return { status: 'today', days: 0, color: 'var(--danger)', label: t('expiryToday') };
+  if (diff <= 7) return { status: 'soon', days: diff, color: 'var(--warning)', label: `${diff} ${t('daysLeft')}` };
+  if (diff <= 30) return { status: 'ok', days: diff, color: 'var(--success)', label: `${diff} ${t('daysLeft')}` };
+  return { status: 'ok', days: diff, color: 'var(--text-3)', label: `${diff} ${t('daysLeft')}` };
+}
+function getExpiringArticles() {
+  return S.articles
+    .filter(a => a.expiry)
+    .map(a => ({ ...a, expiryInfo: getExpiryStatus(a.expiry) }))
+    .filter(a => a.expiryInfo && a.expiryInfo.days <= 30)
+    .sort((a, b) => a.expiryInfo.days - b.expiryInfo.days);
+}
+
 // ── Toast ──────────────────────────────────────
 function showToast(msg, type='') {
   const el = document.createElement('div');
@@ -1176,6 +1303,7 @@ async function applyStock() {
     await api('PUT', `/api/articles/${art.id}`, { quantity: newStock });
     art.stock = newStock;
     logMovement(art.name, S.action === 'add' ? 'entry' : 'exit', S.qty, S.action === 'add' ? t('reception') : t('withdrawal'));
+    logActivity('stock', `${art.name}: ${S.action === 'add' ? '+' : '-'}${S.qty} ${art.unit}`);
     showToast(S.action === 'add' ? `+${S.qty} ${art.unit}` : `-${S.qty} ${art.unit}`);
     S.qty = 1;
     render();
@@ -1216,8 +1344,11 @@ function recordSale() {
     const art = S.articles.find(a => a.id === comp.id);
     if (art) art.stock = Math.round((art.stock - comp.qty * qty) * 10) / 10;
   });
-  S.sales.unshift({ id: Date.now(), productId: product.id, productName: product.name, qty, total: product.price * qty, date: new Date().toISOString() });
-  showToast(`${t('saleConfirmed')} — ${fmt(product.price * qty)} ${sym()}`);
+  const saleTotal = product.price * qty;
+  const saleCost = (product.purchasePrice || 0) * qty;
+  S.sales.unshift({ id: Date.now(), productId: product.id, productName: product.name, qty, total: saleTotal, profit: saleTotal - saleCost, date: new Date().toISOString() });
+  logActivity('sale', `${product.name} x${qty} — ${fmt(saleTotal)} ${sym()}`);
+  showToast(`${t('saleConfirmed')} — ${fmt(saleTotal)} ${sym()}`);
   render();
 }
 
@@ -1237,9 +1368,12 @@ async function saveArticle() {
     const newArt = articleFromAPI(data);
     newArt.ref = f.ref || '';
     newArt.price = parseFloat(f.price) || 0;
+    newArt.expiry = f.expiry || '';
     S.articles.push(newArt);
+    localStorage.setItem('stockr_articles', JSON.stringify(S.articles));
+    logActivity('new_article', f.name.trim());
     showToast(`"${f.name}" ${t('added') || 'ajouté'}`);
-    S.form = { name:'', stock:0, min:0, unit:'', lead:7, ref:'', price:0 };
+    S.form = { name:'', stock:0, min:0, unit:'', lead:7, ref:'', price:0, expiry:'' };
     nav('pantry');
   } catch(e) {
     showToast(e.message, 'error');
@@ -1602,7 +1736,7 @@ function render() {
     catalog: vCatalog, suppliers: vSuppliers,
     'add-supplier': vAddSupplier, 'supplier-detail': vSupplierDetail,
     'stock-history': vStockHistory, 'purchase-orders': vPurchaseOrders,
-    'add-order': vAddOrder, pricing: vPricing,
+    'add-order': vAddOrder, pricing: vPricing, subscription: vSubscription,
   };
   viewEl.innerHTML = (map[S.view] || vHome)();
   if (!S.globalSearch) viewEl.scrollTop = 0;
@@ -1615,7 +1749,7 @@ function render() {
     if (gs) { gs.focus(); gs.setSelectionRange(gs.value.length, gs.value.length); }
   }
 
-  const hideNav = ['detail','add','add-product','edit-product','add-client','client-detail','notifications','catalog','add-supplier','supplier-detail','stock-history','purchase-orders','add-order','pricing'].includes(S.view);
+  const hideNav = ['detail','add','add-product','edit-product','add-client','client-detail','notifications','catalog','add-supplier','supplier-detail','stock-history','purchase-orders','add-order','pricing','subscription'].includes(S.view);
   navEl.style.display = hideNav ? 'none' : '';
   if (!hideNav) navEl.innerHTML = renderNav();
 }
@@ -1869,6 +2003,26 @@ function vHome() {
       <input class="input input-search" type="text" placeholder="    ${t('searchAll')}" value="${S.globalSearch.replace(/"/g,'&quot;')}" oninput="S.globalSearch=this.value;render()" id="global-search">
     </div>
     ${_showSearch ? _searchHTML : ''}
+    ${!_showSearch ? `
+    <div class="quick-actions-bar">
+      <button class="qa-btn qa-spectra" onclick="nav('spectra')">
+        <div class="qa-ico">${IC.camera}</div>
+        <div class="qa-lbl">${t('scanStock')}</div>
+      </button>
+      <button class="qa-btn qa-sale" onclick="nav('sales')">
+        <div class="qa-ico">${IC.dollar}</div>
+        <div class="qa-lbl">${t('addSale')}</div>
+      </button>
+      <button class="qa-btn qa-article" onclick="nav('add')">
+        <div class="qa-ico">${IC.plus}</div>
+        <div class="qa-lbl">${t('newArticleShort')}</div>
+      </button>
+      <button class="qa-btn qa-report" onclick="nav('financial')">
+        <div class="qa-ico">${IC.bar}</div>
+        <div class="qa-lbl">${t('viewReport')}</div>
+      </button>
+    </div>` : ''}
+
     ${!_showSearch && low.length > 0 ? `
     <div class="alert-banner" onclick="nav('pantry',{filter:'low'})">
       <div class="alert-ico">${IC.alert}</div>
@@ -1878,6 +2032,23 @@ function vHome() {
       </div>
       <div class="alert-arrow">${IC.chevron}</div>
     </div>` : ''}
+
+    ${(() => {
+      if (_showSearch) return '';
+      const expiring = getExpiringArticles();
+      if (expiring.length === 0) return '';
+      return `
+      <div class="alert-banner expiry-alert" onclick="nav('pantry')">
+        <div class="alert-ico" style="background:rgba(245,158,11,.12);color:var(--warning)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <div style="flex:1">
+          <div class="alert-title">${expiring.length} ${t('expiringSoon')}</div>
+          <div class="alert-sub">${expiring.slice(0,3).map(a => `${a.name} (${a.expiryInfo.label})`).join(' · ')}</div>
+        </div>
+        <div class="alert-arrow">${IC.chevron}</div>
+      </div>`;
+    })()}
 
     ${(() => {
       if (_showSearch) return '';
@@ -2083,6 +2254,22 @@ function vHome() {
       </button>`).join('')}
     </div>` : ''}
 
+    ${S.activities.length > 0 ? `
+    <div class="section-hd"><div class="section-lbl">${t('activityFeed')}</div></div>
+    <div class="card anim activity-feed" style="animation-delay:0.22s">
+      ${S.activities.slice(0,6).map((a, i) => {
+        const ico = a.type === 'sale' ? IC.dollar : a.type === 'stock' ? IC.box : a.type === 'new_article' ? IC.plus : a.type === 'plan' ? IC.logo : IC.info;
+        const color = a.type === 'sale' ? 'var(--success)' : a.type === 'stock' ? 'var(--accent)' : a.type === 'new_article' ? 'var(--warning)' : 'var(--text-3)';
+        return `<div class="activity-item ${i > 0 ? 'bordered' : ''}" style="animation-delay:${i*0.04}s">
+          <div class="activity-ico" style="color:${color};background:${color}12">${ico}</div>
+          <div class="activity-body">
+            <div class="activity-text">${a.detail}</div>
+            <div class="activity-time">${fmtTimeAgo(a.date)}</div>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>` : ''}
+
     <div class="section-hd">
       <div class="section-lbl">${t('recentSales')}</div>
       <button class="section-act" onclick="nav('sales')">${t('viewAll')}</button>
@@ -2156,6 +2343,7 @@ function vPantry() {
           </div>
           <div class="article-right">
             <span class="status ${st.cls}">${st.icon} ${st.label}</span>
+            ${(() => { const exp = getExpiryStatus(a.expiry); return exp && exp.days <= 30 ? `<span class="expiry-badge-sm" style="color:${exp.color}">${exp.label}</span>` : ''; })()}
             <div style="color:var(--gray-4)">${IC.chevron}</div>
           </div>
         </div>
@@ -2366,6 +2554,39 @@ function vFinancial() {
       <div class="metric-card"><div class="metric-val" style="color:var(--success)">${fmt(totalProfit)}</div><div class="metric-lbl">${t('profit')}</div></div>
       <div class="metric-card"><div class="metric-val" style="color:${avgMargin>=20?'var(--success)':avgMargin>=0?'var(--warning)':'var(--danger)'}">${avgMargin}%</div><div class="metric-lbl">${t('avgMargin')}</div></div>
     </div>
+
+    ${(() => {
+      // Advanced KPIs
+      const dayMs = 86400000;
+      const salesDates = filtered.map(s => new Date(s.date).toDateString());
+      const uniqueDays = [...new Set(salesDates)];
+      const avgDailySales = uniqueDays.length > 0 ? Math.round(totalCA / uniqueDays.length) : 0;
+      const dailyTotals = {};
+      filtered.forEach(s => {
+        const ds = new Date(s.date).toDateString();
+        dailyTotals[ds] = (dailyTotals[ds] || 0) + s.total;
+      });
+      const dailyArr = Object.entries(dailyTotals);
+      const bestDay = dailyArr.length ? dailyArr.sort((a,b) => b[1] - a[1])[0] : null;
+      const turnover = stockVal > 0 ? (totalCA / stockVal).toFixed(1) : '—';
+      // Growth rate: compare last 7 days vs previous 7 days
+      const now = Date.now();
+      const last7 = S.sales.filter(s => now - new Date(s.date).getTime() < 7 * dayMs).reduce((s,v) => s + v.total, 0);
+      const prev7 = S.sales.filter(s => { const d = now - new Date(s.date).getTime(); return d >= 7 * dayMs && d < 14 * dayMs; }).reduce((s,v) => s + v.total, 0);
+      const growth = prev7 > 0 ? Math.round(((last7 - prev7) / prev7) * 100) : (last7 > 0 ? 100 : 0);
+      return `
+    <div class="section-hd" style="margin-top:8px"><div class="section-lbl">${_lang==='fr'?'Indicateurs avancés':'Advanced Metrics'}</div></div>
+    <div class="metric-grid">
+      <div class="metric-card"><div class="metric-val">${fmt(avgDailySales)}</div><div class="metric-lbl">${t('avgDailySales')}</div></div>
+      <div class="metric-card"><div class="metric-val">${turnover}x</div><div class="metric-lbl">${t('stockTurnover')}</div></div>
+      <div class="metric-card"><div class="metric-val" style="color:${growth>=0?'var(--success)':'var(--danger)'}">${growth>=0?'+':''}${growth}%</div><div class="metric-lbl">${t('growthRate')}</div></div>
+    </div>
+    <div class="metric-grid">
+      <div class="metric-card"><div class="metric-val">${fmt(avg)}</div><div class="metric-lbl">${t('avgTicket')}</div></div>
+      <div class="metric-card"><div class="metric-val">${fmt(stockVal)}</div><div class="metric-lbl">${t('stockVal')}</div></div>
+      ${bestDay ? `<div class="metric-card"><div class="metric-val" style="font-size:13px">${new Date(bestDay[0]).toLocaleDateString(_lang==='en'?'en-US':'fr-FR',{day:'numeric',month:'short'})}</div><div class="metric-lbl">${t('bestDay')} (${fmt(bestDay[1])})</div></div>` : `<div class="metric-card"><div class="metric-val">—</div><div class="metric-lbl">${t('bestDay')}</div></div>`}
+    </div>`;
+    })()}
     <div class="metric-grid">
       <div class="metric-card"><div class="metric-val">${filtered.length}</div><div class="metric-lbl">${t('salesCount')}</div></div>
       <div class="metric-card"><div class="metric-val">${fmt(avg)}</div><div class="metric-lbl">${t('avgTicket')}</div></div>
@@ -2478,6 +2699,14 @@ function vDetail() {
         <span class="info-lbl">${IC.truck} ${t('deliveryTime')}</span>
         <span class="info-val">${art.lead} ${_lang==='fr'?'jours':'days'}</span>
       </div>
+      ${(() => {
+        if (!art.expiry) return '';
+        const exp = getExpiryStatus(art.expiry);
+        return `<div class="info-row">
+          <span class="info-lbl"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> ${t('expiryDate')}</span>
+          <span class="info-val"><span class="expiry-badge" style="background:${exp.color};color:#fff">${exp.label}</span> ${new Date(art.expiry).toLocaleDateString(_lang==='en'?'en-US':'fr-FR')}</span>
+        </div>`;
+      })()}
       ${usedIn.length>0 ? `
       <div class="info-row" style="align-items:flex-start">
         <span class="info-lbl">${IC.tag} ${t('usedIn')}</span>
@@ -2507,6 +2736,10 @@ function vDetail() {
       <div class="form-group">
         <label class="form-label">${t('articlePrice')} (${sym()})</label>
         <input class="input" type="number" step="10" min="0" value="${art.price||0}" onchange="updateArticleField(${art.id},'price',parseFloat(this.value)||0)">
+      </div>
+      <div class="form-group">
+        <label class="form-label">${t('expiryDate')}</label>
+        <input class="input" type="date" value="${art.expiry||''}" onchange="updateArticleField(${art.id},'expiry',this.value)">
       </div>
       <div class="form-group">
         <label class="form-label">${t('articleNotes')}</label>
@@ -2597,9 +2830,15 @@ function vAdd() {
           <input class="input" type="number" placeholder="0" step="10" value="${f.price||0}" oninput="S.form.price=this.value">
         </div>
       </div>
-      <div class="form-group">
-        <label class="form-label">${t('deliveryDays')}</label>
-        <input class="input" type="number" placeholder="7" value="${f.lead}" oninput="S.form.lead=this.value" style="width:50%">
+      <div class="input-row form-group">
+        <div>
+          <label class="form-label">${t('deliveryDays')}</label>
+          <input class="input" type="number" placeholder="7" value="${f.lead}" oninput="S.form.lead=this.value">
+        </div>
+        <div>
+          <label class="form-label">${t('expiryDate')}</label>
+          <input class="input" type="date" value="${f.expiry||''}" oninput="S.form.expiry=this.value">
+        </div>
       </div>
       <div style="background:var(--gray-1);border:1px solid var(--border);border-radius:var(--r-md);padding:12px;font-size:12px;color:var(--text-3);margin-bottom:14px">
         ${IC.info} ${t('alertAutoInfo')}
@@ -2719,9 +2958,13 @@ function vEditProduct() {
 function vNotifications() {
   const outOfStock = S.articles.filter(a => a.stock === 0);
   const lowStock = S.articles.filter(a => a.stock > 0 && a.min > 0 && a.stock < a.min);
+  const expiring = getExpiringArticles();
   const allAlerts = [
     ...outOfStock.map(a => ({ type: 'out', article: a, priority: 0 })),
-    ...lowStock.map(a => ({ type: 'low', article: a, priority: 1 })),
+    ...expiring.filter(a => a.expiryInfo.status === 'expired').map(a => ({ type: 'expired', article: a, priority: 0 })),
+    ...expiring.filter(a => a.expiryInfo.status === 'today').map(a => ({ type: 'expiry_today', article: a, priority: 1 })),
+    ...lowStock.map(a => ({ type: 'low', article: a, priority: 2 })),
+    ...expiring.filter(a => a.expiryInfo.status === 'soon').map(a => ({ type: 'expiry_soon', article: a, priority: 3 })),
   ].sort((a, b) => a.priority - b.priority);
 
   return `
@@ -2759,6 +3002,25 @@ function vNotifications() {
       </div>
     </div>`;
     }).join('')}
+
+    ${expiring.length > 0 ? `
+    <div class="section-hd" style="margin-top:12px"><div class="section-lbl">${t('expiryAlerts')}</div></div>
+    ${expiring.map((a, i) => `
+    <div class="card card-tap anim" style="animation-delay:${(allAlerts.length + i)*0.04}s;border-left:4px solid ${a.expiryInfo.color}" onclick="nav('detail',{selectedId:${a.id}})">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:40px;height:40px;border-radius:10px;background:${a.expiryInfo.color}15;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="${a.expiryInfo.color}" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:14px;font-weight:700;color:var(--text-1)">${a.name}</div>
+          <div style="font-size:12px;color:${a.expiryInfo.color};font-weight:600;margin-top:2px">
+            ${a.expiryInfo.label} — ${new Date(a.expiry).toLocaleDateString(_lang==='en'?'en-US':'fr-FR')}
+          </div>
+          <div style="font-size:11px;color:var(--text-3);margin-top:2px">${a.stock} ${a.unit} ${t('inStock')}</div>
+        </div>
+        <div style="color:var(--gray-4)">${IC.chevron}</div>
+      </div>
+    </div>`).join('')}` : ''}
   </div>`;
 }
 
@@ -3117,9 +3379,14 @@ function vSpectra() {
         </button>
       </div>
 
-      <button class="spectra-demo-btn" onclick="spectraRunDemo()">
-        ${IC.eye} &nbsp; ${t('spectraDemo')} — ${t('spectraDemoSub')}
-      </button>
+      <div class="spectra-demo-row">
+        <button class="spectra-demo-btn" onclick="spectraRunDemo()">
+          ${IC.eye} &nbsp; ${t('spectraAudit')} ${t('spectraDemo')}
+        </button>
+        <button class="spectra-demo-btn" style="background:rgba(5,150,105,.08);color:#059669;border-color:rgba(5,150,105,.2)" onclick="spectraRunDemoReception()">
+          ${IC.truck} &nbsp; ${t('spectraReception')} ${t('spectraDemo')}
+        </button>
+      </div>
     </div>
 
     <input id="spectra-file" type="file" accept="image/*" capture="environment"
@@ -3664,6 +3931,121 @@ function vPricing() {
   </div>`;
 }
 
+// ── SUBSCRIPTION ─────────────────────────────
+function vSubscription() {
+  const sub = S.subscription;
+  const isActive = sub.plan !== 'free';
+  const trialDays = sub.trialEnd ? Math.max(0, Math.ceil((new Date(sub.trialEnd) - Date.now()) / 86400000)) : 0;
+  const billing = sub.billing || 'monthly';
+  const prices = {
+    pro:      { monthly: 4900, yearly: 39200 },
+    business: { monthly: 14900, yearly: 119200 },
+  };
+
+  return `
+  <div class="sub-hero" style="background:linear-gradient(135deg,#4F46E5 0%,#7C3AED 100%)">
+    <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('settings')">${IC.left}</button>
+    <div class="sub-hero-title">${t('subscription')}</div>
+    <div class="sub-hero-sub">${isActive ? t('activePlan') + ': ' + sub.plan.toUpperCase() : t('planFree')}</div>
+  </div>
+  <div class="container">
+
+    ${isActive ? `
+    <div class="card anim" style="border:2px solid var(--accent);overflow:hidden;margin-bottom:16px">
+      <div style="background:linear-gradient(135deg,var(--accent),#7C3AED);padding:16px;margin:-16px -16px 16px -16px">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <div style="color:rgba(255,255,255,.7);font-size:11px;font-weight:700;text-transform:uppercase">${t('activePlan')}</div>
+            <div style="color:#fff;font-size:24px;font-weight:900;margin-top:4px">${sub.plan.toUpperCase()}</div>
+          </div>
+          <div style="width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;color:#fff">${IC.logo}</div>
+        </div>
+      </div>
+      ${trialDays > 0 ? `
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(79,70,229,.06);border-radius:10px;margin-bottom:12px">
+        <div style="width:36px;height:36px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:900">${trialDays}</div>
+        <div>
+          <div style="font-size:13px;font-weight:700;color:var(--text-1)">${trialDays} ${t('trialDays')}</div>
+          <div style="font-size:11px;color:var(--text-3)">${t('renewDate')}: ${new Date(sub.trialEnd).toLocaleDateString(_lang==='en'?'en-US':'fr-FR')}</div>
+        </div>
+      </div>` : ''}
+      <div style="font-size:13px;font-weight:700;margin-bottom:10px;color:var(--text-1)">${t('planFeatures')}</div>
+      ${_planFeatures(sub.plan).map(f => `
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 0;font-size:13px">
+        <span style="color:var(--success)">${IC.check}</span>
+        <span style="color:var(--text-2)">${f}</span>
+      </div>`).join('')}
+      <div style="display:flex;gap:8px;margin-top:16px">
+        <button class="btn btn-ghost" style="flex:1;color:var(--danger);border-color:var(--danger)" onclick="cancelPlan()">${t('cancelPlan')}</button>
+      </div>
+    </div>` : `
+    <div class="card anim" style="text-align:center;padding:24px;margin-bottom:16px">
+      <div style="width:56px;height:56px;border-radius:50%;background:var(--gray-2);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;color:var(--text-3)">${IC.logo}</div>
+      <div style="font-size:16px;font-weight:800;color:var(--text-1)">${t('planFree')}</div>
+      <div style="font-size:13px;color:var(--text-3);margin-top:4px">${_lang==='fr'?'Passez à Pro pour débloquer toutes les fonctionnalités':'Upgrade to Pro to unlock all features'}</div>
+    </div>`}
+
+    <div style="display:flex;gap:6px;margin-bottom:16px;background:var(--gray-1);padding:4px;border-radius:10px">
+      <button class="btn ${billing==='monthly'?'btn-primary':'btn-ghost'}" style="flex:1;padding:8px;font-size:12px" onclick="setBilling('monthly')">${t('monthly')}</button>
+      <button class="btn ${billing==='yearly'?'btn-primary':'btn-ghost'}" style="flex:1;padding:8px;font-size:12px" onclick="setBilling('yearly')">
+        ${t('yearly')} <span style="font-size:10px;opacity:.8">(-17%)</span>
+      </button>
+    </div>
+
+    ${['pro','business'].map((pk, i) => {
+      const price = prices[pk][billing];
+      const isCurrent = sub.plan === pk;
+      const color = pk === 'pro' ? 'var(--accent)' : 'var(--success)';
+      const label = pk === 'pro' ? t('proPlan') : t('businessPlan');
+      return `
+    <div class="card anim" style="margin-bottom:12px;border:2px solid ${isCurrent?color:'var(--border)'};overflow:hidden;animation-delay:${i*0.06}s">
+      ${pk==='pro'?`<div style="background:var(--accent);color:#fff;text-align:center;padding:4px;font-size:10px;font-weight:800;text-transform:uppercase;margin:-16px -16px 12px -16px">${_lang==='fr'?'Le plus populaire':'Most popular'}</div>`:''}
+      <div style="padding:${pk==='pro'?'0 0 0':'0'}">
+        <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:6px">
+          <span style="font-size:28px;font-weight:900;color:${color}">${fmt(price)}</span>
+          <span style="font-size:12px;color:var(--text-3)">${sym()}/${billing==='yearly'?(_lang==='fr'?'an':'yr'):(_lang==='fr'?'mois':'mo')}</span>
+        </div>
+        <div style="font-size:15px;font-weight:800;margin-bottom:10px;color:var(--text-1)">${label}</div>
+        ${_planFeatures(pk).map(f => `
+        <div style="display:flex;align-items:center;gap:8px;padding:3px 0;font-size:12px">
+          <span style="color:${color}">${IC.check}</span><span>${f}</span>
+        </div>`).join('')}
+        <button class="btn ${isCurrent?'btn-ghost':'btn-primary'}" style="width:100%;margin-top:14px;${isCurrent?'opacity:.6;cursor:default':''}" ${isCurrent?'disabled':`onclick="activatePlan('${pk}')"`}>
+          ${isCurrent ? t('currentPlan') : t('choosePlan')}
+        </button>
+      </div>
+    </div>`;
+    }).join('')}
+
+    <div style="text-align:center;margin-top:12px;padding:16px">
+      <div style="font-size:12px;color:var(--text-3);line-height:1.5">${_lang==='fr'?'Tous les plans incluent le mode hors-ligne, les mises à jour gratuites et le support.':'All plans include offline mode, free updates, and support.'}</div>
+      <div style="font-size:11px;color:var(--text-3);margin-top:4px">support@stockr.app</div>
+    </div>
+  </div>`;
+}
+
+function _planFeatures(plan) {
+  if (plan === 'pro') return [
+    t('unlimited')+' '+t('articles'), t('unlimited')+' '+t('sales').toLowerCase(),
+    '5 '+t('locations').toLowerCase(), 'Spectra '+t('unlimited'),
+    'WhatsApp '+t('catalog'), t('purchaseOrders'), t('suppliers'),
+    t('exportCSV'), _lang==='fr'?'Rapports avancés':'Advanced reports',
+  ];
+  if (plan === 'business') return [
+    t('unlimited')+' '+t('articles'), t('unlimited')+' '+t('sales').toLowerCase(),
+    t('unlimited')+' '+t('locations').toLowerCase(), 'Spectra '+t('unlimited'),
+    'API '+t('included'), _lang==='fr'?'Multi-utilisateurs':'Multi-users',
+    _lang==='fr'?'Support prioritaire':'Priority support',
+    _lang==='fr'?'Tableau de bord avancé':'Advanced dashboard',
+    _lang==='fr'?'Gestion des rôles':'Role management',
+  ];
+  return [
+    '50 '+t('articles'), '100 '+t('sales').toLowerCase(),
+    '1 '+t('locations').toLowerCase(), 'Spectra (5/'+(_lang==='fr'?'jour':'day')+')',
+    'PDF '+t('invoice'),
+  ];
+}
+
 // ── SUPPLIERS ────────────────────────────────
 function vSuppliers() {
   const q = S.clientSearch.toLowerCase();
@@ -3825,28 +4207,73 @@ function vStockHistory() {
 // ── SPECTRA DEMO MODE ───────────────────────
 function spectraRunDemo() {
   S.spectra.step = 'loading';
+  S.spectra.demoMode = 'audit';
   render();
-  // Simulate detection after 2s using existing articles
+  // Simulate realistic detection after 2.5s using existing articles
   setTimeout(() => {
-    const demoItems = S.articles.slice(0, 5).map(a => ({
-      detected_name: a.name,
-      matched_name: a.name,
-      matched_id: a.id,
-      matched_unit: a.unit || 'pce',
-      quantity: Math.max(1, Math.floor(Math.random() * ((a.qty || a.stock || 5) + 3))),
-      confidence: Math.floor(85 + Math.random() * 14),
-    }));
-    if (demoItems.length === 0) {
-      demoItems.push(
-        { detected_name: 'Riz 5kg', matched_name: 'Riz 5kg', quantity: 8, confidence: 92, matched_unit: 'sac' },
-        { detected_name: 'Huile 1L', matched_name: 'Huile 1L', quantity: 15, confidence: 88, matched_unit: 'l' },
-        { detected_name: 'Sucre 1kg', matched_name: 'Sucre 1kg', quantity: 3, confidence: 95, matched_unit: 'kg' }
-      );
+    const fallbackDB = [
+      { detected_name: 'Riz 5kg', matched_name: 'Riz 5kg', quantity: 8, confidence: 94, matched_unit: 'sac' },
+      { detected_name: 'Huile végétale 1L', matched_name: 'Huile végétale 1L', quantity: 12, confidence: 91, matched_unit: 'l' },
+      { detected_name: 'Sucre 1kg', matched_name: 'Sucre 1kg', quantity: 3, confidence: 97, matched_unit: 'kg' },
+      { detected_name: 'Savon Marseille', matched_name: 'Savon Marseille', quantity: 20, confidence: 89, matched_unit: 'pce' },
+      { detected_name: 'Farine 1kg', matched_name: 'Farine 1kg', quantity: 5, confidence: 93, matched_unit: 'kg' },
+    ];
+    let demoItems;
+    if (S.articles.length >= 3) {
+      // Use real articles with realistic gap simulation
+      demoItems = S.articles.slice(0, Math.min(6, S.articles.length)).map(a => {
+        const stk = a.qty !== undefined ? a.qty : a.stock;
+        // Create gaps: some items match, some are missing, some extra
+        const variance = Math.random();
+        let qty;
+        if (variance < 0.3) qty = Math.max(0, stk - Math.ceil(Math.random() * 3)); // missing
+        else if (variance < 0.5) qty = stk + Math.ceil(Math.random() * 2); // extra
+        else qty = stk; // match
+        return {
+          detected_name: a.name,
+          matched_name: a.name,
+          matched_id: a.id,
+          matched_unit: a.unit || 'pce',
+          quantity: Math.max(0, qty),
+          confidence: Math.floor(86 + Math.random() * 13),
+        };
+      });
+    } else {
+      demoItems = fallbackDB;
     }
     S.spectra.compareResults = demoItems;
     S.spectra.step = 'compare';
+    logActivity('spectra', _lang === 'fr' ? 'Audit Spectra effectué (démo)' : 'Spectra audit completed (demo)');
     render();
-  }, 2000);
+  }, 2500);
+}
+
+function spectraRunDemoReception() {
+  S.spectra.step = 'loading';
+  S.spectra.demoMode = 'reception';
+  render();
+  setTimeout(() => {
+    let receptionItems;
+    if (S.articles.length >= 2) {
+      receptionItems = S.articles.slice(0, Math.min(4, S.articles.length)).map(a => ({
+        detected_name: a.name,
+        matched_name: a.name,
+        matched_id: a.id,
+        matched_unit: a.unit || 'pce',
+        quantity: Math.ceil(Math.random() * 10 + 2),
+        confidence: Math.floor(88 + Math.random() * 11),
+      }));
+    } else {
+      receptionItems = [
+        { detected_name: 'Bouteilles eau 1.5L', matched_name: 'Bouteilles eau 1.5L', quantity: 24, confidence: 96, matched_unit: 'pce' },
+        { detected_name: 'Gobelets plastique', matched_name: 'Gobelets plastique', quantity: 10, confidence: 91, matched_unit: 'pce' },
+        { detected_name: 'Serviettes', matched_name: 'Serviettes', quantity: 6, confidence: 87, matched_unit: 'lot' },
+      ];
+    }
+    S.spectra.receptionItems = receptionItems;
+    S.spectra.step = 'reception';
+    render();
+  }, 2500);
 }
 
 // ── QUICK SALE ──────────────────────────────
@@ -3893,6 +4320,7 @@ function quickSaleProduct(productId) {
 
   S.sales.unshift(sale);
   localStorage.setItem('stockr_sales', JSON.stringify(S.sales));
+  logActivity('sale', `${prod.name} x1 — ${fmt(prod.price)} ${sym}`);
   showToast(`${t('saleConfirmed')}: ${prod.name} — ${fmt(prod.price)} ${sym}`, 'success');
   render();
 }
@@ -4388,6 +4816,29 @@ function vSettings() {
     </div>
 
     <div class="settings-section">
+      <div class="settings-label">${t('subscription')}</div>
+      <div class="settings-row-block">
+        <div class="settings-row" onclick="nav('subscription')">
+          <div class="settings-row-inner">
+            <span class="settings-row-ico" style="color:var(--accent)">${IC.logo}</span>
+            <div>
+              <div class="settings-row-lbl">${t('myPlan')}: <strong style="color:var(--accent)">${S.subscription.plan.toUpperCase()}</strong></div>
+              <div class="settings-row-sub">${t('subscriptionManage')}</div>
+            </div>
+          </div>
+          ${IC.chevron}
+        </div>
+        <div class="settings-row" onclick="nav('pricing')">
+          <div class="settings-row-inner">
+            <span class="settings-row-ico">${IC.trending}</span>
+            <div class="settings-row-lbl">${t('pricing')}</div>
+          </div>
+          ${IC.chevron}
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
       <div class="settings-label">${t('appearance')}</div>
       <div class="settings-row-block">
         <div class="settings-row" style="cursor:default">
@@ -4587,7 +5038,7 @@ function vSettings() {
       </div>
     </div>` : ''}
 
-    <div style="text-align:center;padding:24px 0 8px;font-size:11px;color:var(--text-3)">STOCKR · v0.5.0 · 2026</div>
+    <div style="text-align:center;padding:24px 0 8px;font-size:11px;color:var(--text-3)">STOCKR · v0.6.0 · 2026</div>
   </div>`;
 }
 
@@ -4697,6 +5148,7 @@ document.addEventListener('DOMContentLoaded', () => {
   window.spectraAdjustStock      = spectraAdjustStock;
   window.spectraSignalLoss       = spectraSignalLoss;
   window.spectraRunDemo          = spectraRunDemo;
+  window.spectraRunDemoReception  = spectraRunDemoReception;
   window.saveSupplier            = saveSupplier;
   window.deleteSupplier          = deleteSupplier;
   window.quickSaleProduct        = quickSaleProduct;
@@ -4708,6 +5160,9 @@ document.addEventListener('DOMContentLoaded', () => {
   window.updateArticleField      = updateArticleField;
   window.changeCurrency          = changeCurrency;
   window.changeTaxRate           = changeTaxRate;
+  window.activatePlan            = activatePlan;
+  window.cancelPlan              = cancelPlan;
+  window.setBilling              = setBilling;
 
   // Restaurer la session + token si existants
   const saved = getSession();

@@ -1022,19 +1022,24 @@ body.dark textarea.input:focus { background: var(--surface); color: var(--text);
 [data-theme="dark"] .spectra-feature-btn:hover { background: var(--gray-7); box-shadow: 0 6px 20px rgba(0,0,0,.3); }
 
 /* Demo button */
-.spectra-demo-btn {
-  display: flex; align-items: center; justify-content: center; gap: 8px;
+.spectra-demo-row {
+  display: flex; gap: 8px;
   width: 100%; max-width: 380px;
-  padding: 12px 18px;
-  font-size: 13px; font-weight: 600;
+  margin-top: 6px;
+}
+.spectra-demo-btn {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  flex: 1;
+  padding: 10px 10px;
+  font-size: 11px; font-weight: 600;
   cursor: pointer;
   border: 1.5px dashed var(--border);
   border-radius: 12px;
   background: transparent;
   color: var(--text-3);
-  margin-top: 6px;
   transition: all .2s;
 }
+.spectra-demo-btn:active { transform: scale(.95); }
 .spectra-demo-btn:hover { background: var(--bg-2); color: var(--text); border-color: var(--accent); }
 [data-theme="dark"] .spectra-demo-btn { border-color: var(--gray-6); }
 
@@ -1340,6 +1345,103 @@ body.dark textarea.input:focus { background: var(--surface); color: var(--text);
 [data-theme="dark"] .loc-card { background: var(--gray-8); border-color: var(--gray-7); }
 [data-theme="dark"] .loc-active { background: rgba(79,70,229,.15); border-color: var(--accent); }
 
+/* ── QUICK ACTIONS BAR ────────────────────────── */
+.quick-actions-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+  padding: 4px 0;
+}
+.qa-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 6px 12px;
+  background: var(--card);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all .2s;
+}
+.qa-btn:active { transform: scale(.94); }
+.qa-ico {
+  width: 40px; height: 40px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff;
+  font-size: 15px;
+}
+.qa-spectra .qa-ico { background: linear-gradient(135deg, #7C3AED, #4F46E5); }
+.qa-sale .qa-ico { background: linear-gradient(135deg, #059669, #10b981); }
+.qa-article .qa-ico { background: linear-gradient(135deg, #D97706, #f59e0b); }
+.qa-report .qa-ico { background: linear-gradient(135deg, #2563EB, #3b82f6); }
+.qa-lbl {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text);
+  text-align: center;
+}
+
+/* ── ACTIVITY FEED ───────────────────────────── */
+.activity-feed { padding: 2px 0 !important; }
+.activity-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+}
+.activity-item.bordered {
+  border-top: 1px solid var(--border);
+}
+.activity-ico {
+  width: 32px; height: 32px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.activity-body { flex: 1; min-width: 0; }
+.activity-text {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.activity-time {
+  font-size: 10px;
+  color: var(--text-3);
+  margin-top: 2px;
+}
+
+/* ── EXPIRY BADGES ───────────────────────────── */
+.expiry-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+.expiry-badge-sm {
+  font-size: 9px;
+  font-weight: 700;
+  display: block;
+  margin-top: 2px;
+}
+.expiry-alert {
+  border-color: rgba(245, 158, 11, .3) !important;
+  background: rgba(245, 158, 11, .04) !important;
+}
+
+/* ── SUBSCRIPTION CARD ENHANCEMENTS ──────────── */
+[data-theme="dark"] .qa-btn { background: var(--gray-8); border-color: var(--gray-7); }
+[data-theme="dark"] .activity-item.bordered { border-color: var(--gray-7); }
+
 /* ── AUTH STEP 2 — profil cards ─────────────── */
 .profile-cards {
   display: flex;
@@ -1456,3 +1558,112 @@ body.dark textarea.input:focus { background: var(--surface); color: var(--text);
 }
 .empty-title { font-size: 15px; font-weight: 700; margin-top: 12px; color: var(--text-2); }
 .empty-sub { font-size: 12px; margin-top: 4px; line-height: 1.4; }
+
+/* ── POLISH — Micro-interactions & Transitions ── */
+
+/* Page view fade-in */
+#view {
+  animation: viewFadeIn .25s ease-out;
+}
+@keyframes viewFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Hero shimmer effect */
+.hero::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 200%; height: 100%;
+  background: linear-gradient(90deg, transparent 40%, rgba(255,255,255,.03) 50%, transparent 60%);
+  animation: heroShimmer 8s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes heroShimmer {
+  0%, 100% { transform: translateX(-30%); }
+  50% { transform: translateX(30%); }
+}
+
+/* Card hover shine */
+.card-tap::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(135deg, transparent 30%, rgba(79,70,229,.02) 50%, transparent 70%);
+  opacity: 0;
+  transition: opacity .3s;
+  pointer-events: none;
+}
+.card-tap:hover::after { opacity: 1; }
+.card-tap { position: relative; overflow: hidden; }
+
+/* Metric card hover lift */
+.metric-card {
+  transition: transform .2s, box-shadow .2s;
+}
+.metric-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,.06);
+}
+
+/* Button press micro-animation */
+.btn:active {
+  transform: scale(.96);
+  transition: transform .08s;
+}
+
+/* Nav tab indicator animation */
+.nav-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 20px; height: 3px;
+  background: var(--accent);
+  border-radius: 3px;
+  animation: navDotPop .25s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes navDotPop {
+  from { transform: translateX(-50%) scale(0); }
+  to   { transform: translateX(-50%) scale(1); }
+}
+.nav-tab { position: relative; }
+
+/* Alert banner pulse */
+.alert-banner {
+  animation: alertPulse 3s ease-in-out infinite;
+}
+@keyframes alertPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(217,119,6,.1); }
+  50% { box-shadow: 0 0 0 4px rgba(217,119,6,.08); }
+}
+
+/* Quick sale chip press */
+.quick-sale-chip:active {
+  transform: scale(.93);
+  transition: transform .08s;
+}
+
+/* Status badge gentle pulse for danger */
+.status.s-out {
+  animation: statusPulse 2s ease-in-out infinite;
+}
+@keyframes statusPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .7; }
+}
+
+/* Smooth progress bar fill */
+.progress-bar {
+  transition: width .6s cubic-bezier(.25,.46,.45,.94) !important;
+}
+
+/* Hero stat hover */
+.hero-stat {
+  transition: transform .15s, background .15s;
+}
+.hero-stat:active {
+  transform: scale(.95);
+}
