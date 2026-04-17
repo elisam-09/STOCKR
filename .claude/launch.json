@@ -28,6 +28,13 @@
       "runtimeArgs": ["-m", "http.server", "3458"],
       "port": 3458,
       "cwd": "/Users/MacdeElisam/STOCKR/stockr_frontend/www1"
+    },
+    {
+      "name": "stockr-worktree",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "3459"],
+      "port": 3459,
+      "cwd": ".claude/worktrees/flamboyant-cartwright/stockr_frontend/www2"
     }
   ]
 }
