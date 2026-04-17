@@ -1335,23 +1335,27 @@ function saleFromAPI(s) {
 
 // ── Charger données depuis l'API ──────────────
 async function loadData() {
+  // Si token présent, toujours essayer l'API réelle
+  if (S.token && USE_LOCAL) USE_LOCAL = false;
   try {
     const [arts, prods, sales, preds, clients] = await Promise.all([
       api('GET', '/api/articles/'),
       api('GET', '/api/products/'),
       api('GET', '/api/sales/'),
-      api('GET', '/api/predictions/'),
+      api('GET', '/api/predictions/').catch(() => null),
       api('GET', '/api/clients/').catch(() => []),
     ]);
     S.products    = prods.map(productFromAPI);
     S.articles    = arts.map(articleFromAPI);
     S.sales       = sales.map(saleFromAPI);
-    S.predictions = preds;
+    S.predictions = preds || [];
     S.clients     = clients || [];
     recalcAllMins();
     render();
   } catch(e) {
-    showToast(t('errLoad'), 'error');
+    console.error('loadData error:', e);
+    showToast(e.message || t('errLoad'), 'error');
+    render();
   }
 }
 
