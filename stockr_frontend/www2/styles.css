@@ -144,7 +144,8 @@ body {
   background: linear-gradient(90deg, var(--accent), #818cf8);
   border-radius: 0 0 3px 3px;
 }
-.nav-label { font-size: 10px; font-weight: 600; letter-spacing: 0.2px; }
+.nav-label { font-size: 9px; font-weight: 600; letter-spacing: 0.1px; }
+.nav-tab svg { width: 20px; height: 20px; }
 
 @media (max-width: 430px) {
   body { background: var(--bg); align-items: flex-start; }
@@ -2140,4 +2141,829 @@ body.dark textarea.input:focus { background: var(--surface); color: var(--text);
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+/* =============================================
+   NEW FEATURES STYLES
+   ============================================= */
+
+/* ── More Menu Grid ────────────────────────── */
+.more-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  padding: 0 4px;
+}
+.more-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 20px 12px 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+}
+.more-item::after {
+  content: '';
+  position: absolute;
+  top: -20px; right: -20px;
+  width: 60px; height: 60px;
+  border-radius: 50%;
+  opacity: 0.08;
+  pointer-events: none;
+}
+.more-item:active { transform: scale(0.94); box-shadow: var(--shadow-md); }
+.more-ico {
+  width: 44px; height: 44px;
+  border-radius: var(--r-md);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 10px;
+  transition: transform 0.2s;
+}
+.more-item:active .more-ico { transform: scale(0.9); }
+.more-lbl { font-size: 12px; font-weight: 700; color: var(--text); }
+.more-sub { font-size: 10px; color: var(--text-3); margin-top: 2px; }
+.more-badge {
+  position: absolute; top: 8px; right: 8px;
+  background: var(--accent); color: white;
+  font-size: 9px; font-weight: 800;
+  padding: 2px 6px; border-radius: var(--r-full);
+}
+
+/* ── Feature Card ──────────────────────────── */
+.feature-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 16px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex; align-items: center; gap: 14px;
+  box-shadow: var(--shadow-sm);
+}
+.feature-card:active { transform: scale(0.98); }
+.feature-ico {
+  width: 48px; height: 48px;
+  border-radius: var(--r-md);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.feature-info { flex: 1; min-width: 0; }
+.feature-title { font-size: 14px; font-weight: 700; color: var(--text); }
+.feature-desc { font-size: 12px; color: var(--text-3); margin-top: 2px; }
+.feature-arrow { color: var(--text-3); flex-shrink: 0; }
+
+/* ── Payment Method Card ───────────────────── */
+.payment-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 14px 16px;
+  margin-bottom: 8px;
+  display: flex; align-items: center; gap: 14px;
+  transition: all 0.2s;
+}
+.payment-logo {
+  width: 44px; height: 44px;
+  border-radius: var(--r-md);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 800; color: white;
+  flex-shrink: 0;
+  letter-spacing: -0.3px;
+}
+.payment-info { flex: 1; }
+.payment-name { font-size: 14px; font-weight: 700; color: var(--text); }
+.payment-num { font-size: 12px; color: var(--text-3); margin-top: 1px; }
+.payment-status {
+  font-size: 10px; font-weight: 700; padding: 3px 8px;
+  border-radius: var(--r-full);
+}
+.payment-active { background: var(--success-light); color: var(--success); }
+.payment-inactive { background: var(--gray-1); color: var(--text-3); }
+
+/* ── Social Card ───────────────────────────── */
+.social-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.social-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.social-card:active { transform: scale(0.96); }
+.social-ico {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 10px;
+  color: white;
+}
+.social-name { font-size: 13px; font-weight: 700; color: var(--text); }
+.social-stat { font-size: 11px; color: var(--text-3); margin-top: 3px; }
+.social-btn {
+  margin-top: 10px;
+  padding: 6px 14px;
+  border-radius: var(--r-full);
+  font-size: 11px; font-weight: 700;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.social-btn.connected { background: var(--success-light); color: var(--success); border-color: var(--success-muted); }
+
+/* ── Promo Card ────────────────────────────── */
+.promo-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 14px 16px;
+  margin-bottom: 8px;
+  display: flex; align-items: center; gap: 12px;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+.promo-card:active { transform: scale(0.98); }
+.promo-badge {
+  width: 48px; height: 48px;
+  background: linear-gradient(135deg, #dc2626, #ef4444);
+  border-radius: var(--r-md);
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-size: 16px; font-weight: 800;
+  flex-shrink: 0;
+}
+.promo-info { flex: 1; }
+.promo-name { font-size: 14px; font-weight: 700; color: var(--text); }
+.promo-dates { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+.promo-status {
+  font-size: 10px; font-weight: 700; padding: 3px 8px;
+  border-radius: var(--r-full);
+  cursor: pointer;
+}
+
+/* ── Promo Type Selector (form) ──────────────── */
+.promo-type-opt {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 16px 10px;
+  border: 2px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+.promo-type-opt:hover {
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
+.promo-type-opt.selected {
+  border-color: var(--accent);
+  background: var(--accent-light);
+  box-shadow: 0 0 0 3px rgba(79,70,229,0.15);
+  transform: translateY(-1px);
+}
+
+/* ── Marketing Tabs (hub) ────────────────────── */
+.mkt-tabs {
+  display: flex;
+  gap: 6px;
+  padding: 10px 14px 0;
+  overflow-x: auto;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  scrollbar-width: none;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.mkt-tabs::-webkit-scrollbar { display: none; }
+.mkt-tab {
+  flex-shrink: 0;
+  display: flex; align-items: center; gap: 6px;
+  padding: 10px 14px;
+  border: none;
+  background: transparent;
+  border-bottom: 2px solid transparent;
+  font-weight: 600; font-size: 12px;
+  color: var(--text-3);
+  cursor: pointer;
+  transition: all .2s;
+  white-space: nowrap;
+}
+.mkt-tab:hover { color: var(--text-1); }
+.mkt-tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+.mkt-tab-ico { font-size: 14px; }
+.mkt-tab-count {
+  background: var(--accent);
+  color: white;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: var(--r-full);
+  min-width: 18px;
+  text-align: center;
+}
+.mkt-tab:not(.active) .mkt-tab-count {
+  background: var(--gray-2);
+  color: var(--text-3);
+}
+
+/* ── Form radio (pretty) ─────────────────────── */
+.form-radio {
+  display: flex; align-items: center; justify-content: center;
+  gap: 6px;
+  padding: 12px;
+  border: 2px solid var(--border);
+  border-radius: var(--r-md);
+  cursor: pointer;
+  font-weight: 600; font-size: 13px;
+  transition: all .15s;
+  background: var(--surface);
+}
+.form-radio input { display: none; }
+.form-radio:has(input:checked) {
+  border-color: var(--accent);
+  background: var(--accent-light);
+  color: var(--accent);
+}
+
+/* ── Boutique Components ───────────────────── */
+.boutique-preview {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-xl);
+  overflow: hidden;
+  margin-bottom: 14px;
+  box-shadow: var(--shadow-md);
+}
+.boutique-header {
+  background: linear-gradient(135deg, var(--accent), #6366f1);
+  padding: 24px 16px;
+  color: white;
+  text-align: center;
+}
+.boutique-header h3 { font-size: 18px; font-weight: 800; margin-bottom: 4px; }
+.boutique-header p { font-size: 12px; opacity: 0.7; }
+.boutique-products {
+  padding: 14px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+.boutique-product {
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 12px;
+  text-align: center;
+}
+.boutique-product-img {
+  width: 100%; height: 80px;
+  background: var(--gray-1);
+  border-radius: var(--r-sm);
+  margin-bottom: 8px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-3);
+}
+.boutique-product-name { font-size: 12px; font-weight: 700; color: var(--text); }
+.boutique-product-price { font-size: 13px; font-weight: 800; color: var(--accent); margin-top: 2px; }
+
+/* ── Integration Card ──────────────────────── */
+.integration-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 14px 16px;
+  margin-bottom: 8px;
+  display: flex; align-items: center; gap: 14px;
+}
+.integration-logo {
+  width: 44px; height: 44px;
+  border-radius: var(--r-md);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  font-size: 18px; font-weight: 800;
+}
+.integration-info { flex: 1; }
+.integration-name { font-size: 14px; font-weight: 700; color: var(--text); }
+.integration-desc { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+.integration-btn {
+  padding: 6px 14px;
+  border-radius: var(--r-full);
+  font-size: 11px; font-weight: 700;
+  border: 1px solid var(--accent);
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.integration-btn:active { background: var(--accent-light); }
+.integration-btn.connected {
+  background: var(--success-light);
+  color: var(--success);
+  border-color: var(--success-muted);
+}
+
+/* ── Spectra Enhanced ──────────────────────── */
+.spectra-mode-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.spectra-mode-btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 14px 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.spectra-mode-btn.active {
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
+.spectra-mode-btn:active { transform: scale(0.96); }
+.spectra-mode-ico { margin-bottom: 6px; color: var(--text-2); }
+.spectra-mode-btn.active .spectra-mode-ico { color: var(--accent); }
+.spectra-mode-lbl { font-size: 12px; font-weight: 700; color: var(--text); }
+.spectra-mode-btn.active .spectra-mode-lbl { color: var(--accent); }
+
+.spectra-count-result {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 14px;
+  margin-bottom: 8px;
+  display: flex; align-items: center; gap: 12px;
+}
+.spectra-count-num {
+  width: 40px; height: 40px;
+  background: var(--accent-light);
+  border: 1px solid var(--accent-muted);
+  border-radius: var(--r-md);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; font-weight: 800; color: var(--accent);
+}
+.spectra-count-info { flex: 1; }
+.spectra-count-name { font-size: 14px; font-weight: 700; color: var(--text); }
+.spectra-count-detail { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+
+/* ── Campaign Card ─────────────────────────── */
+.campaign-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 14px 16px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.campaign-card:active { transform: scale(0.98); }
+.campaign-top { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.campaign-type-badge {
+  padding: 3px 8px;
+  border-radius: var(--r-full);
+  font-size: 10px; font-weight: 700;
+}
+.campaign-name { font-size: 14px; font-weight: 700; color: var(--text); }
+.campaign-stats { display: flex; gap: 16px; }
+.campaign-stat { font-size: 11px; color: var(--text-3); }
+.campaign-stat span { font-weight: 700; color: var(--text); }
+
+/* ── Loyalty Section ───────────────────────── */
+.loyalty-card {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%);
+  border-radius: var(--r-xl);
+  padding: 20px;
+  color: white;
+  margin-bottom: 14px;
+  position: relative;
+  overflow: hidden;
+}
+.loyalty-card::before {
+  content: '';
+  position: absolute;
+  top: -20px; right: -20px;
+  width: 100px; height: 100px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 50%;
+}
+.loyalty-title { font-size: 16px; font-weight: 800; margin-bottom: 4px; position: relative; }
+.loyalty-sub { font-size: 12px; opacity: 0.8; position: relative; }
+
+/* ── Order Tracking ────────────────────────── */
+.tracking-timeline {
+  position: relative;
+  padding-left: 24px;
+  margin: 14px 0;
+}
+.tracking-timeline::before {
+  content: '';
+  position: absolute;
+  left: 7px; top: 0; bottom: 0;
+  width: 2px;
+  background: var(--border);
+}
+.tracking-step {
+  position: relative;
+  padding: 8px 0 16px;
+}
+.tracking-step::before {
+  content: '';
+  position: absolute;
+  left: -21px; top: 10px;
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: var(--gray-3);
+  border: 2px solid var(--surface);
+}
+.tracking-step.done::before {
+  background: var(--success);
+}
+.tracking-step.active::before {
+  background: var(--accent);
+  box-shadow: 0 0 0 4px rgba(79,70,229,0.2);
+}
+.tracking-step-title { font-size: 13px; font-weight: 700; color: var(--text); }
+.tracking-step-date { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+
+/* ── Delivery Zone Chips ───────────────────── */
+.zone-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.zone-chip {
+  padding: 5px 12px;
+  border-radius: var(--r-full);
+  font-size: 12px; font-weight: 600;
+  background: var(--gray-1);
+  border: 1px solid var(--border);
+  color: var(--text-2);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.zone-chip:active { transform: scale(0.94); }
+.zone-chip.active { background: var(--accent); border-color: var(--accent); color: white; }
+
+/* ── Stats Row ─────────────────────────────── */
+.stats-row { display: flex; gap: 8px; margin-bottom: 12px; }
+.stat-box {
+  flex: 1;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 12px;
+  text-align: center;
+}
+.stat-val { font-size: 18px; font-weight: 800; color: var(--text); }
+.stat-lbl { font-size: 10px; color: var(--text-3); margin-top: 2px; font-weight: 600; text-transform: uppercase; }
+
+/* ── Location Cards Enhanced ──────────────── */
+.loc-card {
+  position: relative;
+  overflow: hidden;
+}
+.loc-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: transparent;
+  transition: background 0.2s;
+}
+.loc-card.loc-active::after {
+  background: var(--accent);
+}
+
+/* ── Boutique Product Card ────────────────── */
+.boutique-product {
+  border: 2px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 14px;
+  text-align: center;
+  transition: all 0.25s cubic-bezier(.4,0,.2,1);
+  position: relative;
+  overflow: hidden;
+}
+.boutique-product:active {
+  transform: scale(0.96);
+}
+.boutique-product::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--accent);
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+.boutique-product-img {
+  width: 44px;
+  height: 44px;
+  margin: 0 auto 8px;
+  background: var(--gray-1);
+  border-radius: var(--r-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+}
+.boutique-product-name {
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.2;
+  margin-bottom: 4px;
+}
+.boutique-product-price {
+  font-weight: 800;
+  font-size: 14px;
+  color: var(--accent);
+}
+
+/* ── Color Theme Selector ─────────────────── */
+.theme-color-option {
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.theme-color-option:hover {
+  transform: scale(1.15);
+}
+
+/* ── Social Calendar ──────────────────────── */
+.social-calendar-day {
+  transition: background 0.15s;
+  cursor: default;
+}
+.social-calendar-day:hover {
+  background: var(--gray-1);
+  border-radius: 8px;
+}
+
+/* ── Promo Card Enhanced ──────────────────── */
+.promo-card {
+  position: relative;
+  overflow: hidden;
+}
+.promo-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--accent);
+  border-radius: 4px 0 0 4px;
+}
+.promo-badge {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  font-weight: 800;
+  font-size: 14px;
+  padding: 6px 12px;
+  border-radius: var(--r-md);
+  white-space: nowrap;
+  text-align: center;
+  min-width: 60px;
+  box-shadow: 0 2px 8px rgba(239,68,68,.25);
+}
+
+/* ── Campaign Card Enhanced ───────────────── */
+.campaign-card {
+  position: relative;
+  overflow: hidden;
+}
+.campaign-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 80px;
+  height: 80px;
+  background: radial-gradient(circle at top right, var(--accent-light), transparent 70%);
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+/* ── Loyalty Card Enhanced ────────────────── */
+.loyalty-card::after {
+  content: '';
+  position: absolute;
+  bottom: -30px;
+  left: -30px;
+  width: 120px;
+  height: 120px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* ── Integration Card ─────────────────────── */
+.integration-card {
+  transition: all 0.2s;
+  border-left: 3px solid transparent;
+}
+.integration-card:hover {
+  border-left-color: var(--accent);
+}
+.integration-card.connected {
+  border-left-color: var(--success);
+}
+
+/* ── Social Platform Card Enhanced ────────── */
+.social-card {
+  transition: all 0.25s cubic-bezier(.4,0,.2,1);
+  position: relative;
+  overflow: hidden;
+}
+.social-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0,0,0,.08);
+}
+.social-btn {
+  transition: all 0.2s;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: 6px 12px;
+  border-radius: var(--r-full);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--text-2);
+}
+.social-btn:hover {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+.social-btn.connected {
+  background: var(--danger);
+  color: white;
+  border-color: var(--danger);
+}
+
+/* ── Payment Card Enhanced ────────────────── */
+.payment-card {
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.payment-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: transparent;
+}
+.payment-card.active::before {
+  background: var(--success);
+}
+.payment-card:hover {
+  box-shadow: 0 6px 16px rgba(0,0,0,.06);
+}
+
+/* ── Info Row in Detail ───────────────────── */
+.info-row select.input {
+  appearance: auto;
+  background: var(--gray-1);
+  border: 1px solid var(--border);
+  cursor: pointer;
+}
+
+/* ── Smooth page transitions ──────────────── */
+#view > div {
+  animation: fadeSlideIn 0.25s ease-out;
+}
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Better touch feedback ────────────────── */
+.card-tap {
+  -webkit-tap-highlight-color: transparent;
+}
+.card-tap:active {
+  transform: scale(0.985);
+  transition: transform 0.1s;
+}
+
+/* ── Subscription plan cards ──────────────── */
+.plan-card {
+  transition: all 0.3s cubic-bezier(.4,0,.2,1);
+  position: relative;
+  overflow: hidden;
+}
+.plan-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(0,0,0,.1);
+}
+.plan-card.popular::after {
+  content: 'Populaire';
+  position: absolute;
+  top: 12px;
+  right: -28px;
+  background: var(--accent);
+  color: white;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 3px 32px;
+  transform: rotate(45deg);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ── Boutique — Tool cards (Apparence / Domaine / Pixels / Code) ── */
+.boutique-tool-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 12px;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  transition: transform .15s, box-shadow .15s, border-color .15s;
+}
+.boutique-tool-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0,0,0,.06);
+  border-color: var(--accent);
+}
+.btc-ico {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.btc-txt { flex: 1; min-width: 0; }
+.btc-title { font-weight: 700; font-size: 13px; color: var(--text-1); }
+.btc-sub {
+  font-size: 11px;
+  color: var(--text-3);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Boutique — Template option (Feed / Oreo / Make) ── */
+.template-option {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 10px;
+  cursor: pointer;
+  transition: border-color .15s, transform .15s, background .15s;
+}
+.template-option:hover { transform: translateY(-1px); }
+.template-option.selected {
+  border-color: var(--accent);
+  background: var(--accent-light, rgba(79,70,229,.08));
+}
+.template-preview {
+  background: var(--gray-1);
+  border-radius: 8px;
+  padding: 8px;
+  min-height: 90px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+.tpl-bar  { height: 8px; background: var(--gray-3); border-radius: 4px; width: 60%; }
+.tpl-text { height: 6px; background: var(--gray-2); border-radius: 3px; width: 100%; }
+.tpl-text.short { width: 50%; }
+.tpl-img  { flex: 1; min-height: 26px; background: var(--gray-3); border-radius: 4px; }
+.tpl-cta  {
+  height: 12px;
+  background: var(--accent);
+  border-radius: 4px;
+  width: 40%;
+  margin-top: auto;
+}
+.template-label {
+  text-align: center;
+  font-weight: 700;
+  font-size: 13px;
+  margin-top: 2px;
 }

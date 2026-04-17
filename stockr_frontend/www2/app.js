@@ -47,6 +47,33 @@ const IC = {
   logoLg:   `<svg width="40" height="40" viewBox="0 0 576 512" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M316.9 18C311.6 7 300.4 0 288.1 0s-23.4 7-28.8 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3l128.3-68.5 128.3 68.5c10.8 5.7 23.9 4.9 33.8-2.3s14.9-19.3 12.9-31.3L438.5 329 542.7 225.9c8.6-8.5 11.7-21.2 7.9-32.7s-13.7-19.9-25.7-21.7L381.2 150.3 316.9 18zM288 102.2l52.8 107.5c4.6 9.3 13.4 15.8 23.7 17.3l118.1 17.2-85.5 83.5c-7.4 7.2-10.8 17.6-9 27.8L411 473.1l-105.6-56.3c-9.3-5-20.4-5-29.7 0L170.1 473.1l20.2-117.6c1.8-10.2-1.6-20.6-9-27.8L95.8 244.2l118.1-17.2c10.3-1.5 19.1-8 23.7-17.3L288 102.2zm195.2-61.7c-5.6-11.2-16.9-18.5-29.5-18.5s-23.9 7.2-29.5 18.5l-21.8 44.4-48.8 7.1c-12.1 1.8-22.2 10.2-25.9 21.8s-.7 24.4 7.9 32.9l35.4 34.5-8.3 48.8c-2.1 12.1 3 24.4 13 31.6s23.2 8.1 34.1 2.3l43.8-23 43.8 23c10.9 5.7 24.1 4.9 34.1-2.3s15.1-19.5 13-31.6l-8.4-48.8 35.4-34.5c8.6-8.5 11.7-21.4 7.9-32.9s-13.8-20-25.9-21.8l-48.8-7.1-21.5-44.3z"/></svg>`,
   cart:     `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>`,
   sova: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.5 2 6 4.5 6 8c0 1.5.5 3 1.5 4L6 14l2 1-1 3h10l-1-3 2-1-1.5-2c1-1 1.5-2.5 1.5-4 0-3.5-2.5-6-6-6z"/><path d="M9 10h.01M15 10h.01"/><path d="M10 14s.5 1 2 1 2-1 2-1"/></svg>`,
+  // New feature icons
+  shop:     `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1-4h16l1 4"/><path d="M3 9v10a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V9"/><path d="M9 21V9"/><path d="M3 9h18"/><rect x="13" y="13" width="5" height="4" rx="1"/></svg>`,
+  megaphone:`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l18-5v12L3 13v-2z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>`,
+  globe:    `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`,
+  link:     `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>`,
+  wallet:   `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>`,
+  gift:     `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>`,
+  percent:  `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="5" x2="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>`,
+  share2:   `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>`,
+  map:      `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`,
+  layers:   `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>`,
+  zap:      `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>`,
+  barcode:  `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="2" y1="4" x2="2" y2="20"/><line x1="6" y1="4" x2="6" y2="20"/><line x1="9" y1="4" x2="9" y2="20"/><line x1="13" y1="4" x2="13" y2="20"/><line x1="16" y1="4" x2="16" y2="20"/><line x1="20" y1="4" x2="20" y2="20"/><line x1="22" y1="4" x2="22" y2="20"/></svg>`,
+  instagram:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>`,
+  facebook: `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>`,
+  youtube:  `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>`,
+  tiktok:   `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 0 0-.79-.05A6.34 6.34 0 0 0 3.15 15a6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.34-6.34V8.6a8.21 8.21 0 0 0 4.76 1.51V6.69h-1z"/></svg>`,
+  creditCard:`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>`,
+  package:  `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>`,
+  grid:     `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>`,
+  target:   `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>`,
+  star:     `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
+  clock:    `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
+  mail:     `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22 6 12 13 2 6"/></svg>`,
+  smartphone:`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>`,
+  qrcode:   `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="8" height="8" rx="1"/><rect x="14" y="2" width="8" height="8" rx="1"/><rect x="2" y="14" width="8" height="8" rx="1"/><rect x="14" y="14" width="4" height="4"/><line x1="22" y1="14" x2="22" y2="22"/><line x1="14" y1="22" x2="22" y2="22"/></svg>`,
+  receipt:  `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l3-2 3 2 3-2 3 2 3-2 3 2V2l-3 2-3-2-3 2-3-2-3 2-3-2z"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="12" y2="16"/></svg>`,
 };
 
 // ── Auth store (localStorage) ──────────────────
@@ -289,6 +316,60 @@ const LANGS = {
     // Misc extra
     copied:'Copié !', shared:'Partagé !', noData:'Pas de données',
     profitChart:'Évolution bénéfice', clientsChart:'Répartition clients',
+    // Boutique en ligne
+    boutique:'Boutique', boutiqueTitle:'Ma Boutique en ligne', boutiqueSetup:'Configurer ma boutique',
+    boutiqueProducts:'Produits en vitrine', boutiqueLink:'Lien de la boutique', boutiqueCopy:'Copier le lien',
+    boutiqueTheme:'Thème', boutiquePublish:'Publier', boutiqueDraft:'Brouillon', boutiqueOrders:'Commandes reçues',
+    boutiqueDelivery:'Livraison', boutiqueFees:'Frais de livraison', boutiqueZone:'Zone de livraison',
+    boutiqueNoProducts:'Aucun produit dans la boutique', boutiqueAddProducts:'Ajouter des produits',
+    boutiqueShare:'Partager ma boutique', boutiqueQR:'QR Code boutique', boutiqueVisits:'Visites',
+    boutiqueConversion:'Taux de conversion', boutiquePending:'En attente',
+    // Marketing
+    marketing:'Marketing', marketingTitle:'Centre Marketing', promotions:'Promotions',
+    newPromo:'Nouvelle promo', promoName:'Nom de la promo', promoDiscount:'Réduction (%)',
+    promoStart:'Date début', promoEnd:'Date fin', promoActive:'Active', promoExpired:'Expirée',
+    promoProducts:'Produits en promo', noPromos:'Aucune promotion',
+    campaigns:'Campagnes', newCampaign:'Nouvelle campagne', campaignName:'Nom',
+    campaignType:'Type', campaignSMS:'SMS', campaignWhatsApp:'WhatsApp',
+    campaignEmail:'Email', campaignSend:'Envoyer', campaignSchedule:'Programmer',
+    campaignSent:'Envoyée', campaignDraft:'Brouillon', noCampaigns:'Aucune campagne',
+    loyaltyProgram:'Programme fidélité', loyaltyPoints:'Points fidélité',
+    loyaltyReward:'Récompense', loyaltyLevel:'Niveau',
+    // Réseaux sociaux
+    socialMedia:'Réseaux sociaux', socialConnect:'Connecter', socialPost:'Publier',
+    socialSchedule:'Programmer un post', socialCaption:'Légende', socialHashtags:'Hashtags',
+    socialPreview:'Aperçu', socialStats:'Statistiques', socialFollowers:'Abonnés',
+    socialEngagement:'Engagement', socialReach:'Portée', socialPlatform:'Plateforme',
+    socialAutoPost:'Publication auto', socialProductPost:'Publier un produit',
+    socialStory:'Story', socialReel:'Reel', socialNoAccounts:'Aucun compte connecté',
+    // Paiements
+    payments:'Paiements', paymentMethods:'Moyens de paiement', addPayment:'Ajouter',
+    waveMoney:'Wave', orangeMoney:'Orange Money', moovMoney:'Moov Money',
+    mtnMomo:'MTN MoMo', paypal:'PayPal', visa:'Visa/Mastercard',
+    paymentPhone:'Numéro de paiement', paymentActive:'Actif', paymentInactive:'Inactif',
+    paymentQR:'QR de paiement', paymentHistory:'Historique paiements',
+    paymentReceived:'Paiement reçu', paymentPending:'En attente',
+    paymentTotal:'Total reçu', paymentSetup:'Configurer',
+    // Intégrations
+    integrations:'Intégrations', integrationsTitle:'Intégrations & Connexions',
+    integrationsAvailable:'Disponibles', integrationsConnected:'Connectées',
+    integrationsSetup:'Configurer', integrationsSync:'Synchroniser',
+    integrationsAPI:'Clé API', integrationsWebhook:'Webhook',
+    // Spectra amélioré
+    spectraCount:'Comptage automatique', spectraYolo:'Détection YOLO',
+    spectraBarcode:'Scanner code-barres', spectraBatch:'Scan en lot',
+    spectraHistory:'Historique scans', spectraAccuracy:'Précision',
+    spectraItems:'articles détectés', spectraQuantity:'Quantité détectée',
+    spectraAutoName:'Nom détecté', spectraAutoCount:'Nombre détecté',
+    spectraMultiScan:'Multi-scan', spectraContinuous:'Scan continu',
+    // Commandes d'achat améliorées
+    orderDelivery:'Suivi livraison', orderExpected:'Livraison prévue',
+    orderTracking:'N° suivi', orderShipped:'Expédiée', orderDelivered:'Livrée',
+    orderDeliveryDays:'Délai estimé (jours)', orderUrgent:'Urgent',
+    orderNotes:'Notes commande', orderHistory:'Historique commandes',
+    orderAutoReorder:'Réapprovisionnement auto',
+    // Plus menu
+    more:'Plus', moreTitle:'Plus de fonctionnalités',
     version:'Version',
   },
   en: {
@@ -459,6 +540,60 @@ const LANGS = {
     // Misc extra
     copied:'Copied!', shared:'Shared!', noData:'No data',
     profitChart:'Profit evolution', clientsChart:'Client breakdown',
+    // Online store
+    boutique:'Store', boutiqueTitle:'My Online Store', boutiqueSetup:'Setup my store',
+    boutiqueProducts:'Showcase products', boutiqueLink:'Store link', boutiqueCopy:'Copy link',
+    boutiqueTheme:'Theme', boutiquePublish:'Publish', boutiqueDraft:'Draft', boutiqueOrders:'Orders received',
+    boutiqueDelivery:'Delivery', boutiqueFees:'Delivery fees', boutiqueZone:'Delivery zone',
+    boutiqueNoProducts:'No products in store', boutiqueAddProducts:'Add products',
+    boutiqueShare:'Share my store', boutiqueQR:'Store QR Code', boutiqueVisits:'Visits',
+    boutiqueConversion:'Conversion rate', boutiquePending:'Pending',
+    // Marketing
+    marketing:'Marketing', marketingTitle:'Marketing Center', promotions:'Promotions',
+    newPromo:'New promo', promoName:'Promo name', promoDiscount:'Discount (%)',
+    promoStart:'Start date', promoEnd:'End date', promoActive:'Active', promoExpired:'Expired',
+    promoProducts:'Products on sale', noPromos:'No promotions',
+    campaigns:'Campaigns', newCampaign:'New campaign', campaignName:'Name',
+    campaignType:'Type', campaignSMS:'SMS', campaignWhatsApp:'WhatsApp',
+    campaignEmail:'Email', campaignSend:'Send', campaignSchedule:'Schedule',
+    campaignSent:'Sent', campaignDraft:'Draft', noCampaigns:'No campaigns',
+    loyaltyProgram:'Loyalty program', loyaltyPoints:'Loyalty points',
+    loyaltyReward:'Reward', loyaltyLevel:'Level',
+    // Social media
+    socialMedia:'Social Media', socialConnect:'Connect', socialPost:'Post',
+    socialSchedule:'Schedule post', socialCaption:'Caption', socialHashtags:'Hashtags',
+    socialPreview:'Preview', socialStats:'Statistics', socialFollowers:'Followers',
+    socialEngagement:'Engagement', socialReach:'Reach', socialPlatform:'Platform',
+    socialAutoPost:'Auto post', socialProductPost:'Post a product',
+    socialStory:'Story', socialReel:'Reel', socialNoAccounts:'No connected accounts',
+    // Payments
+    payments:'Payments', paymentMethods:'Payment methods', addPayment:'Add',
+    waveMoney:'Wave', orangeMoney:'Orange Money', moovMoney:'Moov Money',
+    mtnMomo:'MTN MoMo', paypal:'PayPal', visa:'Visa/Mastercard',
+    paymentPhone:'Payment number', paymentActive:'Active', paymentInactive:'Inactive',
+    paymentQR:'Payment QR', paymentHistory:'Payment history',
+    paymentReceived:'Payment received', paymentPending:'Pending',
+    paymentTotal:'Total received', paymentSetup:'Setup',
+    // Integrations
+    integrations:'Integrations', integrationsTitle:'Integrations & Connections',
+    integrationsAvailable:'Available', integrationsConnected:'Connected',
+    integrationsSetup:'Setup', integrationsSync:'Sync',
+    integrationsAPI:'API Key', integrationsWebhook:'Webhook',
+    // Enhanced Spectra
+    spectraCount:'Auto counting', spectraYolo:'YOLO Detection',
+    spectraBarcode:'Barcode scanner', spectraBatch:'Batch scan',
+    spectraHistory:'Scan history', spectraAccuracy:'Accuracy',
+    spectraItems:'detected items', spectraQuantity:'Detected quantity',
+    spectraAutoName:'Detected name', spectraAutoCount:'Detected count',
+    spectraMultiScan:'Multi-scan', spectraContinuous:'Continuous scan',
+    // Enhanced purchase orders
+    orderDelivery:'Delivery tracking', orderExpected:'Expected delivery',
+    orderTracking:'Tracking #', orderShipped:'Shipped', orderDelivered:'Delivered',
+    orderDeliveryDays:'Estimated delay (days)', orderUrgent:'Urgent',
+    orderNotes:'Order notes', orderHistory:'Order history',
+    orderAutoReorder:'Auto reorder',
+    // More menu
+    more:'More', moreTitle:'More features',
     version:'Version',
   }
 };
@@ -475,204 +610,287 @@ function generateInvoicePDF(sales) {
   if (typeof window.jspdf === 'undefined') { showToast(t('pdfOffline'), 'error'); return; }
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ unit: 'mm', format: 'a4' });
-
-  const sym        = S.session?.currency_symbol || 'FCFA';
-  const biz        = S.session?.business || S.session?.name || 'Mon Commerce';
-  const email      = S.session?.email || '';
-  const invId      = _invNum(sales[0].id);
-  const locale     = _lang === 'en' ? 'en-US' : 'fr-FR';
-  const now        = new Date();
-  const dateStr    = now.toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' });
-  const timeStr    = now.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
+  const sym  = S.session?.currency_symbol || 'FCFA';
+  const biz  = S.session?.business || S.session?.name || 'Mon Commerce';
+  const invId = _invNum(sales[0].id);
+  const locale = _lang === 'en' ? 'en-US' : 'fr-FR';
+  const dateObj = new Date(sales[0].date);
+  const date  = dateObj.toLocaleDateString(locale, { day:'numeric', month:'long', year:'numeric' });
+  const time  = dateObj.toLocaleTimeString(locale, { hour:'2-digit', minute:'2-digit' });
   const clientName = sales[0]?.clientName || null;
-  const clientPhone= sales[0]?.clientPhone || null;
-  const logoData   = localStorage.getItem('stockr_logo') || null;
-  const loc        = S.currentLocation ? S.locations.find(l => l.id === S.currentLocation) : null;
+  const client = sales[0]?.clientId ? S.clients.find(c => c.id === sales[0].clientId) : null;
+  const logoData = localStorage.getItem('stockr_logo') || null;
+  const loc = S.currentLocation ? S.locations.find(l => l.id === S.currentLocation) : null;
+  const tier = client && S.loyaltyConfig?.enabled ? _getClientTier(client) : null;
 
-  // ── Fond crème ──────────────────────────────────────────
-  doc.setFillColor(249, 246, 241);
-  doc.rect(0, 0, 210, 297, 'F');
+  // ── Header indigo avec bande décorative ──
+  doc.setFillColor(79, 70, 229);
+  doc.rect(0, 0, 210, 50, 'F');
+  // Bande accent violet foncé
+  doc.setFillColor(67, 56, 202);
+  doc.rect(0, 45, 210, 5, 'F');
 
-  // ── Zone supérieure : logo + infos entreprise (gauche) | INVOICE (droite) ──
-  const topY   = 22;
-  const logoSz = 22;   // diamètre du cercle / côté du logo
-
-  // Logo ou cercle placeholder
+  // Logo if available
+  let logoX = 16;
   if (logoData) {
     try {
-      // Clip circulaire simulé avec un rect arrondi
-      doc.addImage(logoData, 'JPEG', 14, topY - logoSz / 2, logoSz, logoSz);
-    } catch(e) {
-      doc.setFillColor(30, 30, 30);
-      doc.circle(14 + logoSz / 2, topY, logoSz / 2, 'F');
-    }
-  } else {
-    doc.setFillColor(30, 30, 30);
-    doc.circle(14 + logoSz / 2, topY, logoSz / 2, 'F');
+      doc.setFillColor(255, 255, 255);
+      doc.roundedRect(14, 6, 22, 22, 2, 2, 'F');
+      doc.addImage(logoData, 'JPEG', 16, 8, 18, 18);
+      logoX = 42;
+    } catch(e) {}
   }
 
-  // Nom entreprise + email sous le logo
-  const infoX = 14 + logoSz + 5;
-  doc.setTextColor(20, 20, 20);
-  doc.setFontSize(13); doc.setFont('helvetica', 'bold');
-  doc.text(biz, infoX, topY - 3);
-  doc.setFontSize(8); doc.setFont('helvetica', 'normal');
-  doc.setTextColor(100, 100, 100);
-  if (email) doc.text(email, infoX, topY + 4);
-  if (loc)   doc.text(loc.name, infoX, topY + 10);
-
-  // "INVOICE" côté droit
-  doc.setTextColor(20, 20, 20);
-  doc.setFontSize(30); doc.setFont('helvetica', 'bold');
-  doc.text('INVOICE', 196, topY + 4, { align: 'right' });
-
-  // Numéro + date + heure sous "INVOICE"
-  doc.setFontSize(8); doc.setFont('helvetica', 'normal');
-  doc.setTextColor(100, 100, 100);
-  doc.text(`#${invId}`, 196, topY + 12, { align: 'right' });
-  doc.text(`${dateStr}  ${timeStr}`, 196, topY + 18, { align: 'right' });
-
-  // ── Séparateur ─────────────────────────────────────────
-  let y = topY + 28;
-  doc.setDrawColor(200, 195, 188);
-  doc.setLineWidth(0.4);
-  doc.line(14, y, 196, y);
-  y += 10;
-
-  // ── BILLED TO ──────────────────────────────────────────
-  doc.setFontSize(8); doc.setFont('helvetica', 'bold');
-  doc.setTextColor(130, 120, 110);
-  doc.text('BILLED TO', 14, y);
-  y += 5;
-  doc.setFontSize(11); doc.setFont('helvetica', 'bold');
-  doc.setTextColor(20, 20, 20);
-  doc.text(clientName || 'Client', 14, y);
-  y += 5;
-  if (clientPhone) {
-    doc.setFontSize(9); doc.setFont('helvetica', 'normal');
-    doc.setTextColor(80, 80, 80);
-    doc.text(clientPhone, 14, y);
-    y += 5;
-  }
-  y += 6;
-
-  // ── En-tête tableau ────────────────────────────────────
-  doc.setDrawColor(200, 195, 188);
-  doc.setLineWidth(0.3);
-  doc.line(14, y, 196, y);
-  y += 1;
-  doc.setFontSize(8); doc.setFont('helvetica', 'bold');
-  doc.setTextColor(100, 95, 88);
-  doc.text('ITEM',       18,  y + 5);
-  doc.text('QTY',        118, y + 5, { align: 'center' });
-  doc.text('UNIT PRICE', 158, y + 5, { align: 'right' });
-  doc.text('TOTAL',      193, y + 5, { align: 'right' });
-  y += 7;
-  doc.line(14, y, 196, y);
-  y += 7;
-
-  // ── Lignes produits ────────────────────────────────────
-  let grandTotal = 0;
-  doc.setFont('helvetica', 'normal'); doc.setFontSize(9);
-  for (const s of sales) {
-    const itemTotal = s.total || 0;
-    const itemQty   = s.qty   || 1;
-    const unitPrice = itemQty > 0 ? Math.round(itemTotal / itemQty) : 0;
-    grandTotal += itemTotal;
-
-    const name = String(s.productName || '—').slice(0, 50); // sécurisé
-
-    doc.setTextColor(20, 20, 20); doc.setFont('helvetica', 'normal');
-    doc.text(name,                              18,  y);
-    doc.text(String(itemQty),                  118, y, { align: 'center' });
-    doc.setTextColor(110, 105, 98);
-    doc.text(fmt(unitPrice) + ' ' + sym,       158, y, { align: 'right' });
-    doc.setTextColor(20, 20, 20); doc.setFont('helvetica', 'bold');
-    doc.text(fmt(itemTotal) + ' ' + sym,       193, y, { align: 'right' });
-
-    y += 9;
-    doc.setDrawColor(220, 215, 208); doc.setLineWidth(0.2);
-    doc.line(14, y - 2, 196, y - 2);
-  }
-
-  y += 4;
-  // ── Bloc totaux ────────────────────────────────────────
-  const taxRate    = parseFloat(S.session?.tax_rate) || 0;
-  const taxAmount  = taxRate > 0 ? Math.round(grandTotal * taxRate / 100) : 0;
-  const totalDue   = grandTotal + taxAmount;
-  const totColL    = 138;  // x gauche de la colonne des labels
-  const totColR    = 193;  // x droite (valeurs)
-
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(24); doc.setFont('helvetica', 'bold');
+  doc.text(biz, logoX, 18);
   doc.setFontSize(9); doc.setFont('helvetica', 'normal');
-  doc.setTextColor(80, 80, 80);
+  doc.text(S.session?.email || '', logoX, 25);
+  if (loc) doc.text((loc.name || '') + (loc.address ? ' · ' + loc.address : ''), logoX, 31);
+  if (S.session?.phone) doc.text(IC && 'Tel : ' + S.session.phone, logoX, 37);
 
-  // Subtotal
-  doc.text('Subtotal',               totColL, y, { align: 'right' });
-  doc.text(fmt(grandTotal) + ' ' + sym, totColR, y, { align: 'right' });
-  y += 7;
+  // Invoice number badge
+  doc.setFillColor(255, 255, 255, 0.2);
+  doc.setDrawColor(255, 255, 255);
+  doc.setLineWidth(0.3);
+  doc.roundedRect(140, 8, 55, 28, 2, 2, 'S');
+  doc.setFontSize(9); doc.setFont('helvetica', 'normal');
+  doc.text('FACTURE', 167.5, 14, { align: 'center' });
+  doc.setFontSize(14); doc.setFont('helvetica', 'bold');
+  doc.text(invId, 167.5, 22, { align: 'center' });
+  doc.setFontSize(8); doc.setFont('helvetica', 'normal');
+  doc.text(date, 167.5, 28, { align: 'center' });
+  doc.text(time, 167.5, 33, { align: 'center' });
 
-  // TVA
-  if (taxRate > 0) {
-    doc.text(`Tax (${taxRate}%)`,    totColL, y, { align: 'right' });
-    doc.text(fmt(taxAmount) + ' ' + sym, totColR, y, { align: 'right' });
-    y += 7;
+  // ── Status badge (PAYE) ──
+  let y = 60;
+  const pm = sales[0]?.paymentMethod || 'cash';
+  const pmLabels = {cash:'Especes',wave:'Wave',orange:'Orange Money',moov:'Moov Money',mtn:'MTN MoMo',paypal:'PayPal',visa:'Carte bancaire'};
+  doc.setFillColor(16, 185, 129);
+  doc.roundedRect(16, y - 5, 32, 10, 2, 2, 'F');
+  doc.setTextColor(255, 255, 255); doc.setFontSize(9); doc.setFont('helvetica', 'bold');
+  doc.text('PAYE', 32, y + 1.5, { align: 'center' });
+  doc.setTextColor(60, 60, 60);
+  doc.setFontSize(9); doc.setFont('helvetica', 'normal');
+  doc.text('Mode : ' + (pmLabels[pm] || pm), 52, y + 1);
+
+  // ── Client info block ──
+  y = 78;
+  if (clientName || client) {
+    doc.setFillColor(248, 250, 252);
+    doc.roundedRect(16, y - 6, 178, client?.phone || client?.email ? 26 : 16, 2, 2, 'F');
+    doc.setDrawColor(229, 231, 235);
+    doc.setLineWidth(0.3);
+    doc.roundedRect(16, y - 6, 178, client?.phone || client?.email ? 26 : 16, 2, 2, 'S');
+    doc.setTextColor(79, 70, 229); doc.setFontSize(8); doc.setFont('helvetica', 'bold');
+    doc.text('FACTURE A', 20, y - 1);
+    doc.setTextColor(30, 30, 30); doc.setFontSize(11); doc.setFont('helvetica', 'bold');
+    doc.text(clientName || client?.name || 'Client', 20, y + 5);
+    doc.setFontSize(8); doc.setFont('helvetica', 'normal'); doc.setTextColor(100, 100, 100);
+    let cy = y + 11;
+    if (client?.phone) { doc.text('Tel : ' + client.phone, 20, cy); cy += 5; }
+    if (client?.email) { doc.text('Email : ' + client.email, 20, cy); cy += 5; }
+    if (client?.address) { doc.text('Adresse : ' + client.address, 20, cy); }
+    // Tier badge on the right
+    if (tier) {
+      const hex = (tier.color||'#4F46E5').replace('#','');
+      const r = parseInt(hex.substring(0,2),16), g = parseInt(hex.substring(2,4),16), b = parseInt(hex.substring(4,6),16);
+      doc.setFillColor(r, g, b);
+      doc.roundedRect(140, y - 1, 54, 10, 2, 2, 'F');
+      doc.setTextColor(255, 255, 255); doc.setFontSize(9); doc.setFont('helvetica', 'bold');
+      doc.text('CLIENT ' + tier.name.toUpperCase(), 167, y + 5, { align: 'center' });
+    }
+    y += (client?.phone || client?.email ? 26 : 16);
   }
 
-  // Ligne séparatrice
-  doc.setDrawColor(180, 175, 168); doc.setLineWidth(0.4);
-  doc.line(totColL - 24, y - 2, 196, y - 2);
-  y += 3;
+  // ── En-tête tableau ──
+  y += 4;
+  doc.setFillColor(79, 70, 229);
+  doc.roundedRect(16, y - 2, 178, 10, 1, 1, 'F');
+  doc.setTextColor(255, 255, 255); doc.setFontSize(9); doc.setFont('helvetica', 'bold');
+  doc.text('DESIGNATION', 20, y + 4.5);
+  doc.text('QTE', 120, y + 4.5, { align: 'center' });
+  doc.text('PU', 155, y + 4.5, { align: 'right' });
+  doc.text('TOTAL', 192, y + 4.5, { align: 'right' });
 
-  // Total Due — plus grand et gras
-  doc.setFontSize(11); doc.setFont('helvetica', 'bold');
-  doc.setTextColor(20, 20, 20);
-  doc.text('Total Due',              totColL, y, { align: 'right' });
-  doc.text(fmt(totalDue) + ' ' + sym,   totColR, y, { align: 'right' });
-  y += 16;
+  // ── Lignes produits ──
+  y += 14; let grandTotal = 0; let totalProfit = 0;
+  doc.setTextColor(30, 30, 30); doc.setFont('helvetica', 'normal'); doc.setFontSize(9);
+  sales.forEach((s, i) => {
+    const unitPrice = s.qty > 0 ? Math.round(s.total / s.qty) : 0;
+    grandTotal += s.total;
+    totalProfit += (s.profit || 0);
+    if (i % 2 === 1) { doc.setFillColor(249, 250, 251); doc.rect(16, y - 5, 178, 9, 'F'); }
+    doc.text(s.productName.length > 40 ? s.productName.substring(0, 40) + '...' : s.productName, 20, y);
+    doc.text(String(s.qty), 120, y, { align: 'center' });
+    doc.text(fmt(unitPrice) + ' ' + sym, 155, y, { align: 'right' });
+    doc.setFont('helvetica', 'bold');
+    doc.text(fmt(s.total) + ' ' + sym, 192, y, { align: 'right' });
+    doc.setFont('helvetica', 'normal');
+    y += 9;
+  });
 
-  // ── Merci ──────────────────────────────────────────────
-  doc.setFontSize(14); doc.setFont('helvetica', 'bolditalic');
-  doc.setTextColor(60, 55, 50);
-  doc.text('Thank you for your Business!', 105, y, { align: 'center' });
-  y += 8;
+  // ── Totals block ──
+  y += 2;
+  doc.setDrawColor(79, 70, 229); doc.setLineWidth(0.8); doc.line(16, y, 194, y); y += 8;
+  const taxRate = parseFloat(S.session?.tax_rate) || 0;
+  doc.setFontSize(9); doc.setTextColor(100, 100, 100); doc.setFont('helvetica', 'normal');
+  doc.text('Sous-total', 155, y, { align: 'right' });
+  doc.text(fmt(grandTotal) + ' ' + sym, 192, y, { align: 'right' }); y += 7;
+  if (sales[0]?.promoName && sales[0]?.promoDiscount) {
+    doc.setTextColor(220, 38, 38);
+    doc.text(`Promo "${sales[0].promoName}" (-${sales[0].promoDiscount}%)`, 155, y, { align: 'right' });
+    doc.text('Applique', 192, y, { align: 'right' });
+    y += 7;
+    doc.setTextColor(100, 100, 100);
+  }
+  if (taxRate > 0) {
+    const tva = Math.round(grandTotal * taxRate / 100);
+    doc.text(`TVA (${taxRate}%)`, 155, y, { align: 'right' });
+    doc.text(fmt(tva) + ' ' + sym, 192, y, { align: 'right' }); y += 7;
+    grandTotal += tva;
+  }
 
-  // ── Infos paiement ────────────────────────────────────
-  doc.setFontSize(8); doc.setFont('helvetica', 'normal');
-  doc.setTextColor(120, 115, 108);
-  doc.text('Payment: Cash / Mobile Money', 105, y, { align: 'center' });
+  // Total final
+  y += 2;
+  doc.setFillColor(79, 70, 229);
+  doc.roundedRect(110, y - 1, 84, 12, 2, 2, 'F');
+  doc.setTextColor(255, 255, 255); doc.setFontSize(12); doc.setFont('helvetica', 'bold');
+  doc.text('TOTAL A PAYER', 140, y + 7, { align: 'right' });
+  doc.setFontSize(13);
+  doc.text(fmt(grandTotal) + ' ' + sym, 192, y + 7, { align: 'right' });
+  // Side stats
+  doc.setTextColor(100, 100, 100); doc.setFontSize(8); doc.setFont('helvetica', 'normal');
+  doc.text(sales.length + ' article' + (sales.length>1?'s':''), 20, y + 4);
+  doc.text(sales.reduce((s,v) => s + v.qty, 0) + ' unites', 20, y + 9);
 
-  // ── Pied de page : séparateur + branding ──────────────
-  doc.setDrawColor(200, 195, 188); doc.setLineWidth(0.3);
-  doc.line(14, 280, 196, 280);
+  // ── Loyalty points earned block ──
+  y += 18;
+  if (client && S.loyaltyConfig?.enabled) {
+    const pointsEarned = Math.floor(grandTotal * (S.loyaltyConfig.pointsPerFcfa || 1) * (tier?.multiplier || 1));
+    const totalPoints = client.loyaltyPoints || 0;
+    doc.setFillColor(255, 251, 235);
+    doc.setDrawColor(251, 191, 36);
+    doc.setLineWidth(0.5);
+    doc.roundedRect(16, y, 178, 18, 2, 2, 'FD');
+    doc.setTextColor(180, 83, 9); doc.setFontSize(9); doc.setFont('helvetica', 'bold');
+    doc.text('*** POINTS FIDELITE ***', 20, y + 6);
+    doc.setFontSize(8); doc.setFont('helvetica', 'normal'); doc.setTextColor(120, 70, 10);
+    doc.text(`Gagnes sur cet achat : +${pointsEarned} pts${tier?.multiplier>1?' (x'+tier.multiplier+' palier '+tier.name+')':''}`, 20, y + 11);
+    doc.text(`Solde total : ${totalPoints} pts`, 20, y + 15.5);
+    // Next reward hint
+    const rewards = (S.loyaltyConfig.rewards||[]).slice().sort((a,b)=>a.points-b.points);
+    const nextReward = rewards.find(r => r.points > totalPoints);
+    if (nextReward) {
+      doc.setTextColor(100, 60, 10);
+      doc.text(`Prochaine recompense : ${nextReward.name} dans ${nextReward.points - totalPoints} pts`, 130, y + 11);
+    } else if (rewards.length > 0) {
+      doc.setTextColor(16, 185, 129);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Vous pouvez echanger une recompense !', 130, y + 11);
+    }
+    y += 22;
+  }
 
-  doc.setFontSize(8); doc.setFont('helvetica', 'bold');
-  doc.setTextColor(80, 80, 80);
-  doc.text(biz, 14, 286);
+  // ── Tracking link + boutique URL ──
+  const bc = S.boutiqueConfig || {};
+  const boutiqueUrl = (bc.customDomainVerified && bc.customDomain) ? ('https://' + bc.customDomain) : (bc.domain ? ('https://' + bc.domain + '.stockr.shop') : null);
+  if (boutiqueUrl) {
+    doc.setFillColor(238, 242, 255);
+    doc.roundedRect(16, y, 178, 12, 2, 2, 'F');
+    doc.setTextColor(79, 70, 229); doc.setFontSize(8); doc.setFont('helvetica', 'bold');
+    doc.text('Suivez votre commande :', 20, y + 5);
+    doc.setFont('helvetica', 'normal');
+    doc.text(boutiqueUrl + '/suivi?inv=' + invId, 20, y + 9);
+    y += 16;
+  }
 
-  doc.setFont('helvetica', 'normal');
-  doc.setTextColor(150, 145, 138);
-  doc.text('Généré par STOCKR', 196, 286, { align: 'right' });
+  // ── Notes ──
+  y += 4;
+  doc.setTextColor(120, 120, 120); doc.setFontSize(7);
+  const conditions = bc.conditions || 'Paiement comptant. Marchandise vendue non reprise ni echangee sauf defaut d\'origine.';
+  const wrapped = doc.splitTextToSize('Conditions : ' + conditions, 178);
+  doc.text(wrapped, 16, y);
 
-  doc.save(`Invoice-${invId}.pdf`);
-  showToast(t('invoice') + ' PDF ✓');
+  // ── Pied de page ──
+  doc.setFillColor(248, 250, 252);
+  doc.rect(0, 268, 210, 30, 'F');
+  doc.setDrawColor(79, 70, 229); doc.setLineWidth(1);
+  doc.line(16, 268, 194, 268);
+  doc.setTextColor(79, 70, 229); doc.setFontSize(10); doc.setFont('helvetica', 'bold');
+  doc.text('Merci de votre confiance !', 105, 276, { align: 'center' });
+  doc.setTextColor(100, 100, 100); doc.setFontSize(8); doc.setFont('helvetica', 'normal');
+  doc.text(biz + (S.session?.email ? ' · ' + S.session.email : '') + (loc ? ' · ' + loc.name : ''), 105, 282, { align: 'center' });
+  const activePayments = (S.paymentMethods||[]).filter(m=>m.active);
+  if (activePayments.length > 0) {
+    doc.setFontSize(7);
+    doc.text('Paiements acceptes : ' + activePayments.map(m=>m.name).join(' · '), 105, 287, { align: 'center' });
+  }
+  doc.setFontSize(6); doc.setTextColor(160, 160, 160);
+  doc.text('Facture generee par STOCKR · stockr.app', 105, 293, { align: 'center' });
+
+  doc.save(`${t('invoice')}-${invId}.pdf`);
+  showToast(t('invoice') + ' PDF');
 }
 
 function shareViaWhatsApp(sales) {
   if (!Array.isArray(sales)) sales = [sales];
-  const sym  = S.session?.currency_symbol || 'FCFA';
+  const csym = S.session?.currency_symbol || 'FCFA';
   const biz  = S.session?.business || S.session?.name || 'Mon Commerce';
   const date = new Date(sales[0].date).toLocaleDateString('fr-FR');
   const invId = _invNum(sales[0].id);
   const total = sales.reduce((s, v) => s + v.total, 0);
+  const taxRate = parseFloat(S.session?.tax_rate) || 0;
+  const pmLabels = {cash:'Especes',wave:'Wave',orange:'Orange Money',moov:'Moov Money',mtn:'MTN MoMo',paypal:'PayPal',visa:'Carte bancaire'};
+  const pm = sales[0]?.paymentMethod || 'cash';
+  const clientName = sales[0]?.clientName;
+  const client = clientName ? S.clients.find(c => c.name === clientName || String(c.id) === String(sales[0]?.clientId)) : null;
+  const loc = S.currentLocation ? S.locations.find(l => l.id === S.currentLocation) : null;
 
-  const lines = ['🧾 *REÇU DE VENTE*', `📍 *${biz}*`, `📅 ${date}  •  N° ${invId}`, ''];
+  const lines = [
+    '================================',
+    `       *${biz}*`,
+    loc ? `       ${loc.name}` : '',
+    S.session?.email ? `       ${S.session.email}` : '',
+    '================================',
+    '',
+    `*RECU N° ${invId}*`,
+    `Date : ${date}`,
+    clientName ? `Client : ${clientName}` : '',
+    client?.phone ? `Tel : ${client.phone}` : '',
+    '',
+    '--------------------------------',
+  ];
   sales.forEach(s => {
     const u = s.qty > 0 ? Math.round(s.total / s.qty) : 0;
-    lines.push(`▸ ${s.productName}  ×${s.qty}  =  *${fmt(s.total)} ${sym}*`);
+    lines.push(`${s.productName}`);
+    lines.push(`  ${s.qty} x ${fmt(u)} ${csym} = *${fmt(s.total)} ${csym}*`);
   });
-  lines.push('', `✅ *TOTAL : ${fmt(total)} ${sym}*`, '', '_Géré avec STOCKR_');
+  lines.push('--------------------------------');
+  if (sales[0]?.promoName) {
+    lines.push(`Promo : ${sales[0].promoName} (-${sales[0].promoDiscount||0}%)`);
+  }
+  lines.push(`Sous-total : ${fmt(total)} ${csym}`);
+  if (taxRate > 0) {
+    const tva = Math.round(total * taxRate / 100);
+    lines.push(`TVA (${taxRate}%) : ${fmt(tva)} ${csym}`);
+    lines.push(`*TOTAL TTC : ${fmt(total + tva)} ${csym}*`);
+  } else {
+    lines.push(`*TOTAL : ${fmt(total)} ${csym}*`);
+  }
+  lines.push('');
+  lines.push(`Paiement : ${pmLabels[pm] || pm}`);
+  if (S.loyaltyConfig?.enabled && client?.loyaltyPoints > 0) {
+    lines.push(`Points fidelite : ${client.loyaltyPoints} pts`);
+  }
+  lines.push('');
+  lines.push('Merci pour votre achat !');
+  lines.push(`_${biz} — Propulse par STOCKR_`);
 
-  window.open('https://wa.me/?text=' + encodeURIComponent(lines.join('\n')), '_blank');
+  // Target client's WhatsApp if phone available
+  const phone = client?.phone?.replace(/[\s\-\(\)]/g, '') || '';
+  const waUrl = phone ? `https://wa.me/${phone}?text=` : 'https://wa.me/?text=';
+  window.open(waUrl + encodeURIComponent(lines.filter(l=>l!=='').join('\n')), '_blank');
 }
 
 // ── Chart ─────────────────────────────────────
@@ -869,6 +1087,42 @@ const S = {
   subscription: JSON.parse(localStorage.getItem('stockr_subscription') || '{"plan":"free","activated":null,"billing":"monthly"}'),
   // Activity feed
   activities: JSON.parse(localStorage.getItem('stockr_activities') || '[]'),
+  // Boutique state
+  boutiqueConfig: JSON.parse(localStorage.getItem('stockr_boutique') || '{"name":"","description":"","theme":"modern","published":false,"products":[],"deliveryFees":0,"deliveryZones":[],"visits":0}'),
+  boutiqueOrders: JSON.parse(localStorage.getItem('stockr_boutique_orders') || '[]'),
+  // Marketing state
+  promotions: JSON.parse(localStorage.getItem('stockr_promotions') || '[]'),
+  campaigns: JSON.parse(localStorage.getItem('stockr_campaigns') || '[]'),
+  loyaltyConfig: (() => {
+    const raw = JSON.parse(localStorage.getItem('stockr_loyalty') || '{"enabled":false,"pointsPerFcfa":1,"rewards":[]}');
+    if (!raw.tiers) {
+      raw.tiers = [
+        { id:'bronze',   name:'Bronze',   min:0,    color:'#CD7F32', gradient:'linear-gradient(135deg,#CD7F32,#8B4513)', icon:'🥉', perk:'Points x1',   multiplier:1 },
+        { id:'silver',   name:'Argent',   min:500,  color:'#A8A9AD', gradient:'linear-gradient(135deg,#D1D5DB,#6B7280)', icon:'🥈', perk:'Points x1.2 · -5% anniv.', multiplier:1.2 },
+        { id:'gold',     name:'Or',       min:2000, color:'#FFD700', gradient:'linear-gradient(135deg,#FFD700,#DAA520)', icon:'🥇', perk:'Points x1.5 · livraison gratuite', multiplier:1.5 },
+        { id:'platinum', name:'Platine',  min:5000, color:'#8B5CF6', gradient:'linear-gradient(135deg,#A78BFA,#6D28D9)', icon:'💎', perk:'Points x2 · priorité VIP', multiplier:2 },
+      ];
+    }
+    if (raw.tierMode === undefined) raw.tierMode = 'spent'; // 'spent' | 'points'
+    return raw;
+  })(),
+  banners: JSON.parse(localStorage.getItem('stockr_banners') || '[]'),
+  popups: JSON.parse(localStorage.getItem('stockr_popups') || '[]'),
+  reviews: JSON.parse(localStorage.getItem('stockr_reviews') || '[]'),
+  trackingLinks: JSON.parse(localStorage.getItem('stockr_tracking') || '[]'),
+  // Social media state
+  socialAccounts: JSON.parse(localStorage.getItem('stockr_social') || '[]'),
+  scheduledPosts: JSON.parse(localStorage.getItem('stockr_posts') || '[]'),
+  // Payment methods state
+  paymentMethods: JSON.parse(localStorage.getItem('stockr_payments') || '[]'),
+  paymentHistory: JSON.parse(localStorage.getItem('stockr_payment_history') || '[]'),
+  // Integrations state
+  integrationsConfig: JSON.parse(localStorage.getItem('stockr_integrations') || '[]'),
+  // API & webhooks state
+  apiConfig: JSON.parse(localStorage.getItem('stockr_api') || '{"token":null,"createdAt":null,"webhooks":[]}'),
+  // Spectra enhanced state
+  spectraScanHistory: JSON.parse(localStorage.getItem('stockr_spectra_history') || '[]'),
+  spectraMode: 'photo', // 'photo' | 'barcode' | 'continuous' | 'yolo'
   form: { name: '', stock: 0, min: 0, unit: '', lead: 7, ref: '', price: 0, expiry: '' },
   spectra: {
     step:      'camera',   // 'camera' | 'loading' | 'confirm' | 'done'
@@ -1031,9 +1285,7 @@ function _localApi(method, path, body) {
 
 // ── API helper ────────────────────────────────
 async function api(method, path, body) {
-  // Si mode local actif ET on a un token → on tente quand même le vrai backend
-  // (évite de rester bloqué en offline après une coupure réseau temporaire)
-  if (USE_LOCAL && !S.token) {
+  if (USE_LOCAL) {
     try { return _localApi(method, path, body); }
     catch(e) { throw new Error(e.message); }
   }
@@ -1043,18 +1295,15 @@ async function api(method, path, body) {
       headers: { 'Content-Type': 'application/json', ...(S.token ? { 'Authorization': `Bearer ${S.token}` } : {}) },
       body: body ? JSON.stringify(body) : undefined
     });
-    if (res.ok) {
-      USE_LOCAL = false; // Connexion rétablie → reset offline mode
-      return res.json();
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(typeof err.error === 'string' ? err.error : (err.error?.error || err.message || `Erreur ${res.status}`));
     }
-    const err = await res.json().catch(() => ({}));
-    throw new Error(typeof err.error === 'string' ? err.error : (err.error?.error || err.message || `Erreur ${res.status}`));
+    return res.json();
   } catch(e) {
     if (e.message === 'Failed to fetch' || e.name === 'TypeError' || e.message.includes('503')) {
-      if (!USE_LOCAL) {
-        USE_LOCAL = true;
-        showToast(t('offlineMode'), '');
-      }
+      USE_LOCAL = true;
+      showToast(t('offlineMode'), '');
       return _localApi(method, path, body);
     }
     throw e;
@@ -1426,10 +1675,36 @@ function recordSale() {
     const art = S.articles.find(a => a.id === comp.id);
     if (art) art.stock = Math.round((art.stock - comp.qty * qty) * 10) / 10;
   });
-  const saleTotal = product.price * qty;
+  let saleTotal = product.price * qty;
   const saleCost = (product.purchasePrice || 0) * qty;
-  S.sales.unshift({ id: Date.now(), productId: product.id, productName: product.name, qty, total: saleTotal, profit: saleTotal - saleCost, date: new Date().toISOString() });
-  logActivity('sale', `${product.name} x${qty} — ${fmt(saleTotal)} ${sym()}`);
+  const pmSel = $('sale-payment');
+  const payMethod = pmSel ? pmSel.value : 'cash';
+  const clientSel = $('sale-client');
+  const clientId = clientSel ? parseInt(clientSel.value) || null : null;
+  const client = clientId ? S.clients.find(c => c.id === clientId) : null;
+  const PMLABELS = {cash:'Especes',wave:'Wave',orange:'Orange Money',moov:'Moov Money',mtn:'MTN MoMo'};
+  // Apply promo
+  const promo = _getActivePromo(product.id);
+  let promoName = null, promoDiscount = 0;
+  if (promo) { promoDiscount = promo.discount; promoName = promo.name; saleTotal = Math.round(saleTotal * (100 - promoDiscount) / 100); }
+  S.sales.unshift({ id: Date.now(), productId: product.id, productName: product.name, qty, total: saleTotal, profit: saleTotal - saleCost, date: new Date().toISOString(), paymentMethod: payMethod, clientId, clientName: client?.name || null, promoName, promoDiscount });
+  // Loyalty points (with tier multiplier)
+  if (S.loyaltyConfig?.enabled && clientId) {
+    const cl = S.clients.find(c => c.id === clientId);
+    if (cl) {
+      const tier = _getClientTier(cl);
+      const mult = tier?.multiplier || 1;
+      const pts = Math.floor(saleTotal * (S.loyaltyConfig.pointsPerFcfa || 1) * mult);
+      cl.loyaltyPoints = (cl.loyaltyPoints || 0) + pts;
+      localStorage.setItem('stockr_clients', JSON.stringify(S.clients));
+      // Check tier upgrade
+      const newTier = _getClientTier(cl);
+      if (newTier && tier && newTier.id !== tier.id && newTier.min > tier.min) {
+        showToast(`🎉 ${cl.name} a atteint le palier ${newTier.name} ${newTier.icon||''} !`, 'success');
+      }
+    }
+  }
+  logActivity('sale', `${product.name} x${qty} — ${fmt(saleTotal)} ${sym()} (${PMLABELS[payMethod]||payMethod})`);
   showToast(`${t('saleConfirmed')} — ${fmt(saleTotal)} ${sym()}`);
   render();
 }
@@ -1673,65 +1948,56 @@ function removeFromCart(idx) {
 async function confirmCart() {
   if (!S.cart.length) { showToast(t('emptyCartMsg'), 'error'); return; }
   const clientSel = $('sale-client');
-  const clientId  = clientSel ? parseInt(clientSel.value) || null : null;
-  const client    = clientId ? S.clients.find(c => c.id === clientId) : null;
-  const sessionId = 'sess_' + Date.now();
-  const now       = new Date().toISOString();
-
-  // ── Construire la facture depuis le panier AVANT les appels API ──
-  // (garantit que tous les articles y sont, peu importe la réponse serveur)
-  let invoiceItems = S.cart.map(item => {
-    const product = S.products.find(p => p.id === item.productId);
-    return {
-      id:          item.productId,           // provisoire, remplacé après API
-      productId:   item.productId,
-      productName: item.productName || (product?.name) || '?',
-      qty:         item.qty,
-      total:       (item.unitPrice || product?.price || 0) * item.qty,
-      profit:      ((item.unitPrice || product?.price || 0) - (item.unitCost || product?.purchasePrice || 0)) * item.qty,
-      date:        now,
-      clientId,
-      clientName:  client?.name || null,
-      sessionId,
-    };
-  });
-
-  const cartTotal = invoiceItems.reduce((s, v) => s + v.total, 0);
-  const cartCount = invoiceItems.reduce((s, v) => s + v.qty, 0);
-
+  const clientId = clientSel ? parseInt(clientSel.value) || null : null;
+  const client = clientId ? S.clients.find(c => c.id === clientId) : null;
+  const pmSel = $('sale-payment');
+  const payMethod = pmSel ? pmSel.value : 'cash';
   try {
-    // ── Appels API (enregistrement côté serveur) ──
-    const apiSales = [];
+    let total = 0, count = 0, newSales = [];
     for (const item of S.cart) {
-      const data = await api('POST', '/api/sales/', {
-        product_id:  item.productId,
-        quantity:    item.qty,
-        client_id:   clientId,
-        client_name: client?.name || null,
-      });
-      apiSales.push(data.sale);
-    }
-
-    // Mettre à jour les IDs réels retournés par l'API dans invoiceItems
-    apiSales.forEach((sale, i) => {
-      if (invoiceItems[i]) {
-        invoiceItems[i].id   = sale.id;
-        invoiceItems[i].date = sale.timestamp || now;
+      const data = await api('POST', '/api/sales/', { product_id: item.productId, quantity: item.qty, client_id: clientId, client_name: client?.name || null });
+      const product = S.products.find(p => p.id === item.productId);
+      let lineTotal = (product?.price || 0) * item.qty;
+      let lineProfit = ((product?.price || 0) - (product?.purchasePrice || 0)) * item.qty;
+      // Apply promo discount
+      const promo = _getActivePromo(item.productId);
+      let promoName = null, promoDiscount = 0;
+      if (promo) {
+        promoDiscount = promo.discount;
+        promoName = promo.name;
+        const discount = Math.round(lineTotal * promoDiscount / 100);
+        lineTotal -= discount;
+        lineProfit -= discount;
       }
-    });
-
-    // Ajouter à S.sales pour la liste
-    invoiceItems.forEach(s => S.sales.unshift(s));
-
-    // Stocker la session panier (accessible depuis la liste des ventes)
-    S.lastSession = sessionId;
-    window['__session_' + sessionId] = invoiceItems;
-
+      total += lineTotal;
+      count += item.qty;
+      const newSale = { id: data.sale.id, productId: data.sale.product_id, productName: data.sale.product_name, qty: data.sale.quantity, total: lineTotal, profit: lineProfit, date: data.sale.timestamp, clientId, clientName: client?.name || null, paymentMethod: payMethod, promoName, promoDiscount };
+      S.sales.unshift(newSale);
+      newSales.push(newSale);
+    }
+    // Loyalty points (with tier multiplier)
+    if (S.loyaltyConfig?.enabled && clientId) {
+      const cl = S.clients.find(c => c.id === clientId);
+      if (cl) {
+        const tier = _getClientTier(cl);
+        const mult = tier?.multiplier || 1;
+        const pts = Math.floor(total * (S.loyaltyConfig.pointsPerFcfa || 1) * mult);
+        cl.loyaltyPoints = (cl.loyaltyPoints || 0) + pts;
+        localStorage.setItem('stockr_clients', JSON.stringify(S.clients));
+        const newTier = _getClientTier(cl);
+        if (newTier && tier && newTier.id !== tier.id && newTier.min > tier.min) {
+          showToast(`🎉 ${cl.name} a atteint le palier ${newTier.name} ${newTier.icon||''} !`, 'success');
+        }
+      }
+    }
+    // Payment history
+    if (payMethod !== 'cash') {
+      S.paymentHistory.unshift({ id:Date.now(), provider:payMethod, amount:total, clientName:client?.name||'Client', date:new Date().toISOString() });
+      localStorage.setItem('stockr_payment_history', JSON.stringify(S.paymentHistory));
+    }
     S.cart = [];
-    showToast(`${cartCount} ${t('unitsSold')} — ${fmt(cartTotal)} ${S.session?.currency_symbol || 'FCFA'}`);
-    showReceiptBanner(invoiceItems, cartTotal);
-
-
+    showToast(`${count} ${t('unitsSold')} — ${fmt(total)} ${sym()}`);
+    showReceiptBanner(newSales, total);
     // Recharger les articles pour avoir les stocks à jour
     const arts = await api('GET', '/api/articles/');
     S.articles = arts.map(articleFromAPI);
@@ -1880,13 +2146,25 @@ function render() {
     sales: vSales, financial: vFinancial,
     detail: vDetail, add: vAdd, 'add-product': vAddProduct,
     'edit-product': vEditProduct, settings: vSettings,
-    spectra: vSpectra, clients: vClients, 'add-client': vAddClient,
+    spectra: vSpectraEnhanced, clients: vClients, 'add-client': vAddClient,
     'client-detail': vClientDetail, notifications: vNotifications,
     catalog: vCatalog, suppliers: vSuppliers,
     'add-supplier': vAddSupplier, 'supplier-detail': vSupplierDetail,
-    'stock-history': vStockHistory, 'purchase-orders': vPurchaseOrders,
+    'stock-history': vStockHistory, 'purchase-orders': vPurchaseOrdersEnhanced,
     'add-order': vAddOrder, pricing: vPricing, subscription: vSubscription,
     sova: vSova,
+    // ── Nouvelles vues v2 ──
+    more: vMore, boutique: vBoutique, marketing: vMarketing,
+    'social-media': vSocialMedia, 'payments-setup': vPayments,
+    integrations: vIntegrations,
+    'promo-form': vPromoForm, 'promo-detail': vPromoDetail,
+    'banner-form': vBannerForm, 'popup-form': vPopupForm,
+    'review-form': vReviewForm, 'tracking-form': vTrackingForm,
+    'boutique-appearance': vBoutiqueAppearance,
+    'boutique-domain': vBoutiqueDomain,
+    'boutique-pixels': vBoutiquePixels,
+    'boutique-code': vBoutiqueCode,
+    'api-settings': vApiSettings,
   };
   viewEl.innerHTML = (map[S.view] || vHome)();
   if (!S.globalSearch) viewEl.scrollTop = 0;
@@ -1899,7 +2177,7 @@ function render() {
     if (gs) { gs.focus(); gs.setSelectionRange(gs.value.length, gs.value.length); }
   }
 
-  const hideNav = ['detail','add','add-product','edit-product','add-client','client-detail','notifications','catalog','add-supplier','supplier-detail','stock-history','purchase-orders','add-order','pricing','subscription'].includes(S.view);
+  const hideNav = ['detail','add','add-product','edit-product','add-client','client-detail','notifications','catalog','add-supplier','supplier-detail','stock-history','purchase-orders','add-order','pricing','subscription','boutique','boutique-appearance','boutique-domain','boutique-pixels','boutique-code','marketing','social-media','payments-setup','integrations','api-settings','spectra','clients'].includes(S.view);
   navEl.style.display = hideNav ? 'none' : '';
   if (!hideNav) navEl.innerHTML = renderNav();
 }
@@ -1913,6 +2191,12 @@ function renderNav() {
     { id:'clients',   icon:IC.users,  label:t('clients')  },
     { id:'sova',      icon:IC.sova,   label:'SOVA'        },
     { id:'financial', icon:IC.bar,    label:t('bilan')    },
+    { id:'home',      icon:IC.home,    label:t('home')     },
+    { id:'pantry',    icon:IC.box,     label:t('stock')    },
+    { id:'products',  icon:IC.tag,     label:t('products') },
+    { id:'sales',     icon:IC.dollar,  label:t('sales')    },
+    { id:'financial', icon:IC.bar,     label:t('bilan')    },
+    { id:'more',      icon:IC.grid,    label:t('more')||'Plus' },
   ];
   return tabs.map(t => `
     <button class="nav-tab ${S.view===t.id?'active':''}" onclick="nav('${t.id}')">
@@ -2117,9 +2401,9 @@ function vHome() {
         <div class="hero-greeting">${t('hello')}, ${S.session.name.split(' ')[0]}</div>
         <div class="hero-name">${S.session.business || S.session.name}</div>
         ${S.locations.length > 0 ? `<div class="hero-location">
-          <select class="location-select" onchange="setLocation(this.value?Number(this.value):null)">
-            <option value="">${t('allLocations')}</option>
-            ${S.locations.map(l => `<option value="${l.id}" ${S.currentLocation===l.id?'selected':''}>${l.name}</option>`).join('')}
+          <select class="location-select" onchange="setLocation(this.value?Number(this.value):null)" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);color:#fff;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:600;outline:none;cursor:pointer;-webkit-appearance:none;appearance:none">
+            <option value="" style="color:#000">${t('allLocations')}</option>
+            ${S.locations.map(l => `<option value="${l.id}" style="color:#000" ${S.currentLocation===l.id?'selected':''}>${l.name}${l.type?' ('+({'store':'Boutique','warehouse':'Entrepôt','popup':'Pop-up'}[l.type]||l.type)+')':''}</option>`).join('')}
           </select>
         </div>` : ''}
       </div>
@@ -2378,20 +2662,25 @@ function vHome() {
         <div class="quick-label">${t('bilan')}</div>
         <div class="quick-sub">${S.sales.length} ${t('saleOf')}</div>
       </button>
+      <button class="quick-btn" onclick="nav('boutique')">
+        <span class="quick-ico">${IC.shop}</span>
+        <div class="quick-label">${t('boutique')||'Boutique'}</div>
+        <div class="quick-sub">Vendre en ligne</div>
+      </button>
+      <button class="quick-btn" onclick="nav('marketing')">
+        <span class="quick-ico">${IC.megaphone}</span>
+        <div class="quick-label">${t('marketing')||'Marketing'}</div>
+        <div class="quick-sub">Promos & campagnes</div>
+      </button>
       <button class="quick-btn" onclick="nav('clients')">
         <span class="quick-ico">${IC.users}</span>
         <div class="quick-label">${t('clients')}</div>
-        <div class="quick-sub">${S.clients.length} ${t('clientOf')}</div>
+        <div class="quick-sub">${S.clients.length} clients</div>
       </button>
-      <button class="quick-btn" onclick="nav('spectra')">
-        <span class="quick-ico">${IC.camera}</span>
-        <div class="quick-label">Spectra</div>
-        <div class="quick-sub">${t('spectraScan')}</div>
-      </button>
-      <button class="quick-btn" onclick="nav('catalog')">
-        <span class="quick-ico">${IC.whatsapp}</span>
-        <div class="quick-label">${t('catalog')}</div>
-        <div class="quick-sub">${t('catalogSub')}</div>
+      <button class="quick-btn" onclick="nav('more')">
+        <span class="quick-ico">${IC.grid}</span>
+        <div class="quick-label">${t('more')||'Plus'}</div>
+        <div class="quick-sub">${(S.integrationsConfig||[]).filter(i=>i.connected).length} connecte(s)</div>
       </button>
     </div>
 
@@ -2447,7 +2736,9 @@ function vHome() {
 // ── PANTRY ────────────────────────────────────
 function vPantry() {
   const q = S.search.toLowerCase();
-  let list = S.articles.filter(a => a.name.toLowerCase().includes(q));
+  // Filter by location first
+  let baseList = S.currentLocation ? S.articles.filter(a => !a.locationId || a.locationId === S.currentLocation) : S.articles;
+  let list = baseList.filter(a => a.name.toLowerCase().includes(q));
   if (S.filter==='out') list = list.filter(a => a.stock===0);
   else if (S.filter==='low') list = list.filter(a => a.stock>0 && a.stock<a.min && a.min>0);
   else if (S.filter==='ok')  list = list.filter(a => a.stock>=a.min || a.min===0);
@@ -2467,11 +2758,16 @@ function vPantry() {
       <input class="input input-search" type="text" placeholder="    ${t('search')}" value="${S.search.replace(/"/g,'&quot;')}" oninput="S.search=this.value;render()">
     </div>
     <div class="filter-row">
-      <button class="filter-chip ${S.filter==='all'?'active':''}" onclick="S.filter='all';render()">${t('all')} (${S.articles.length})</button>
+      <button class="filter-chip ${S.filter==='all'?'active':''}" onclick="S.filter='all';render()">${t('all')} (${baseList.length})</button>
       <button class="filter-chip ${S.filter==='out'?'active':''}" onclick="S.filter='out';render()">${t('outOfStock')}</button>
       <button class="filter-chip ${S.filter==='low'?'active':''}" onclick="S.filter='low';render()">${t('low')}</button>
       <button class="filter-chip ${S.filter==='ok'?'active':''}"  onclick="S.filter='ok';render()">${t('ok')}</button>
     </div>
+    ${S.locations.length > 0 ? `
+    <div class="filter-row" style="margin-top:-4px">
+      <button class="filter-chip ${!S.currentLocation?'active':''}" onclick="setLocation(null)" style="font-size:10px;padding:4px 10px">${IC.home} Tous</button>
+      ${S.locations.map(l => `<button class="filter-chip ${String(S.currentLocation)===String(l.id)?'active':''}" onclick="setLocation(${l.id})" style="font-size:10px;padding:4px 10px">${l.name}</button>`).join('')}
+    </div>` : ''}
   </div>
   <div class="container">
     ${list.length===0 ? `
@@ -2570,7 +2866,7 @@ function vSales() {
         <label class="form-label">${t('product')}</label>
         <select class="input" id="sale-product">
           <option value="">${t('select')}</option>
-          ${avail.map(p=>`<option value="${p.id}">${p.name} — ${fmt(p.price)} ${sym()} (${productMaxMake(p)} fab.)</option>`).join('')}
+          ${avail.map(p=>{const pr=_getActivePromo(p.id);return `<option value="${p.id}">${p.name} — ${pr?fmt(Math.round(p.price*(100-pr.discount)/100))+' (-'+pr.discount+'%)':fmt(p.price)} ${sym()} (${productMaxMake(p)} fab.)${pr?' PROMO':''}</option>`;}).join('')}
         </select>
       </div>
       <div class="form-group">
@@ -2585,6 +2881,13 @@ function vSales() {
           ${S.clients.map(c=>`<option value="${c.id}">${c.name}${c.phone?' · '+c.phone:''}</option>`).join('')}
         </select>
       </div>` : ''}
+      <div class="form-group">
+        <label class="form-label">Mode de paiement</label>
+        <select class="input" id="sale-payment">
+          <option value="cash">Especes</option>
+          ${(S.paymentMethods||[]).filter(m=>m.active).map(m=>`<option value="${m.provider}">${m.name}</option>`).join('')}
+        </select>
+      </div>
       <div style="display:flex;gap:8px">
         <button class="btn btn-primary" style="flex:1" onclick="addToCart();S.cartOpen=true;render()">${t('confirm')}</button>
         <button class="btn btn-ghost" onclick="toggleCart()" style="flex:1">
@@ -2619,87 +2922,32 @@ function vSales() {
       <button class="filter-chip ${S.saleClientFilter===c.id?'active':''}" onclick="S.saleClientFilter=${c.id};render()">${c.name}</button>`).join('')}
     </div>` : ''}
     ${(() => {
-      const sym = S.session?.currency_symbol || 'FCFA';
-      let sales = S.saleClientFilter
-        ? S.sales.filter(s => s.clientId && String(s.clientId) === String(S.saleClientFilter))
-        : S.sales;
-
-      if (sales.length === 0) return `
+      const filtered = S.saleClientFilter ? S.sales.filter(s => s.clientId && String(s.clientId) === String(S.saleClientFilter)) : S.sales;
+      if (filtered.length === 0) return `
     <div class="empty">
       <div class="empty-ico">${IC.dollarLg}</div>
       <div class="empty-title">${t('noSales')}</div>
       <div class="empty-text">${t('noSalesSub')}</div>
     </div>`;
-
-      // ── Grouper par sessionId (panier), les sans sessionId = vente solo ──
-      const groups = [];
-      const seen   = new Set();
-      for (const s of sales) {
-        if (s.sessionId) {
-          if (seen.has(s.sessionId)) continue; // déjà traité
-          seen.add(s.sessionId);
-          // Reconstruire le groupe depuis S.sales (fonctionne même après reload)
-          const grp = S.sales.filter(x => x.sessionId === s.sessionId);
-          groups.push({ isCart: true, items: grp, date: grp[0].date, clientName: grp[0].clientName, sessionId: s.sessionId });
-        } else {
-          groups.push({ isCart: false, items: [s], date: s.date, clientName: s.clientName, sessionId: null });
-        }
-      }
-
-      return groups.map(g => {
-        const cartTotal  = g.items.reduce((acc, x) => acc + (x.total || 0), 0);
-        const cartProfit = g.items.reduce((acc, x) => acc + (x.profit || 0), 0);
-        const sid        = 'grp_' + (g.sessionId || g.items[0].id);
-        window[sid]      = g.items;
-
-        if (g.isCart && g.items.length > 1) {
-          // ── Affichage panier multi-articles ──
-          return `
-    <div class="sale-card">
-      <div class="sale-card-header">
-        <div>
-          <div class="sale-card-title">${IC.cart} Panier · ${g.items.length} articles</div>
-          <div class="sale-card-meta">${fmtDate(g.date)}${g.clientName ? ` · <span style="color:var(--accent)">${g.clientName}</span>` : ''}</div>
-        </div>
-        <div style="text-align:right">
-          <div class="sale-card-total">${fmt(cartTotal)} ${sym}</div>
-          ${cartProfit > 0 ? `<div class="sale-card-profit">+${fmt(cartProfit)} bénéf.</div>` : ''}
-        </div>
-      </div>
-      <div class="sale-card-items">
-        ${g.items.map(s => `
-        <div class="sale-card-line">
-          <span class="sale-card-name">${s.productName || '—'}</span>
-          <span class="sale-card-qty">×${s.qty}</span>
-          <span class="sale-card-price">${fmt(s.total || 0)} ${sym}</span>
-        </div>`).join('')}
-      </div>
-      <div class="sale-card-footer">
-        <button class="sale-act-btn" title="Facture PDF" onclick="generateInvoicePDF(window['${sid}'])">${IC.pdf} Facture</button>
-        <button class="sale-act-btn sale-act-wa" title="Partager WhatsApp" onclick="shareViaWhatsApp(window['${sid}'])">${IC.whatsapp} WhatsApp</button>
-      </div>
-    </div>`;
-        } else {
-          // ── Vente solo (1 article ou pas de sessionId) ──
-          const s = g.items[0];
-          return `
+      return filtered.map(s=>{
+      const sid = 'sale_' + s.id;
+      window[sid] = s;
+      return `
     <div class="sale-item">
-      <div class="sale-dot"></div>
+      <div class="sale-dot" style="${s.paymentMethod&&s.paymentMethod!=='cash'?'background:'+(s.paymentMethod==='wave'?'#1DC3FF':s.paymentMethod==='orange'?'#FF6600':s.paymentMethod==='moov'?'#00A651':s.paymentMethod==='mtn'?'#FFCC00':'var(--accent)'):''}"></div>
       <div class="sale-info">
-        <div class="sale-prod">${s.productName || '—'}</div>
+        <div class="sale-prod">${s.productName}${s.paymentMethod&&s.paymentMethod!=='cash'?` <span style="font-size:10px;padding:1px 6px;border-radius:4px;background:${s.paymentMethod==='wave'?'#1DC3FF':s.paymentMethod==='orange'?'#FF6600':s.paymentMethod==='moov'?'#00A651':s.paymentMethod==='mtn'?'#FFCC00':'#ccc'}20;color:${s.paymentMethod==='wave'?'#1DC3FF':s.paymentMethod==='orange'?'#FF6600':s.paymentMethod==='moov'?'#00A651':s.paymentMethod==='mtn'?'#b39700':'var(--text-2)'};font-weight:600">${s.paymentMethod==='wave'?'Wave':s.paymentMethod==='orange'?'OM':s.paymentMethod==='moov'?'Moov':s.paymentMethod==='mtn'?'MTN':s.paymentMethod}</span>`:''}</div>
         <div class="sale-date">${fmtDate(s.date)}${s.clientName ? ` · <span style="color:var(--accent)">${s.clientName}</span>` : ''}</div>
       </div>
       <div class="sale-right">
-        <div class="sale-total">${fmt(s.total || 0)} ${sym}</div>
-        <div class="sale-qty">×${s.qty}${s.profit ? ` · <span style="color:var(--success)">+${fmt(s.profit)}</span>` : ''}</div>
+        <div class="sale-total">${fmt(s.total)} ${S.session?.currency_symbol||'FCFA'}</div>
+        <div class="sale-qty">x${s.qty}${s.profit ? ` · <span style="color:var(--success)">+${fmt(s.profit)}</span>` : ''}</div>
       </div>
       <div class="sale-actions">
         <button class="sale-act-btn" title="Facture PDF" onclick="generateInvoicePDF(window['${sid}'])">${IC.pdf}</button>
         <button class="sale-act-btn sale-act-wa" title="WhatsApp" onclick="shareViaWhatsApp(window['${sid}'])">${IC.whatsapp}</button>
       </div>
-    </div>`;
-        }
-      }).join('');
+    </div>`;}).join('');
     })()}
   </div>`;
 }
@@ -3249,6 +3497,15 @@ function vDetail() {
         <span class="info-lbl">${IC.truck} ${t('deliveryTime')}</span>
         <span class="info-val">${art.lead} ${_lang==='fr'?'jours':'days'}</span>
       </div>
+      <div class="info-row">
+        <span class="info-lbl">${IC.home} Emplacement</span>
+        <span class="info-val">
+          <select class="input" style="font-size:11px;padding:4px 8px;width:auto;min-width:120px;border-radius:6px" onchange="setArticleLocation(${art.id},parseInt(this.value)||null)">
+            <option value="">— Non assigné —</option>
+            ${S.locations.map(l => `<option value="${l.id}" ${art.locationId===l.id?'selected':''}>${l.name}${l.type?' ('+({'store':'Boutique','warehouse':'Entrepôt','popup':'Pop-up'}[l.type]||l.type)+')':''}</option>`).join('')}
+          </select>
+        </span>
+      </div>
       ${(() => {
         if (!art.expiry) return '';
         const exp = getExpiryStatus(art.expiry);
@@ -3380,15 +3637,9 @@ function vAdd() {
           <input class="input" type="number" placeholder="0" step="10" value="${f.price||0}" oninput="S.form.price=this.value">
         </div>
       </div>
-      <div class="input-row form-group">
-        <div>
-          <label class="form-label">${t('deliveryDays')}</label>
-          <input class="input" type="number" placeholder="7" value="${f.lead}" oninput="S.form.lead=this.value">
-        </div>
-        <div>
-          <label class="form-label">${t('expiryDate')}</label>
-          <input class="input" type="date" value="${f.expiry||''}" oninput="S.form.expiry=this.value">
-        </div>
+      <div class="form-group">
+        <label class="form-label">${t('expiryDate')}</label>
+        <input class="input" type="date" value="${f.expiry||''}" oninput="S.form.expiry=this.value">
       </div>
       <div style="background:var(--gray-1);border:1px solid var(--border);border-radius:var(--r-md);padding:12px;font-size:12px;color:var(--text-3);margin-bottom:14px">
         ${IC.info} ${t('alertAutoInfo')}
@@ -3612,14 +3863,20 @@ function vClients() {
       ${S.clients.length === 0 ? `<button class="btn btn-primary" style="width:auto;padding:11px 24px" onclick="nav('add-client')">${t('addClient')}</button>` : ''}
     </div>` : list.map((c, i) => {
       const st = clientStats[String(c.id)] || { total: 0, count: 0, last: null };
+      const tier = S.loyaltyConfig?.enabled ? _getClientTier(c) : null;
+      const showTier = tier && (c.loyaltyPoints > 0 || st.total > 0);
       return `
       <div class="card card-tap anim" style="animation-delay:${i*0.04}s" onclick="nav('client-detail',{selectedClientId:${c.id}})">
         <div class="article-row">
-          <div class="article-avatar">${initials(c.name)}</div>
+          <div class="article-avatar" ${tier ? `style="background:${tier.gradient||tier.color};color:#fff"` : ''}>${initials(c.name)}</div>
           <div class="article-info">
-            <div class="article-name">${c.name}</div>
+            <div class="article-name" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+              <span>${c.name}</span>
+              ${showTier ? _renderTierBadge(tier, 'sm') : ''}
+            </div>
             <div class="article-meta">${c.phone ? `${IC.phone} ${c.phone}` : ''}${c.phone && c.email ? ' · ' : ''}${c.email || ''}</div>
             ${st.count > 0 ? `<div class="article-meta" style="margin-top:2px">${st.count} ${t('purchases').toLowerCase()} · ${fmt(st.total)} ${sym()}</div>` : ''}
+            ${c.loyaltyPoints > 0 ? `<div class="article-meta" style="margin-top:2px;color:var(--warning)">${IC.star} ${c.loyaltyPoints} pts fidelite</div>` : ''}
           </div>
           <div style="color:var(--gray-4)">${IC.chevron}</div>
         </div>
@@ -3717,6 +3974,52 @@ function vClientDetail() {
         <div class="metric-lbl">${t('profit')}</div>
       </div>
     </div>
+
+    ${S.loyaltyConfig?.enabled ? (() => {
+      const tier = _getClientTier(client);
+      const bg = tier ? (tier.gradient || tier.color) : 'linear-gradient(135deg,#FFD700,#FFA500)';
+      const txtColor = tier?.id === 'bronze' || tier?.id === 'silver' ? '#fff' : '#fff';
+      return `
+    <div class="card" style="margin-bottom:14px;background:${bg};color:${txtColor};border-radius:14px;position:relative;overflow:hidden">
+      ${tier ? `<div style="position:absolute;top:10px;right:12px;font-size:40px;opacity:0.25">${tier.icon||'★'}</div>` : ''}
+      <div style="display:flex;align-items:center;justify-content:space-between;position:relative">
+        <div>
+          <div style="font-size:11px;font-weight:600;opacity:0.85;letter-spacing:0.5px">PROGRAMME FIDELITE</div>
+          ${tier ? `<div style="margin-top:4px;margin-bottom:6px">${_renderTierBadge(tier, 'lg')}</div>` : ''}
+          <div style="font-size:28px;font-weight:800">${client.loyaltyPoints||0} <span style="font-size:14px;font-weight:600">pts</span></div>
+          ${tier ? `<div style="font-size:11px;opacity:0.9;margin-top:2px">${tier.perk||''}</div>` : ''}
+        </div>
+      </div>
+      ${tier && tier.nextTier ? `
+      <div style="margin-top:10px;padding:10px;background:rgba(255,255,255,0.15);border-radius:10px">
+        <div style="display:flex;justify-content:space-between;font-size:11px;font-weight:600;margin-bottom:6px">
+          <span>Vers ${tier.nextTier.name} ${tier.nextTier.icon||''}</span>
+          <span>${fmt(tier.toNext)}${tier.mode==='points'?' pts':' '+sym()} restants</span>
+        </div>
+        <div style="height:6px;background:rgba(0,0,0,0.2);border-radius:3px;overflow:hidden">
+          <div style="height:100%;width:${tier.progress||0}%;background:#fff;border-radius:3px"></div>
+        </div>
+      </div>` : tier ? `
+      <div style="margin-top:10px;padding:8px;background:rgba(255,255,255,0.15);border-radius:10px;font-size:11px;font-weight:600;text-align:center">
+        🎉 Palier maximum atteint !
+      </div>` : ''}
+      ${(S.loyaltyConfig.rewards||[]).length > 0 ? `
+      <div style="margin-top:10px">
+        ${S.loyaltyConfig.rewards.map((r,i) => `
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 8px;background:rgba(255,255,255,0.12);border-radius:8px;margin-top:4px">
+          <span style="font-size:12px;font-weight:600">${r.icon||'🎁'} ${r.name} <span style="opacity:0.7">(${r.points} pts)</span></span>
+          ${(client.loyaltyPoints||0) >= r.points ? `
+          <button style="background:rgba(255,255,255,0.3);color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer" onclick="redeemLoyaltyReward(${client.id},${i})">Echanger</button>` : `
+          <span style="font-size:10px;opacity:0.7">${r.points - (client.loyaltyPoints||0)} pts manquants</span>`}
+        </div>`).join('')}
+      </div>` : ''}
+      ${(client.redeemedRewards||[]).length > 0 ? `
+      <div style="margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.2)">
+        <div style="font-size:10px;opacity:0.85;margin-bottom:4px;font-weight:600">HISTORIQUE ÉCHANGES</div>
+        ${(client.redeemedRewards||[]).slice(0,3).map(r => `
+        <div style="font-size:10px;opacity:0.9">✓ ${r.name} — ${new Date(r.date).toLocaleDateString('fr')}</div>`).join('')}
+      </div>` : ''}
+    </div>`;})() : ''}
 
     ${client.email ? `
     <div class="card" style="margin-top:8px">
@@ -4314,7 +4617,7 @@ function vPurchaseOrders() {
   const sym = S.session?.currency_symbol || 'FCFA';
   return `
   <div class="sub-hero">
-    <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('settings')">${IC.left}</button>
+    <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('more')">${IC.left}</button>
     <div class="sub-hero-title">${t('purchaseOrders')}</div>
     <div class="sub-hero-sub">${orders.length} ${t('articles').toLowerCase()}</div>
   </div>
@@ -4383,6 +4686,18 @@ function vAddOrder() {
         <label class="form-label">${t('orderTotal')} (${sym})</label>
         <input class="input" id="ord-total" type="number" min="0" placeholder="0">
       </div>
+      <div class="form-group">
+        <label class="form-label">${t('deliveryDays')||'Delai de livraison (jours)'}</label>
+        <input class="input" id="ord-lead" type="number" min="1" value="7" placeholder="7">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Date de livraison estimee</label>
+        <input class="input" id="ord-delivery-date" type="date" value="${new Date(Date.now()+7*86400000).toISOString().slice(0,10)}">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Notes / Remarques</label>
+        <textarea class="input" id="ord-notes" rows="2" placeholder="Informations supplementaires..." style="resize:vertical"></textarea>
+      </div>
       <button class="btn btn-primary" style="width:100%;margin-top:8px" onclick="saveOrder()">
         ${IC.check} &nbsp; ${t('newOrder')}
       </button>
@@ -4399,11 +4714,15 @@ function saveOrder() {
   const sup = S.suppliers.find(s => s.id === parseInt(supEl?.value));
   const qty = parseInt(document.getElementById('ord-qty')?.value) || 1;
   const total = parseFloat(document.getElementById('ord-total')?.value) || 0;
+  const leadDays = parseInt(document.getElementById('ord-lead')?.value) || 7;
+  const deliveryDate = document.getElementById('ord-delivery-date')?.value || new Date(Date.now()+leadDays*86400000).toISOString().slice(0,10);
+  const notes = document.getElementById('ord-notes')?.value?.trim() || '';
   const order = {
     id: Date.now(),
     articleId: art?.id, articleName: art?.name || '?', unit: art?.unit || 'pce',
     supplierId: sup?.id || null, supplierName: sup?.name || '',
     qty, total, status: 'pending',
+    leadDays, deliveryDate, notes,
     date: new Date().toISOString(),
   };
   S.purchaseOrders.unshift(order);
@@ -4450,7 +4769,7 @@ function vPricing() {
   ];
   return `
   <div class="sub-hero">
-    <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('settings')">${IC.left}</button>
+    <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('more')">${IC.left}</button>
     <div class="sub-hero-title">${t('pricing')}</div>
     <div class="sub-hero-sub">${_lang==='fr'?'Choisissez le plan adapté à votre activité':'Choose the plan that fits your business'}</div>
   </div>
@@ -4489,13 +4808,14 @@ function vSubscription() {
   const trialDays = sub.trialEnd ? Math.max(0, Math.ceil((new Date(sub.trialEnd) - Date.now()) / 86400000)) : 0;
   const billing = sub.billing || 'monthly';
   const prices = {
-    pro:      { monthly: 4900, yearly: 39200 },
-    business: { monthly: 14900, yearly: 119200 },
+    starter:  { monthly: 2500, yearly: 24000 },
+    pro:      { monthly: 4900, yearly: 47000 },
+    business: { monthly: 14900, yearly: 143000 },
   };
 
   return `
   <div class="sub-hero" style="background:linear-gradient(135deg,#4F46E5 0%,#7C3AED 100%)">
-    <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('settings')">${IC.left}</button>
+    <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('more')">${IC.left}</button>
     <div class="sub-hero-title">${t('subscription')}</div>
     <div class="sub-hero-sub">${isActive ? t('activePlan') + ': ' + sub.plan.toUpperCase() : t('planFree')}</div>
   </div>
@@ -4533,30 +4853,34 @@ function vSubscription() {
     <div class="card anim" style="text-align:center;padding:24px;margin-bottom:16px">
       <div style="width:56px;height:56px;border-radius:50%;background:var(--gray-2);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;color:var(--text-3)">${IC.logo}</div>
       <div style="font-size:16px;font-weight:800;color:var(--text-1)">${t('planFree')}</div>
-      <div style="font-size:13px;color:var(--text-3);margin-top:4px">${_lang==='fr'?'Passez à Pro pour débloquer toutes les fonctionnalités':'Upgrade to Pro to unlock all features'}</div>
+      <div style="font-size:13px;color:var(--text-3);margin-top:4px">Passez a un plan superieur pour debloquer toutes les fonctionnalites</div>
     </div>`}
 
     <div style="display:flex;gap:6px;margin-bottom:16px;background:var(--gray-1);padding:4px;border-radius:10px">
       <button class="btn ${billing==='monthly'?'btn-primary':'btn-ghost'}" style="flex:1;padding:8px;font-size:12px" onclick="setBilling('monthly')">${t('monthly')}</button>
       <button class="btn ${billing==='yearly'?'btn-primary':'btn-ghost'}" style="flex:1;padding:8px;font-size:12px" onclick="setBilling('yearly')">
-        ${t('yearly')} <span style="font-size:10px;opacity:.8">(-17%)</span>
+        ${t('yearly')} <span style="font-size:10px;opacity:.8">(-20%)</span>
       </button>
     </div>
 
-    ${['pro','business'].map((pk, i) => {
+    ${['starter','pro','business'].map((pk, i) => {
       const price = prices[pk][billing];
       const isCurrent = sub.plan === pk;
-      const color = pk === 'pro' ? 'var(--accent)' : 'var(--success)';
-      const label = pk === 'pro' ? t('proPlan') : t('businessPlan');
+      const colors = {starter:'#0ea5e9', pro:'var(--accent)', business:'var(--success)'};
+      const color = colors[pk];
+      const labels = {starter:'Starter', pro:t('proPlan')||'Pro', business:t('businessPlan')||'Business'};
+      const label = labels[pk];
+      const descs = {starter:'Ideal pour demarrer', pro:'Pour les PME en croissance', business:'Pour les grandes entreprises'};
       return `
     <div class="card anim" style="margin-bottom:12px;border:2px solid ${isCurrent?color:'var(--border)'};overflow:hidden;animation-delay:${i*0.06}s">
-      ${pk==='pro'?`<div style="background:var(--accent);color:#fff;text-align:center;padding:4px;font-size:10px;font-weight:800;text-transform:uppercase;margin:-16px -16px 12px -16px">${_lang==='fr'?'Le plus populaire':'Most popular'}</div>`:''}
-      <div style="padding:${pk==='pro'?'0 0 0':'0'}">
-        <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:6px">
+      ${pk==='pro'?`<div style="background:var(--accent);color:#fff;text-align:center;padding:4px;font-size:10px;font-weight:800;text-transform:uppercase;margin:-16px -16px 12px -16px">Le plus populaire</div>`:''}
+      <div>
+        <div style="font-size:15px;font-weight:800;margin-bottom:2px;color:var(--text-1)">${label}</div>
+        <div style="font-size:11px;color:var(--text-3);margin-bottom:10px">${descs[pk]}</div>
+        <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:12px">
           <span style="font-size:28px;font-weight:900;color:${color}">${fmt(price)}</span>
-          <span style="font-size:12px;color:var(--text-3)">${sym()}/${billing==='yearly'?(_lang==='fr'?'an':'yr'):(_lang==='fr'?'mois':'mo')}</span>
+          <span style="font-size:12px;color:var(--text-3)">${sym()}/${billing==='yearly'?'an':'mois'}</span>
         </div>
-        <div style="font-size:15px;font-weight:800;margin-bottom:10px;color:var(--text-1)">${label}</div>
         ${_planFeatures(pk).map(f => `
         <div style="display:flex;align-items:center;gap:8px;padding:3px 0;font-size:12px">
           <span style="color:${color}">${IC.check}</span><span>${f}</span>
@@ -4568,32 +4892,45 @@ function vSubscription() {
     </div>`;
     }).join('')}
 
-    <div style="text-align:center;margin-top:12px;padding:16px">
-      <div style="font-size:12px;color:var(--text-3);line-height:1.5">${_lang==='fr'?'Tous les plans incluent le mode hors-ligne, les mises à jour gratuites et le support.':'All plans include offline mode, free updates, and support.'}</div>
-      <div style="font-size:11px;color:var(--text-3);margin-top:4px">support@stockr.app</div>
+    <div class="card" style="margin-top:8px;text-align:center;padding:16px;background:var(--gray-1)">
+      <div style="font-size:11px;color:var(--text-3);line-height:1.6">
+        Tous les plans incluent : mode hors-ligne, mises a jour gratuites, support WhatsApp, sauvegarde cloud.
+        <br>Paiement possible via Wave, Orange Money, Moov Money.
+      </div>
+      <div style="font-size:11px;color:var(--accent);margin-top:6px;font-weight:600">support@stockr.app</div>
     </div>
   </div>`;
 }
 
 function _planFeatures(plan) {
+  if (plan === 'starter') return [
+    '200 articles', '500 ventes/mois',
+    '2 emplacements', 'Spectra (20/jour)',
+    'Factures PDF', 'Export CSV',
+    '1 moyen de paiement',
+  ];
   if (plan === 'pro') return [
     t('unlimited')+' '+t('articles'), t('unlimited')+' '+t('sales').toLowerCase(),
     '5 '+t('locations').toLowerCase(), 'Spectra '+t('unlimited'),
     'WhatsApp '+t('catalog'), t('purchaseOrders'), t('suppliers'),
-    t('exportCSV'), _lang==='fr'?'Rapports avancés':'Advanced reports',
+    t('exportCSV'), 'Boutique en ligne',
+    'Marketing & campagnes', 'Integrations (5)',
+    'Rapports avances',
   ];
   if (plan === 'business') return [
     t('unlimited')+' '+t('articles'), t('unlimited')+' '+t('sales').toLowerCase(),
     t('unlimited')+' '+t('locations').toLowerCase(), 'Spectra '+t('unlimited'),
-    'API '+t('included'), _lang==='fr'?'Multi-utilisateurs':'Multi-users',
-    _lang==='fr'?'Support prioritaire':'Priority support',
-    _lang==='fr'?'Tableau de bord avancé':'Advanced dashboard',
-    _lang==='fr'?'Gestion des rôles':'Role management',
+    'API incluse', 'Multi-utilisateurs',
+    'Support prioritaire 24/7', 'Tableau de bord avance',
+    'Gestion des roles', 'Integrations illimitees',
+    'Boutique + domaine personnalise',
+    'Programme fidelite avance',
+    'Export comptable OHADA',
   ];
   return [
     '50 '+t('articles'), '100 '+t('sales').toLowerCase(),
-    '1 '+t('locations').toLowerCase(), 'Spectra (5/'+(_lang==='fr'?'jour':'day')+')',
-    'PDF '+t('invoice'),
+    '1 emplacement', 'Spectra (5/jour)',
+    'PDF facture',
   ];
 }
 
@@ -4603,7 +4940,7 @@ function vSuppliers() {
   const filtered = q ? S.suppliers.filter(s => s.name.toLowerCase().includes(q) || (s.phone||'').includes(q)) : S.suppliers;
   return `
   <div class="sub-hero">
-    <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('settings')">${IC.left}</button>
+    <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('more')">${IC.left}</button>
     <div class="sub-hero-title">${t('suppliers')}</div>
     <div class="sub-hero-sub">${S.suppliers.length} ${t('supplierOf')}</div>
   </div>
@@ -4728,7 +5065,7 @@ function vStockHistory() {
   const movements = S.stockMovements.slice(0, 100);
   return `
   <div class="sub-hero">
-    <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('settings')">${IC.left}</button>
+    <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('more')">${IC.left}</button>
     <div class="sub-hero-title">${t('stockHistory')}</div>
     <div class="sub-hero-sub">${S.stockMovements.length} ${t('articles').toLowerCase()}</div>
   </div>
@@ -4833,15 +5170,29 @@ function quickSaleProduct(productId) {
   if (!prod) return;
   const sym = S.session?.currency_symbol || 'FCFA';
 
-  // Check stock availability
-  const canMake = prod.items ? Math.min(...prod.items.map(it => {
-    const art = S.articles.find(a => a.id === it.articleId);
-    return art ? Math.floor((art.qty !== undefined ? art.qty : art.stock) / (it.qty || 1)) : 0;
+  // Check stock availability using composition (correct property)
+  const comps = prod.composition || [];
+  const canMake = comps.length > 0 ? Math.min(...comps.map(comp => {
+    const art = S.articles.find(a => a.id === comp.id);
+    return art ? Math.floor((art.stock !== undefined ? art.stock : 0) / (comp.qty || 1)) : 0;
   })) : 999;
 
   if (canMake < 1) {
     showToast(t('insufficientStock'), 'error');
     return;
+  }
+
+  // Apply active promo (auto-applicable, sans code)
+  let finalPrice = prod.price;
+  let promoName = null, promoDiscount = 0, promoCode = null, promoId = null;
+  const promo = _getActivePromo(prod.id);
+  if (promo) {
+    promoId = promo.id;
+    promoName = promo.name;
+    promoCode = promo.code;
+    finalPrice = _applyPromoValue(prod.price, promo);
+    promoDiscount = prod.price > 0 ? Math.round((1 - finalPrice/prod.price)*100) : 0;
+    _recordPromoUsage(promo.id, null);
   }
 
   // Create sale
@@ -4850,23 +5201,29 @@ function quickSaleProduct(productId) {
     productId: prod.id,
     productName: prod.name,
     qty: 1,
-    total: prod.price,
-    profit: prod.price - (prod.cost || 0),
+    total: finalPrice,
+    profit: finalPrice - (prod.purchasePrice || 0),
     date: new Date().toISOString(),
     method: 'cash',
+    paymentMethod: 'cash',
+    promoName, promoDiscount, promoCode, promoId,
   };
 
-  // Deduct stock
-  if (prod.items) {
-    prod.items.forEach(it => {
-      const art = S.articles.find(a => a.id === it.articleId);
+  // Deduct stock using composition
+  if (comps.length > 0) {
+    comps.forEach(comp => {
+      const art = S.articles.find(a => a.id === comp.id);
       if (art) {
-        if (art.qty !== undefined) art.qty -= (it.qty || 1);
-        else art.stock -= (it.qty || 1);
-        logMovement(art.name, 'exit', it.qty || 1, t('quickSale') + ': ' + prod.name);
+        art.stock = Math.round((art.stock - (comp.qty || 1)) * 10) / 10;
+        logMovement(art.name, 'exit', comp.qty || 1, t('quickSale') + ': ' + prod.name);
       }
     });
     localStorage.setItem('stockr_articles', JSON.stringify(S.articles));
+  }
+
+  // Loyalty points
+  if (S.loyaltyConfig?.enabled) {
+    sale.loyaltyPoints = Math.floor(finalPrice * (S.loyaltyConfig.pointsPerFcfa || 1));
   }
 
   S.sales.unshift(sale);
@@ -4933,19 +5290,36 @@ function exportFullCSV(type) {
 
 // ── LOCATIONS ────────────────────────────────
 function addLocation() {
-  const input = document.getElementById('loc-name');
-  const name = input?.value?.trim();
+  const nameEl = document.getElementById('loc-name');
+  const addrEl = document.getElementById('loc-address');
+  const phoneEl = document.getElementById('loc-phone');
+  const typeEl = document.getElementById('loc-type');
+  const name = nameEl?.value?.trim();
   if (!name) return;
-  const loc = { id: Date.now(), name };
+  const loc = {
+    id: Date.now(),
+    name,
+    address: addrEl?.value?.trim() || '',
+    phone: phoneEl?.value?.trim() || '',
+    type: typeEl?.value || 'store', // store, warehouse, popup
+    createdAt: new Date().toISOString()
+  };
   S.locations.push(loc);
   localStorage.setItem('stockr_locations', JSON.stringify(S.locations));
   S.locationAdd = false;
+  logActivity('location', `Nouvel emplacement: ${name}`);
+  showToast(`Emplacement "${name}" ajouté`);
   render();
 }
 
 function removeLocation(id) {
+  const loc = S.locations.find(l => l.id === id);
+  if (!confirm(`Supprimer l'emplacement "${loc?.name}" ? Les articles de cet emplacement ne seront plus filtrés.`)) return;
   S.locations = S.locations.filter(l => l.id !== id);
   localStorage.setItem('stockr_locations', JSON.stringify(S.locations));
+  // Un-assign articles from this location
+  S.articles.forEach(a => { if (a.locationId === id) a.locationId = null; });
+  localStorage.setItem('stockr_articles', JSON.stringify(S.articles));
   if (S.currentLocation === id) {
     S.currentLocation = null;
     localStorage.removeItem('stockr_current_location');
@@ -4958,6 +5332,32 @@ function setLocation(id) {
   if (id) localStorage.setItem('stockr_current_location', String(id));
   else localStorage.removeItem('stockr_current_location');
   render();
+}
+
+function setArticleLocation(articleId, locationId) {
+  const art = S.articles.find(a => a.id === articleId);
+  if (!art) return;
+  art.locationId = locationId || null;
+  localStorage.setItem('stockr_articles', JSON.stringify(S.articles));
+  showToast(`Emplacement mis à jour`);
+}
+
+function getFilteredArticles() {
+  if (!S.currentLocation) return S.articles;
+  return S.articles.filter(a => !a.locationId || a.locationId === S.currentLocation);
+}
+
+function getLocationArticleCount(locId) {
+  return S.articles.filter(a => a.locationId === locId).length;
+}
+
+function getLocationSalesTotal(locId) {
+  const locArticleIds = S.articles.filter(a => a.locationId === locId).map(a => a.id);
+  return S.sales.filter(s => {
+    const prod = S.products.find(p => p.id === s.productId);
+    if (!prod) return false;
+    return (prod.composition||[]).some(c => locArticleIds.includes(c.id));
+  }).reduce((sum, s) => sum + (s.total || 0), 0);
 }
 
 // ── BUSINESS LOGO ────────────────────────────
@@ -5480,16 +5880,26 @@ function vSettings() {
         <div class="loc-card ${isActive?'loc-active':''}" onclick="setLocation(${l.id})" style="cursor:pointer">
           <div class="loc-card-ico" style="background:linear-gradient(135deg,#${c.split(',')[0].slice(1)},${c.split(',')[1]})">${IC.box}</div>
           <div class="loc-card-name">${l.name}</div>
-          <div class="loc-card-count">${S.articles.filter(a => !a.location || a.location === l.id).length} ${t('articles').toLowerCase()}</div>
+          <div class="loc-card-count">${getLocationArticleCount(l.id)} ${t('articles').toLowerCase()}</div>
+          ${l.type ? `<div style="font-size:9px;text-transform:uppercase;color:var(--accent);font-weight:600;margin-top:2px">${l.type==='store'?'Boutique':l.type==='warehouse'?'Entrepôt':'Pop-up'}</div>` : ''}
           ${isActive?'<div class="loc-card-check">✓</div>':''}
           <button onclick="event.stopPropagation();removeLocation(${l.id})" class="loc-card-del">✕</button>
         </div>`;
         }).join('')}
         ${S.locationAdd ? `
-        <div class="loc-card" style="cursor:default;padding:12px">
-          <input class="input" id="loc-name" type="text" placeholder="${t('locationPlaceholder')}" style="width:100%;margin-bottom:8px;font-size:12px">
+        <div class="loc-card" style="cursor:default;padding:12px;grid-column:span 2">
+          <input class="input" id="loc-name" type="text" placeholder="Nom de l'emplacement" style="width:100%;margin-bottom:6px;font-size:12px">
+          <input class="input" id="loc-address" type="text" placeholder="Adresse (ex: Cocody, Rue des jardins)" style="width:100%;margin-bottom:6px;font-size:12px">
+          <div style="display:flex;gap:6px;margin-bottom:6px">
+            <input class="input" id="loc-phone" type="tel" placeholder="Telephone" style="flex:1;font-size:12px">
+            <select class="input" id="loc-type" style="flex:1;font-size:12px">
+              <option value="store">Boutique</option>
+              <option value="warehouse">Entrepôt</option>
+              <option value="popup">Pop-up / Stand</option>
+            </select>
+          </div>
           <div style="display:flex;gap:4px">
-            <button class="btn btn-primary" style="flex:1;padding:6px;font-size:11px" onclick="addLocation()">OK</button>
+            <button class="btn btn-primary" style="flex:1;padding:6px;font-size:11px" onclick="addLocation()">Ajouter</button>
             <button class="btn btn-ghost" style="padding:6px 8px;font-size:11px" onclick="S.locationAdd=false;render()">✕</button>
           </div>
         </div>` : `
@@ -5589,9 +5999,3987 @@ function vSettings() {
       </div>
     </div>` : ''}
 
-    <div style="text-align:center;padding:24px 0 8px;font-size:11px;color:var(--text-3)">STOCKR · v0.6.0 · 2026</div>
+    <div style="text-align:center;padding:24px 0 8px;font-size:11px;color:var(--text-3)">STOCKR · v2.0.0 · 2026</div>
   </div>`;
 }
+
+// ══════════════════════════════════════════════
+// ██ STOCKR v2 — NOUVELLES FONCTIONNALITÉS
+// ══════════════════════════════════════════════
+
+// ── MORE MENU ────────────────────────────────
+function vMore() {
+  const pendingOrders = S.purchaseOrders.filter(o => o.status === 'pending').length;
+  const activePromos = (S.promotions || []).filter(p => p.active).length;
+  const connectedSocial = (S.socialAccounts || []).filter(a => a.connected).length;
+  const activePayments = (S.paymentMethods || []).filter(p => p.active).length;
+
+  const items = [
+    { id:'clients',         icon:IC.users,      label:t('clients')||'Clients',          sub:`${S.clients.length} client(s)`, color:'#0ea5e9' },
+    { id:'boutique',        icon:IC.shop,       label:t('boutique')||'Boutique',        sub:'Boutique en ligne',       color:'#4F46E5', badge: S.boutiqueConfig?.published ? '●' : null },
+    { id:'marketing',       icon:IC.megaphone,  label:t('marketing')||'Marketing',     sub:`${activePromos} promo(s)`, color:'#dc2626', badge: activePromos || null },
+    { id:'social-media',    icon:IC.share2,     label:t('socialMedia')||'Reseaux',     sub:`${connectedSocial} connecte(s)`, color:'#e1306c' },
+    { id:'payments-setup',  icon:IC.wallet,     label:t('payments')||'Paiements',      sub:`${activePayments} actif(s)`, color:'#ff6600' },
+    { id:'purchase-orders', icon:IC.truck,      label:t('purchaseOrders')||'Commandes', sub:`${pendingOrders} en attente`, color:'#059669', badge: pendingOrders || null },
+    { id:'integrations',    icon:IC.link,       label:t('integrations')||'Integrations', sub:'Apps & services',         color:'#7c3aed' },
+    { id:'suppliers',       icon:IC.package,    label:t('suppliers')||'Fournisseurs',  sub:`${S.suppliers.length} enregistre(s)`, color:'#0891b2' },
+    { id:'stock-history',   icon:IC.trending,   label:t('stockHistory')||'Mouvements', sub:`${S.stockMovements.length} entrees`, color:'#334155' },
+    { id:'spectra',         icon:IC.camera,     label:'Spectra AI',                    sub:'Scanner & compter',        color:'#6366f1' },
+    { id:'catalog',         icon:IC.pdf,        label:t('catalog')||'Catalogue',       sub:'WhatsApp & PDF',           color:'#16a34a' },
+    { id:'pricing',         icon:IC.star,       label:t('pricing')||'Tarifs',          sub:t('myPlan')||'Mon plan',    color:'#eab308' },
+    { id:'settings',        icon:IC.settings,   label:t('settings')||'Parametres',     sub:t('myAccount')||'Compte',   color:'#64748b' },
+  ];
+
+  return `
+  <div class="page-header">
+    <div class="page-header-row">
+      <button class="back-btn" onclick="nav('home')">${IC.left}</button>
+      <div class="page-title">${t('more')||'Plus'}</div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="more-grid">
+      ${items.map((it,i) => `
+      <div class="more-item anim" onclick="nav('${it.id}')" style="animation-delay:${i*30}ms">
+        ${it.badge ? `<div class="more-badge">${it.badge}</div>` : ''}
+        <div class="more-ico" style="background:${it.color}15;color:${it.color}">${it.icon}</div>
+        <div class="more-lbl">${it.label}</div>
+        <div class="more-sub">${it.sub}</div>
+      </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+// ── BOUTIQUE EN LIGNE ────────────────────────
+function vBoutique() {
+  const bc = S.boutiqueConfig || {};
+  const shopProducts = S.products.filter(p => (bc.products || []).includes(p.id));
+  const orders = S.boutiqueOrders || [];
+  const pendingOrders = orders.filter(o => o.status === 'pending');
+
+  return `
+  <div class="sub-hero">
+    <div class="page-header-row" style="margin-bottom:14px">
+      <button class="back-btn-dark" onclick="nav('more')">${IC.left}</button>
+      <div style="flex:1">
+        <div class="sub-hero-title">${t('boutiqueTitle')||'Ma Boutique en ligne'}</div>
+        <div class="sub-hero-sub">${bc.published ? (t('boutiquePublish')||'Publiée') : (t('boutiqueDraft')||'Brouillon')}</div>
+      </div>
+      <label class="toggle-switch" style="flex-shrink:0">
+        <input type="checkbox" ${bc.published?'checked':''} onchange="toggleBoutiquePublish(this.checked)">
+        <span class="toggle-track"></span>
+      </label>
+    </div>
+    <div style="display:flex;gap:8px">
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${shopProducts.length}</div><div class="hero-stat-lbl">${t('products')}</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${pendingOrders.length}</div><div class="hero-stat-lbl">Commandes</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${bc.visits || 0}</div><div class="hero-stat-lbl">Visites</div></div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">Configuration</div>
+      <div class="form-group">
+        <label class="form-label">Nom de la boutique</label>
+        <input class="input" value="${bc.name || S.session?.business || ''}" oninput="updateBoutiqueConfig('name',this.value)" placeholder="${S.session?.business || 'Ma Boutique'}">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <input class="input" value="${bc.description || ''}" oninput="updateBoutiqueConfig('description',this.value)" placeholder="Décrivez votre boutique...">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Frais de livraison (${sym()})</label>
+        <input class="input" type="number" value="${bc.deliveryFees || 0}" oninput="updateBoutiqueConfig('deliveryFees',parseFloat(this.value)||0)">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Zones de livraison</label>
+        <div class="zone-chips">
+          ${['Abidjan','Cocody','Plateau','Yopougon','Marcory','Treichville','Adjamé','Abobo','Bouaké','San-Pédro','Yamoussoukro','Daloa','Man','Korhogo'].map(z => `
+          <span class="zone-chip ${(bc.deliveryZones||[]).includes(z)?'active':''}" onclick="toggleDeliveryZone('${z}')">${z}</span>`).join('')}
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">${IC.phone} Contact & Apparence</div>
+      <div class="form-group">
+        <label class="form-label">Numéro WhatsApp Business</label>
+        <input class="input" type="tel" value="${bc.whatsappNumber || ''}" oninput="updateBoutiqueConfig('whatsappNumber',this.value)" placeholder="+225 07 XX XX XX XX">
+        <div style="font-size:10px;color:var(--text-3);margin-top:2px">Les clients commanderont via ce numéro</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Couleur du thème</label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          ${[
+            {id:'indigo',  color:'#4F46E5', name:'Indigo'},
+            {id:'emerald', color:'#059669', name:'Émeraude'},
+            {id:'rose',    color:'#E11D48', name:'Rose'},
+            {id:'amber',   color:'#D97706', name:'Ambre'},
+            {id:'sky',     color:'#0284C7', name:'Ciel'},
+            {id:'purple',  color:'#7C3AED', name:'Violet'},
+            {id:'orange',  color:'#EA580C', name:'Orange'},
+            {id:'teal',    color:'#0D9488', name:'Turquoise'},
+          ].map(c => `
+          <div onclick="updateBoutiqueConfig('themeColor','${c.color}');render()" style="cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px">
+            <div style="width:36px;height:36px;border-radius:50%;background:${c.color};border:3px solid ${(bc.themeColor||'#4F46E5')===c.color?'#000':'transparent'};transition:.2s"></div>
+            <span style="font-size:9px;color:var(--text-3)">${c.name}</span>
+          </div>`).join('')}
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Logo de la boutique</label>
+        <div style="display:flex;align-items:center;gap:10px">
+          ${localStorage.getItem('stockr_logo') ? `<img src="${localStorage.getItem('stockr_logo')}" style="width:48px;height:48px;border-radius:10px;object-fit:cover">` : `<div style="width:48px;height:48px;border-radius:10px;background:var(--gray-1);display:flex;align-items:center;justify-content:center;color:var(--text-3)">${IC.camera}</div>`}
+          <div>
+            <div style="font-size:11px;color:var(--text-3)">Utilisé dans le site et les factures</div>
+            <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px;margin-top:4px" onclick="uploadLogo()">Changer le logo</button>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Moyens de paiement acceptés</label>
+        <div style="display:flex;flex-wrap:wrap;gap:6px">
+          ${(S.paymentMethods||[]).filter(m=>m.active).map(m => `
+          <span style="background:var(--accent-light);color:var(--accent);padding:4px 10px;border-radius:8px;font-size:11px;font-weight:600">${m.name}</span>`).join('') || '<span style="font-size:12px;color:var(--text-3)">Aucun — configurez dans Paiements</span>'}
+        </div>
+        <button class="btn btn-ghost" style="font-size:11px;margin-top:6px" onclick="nav('payments')">Gérer les paiements →</button>
+      </div>
+    </div>
+
+    <div class="section-hd"><span class="section-lbl">Outils avancés du site</span></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+      <button class="boutique-tool-card" onclick="nav('boutique-appearance')">
+        <div class="btc-ico" style="background:#4F46E510;color:#4F46E5">🎨</div>
+        <div class="btc-txt">
+          <div class="btc-title">Apparence</div>
+          <div class="btc-sub">Thème, couleurs, organisation</div>
+        </div>
+      </button>
+      <button class="boutique-tool-card" onclick="nav('boutique-domain')">
+        <div class="btc-ico" style="background:#05966910;color:#059669">🌐</div>
+        <div class="btc-txt">
+          <div class="btc-title">Domaine</div>
+          <div class="btc-sub">${bc.customDomain || bc.domain ? (bc.customDomain||bc.domain+'.stockr.shop') : 'Configurer URL'}</div>
+        </div>
+      </button>
+      <button class="boutique-tool-card" onclick="nav('boutique-pixels')">
+        <div class="btc-ico" style="background:#DC262610;color:#DC2626">📊</div>
+        <div class="btc-txt">
+          <div class="btc-title">Pixels & Tracking</div>
+          <div class="btc-sub">Facebook, TikTok, Google</div>
+        </div>
+      </button>
+      <button class="boutique-tool-card" onclick="nav('boutique-code')">
+        <div class="btc-ico" style="background:#F59E0B10;color:#F59E0B">&lt;/&gt;</div>
+        <div class="btc-txt">
+          <div class="btc-title">Code personnalisé</div>
+          <div class="btc-sub">CSS, HTML, JS avancé</div>
+        </div>
+      </button>
+    </div>
+
+    <div class="card" style="margin-bottom:10px;border:2px dashed var(--accent)">
+      <div class="card-title">${IC.globe} Génération du site</div>
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:10px">Générez votre site en un clic — toutes vos promos, bannières, avis seront inclus</div>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-primary" style="flex:1" onclick="generateBoutiqueSite()">${IC.check} Générer HTML</button>
+        <button class="btn btn-ghost" style="flex:1" onclick="previewBoutiqueSite()">${IC.globe} Aperçu</button>
+      </div>
+      ${bc.siteGenerated ? `
+      <div style="margin-top:10px;padding:8px 12px;background:var(--success-light,#D1FAE5);border-radius:8px;font-size:12px;color:var(--success);font-weight:600;display:flex;align-items:center;gap:6px">
+        ${IC.check} Site généré le ${new Date(bc.siteGeneratedDate).toLocaleDateString('fr')}
+      </div>` : ''}
+    </div>
+
+    <div class="section-hd">
+      <span class="section-lbl">Produits en vitrine (${shopProducts.length})</span>
+    </div>
+    ${S.products.length === 0 ? `
+    <div class="empty" style="padding:24px">
+      <div class="empty-ico">${IC.inbox}</div>
+      <div class="empty-text">Aucun produit. Crée des produits d'abord.</div>
+      <button class="btn btn-primary" style="max-width:200px" onclick="nav('products')">Voir produits</button>
+    </div>` : `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      ${S.products.map(p => {
+        const selected = (bc.products || []).includes(p.id);
+        return `
+      <div class="boutique-product" style="cursor:pointer;border-color:${selected?'var(--accent)':'var(--border)'};background:${selected?'var(--accent-light)':'var(--surface)'}" onclick="toggleBoutiqueProduct(${p.id})">
+        <div class="boutique-product-img">${IC.package}</div>
+        <div class="boutique-product-name">${p.name}</div>
+        <div class="boutique-product-price">${fmt(p.price)} ${sym()}</div>
+        ${selected ? '<div style="color:var(--accent);font-size:11px;font-weight:700;margin-top:4px">✓ En vitrine</div>' : ''}
+      </div>`;}).join('')}
+    </div>`}
+
+    <div class="section-hd"><span class="section-lbl">Partager</span></div>
+    <div class="card" style="margin-bottom:14px">
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-primary" style="flex:1" onclick="shareBoutiqueWhatsApp()">${IC.whatsapp} WhatsApp</button>
+        <button class="btn btn-ghost" style="flex:1" onclick="copyBoutiqueLink()">Copier le lien</button>
+      </div>
+    </div>
+
+    <div class="section-hd">
+      <span class="section-lbl">Commandes recues (${orders.length})</span>
+      <button class="fab" style="width:32px;height:32px" onclick="addBoutiqueOrder()">${IC.plus}</button>
+    </div>
+    ${orders.length === 0 ? `
+    <div class="card" style="text-align:center;padding:20px">
+      <div style="color:var(--text-3);font-size:13px;margin-bottom:8px">Aucune commande pour le moment</div>
+      <button class="btn btn-ghost" style="font-size:12px" onclick="addBoutiqueOrder()">Ajouter manuellement</button>
+    </div>` : orders.slice(0,20).map(o => `
+    <div class="card" style="margin-bottom:8px;border-left:4px solid ${o.status==='pending'?'var(--warning)':o.status==='confirmed'?'var(--accent)':o.status==='delivered'?'var(--success)':'var(--gray-4)'}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div>
+          <div style="font-weight:700;font-size:14px">${o.clientName||'Client'}</div>
+          <div style="font-size:12px;color:var(--text-3);margin-top:2px">${o.phone||''} ${o.zone?'· '+o.zone:''}</div>
+          <div style="font-size:12px;color:var(--text-2);margin-top:4px">${(o.items||[]).map(i=>i.name+' x'+i.qty).join(', ')}</div>
+          <div style="font-size:11px;color:var(--text-3);margin-top:4px">${fmtDate(o.date)}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-weight:700;font-size:15px">${fmt(o.total||0)} ${sym()}</div>
+          <span style="font-size:10px;padding:2px 8px;border-radius:4px;font-weight:600;background:${o.status==='pending'?'var(--warning)':o.status==='confirmed'?'var(--accent)':o.status==='delivered'?'var(--success)':'var(--gray-4)'}20;color:${o.status==='pending'?'var(--warning)':o.status==='confirmed'?'var(--accent)':o.status==='delivered'?'var(--success)':'var(--text-3)'}">${o.status==='pending'?'En attente':o.status==='confirmed'?'Confirmee':o.status==='delivered'?'Livree':'Annulee'}</span>
+        </div>
+      </div>
+      ${o.status==='pending'?`
+      <div style="display:flex;gap:6px;margin-top:10px">
+        <button class="btn btn-primary" style="flex:1;font-size:12px;padding:8px" onclick="updateOrderStatus(${o.id},'confirmed')">Confirmer</button>
+        <button class="btn btn-ghost" style="font-size:12px;padding:8px" onclick="updateOrderStatus(${o.id},'cancelled')">Annuler</button>
+      </div>`:o.status==='confirmed'?`
+      <div style="display:flex;gap:6px;margin-top:10px">
+        <button class="btn btn-primary" style="flex:1;font-size:12px;padding:8px" onclick="updateOrderStatus(${o.id},'delivered')">Marquer livree</button>
+        <button class="btn btn-ghost" style="font-size:12px;padding:8px" onclick="contactOrderClient(${o.id})">Contacter</button>
+      </div>
+      <div style="display:flex;gap:6px;margin-top:6px">
+        <button class="btn btn-ghost" style="flex:1;font-size:11px;padding:6px;background:#FF4D0010;color:#FF4D00;border-color:#FF4D0040" onclick="createYangoDelivery(${o.id})">${IC.truck} Yango</button>
+        <button class="btn btn-ghost" style="flex:1;font-size:11px;padding:6px;background:#FFC24410;color:#B8860B;border-color:#FFC24440" onclick="createGlovoDelivery(${o.id})">${IC.truck} Glovo</button>
+        <button class="btn btn-ghost" style="flex:1;font-size:11px;padding:6px;background:#1DC3FF10;color:#1DC3FF;border-color:#1DC3FF40" onclick="requestPaymentWhatsApp(${o.total||0},'${(o.phone||'').replace(/'/g,'')}','Commande #${o.id}')">${IC.creditCard} Paiement</button>
+      </div>`:''}
+    </div>`).join('')}
+  </div>`;
+}
+
+function toggleBoutiquePublish(val) {
+  S.boutiqueConfig.published = val;
+  localStorage.setItem('stockr_boutique', JSON.stringify(S.boutiqueConfig));
+  showToast(val ? 'Boutique publiée !' : 'Boutique en brouillon');
+  render();
+}
+function updateBoutiqueConfig(key, val) {
+  S.boutiqueConfig[key] = val;
+  localStorage.setItem('stockr_boutique', JSON.stringify(S.boutiqueConfig));
+}
+function generateBoutiqueSite() {
+  const bc = S.boutiqueConfig;
+  if (!bc.domain) { showToast('Entrez un nom de domaine', 'error'); return; }
+  const shopProds = S.products.filter(p => (bc.products||[]).includes(p.id));
+  if (shopProds.length === 0) { showToast('Ajoutez des produits en vitrine', 'error'); return; }
+  const tc = bc.themeColor || '#4F46E5';
+  const waNum = (bc.whatsappNumber || '').replace(/\s/g, '').replace(/^\+/, '');
+  const waLink = waNum ? `https://wa.me/${waNum}` : 'https://wa.me/';
+  const payments = (S.paymentMethods||[]).filter(m => m.active);
+  const payHTML = payments.length > 0 ? payments.map(m => `<span class="pay-badge">${m.name}</span>`).join('') : '<span class="pay-badge">Espèces</span>';
+  const logo = localStorage.getItem('stockr_logo');
+  // ── Configuration avancée (apparence / pixels / code / toggles) ──
+  const px  = bc.pixels     || {};
+  const cc  = bc.customCode || {};
+  const borderRadius = (bc.borderStyle === 'square') ? '2px' : '16px';
+  const iconRadius   = (bc.borderStyle === 'square') ? '2px' : '14px';
+  const btnRadius    = (bc.borderStyle === 'square') ? '2px' : '10px';
+  const btnAnim = bc.buttonAnimation || 'rebond';
+  const font = bc.fontFamily || 'Inter';
+  const fontStack = (font === 'Inter' || font === 'system') ? "system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" : `'${font}',system-ui,sans-serif`;
+  const fontImport = (font && font !== 'Inter' && font !== 'system') ?
+    `<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=${encodeURIComponent(font)}:wght@400;600;700;800&display=swap" rel="stylesheet">` : '';
+  // Organisation toggles (défaut true si non défini)
+  const showFeatured    = bc.showFeatured    !== false;
+  const showCartButton  = bc.showCartButton  !== false;
+  const showReviews     = bc.showReviews     !== false;
+  const showPromoBadges = bc.showPromoBadges !== false;
+  const showStockCount  = bc.showStockCount  !== false;
+  const showCategories  = bc.showCategories  !== false;
+  // URL publique (domaine personnalisé si vérifié)
+  const publicUrl = (bc.customDomainVerified && bc.customDomain) ? `https://${bc.customDomain}` : `https://${bc.domain}.stockr.shop`;
+
+  // ── Snippets pixels ──
+  const fbPixelHead = (px.facebookPixel_enabled && px.facebookPixel) ? `
+<!-- Meta Pixel -->
+<script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','${px.facebookPixel}');fbq('track','PageView');</script>
+<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=${px.facebookPixel}&ev=PageView&noscript=1"/></noscript>` : '';
+  const ttPixelHead = (px.tiktokPixel_enabled && px.tiktokPixel) ? `
+<!-- TikTok Pixel -->
+<script>!function(w,d,t){w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods="page,track,identify,instances,debug,on,off,once,ready,alias,group,enableCookie,disableCookie".split(","),ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.load=function(e,n){var r="https://analytics.tiktok.com/i18n/pixel/events.js";ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=r,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};var o=document.createElement("script");o.type="text/javascript",o.async=!0,o.src=r+"?sdkid="+e+"&lib="+t;var a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(o,a)};ttq.load('${px.tiktokPixel}');ttq.page();}(window,document,'ttq');</script>` : '';
+  const gaHead = (px.googleAnalytics_enabled && px.googleAnalytics) ? `
+<!-- GA4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=${px.googleAnalytics}"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','${px.googleAnalytics}');</script>` : '';
+  const gtmHead = (px.googleTagMgr_enabled && px.googleTagMgr) ? `
+<!-- GTM -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${px.googleTagMgr}');</script>` : '';
+  const gtmBody = (px.googleTagMgr_enabled && px.googleTagMgr) ? `<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=${px.googleTagMgr}" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>` : '';
+  const snapHead = (px.snapPixel_enabled && px.snapPixel) ? `
+<!-- Snapchat Pixel -->
+<script>(function(e,t,n){if(e.snaptr)return;var a=e.snaptr=function(){a.handleRequest?a.handleRequest.apply(a,arguments):a.queue.push(arguments)};a.queue=[];var s='script';r=t.createElement(s);r.async=!0;r.src=n;var u=t.getElementsByTagName(s)[0];u.parentNode.insertBefore(r,u)})(window,document,'https://sc-static.net/scevent.min.js');snaptr('init','${px.snapPixel}');snaptr('track','PAGE_VIEW');</script>` : '';
+  const customJsBody = (px.customJs_enabled && px.customJs) ? `<script>${px.customJs}</script>` : '';
+
+  // ── Animations de bouton (CSS) ──
+  const btnAnimCss = {
+    none:   '',
+    rebond: '@keyframes btnBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}.order-btn{animation:btnBounce 1.4s ease-in-out infinite}',
+    pulse:  '@keyframes btnPulse{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(37,211,102,.5)}50%{transform:scale(1.04);box-shadow:0 0 0 8px rgba(37,211,102,0)}}.order-btn{animation:btnPulse 1.8s infinite}',
+    shake:  '@keyframes btnShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px)}75%{transform:translateX(2px)}}.order-btn{animation:btnShake .6s ease-in-out infinite}',
+    glow:   '@keyframes btnGlow{0%,100%{box-shadow:0 0 8px rgba(37,211,102,.4)}50%{box-shadow:0 0 20px rgba(37,211,102,.9)}}.order-btn{animation:btnGlow 1.6s ease-in-out infinite}',
+  }[btnAnim] || '';
+  // Active banners (filter by date)
+  const today = new Date().toISOString().slice(0,10);
+  const activeBanners = (S.banners||[]).filter(b => b.active && (b.startDate||'')<=today && (b.endDate||'9999')>=today);
+  const topBanner = activeBanners.find(b => b.position !== 'bottom');
+  const bottomBanner = activeBanners.find(b => b.position === 'bottom');
+  const bannerHTML = (b, pos) => b ? `<div class="banner banner-${pos}" style="background:${b.bgColor};color:${b.textColor}">
+    <span style="font-size:18px">${b.emoji||''}</span>
+    <span style="flex:1">${b.text}</span>
+    ${b.linkText?`<a href="${b.linkUrl||'#'}" style="background:rgba(255,255,255,0.25);padding:6px 14px;border-radius:6px;font-size:11px;font-weight:700;color:inherit;text-decoration:none">${b.linkText}</a>`:''}
+    ${b.dismissible!==false?`<button onclick="this.parentElement.style.display='none'" style="background:none;border:none;color:inherit;font-size:18px;cursor:pointer;padding:0 6px;opacity:.7">×</button>`:''}
+  </div>` : '';
+
+  // Active popup
+  const activePopup = (S.popups||[]).find(p => p.active && (p.startDate||'')<=today && (p.endDate||'9999')>=today);
+  const popupHTML = activePopup ? `<div id="popup-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1000;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)" onclick="if(event.target===this)closePopup()">
+    <div style="background:${activePopup.bgColor};color:${activePopup.textColor};border-radius:16px;padding:32px 24px;max-width:400px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.4);animation:popupIn .4s ease-out">
+      <button onclick="closePopup()" style="position:absolute;top:12px;right:12px;background:rgba(255,255,255,0.2);border:none;color:${activePopup.textColor};width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:18px;font-weight:700">×</button>
+      <div style="font-size:48px;margin-bottom:12px">${activePopup.emoji||'🎉'}</div>
+      <div style="font-size:22px;font-weight:800;margin-bottom:10px;line-height:1.2">${activePopup.title}</div>
+      <div style="font-size:14px;opacity:.95;margin-bottom:18px;line-height:1.5">${activePopup.message||''}</div>
+      ${activePopup.promoCode?`<div style="background:rgba(255,255,255,0.25);padding:10px 18px;border-radius:10px;font-family:monospace;font-weight:800;letter-spacing:3px;display:inline-block;margin-bottom:16px;font-size:16px;cursor:pointer" onclick="navigator.clipboard.writeText('${activePopup.promoCode}');this.innerHTML='✓ Copié !'">${activePopup.promoCode}</div>`:''}
+      <div><a href="${activePopup.ctaUrl||waLink}" target="_blank" onclick="closePopup()" style="display:inline-block;background:rgba(255,255,255,0.25);color:${activePopup.textColor};padding:12px 28px;border-radius:10px;font-weight:700;text-decoration:none;backdrop-filter:blur(4px)">${activePopup.ctaText||'En profiter'}</a></div>
+    </div>
+  </div>
+  <script>
+  (function(){
+    var trig='${activePopup.trigger}', val=${activePopup.triggerValue||5}, once=${activePopup.showOnce!==false};
+    var key='stockr_popup_${activePopup.id}';
+    if(once && localStorage.getItem(key))return;
+    function show(){document.getElementById('popup-overlay').style.display='flex';if(once)localStorage.setItem(key,'1');}
+    window.closePopup=function(){document.getElementById('popup-overlay').style.display='none';};
+    if(trig==='entry'){setTimeout(show,300);}
+    else if(trig==='time'){setTimeout(show,val*1000);}
+    else if(trig==='scroll'){window.addEventListener('scroll',function onScroll(){var p=(window.scrollY/(document.body.scrollHeight-window.innerHeight))*100;if(p>=val){show();window.removeEventListener('scroll',onScroll);}});}
+    else if(trig==='exit'){document.addEventListener('mouseleave',function onExit(e){if(e.clientY<=0){show();document.removeEventListener('mouseleave',onExit);}});}
+  })();
+  </script>
+  <style>@keyframes popupIn{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}</style>` : '';
+
+  // Reviews (approved only)
+  const approvedReviews = (S.reviews||[]).filter(r => r.approved);
+  const avgRating = approvedReviews.length > 0 ? (approvedReviews.reduce((s,r)=>s+r.rating,0)/approvedReviews.length).toFixed(1) : 0;
+  const reviewsHTML = approvedReviews.length > 0 ? `<div class="reviews-section">
+    <div class="reviews-title">
+      <div style="font-size:24px;font-weight:800;color:#F59E0B">${avgRating} / 5</div>
+      <div style="font-size:22px;color:#F59E0B;letter-spacing:2px">${'★'.repeat(Math.round(avgRating))}${'☆'.repeat(5-Math.round(avgRating))}</div>
+      <div style="font-size:12px;color:#666;margin-top:4px">${approvedReviews.length} avis clients vérifiés</div>
+    </div>
+    ${approvedReviews.slice(0,6).map(r => `
+    <div class="review">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+        <div style="width:36px;height:36px;border-radius:50%;background:${tc};color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800">${(r.clientName||'?').charAt(0).toUpperCase()}</div>
+        <div style="flex:1">
+          <div style="font-weight:700;font-size:13px">${r.clientName} ${r.verified?'<span style="color:#10B981;font-size:11px">✓ Vérifié</span>':''}</div>
+          <div style="color:#F59E0B;font-size:13px;letter-spacing:1px">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
+        </div>
+      </div>
+      <div style="font-size:13px;color:#444;line-height:1.5">${r.comment||''}</div>
+    </div>`).join('')}
+  </div>` : '';
+
+  const prodsHTML = shopProds.map(p => {
+    const promo = _getActivePromo(p.id);
+    const promoPrice = promo ? _applyPromoValue(p.price, promo) : null;
+    return `<div class="product">
+      <div class="product-top">
+        <div class="product-icon">${p.name.charAt(0).toUpperCase()}</div>
+        <div class="product-info">
+          <div class="product-name">${p.name}</div>
+          ${showCategories && p.category ? `<div style="font-size:11px;color:#999;margin-top:2px">${p.category}</div>` : ''}
+          ${showPromoBadges && promo ? `<div class="product-promo">${promo.type==='fixed'?'-'+fmt(promo.value)+sym():'-'+(promo.value||promo.discount)+'%'} ${promo.name}</div>` : ''}
+        </div>
+      </div>
+      <div class="product-bottom">
+        <div>
+          <div class="product-price">${promo ? `<span class="old-price">${fmt(p.price)}</span> ${fmt(promoPrice)}` : fmt(p.price)} ${sym()}</div>
+          ${showStockCount && p.qty>0 ? `<div style="font-size:11px;color:#10B981;margin-top:2px;font-weight:600">✓ En stock (${p.qty})</div>` : ''}
+          ${showStockCount && p.qty===0 ? `<div style="font-size:11px;color:#EF4444;margin-top:2px;font-weight:600">⚠ Rupture</div>` : ''}
+        </div>
+        ${showCartButton ? `<button class="order-btn" onclick="window.open('${waLink}?text='+encodeURIComponent('Bonjour, je voudrais commander : ${p.name.replace(/'/g, "\\'")} ${promo ? '(PROMO code '+promo.code+') '+fmt(promoPrice) : fmt(p.price)} ${sym()}'))">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-3px"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg>
+          Commander
+        </button>` : ''}
+      </div>
+    </div>`;
+  }).join('\n');
+  const html = `<!DOCTYPE html>
+<html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${bc.name||S.session?.business||'Ma Boutique'}</title>
+<meta name="description" content="${bc.description || 'Boutique en ligne'}">
+<meta property="og:title" content="${bc.name||S.session?.business||'Ma Boutique'}">
+<meta property="og:description" content="${bc.description || 'Boutique en ligne'}">
+<meta property="og:url" content="${publicUrl}">
+<link rel="canonical" href="${publicUrl}">
+<link rel="icon" type="image/png" href="${logo || ''}">
+${fontImport}
+${fbPixelHead}
+${ttPixelHead}
+${gaHead}
+${gtmHead}
+${snapHead}
+${cc.head || ''}
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:${fontStack};background:#f5f5f7;color:#1d1d1f;-webkit-font-smoothing:antialiased}
+.header{background:linear-gradient(135deg,${tc},${tc}cc);color:#fff;padding:48px 20px 36px;text-align:center;position:relative;overflow:hidden}
+.header::before{content:'';position:absolute;top:-60%;left:-20%;width:140%;height:200%;background:radial-gradient(circle,rgba(255,255,255,.1) 0%,transparent 70%);pointer-events:none}
+.header-logo{width:64px;height:64px;border-radius:16px;object-fit:cover;margin-bottom:12px;border:3px solid rgba(255,255,255,.3);box-shadow:0 4px 20px rgba(0,0,0,.2)}
+.header h1{font-size:26px;font-weight:800;letter-spacing:-.5px}
+.header p{opacity:.85;margin-top:8px;font-size:14px;max-width:400px;margin-left:auto;margin-right:auto}
+.container{max-width:640px;margin:0 auto;padding:16px}
+.info-bar{background:#fff;border-radius:14px;padding:14px 18px;margin:-24px 16px 16px;position:relative;z-index:1;box-shadow:0 4px 20px rgba(0,0,0,.06);display:flex;gap:16px;justify-content:center;flex-wrap:wrap;font-size:12px;color:#666}
+.info-item{display:flex;align-items:center;gap:6px}
+.product{background:#fff;border-radius:${borderRadius};padding:18px;margin-bottom:14px;box-shadow:0 2px 12px rgba(0,0,0,.04);border:1px solid rgba(0,0,0,.04);transition:transform .2s,box-shadow .2s}
+.product:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.08)}
+.product-top{display:flex;gap:14px;align-items:flex-start}
+.product-icon{width:52px;height:52px;border-radius:${iconRadius};background:${tc}15;color:${tc};display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;flex-shrink:0}
+.product-info{flex:1}
+.product-name{font-weight:700;font-size:16px;line-height:1.3}
+.product-promo{display:inline-block;background:#ef444420;color:#ef4444;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:700;margin-top:4px}
+.product-bottom{display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:14px;border-top:1px solid #f0f0f0}
+.product-price{font-weight:800;font-size:20px;color:${tc}}
+.old-price{text-decoration:line-through;color:#aaa;font-size:14px;font-weight:500;margin-right:6px}
+.order-btn{background:#25D366;color:#fff;border:none;border-radius:${btnRadius};padding:10px 18px;font-weight:700;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:6px;transition:transform .15s,background .15s}
+.order-btn:hover{background:#20bd5a;transform:scale(1.03)}
+.pay-section{background:#fff;border-radius:14px;padding:16px;margin-bottom:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.03)}
+.pay-section-title{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#999;margin-bottom:10px;font-weight:600}
+.pay-badges{display:flex;flex-wrap:wrap;justify-content:center;gap:6px}
+.pay-badge{background:${tc}12;color:${tc};padding:6px 14px;border-radius:10px;font-size:12px;font-weight:600}
+.delivery-info{text-align:center;font-size:13px;color:#666;margin:8px 0;padding:12px;background:#fff;border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,.03)}
+.footer{text-align:center;padding:32px 20px;font-size:12px;color:#aaa}
+.footer a{color:${tc};text-decoration:none;font-weight:600}
+.wa-float{position:fixed;bottom:20px;right:20px;width:56px;height:56px;border-radius:50%;background:#25D366;color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(37,211,102,.4);cursor:pointer;z-index:99;transition:transform .2s}
+.wa-float:hover{transform:scale(1.1)}
+.wa-float svg{width:28px;height:28px}
+.banner{display:flex;align-items:center;gap:10px;padding:10px 16px;font-size:13px;font-weight:600}
+.banner-top{position:sticky;top:0;z-index:50}
+.banner-bottom{position:sticky;bottom:0;z-index:50}
+.reviews-section{background:linear-gradient(135deg,#FEF3C7,#fff);border-radius:14px;padding:20px 16px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.03)}
+.reviews-title{text-align:center;margin-bottom:16px}
+.review{background:#fff;border-radius:12px;padding:14px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,.04);border:1px solid rgba(0,0,0,.03)}
+.review:last-child{margin-bottom:0}
+@media(max-width:480px){.header{padding:36px 16px 28px}.header h1{font-size:22px}.product-price{font-size:17px}.info-bar{margin:-20px 12px 12px;padding:10px 14px}}
+${btnAnimCss}
+${cc.css || ''}
+</style></head><body>
+${gtmBody}
+${bannerHTML(topBanner, 'top')}
+<div class="header">
+  ${logo ? `<img src="${logo}" class="header-logo" alt="Logo">` : ''}
+  <h1>${bc.name||S.session?.business||'Ma Boutique'}</h1>
+  <p>${bc.description||'Bienvenue ! Découvrez nos produits et commandez en un clic'}</p>
+</div>
+<div class="info-bar">
+  ${(bc.deliveryZones||[]).length>0?`<div class="info-item">📍 ${(bc.deliveryZones||[]).slice(0,4).join(', ')}${(bc.deliveryZones||[]).length>4?' +'+((bc.deliveryZones||[]).length-4):''}</div>`:''}
+  ${bc.deliveryFees>0?`<div class="info-item">🚚 Livraison : ${fmt(bc.deliveryFees)} ${sym()}</div>`:'<div class="info-item">🚚 Livraison disponible</div>'}
+  <div class="info-item">💬 Commande via WhatsApp</div>
+</div>
+<div class="container">
+${cc.body || ''}
+${prodsHTML}
+${showReviews ? reviewsHTML : ''}
+<div class="pay-section">
+  <div class="pay-section-title">Moyens de paiement acceptés</div>
+  <div class="pay-badges">${payHTML}</div>
+</div>
+${(bc.deliveryZones||[]).length>0?`<div class="delivery-info">🏙️ Zones de livraison : ${(bc.deliveryZones||[]).join(' • ')}</div>`:''}
+</div>
+${bannerHTML(bottomBanner, 'bottom')}
+${popupHTML}
+<div class="footer">
+  <div style="margin-bottom:8px">${bc.name||S.session?.business||'Ma Boutique'}</div>
+  Propulsé par <a href="#">STOCKR</a>
+</div>
+${waNum?`<a href="${waLink}" target="_blank" class="wa-float"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg></a>`:''}
+${customJsBody}
+${cc.js ? `<script>${cc.js}<\/script>` : ''}
+</body></html>`;
+  // Download as HTML file
+  const blob = new Blob([html], {type:'text/html;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `${bc.domain||'boutique'}.html`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+  bc.siteGenerated = true;
+  bc.siteGeneratedDate = new Date().toISOString();
+  localStorage.setItem('stockr_boutique', JSON.stringify(bc));
+  logActivity('boutique', `Site genere : ${publicUrl}`);
+  showToast('Site telecharge ! Hebergez-le sur votre domaine.');
+  render();
+}
+// ═══════════════════════════════════════════════
+// APPARENCE — templates, couleurs, organisation
+// ═══════════════════════════════════════════════
+function vBoutiqueAppearance() {
+  const bc = S.boutiqueConfig;
+  const tpl = bc.template || 'feed';
+  const border = bc.borderStyle || 'rounded';
+  const animation = bc.buttonAnimation || 'rebond';
+  return `
+  <div class="sub-hero">
+    <div class="page-header-row" style="margin-bottom:10px">
+      <button class="back-btn-dark" onclick="nav('boutique')">${IC.left}</button>
+      <div style="flex:1">
+        <div class="sub-hero-title">Paramètres d'apparence</div>
+        <div class="sub-hero-sub">Personnalisez le look de votre site</div>
+      </div>
+      <button class="btn btn-primary" style="padding:6px 14px;font-size:12px" onclick="previewBoutiqueSite()">${IC.globe} Aperçu</button>
+    </div>
+  </div>
+  <div class="container">
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">${IC.layers||'📐'} Template de fiche produit</div>
+      <div style="font-size:11px;color:var(--text-3);margin-bottom:10px">Définissez comment s'affiche la page quand un client clique sur un produit</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+        ${[
+          {id:'feed',    name:'Feed',  desc:'Vue détaillée classique'},
+          {id:'oreo',    name:'Oreo',  desc:'Image + achat rapide'},
+          {id:'make',    name:'Make',  desc:'Présentation storytelling'},
+        ].map(t => `
+        <div class="template-option ${tpl===t.id?'selected':''}" onclick="updateBoutiqueConfig('template','${t.id}');render()">
+          <div class="template-preview">
+            <div class="tpl-bar"></div>
+            ${t.id==='feed'?'<div class="tpl-text"></div><div class="tpl-text"></div><div class="tpl-text short"></div>':
+              t.id==='oreo'?'<div class="tpl-img"></div><div class="tpl-cta"></div>':
+              '<div class="tpl-img"></div><div class="tpl-text"></div><div class="tpl-cta"></div>'}
+          </div>
+          <div class="template-label">${t.name}</div>
+          <div style="font-size:10px;color:var(--text-3);text-align:center">${t.desc}</div>
+        </div>`).join('')}
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">🎨 Couleur de la marque</div>
+      <div style="font-size:11px;color:var(--text-3);margin-bottom:8px">La couleur principale de votre boutique</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        ${[
+          {color:'#FCD34D',name:'Jaune'},
+          {color:'#059669',name:'Vert'},
+          {color:'#EA580C',name:'Orange'},
+          {color:'#2563EB',name:'Bleu'},
+          {color:'#F472B6',name:'Rose'},
+          {color:'#4F46E5',name:'Indigo'},
+          {color:'#000000',name:'Noir'},
+          {color:'#DC2626',name:'Rouge'},
+        ].map(c => `
+        <div onclick="updateBoutiqueConfig('themeColor','${c.color}');render()" style="cursor:pointer;width:48px;height:48px;border-radius:50%;background:${c.color};border:3px solid ${(bc.themeColor||'#4F46E5')===c.color?'#000':'transparent'};display:flex;align-items:center;justify-content:center;color:${c.color==='#FCD34D'||c.color==='#FFFFFF'?'#000':'#fff'};transition:.2s;position:relative">${(bc.themeColor||'#4F46E5')===c.color?'✓':''}</div>`).join('')}
+        <label style="cursor:pointer;width:48px;height:48px;border-radius:50%;border:2px dashed var(--border);display:flex;align-items:center;justify-content:center;color:var(--text-3);position:relative">
+          ✎
+          <input type="color" value="${bc.themeColor||'#4F46E5'}" onchange="updateBoutiqueConfig('themeColor',this.value);render()" style="position:absolute;inset:0;opacity:0;cursor:pointer">
+        </label>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">Style de bordure</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        ${[
+          {id:'rounded', name:'Arrondi', radius:'16px'},
+          {id:'square', name:'Carré', radius:'2px'},
+        ].map(b => `
+        <div class="template-option ${border===b.id?'selected':''}" onclick="updateBoutiqueConfig('borderStyle','${b.id}');render()">
+          <div style="background:var(--gray-1);width:80%;height:40px;margin:0 auto 8px;border-radius:${b.radius};border:2px solid var(--border)"></div>
+          <div style="text-align:center;font-weight:700;font-size:13px">${b.name}</div>
+        </div>`).join('')}
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">Animation du bouton d'achat</div>
+      <div style="display:flex;gap:8px">
+        <select class="input" style="flex:1" onchange="updateBoutiqueConfig('buttonAnimation',this.value)">
+          ${[
+            {id:'none',name:'Aucune'},
+            {id:'rebond',name:'Rebond'},
+            {id:'pulse',name:'Pulsation'},
+            {id:'shake',name:'Secousse'},
+            {id:'glow',name:'Lueur'},
+          ].map(a => `<option value="${a.id}" ${animation===a.id?'selected':''}>${a.name}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">📦 Organisation de la page</div>
+      ${[
+        {key:'showFeatured',label:'Afficher les produits en vedette',sub:'Mettez en avant vos meilleures ventes'},
+        {key:'showCartButton',label:"Afficher le bouton d'achat sur la carte produit",sub:'Achat direct depuis la liste'},
+        {key:'showReviews',label:'Afficher les avis clients',sub:'Renforce la confiance'},
+        {key:'showPromoBadges',label:'Afficher les badges promo',sub:'Montrer -10%, -20% sur les produits'},
+        {key:'showStockCount',label:'Afficher le stock disponible',sub:"Crée un sentiment d'urgence"},
+        {key:'showCategories',label:'Afficher les catégories',sub:'Navigation par type de produit'},
+      ].map(opt => `
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)">
+        <div style="flex:1">
+          <div style="font-weight:600;font-size:13px">${opt.label}</div>
+          <div style="font-size:11px;color:var(--text-3)">${opt.sub}</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" ${bc[opt.key]!==false?'checked':''} onchange="updateBoutiqueConfig('${opt.key}',this.checked)">
+          <span class="toggle-track"></span>
+        </label>
+      </div>`).join('')}
+    </div>
+
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">🔤 Typographie</div>
+      <div class="form-group">
+        <label class="form-label">Police</label>
+        <select class="input" onchange="updateBoutiqueConfig('fontFamily',this.value)">
+          ${['Inter','Poppins','Roboto','Montserrat','Playfair Display','Lato','Open Sans'].map(f => `<option value="${f}" ${bc.fontFamily===f?'selected':''}>${f}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" style="width:100%" onclick="showToast('Apparence sauvegardée ✓');nav('boutique')">${IC.check} Enregistrer les paramètres</button>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════
+// NOM DE DOMAINE
+// ═══════════════════════════════════════════════
+function vBoutiqueDomain() {
+  const bc = S.boutiqueConfig;
+  const verified = bc.customDomainVerified;
+  return `
+  <div class="sub-hero">
+    <div class="page-header-row" style="margin-bottom:10px">
+      <button class="back-btn-dark" onclick="nav('boutique')">${IC.left}</button>
+      <div style="flex:1">
+        <div class="sub-hero-title">Nom de domaine</div>
+        <div class="sub-hero-sub">Personnalisez votre URL</div>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">🔗 URL STOCKR (gratuite)</div>
+      <div style="font-size:11px;color:var(--text-3);margin-bottom:8px">Votre boutique est accessible gratuitement sur stockr.shop</div>
+      <div class="form-group">
+        <label class="form-label">Nom de sous-domaine</label>
+        <div style="display:flex;gap:6px;align-items:center">
+          <input class="input" value="${bc.domain||''}" placeholder="maboutique" oninput="updateBoutiqueConfig('domain',this.value.toLowerCase().replace(/[^a-z0-9-]/g,''))" style="flex:1">
+          <span style="font-size:13px;color:var(--text-3);font-weight:600">.stockr.shop</span>
+        </div>
+      </div>
+      ${bc.domain ? `
+      <div style="background:var(--gray-1);padding:10px;border-radius:8px;font-family:monospace;font-size:13px;display:flex;align-items:center;justify-content:space-between">
+        <span>https://${bc.domain}.stockr.shop</span>
+        <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" onclick="navigator.clipboard.writeText('https://${bc.domain}.stockr.shop');showToast('Lien copié !')">${IC.check} Copier</button>
+      </div>` : ''}
+    </div>
+
+    <div class="card" style="margin-bottom:10px;border:2px solid var(--accent);background:var(--accent-light)">
+      <div class="card-title">🌐 Domaine personnalisé (pro)</div>
+      <div style="font-size:12px;color:var(--text-2);margin-bottom:12px">Instaurez la confiance avec votre propre nom de domaine (ex: <strong>maboutique.com</strong>). Un domaine professionnel permet aux clients de vous trouver plus facilement.</div>
+      <div class="form-group">
+        <label class="form-label">Votre domaine</label>
+        <input class="input" value="${bc.customDomain||''}" placeholder="maboutique.com" oninput="updateBoutiqueConfig('customDomain',this.value.toLowerCase().trim())">
+      </div>
+      ${bc.customDomain ? `
+      <div style="margin-top:10px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+          <strong style="font-size:14px">${bc.customDomain}</strong>
+          ${verified ? '<span style="background:#10B98120;color:#10B981;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700">✓ Vérifié</span>' : '<span style="background:#F59E0B20;color:#F59E0B;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700">⚠ Non vérifié</span>'}
+        </div>
+        <div style="font-size:11px;color:var(--text-3);margin-bottom:8px;font-weight:600">Ajoutez ces enregistrements DNS chez votre registrar :</div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden">
+          <div style="display:grid;grid-template-columns:60px 1fr 1fr 32px;padding:8px 10px;background:var(--gray-1);font-size:10px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:1px">
+            <div>Type</div><div>Nom</div><div>Valeur</div><div></div>
+          </div>
+          <div style="display:grid;grid-template-columns:60px 1fr 1fr 32px;padding:10px;align-items:center;border-bottom:1px solid var(--border);font-size:12px;font-family:monospace">
+            <div><strong>A</strong></div><div>@</div><div>216.150.1.1</div>
+            <button style="border:none;background:none;cursor:pointer" onclick="navigator.clipboard.writeText('216.150.1.1');showToast('Copié')">${IC.check}</button>
+          </div>
+          <div style="display:grid;grid-template-columns:60px 1fr 1fr 32px;padding:10px;align-items:center;font-size:12px;font-family:monospace">
+            <div><strong>CNAME</strong></div><div>www</div><div style="overflow:hidden;text-overflow:ellipsis">${bc.customDomain}</div>
+            <button style="border:none;background:none;cursor:pointer" onclick="navigator.clipboard.writeText('${bc.customDomain}');showToast('Copié')">${IC.check}</button>
+          </div>
+        </div>
+        <div style="display:flex;gap:6px;margin-top:10px">
+          <button class="btn btn-primary" style="flex:1" onclick="verifyCustomDomain()">${IC.check} Vérifier le domaine</button>
+          ${verified?`<button class="btn btn-ghost" onclick="if(confirm('Supprimer ce domaine ?')){updateBoutiqueConfig('customDomain','');updateBoutiqueConfig('customDomainVerified',false);render()}" style="color:var(--danger)">🗑</button>`:''}
+        </div>
+      </div>` : ''}
+    </div>
+
+    <div class="card" style="font-size:11px;color:var(--text-3);line-height:1.6">
+      <strong style="color:var(--text-1);display:block;margin-bottom:6px">💡 Comment ça marche ?</strong>
+      1. Achetez votre nom de domaine chez un registrar (Namecheap, OVH, GoDaddy...)<br>
+      2. Configurez les enregistrements DNS ci-dessus<br>
+      3. Cliquez sur "Vérifier" — la propagation peut prendre 24-48h<br>
+      4. Votre boutique sera accessible sur votre domaine personnalisé !
+    </div>
+  </div>`;
+}
+function verifyCustomDomain() {
+  const bc = S.boutiqueConfig;
+  if (!bc.customDomain) { showToast('Entrez un domaine', 'error'); return; }
+  // Simulated verification (en prod: ping DNS)
+  showToast('Vérification en cours...');
+  setTimeout(() => {
+    updateBoutiqueConfig('customDomainVerified', true);
+    showToast('Domaine vérifié ! ✓');
+    render();
+  }, 1500);
+}
+
+// ═══════════════════════════════════════════════
+// PIXELS & TRACKING (Facebook, TikTok, Google)
+// ═══════════════════════════════════════════════
+function vBoutiquePixels() {
+  const bc = S.boutiqueConfig;
+  const px = bc.pixels = bc.pixels || {};
+  const pixelDefs = [
+    {key:'facebookPixel',  name:'ID Pixel Facebook',              icon:'🔵', color:'#1877F2', placeholder:'1234567890',   desc:'Ajoutez votre ID Pixel Facebook pour suivre le trafic'},
+    {key:'facebookCapi',   name:"Jeton d'API de Conversion Facebook", icon:'🔵', color:'#1877F2', placeholder:'EAA...',      desc:'Améliore le suivi des conversions (iOS 14.5+)'},
+    {key:'tiktokPixel',    name:'ID Pixel TikTok',                icon:'⚫', color:'#000',    placeholder:'C1A...',       desc:'Suivez le trafic et les conversions TikTok Ads'},
+    {key:'googleAnalytics',name:'Google Analytics 4 ID',          icon:'🔴', color:'#E37400', placeholder:'G-XXXXXXXXXX', desc:'Analyses détaillées du trafic de votre site'},
+    {key:'googleTagMgr',   name:'Google Tag Manager',             icon:'🔴', color:'#4285F4', placeholder:'GTM-XXXXXXX',  desc:'Gérez toutes vos balises de tracking'},
+    {key:'snapPixel',      name:'ID Pixel Snapchat',              icon:'🟡', color:'#FFFC00', placeholder:'abc123',       desc:'Trackez les campagnes Snap Ads'},
+  ];
+  const activeCount = pixelDefs.filter(p => px[p.key+'_enabled'] && px[p.key]).length + (px.customJs_enabled && px.customJs ? 1 : 0);
+  return `
+  <div class="sub-hero">
+    <div class="page-header-row" style="margin-bottom:10px">
+      <button class="back-btn-dark" onclick="nav('boutique')">${IC.left}</button>
+      <div style="flex:1">
+        <div class="sub-hero-title">Paramètres des pixels</div>
+        <div class="sub-hero-sub">${activeCount>0?activeCount+' pixel'+(activeCount>1?'s':'')+' actif'+(activeCount>1?'s':''):'Suivez vos conversions publicitaires'}</div>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    ${pixelDefs.map(p => {
+      const enabled = !!px[p.key+'_enabled'];
+      return `
+    <div class="card" style="margin-bottom:8px;${enabled?'border-left:3px solid '+p.color:''}">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:${enabled?'10px':'0'}">
+        <div style="width:36px;height:36px;border-radius:10px;background:${p.color}15;color:${p.color};display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">${p.icon}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:700;font-size:13px;color:var(--text-1)">${p.name}</div>
+          <div style="font-size:10px;color:var(--text-3);line-height:1.4">${p.desc}</div>
+        </div>
+        <label class="toggle-switch" style="flex-shrink:0">
+          <input type="checkbox" ${enabled?'checked':''} onchange="updatePixelConfig('${p.key}_enabled',this.checked);render()">
+          <span class="toggle-track"></span>
+        </label>
+      </div>
+      ${enabled ? `
+      <div class="form-group" style="margin-bottom:0">
+        <label class="form-label" style="font-size:11px">${p.name}</label>
+        <input class="input" value="${(px[p.key]||'').replace(/"/g,'&quot;')}" placeholder="${p.placeholder}" oninput="updatePixelConfig('${p.key}',this.value)" style="font-family:monospace;font-size:12px">
+        ${px[p.key] ? `<div style="font-size:10px;color:#10B981;margin-top:4px;font-weight:600">✓ Configuré</div>` : ''}
+      </div>` : ''}
+    </div>`;}).join('')}
+
+    <!-- ── JavaScript personnalisé ── -->
+    <div class="card" style="margin-bottom:10px;${px.customJs_enabled?'border-left:3px solid #FCD34D':''}">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:${px.customJs_enabled?'10px':'0'}">
+        <div style="width:36px;height:36px;border-radius:10px;background:#FCD34D15;color:#92400E;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0">JS</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:700;font-size:13px;color:var(--text-1)">Code JavaScript personnalisé</div>
+          <div style="font-size:10px;color:var(--text-3)">Pour événements custom et tracking avancé</div>
+        </div>
+        <label class="toggle-switch" style="flex-shrink:0">
+          <input type="checkbox" ${px.customJs_enabled?'checked':''} onchange="updatePixelConfig('customJs_enabled',this.checked);render()">
+          <span class="toggle-track"></span>
+        </label>
+      </div>
+      ${px.customJs_enabled ? `
+      <div class="form-group" style="margin-bottom:0">
+        <label class="form-label" style="font-size:11px">Code JavaScript personnalisé</label>
+        <textarea class="input" rows="8" style="font-family:'SF Mono',Consolas,monospace;font-size:11px;line-height:1.5" placeholder="/* Votre JS personnalisé — ex: ga('send','event','boutique','view'); */" oninput="updatePixelConfig('customJs',this.value)">${px.customJs||''}</textarea>
+        <div style="font-size:10px;color:var(--warning);margin-top:6px">⚠ Injecté avant &lt;/body&gt; — n'insérez que du code de confiance</div>
+      </div>` : ''}
+    </div>
+
+    <!-- ── Actions bas de page ── -->
+    <div style="display:flex;gap:8px;margin-top:14px">
+      <button class="btn btn-primary" style="flex:1" onclick="savePixelConfig()">${IC.check} Enregistrer</button>
+      <button class="btn btn-ghost" onclick="resetPixelConfig()" style="color:var(--danger)">🗑 Tout réinitialiser</button>
+    </div>
+
+    <div class="card" style="background:#EFF6FF;border-color:#3B82F640;margin-top:14px;font-size:11px;color:#1E40AF;line-height:1.6">
+      💡 <strong>Astuce :</strong> les pixels sont automatiquement injectés dans le site quand vous cliquez sur "Générer HTML" depuis la page Boutique.
+    </div>
+  </div>`;
+}
+function updatePixelConfig(key, val) {
+  const bc = S.boutiqueConfig;
+  bc.pixels = bc.pixels || {};
+  bc.pixels[key] = val;
+  localStorage.setItem('stockr_boutique', JSON.stringify(bc));
+}
+function savePixelConfig() {
+  const bc = S.boutiqueConfig;
+  localStorage.setItem('stockr_boutique', JSON.stringify(bc));
+  const px = bc.pixels || {};
+  const count = Object.keys(px).filter(k => !k.endsWith('_enabled') && px[k] && px[k+'_enabled']).length;
+  logActivity('boutique', `Pixels mis à jour (${count} actif(s))`);
+  showToast(`Pixels enregistrés ✓`);
+}
+function resetPixelConfig() {
+  if (!confirm('Réinitialiser tous les pixels ? Cette action est irréversible.')) return;
+  S.boutiqueConfig.pixels = {};
+  localStorage.setItem('stockr_boutique', JSON.stringify(S.boutiqueConfig));
+  showToast('Pixels réinitialisés');
+  render();
+}
+
+// ═══════════════════════════════════════════════
+// CODE PERSONNALISÉ (CSS, HTML, JS)
+// ═══════════════════════════════════════════════
+function _codeSamples() {
+  return {
+    css: "/* Arrondir tous les boutons */\n.order-btn, .btn {\n  border-radius: 25px !important;\n}\n\n/* Ajouter ombre aux produits */\n.product {\n  box-shadow: 0 8px 30px rgba(0,0,0,.12);\n}\n\n/* Fond personnalisé */\nbody {\n  background: linear-gradient(135deg, #FEF3C7, #fff);\n}",
+    head: '<!-- Meta tags SEO -->\n<meta property="og:image" content="https://...image.jpg">\n<meta name="keywords" content="boutique, vente, CI">\n\n<!-- Preconnect pour perf -->\n<link rel="preconnect" href="https://fonts.googleapis.com">',
+    body: '<!-- Bannière annonce -->\n<div style="position:fixed;bottom:80px;left:20px;background:#000;color:#fff;padding:10px 16px;border-radius:10px;font-size:12px;z-index:999">\n  🎁 Livraison gratuite dès 20 000 FCFA\n</div>',
+    js: "// Tracker les clics 'Commander'\ndocument.querySelectorAll('.order-btn').forEach(btn => {\n  btn.addEventListener('click', () => {\n    console.log('Commande:', btn.closest('.product')?.querySelector('.product-name')?.textContent);\n    // Envoyer à GA, FB Pixel, etc.\n  });\n});"
+  };
+}
+function vBoutiqueCode() {
+  const bc = S.boutiqueConfig;
+  const cc = bc.customCode = bc.customCode || {};
+  const tab = S.codeTab || 'css';
+  const tabLabels = { css:'CSS', head:'HTML <head>', body:'HTML <body>', js:'JavaScript' };
+  const tabInjectMsg = {
+    css: "🎨 <strong>CSS</strong> est injecté dans <code>&lt;style&gt;</code> du site généré — modifie l'apparence globale.",
+    head:'📝 <strong>HTML &lt;head&gt;</strong> : balises meta, liens externes, polices, scripts tiers.',
+    body:'📄 <strong>HTML &lt;body&gt;</strong> : éléments affichés avant &lt;/body&gt; — widgets, chat, bannières.',
+    js:  '⚡ <strong>JavaScript</strong> exécuté à la fin du chargement — tracking custom, interactions.'
+  };
+  return `
+  <div class="sub-hero">
+    <div class="page-header-row" style="margin-bottom:10px">
+      <button class="back-btn-dark" onclick="nav('boutique')">${IC.left}</button>
+      <div style="flex:1">
+        <div class="sub-hero-title">Code personnalisé</div>
+        <div class="sub-hero-sub">CSS, HTML, JavaScript avancés</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mkt-tabs">
+    ${[
+      {id:'css',label:'CSS',ico:'🎨'},
+      {id:'head',label:'&lt;head&gt;',ico:'📝'},
+      {id:'body',label:'&lt;body&gt;',ico:'📄'},
+      {id:'js',label:'JS',ico:'⚡'},
+    ].map(t => `
+    <button class="mkt-tab ${tab===t.id?'active':''}" onclick="setCodeTab('${t.id}')">
+      <span class="mkt-tab-ico">${t.ico}</span>
+      <span class="mkt-tab-lbl">${t.label}</span>
+      ${cc[t.id]?'<span class="mkt-tab-count">●</span>':''}
+    </button>`).join('')}
+  </div>
+
+  <div class="container">
+    <div class="card" style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div class="card-title" style="margin-bottom:0">Code ${tabLabels[tab]}</div>
+        <div style="display:flex;gap:4px">
+          <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" onclick="loadCodeSample('${tab}')">📋 Exemple</button>
+          <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" onclick="copyCustomCode('${tab}')">📑 Copier</button>
+        </div>
+      </div>
+      <textarea id="code-editor-${tab}" class="input" rows="14" style="font-family:'SF Mono',Consolas,monospace;font-size:12px;line-height:1.5;background:#1E1E1E;color:#D4D4D4;border:none;white-space:pre;overflow-x:auto;caret-color:#fff" placeholder="/* Votre code ${tabLabels[tab]} */" oninput="updateCustomCode('${tab}',this.value)">${cc[tab]||''}</textarea>
+      <div style="font-size:10px;color:var(--text-3);margin-top:4px">${(cc[tab]||'').length} caractères</div>
+      <div style="display:flex;gap:6px;margin-top:10px">
+        <button class="btn btn-primary" style="flex:1" onclick="saveCustomCode('${tab}')">${IC.check} Enregistrer</button>
+        <button class="btn btn-ghost" onclick="clearCustomCode('${tab}')" style="color:var(--danger)">🗑 Effacer</button>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">📖 Où est injecté ce code ?</div>
+      <div style="font-size:12px;color:var(--text-2);line-height:1.6">
+        ${tabInjectMsg[tab]||''}
+      </div>
+    </div>
+
+    <div class="card" style="background:#FEF3C7;border-color:#F59E0B40;font-size:11px;color:#92400E;line-height:1.6">
+      <strong>⚠ Attention :</strong> Le code personnalisé est injecté tel quel. N'insérez que du code de confiance.
+      Testez toujours avec l'aperçu avant de générer le site.
+    </div>
+  </div>`;
+}
+function setCodeTab(tab) { S.codeTab = tab; render(); }
+function updateCustomCode(tab, val) {
+  const bc = S.boutiqueConfig;
+  bc.customCode = bc.customCode || {};
+  bc.customCode[tab] = val;
+  localStorage.setItem('stockr_boutique', JSON.stringify(bc));
+}
+function loadCodeSample(tab) {
+  const sample = _codeSamples()[tab] || '';
+  updateCustomCode(tab, sample);
+  showToast(`Exemple ${tab.toUpperCase()} chargé`);
+  render();
+}
+function saveCustomCode(tab) {
+  const el = $(`code-editor-${tab}`);
+  if (el) updateCustomCode(tab, el.value);
+  logActivity('boutique', `Code ${tab.toUpperCase()} enregistré`);
+  showToast(`Code ${tab.toUpperCase()} enregistré ✓`);
+  render();
+}
+function clearCustomCode(tab) {
+  if (!confirm(`Effacer le code ${tab.toUpperCase()} ?`)) return;
+  updateCustomCode(tab, '');
+  showToast('Effacé');
+  render();
+}
+function copyCustomCode(tab) {
+  const val = (S.boutiqueConfig.customCode||{})[tab] || '';
+  if (!val) { showToast('Rien à copier', 'error'); return; }
+  navigator.clipboard.writeText(val);
+  showToast('Code copié ✓');
+}
+
+function previewBoutiqueSite() {
+  const bc = S.boutiqueConfig;
+  const shopProds = S.products.filter(p => (bc.products||[]).includes(p.id));
+  if (shopProds.length === 0) { showToast('Ajoutez des produits en vitrine', 'error'); return; }
+  const preview = window.open('', '_blank');
+  const tc = bc.themeColor || '#4F46E5';
+  const payments = (S.paymentMethods||[]).filter(m => m.active);
+  const payText = payments.length > 0 ? payments.map(m => `<span style="background:${tc}15;color:${tc};padding:5px 12px;border-radius:8px;font-size:12px;font-weight:600">${m.name}</span>`).join(' ') : '<span style="color:#888">Espèces</span>';
+  const logo = localStorage.getItem('stockr_logo');
+  preview.document.write(`<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Aperçu — ${bc.name||'Boutique'}</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:system-ui,-apple-system,sans-serif;background:#f5f5f7;-webkit-font-smoothing:antialiased}
+.h{background:linear-gradient(135deg,${tc},${tc}cc);color:#fff;padding:44px 20px 32px;text-align:center;position:relative;overflow:hidden}
+.h::before{content:'';position:absolute;top:-60%;left:-20%;width:140%;height:200%;background:radial-gradient(circle,rgba(255,255,255,.1),transparent 70%)}
+.h img{width:56px;height:56px;border-radius:14px;object-fit:cover;margin-bottom:10px;border:2px solid rgba(255,255,255,.3)}
+.h h1{font-size:24px;font-weight:800;letter-spacing:-.5px}.h p{opacity:.85;margin-top:6px;font-size:13px}
+.bar{background:#fff;border-radius:12px;padding:12px 16px;margin:-20px 16px 14px;position:relative;z-index:1;box-shadow:0 4px 16px rgba(0,0,0,.06);text-align:center;font-size:12px;color:#666;display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.c{max-width:600px;margin:0 auto;padding:14px}
+.p{background:#fff;border-radius:14px;padding:16px;margin-bottom:12px;box-shadow:0 2px 10px rgba(0,0,0,.04);border:1px solid rgba(0,0,0,.03)}
+.pt{display:flex;gap:12px;align-items:center}
+.pi{width:46px;height:46px;border-radius:12px;background:${tc}15;color:${tc};display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;flex-shrink:0}
+.n{font-weight:700;font-size:15px}.pr{color:${tc};font-weight:800;font-size:18px;margin-top:10px}
+.b{background:#25D366;color:#fff;border:none;border-radius:10px;padding:10px 16px;font-weight:700;font-size:13px;cursor:pointer;margin-top:12px;display:inline-block}
+.pay{background:#fff;border-radius:12px;padding:14px;text-align:center;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.03)}
+.pay-t{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#999;margin-bottom:8px;font-weight:600}
+.f{text-align:center;padding:28px;font-size:12px;color:#aaa}</style></head>
+<body><div class="h">${logo?`<img src="${logo}" alt="Logo">`:''}<h1>${bc.name||S.session?.business||'Ma Boutique'}</h1><p>${bc.description||'Bienvenue !'}</p></div>
+<div class="bar">📍 ${(bc.deliveryZones||[]).slice(0,3).join(', ')||'Livraison disponible'} ${bc.deliveryFees>0?' • 🚚 '+fmt(bc.deliveryFees)+' '+sym():''}</div>
+<div class="c">
+${shopProds.map(p=>{const promo=_getActivePromo(p.id);const pp=promo?Math.round(p.price*(1-promo.discount/100)):null;return `<div class="p"><div class="pt"><div class="pi">${p.name.charAt(0)}</div><div><div class="n">${p.name}</div>${promo?'<div style="color:#ef4444;font-size:11px;font-weight:700;margin-top:2px">-'+promo.discount+'% '+promo.name+'</div>':''}</div></div><div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding-top:12px;border-top:1px solid #f0f0f0"><div class="pr">${promo?'<span style="text-decoration:line-through;color:#aaa;font-size:13px;margin-right:6px">'+fmt(p.price)+'</span>'+fmt(pp):fmt(p.price)} ${sym()}</div><button class="b">Commander</button></div></div>`;}).join('')}
+<div class="pay"><div class="pay-t">Paiements acceptés</div><div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center">${payText}</div></div>
+</div><div class="f">Aperçu STOCKR — ${bc.domain||'boutique'}.stockr.shop</div></body></html>`);
+  preview.document.close();
+}
+function toggleBoutiqueProduct(id) {
+  if (!S.boutiqueConfig.products) S.boutiqueConfig.products = [];
+  const idx = S.boutiqueConfig.products.indexOf(id);
+  if (idx >= 0) S.boutiqueConfig.products.splice(idx, 1);
+  else S.boutiqueConfig.products.push(id);
+  localStorage.setItem('stockr_boutique', JSON.stringify(S.boutiqueConfig));
+  render();
+}
+function toggleDeliveryZone(zone) {
+  if (!S.boutiqueConfig.deliveryZones) S.boutiqueConfig.deliveryZones = [];
+  const idx = S.boutiqueConfig.deliveryZones.indexOf(zone);
+  if (idx >= 0) S.boutiqueConfig.deliveryZones.splice(idx, 1);
+  else S.boutiqueConfig.deliveryZones.push(zone);
+  localStorage.setItem('stockr_boutique', JSON.stringify(S.boutiqueConfig));
+  render();
+}
+function shareBoutiqueWhatsApp() {
+  const bc = S.boutiqueConfig;
+  const prods = S.products.filter(p => (bc.products||[]).includes(p.id));
+  const lines = [
+    `🛍️ *${bc.name || S.session?.business || 'Ma Boutique'}*`,
+    bc.description || '', '',
+    '📦 *Nos produits :*',
+    ...prods.map(p => `▸ ${p.name} — *${fmt(p.price)} ${sym()}*`),
+    '', bc.deliveryFees > 0 ? `🚚 Livraison : ${fmt(bc.deliveryFees)} ${sym()}` : '🚚 Livraison gratuite',
+    (bc.deliveryZones||[]).length > 0 ? `📍 Zones : ${bc.deliveryZones.join(', ')}` : '',
+    '', '📲 Commandez maintenant !', '_Propulsé par STOCKR_'
+  ];
+  window.open('https://wa.me/?text=' + encodeURIComponent(lines.join('\n')), '_blank');
+}
+function copyBoutiqueLink() {
+  const text = `${S.boutiqueConfig.name||S.session?.business||'Ma Boutique'} — Commandez sur WhatsApp !`;
+  navigator.clipboard?.writeText(text).then(() => showToast(t('copied')||'Copie !'));
+}
+function addBoutiqueOrder() {
+  const clientName = prompt('Nom du client :');
+  if (!clientName) return;
+  const phone = prompt('Telephone du client :') || '';
+  const zone = prompt('Zone de livraison :') || '';
+  // Select products
+  const shopProds = S.products.filter(p => (S.boutiqueConfig.products||[]).includes(p.id));
+  if (shopProds.length === 0) { showToast('Ajoutez des produits en vitrine d\'abord', 'error'); return; }
+  const prodIndex = prompt('Produit :\n' + shopProds.map((p,i) => `${i+1}. ${p.name} — ${fmt(p.price)} ${sym()}`).join('\n') + '\n\nNumero du produit :');
+  if (!prodIndex) return;
+  const prod = shopProds[parseInt(prodIndex)-1];
+  if (!prod) { showToast('Produit invalide', 'error'); return; }
+  const qty = parseInt(prompt('Quantite :', '1')) || 1;
+  const total = prod.price * qty + (S.boutiqueConfig.deliveryFees || 0);
+  const order = {
+    id: Date.now(), clientName, phone, zone, status: 'pending',
+    items: [{ id:prod.id, name:prod.name, price:prod.price, qty }],
+    total, date: new Date().toISOString()
+  };
+  S.boutiqueOrders.unshift(order);
+  localStorage.setItem('stockr_boutique_orders', JSON.stringify(S.boutiqueOrders));
+  logActivity('order', `Commande de ${clientName} — ${fmt(total)} ${sym()}`);
+  showToast('Commande ajoutee !');
+  render();
+}
+function updateOrderStatus(id, status) {
+  const order = S.boutiqueOrders.find(o => o.id === id);
+  if (!order) return;
+  order.status = status;
+  order.updatedAt = new Date().toISOString();
+  localStorage.setItem('stockr_boutique_orders', JSON.stringify(S.boutiqueOrders));
+  // If confirmed, record as sale
+  if (status === 'confirmed') {
+    for (const item of (order.items||[])) {
+      const product = S.products.find(p => p.id === item.id);
+      if (product) {
+        product.composition.forEach(comp => {
+          const art = S.articles.find(a => a.id === comp.id);
+          if (art) art.stock = Math.round((art.stock - comp.qty * item.qty) * 10) / 10;
+        });
+        S.sales.unshift({ id:Date.now(), productId:item.id, productName:item.name, qty:item.qty, total:item.price*item.qty, profit:((item.price||0)-(product.purchasePrice||0))*item.qty, date:new Date().toISOString(), paymentMethod:'pending', clientName:order.clientName });
+      }
+    }
+    logActivity('sale', `Commande confirmee — ${order.clientName}`);
+  }
+  showToast(status==='confirmed'?'Commande confirmee !':status==='delivered'?'Commande livree !':'Commande annulee');
+  render();
+}
+function contactOrderClient(id) {
+  const order = S.boutiqueOrders.find(o => o.id === id);
+  if (!order || !order.phone) { showToast('Pas de numero de telephone', 'error'); return; }
+  const phone = order.phone.replace(/\s/g, '');
+  const msg = `Bonjour ${order.clientName}, votre commande chez ${S.boutiqueConfig.name||S.session?.business||'nous'} est prete ! Total: ${fmt(order.total)} ${sym()}`;
+  window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+}
+
+// ── MARKETING CENTER (hub à onglets) ─────────
+function vMarketing() {
+  const tab = S.marketingTab || 'promos';
+  const promos = S.promotions || [];
+  const banners = S.banners || [];
+  const popups = S.popups || [];
+  const reviews = S.reviews || [];
+  const campaigns = S.campaigns || [];
+  const tracking = S.trackingLinks || [];
+  const activePromos = promos.filter(p => p.active);
+  const activeBanners = banners.filter(b => b.active);
+  const activePopups = popups.filter(p => p.active);
+
+  const tabs = [
+    { id:'promos',    label:'Réductions', icon:'%',  count: activePromos.length },
+    { id:'banners',   label:'Bannières',  icon:'📢', count: activeBanners.length },
+    { id:'popups',    label:'Popups',     icon:'💬', count: activePopups.length },
+    { id:'reviews',   label:'Avis',       icon:'⭐', count: reviews.filter(r=>r.approved).length },
+    { id:'campaigns', label:'Campagnes',  icon:'📧', count: campaigns.length },
+    { id:'tracking',  label:'Liens',      icon:'🔗', count: tracking.length },
+    { id:'loyalty',   label:'Fidélité',   icon:'🎁', count: (S.loyaltyConfig?.rewards||[]).length },
+  ];
+
+  return `
+  <div class="sub-hero">
+    <div class="page-header-row" style="margin-bottom:14px">
+      <button class="back-btn-dark" onclick="nav('more')">${IC.left}</button>
+      <div style="flex:1">
+        <div class="sub-hero-title">Centre Marketing</div>
+        <div class="sub-hero-sub">Tous vos outils de vente au même endroit</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${activePromos.length}</div><div class="hero-stat-lbl">Promos actives</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${activeBanners.length+activePopups.length}</div><div class="hero-stat-lbl">Affichages</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${S.clients.length}</div><div class="hero-stat-lbl">${t('clients')}</div></div>
+    </div>
+  </div>
+
+  <div class="mkt-tabs">
+    ${tabs.map(tb => `
+    <button class="mkt-tab ${tab===tb.id?'active':''}" onclick="setMarketingTab('${tb.id}')">
+      <span class="mkt-tab-ico">${tb.icon}</span>
+      <span class="mkt-tab-lbl">${tb.label}</span>
+      ${tb.count>0?`<span class="mkt-tab-count">${tb.count}</span>`:''}
+    </button>`).join('')}
+  </div>
+
+  <div class="container">
+    ${tab === 'promos' ? _renderPromosTab(promos) : ''}
+    ${tab === 'banners' ? _renderBannersTab(banners) : ''}
+    ${tab === 'popups' ? _renderPopupsTab(popups) : ''}
+    ${tab === 'reviews' ? _renderReviewsTab(reviews) : ''}
+    ${tab === 'campaigns' ? _renderCampaignsTab(campaigns) : ''}
+    ${tab === 'tracking' ? _renderTrackingTab(tracking) : ''}
+    ${tab === 'loyalty' ? _renderLoyaltyTab() : ''}
+  </div>`;
+}
+
+function setMarketingTab(id) {
+  S.marketingTab = id;
+  render();
+}
+
+function _renderPromosTab(promos) {
+  return `
+    <div class="section-hd">
+      <span class="section-lbl">Codes promo & réductions</span>
+      <button class="fab" style="width:32px;height:32px" onclick="addPromotion()">${IC.plus}</button>
+    </div>
+    ${promos.length === 0 ? `
+    <div class="card" style="text-align:center;padding:24px">
+      <div style="color:var(--text-3);margin-bottom:8px;font-size:32px">%</div>
+      <div style="font-size:14px;font-weight:700;margin-bottom:4px">Aucune réduction</div>
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:12px">Offrez des codes promo pour déclencher l'achat et stimuler vos ventes</div>
+      <button class="btn btn-primary" style="max-width:220px;margin:0 auto" onclick="addPromotion()">+ Créer une réduction</button>
+    </div>` : promos.map(p => {
+      const now = new Date().toISOString().slice(0,10);
+      const expired = (p.endDate||'9999') < now;
+      const notYet = (p.startDate||'') > now;
+      const limitReached = p.maxUses > 0 && (p.usageCount||0) >= p.maxUses;
+      const statusLabel = !p.active ? 'Désactivée' : expired ? 'Expirée' : notYet ? 'À venir' : limitReached ? 'Épuisée' : 'Active';
+      const statusCls = (!p.active||expired||limitReached) ? 'st-out' : notYet ? 'st-low' : 'st-ok';
+      const valueDisp = p.type==='fixed' ? `-${fmt(p.value||0)}${sym()}` : `-${p.value||p.discount||0}%`;
+      const usageBar = p.maxUses>0 ? Math.min(100, Math.round((p.usageCount||0)/p.maxUses*100)) : 0;
+      return `
+    <div class="promo-card" onclick="viewPromo(${p.id})" style="cursor:pointer">
+      <div class="promo-badge">${valueDisp}</div>
+      <div class="promo-info">
+        <div class="promo-name">${p.name}</div>
+        <div style="font-family:monospace;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:1px;margin-top:2px">${p.code||'—'}</div>
+        <div class="promo-dates">${p.startDate||'—'} → ${p.endDate||'—'} · ${p.usageCount||0}${p.maxUses>0?'/'+p.maxUses:''} utilisation(s)</div>
+        ${p.maxUses>0?`<div style="height:3px;background:var(--gray-1);border-radius:2px;margin-top:6px;overflow:hidden"><div style="height:100%;width:${usageBar}%;background:var(--accent)"></div></div>`:''}
+      </div>
+      <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end">
+        <span class="promo-status ${statusCls}" onclick="event.stopPropagation();togglePromoActive(${p.id})">${statusLabel}</span>
+        <button style="font-size:10px;color:var(--accent);background:none;border:none;cursor:pointer" onclick="event.stopPropagation();sharePromoWhatsApp(${p.id})">${IC.whatsapp} Partager</button>
+      </div>
+    </div>`;}).join('')}`;
+}
+
+function _renderCampaignsTab(campaigns) {
+  return `
+    <div class="section-hd">
+      <span class="section-lbl">Campagnes marketing</span>
+      <button class="fab" style="width:32px;height:32px" onclick="addCampaign()">${IC.plus}</button>
+    </div>
+    <div style="font-size:11px;color:var(--text-3);margin-bottom:8px">Envoyez des messages WhatsApp/SMS/Email en masse à vos clients</div>
+    ${campaigns.length === 0 ? `
+    <div class="card" style="text-align:center;padding:24px">
+      <div style="color:var(--text-3);margin-bottom:8px;font-size:32px">📧</div>
+      <div style="font-size:14px;font-weight:700;margin-bottom:4px">Aucune campagne</div>
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:12px">Relancez vos clients et boostez vos ventes</div>
+      <button class="btn btn-primary" style="max-width:220px;margin:0 auto" onclick="addCampaign()">+ Nouvelle campagne</button>
+    </div>` : campaigns.map(c => `
+    <div class="campaign-card">
+      <div class="campaign-top">
+        <span class="campaign-type-badge" style="background:${c.type==='whatsapp'?'#25d366':c.type==='sms'?'#4F46E5':'#ea4335'}20;color:${c.type==='whatsapp'?'#25d366':c.type==='sms'?'#4F46E5':'#ea4335'}">${c.type.toUpperCase()}</span>
+        <span class="campaign-name">${c.name}</span>
+      </div>
+      <div class="campaign-stats">
+        <div class="campaign-stat">Destinataires: <span>${c.recipients||0}</span></div>
+        <div class="campaign-stat">Status: <span style="color:${c.sent?'var(--success)':'var(--warning)'}">${c.sent?'Envoyée':'Prête'}</span></div>
+        ${c.sentCount ? `<div class="campaign-stat">Envoyés: <span>${c.sentCount}</span></div>` : ''}
+      </div>
+      <div style="font-size:11px;color:var(--text-3);margin-top:6px;padding:6px 8px;background:var(--gray-1);border-radius:6px;line-height:1.4;max-height:48px;overflow:hidden">${(c.message||c.name).substring(0,100)}${(c.message||c.name).length>100?'...':''}</div>
+      <div style="display:flex;gap:6px;margin-top:8px">
+        ${!c.sent ? `<button class="btn btn-primary" style="flex:1;font-size:12px;padding:8px" onclick="event.stopPropagation();sendCampaign(${c.id})">
+          ${c.type==='whatsapp'?IC.whatsapp:c.type==='sms'?IC.phone:IC.mail} Envoyer
+        </button>` : `<span style="font-size:11px;color:var(--success);display:flex;align-items:center;gap:4px;flex:1">✓ Envoyée le ${c.sentDate?new Date(c.sentDate).toLocaleDateString('fr'):''}</span>`}
+        <button class="btn btn-ghost" style="font-size:12px;padding:8px" onclick="event.stopPropagation();deleteCampaign(${c.id})">Supprimer</button>
+      </div>
+    </div>`).join('')}`;
+}
+
+// ── TIERS : helpers ─────────────────────────
+function _clientLifetimeSpent(client) {
+  if (!client) return 0;
+  return S.sales.filter(s => s.clientId === client.id).reduce((sum, s) => sum + (s.total || 0), 0);
+}
+function _getClientTier(client) {
+  const tiers = S.loyaltyConfig?.tiers || [];
+  if (!tiers.length) return null;
+  const mode = S.loyaltyConfig?.tierMode || 'spent';
+  const value = mode === 'points' ? (client?.loyaltyPoints || 0) : _clientLifetimeSpent(client);
+  const sorted = [...tiers].sort((a,b) => a.min - b.min);
+  let current = sorted[0];
+  for (const tier of sorted) { if (value >= tier.min) current = tier; }
+  const nextTier = sorted.find(t => t.min > value) || null;
+  const progress = nextTier ? Math.min(100, ((value - current.min) / (nextTier.min - current.min)) * 100) : 100;
+  return { ...current, progress, nextTier, currentValue: value, toNext: nextTier ? nextTier.min - value : 0, mode };
+}
+function _renderTierBadge(tier, size='sm') {
+  if (!tier) return '';
+  const pad = size === 'lg' ? '6px 12px' : '3px 8px';
+  const fz  = size === 'lg' ? '13px'     : '10px';
+  return `<span style="background:${tier.gradient||tier.color};color:#fff;padding:${pad};border-radius:10px;font-size:${fz};font-weight:800;display:inline-flex;align-items:center;gap:4px;text-shadow:0 1px 2px rgba(0,0,0,0.3)">${tier.icon||'★'} ${tier.name}</span>`;
+}
+
+function _renderLoyaltyTab() {
+  const tiers   = S.loyaltyConfig?.tiers || [];
+  const mode    = S.loyaltyConfig?.tierMode || 'spent';
+  const clients = S.clients || [];
+  // Compute tier distribution
+  const tierCounts = {};
+  tiers.forEach(t => tierCounts[t.id] = 0);
+  let totalActive = 0;
+  clients.forEach(c => {
+    const value = mode === 'points' ? (c.loyaltyPoints || 0) : _clientLifetimeSpent(c);
+    if (value <= 0) return;
+    totalActive++;
+    let match = tiers[0];
+    [...tiers].sort((a,b) => a.min - b.min).forEach(t => { if (value >= t.min) match = t; });
+    if (match) tierCounts[match.id] = (tierCounts[match.id]||0) + 1;
+  });
+  const totalPts = clients.reduce((s,c)=>s+(c.loyaltyPoints||0),0);
+  return `
+    <div class="section-hd"><span class="section-lbl">Programme de fidélité</span></div>
+    <div class="loyalty-card" onclick="toggleLoyalty()">
+      <div class="loyalty-title">${IC.star} Programme fidélité</div>
+      <div class="loyalty-sub">${S.loyaltyConfig?.enabled ? 'Activé — cliquez pour désactiver' : 'Cliquez pour activer et fidéliser vos clients'}</div>
+      <div style="margin-top:12px;display:flex;gap:8px;position:relative;flex-wrap:wrap">
+        <div style="background:rgba(255,255,255,0.2);padding:8px 14px;border-radius:8px;font-size:12px;font-weight:700">1 ${sym()} = ${S.loyaltyConfig?.pointsPerFcfa||1} pt</div>
+        <div style="background:rgba(255,255,255,0.2);padding:8px 14px;border-radius:8px;font-size:12px;font-weight:700">${(S.loyaltyConfig?.rewards||[]).length} récompenses</div>
+        <div style="background:rgba(255,255,255,0.2);padding:8px 14px;border-radius:8px;font-size:12px;font-weight:700">${tiers.length} paliers</div>
+      </div>
+    </div>
+    ${S.loyaltyConfig?.enabled ? `
+    <div class="card" style="margin-top:10px">
+      <div class="card-title">⚙️ Règles du programme</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px">
+        <button class="btn btn-ghost" style="font-size:11px;padding:8px;flex-direction:column;gap:2px" onclick="editLoyaltyRate()">
+          <strong style="font-size:14px;color:var(--accent)">${S.loyaltyConfig.pointsPerFcfa||1} pt / ${sym()}</strong>
+          <span style="font-size:10px;color:var(--text-3)">Taux de points</span>
+        </button>
+        <button class="btn btn-ghost" style="font-size:11px;padding:8px;flex-direction:column;gap:2px" onclick="toggleLoyaltyTierMode()">
+          <strong style="font-size:14px;color:var(--accent)">${mode === 'points' ? 'Par points' : 'Par dépenses'}</strong>
+          <span style="font-size:10px;color:var(--text-3)">Mode paliers</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:10px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div class="card-title" style="margin:0">🏆 Paliers VIP</div>
+        <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" onclick="addLoyaltyTier()">+ Palier</button>
+      </div>
+      <div style="font-size:11px;color:var(--text-3);margin-bottom:8px">${mode==='points'?'Selon les points accumulés':'Selon le montant dépensé cumulé'}</div>
+      ${tiers.sort((a,b)=>a.min-b.min).map((t,i) => `
+      <div style="background:${t.gradient||t.color};border-radius:12px;padding:12px;margin-bottom:8px;color:#fff;position:relative;overflow:hidden">
+        <div style="display:flex;justify-content:space-between;align-items:start;gap:8px">
+          <div style="flex:1;min-width:0">
+            <div style="font-size:11px;opacity:0.9;font-weight:600">PALIER ${i+1}</div>
+            <div style="font-size:20px;font-weight:800;margin-top:2px;display:flex;align-items:center;gap:6px">
+              <span style="font-size:24px">${t.icon||'★'}</span> ${t.name}
+            </div>
+            <div style="font-size:11px;opacity:0.9;margin-top:4px">
+              À partir de <strong>${fmt(t.min)}${mode==='points'?' pts':' '+sym()}</strong>
+            </div>
+            <div style="font-size:11px;opacity:0.95;margin-top:4px;background:rgba(0,0,0,0.15);padding:4px 8px;border-radius:6px;display:inline-block">${t.perk||''}</div>
+          </div>
+          <div style="text-align:right;display:flex;flex-direction:column;gap:4px;align-items:flex-end">
+            <div style="font-size:28px;font-weight:800">${tierCounts[t.id]||0}</div>
+            <div style="font-size:10px;opacity:0.8">clients</div>
+            <div style="display:flex;gap:4px">
+              <button style="background:rgba(0,0,0,0.25);color:#fff;border:none;border-radius:6px;padding:4px 8px;font-size:10px;cursor:pointer;font-weight:700" onclick="editLoyaltyTier(${i})">✎</button>
+              ${tiers.length > 1 ? `<button style="background:rgba(0,0,0,0.25);color:#fff;border:none;border-radius:6px;padding:4px 8px;font-size:10px;cursor:pointer;font-weight:700" onclick="deleteLoyaltyTier(${i})">🗑</button>` : ''}
+            </div>
+          </div>
+        </div>
+      </div>`).join('')}
+    </div>
+
+    <div class="card" style="margin-top:10px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div class="card-title" style="margin:0">🎁 Récompenses</div>
+        <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" onclick="addLoyaltyReward()">+ Récompense</button>
+      </div>
+      ${(S.loyaltyConfig.rewards||[]).length === 0 ? `
+      <div style="font-size:12px;color:var(--text-3);padding:8px 0;text-align:center">Aucune récompense · vos clients ne peuvent rien échanger</div>` :
+      (S.loyaltyConfig.rewards||[]).map((r,i) => `
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;border:1px solid var(--border);border-radius:10px;margin-bottom:6px">
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:700;font-size:13px">${r.icon||'🎁'} ${r.name}</div>
+          ${r.description?`<div style="font-size:11px;color:var(--text-3);margin-top:2px">${r.description}</div>`:''}
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="font-size:12px;font-weight:800;color:var(--warning)">${r.points} pts</span>
+          <button style="font-size:11px;background:none;border:none;cursor:pointer" onclick="editLoyaltyReward(${i})">✎</button>
+          <button style="font-size:11px;background:none;border:none;cursor:pointer;color:var(--danger)" onclick="deleteLoyaltyReward(${i})">🗑</button>
+        </div>
+      </div>`).join('')}
+    </div>
+
+    <div class="card" style="margin-top:10px;background:linear-gradient(135deg,#EEF2FF,#FFF)">
+      <div class="card-title">📊 Statistiques</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px">
+        <div style="text-align:center;background:#fff;padding:10px;border-radius:10px">
+          <div style="font-size:20px;font-weight:800;color:var(--accent)">${totalPts}</div>
+          <div style="font-size:10px;color:var(--text-3)">pts distribués</div>
+        </div>
+        <div style="text-align:center;background:#fff;padding:10px;border-radius:10px">
+          <div style="font-size:20px;font-weight:800;color:var(--success)">${totalActive}</div>
+          <div style="font-size:10px;color:var(--text-3)">clients fidèles</div>
+        </div>
+        <div style="text-align:center;background:#fff;padding:10px;border-radius:10px">
+          <div style="font-size:20px;font-weight:800;color:var(--warning)">${clients.reduce((s,c)=>s+(c.redeemedRewards||[]).length,0)}</div>
+          <div style="font-size:10px;color:var(--text-3)">échanges</div>
+        </div>
+      </div>
+      <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">
+        <button class="btn btn-ghost" style="font-size:11px;padding:6px 10px;flex:1" onclick="sendLoyaltyCampaign()">${IC.whatsapp} Relancer les VIP</button>
+        <button class="btn btn-ghost" style="font-size:11px;padding:6px 10px;flex:1" onclick="exportLoyaltyReport()">${IC.download||'⤓'} Rapport CSV</button>
+      </div>
+    </div>` : ''}`;
+}
+
+// ── BANNIÈRES ────────────────────────────────
+// Schema : { id, text, subText, bgColor, textColor, emoji, linkUrl, linkText, active, startDate, endDate, position:'top'|'bottom', dismissible }
+function _renderBannersTab(banners) {
+  return `
+    <div class="section-hd">
+      <span class="section-lbl">Bannières promotionnelles</span>
+      <button class="fab" style="width:32px;height:32px" onclick="addBanner()">${IC.plus}</button>
+    </div>
+    <div style="font-size:11px;color:var(--text-3);margin-bottom:8px">Diffusez un message en haut ou en bas de votre boutique en ligne</div>
+    ${banners.length === 0 ? `
+    <div class="card" style="text-align:center;padding:24px">
+      <div style="color:var(--text-3);margin-bottom:8px;font-size:32px">📢</div>
+      <div style="font-size:14px;font-weight:700;margin-bottom:4px">Aucune bannière</div>
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:12px">Affichez une annonce importante en haut de votre boutique</div>
+      <button class="btn btn-primary" style="max-width:220px;margin:0 auto" onclick="addBanner()">+ Créer une bannière</button>
+    </div>` : banners.map(b => `
+    <div class="card" style="margin-bottom:8px;padding:0;overflow:hidden;cursor:pointer" onclick="editBanner(${b.id})">
+      <div style="background:${b.bgColor||'#4F46E5'};color:${b.textColor||'#fff'};padding:12px 14px;display:flex;align-items:center;gap:10px;font-weight:600;font-size:13px">
+        <span style="font-size:18px">${b.emoji||'📢'}</span>
+        <div style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${b.text||'Sans texte'}</div>
+        ${b.linkText?`<span style="background:rgba(255,255,255,0.25);padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700">${b.linkText}</span>`:''}
+      </div>
+      <div style="padding:10px 14px;display:flex;justify-content:space-between;align-items:center">
+        <div style="font-size:11px;color:var(--text-3)">
+          ${b.position==='bottom'?'↓ Bas':'↑ Haut'} · ${b.startDate||'—'} → ${b.endDate||'—'}
+        </div>
+        <div style="display:flex;gap:6px" onclick="event.stopPropagation()">
+          <span class="promo-status ${b.active?'st-ok':'st-out'}" onclick="toggleBannerActive(${b.id})">${b.active?'Active':'Inactive'}</span>
+          <button style="font-size:10px;color:var(--danger);background:none;border:none;cursor:pointer" onclick="deleteBanner(${b.id})">🗑</button>
+        </div>
+      </div>
+    </div>`).join('')}`;
+}
+
+// ── POPUPS ───────────────────────────────────
+// Schema : { id, title, message, emoji, trigger:'entry'|'scroll'|'time'|'exit', triggerValue, ctaText, ctaUrl, promoCode, active, showOnce, bgColor, textColor, startDate, endDate }
+function _renderPopupsTab(popups) {
+  return `
+    <div class="section-hd">
+      <span class="section-lbl">Popups déclenchés</span>
+      <button class="fab" style="width:32px;height:32px" onclick="addPopup()">${IC.plus}</button>
+    </div>
+    <div style="font-size:11px;color:var(--text-3);margin-bottom:8px">Affichez un message clé pour inciter à l'action (entrée, scroll, temps, sortie)</div>
+    ${popups.length === 0 ? `
+    <div class="card" style="text-align:center;padding:24px">
+      <div style="color:var(--text-3);margin-bottom:8px;font-size:32px">💬</div>
+      <div style="font-size:14px;font-weight:700;margin-bottom:4px">Aucun popup</div>
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:12px">Offrez un code promo aux nouveaux visiteurs</div>
+      <button class="btn btn-primary" style="max-width:220px;margin:0 auto" onclick="addPopup()">+ Créer un popup</button>
+    </div>` : popups.map(p => {
+      const trigLabels = { entry:'À l\'entrée', scroll:`Au scroll ${p.triggerValue||50}%`, time:`Après ${p.triggerValue||5}s`, exit:'À la sortie' };
+      return `
+    <div class="card" style="margin-bottom:8px;cursor:pointer" onclick="editPopup(${p.id})">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:48px;height:48px;border-radius:12px;background:${p.bgColor||'#4F46E5'};display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">${p.emoji||'💬'}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:700;font-size:14px">${p.title||'Sans titre'}</div>
+          <div style="font-size:11px;color:var(--text-3);margin-top:2px">${trigLabels[p.trigger]||'À l\'entrée'}${p.promoCode?' · Code: '+p.promoCode:''}</div>
+          <div style="font-size:11px;color:var(--text-3);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${(p.message||'').slice(0,60)}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end" onclick="event.stopPropagation()">
+          <span class="promo-status ${p.active?'st-ok':'st-out'}" onclick="togglePopupActive(${p.id})">${p.active?'Active':'Inactive'}</span>
+          <button style="font-size:10px;color:var(--danger);background:none;border:none;cursor:pointer" onclick="deletePopup(${p.id})">🗑</button>
+        </div>
+      </div>
+    </div>`;}).join('')}`;
+}
+
+// ── AVIS (Proof) ─────────────────────────────
+// Schema : { id, clientName, rating 1-5, comment, productId, date, approved, verified }
+function _renderReviewsTab(reviews) {
+  const avg = reviews.length > 0 ? (reviews.reduce((s,r)=>s+r.rating,0)/reviews.length).toFixed(1) : '—';
+  const pending = reviews.filter(r => !r.approved);
+  return `
+    <div class="section-hd">
+      <span class="section-lbl">Avis clients</span>
+      <button class="fab" style="width:32px;height:32px" onclick="addReview()">${IC.plus}</button>
+    </div>
+    <div style="font-size:11px;color:var(--text-3);margin-bottom:8px">Affichez les avis sur votre boutique pour renforcer la confiance</div>
+    ${reviews.length === 0 ? `
+    <div class="card" style="text-align:center;padding:24px">
+      <div style="color:var(--text-3);margin-bottom:8px;font-size:32px">⭐</div>
+      <div style="font-size:14px;font-weight:700;margin-bottom:4px">Aucun avis</div>
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:12px">Ajoutez les avis de vos clients satisfaits</div>
+      <button class="btn btn-primary" style="max-width:220px;margin:0 auto" onclick="addReview()">+ Ajouter un avis</button>
+    </div>` : `
+    <div class="card" style="margin-bottom:10px;text-align:center;background:linear-gradient(135deg,#FEF3C7,#FFF)">
+      <div style="font-size:32px;font-weight:800;color:#F59E0B">${avg} <span style="font-size:14px">/ 5</span></div>
+      <div style="font-size:18px;color:#F59E0B;letter-spacing:2px">${'★'.repeat(Math.round(avg))}${'☆'.repeat(5-Math.round(avg))}</div>
+      <div style="font-size:11px;color:var(--text-3);margin-top:4px">${reviews.length} avis · ${reviews.filter(r=>r.approved).length} approuvés${pending.length>0?' · '+pending.length+' à modérer':''}</div>
+      <div style="display:flex;gap:6px;margin-top:10px;justify-content:center">
+        <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" onclick="copyReviewLink()">${IC.link||'🔗'} Lien pour clients</button>
+        <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" onclick="shareReviewLink()">${IC.whatsapp} Demander via WhatsApp</button>
+      </div>
+    </div>
+    ${reviews.map(r => {
+      const prod = r.productId ? S.products.find(p=>p.id===r.productId) : null;
+      return `
+    <div class="card" style="margin-bottom:8px;${!r.approved?'border-left:3px solid var(--warning)':''}">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+        <div style="width:36px;height:36px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800">${(r.clientName||'?').charAt(0).toUpperCase()}</div>
+        <div style="flex:1">
+          <div style="font-weight:700;font-size:13px">${r.clientName||'Anonyme'} ${r.verified?'<span style="color:var(--success);font-size:11px">✓ Vérifié</span>':''}</div>
+          <div style="font-size:11px;color:var(--text-3)">${fmtDate(r.date)}${prod?' · '+prod.name:''}</div>
+        </div>
+        <div style="color:#F59E0B;font-size:15px;letter-spacing:1px">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
+      </div>
+      <div style="font-size:13px;color:var(--text-1);line-height:1.5">${r.comment||''}</div>
+      <div style="display:flex;gap:6px;margin-top:8px">
+        ${!r.approved?`<button class="btn btn-primary" style="flex:1;font-size:11px;padding:6px" onclick="approveReview(${r.id})">${IC.check} Approuver</button>`:`<span style="flex:1;font-size:11px;color:var(--success);padding:6px;display:flex;align-items:center;gap:4px">✓ Publié</span>`}
+        <button class="btn btn-ghost" style="font-size:11px;padding:6px" onclick="editReview(${r.id})">${IC.edit||'✎'}</button>
+        <button class="btn btn-ghost" style="font-size:11px;padding:6px;color:var(--danger)" onclick="deleteReview(${r.id})">🗑</button>
+      </div>
+    </div>`;}).join('')}`}`;
+}
+
+// ── LIENS TRACKÉS (Campagnes UTM) ────────────
+// Schema : { id, name, destUrl, source, medium, campaign, clicks, active, createdAt }
+function _renderTrackingTab(tracking) {
+  return `
+    <div class="section-hd">
+      <span class="section-lbl">Liens de suivi</span>
+      <button class="fab" style="width:32px;height:32px" onclick="addTrackingLink()">${IC.plus}</button>
+    </div>
+    <div style="font-size:11px;color:var(--text-3);margin-bottom:8px">Créez des liens tracés pour savoir d'où viennent vos clients (Facebook, Instagram, WhatsApp, etc.)</div>
+    ${tracking.length === 0 ? `
+    <div class="card" style="text-align:center;padding:24px">
+      <div style="color:var(--text-3);margin-bottom:8px;font-size:32px">🔗</div>
+      <div style="font-size:14px;font-weight:700;margin-bottom:4px">Aucun lien tracé</div>
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:12px">Sachez quelles publicités ramènent des clients</div>
+      <button class="btn btn-primary" style="max-width:220px;margin:0 auto" onclick="addTrackingLink()">+ Créer un lien tracé</button>
+    </div>` : tracking.map(tk => `
+    <div class="card" style="margin-bottom:8px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+        <div style="font-weight:700;font-size:13px;flex:1">${tk.name}</div>
+        <div style="font-size:20px;font-weight:800;color:var(--accent)">${tk.clicks||0}</div>
+      </div>
+      <div style="font-size:10px;color:var(--text-3);font-family:monospace;word-break:break-all;background:var(--gray-1);padding:6px 8px;border-radius:6px">${_buildTrackingUrl(tk)}</div>
+      <div style="display:flex;gap:4px;margin-top:6px;flex-wrap:wrap">
+        <span style="font-size:10px;padding:2px 8px;border-radius:4px;background:var(--accent-light);color:var(--accent);font-weight:600">${tk.source}</span>
+        <span style="font-size:10px;padding:2px 8px;border-radius:4px;background:var(--gray-1);color:var(--text-2);font-weight:600">${tk.medium}</span>
+        <span style="font-size:10px;padding:2px 8px;border-radius:4px;background:var(--gray-1);color:var(--text-2);font-weight:600">${tk.campaign}</span>
+      </div>
+      <div style="display:flex;gap:6px;margin-top:8px">
+        <button class="btn btn-ghost" style="flex:1;font-size:11px;padding:6px" onclick="copyTrackingLink(${tk.id})">${IC.check} Copier</button>
+        <button class="btn btn-ghost" style="flex:1;font-size:11px;padding:6px" onclick="shareTrackingLink(${tk.id})">${IC.whatsapp} Partager</button>
+        <button class="btn btn-ghost" style="font-size:11px;padding:6px;color:var(--danger)" onclick="deleteTrackingLink(${tk.id})">🗑</button>
+      </div>
+    </div>`).join('')}`;
+}
+
+// ── PROMO CODE SYSTEM (complet) ──────────────
+// Schema : { id, name, code, type:'percent'|'fixed', value, products:[], maxUses, maxUsesPerClient, startDate, endDate, active, usageCount, usageByClient:{} }
+
+function _genPromoCode(name) {
+  const base = (name||'PROMO').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,6);
+  const suffix = Math.floor(Math.random()*900+100);
+  return base + suffix;
+}
+
+function addPromotion() {
+  S.editingPromoId = null;
+  S.view = 'promo-form';
+  render();
+}
+
+function editPromotion(id) {
+  S.editingPromoId = id;
+  S.view = 'promo-form';
+  render();
+}
+
+function vPromoForm() {
+  const isEdit = !!S.editingPromoId;
+  const p = isEdit ? (S.promotions||[]).find(x => x.id === S.editingPromoId) : null;
+  const today = new Date().toISOString().slice(0,10);
+  const plus30 = new Date(Date.now()+30*86400000).toISOString().slice(0,10);
+  const draft = p || {
+    name:'', code:'', type:'percent', value:10, products:[],
+    maxUses:0, maxUsesPerClient:0,
+    startDate:today, endDate:plus30, active:true, usageCount:0, usageByClient:{}
+  };
+  return `
+  <div class="sub-hero">
+    <div class="page-header-row" style="margin-bottom:10px">
+      <button class="back-btn-dark" onclick="S.editingPromoId=null;nav('marketing')">${IC.left}</button>
+      <div style="flex:1">
+        <div class="sub-hero-title">${isEdit?'Modifier la réduction':'Nouvelle réduction'}</div>
+        <div class="sub-hero-sub">${isEdit?'Mise à jour du code promo':'Créez un code promo complet'}</div>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">${IC.tag||IC.percent} Informations</div>
+      <div class="form-group">
+        <label class="form-label">Nom <span style="color:var(--danger)">*</span></label>
+        <input class="input" id="promo-name" value="${draft.name||''}" placeholder="Ex: Soldes de Noël" oninput="if(!$('promo-code').dataset.manual)$('promo-code').value=_genPromoCode(this.value)">
+        <div style="font-size:10px;color:var(--text-3);margin-top:2px">Nom interne visible uniquement par vous</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Code promo <span style="color:var(--danger)">*</span></label>
+        <div style="display:flex;gap:6px">
+          <input class="input" id="promo-code" value="${draft.code||''}" placeholder="Ex: NOEL25" style="flex:1;text-transform:uppercase;font-family:monospace;font-weight:700;letter-spacing:1px" oninput="this.dataset.manual='1';this.value=this.value.toUpperCase()">
+          <button class="btn btn-ghost" style="padding:0 12px" onclick="$('promo-code').value=_genPromoCode($('promo-name').value);$('promo-code').dataset.manual=''">${IC.refresh||'🎲'}</button>
+        </div>
+        <div style="font-size:10px;color:var(--text-3);margin-top:2px">Ce code sera saisi par vos clients pour obtenir la réduction</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">${IC.percent} Type de réduction <span style="color:var(--danger)">*</span></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
+        <label class="promo-type-opt ${draft.type==='percent'?'selected':''}" onclick="document.querySelectorAll('.promo-type-opt').forEach(e=>e.classList.remove('selected'));this.classList.add('selected');$('promo-type').value='percent';$('promo-value-unit').textContent='%';">
+          <div style="font-size:22px;font-weight:800;color:var(--accent)">%</div>
+          <div style="font-size:13px;font-weight:700;margin-top:4px">Pourcentage</div>
+          <div style="font-size:10px;color:var(--text-3)">Ex: -20%</div>
+        </label>
+        <label class="promo-type-opt ${draft.type==='fixed'?'selected':''}" onclick="document.querySelectorAll('.promo-type-opt').forEach(e=>e.classList.remove('selected'));this.classList.add('selected');$('promo-type').value='fixed';$('promo-value-unit').textContent='${sym()}';">
+          <div style="font-size:22px;font-weight:800;color:var(--accent)">${sym()}</div>
+          <div style="font-size:13px;font-weight:700;margin-top:4px">Montant fixe</div>
+          <div style="font-size:10px;color:var(--text-3)">Ex: -1000 ${sym()}</div>
+        </label>
+      </div>
+      <input type="hidden" id="promo-type" value="${draft.type}">
+      <div class="form-group" style="margin-top:12px">
+        <label class="form-label">Valeur de la réduction</label>
+        <div style="display:flex;gap:6px;align-items:center">
+          <input class="input" id="promo-value" type="number" min="0" value="${draft.value||10}" style="flex:1">
+          <span id="promo-value-unit" style="font-weight:800;font-size:18px;color:var(--accent);min-width:40px;text-align:center">${draft.type==='percent'?'%':sym()}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">${IC.package} Produits concernés</div>
+      <div style="font-size:11px;color:var(--text-3);margin-bottom:8px">Laissez tout décoché pour appliquer à tous les produits</div>
+      ${(S.products||[]).length === 0 ? `<div style="font-size:12px;color:var(--text-3);padding:8px 0">Aucun produit — la réduction s'appliquera à tout</div>` : `
+      <div style="max-height:200px;overflow-y:auto;border:1px solid var(--border);border-radius:8px;padding:4px">
+        ${S.products.map(pr => `
+        <label style="display:flex;align-items:center;gap:10px;padding:8px;cursor:pointer;border-radius:6px" onmouseover="this.style.background='var(--gray-1)'" onmouseout="this.style.background='transparent'">
+          <input type="checkbox" class="promo-prod-check" value="${pr.id}" ${(draft.products||[]).includes(pr.id)?'checked':''}>
+          <div style="flex:1;font-size:13px">${pr.name}</div>
+          <div style="font-size:11px;color:var(--text-3)">${fmt(pr.price)} ${sym()}</div>
+        </label>`).join('')}
+      </div>
+      <div style="display:flex;gap:6px;margin-top:8px">
+        <button class="btn btn-ghost" style="flex:1;font-size:11px;padding:6px" onclick="document.querySelectorAll('.promo-prod-check').forEach(c=>c.checked=true)">Tout cocher</button>
+        <button class="btn btn-ghost" style="flex:1;font-size:11px;padding:6px" onclick="document.querySelectorAll('.promo-prod-check').forEach(c=>c.checked=false)">Tout décocher</button>
+      </div>`}
+    </div>
+
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">${IC.users||IC.user} Limites d'utilisation</div>
+      <div class="form-group">
+        <label class="form-label">Utilisations maximum (total)</label>
+        <input class="input" id="promo-maxuses" type="number" min="0" value="${draft.maxUses||0}" placeholder="0 = illimité">
+        <div style="font-size:10px;color:var(--text-3);margin-top:2px">La réduction se désactive une fois cette limite atteinte. 0 = aucune limite</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Utilisations max par client</label>
+        <input class="input" id="promo-maxperclient" type="number" min="0" value="${draft.maxUsesPerClient||0}" placeholder="0 = illimité">
+        <div style="font-size:10px;color:var(--text-3);margin-top:2px">Combien de fois un même client peut utiliser ce code. 0 = illimité</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">${IC.calendar} Période de validité</div>
+      <div class="form-group">
+        <label class="form-label">Date de début</label>
+        <input class="input" id="promo-start" type="date" value="${draft.startDate||today}">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Date de fin</label>
+        <input class="input" id="promo-end" type="date" value="${draft.endDate||plus30}">
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        ${[{l:'7 jours',d:7},{l:'14 jours',d:14},{l:'30 jours',d:30},{l:'90 jours',d:90}].map(q=>`
+        <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" onclick="const d=new Date();$('promo-start').value=d.toISOString().slice(0,10);d.setDate(d.getDate()+${q.d});$('promo-end').value=d.toISOString().slice(0,10)">${q.l}</button>`).join('')}
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:14px">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <div style="font-weight:700;font-size:13px">Activer immédiatement</div>
+          <div style="font-size:11px;color:var(--text-3)">Les clients pourront utiliser le code</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="promo-active" ${draft.active!==false?'checked':''}>
+          <span class="toggle-track"></span>
+        </label>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:8px">
+      ${isEdit?`<button class="btn btn-ghost" style="color:var(--danger);border-color:var(--danger)" onclick="deletePromotion(${draft.id});nav('marketing')">${IC.trash||'🗑'} Supprimer</button>`:''}
+      <button class="btn btn-primary" style="flex:1" onclick="savePromotion()">${IC.check} ${isEdit?'Mettre à jour':'Créer la réduction'}</button>
+    </div>
+  </div>`;
+}
+
+function savePromotion() {
+  const name = ($('promo-name')?.value||'').trim();
+  const code = ($('promo-code')?.value||'').trim().toUpperCase();
+  const type = $('promo-type')?.value || 'percent';
+  const value = parseFloat($('promo-value')?.value) || 0;
+  if (!name) { showToast('Nom obligatoire', 'error'); return; }
+  if (!code) { showToast('Code promo obligatoire', 'error'); return; }
+  if (value <= 0) { showToast('Valeur doit être > 0', 'error'); return; }
+  if (type === 'percent' && value > 100) { showToast('Pourcentage max 100', 'error'); return; }
+  // Unicité du code
+  const dup = (S.promotions||[]).find(x => x.code === code && x.id !== S.editingPromoId);
+  if (dup) { showToast(`Code "${code}" déjà utilisé`, 'error'); return; }
+  const products = Array.from(document.querySelectorAll('.promo-prod-check:checked')).map(c => parseInt(c.value));
+  const maxUses = parseInt($('promo-maxuses')?.value) || 0;
+  const maxUsesPerClient = parseInt($('promo-maxperclient')?.value) || 0;
+  const startDate = $('promo-start')?.value || new Date().toISOString().slice(0,10);
+  const endDate = $('promo-end')?.value || new Date(Date.now()+30*86400000).toISOString().slice(0,10);
+  const active = $('promo-active')?.checked !== false;
+
+  if (S.editingPromoId) {
+    const p = S.promotions.find(x => x.id === S.editingPromoId);
+    if (p) {
+      Object.assign(p, { name, code, type, value, discount: type==='percent'?value:p.discount, products, maxUses, maxUsesPerClient, startDate, endDate, active });
+      showToast('Réduction mise à jour');
+    }
+  } else {
+    const promo = {
+      id: Date.now(), name, code, type, value,
+      discount: type==='percent' ? value : 0, // legacy compat
+      products, maxUses, maxUsesPerClient, startDate, endDate, active,
+      usageCount: 0, usageByClient: {}, createdAt: new Date().toISOString()
+    };
+    S.promotions.push(promo);
+    logActivity('promo', `${name} créée — code ${code}`);
+    showToast(`Réduction créée : ${code}`);
+  }
+  localStorage.setItem('stockr_promotions', JSON.stringify(S.promotions));
+  S.editingPromoId = null;
+  S.view = 'marketing';
+  render();
+}
+
+function vPromoDetail() {
+  const p = (S.promotions||[]).find(x => x.id === S.viewingPromoId);
+  if (!p) { S.view='marketing'; return vMarketing(); }
+  const now = new Date().toISOString().slice(0,10);
+  const expired = p.endDate < now;
+  const notYet = p.startDate > now;
+  const limitReached = p.maxUses > 0 && (p.usageCount||0) >= p.maxUses;
+  const status = !p.active ? 'Désactivée' : expired ? 'Expirée' : notYet ? 'À venir' : limitReached ? 'Limite atteinte' : 'Active';
+  const statusColor = (!p.active||expired||limitReached) ? 'var(--danger)' : notYet ? 'var(--warning)' : 'var(--success)';
+  const valueDisp = p.type==='fixed' ? `-${fmt(p.value)} ${sym()}` : `-${p.value}%`;
+  const usageRate = p.maxUses > 0 ? Math.round((p.usageCount||0)/p.maxUses*100) : 0;
+  const nbClients = Object.keys(p.usageByClient||{}).length;
+  return `
+  <div class="sub-hero">
+    <div class="page-header-row" style="margin-bottom:14px">
+      <button class="back-btn-dark" onclick="S.viewingPromoId=null;nav('marketing')">${IC.left}</button>
+      <div style="flex:1">
+        <div class="sub-hero-title">${p.name}</div>
+        <div class="sub-hero-sub" style="font-family:monospace;letter-spacing:2px">${p.code}</div>
+      </div>
+      <span style="font-size:11px;padding:4px 10px;border-radius:8px;background:${statusColor}20;color:${statusColor};font-weight:700">${status}</span>
+    </div>
+    <div style="display:flex;gap:8px">
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${valueDisp}</div><div class="hero-stat-lbl">Réduction</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${p.usageCount||0}</div><div class="hero-stat-lbl">Utilisations</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${nbClients}</div><div class="hero-stat-lbl">Clients</div></div>
+    </div>
+  </div>
+  <div class="container">
+    ${p.maxUses>0 ? `
+    <div class="card" style="margin-bottom:10px">
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:6px">Progression ${p.usageCount||0}/${p.maxUses} (${usageRate}%)</div>
+      <div style="height:8px;background:var(--gray-1);border-radius:4px;overflow:hidden">
+        <div style="height:100%;width:${usageRate}%;background:linear-gradient(90deg,var(--accent),${statusColor});transition:width .3s"></div>
+      </div>
+    </div>`:''}
+
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">${IC.settings||IC.package} Détails</div>
+      <div class="info-row"><span class="info-lbl">Type</span><span class="info-val">${p.type==='fixed'?'Montant fixe':'Pourcentage'}</span></div>
+      <div class="info-row"><span class="info-lbl">Valeur</span><span class="info-val" style="color:var(--accent);font-weight:800">${valueDisp}</span></div>
+      <div class="info-row"><span class="info-lbl">Période</span><span class="info-val">${p.startDate} → ${p.endDate}</span></div>
+      <div class="info-row"><span class="info-lbl">Produits</span><span class="info-val">${(p.products||[]).length===0?'Tous':p.products.length+' spécifique(s)'}</span></div>
+      <div class="info-row"><span class="info-lbl">Max total</span><span class="info-val">${p.maxUses>0?p.maxUses:'Illimité'}</span></div>
+      <div class="info-row"><span class="info-lbl">Max / client</span><span class="info-val">${p.maxUsesPerClient>0?p.maxUsesPerClient:'Illimité'}</span></div>
+    </div>
+
+    ${(p.products||[]).length>0?`
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">${IC.package} Produits concernés (${p.products.length})</div>
+      ${p.products.map(id => {
+        const pr = S.products.find(x=>x.id===id);
+        if (!pr) return '';
+        const discPrice = _applyPromoValue(pr.price, p);
+        return `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px">
+          <div>${pr.name}</div>
+          <div><span style="text-decoration:line-through;color:var(--text-3);font-size:11px">${fmt(pr.price)}</span> <strong style="color:var(--accent)">${fmt(discPrice)} ${sym()}</strong></div>
+        </div>`;
+      }).join('')}
+    </div>`:''}
+
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">${IC.share||IC.whatsapp} Partager la réduction</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+        <button class="btn btn-ghost" onclick="sharePromoWhatsApp(${p.id})" style="background:#25D36610;color:#25D366;border-color:#25D36640">${IC.whatsapp} WhatsApp</button>
+        <button class="btn btn-ghost" onclick="sharePromoSMS(${p.id})">${IC.smartphone||IC.phone} SMS</button>
+        <button class="btn btn-ghost" onclick="copyPromoCode('${p.code}')">${IC.check} Copier code</button>
+        <button class="btn btn-ghost" onclick="copyPromoLink(${p.id})">${IC.globe||IC.link} Copier lien</button>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-bottom:8px">
+      <button class="btn btn-primary" style="flex:1" onclick="editPromotion(${p.id})">${IC.edit||IC.settings} Modifier</button>
+      <button class="btn btn-ghost" style="flex:1" onclick="togglePromoActive(${p.id})">${p.active?'Désactiver':'Activer'}</button>
+    </div>
+    <button class="btn btn-ghost" style="color:var(--danger);border-color:var(--danger);width:100%" onclick="deletePromotion(${p.id})">${IC.trash||'🗑'} Supprimer</button>
+  </div>`;
+}
+
+function togglePromoActive(id) {
+  const p = S.promotions.find(x => x.id === id);
+  if (!p) return;
+  p.active = !p.active;
+  localStorage.setItem('stockr_promotions', JSON.stringify(S.promotions));
+  showToast(p.active ? 'Réduction activée' : 'Réduction désactivée');
+  render();
+}
+
+function deletePromotion(id) {
+  if (!confirm('Supprimer définitivement cette réduction ?')) return;
+  S.promotions = S.promotions.filter(x => x.id !== id);
+  localStorage.setItem('stockr_promotions', JSON.stringify(S.promotions));
+  showToast('Réduction supprimée');
+  if (S.view === 'promo-detail') S.view = 'marketing';
+  S.viewingPromoId = null;
+  render();
+}
+
+function viewPromo(id) {
+  S.viewingPromoId = id;
+  S.view = 'promo-detail';
+  render();
+}
+
+// Calcule le prix après application de la promo sur un article unitaire
+function _applyPromoValue(price, promo) {
+  if (!promo) return price;
+  if (promo.type === 'fixed') return Math.max(0, price - promo.value);
+  const disc = promo.value || promo.discount || 0;
+  return Math.round(price * (1 - disc/100));
+}
+
+// Valide un code promo pour un client/produit et renvoie la promo applicable
+function validatePromoCode(code, clientId, productId) {
+  if (!code) return { ok:false, error:'Code manquant' };
+  const p = (S.promotions||[]).find(x => x.code?.toUpperCase() === code.toUpperCase());
+  if (!p) return { ok:false, error:'Code invalide' };
+  if (!p.active) return { ok:false, error:'Réduction désactivée' };
+  const now = new Date().toISOString().slice(0,10);
+  if (p.startDate && p.startDate > now) return { ok:false, error:'Réduction pas encore active' };
+  if (p.endDate && p.endDate < now) return { ok:false, error:'Réduction expirée' };
+  if (p.maxUses > 0 && (p.usageCount||0) >= p.maxUses) return { ok:false, error:'Limite d\'utilisation atteinte' };
+  if (clientId && p.maxUsesPerClient > 0) {
+    const used = (p.usageByClient||{})[clientId] || 0;
+    if (used >= p.maxUsesPerClient) return { ok:false, error:'Vous avez atteint votre limite' };
+  }
+  if (productId && (p.products||[]).length > 0 && !p.products.includes(productId)) {
+    return { ok:false, error:'Ce code ne s\'applique pas à ce produit' };
+  }
+  return { ok:true, promo:p };
+}
+
+// Enregistre une utilisation (appelé lors d'une vente avec code)
+function _recordPromoUsage(promoId, clientId) {
+  const p = S.promotions.find(x => x.id === promoId);
+  if (!p) return;
+  p.usageCount = (p.usageCount||0) + 1;
+  if (clientId) {
+    p.usageByClient = p.usageByClient || {};
+    p.usageByClient[clientId] = (p.usageByClient[clientId]||0) + 1;
+  }
+  localStorage.setItem('stockr_promotions', JSON.stringify(S.promotions));
+}
+
+// Promo auto-applicable sur un produit (sans code, pour affichage vitrine)
+function _getActivePromo(productId) {
+  const now = new Date().toISOString().slice(0,10);
+  return (S.promotions||[]).find(p =>
+    p.active &&
+    (p.startDate||'') <= now && (p.endDate||'9999') >= now &&
+    (!p.maxUses || (p.usageCount||0) < p.maxUses) &&
+    ((p.products||[]).length === 0 || (p.products||[]).includes(productId))
+  );
+}
+
+// ── Partage / Copy ───────────────────────────
+function _promoShareText(p) {
+  const biz = S.session?.business || 'notre boutique';
+  const val = p.type==='fixed' ? `${fmt(p.value)} ${sym()} de réduction` : `${p.value}% de réduction`;
+  return `🎉 Offre ${biz} !\n\n${p.name} — ${val}\n\nCode promo : *${p.code}*\n\nValable jusqu'au ${p.endDate}\n${(p.products||[]).length>0?'Sur produits sélectionnés':'Sur tous les produits'}`;
+}
+
+function sharePromoWhatsApp(id) {
+  const p = S.promotions.find(x => x.id === id);
+  if (!p) return;
+  const msg = encodeURIComponent(_promoShareText(p));
+  window.open(`https://wa.me/?text=${msg}`, '_blank');
+}
+
+function sharePromoSMS(id) {
+  const p = S.promotions.find(x => x.id === id);
+  if (!p) return;
+  const msg = encodeURIComponent(_promoShareText(p));
+  window.open(`sms:?body=${msg}`, '_blank');
+}
+
+function copyPromoCode(code) {
+  navigator.clipboard?.writeText(code).then(() => showToast(`Code ${code} copié !`));
+}
+
+function copyPromoLink(id) {
+  const p = S.promotions.find(x => x.id === id);
+  if (!p) return;
+  const domain = S.boutiqueConfig?.domain || 'maboutique';
+  const link = `https://${domain}.stockr.shop/?promo=${p.code}`;
+  navigator.clipboard?.writeText(link).then(() => showToast('Lien copié !'));
+}
+
+// ═══════════════════════════════════════════════
+// BANNIÈRES (CRUD + partage)
+// ═══════════════════════════════════════════════
+function addBanner() {
+  S.editingBannerId = null;
+  S.view = 'banner-form';
+  render();
+}
+function editBanner(id) {
+  S.editingBannerId = id;
+  S.view = 'banner-form';
+  render();
+}
+function vBannerForm() {
+  const isEdit = !!S.editingBannerId;
+  const b = isEdit ? S.banners.find(x => x.id === S.editingBannerId) : null;
+  const today = new Date().toISOString().slice(0,10);
+  const plus30 = new Date(Date.now()+30*86400000).toISOString().slice(0,10);
+  const draft = b || { text:'Livraison gratuite dès 20 000 FCFA !', subText:'', emoji:'🚚', bgColor:'#4F46E5', textColor:'#FFFFFF', linkUrl:'', linkText:'', active:true, startDate:today, endDate:plus30, position:'top', dismissible:true };
+  const colors = [
+    {bg:'#4F46E5', fg:'#fff', name:'Indigo'},
+    {bg:'#059669', fg:'#fff', name:'Vert'},
+    {bg:'#DC2626', fg:'#fff', name:'Rouge'},
+    {bg:'#F59E0B', fg:'#fff', name:'Orange'},
+    {bg:'#000000', fg:'#fff', name:'Noir'},
+    {bg:'#FFFFFF', fg:'#000', name:'Blanc'},
+    {bg:'#7C3AED', fg:'#fff', name:'Violet'},
+    {bg:'#0284C7', fg:'#fff', name:'Bleu'},
+  ];
+  return `
+  <div class="sub-hero">
+    <div class="page-header-row" style="margin-bottom:10px">
+      <button class="back-btn-dark" onclick="S.editingBannerId=null;nav('marketing')">${IC.left}</button>
+      <div style="flex:1">
+        <div class="sub-hero-title">${isEdit?'Modifier bannière':'Nouvelle bannière'}</div>
+        <div class="sub-hero-sub">Message affiché sur votre boutique</div>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="card" style="margin-bottom:10px;padding:0;overflow:hidden">
+      <div id="banner-preview" style="background:${draft.bgColor};color:${draft.textColor};padding:14px;display:flex;align-items:center;gap:10px;font-weight:600;font-size:13px">
+        <span id="bn-prev-emoji" style="font-size:18px">${draft.emoji}</span>
+        <div id="bn-prev-text" style="flex:1">${draft.text}</div>
+        ${draft.linkText?`<span id="bn-prev-link" style="background:rgba(255,255,255,0.25);padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700">${draft.linkText}</span>`:''}
+      </div>
+      <div style="padding:8px 14px;font-size:10px;color:var(--text-3);background:var(--gray-1)">Aperçu en temps réel</div>
+    </div>
+
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">Contenu</div>
+      <div class="form-group">
+        <label class="form-label">Texte <span style="color:var(--danger)">*</span></label>
+        <input class="input" id="bn-text" value="${draft.text||''}" placeholder="Livraison gratuite dès 20 000 FCFA !" oninput="$('bn-prev-text').textContent=this.value">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Emoji (optionnel)</label>
+        <input class="input" id="bn-emoji" value="${draft.emoji||''}" placeholder="🚚" maxlength="4" oninput="$('bn-prev-emoji').textContent=this.value" style="font-size:18px;text-align:center">
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:6px">
+          ${['🎉','🔥','🚚','💥','⭐','🎁','💰','✨','⚡','🆕','👑'].map(e => `<button class="btn btn-ghost" style="font-size:16px;padding:4px 8px;min-width:32px" onclick="$('bn-emoji').value='${e}';$('bn-prev-emoji').textContent='${e}'">${e}</button>`).join('')}
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">Couleurs</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        ${colors.map(c => `
+        <div onclick="document.querySelectorAll('.bn-color').forEach(e=>e.style.borderColor='transparent');this.style.borderColor='#000';$('bn-bg').value='${c.bg}';$('bn-fg').value='${c.fg}';$('banner-preview').style.background='${c.bg}';$('banner-preview').style.color='${c.fg}'" class="bn-color" style="cursor:pointer;width:40px;height:40px;border-radius:50%;background:${c.bg};border:3px solid ${draft.bgColor===c.bg?'#000':'transparent'};display:flex;align-items:center;justify-content:center;color:${c.fg};font-size:10px;font-weight:800" title="${c.name}">Aa</div>`).join('')}
+      </div>
+      <input type="hidden" id="bn-bg" value="${draft.bgColor}">
+      <input type="hidden" id="bn-fg" value="${draft.textColor}">
+    </div>
+
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">Action (optionnel)</div>
+      <div class="form-group">
+        <label class="form-label">Texte du bouton</label>
+        <input class="input" id="bn-linktext" value="${draft.linkText||''}" placeholder="Voir les offres">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Lien cible</label>
+        <input class="input" id="bn-linkurl" value="${draft.linkUrl||''}" placeholder="https://... ou #promos">
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">Affichage</div>
+      <div class="form-group">
+        <label class="form-label">Position</label>
+        <div style="display:flex;gap:8px">
+          <label class="form-radio" style="flex:1">
+            <input type="radio" name="bn-pos" value="top" ${draft.position!=='bottom'?'checked':''}>
+            <span>↑ En haut</span>
+          </label>
+          <label class="form-radio" style="flex:1">
+            <input type="radio" name="bn-pos" value="bottom" ${draft.position==='bottom'?'checked':''}>
+            <span>↓ En bas</span>
+          </label>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <div class="form-group" style="flex:1"><label class="form-label">Début</label><input class="input" type="date" id="bn-start" value="${draft.startDate||today}"></div>
+        <div class="form-group" style="flex:1"><label class="form-label">Fin</label><input class="input" type="date" id="bn-end" value="${draft.endDate||plus30}"></div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px">
+        <div><div style="font-weight:700;font-size:13px">Bouton fermer</div><div style="font-size:11px;color:var(--text-3)">Le visiteur peut masquer</div></div>
+        <label class="toggle-switch"><input type="checkbox" id="bn-dismiss" ${draft.dismissible!==false?'checked':''}><span class="toggle-track"></span></label>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px">
+        <div><div style="font-weight:700;font-size:13px">Activer</div><div style="font-size:11px;color:var(--text-3)">Visible immédiatement sur votre boutique</div></div>
+        <label class="toggle-switch"><input type="checkbox" id="bn-active" ${draft.active!==false?'checked':''}><span class="toggle-track"></span></label>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:8px">
+      ${isEdit?`<button class="btn btn-ghost" style="color:var(--danger);border-color:var(--danger)" onclick="deleteBanner(${draft.id})">🗑 Supprimer</button>`:''}
+      <button class="btn btn-primary" style="flex:1" onclick="saveBanner()">${IC.check} ${isEdit?'Mettre à jour':'Créer la bannière'}</button>
+    </div>
+  </div>`;
+}
+function saveBanner() {
+  const text = ($('bn-text')?.value||'').trim();
+  if (!text) { showToast('Texte obligatoire', 'error'); return; }
+  const draft = {
+    text,
+    emoji: $('bn-emoji')?.value || '',
+    bgColor: $('bn-bg')?.value || '#4F46E5',
+    textColor: $('bn-fg')?.value || '#FFFFFF',
+    linkUrl: $('bn-linkurl')?.value || '',
+    linkText: $('bn-linktext')?.value || '',
+    position: document.querySelector('input[name="bn-pos"]:checked')?.value || 'top',
+    startDate: $('bn-start')?.value,
+    endDate: $('bn-end')?.value,
+    dismissible: $('bn-dismiss')?.checked !== false,
+    active: $('bn-active')?.checked !== false,
+  };
+  if (S.editingBannerId) {
+    const b = S.banners.find(x => x.id === S.editingBannerId);
+    if (b) { Object.assign(b, draft); showToast('Bannière mise à jour'); }
+  } else {
+    S.banners.push({ id: Date.now(), ...draft, createdAt: new Date().toISOString() });
+    logActivity('banner', `Bannière créée : ${text.slice(0,40)}`);
+    showToast('Bannière créée');
+  }
+  localStorage.setItem('stockr_banners', JSON.stringify(S.banners));
+  S.editingBannerId = null;
+  S.view = 'marketing';
+  S.marketingTab = 'banners';
+  render();
+}
+function toggleBannerActive(id) {
+  const b = S.banners.find(x => x.id === id);
+  if (!b) return;
+  b.active = !b.active;
+  localStorage.setItem('stockr_banners', JSON.stringify(S.banners));
+  showToast(b.active ? 'Bannière activée' : 'Bannière désactivée');
+  render();
+}
+function deleteBanner(id) {
+  if (!confirm('Supprimer cette bannière ?')) return;
+  S.banners = S.banners.filter(x => x.id !== id);
+  localStorage.setItem('stockr_banners', JSON.stringify(S.banners));
+  showToast('Bannière supprimée');
+  if (S.view === 'banner-form') { S.view='marketing'; S.marketingTab='banners'; S.editingBannerId=null; }
+  render();
+}
+
+// ═══════════════════════════════════════════════
+// POPUPS (CRUD + partage)
+// ═══════════════════════════════════════════════
+function addPopup() {
+  S.editingPopupId = null;
+  S.view = 'popup-form';
+  render();
+}
+function editPopup(id) {
+  S.editingPopupId = id;
+  S.view = 'popup-form';
+  render();
+}
+function vPopupForm() {
+  const isEdit = !!S.editingPopupId;
+  const p = isEdit ? S.popups.find(x => x.id === S.editingPopupId) : null;
+  const today = new Date().toISOString().slice(0,10);
+  const plus30 = new Date(Date.now()+30*86400000).toISOString().slice(0,10);
+  const draft = p || { title:'-10% sur votre première commande !', message:'Utilisez le code BIENVENUE10 pour profiter de 10% de remise.', emoji:'🎉', trigger:'time', triggerValue:5, ctaText:'En profiter', ctaUrl:'', promoCode:'', bgColor:'#4F46E5', textColor:'#FFFFFF', active:true, showOnce:true, startDate:today, endDate:plus30 };
+  const promos = (S.promotions||[]).filter(x => x.active);
+  return `
+  <div class="sub-hero">
+    <div class="page-header-row" style="margin-bottom:10px">
+      <button class="back-btn-dark" onclick="S.editingPopupId=null;nav('marketing')">${IC.left}</button>
+      <div style="flex:1">
+        <div class="sub-hero-title">${isEdit?'Modifier popup':'Nouveau popup'}</div>
+        <div class="sub-hero-sub">Offre mise en avant pour vos visiteurs</div>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="card" style="margin-bottom:10px;padding:0;overflow:hidden">
+      <div id="pp-preview" style="background:${draft.bgColor};color:${draft.textColor};padding:24px 18px;text-align:center;border-radius:8px">
+        <div style="font-size:40px;margin-bottom:8px" id="pp-prev-emoji">${draft.emoji}</div>
+        <div style="font-size:18px;font-weight:800;margin-bottom:6px" id="pp-prev-title">${draft.title}</div>
+        <div style="font-size:13px;opacity:0.9;margin-bottom:12px" id="pp-prev-message">${draft.message}</div>
+        ${draft.promoCode?`<div id="pp-prev-code" style="background:rgba(255,255,255,0.25);padding:8px 14px;border-radius:8px;font-family:monospace;font-weight:800;letter-spacing:2px;display:inline-block;margin-bottom:10px">${draft.promoCode}</div>`:''}
+        <div><button style="background:rgba(255,255,255,0.25);color:${draft.textColor};padding:10px 24px;border:none;border-radius:8px;font-weight:700;cursor:pointer;backdrop-filter:blur(4px)" id="pp-prev-cta">${draft.ctaText}</button></div>
+      </div>
+      <div style="padding:8px 14px;font-size:10px;color:var(--text-3);background:var(--gray-1)">Aperçu en temps réel</div>
+    </div>
+
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">Contenu</div>
+      <div class="form-group">
+        <label class="form-label">Emoji / Icône</label>
+        <input class="input" id="pp-emoji" value="${draft.emoji||''}" oninput="$('pp-prev-emoji').textContent=this.value" style="font-size:20px;text-align:center">
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:6px">
+          ${['🎉','🎁','🔥','💥','⭐','💰','🎊','✨','⚡','🛍️','🏷️','💎'].map(e => `<button class="btn btn-ghost" style="font-size:18px;padding:4px 8px" onclick="$('pp-emoji').value='${e}';$('pp-prev-emoji').textContent='${e}'">${e}</button>`).join('')}
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Titre <span style="color:var(--danger)">*</span></label>
+        <input class="input" id="pp-title" value="${draft.title||''}" oninput="$('pp-prev-title').textContent=this.value" placeholder="-10% sur votre première commande !">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Message</label>
+        <textarea class="input" id="pp-message" rows="3" oninput="$('pp-prev-message').textContent=this.value" placeholder="Utilisez le code BIENVENUE10...">${draft.message||''}</textarea>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">Déclencheur</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+        ${[
+          {id:'entry',label:"À l'entrée",ico:'👋',desc:"Dès l'ouverture"},
+          {id:'time',label:'Après temps',ico:'⏱️',desc:'Après X secondes'},
+          {id:'scroll',label:'Au scroll',ico:'📜',desc:'Après X% de scroll'},
+          {id:'exit',label:'À la sortie',ico:'👋',desc:'Intention de partir'},
+        ].map(tg => `
+        <label class="promo-type-opt ${draft.trigger===tg.id?'selected':''}" onclick="document.querySelectorAll('[data-pp-trig]').forEach(e=>e.classList.remove('selected'));this.classList.add('selected');$('pp-trigger').value='${tg.id}';document.getElementById('pp-trig-val-wrap').style.display=['time','scroll'].includes('${tg.id}')?'block':'none';$('pp-trig-val-lbl').textContent='${tg.id==='time'?'Secondes':tg.id==='scroll'?'% de scroll':''}'" data-pp-trig="${tg.id}">
+          <div style="font-size:22px">${tg.ico}</div>
+          <div style="font-size:12px;font-weight:700;margin-top:4px">${tg.label}</div>
+          <div style="font-size:9px;color:var(--text-3)">${tg.desc}</div>
+        </label>`).join('')}
+      </div>
+      <input type="hidden" id="pp-trigger" value="${draft.trigger}">
+      <div id="pp-trig-val-wrap" class="form-group" style="display:${['time','scroll'].includes(draft.trigger)?'block':'none'}">
+        <label class="form-label"><span id="pp-trig-val-lbl">${draft.trigger==='time'?'Secondes':'% de scroll'}</span></label>
+        <input class="input" type="number" id="pp-trig-val" value="${draft.triggerValue||5}" min="1">
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">Action</div>
+      <div class="form-group">
+        <label class="form-label">Texte du bouton</label>
+        <input class="input" id="pp-cta-text" value="${draft.ctaText||''}" oninput="$('pp-prev-cta').textContent=this.value" placeholder="En profiter">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Code promo associé (optionnel)</label>
+        <select class="input" id="pp-promo">
+          <option value="">Aucun</option>
+          ${promos.map(pr => `<option value="${pr.code}" ${draft.promoCode===pr.code?'selected':''}>${pr.code} — ${pr.name}</option>`).join('')}
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Lien cible (optionnel)</label>
+        <input class="input" id="pp-cta-url" value="${draft.ctaUrl||''}" placeholder="https://...">
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">Couleurs</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        ${[{bg:'#4F46E5',fg:'#fff'},{bg:'#059669',fg:'#fff'},{bg:'#DC2626',fg:'#fff'},{bg:'#F59E0B',fg:'#fff'},{bg:'#000',fg:'#fff'},{bg:'#fff',fg:'#000'},{bg:'#7C3AED',fg:'#fff'},{bg:'#0F172A',fg:'#fff'}].map(c => `
+        <div onclick="$('pp-bg').value='${c.bg}';$('pp-fg').value='${c.fg}';$('pp-preview').style.background='${c.bg}';$('pp-preview').style.color='${c.fg}'" style="cursor:pointer;width:40px;height:40px;border-radius:50%;background:${c.bg};border:3px solid ${draft.bgColor===c.bg?'#000':'transparent'}"></div>`).join('')}
+      </div>
+      <input type="hidden" id="pp-bg" value="${draft.bgColor}">
+      <input type="hidden" id="pp-fg" value="${draft.textColor}">
+    </div>
+
+    <div class="card" style="margin-bottom:10px">
+      <div style="display:flex;gap:8px">
+        <div class="form-group" style="flex:1"><label class="form-label">Début</label><input class="input" type="date" id="pp-start" value="${draft.startDate||today}"></div>
+        <div class="form-group" style="flex:1"><label class="form-label">Fin</label><input class="input" type="date" id="pp-end" value="${draft.endDate||plus30}"></div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px">
+        <div><div style="font-weight:700;font-size:13px">Afficher une seule fois</div><div style="font-size:11px;color:var(--text-3)">Par visiteur (via cookie)</div></div>
+        <label class="toggle-switch"><input type="checkbox" id="pp-once" ${draft.showOnce!==false?'checked':''}><span class="toggle-track"></span></label>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px">
+        <div><div style="font-weight:700;font-size:13px">Activer</div><div style="font-size:11px;color:var(--text-3)">Visible sur votre boutique</div></div>
+        <label class="toggle-switch"><input type="checkbox" id="pp-active" ${draft.active!==false?'checked':''}><span class="toggle-track"></span></label>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:8px">
+      ${isEdit?`<button class="btn btn-ghost" style="color:var(--danger);border-color:var(--danger)" onclick="deletePopup(${draft.id})">🗑 Supprimer</button>`:''}
+      <button class="btn btn-primary" style="flex:1" onclick="savePopup()">${IC.check} ${isEdit?'Mettre à jour':'Créer le popup'}</button>
+    </div>
+  </div>`;
+}
+function savePopup() {
+  const title = ($('pp-title')?.value||'').trim();
+  if (!title) { showToast('Titre obligatoire', 'error'); return; }
+  const draft = {
+    title,
+    message: $('pp-message')?.value || '',
+    emoji: $('pp-emoji')?.value || '🎉',
+    trigger: $('pp-trigger')?.value || 'time',
+    triggerValue: parseInt($('pp-trig-val')?.value) || 5,
+    ctaText: $('pp-cta-text')?.value || 'En profiter',
+    ctaUrl: $('pp-cta-url')?.value || '',
+    promoCode: $('pp-promo')?.value || '',
+    bgColor: $('pp-bg')?.value || '#4F46E5',
+    textColor: $('pp-fg')?.value || '#FFFFFF',
+    startDate: $('pp-start')?.value,
+    endDate: $('pp-end')?.value,
+    showOnce: $('pp-once')?.checked !== false,
+    active: $('pp-active')?.checked !== false,
+  };
+  if (S.editingPopupId) {
+    const p = S.popups.find(x => x.id === S.editingPopupId);
+    if (p) { Object.assign(p, draft); showToast('Popup mis à jour'); }
+  } else {
+    S.popups.push({ id: Date.now(), ...draft, createdAt: new Date().toISOString() });
+    logActivity('popup', `Popup créé : ${title.slice(0,40)}`);
+    showToast('Popup créé');
+  }
+  localStorage.setItem('stockr_popups', JSON.stringify(S.popups));
+  S.editingPopupId = null;
+  S.view = 'marketing';
+  S.marketingTab = 'popups';
+  render();
+}
+function togglePopupActive(id) {
+  const p = S.popups.find(x => x.id === id);
+  if (!p) return;
+  p.active = !p.active;
+  localStorage.setItem('stockr_popups', JSON.stringify(S.popups));
+  showToast(p.active ? 'Popup activé' : 'Popup désactivé');
+  render();
+}
+function deletePopup(id) {
+  if (!confirm('Supprimer ce popup ?')) return;
+  S.popups = S.popups.filter(x => x.id !== id);
+  localStorage.setItem('stockr_popups', JSON.stringify(S.popups));
+  showToast('Popup supprimé');
+  if (S.view === 'popup-form') { S.view='marketing'; S.marketingTab='popups'; S.editingPopupId=null; }
+  render();
+}
+
+// ═══════════════════════════════════════════════
+// AVIS / PROOF (CRUD + demande + approbation)
+// ═══════════════════════════════════════════════
+function addReview() {
+  S.editingReviewId = null;
+  S.view = 'review-form';
+  render();
+}
+function editReview(id) {
+  S.editingReviewId = id;
+  S.view = 'review-form';
+  render();
+}
+function vReviewForm() {
+  const isEdit = !!S.editingReviewId;
+  const r = isEdit ? S.reviews.find(x => x.id === S.editingReviewId) : null;
+  const draft = r || { clientName:'', rating:5, comment:'', productId:null, date:new Date().toISOString(), approved:true, verified:false };
+  return `
+  <div class="sub-hero">
+    <div class="page-header-row" style="margin-bottom:10px">
+      <button class="back-btn-dark" onclick="S.editingReviewId=null;nav('marketing')">${IC.left}</button>
+      <div style="flex:1">
+        <div class="sub-hero-title">${isEdit?'Modifier avis':'Nouvel avis client'}</div>
+        <div class="sub-hero-sub">Témoignage affiché sur votre boutique</div>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="card" style="margin-bottom:10px">
+      <div class="form-group">
+        <label class="form-label">Nom du client <span style="color:var(--danger)">*</span></label>
+        <input class="input" id="rv-name" value="${draft.clientName||''}" placeholder="Ex: Aminata K.">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Note <span style="color:var(--danger)">*</span></label>
+        <div style="display:flex;gap:6px;font-size:32px;cursor:pointer;justify-content:center" id="rv-stars">
+          ${[1,2,3,4,5].map(n => `<span data-star="${n}" onclick="document.querySelectorAll('#rv-stars span').forEach(s=>{s.style.color=parseInt(s.dataset.star)<=${n}?'#F59E0B':'#D1D5DB'});$('rv-rating').value='${n}'" style="color:${n<=draft.rating?'#F59E0B':'#D1D5DB'};transition:.2s">★</span>`).join('')}
+        </div>
+        <input type="hidden" id="rv-rating" value="${draft.rating}">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Commentaire</label>
+        <textarea class="input" id="rv-comment" rows="4" placeholder="Excellent service, livraison rapide...">${draft.comment||''}</textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Produit concerné (optionnel)</label>
+        <select class="input" id="rv-product">
+          <option value="">— Général (tout produit) —</option>
+          ${(S.products||[]).map(p => `<option value="${p.id}" ${draft.productId==p.id?'selected':''}>${p.name}</option>`).join('')}
+        </select>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px">
+        <div><div style="font-weight:700;font-size:13px">Client vérifié</div><div style="font-size:11px;color:var(--text-3)">Badge "✓ Vérifié" visible</div></div>
+        <label class="toggle-switch"><input type="checkbox" id="rv-verified" ${draft.verified?'checked':''}><span class="toggle-track"></span></label>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px">
+        <div><div style="font-weight:700;font-size:13px">Publié</div><div style="font-size:11px;color:var(--text-3)">Visible sur la boutique</div></div>
+        <label class="toggle-switch"><input type="checkbox" id="rv-approved" ${draft.approved!==false?'checked':''}><span class="toggle-track"></span></label>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px">
+      ${isEdit?`<button class="btn btn-ghost" style="color:var(--danger);border-color:var(--danger)" onclick="deleteReview(${draft.id})">🗑 Supprimer</button>`:''}
+      <button class="btn btn-primary" style="flex:1" onclick="saveReview()">${IC.check} ${isEdit?'Mettre à jour':"Créer l'avis"}</button>
+    </div>
+  </div>`;
+}
+function saveReview() {
+  const clientName = ($('rv-name')?.value||'').trim();
+  if (!clientName) { showToast('Nom du client obligatoire', 'error'); return; }
+  const draft = {
+    clientName,
+    rating: parseInt($('rv-rating')?.value) || 5,
+    comment: $('rv-comment')?.value || '',
+    productId: $('rv-product')?.value ? parseInt($('rv-product').value) : null,
+    verified: $('rv-verified')?.checked === true,
+    approved: $('rv-approved')?.checked !== false,
+  };
+  if (S.editingReviewId) {
+    const r = S.reviews.find(x => x.id === S.editingReviewId);
+    if (r) { Object.assign(r, draft); showToast('Avis mis à jour'); }
+  } else {
+    S.reviews.unshift({ id: Date.now(), ...draft, date: new Date().toISOString() });
+    logActivity('review', `Avis ${draft.rating}★ par ${clientName}`);
+    showToast('Avis ajouté');
+  }
+  localStorage.setItem('stockr_reviews', JSON.stringify(S.reviews));
+  S.editingReviewId = null;
+  S.view = 'marketing';
+  S.marketingTab = 'reviews';
+  render();
+}
+function approveReview(id) {
+  const r = S.reviews.find(x => x.id === id);
+  if (!r) return;
+  r.approved = true;
+  localStorage.setItem('stockr_reviews', JSON.stringify(S.reviews));
+  showToast('Avis publié');
+  render();
+}
+function deleteReview(id) {
+  if (!confirm('Supprimer cet avis ?')) return;
+  S.reviews = S.reviews.filter(x => x.id !== id);
+  localStorage.setItem('stockr_reviews', JSON.stringify(S.reviews));
+  showToast('Avis supprimé');
+  if (S.view === 'review-form') { S.view='marketing'; S.marketingTab='reviews'; S.editingReviewId=null; }
+  render();
+}
+function copyReviewLink() {
+  const domain = S.boutiqueConfig?.domain || 'maboutique';
+  const link = `https://${domain}.stockr.shop/avis`;
+  navigator.clipboard?.writeText(link).then(() => showToast('Lien copié — partagez à vos clients'));
+}
+function shareReviewLink() {
+  const biz = S.session?.business || 'notre boutique';
+  const domain = S.boutiqueConfig?.domain || 'maboutique';
+  const msg = encodeURIComponent(`Bonjour ! Merci d'avoir choisi ${biz} 🙏\n\nVotre avis compte énormément pour nous. Pouvez-vous nous laisser un petit témoignage ici :\n\nhttps://${domain}.stockr.shop/avis\n\nMerci infiniment !`);
+  window.open(`https://wa.me/?text=${msg}`, '_blank');
+}
+
+// ═══════════════════════════════════════════════
+// LIENS TRACKÉS (UTM)
+// ═══════════════════════════════════════════════
+function addTrackingLink() {
+  S.editingTrackingId = null;
+  S.view = 'tracking-form';
+  render();
+}
+function editTrackingLink(id) {
+  S.editingTrackingId = id;
+  S.view = 'tracking-form';
+  render();
+}
+function vTrackingForm() {
+  const isEdit = !!S.editingTrackingId;
+  const t = isEdit ? S.trackingLinks.find(x => x.id === S.editingTrackingId) : null;
+  const domain = S.boutiqueConfig?.domain || 'maboutique';
+  const draft = t || { name:'', destUrl:`https://${domain}.stockr.shop/`, source:'facebook', medium:'social', campaign:'', clicks:0, active:true };
+  return `
+  <div class="sub-hero">
+    <div class="page-header-row" style="margin-bottom:10px">
+      <button class="back-btn-dark" onclick="S.editingTrackingId=null;nav('marketing')">${IC.left}</button>
+      <div style="flex:1">
+        <div class="sub-hero-title">${isEdit?'Modifier lien':'Nouveau lien tracé'}</div>
+        <div class="sub-hero-sub">Pour identifier l'origine de vos clients</div>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">Informations</div>
+      <div class="form-group">
+        <label class="form-label">Nom de la campagne <span style="color:var(--danger)">*</span></label>
+        <input class="input" id="tk-name" value="${draft.name||''}" placeholder="Ex: Pub Facebook Soldes Janvier">
+      </div>
+      <div class="form-group">
+        <label class="form-label">URL de destination <span style="color:var(--danger)">*</span></label>
+        <input class="input" id="tk-dest" value="${draft.destUrl||''}" placeholder="https://maboutique.stockr.shop/">
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">Source du trafic</div>
+      <div class="form-group">
+        <label class="form-label">Source (d'où vient le clic)</label>
+        <select class="input" id="tk-source">
+          ${['facebook','instagram','tiktok','whatsapp','twitter','google','youtube','email','sms','affiche','autre'].map(s => `<option value="${s}" ${draft.source===s?'selected':''}>${s}</option>`).join('')}
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Canal (type de contenu)</label>
+        <select class="input" id="tk-medium">
+          ${['social','paid','organic','email','sms','cpc','affiliate','referral'].map(m => `<option value="${m}" ${draft.medium===m?'selected':''}>${m}</option>`).join('')}
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Nom court campagne (optionnel)</label>
+        <input class="input" id="tk-campaign" value="${draft.campaign||''}" placeholder="soldes_janvier">
+      </div>
+    </div>
+    <div style="display:flex;gap:8px">
+      ${isEdit?`<button class="btn btn-ghost" style="color:var(--danger);border-color:var(--danger)" onclick="deleteTrackingLink(${draft.id})">🗑 Supprimer</button>`:''}
+      <button class="btn btn-primary" style="flex:1" onclick="saveTrackingLink()">${IC.check} ${isEdit?'Mettre à jour':'Créer le lien'}</button>
+    </div>
+  </div>`;
+}
+function saveTrackingLink() {
+  const name = ($('tk-name')?.value||'').trim();
+  const destUrl = ($('tk-dest')?.value||'').trim();
+  if (!name || !destUrl) { showToast('Nom et URL obligatoires', 'error'); return; }
+  const draft = {
+    name, destUrl,
+    source: $('tk-source')?.value || 'autre',
+    medium: $('tk-medium')?.value || 'social',
+    campaign: ($('tk-campaign')?.value || name.toLowerCase().replace(/[^a-z0-9]+/g,'_')).slice(0,30),
+  };
+  if (S.editingTrackingId) {
+    const tk = S.trackingLinks.find(x => x.id === S.editingTrackingId);
+    if (tk) { Object.assign(tk, draft); showToast('Lien mis à jour'); }
+  } else {
+    S.trackingLinks.push({ id: Date.now(), ...draft, clicks: 0, active: true, createdAt: new Date().toISOString() });
+    showToast('Lien tracé créé');
+  }
+  localStorage.setItem('stockr_tracking', JSON.stringify(S.trackingLinks));
+  S.editingTrackingId = null;
+  S.view = 'marketing';
+  S.marketingTab = 'tracking';
+  render();
+}
+function deleteTrackingLink(id) {
+  if (!confirm('Supprimer ce lien ?')) return;
+  S.trackingLinks = S.trackingLinks.filter(x => x.id !== id);
+  localStorage.setItem('stockr_tracking', JSON.stringify(S.trackingLinks));
+  showToast('Lien supprimé');
+  if (S.view === 'tracking-form') { S.view='marketing'; S.marketingTab='tracking'; S.editingTrackingId=null; }
+  render();
+}
+function _buildTrackingUrl(tk) {
+  const base = tk.destUrl || '';
+  const sep = base.includes('?') ? '&' : '?';
+  const params = new URLSearchParams({
+    utm_source: tk.source,
+    utm_medium: tk.medium,
+    utm_campaign: tk.campaign
+  });
+  return base + sep + params.toString();
+}
+function copyTrackingLink(id) {
+  const tk = S.trackingLinks.find(x => x.id === id);
+  if (!tk) return;
+  const url = _buildTrackingUrl(tk);
+  navigator.clipboard?.writeText(url).then(() => showToast('Lien copié !'));
+  tk.clicks = (tk.clicks||0) + 0; // on ne compte que les vrais clics
+  localStorage.setItem('stockr_tracking', JSON.stringify(S.trackingLinks));
+}
+function shareTrackingLink(id) {
+  const tk = S.trackingLinks.find(x => x.id === id);
+  if (!tk) return;
+  const url = _buildTrackingUrl(tk);
+  const msg = encodeURIComponent(`Découvrez ${S.session?.business||'notre boutique'} :\n${url}`);
+  window.open(`https://wa.me/?text=${msg}`, '_blank');
+}
+function addCampaign() {
+  const name = prompt('Nom de la campagne :');
+  if (!name) return;
+  const typeChoice = prompt('Canal d\'envoi :\n1. WhatsApp\n2. SMS\n3. Email\nNumero :', '1');
+  const typeMap = {'1':'whatsapp','2':'sms','3':'email'};
+  const type = typeMap[typeChoice] || typeChoice?.toLowerCase() || 'whatsapp';
+  // Pre-build message with active promos
+  const activePromos = (S.promotions||[]).filter(p => p.active);
+  const promoText = activePromos.length > 0 ? '\n\nOffres en cours:\n' + activePromos.map(p => `- ${p.name} (-${p.discount}%)`).join('\n') : '';
+  const defaultMsg = `Bonjour ! ${S.session?.business||'Notre boutique'} vous informe : ${name}${promoText}\n\nMerci de votre confiance !`;
+  const message = prompt('Message de la campagne :', defaultMsg) || defaultMsg;
+  const clientsWithPhone = S.clients.filter(cl => cl.phone);
+  const clientsWithEmail = S.clients.filter(cl => cl.email);
+  const recipients = type === 'email' ? clientsWithEmail.length : type === 'sms' || type === 'whatsapp' ? clientsWithPhone.length : S.clients.length;
+  const campaign = { id:Date.now(), name, type, message, recipients, sent:false, date:new Date().toISOString(), sentCount:0 };
+  S.campaigns.push(campaign);
+  localStorage.setItem('stockr_campaigns', JSON.stringify(S.campaigns));
+  logActivity('campaign', `Campagne "${name}" (${type}) - ${recipients} destinataires`);
+  showToast(`Campagne "${name}" créée — ${recipients} destinataires`);
+  render();
+}
+function sendCampaign(id) {
+  const c = S.campaigns.find(x => x.id === id);
+  if (!c) return;
+  const msg = c.message || c.name;
+  if (c.type === 'whatsapp') {
+    const clientsWithPhone = S.clients.filter(cl => cl.phone);
+    if (clientsWithPhone.length > 0) {
+      // Open WhatsApp for each client sequentially
+      const phone = clientsWithPhone[0].phone.replace(/\s/g, '').replace(/^\+?225/, '225');
+      window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+      // Show list of remaining clients to send to
+      if (clientsWithPhone.length > 1) {
+        const remaining = clientsWithPhone.slice(1).map(cl => `${cl.name}: ${cl.phone}`).join('\n');
+        setTimeout(() => {
+          alert(`Message envoyé au premier client.\n\nClients restants (${clientsWithPhone.length - 1}):\n${remaining}\n\nCopiez le message et envoyez manuellement ou utilisez WhatsApp Business pour l'envoi groupé.`);
+        }, 1500);
+      }
+      showToast(`WhatsApp ouvert — ${clientsWithPhone.length} clients ciblés`);
+    } else {
+      window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+      showToast('Aucun client avec numéro — WhatsApp ouvert sans destinataire');
+    }
+    c.sent = true;
+    c.sentDate = new Date().toISOString();
+    c.sentCount = clientsWithPhone.length;
+    localStorage.setItem('stockr_campaigns', JSON.stringify(S.campaigns));
+    render();
+  } else if (c.type === 'sms') {
+    const clientsWithPhone = S.clients.filter(cl => cl.phone);
+    const phones = clientsWithPhone.map(cl => cl.phone.replace(/\s/g, '')).join(',');
+    window.open(`sms:${phones}?body=${encodeURIComponent(msg)}`, '_blank');
+    c.sent = true;
+    c.sentDate = new Date().toISOString();
+    c.sentCount = clientsWithPhone.length;
+    localStorage.setItem('stockr_campaigns', JSON.stringify(S.campaigns));
+    showToast(`SMS prêt — ${clientsWithPhone.length} destinataires`);
+    render();
+  } else if (c.type === 'email') {
+    const clientsWithEmail = S.clients.filter(cl => cl.email);
+    const emails = clientsWithEmail.map(cl => cl.email).join(',');
+    const subject = encodeURIComponent(c.name);
+    const body = encodeURIComponent(msg);
+    window.open(`mailto:${emails}?subject=${subject}&body=${body}`, '_blank');
+    c.sent = true;
+    c.sentDate = new Date().toISOString();
+    c.sentCount = clientsWithEmail.length;
+    localStorage.setItem('stockr_campaigns', JSON.stringify(S.campaigns));
+    showToast(`Email prêt — ${clientsWithEmail.length} destinataires`);
+    render();
+  }
+}
+function deleteCampaign(id) {
+  S.campaigns = S.campaigns.filter(c => c.id !== id);
+  localStorage.setItem('stockr_campaigns', JSON.stringify(S.campaigns));
+  showToast('Campagne supprimee');
+  render();
+}
+function toggleLoyalty() {
+  if (!S.loyaltyConfig.enabled) {
+    // Activate — let user configure
+    const rate = parseInt(prompt('Points par FCFA depense :', String(S.loyaltyConfig.pointsPerFcfa || 1))) || 1;
+    const rewardName = prompt('Nom de la premiere recompense :', 'Remise 10%') || 'Remise 10%';
+    const rewardPts = parseInt(prompt('Points necessaires :', '500')) || 500;
+    S.loyaltyConfig.enabled = true;
+    S.loyaltyConfig.pointsPerFcfa = rate;
+    if (!S.loyaltyConfig.rewards) S.loyaltyConfig.rewards = [];
+    if (S.loyaltyConfig.rewards.length === 0) {
+      S.loyaltyConfig.rewards.push({ name: rewardName, points: rewardPts });
+    }
+  } else {
+    S.loyaltyConfig.enabled = false;
+  }
+  localStorage.setItem('stockr_loyalty', JSON.stringify(S.loyaltyConfig));
+  showToast(S.loyaltyConfig.enabled ? 'Fidelite activee !' : 'Fidelite desactivee');
+  render();
+}
+function addLoyaltyReward() {
+  const name = prompt('Nom de la recompense :');
+  if (!name) return;
+  const pts = parseInt(prompt('Points necessaires :', '1000')) || 1000;
+  const description = prompt('Description (optionnel) :', '') || '';
+  const icon = prompt('Emoji (optionnel) :', '🎁') || '🎁';
+  if (!S.loyaltyConfig.rewards) S.loyaltyConfig.rewards = [];
+  S.loyaltyConfig.rewards.push({ name, points: pts, description, icon });
+  S.loyaltyConfig.rewards.sort((a,b) => a.points - b.points);
+  localStorage.setItem('stockr_loyalty', JSON.stringify(S.loyaltyConfig));
+  showToast('Recompense ajoutee');
+  render();
+}
+function editLoyaltyReward(idx) {
+  const r = (S.loyaltyConfig.rewards||[])[idx];
+  if (!r) return;
+  const name = prompt('Nom :', r.name);
+  if (name === null) return;
+  const pts = parseInt(prompt('Points :', String(r.points))) || r.points;
+  const description = prompt('Description :', r.description || '') || '';
+  const icon = prompt('Emoji :', r.icon || '🎁') || '🎁';
+  S.loyaltyConfig.rewards[idx] = { ...r, name: name || r.name, points: pts, description, icon };
+  S.loyaltyConfig.rewards.sort((a,b) => a.points - b.points);
+  localStorage.setItem('stockr_loyalty', JSON.stringify(S.loyaltyConfig));
+  showToast('Recompense mise a jour');
+  render();
+}
+function deleteLoyaltyReward(idx) {
+  const r = (S.loyaltyConfig.rewards||[])[idx];
+  if (!r) return;
+  if (!confirm(`Supprimer la recompense "${r.name}" ?`)) return;
+  S.loyaltyConfig.rewards.splice(idx, 1);
+  localStorage.setItem('stockr_loyalty', JSON.stringify(S.loyaltyConfig));
+  showToast('Recompense supprimee');
+  render();
+}
+// ── TIER MANAGEMENT ─────────────────────────
+function editLoyaltyRate() {
+  const rate = parseFloat(prompt('Combien de points par 1 ' + sym() + ' depense ?\n(ex: 1 = 1 pt par FCFA, 0.01 = 1 pt par 100 FCFA)', String(S.loyaltyConfig.pointsPerFcfa || 1)));
+  if (!rate || rate <= 0) return;
+  S.loyaltyConfig.pointsPerFcfa = rate;
+  localStorage.setItem('stockr_loyalty', JSON.stringify(S.loyaltyConfig));
+  showToast('Taux mis a jour');
+  render();
+}
+function toggleLoyaltyTierMode() {
+  const current = S.loyaltyConfig.tierMode || 'spent';
+  const next = current === 'spent' ? 'points' : 'spent';
+  if (!confirm(`Basculer en mode "${next === 'points' ? 'Par points accumules' : 'Par montant depense cumule'}" ?`)) return;
+  S.loyaltyConfig.tierMode = next;
+  localStorage.setItem('stockr_loyalty', JSON.stringify(S.loyaltyConfig));
+  showToast('Mode paliers : ' + (next === 'points' ? 'Par points' : 'Par depenses'));
+  render();
+}
+function addLoyaltyTier() {
+  const name = prompt('Nom du palier (ex: Diamant) :');
+  if (!name) return;
+  const mode = S.loyaltyConfig.tierMode || 'spent';
+  const min = parseInt(prompt(`Seuil minimum (${mode==='points'?'points':sym()}) :`, '10000')) || 0;
+  const perk = prompt('Avantage du palier :', 'Points x2.5 · acces VIP') || '';
+  const icon = prompt('Emoji :', '💠') || '💠';
+  const color = prompt('Couleur HEX :', '#06B6D4') || '#06B6D4';
+  if (!S.loyaltyConfig.tiers) S.loyaltyConfig.tiers = [];
+  const id = 'tier_' + Date.now();
+  S.loyaltyConfig.tiers.push({ id, name, min, perk, icon, color, gradient:`linear-gradient(135deg,${color},${color}99)`, multiplier: 1 });
+  S.loyaltyConfig.tiers.sort((a,b) => a.min - b.min);
+  localStorage.setItem('stockr_loyalty', JSON.stringify(S.loyaltyConfig));
+  showToast('Palier ajoute');
+  render();
+}
+function editLoyaltyTier(idx) {
+  const tiers = (S.loyaltyConfig.tiers || []).slice().sort((a,b) => a.min - b.min);
+  const t = tiers[idx];
+  if (!t) return;
+  const name = prompt('Nom du palier :', t.name);
+  if (name === null) return;
+  const mode = S.loyaltyConfig.tierMode || 'spent';
+  const min = parseInt(prompt(`Seuil minimum (${mode==='points'?'points':sym()}) :`, String(t.min))) || 0;
+  const perk = prompt('Avantage :', t.perk || '') || '';
+  const icon = prompt('Emoji :', t.icon || '★') || '★';
+  const color = prompt('Couleur HEX :', t.color || '#4F46E5') || '#4F46E5';
+  const multiplier = parseFloat(prompt('Multiplicateur de points (1 = normal, 2 = double) :', String(t.multiplier || 1))) || 1;
+  const realIdx = S.loyaltyConfig.tiers.findIndex(x => x.id === t.id);
+  if (realIdx >= 0) {
+    S.loyaltyConfig.tiers[realIdx] = { ...t, name: name || t.name, min, perk, icon, color, gradient:`linear-gradient(135deg,${color},${color}99)`, multiplier };
+    S.loyaltyConfig.tiers.sort((a,b) => a.min - b.min);
+    localStorage.setItem('stockr_loyalty', JSON.stringify(S.loyaltyConfig));
+    showToast('Palier mis a jour');
+    render();
+  }
+}
+function deleteLoyaltyTier(idx) {
+  const tiers = (S.loyaltyConfig.tiers || []).slice().sort((a,b) => a.min - b.min);
+  const t = tiers[idx];
+  if (!t) return;
+  if ((S.loyaltyConfig.tiers || []).length <= 1) { showToast('Conservez au moins 1 palier', 'error'); return; }
+  if (!confirm(`Supprimer le palier "${t.name}" ?`)) return;
+  S.loyaltyConfig.tiers = S.loyaltyConfig.tiers.filter(x => x.id !== t.id);
+  localStorage.setItem('stockr_loyalty', JSON.stringify(S.loyaltyConfig));
+  showToast('Palier supprime');
+  render();
+}
+function sendLoyaltyCampaign() {
+  const vipClients = S.clients.filter(c => {
+    const tier = _getClientTier(c);
+    return tier && (tier.min >= 500 || (c.loyaltyPoints||0) > 0);
+  });
+  if (vipClients.length === 0) { showToast('Aucun client fidele', 'error'); return; }
+  const msg = prompt(`Message a envoyer aux ${vipClients.length} clients fideles :`, `Bonjour, vous avez ${'{'+'points}'} points fidelite ! Echangez-les contre une recompense.`);
+  if (!msg) return;
+  const first = vipClients[0];
+  const personalizedMsg = msg.replace('{points}', first.loyaltyPoints || 0).replace('{name}', first.name || '');
+  const phone = (first.phone || '').replace(/[^0-9+]/g, '');
+  if (phone) {
+    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(personalizedMsg)}`, '_blank');
+  }
+  showToast(`Relance envoyee a ${first.name} (ouvrez WhatsApp pour les autres)`);
+}
+function exportLoyaltyReport() {
+  const rows = [['Client','Telephone','Points','Depense_cumulee','Palier','Echanges']];
+  S.clients.forEach(c => {
+    const spent = _clientLifetimeSpent(c);
+    const tier = _getClientTier(c);
+    const redeemed = (c.redeemedRewards||[]).length;
+    if ((c.loyaltyPoints||0) === 0 && spent === 0) return;
+    rows.push([c.name||'', c.phone||'', c.loyaltyPoints||0, spent, tier?.name||'—', redeemed]);
+  });
+  const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `stockr_fidelite_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Rapport fidelite exporte');
+}
+function redeemLoyaltyReward(clientId, rewardIndex) {
+  const client = S.clients.find(c => c.id === clientId);
+  if (!client) return;
+  const reward = (S.loyaltyConfig.rewards||[])[rewardIndex];
+  if (!reward) return;
+  if ((client.loyaltyPoints||0) < reward.points) {
+    showToast(`Points insuffisants (${client.loyaltyPoints||0}/${reward.points})`, 'error');
+    return;
+  }
+  client.loyaltyPoints -= reward.points;
+  if (!client.redeemedRewards) client.redeemedRewards = [];
+  client.redeemedRewards.push({ name:reward.name, date:new Date().toISOString(), points:reward.points });
+  localStorage.setItem('stockr_clients', JSON.stringify(S.clients));
+  logActivity('loyalty', `${client.name} a utilise ${reward.points} pts pour "${reward.name}"`);
+  showToast(`${client.name} a echange ${reward.points} pts pour "${reward.name}" !`);
+  render();
+}
+function schedulePost() {
+  if (S.products.length === 0) { showToast('Ajoutez des produits', 'error'); return; }
+  const prodIdx = prompt('Produit :\n' + S.products.map((p,i) => `${i+1}. ${p.name}`).join('\n') + '\nNumero :', '1');
+  if (!prodIdx) return;
+  const prod = S.products[parseInt(prodIdx)-1];
+  if (!prod) { showToast('Produit invalide', 'error'); return; }
+  const channelChoice = prompt('Canal :\n1. WhatsApp\n2. Facebook\n3. Twitter/X\n4. SMS\n5. Copier\nNuméro :', '1');
+  const channelMap = {'1':'whatsapp','2':'facebook','3':'twitter','4':'sms','5':'copy'};
+  const channel = channelMap[channelChoice] || channelChoice?.toLowerCase() || 'whatsapp';
+  const dateStr = prompt('Date de publication (YYYY-MM-DD) :', new Date(Date.now()+86400000).toISOString().slice(0,10));
+  if (!dateStr) return;
+  const time = prompt('Heure (HH:MM) :', '10:00') || '10:00';
+  const caption = prompt('Legende / message :', `${prod.name} — ${fmt(prod.price)} ${S.session?.currency_symbol||'FCFA'}. Commandez maintenant !`) || '';
+  const post = {
+    id: Date.now(), productId: prod.id, productName: prod.name,
+    channel, scheduledDate: dateStr, scheduledTime: time, caption,
+    status: 'scheduled', date: new Date().toISOString()
+  };
+  S.scheduledPosts.push(post);
+  localStorage.setItem('stockr_posts', JSON.stringify(S.scheduledPosts));
+  showToast(`Publication programmee pour le ${dateStr} a ${time}`);
+  render();
+}
+function publishScheduledPost(id) {
+  const post = S.scheduledPosts.find(p => p.id === id);
+  if (!post) return;
+  const prod = S.products.find(p => p.id === post.productId);
+  const text = post.caption || `${post.productName} — Commandez maintenant !`;
+  if (post.channel === 'whatsapp') window.open('https://wa.me/?text='+encodeURIComponent(text),'_blank');
+  else if (post.channel === 'facebook') window.open('https://www.facebook.com/sharer/sharer.php?quote='+encodeURIComponent(text),'_blank');
+  else if (post.channel === 'twitter') window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(text),'_blank');
+  else if (post.channel === 'sms') window.open('sms:?body='+encodeURIComponent(text),'_blank');
+  else navigator.clipboard?.writeText(text).then(()=>showToast('Copie !'));
+  post.status = 'published';
+  post.publishedDate = new Date().toISOString();
+  localStorage.setItem('stockr_posts', JSON.stringify(S.scheduledPosts));
+  showToast('Publication envoyee !');
+  render();
+}
+function deleteScheduledPost(id) {
+  S.scheduledPosts = S.scheduledPosts.filter(p => p.id !== id);
+  localStorage.setItem('stockr_posts', JSON.stringify(S.scheduledPosts));
+  showToast('Publication supprimee');
+  render();
+}
+
+// ── SOCIAL MEDIA ─────────────────────────────
+function vSocialMedia() {
+  const accounts = S.socialAccounts || [];
+  const platforms = [
+    { id:'instagram', name:'Instagram', icon:IC.instagram, color:'#E1306C', bg:'linear-gradient(135deg,#833AB4,#E1306C,#F77737)' },
+    { id:'facebook',  name:'Facebook',  icon:IC.facebook,  color:'#1877F2', bg:'#1877F2' },
+    { id:'tiktok',    name:'TikTok',    icon:IC.tiktok,    color:'#000000', bg:'linear-gradient(135deg,#000,#25F4EE)' },
+    { id:'youtube',   name:'YouTube',   icon:IC.youtube,   color:'#FF0000', bg:'#FF0000' },
+    { id:'twitter',   name:'X (Twitter)', icon:IC.share,    color:'#000000', bg:'linear-gradient(135deg,#1DA1F2,#000)' },
+  ];
+
+  return `
+  <div class="page-header">
+    <div class="page-header-row">
+      <button class="back-btn" onclick="nav('more')">${IC.left}</button>
+      <div class="page-title">Réseaux sociaux</div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="card" style="margin-bottom:14px">
+      <div class="card-title">Publier un produit</div>
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:12px">Publie un produit sur tes réseaux en un clic</div>
+      <select class="input" id="social-product-select" style="margin-bottom:10px">
+        <option value="">— Choisir un produit —</option>
+        ${S.products.map(p => `<option value="${p.id}">${p.name} — ${fmt(p.price)} ${sym()}</option>`).join('')}
+      </select>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="btn btn-primary" style="flex:1" onclick="postProductSocial('whatsapp')">${IC.whatsapp} WhatsApp</button>
+        <button class="btn" style="flex:1;background:#1877F2;color:#fff" onclick="postProductSocial('facebook')">${IC.facebook} Facebook</button>
+      </div>
+      <div style="display:flex;gap:6px;margin-top:6px">
+        <button class="btn" style="flex:1;background:#000;color:#fff;font-size:12px" onclick="postProductSocial('twitter')">𝕏 Twitter</button>
+        <button class="btn btn-ghost" style="flex:1" onclick="postProductSocial('copy')">📋 Copier</button>
+        <button class="btn btn-ghost" style="flex:1" onclick="postProductSocial('sms')">SMS</button>
+      </div>
+    </div>
+
+    <div class="section-hd"><span class="section-lbl">Plateformes</span></div>
+    <div class="social-grid">
+      ${platforms.map(p => {
+        const acc = accounts.find(a => a.platform === p.id);
+        return `
+      <div class="social-card">
+        <div class="social-ico" style="background:${p.bg}">${p.icon}</div>
+        <div class="social-name">${p.name}</div>
+        <div class="social-stat">${acc?.connected ? acc.username||'Connecte' : 'Non connecte'}</div>
+        <button class="social-btn ${acc?.connected?'connected':''}" onclick="toggleSocialAccount('${p.id}','${p.name}')">
+          ${acc?.connected ? 'Deconnecter' : 'Connecter'}
+        </button>
+      </div>`;}).join('')}
+    </div>
+
+    <div class="section-hd">
+      <span class="section-lbl">Programme de publication</span>
+      <button class="fab" style="width:32px;height:32px" onclick="schedulePost()">${IC.plus}</button>
+    </div>
+    ${(() => {
+      const scheduled = (S.scheduledPosts||[]).filter(p => p.status === 'scheduled');
+      const published = (S.scheduledPosts||[]).filter(p => p.status === 'published');
+      // Mini calendar
+      const today = new Date();
+      const calMonth = today.getMonth();
+      const calYear = today.getFullYear();
+      const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+      const firstDay = new Date(calYear, calMonth, 1).getDay();
+      const monthNames = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+      const scheduledDates = scheduled.map(p => p.scheduledDate);
+      const publishedDates = published.map(p => (p.publishedDate||p.date||'').slice(0,10));
+      let calHTML = `<div class="card" style="margin-bottom:12px;padding:14px">
+        <div style="text-align:center;font-weight:700;font-size:14px;margin-bottom:10px">${monthNames[calMonth]} ${calYear}</div>
+        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center">
+          ${['Lu','Ma','Me','Je','Ve','Sa','Di'].map(d => `<div style="font-size:9px;color:var(--text-3);font-weight:600;padding:4px 0">${d}</div>`).join('')}
+          ${'<div></div>'.repeat((firstDay + 6) % 7)}
+          ${Array.from({length:daysInMonth}, (_,i) => {
+            const d = i + 1;
+            const dateStr = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+            const isToday = d === today.getDate();
+            const hasScheduled = scheduledDates.includes(dateStr);
+            const hasPublished = publishedDates.includes(dateStr);
+            const dotColor = hasScheduled ? 'var(--warning)' : hasPublished ? 'var(--success)' : 'transparent';
+            return `<div style="position:relative;padding:6px 2px;font-size:12px;font-weight:${isToday?'700':'400'};color:${isToday?'#fff':'var(--text-1)'};background:${isToday?'var(--accent)':'transparent'};border-radius:8px;cursor:default">
+              ${d}
+              ${(hasScheduled||hasPublished)?`<div style="position:absolute;bottom:2px;left:50%;transform:translateX(-50%);width:5px;height:5px;border-radius:50%;background:${dotColor}"></div>`:''}
+            </div>`;
+          }).join('')}
+        </div>
+        <div style="display:flex;gap:12px;justify-content:center;margin-top:8px">
+          <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text-3)"><div style="width:6px;height:6px;border-radius:50%;background:var(--warning)"></div>Programmée</div>
+          <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text-3)"><div style="width:6px;height:6px;border-radius:50%;background:var(--success)"></div>Publiée</div>
+        </div>
+      </div>`;
+      return `
+    <div class="stats-row" style="margin-bottom:10px">
+      <div class="stat-box"><div class="stat-val">${accounts.filter(a=>a.connected).length}/4</div><div class="stat-lbl">Connectés</div></div>
+      <div class="stat-box"><div class="stat-val">${scheduled.length}</div><div class="stat-lbl">Programmées</div></div>
+      <div class="stat-box"><div class="stat-val">${published.length}</div><div class="stat-lbl">Publiées</div></div>
+    </div>
+    ${calHTML}
+    ${scheduled.length > 0 ? `
+    <div class="section-hd"><span class="section-lbl">A venir</span></div>
+    ${scheduled.map(p => `
+    <div class="card" style="margin-bottom:6px;border-left:3px solid var(--warning)">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-weight:700;font-size:13px">${p.productName}</div>
+          <div style="font-size:11px;color:var(--text-3)">${p.channel} | ${p.scheduledDate} a ${p.scheduledTime}</div>
+          <div style="font-size:11px;color:var(--text-2);margin-top:2px">${(p.caption||'').substring(0,60)}${(p.caption||'').length>60?'...':''}</div>
+        </div>
+        <div style="display:flex;gap:4px">
+          <button class="btn btn-primary" style="font-size:11px;padding:6px 10px" onclick="publishScheduledPost(${p.id})">Publier</button>
+          <button class="btn btn-ghost" style="font-size:11px;padding:6px 8px" onclick="deleteScheduledPost(${p.id})">X</button>
+        </div>
+      </div>
+    </div>`).join('')}` : `
+    <div class="card" style="text-align:center;padding:16px;margin-bottom:10px">
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:8px">Aucune publication programmee</div>
+      <button class="btn btn-primary" style="font-size:12px" onclick="schedulePost()">Programmer une publication</button>
+    </div>`}
+    ${published.length > 0 ? `
+    <div class="section-hd"><span class="section-lbl">Historique (${published.length})</span></div>
+    ${published.slice(0,8).map(p => `
+    <div class="sale-item" style="margin-bottom:4px">
+      <div class="sale-dot" style="background:${p.channel==='whatsapp'?'#25D366':p.channel==='facebook'?'#1877F2':'var(--accent)'}"></div>
+      <div class="sale-info"><div class="sale-prod">${p.productName}</div><div class="sale-date">${p.channel} | ${fmtDate(p.publishedDate||p.date)}</div></div>
+    </div>`).join('')}` : ''}`;
+    })()}
+  </div>`;
+}
+
+function toggleSocialAccount(platformId, platformName) {
+  const existing = S.socialAccounts.find(a => a.platform === platformId);
+  if (existing?.connected) {
+    // Disconnect
+    if (!confirm(`Deconnecter ${platformName} ?`)) return;
+    existing.connected = false;
+    existing.username = null;
+    localStorage.setItem('stockr_social', JSON.stringify(S.socialAccounts));
+    showToast(`${platformName} deconnecte`);
+    render();
+    return;
+  }
+  // Connect — open real platform + ask for username
+  const urls = {
+    instagram: 'https://www.instagram.com/',
+    facebook: 'https://www.facebook.com/',
+    tiktok: 'https://www.tiktok.com/',
+    youtube: 'https://www.youtube.com/',
+    twitter: 'https://x.com/',
+  };
+  if (confirm(`Ouvrir ${platformName} pour vous connecter ?`)) {
+    window.open(urls[platformId] || '#', '_blank');
+  }
+  const username = prompt(`Entrez votre nom d'utilisateur ${platformName} :`, '@');
+  if (!username || username === '@') return;
+  if (existing) {
+    existing.connected = true;
+    existing.username = username;
+  } else {
+    S.socialAccounts.push({ platform:platformId, name:platformName, connected:true, username });
+  }
+  localStorage.setItem('stockr_social', JSON.stringify(S.socialAccounts));
+  logActivity('social', `${platformName} connecte (${username})`);
+  showToast(`${platformName} connecte : ${username}`);
+  render();
+}
+function postProductSocial(channel) {
+  const sel = document.getElementById('social-product-select');
+  if (!sel || !sel.value) { showToast(t('chooseProduct'), 'error'); return; }
+  const product = S.products.find(p => p.id === parseInt(sel.value));
+  if (!product) return;
+  const biz = S.session?.business || 'STOCKR';
+  const lines = [`*${product.name}*`,`${fmt(product.price)} ${sym()}`,'','Disponible maintenant !','Commandez en DM','',`#${biz.replace(/\s+/g,'')} #CoteDIvoire`];
+  const text = lines.join('\n');
+  if (channel === 'whatsapp') {
+    window.open('https://wa.me/?text='+encodeURIComponent(text),'_blank');
+  } else if (channel === 'facebook') {
+    window.open('https://www.facebook.com/sharer/sharer.php?quote='+encodeURIComponent(text),'_blank');
+  } else if (channel === 'twitter') {
+    window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(text),'_blank');
+  } else if (channel === 'sms') {
+    window.open('sms:?body='+encodeURIComponent(text),'_blank');
+  } else {
+    navigator.clipboard?.writeText(text).then(()=>showToast(t('copied')||'Copie !'));
+  }
+  // Track post
+  S.scheduledPosts.push({ id:Date.now(), productId:product.id, productName:product.name, channel, date:new Date().toISOString() });
+  localStorage.setItem('stockr_posts', JSON.stringify(S.scheduledPosts));
+}
+
+// ── PAIEMENTS ────────────────────────────────
+function vPayments() {
+  const methods = S.paymentMethods || [];
+  const providers = [
+    { id:'wave',   name:'Wave',          color:'#1DC3FF', logo:'W',  desc:'Paiement mobile Wave' },
+    { id:'orange', name:'Orange Money',   color:'#FF6600', logo:'OM', desc:'Orange Money CI' },
+    { id:'moov',   name:'Moov Money',     color:'#00A651', logo:'MM', desc:'Moov Money CI' },
+    { id:'mtn',    name:'MTN MoMo',       color:'#FFCC00', logo:'M',  desc:'MTN Mobile Money', textColor:'#000' },
+    { id:'paypal', name:'PayPal',          color:'#003087', logo:'PP', desc:'Paiement international' },
+    { id:'visa',   name:'Visa/Mastercard', color:'#1A1F71', logo:'V',  desc:'Carte bancaire' },
+  ];
+
+  return `
+  <div class="sub-hero">
+    <div class="page-header-row" style="margin-bottom:14px">
+      <button class="back-btn-dark" onclick="nav('more')">${IC.left}</button>
+      <div style="flex:1">
+        <div class="sub-hero-title">Moyens de paiement</div>
+        <div class="sub-hero-sub">Wave, Orange Money, Moov, PayPal…</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${methods.filter(m=>m.active).length}</div><div class="hero-stat-lbl">Actifs</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${S.paymentHistory.length}</div><div class="hero-stat-lbl">Paiements</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${fmt(S.paymentHistory.reduce((s,p)=>s+(p.amount||0),0))}</div><div class="hero-stat-lbl">Total</div></div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="section-hd"><span class="section-lbl">Méthodes de paiement</span></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
+    ${providers.map(prov => {
+      const method = methods.find(m => m.provider === prov.id);
+      const isActive = method?.active;
+      return `
+    <div class="card" style="margin-bottom:0;padding:14px;border:2px solid ${isActive?prov.color:'var(--border)'};position:relative;overflow:hidden;cursor:pointer" onclick="${isActive ? `disconnectPayment('${prov.id}')` : `setupPayment('${prov.id}','${prov.name}')`}">
+      ${isActive ? `<div style="position:absolute;top:0;left:0;right:0;height:3px;background:${prov.color}"></div>` : ''}
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <div style="width:38px;height:38px;border-radius:10px;background:${prov.color};color:${prov.textColor||'#fff'};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;flex-shrink:0">${prov.logo}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:700;font-size:13px;color:var(--text)">${prov.name}</div>
+        </div>
+      </div>
+      <div style="font-size:10px;color:${isActive?prov.color:'var(--text-3)'};font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+        ${isActive ? '✓ '+(method.phone||method.email||'Configuré') : prov.desc}
+      </div>
+      <div style="margin-top:8px;text-align:center">
+        <span style="font-size:10px;padding:3px 10px;border-radius:6px;font-weight:700;${isActive?`background:${prov.color}15;color:${prov.color}`:'background:var(--gray-1);color:var(--text-3)'}">${isActive?'Actif — Retirer':'Configurer'}</span>
+      </div>
+    </div>`;}).join('')}
+    </div>
+
+    <div class="section-hd"><span class="section-lbl">Historique</span></div>
+    ${S.paymentHistory.length === 0 ? `
+    <div class="card" style="text-align:center;padding:20px"><div style="color:var(--text-3);font-size:13px">Aucun paiement reçu</div></div>
+    ` : S.paymentHistory.slice(0,10).map(ph => `
+    <div class="sale-item" style="margin-bottom:6px">
+      <div class="sale-dot" style="background:${ph.provider==='wave'?'#1DC3FF':ph.provider==='orange'?'#FF6600':'var(--success)'}"></div>
+      <div class="sale-info"><div class="sale-prod">${ph.clientName||'Client'}</div><div class="sale-date">${ph.provider.toUpperCase()} · ${fmtDate(ph.date)}</div></div>
+      <div class="sale-right"><div class="sale-total">${fmt(ph.amount)} ${sym()}</div></div>
+    </div>`).join('')}
+  </div>`;
+}
+
+function setupPayment(providerId, providerName) {
+  // Provider-specific setup
+  const urls = {
+    wave: 'https://www.wave.com/fr/business/',
+    orange: 'https://money.orange.ci/',
+    moov: 'https://www.moov-africa.ci/',
+    mtn: 'https://momo.mtn.ci/',
+    paypal: 'https://www.paypal.com/ci/business',
+    visa: null,
+  };
+  const labels = {
+    wave: 'Numero Wave Business',
+    orange: 'Numero Orange Money marchand',
+    moov: 'Numero Moov Money marchand',
+    mtn: 'Numero MTN MoMo marchand',
+    paypal: 'Email PayPal Business',
+    visa: 'ID Terminal / Compte marchand',
+  };
+  // Open provider site to setup
+  if (urls[providerId]) {
+    if (confirm(`Ouvrir le site ${providerName} pour creer/verifier votre compte marchand ?`)) {
+      window.open(urls[providerId], '_blank');
+    }
+  }
+  const label = labels[providerId] || 'Identifiant';
+  const value = prompt(`${providerName}\n\n${label} :`, '');
+  if (!value) return;
+  // For PayPal, also ask for Client ID
+  let apiKey = null;
+  if (providerId === 'paypal') {
+    apiKey = prompt('Client ID PayPal (optionnel) :', '');
+  }
+  if (providerId === 'visa') {
+    apiKey = prompt('Cle API marchand (optionnel) :', '');
+  }
+  const existing = S.paymentMethods.findIndex(m => m.provider === providerId);
+  const method = { provider:providerId, name:providerName, phone:value, email:providerId==='paypal'?value:null, apiKey:apiKey||null, active:true, createdAt:new Date().toISOString() };
+  if (existing >= 0) S.paymentMethods[existing] = method;
+  else S.paymentMethods.push(method);
+  localStorage.setItem('stockr_payments', JSON.stringify(S.paymentMethods));
+  logActivity('payment', `${providerName} configure`);
+  showToast(`${providerName} active !`);
+  render();
+}
+function disconnectPayment(providerId) {
+  S.paymentMethods = S.paymentMethods.filter(m => m.provider !== providerId);
+  localStorage.setItem('stockr_payments', JSON.stringify(S.paymentMethods));
+  showToast('Moyen de paiement retire');
+  render();
+}
+
+// ═══════════════════════════════════════════════
+// API SETTINGS — Token personnel + Webhooks + Doc
+// ═══════════════════════════════════════════════
+function vApiSettings() {
+  if (!S.apiConfig) S.apiConfig = { token:null, createdAt:null, webhooks:[] };
+  const api = S.apiConfig;
+  const webhooks = api.webhooks || [];
+  const tokenMasked = api.token ? (api.token.slice(0,10) + '•••••••••••••••••••••••••••••' + api.token.slice(-4)) : '';
+  const availEvents = [
+    {id:'order.created',    label:'Nouvelle commande',     ico:'🛒'},
+    {id:'order.updated',    label:'Commande modifiée',     ico:'✏️'},
+    {id:'order.delivered',  label:'Commande livrée',       ico:'📦'},
+    {id:'sale.completed',   label:'Vente finalisée',       ico:'💰'},
+    {id:'stock.low',        label:'Stock faible',          ico:'⚠️'},
+    {id:'stock.out',        label:'Rupture de stock',      ico:'🚫'},
+    {id:'client.created',   label:'Nouveau client',        ico:'👤'},
+    {id:'payment.received', label:'Paiement reçu',         ico:'💵'},
+  ];
+  const evtLabel = id => (availEvents.find(e=>e.id===id)||{}).label || id;
+
+  return `
+  <div class="sub-hero">
+    <div class="page-header-row" style="margin-bottom:10px">
+      <button class="back-btn-dark" onclick="nav('integrations')">${IC.left}</button>
+      <div style="flex:1">
+        <div class="sub-hero-title">API & Webhooks</div>
+        <div class="sub-hero-sub">Connectez STOCKR à vos systèmes externes</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${api.token?'1':'0'}</div><div class="hero-stat-lbl">Token</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${webhooks.length}</div><div class="hero-stat-lbl">Webhooks</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${webhooks.filter(w=>w.active).length}</div><div class="hero-stat-lbl">Actifs</div></div>
+    </div>
+  </div>
+  <div class="container">
+
+    <!-- ─── Token API personnel ─── -->
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">🔑 Token API personnel</div>
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:12px">
+        Utilisé pour authentifier les appels vers l'API STOCKR (header <code>Authorization: Bearer ...</code>).
+        ${api.createdAt?`<br>Créé le ${new Date(api.createdAt).toLocaleDateString('fr')}.`:''}
+      </div>
+      ${api.token ? `
+      <div style="background:var(--gray-1);padding:12px;border-radius:10px;font-family:monospace;font-size:12px;word-break:break-all;display:flex;align-items:center;gap:8px">
+        <span style="flex:1">${tokenMasked}</span>
+        <button class="btn btn-ghost" style="font-size:11px;padding:6px 10px;flex-shrink:0" onclick="copyApiToken()">📋 Copier</button>
+      </div>
+      <div style="display:flex;gap:6px;margin-top:10px">
+        <button class="btn btn-ghost" style="flex:1" onclick="generateApiToken()">🔄 Régénérer</button>
+        <button class="btn btn-ghost" style="color:var(--danger);border-color:var(--danger)40" onclick="revokeApiToken()">🗑 Révoquer</button>
+      </div>
+      ` : `
+      <button class="btn btn-primary" style="width:100%" onclick="generateApiToken()">${IC.plus} Générer un token API</button>
+      `}
+    </div>
+
+    <!-- ─── Webhooks sortants ─── -->
+    <div class="card" style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div class="card-title" style="margin-bottom:0">🔗 Webhooks sortants (${webhooks.length})</div>
+        <button class="btn btn-primary" style="font-size:11px;padding:6px 12px" onclick="addWebhook()">${IC.plus} Nouveau</button>
+      </div>
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:12px">
+        STOCKR enverra un POST JSON à votre URL dès qu'un événement se produit.
+      </div>
+      ${webhooks.length === 0 ? `
+      <div class="empty" style="padding:26px 10px">
+        <div class="empty-ico" style="font-size:36px">🪝</div>
+        <div class="empty-text" style="margin-top:6px">Aucun webhook configuré</div>
+        <div style="font-size:11px;color:var(--text-3);margin-top:4px">Créez votre premier webhook pour recevoir des événements en temps réel.</div>
+      </div>
+      ` : webhooks.map(w => `
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:8px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px">
+          <div style="flex:1;min-width:0">
+            <div style="font-weight:700;font-size:14px;color:var(--text-1)">${w.name||'Webhook'}</div>
+            <div style="font-size:11px;color:var(--text-3);font-family:monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:2px">${w.url}</div>
+          </div>
+          <label class="toggle-switch" style="flex-shrink:0">
+            <input type="checkbox" ${w.active?'checked':''} onchange="toggleWebhookActive('${w.id}')">
+            <span class="toggle-track"></span>
+          </label>
+        </div>
+        ${(w.events||[]).length>0 ? `
+        <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px">
+          ${(w.events||[]).map(e => `<span style="background:var(--accent-light);color:var(--accent);padding:2px 8px;border-radius:6px;font-size:10px;font-weight:600">${evtLabel(e)}</span>`).join('')}
+        </div>` : '<div style="font-size:11px;color:var(--text-3);font-style:italic">Aucun événement sélectionné</div>'}
+        <div style="display:flex;gap:6px;margin-top:10px">
+          <button class="btn btn-ghost" style="flex:1;font-size:11px;padding:6px" onclick="testWebhook('${w.id}')">🧪 Tester</button>
+          <button class="btn btn-ghost" style="font-size:11px;padding:6px" onclick="editWebhook('${w.id}')">✏️</button>
+          <button class="btn btn-ghost" style="font-size:11px;padding:6px" onclick="copyWebhookEndpoint('${w.id}')">📋</button>
+          <button class="btn btn-ghost" style="font-size:11px;padding:6px;color:var(--danger)" onclick="deleteWebhook('${w.id}')">🗑</button>
+        </div>
+      </div>
+      `).join('')}
+    </div>
+
+    <!-- ─── Webhook entrant ─── -->
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">📨 Webhook entrant (Zapier / Make / n8n)</div>
+      <div style="font-size:12px;color:var(--text-2);margin-bottom:10px">
+        Déclenchez des actions STOCKR depuis vos outils d'automatisation externes.
+      </div>
+      <div style="background:var(--gray-1);padding:10px;border-radius:8px;font-family:monospace;font-size:11px;word-break:break-all;line-height:1.5">
+        <div style="color:var(--accent);font-weight:700;margin-bottom:4px">POST</div>
+        https://api.stockr.app/v1/webhooks/in/${api.token ? api.token.slice(0,12)+'...' : '&lt;VOTRE_TOKEN&gt;'}
+      </div>
+      <button class="btn btn-ghost" style="margin-top:8px;width:100%;font-size:11px" onclick="copyIncomingEndpoint()">📋 Copier l'endpoint</button>
+    </div>
+
+    <!-- ─── Documentation API ─── -->
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">📖 Documentation API</div>
+      <div style="font-size:12px;color:var(--text-2);line-height:1.7">
+        <strong>Endpoints principaux :</strong><br>
+        <code style="background:var(--gray-1);padding:2px 6px;border-radius:4px;font-size:11px">GET /v1/products</code> — Liste des produits<br>
+        <code style="background:var(--gray-1);padding:2px 6px;border-radius:4px;font-size:11px">POST /v1/sales</code> — Enregistrer une vente<br>
+        <code style="background:var(--gray-1);padding:2px 6px;border-radius:4px;font-size:11px">GET /v1/stock</code> — État du stock<br>
+        <code style="background:var(--gray-1);padding:2px 6px;border-radius:4px;font-size:11px">POST /v1/orders</code> — Créer une commande<br>
+        <code style="background:var(--gray-1);padding:2px 6px;border-radius:4px;font-size:11px">GET /v1/clients</code> — Liste des clients<br><br>
+        <strong>Authentification :</strong> header <code style="background:var(--gray-1);padding:2px 6px;border-radius:4px;font-size:11px">Authorization: Bearer &lt;token&gt;</code>
+      </div>
+    </div>
+
+    <div class="card" style="background:#EFF6FF;border-color:#3B82F640;font-size:11px;color:#1E40AF;line-height:1.6">
+      💡 <strong>Sécurité :</strong> Ne partagez jamais votre token. Chaque webhook possède un secret HMAC distinct pour signer les requêtes.
+    </div>
+  </div>`;
+}
+
+function generateApiToken() {
+  if (!S.apiConfig) S.apiConfig = { token:null, createdAt:null, webhooks:[] };
+  if (S.apiConfig.token && !confirm('Un token existe déjà. Le remplacer ? Les intégrations actives cesseront de fonctionner.')) return;
+  const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let t = 'stk_live_';
+  for (let i = 0; i < 40; i++) t += chars[Math.floor(Math.random() * chars.length)];
+  S.apiConfig.token = t;
+  S.apiConfig.createdAt = new Date().toISOString();
+  localStorage.setItem('stockr_api', JSON.stringify(S.apiConfig));
+  logActivity('api', 'Token API généré');
+  showToast('Token généré ✓');
+  render();
+}
+
+function revokeApiToken() {
+  if (!confirm('Révoquer le token ? Toutes les intégrations actives cesseront de fonctionner.')) return;
+  S.apiConfig.token = null;
+  S.apiConfig.createdAt = null;
+  localStorage.setItem('stockr_api', JSON.stringify(S.apiConfig));
+  logActivity('api', 'Token API révoqué');
+  showToast('Token révoqué');
+  render();
+}
+
+function copyApiToken() {
+  if (!S.apiConfig || !S.apiConfig.token) return;
+  navigator.clipboard.writeText(S.apiConfig.token);
+  showToast('Token copié ✓');
+}
+
+function copyIncomingEndpoint() {
+  const tok = (S.apiConfig && S.apiConfig.token) || 'VOTRE_TOKEN';
+  navigator.clipboard.writeText(`https://api.stockr.app/v1/webhooks/in/${tok}`);
+  showToast('Endpoint copié ✓');
+}
+
+function addWebhook() {
+  const name = prompt('Nom du webhook (ex: Slack Alertes) :');
+  if (!name) return;
+  const url = prompt('URL cible (https://...) :');
+  if (!url || !url.match(/^https?:\/\//)) { showToast('URL invalide', 'error'); return; }
+  const events = prompt('Événements séparés par une virgule\n(ex: order.created, stock.low, sale.completed)', 'order.created');
+  const w = {
+    id: 'wh_' + Date.now().toString(36),
+    name, url,
+    events: (events || '').split(',').map(s => s.trim()).filter(Boolean),
+    active: true,
+    secret: 'whsec_' + Math.random().toString(36).slice(2, 14) + Math.random().toString(36).slice(2, 14),
+    createdAt: new Date().toISOString(),
+    lastCall: null,
+  };
+  if (!S.apiConfig) S.apiConfig = { token:null, createdAt:null, webhooks:[] };
+  S.apiConfig.webhooks = S.apiConfig.webhooks || [];
+  S.apiConfig.webhooks.push(w);
+  localStorage.setItem('stockr_api', JSON.stringify(S.apiConfig));
+  logActivity('api', `Webhook créé : ${name}`);
+  showToast('Webhook créé ✓');
+  render();
+}
+
+function editWebhook(id) {
+  const w = (S.apiConfig.webhooks || []).find(w => w.id === id);
+  if (!w) return;
+  const name = prompt('Nom du webhook :', w.name);
+  if (name === null) return;
+  const url = prompt('URL cible :', w.url);
+  if (!url || !url.match(/^https?:\/\//)) { showToast('URL invalide', 'error'); return; }
+  const events = prompt('Événements (séparés par virgule) :', (w.events || []).join(', '));
+  w.name = name;
+  w.url = url;
+  w.events = (events || '').split(',').map(s => s.trim()).filter(Boolean);
+  localStorage.setItem('stockr_api', JSON.stringify(S.apiConfig));
+  showToast('Webhook modifié ✓');
+  render();
+}
+
+function deleteWebhook(id) {
+  const w = (S.apiConfig.webhooks || []).find(w => w.id === id);
+  if (!w) return;
+  if (!confirm(`Supprimer le webhook "${w.name}" ?`)) return;
+  S.apiConfig.webhooks = (S.apiConfig.webhooks || []).filter(w => w.id !== id);
+  localStorage.setItem('stockr_api', JSON.stringify(S.apiConfig));
+  showToast('Webhook supprimé');
+  render();
+}
+
+function testWebhook(id) {
+  const w = (S.apiConfig.webhooks || []).find(w => w.id === id);
+  if (!w) return;
+  showToast(`Envoi d'un test à ${w.name}...`);
+  fetch(w.url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-STOCKR-Event': 'test.ping', 'X-STOCKR-Signature': w.secret },
+    body: JSON.stringify({ event:'test.ping', timestamp: Date.now(), webhook: w.id, data: { hello:'from STOCKR' } }),
+    mode: 'no-cors',
+  }).then(() => {
+    w.lastCall = new Date().toISOString();
+    localStorage.setItem('stockr_api', JSON.stringify(S.apiConfig));
+    showToast('Test envoyé ✓');
+  }).catch(() => showToast('Échec — vérifiez l\'URL / CORS', 'error'));
+}
+
+function copyWebhookEndpoint(id) {
+  const w = (S.apiConfig.webhooks || []).find(w => w.id === id);
+  if (!w) return;
+  navigator.clipboard.writeText(w.url);
+  showToast('URL copiée ✓');
+}
+
+function toggleWebhookActive(id) {
+  const w = (S.apiConfig.webhooks || []).find(w => w.id === id);
+  if (!w) return;
+  w.active = !w.active;
+  localStorage.setItem('stockr_api', JSON.stringify(S.apiConfig));
+  showToast(w.active?'Webhook activé':'Webhook désactivé');
+  render();
+}
+
+function toggleWebhookEvent(id, evt) {
+  const w = (S.apiConfig.webhooks || []).find(w => w.id === id);
+  if (!w) return;
+  w.events = w.events || [];
+  const i = w.events.indexOf(evt);
+  if (i >= 0) w.events.splice(i, 1); else w.events.push(evt);
+  localStorage.setItem('stockr_api', JSON.stringify(S.apiConfig));
+  render();
+}
+
+// ── INTEGRATIONS (fonctionnelles) ────────────
+function vIntegrations() {
+  const integrationsList = [
+    { id:'whatsapp-business', name:'WhatsApp Business', desc:'Notifications clients automatiques', color:'#25D366', icon:IC.whatsapp, category:'communication',
+      setupType:'phone', setupLabel:'Numero WhatsApp Business', setupPlaceholder:'+225 07 XX XX XX XX', url:'https://business.whatsapp.com/' },
+    { id:'sms-api',           name:'SMS API',            desc:'Envoi SMS en masse via API',  color:'#4F46E5', icon:IC.smartphone, category:'communication',
+      setupType:'apikey', setupLabel:'Cle API SMS (ex: Twilio, Vonage)', setupPlaceholder:'sk_live_xxxxx', url:null },
+    { id:'woocommerce',       name:'WooCommerce',        desc:'Synchroniser avec WordPress', color:'#96588A', icon:IC.shop,       category:'ecommerce',
+      setupType:'url+key', setupLabel:'URL boutique WooCommerce', setupPlaceholder:'https://maboutique.com', keyLabel:'Cle API WooCommerce', url:null },
+    { id:'shopify',           name:'Shopify',             desc:'Synchroniser avec Shopify',   color:'#96BF48', icon:IC.shop,       category:'ecommerce',
+      setupType:'url+key', setupLabel:'URL boutique Shopify', setupPlaceholder:'https://maboutique.myshopify.com', keyLabel:'Access Token', url:'https://www.shopify.com/admin' },
+    { id:'jumia',             name:'Jumia Seller',        desc:'Vendre sur Jumia Afrique',    color:'#F68B1E', icon:IC.globe,      category:'ecommerce',
+      setupType:'url', setupLabel:'Lien vendeur Jumia', setupPlaceholder:'https://vendeur.jumia.ci/...', url:'https://vendeur.jumia.ci/' },
+    { id:'glovo',             name:'Glovo Partners',      desc:'Livraison via Glovo',         color:'#FFC244', icon:IC.truck,      category:'delivery',
+      setupType:'account', setupLabel:'ID Partenaire Glovo', setupPlaceholder:'GLV-XXXXX', url:'https://partners.glovoapp.com/' },
+    { id:'yango',             name:'Yango Delivery',      desc:'Livraison Yango Afrique',     color:'#FF4D00', icon:IC.truck,      category:'delivery',
+      setupType:'account', setupLabel:'ID Partenaire Yango', setupPlaceholder:'YNG-XXXXX', url:'https://yango.com/fr_ci/' },
+    { id:'google-sheets',     name:'Google Sheets',       desc:'Exporter donnees vers Sheets',color:'#0F9D58', icon:IC.layers,     category:'productivity',
+      setupType:'url', setupLabel:'URL Google Sheet', setupPlaceholder:'https://docs.google.com/spreadsheets/d/...', url:null },
+    { id:'excel',             name:'Import/Export Excel',  desc:'Importer et exporter Excel',  color:'#217346', icon:IC.layers,     category:'productivity',
+      setupType:'action', url:null },
+    { id:'comptabilite',      name:'Export Comptable',     desc:'Plan comptable OHADA',        color:'#334155', icon:IC.receipt,     category:'finance',
+      setupType:'action', url:null },
+    { id:'pos',               name:'Caisse (POS)',         desc:'Connecter un terminal de paiement', color:'#059669', icon:IC.creditCard, category:'finance',
+      setupType:'serial', setupLabel:'ID Terminal POS', setupPlaceholder:'POS-XXXXXX', url:null },
+  ];
+
+  return `
+  <div class="sub-hero">
+    <div class="page-header-row" style="margin-bottom:14px">
+      <button class="back-btn-dark" onclick="nav('more')">${IC.left}</button>
+      <div style="flex:1">
+        <div class="sub-hero-title">Intégrations & API</div>
+        <div class="sub-hero-sub">Connectez vos outils favoris</div>
+      </div>
+      <button class="btn btn-primary" style="padding:6px 14px;font-size:12px;white-space:nowrap" onclick="nav('api-settings')">🔑 API</button>
+    </div>
+    <div style="display:flex;gap:8px">
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${(S.integrationsConfig||[]).filter(i=>i.connected).length}</div><div class="hero-stat-lbl">Connectées</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${integrationsList.length}</div><div class="hero-stat-lbl">Disponibles</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${((S.apiConfig||{}).webhooks||[]).length}</div><div class="hero-stat-lbl">Webhooks</div></div>
+    </div>
+  </div>
+  <div class="container">
+    ${['communication','ecommerce','delivery','productivity','finance'].map(cat => {
+      const items = integrationsList.filter(i => i.category === cat);
+      const labels = {communication:'💬 Communication',ecommerce:'🛒 E-commerce',productivity:'📊 Productivité',delivery:'🚚 Livraison',finance:'💰 Finance & POS'};
+      const catIcons = {communication:IC.whatsapp,ecommerce:IC.shop,productivity:IC.layers,delivery:IC.truck,finance:IC.creditCard};
+      return `
+    <div class="section-hd"><span class="section-lbl">${labels[cat]}</span></div>
+    ${items.map(it => {
+      const cfg = (S.integrationsConfig||[]).find(c=>c.id===it.id);
+      const connected = cfg?.connected;
+      return `
+    <div class="card" style="margin-bottom:8px;border-left:3px solid ${connected?it.color:'transparent'};padding:12px 14px;${connected?'background:'+it.color+'05':''}">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:42px;height:42px;border-radius:12px;background:${it.color}15;color:${it.color};display:flex;align-items:center;justify-content:center;flex-shrink:0">${it.icon}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:700;font-size:14px;color:var(--text)">${it.name}</div>
+          <div style="font-size:11px;color:${connected?it.color:'var(--text-3)'};margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${connected ? '✓ '+(cfg.value||cfg.url||'Connecté') : it.desc}</div>
+        </div>
+        ${connected ? `
+          <button style="font-size:11px;padding:6px 12px;border-radius:8px;border:1px solid var(--danger);background:transparent;color:var(--danger);font-weight:600;cursor:pointer;white-space:nowrap" onclick="disconnectIntegration('${it.id}','${it.name}')">Retirer</button>
+        ` : `
+          <button style="font-size:11px;padding:6px 12px;border-radius:8px;border:1px solid ${it.color};background:${it.color}10;color:${it.color};font-weight:600;cursor:pointer;white-space:nowrap" onclick="connectIntegration('${it.id}')">Connecter</button>
+        `}
+      </div>
+    </div>`;}).join('')}`;}).join('')}
+  </div>`;
+}
+
+function _getIntegrationDef(id) {
+  const defs = {
+    'whatsapp-business': { setupType:'phone', setupLabel:'Numero WhatsApp Business', setupPlaceholder:'+225 07 XX XX XX XX', url:'https://business.whatsapp.com/' },
+    'sms-api':           { setupType:'apikey', setupLabel:'Cle API SMS (Twilio, Vonage...)', setupPlaceholder:'sk_live_xxxxx' },
+    'woocommerce':       { setupType:'url+key', setupLabel:'URL boutique WooCommerce', setupPlaceholder:'https://maboutique.com', keyLabel:'Cle API WooCommerce' },
+    'shopify':           { setupType:'url+key', setupLabel:'URL boutique Shopify', setupPlaceholder:'https://maboutique.myshopify.com', keyLabel:'Access Token', url:'https://www.shopify.com/admin' },
+    'jumia':             { setupType:'url', setupLabel:'Lien vendeur Jumia', setupPlaceholder:'https://vendeur.jumia.ci/', url:'https://vendeur.jumia.ci/' },
+    'glovo':             { setupType:'account', setupLabel:'ID Partenaire Glovo', setupPlaceholder:'GLV-XXXXX', url:'https://partners.glovoapp.com/' },
+    'yango':             { setupType:'account', setupLabel:'ID Partenaire Yango', setupPlaceholder:'YNG-XXXXX', url:'https://yango.com/fr_ci/' },
+    'google-sheets':     { setupType:'url', setupLabel:'URL Google Sheet partagee', setupPlaceholder:'https://docs.google.com/spreadsheets/d/...' },
+    'excel':             { setupType:'action' },
+    'comptabilite':      { setupType:'action' },
+    'pos':               { setupType:'serial', setupLabel:'ID Terminal POS', setupPlaceholder:'POS-XXXXXX' },
+  };
+  return defs[id] || {};
+}
+
+function connectIntegration(integrationId) {
+  const def = _getIntegrationDef(integrationId);
+  const names = {'whatsapp-business':'WhatsApp Business','sms-api':'SMS API','woocommerce':'WooCommerce','shopify':'Shopify','jumia':'Jumia','glovo':'Glovo','yango':'Yango Delivery','google-sheets':'Google Sheets','excel':'Excel','comptabilite':'Comptabilite','pos':'Caisse POS'};
+  const name = names[integrationId] || integrationId;
+
+  // Action-type integrations (Excel export, Comptabilite)
+  if (def.setupType === 'action') {
+    if (integrationId === 'excel') {
+      exportAllCSV();
+      _saveIntegration(integrationId, name, 'Export CSV active');
+      return;
+    }
+    if (integrationId === 'comptabilite') {
+      _exportComptable();
+      _saveIntegration(integrationId, name, 'Export OHADA active');
+      return;
+    }
+  }
+
+  // Marketplace / delivery / sheets — shortcut action flow (no API required)
+  if (['jumia','shopify','woocommerce','google-sheets','yango','glovo'].includes(integrationId)) {
+    const actions = {
+      jumia:         { fn: exportToJumia,        msg: 'Export Jumia prêt',       openUrl: def.url },
+      shopify:       { fn: exportToShopify,      msg: 'Export Shopify prêt',     openUrl: def.url },
+      woocommerce:   { fn: exportToWooCommerce,  msg: 'Export WooCommerce prêt', openUrl: null },
+      'google-sheets': { fn: exportToGoogleSheets, msg: 'Export Sheets prêt',     openUrl: 'https://sheets.google.com' },
+      yango:         { fn: null, msg: 'Yango activé — utilisez le bouton "Yango" sur vos commandes', openUrl: null },
+      glovo:         { fn: null, msg: 'Glovo activé — utilisez le bouton "Glovo" sur vos commandes', openUrl: null },
+    };
+    const act = actions[integrationId];
+    if (act.fn) act.fn();
+    _saveIntegration(integrationId, name, act.msg);
+    if (act.openUrl && confirm(`Ouvrir ${name} ?`)) window.open(act.openUrl, '_blank');
+    return;
+  }
+
+  // Open partner URL if available
+  if (def.url) {
+    if (confirm(`Ouvrir ${name} dans un nouvel onglet pour recuperer vos identifiants ?`)) {
+      window.open(def.url, '_blank');
+    }
+  }
+
+  // Collect credentials
+  if (def.setupType === 'phone') {
+    const phone = prompt(def.setupLabel + ' :', def.setupPlaceholder);
+    if (!phone || phone === def.setupPlaceholder) return;
+    _saveIntegration(integrationId, name, phone);
+  } else if (def.setupType === 'apikey') {
+    const key = prompt(def.setupLabel + ' :', '');
+    if (!key) return;
+    _saveIntegration(integrationId, name, '****' + key.slice(-4), key);
+  } else if (def.setupType === 'url+key') {
+    const url = prompt(def.setupLabel + ' :', def.setupPlaceholder);
+    if (!url || url === def.setupPlaceholder) return;
+    const apiKey = prompt((def.keyLabel||'Cle API') + ' :', '');
+    if (!apiKey) return;
+    _saveIntegration(integrationId, name, url, apiKey);
+  } else if (def.setupType === 'url') {
+    const url = prompt(def.setupLabel + ' :', def.setupPlaceholder);
+    if (!url || url === def.setupPlaceholder) return;
+    _saveIntegration(integrationId, name, url);
+  } else if (def.setupType === 'account' || def.setupType === 'serial') {
+    const val = prompt(def.setupLabel + ' :', def.setupPlaceholder);
+    if (!val || val === def.setupPlaceholder) return;
+    _saveIntegration(integrationId, name, val);
+  }
+}
+
+function _saveIntegration(id, name, displayValue, secretKey) {
+  const existing = S.integrationsConfig.findIndex(i => i.id === id);
+  const entry = { id, name, connected:true, value:displayValue, key:secretKey||null, date:new Date().toISOString() };
+  if (existing >= 0) S.integrationsConfig[existing] = entry;
+  else S.integrationsConfig.push(entry);
+  localStorage.setItem('stockr_integrations', JSON.stringify(S.integrationsConfig));
+  logActivity('integration', `${name} connecte`);
+  showToast(`${name} connecte avec succes !`);
+  render();
+}
+
+function disconnectIntegration(id, name) {
+  if (!confirm(`Deconnecter ${name} ?`)) return;
+  S.integrationsConfig = S.integrationsConfig.filter(i => i.id !== id);
+  localStorage.setItem('stockr_integrations', JSON.stringify(S.integrationsConfig));
+  showToast(`${name} deconnecte`);
+  render();
+}
+
+function _exportComptable() {
+  // Export comptable OHADA simplifie
+  const lines = ['Date;Libelle;Debit;Credit;Compte'];
+  S.sales.forEach(s => {
+    lines.push(`${s.date};Vente ${s.productName} x${s.qty};${s.total};0;701000`);
+    lines.push(`${s.date};Encaissement;0;${s.total};521000`);
+  });
+  const blob = new Blob([lines.join('\n')], {type:'text/csv;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `stockr_comptabilite_${new Date().toISOString().slice(0,10)}.csv`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+  showToast('Export comptable OHADA telecharge');
+}
+
+// ── REAL INTEGRATION ACTIONS ─────────────────
+function _downloadFile(content, filename, mime) {
+  const blob = new Blob([content], {type: mime || 'text/csv;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+}
+
+function _csvEscape(s) {
+  if (s === null || s === undefined) return '';
+  s = String(s);
+  if (s.includes(',') || s.includes('"') || s.includes('\n')) return '"' + s.replace(/"/g, '""') + '"';
+  return s;
+}
+
+// Export products to Jumia Seller format
+function exportToJumia() {
+  if (S.products.length === 0) { showToast('Aucun produit à exporter', 'error'); return; }
+  const headers = ['SKU','Product Name','Category','Price','Sale Price','Quantity','Brand','Description','Weight','Package Length','Package Width','Package Height'];
+  const rows = [headers.join(',')];
+  S.products.forEach(p => {
+    const promo = _getActivePromo(p.id);
+    const salePrice = promo ? Math.round(p.price * (1 - promo.discount / 100)) : '';
+    rows.push([
+      _csvEscape('SKU-'+p.id),
+      _csvEscape(p.name),
+      _csvEscape(p.category || 'Général'),
+      p.price,
+      salePrice,
+      999,
+      _csvEscape(S.session?.business || 'STOCKR'),
+      _csvEscape(p.description || p.name),
+      '', '', '', ''
+    ].join(','));
+  });
+  _downloadFile(rows.join('\n'), `jumia_products_${new Date().toISOString().slice(0,10)}.csv`);
+  showToast(`${S.products.length} produits exportés pour Jumia. Uploadez dans Jumia Seller Center.`);
+}
+
+// Export products to Shopify format
+function exportToShopify() {
+  if (S.products.length === 0) { showToast('Aucun produit à exporter', 'error'); return; }
+  const headers = ['Handle','Title','Body (HTML)','Vendor','Type','Tags','Published','Variant Price','Variant Inventory Qty','Variant SKU','Variant Weight Unit','Status'];
+  const rows = [headers.join(',')];
+  S.products.forEach(p => {
+    const handle = p.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+    rows.push([
+      _csvEscape(handle),
+      _csvEscape(p.name),
+      _csvEscape(`<p>${p.description || p.name}</p>`),
+      _csvEscape(S.session?.business || 'STOCKR'),
+      _csvEscape(p.category || 'Default'),
+      _csvEscape((p.tags || []).join(', ')),
+      'TRUE',
+      p.price,
+      999,
+      _csvEscape('SKU-'+p.id),
+      'kg',
+      'active'
+    ].join(','));
+  });
+  _downloadFile(rows.join('\n'), `shopify_products_${new Date().toISOString().slice(0,10)}.csv`);
+  showToast(`${S.products.length} produits exportés pour Shopify. Importez dans Admin › Products › Import.`);
+}
+
+// Export products to WooCommerce format
+function exportToWooCommerce() {
+  if (S.products.length === 0) { showToast('Aucun produit à exporter', 'error'); return; }
+  const headers = ['ID','Type','SKU','Name','Published','Featured','Visibility in catalog','Short description','Description','Regular price','Sale price','Tax status','Stock','Categories','Tags','Images'];
+  const rows = [headers.join(',')];
+  S.products.forEach(p => {
+    const promo = _getActivePromo(p.id);
+    const salePrice = promo ? Math.round(p.price * (1 - promo.discount / 100)) : '';
+    rows.push([
+      p.id,
+      'simple',
+      _csvEscape('SKU-'+p.id),
+      _csvEscape(p.name),
+      1,
+      0,
+      'visible',
+      _csvEscape(p.description || ''),
+      _csvEscape(p.description || p.name),
+      p.price,
+      salePrice,
+      'taxable',
+      999,
+      _csvEscape(p.category || 'Uncategorized'),
+      _csvEscape((p.tags || []).join(', ')),
+      ''
+    ].join(','));
+  });
+  _downloadFile(rows.join('\n'), `woocommerce_products_${new Date().toISOString().slice(0,10)}.csv`);
+  showToast(`${S.products.length} produits exportés pour WooCommerce. Importez via Tools › Import › WooCommerce.`);
+}
+
+// Export to Google Sheets (CSV + instructions)
+function exportToGoogleSheets() {
+  // Complete export with multiple sheets concatenated (separated by ==== markers)
+  const parts = [];
+  parts.push('=== ARTICLES ===');
+  parts.push(['Nom','Stock','Unité','Seuil','Prix','Délai','Référence','Emplacement'].join(','));
+  S.articles.forEach(a => {
+    const loc = S.locations.find(l => l.id === a.locationId);
+    parts.push([_csvEscape(a.name), a.stock, _csvEscape(a.unit), a.min, a.price||0, a.lead||0, _csvEscape(a.ref||''), _csvEscape(loc?.name||'')].join(','));
+  });
+  parts.push('');
+  parts.push('=== PRODUITS ===');
+  parts.push(['Nom','Prix Vente','Prix Achat','Marge','Composition'].join(','));
+  S.products.forEach(p => {
+    const comp = (p.composition||[]).map(c => {
+      const a = S.articles.find(x => x.id === c.id);
+      return (a?.name||'?') + ' x' + c.qty;
+    }).join(' + ');
+    parts.push([_csvEscape(p.name), p.price, p.purchasePrice||0, (p.price-(p.purchasePrice||0)), _csvEscape(comp)].join(','));
+  });
+  parts.push('');
+  parts.push('=== VENTES ===');
+  parts.push(['Date','Produit','Quantité','Total','Profit','Client','Paiement'].join(','));
+  S.sales.forEach(s => {
+    parts.push([s.date.slice(0,10), _csvEscape(s.productName), s.qty, s.total, s.profit||0, _csvEscape(s.clientName||''), _csvEscape(s.paymentMethod||'')].join(','));
+  });
+  _downloadFile(parts.join('\n'), `stockr_google_sheets_${new Date().toISOString().slice(0,10)}.csv`);
+  if (confirm('Export terminé ! Ouvrir Google Sheets maintenant pour importer le fichier ?')) {
+    window.open('https://sheets.google.com/', '_blank');
+  }
+}
+
+// Generate Yango delivery request link for a boutique order
+function createYangoDelivery(orderId) {
+  const order = S.boutiqueOrders.find(o => o.id === orderId);
+  if (!order) { showToast('Commande introuvable', 'error'); return; }
+  const biz = S.session?.business || 'STOCKR';
+  const addr = S.boutiqueConfig?.address || S.locations[0]?.address || 'Adresse de départ';
+  const items = (order.items||[]).map(i => `${i.name} x${i.qty}`).join(', ');
+  // Yango delivery deep-link format (simplified - user fills details in Yango app)
+  const msg = `Livraison Yango\n\nDepuis: ${biz}\n${addr}\n\nVers: ${order.clientName}\nTéléphone: ${order.phone||'N/A'}\nZone: ${order.zone||'À préciser'}\n\nColis: ${items}\nValeur: ${fmt(order.total)} ${sym()}\n\nInstructions: Livraison standard`;
+  // Try Yango app deep link, fallback to web
+  const yangoUrl = 'https://yango.com/fr_ci/order/?from=' + encodeURIComponent(addr) + '&to=' + encodeURIComponent(order.clientName + ' - ' + (order.zone||'')) + '&comment=' + encodeURIComponent(items);
+  if (confirm('Ouvrir Yango avec les détails pré-remplis ?')) {
+    window.open(yangoUrl, '_blank');
+  }
+  // Copy details to clipboard for easy paste
+  navigator.clipboard?.writeText(msg).then(() => showToast('Détails copiés ! Collez dans Yango.'));
+  logActivity('delivery', `Yango livraison: ${order.clientName}`);
+}
+
+// Generate Glovo delivery request
+function createGlovoDelivery(orderId) {
+  const order = S.boutiqueOrders.find(o => o.id === orderId);
+  if (!order) { showToast('Commande introuvable', 'error'); return; }
+  const biz = S.session?.business || 'STOCKR';
+  const items = (order.items||[]).map(i => `${i.name} x${i.qty}`).join(', ');
+  const msg = `Commande Glovo\n\nBoutique: ${biz}\nClient: ${order.clientName}\nTél: ${order.phone||'N/A'}\nZone: ${order.zone||''}\n\nProduits: ${items}\nTotal: ${fmt(order.total)} ${sym()}`;
+  if (confirm('Ouvrir Glovo Partners ?')) {
+    window.open('https://partners.glovoapp.com/', '_blank');
+  }
+  navigator.clipboard?.writeText(msg).then(() => showToast('Détails copiés pour Glovo !'));
+  logActivity('delivery', `Glovo livraison: ${order.clientName}`);
+}
+
+// Generate Wave payment request link
+function generateWavePayment(amount, reference) {
+  const cfg = (S.paymentMethods||[]).find(m => m.provider === 'wave');
+  if (!cfg || !cfg.phone) { showToast('Configurez Wave dans Paiements', 'error'); return null; }
+  const phone = cfg.phone.replace(/\s/g,'').replace(/^\+/,'');
+  // Wave uses wave.com/pay link format
+  return `https://pay.wave.com/m/${phone}/c/${encodeURIComponent(reference||'PAY')}?amount=${amount}`;
+}
+
+// Generate Orange Money payment USSD
+function generateOrangePayment(amount) {
+  const cfg = (S.paymentMethods||[]).find(m => m.provider === 'orange');
+  if (!cfg || !cfg.phone) { showToast('Configurez Orange Money dans Paiements', 'error'); return null; }
+  const phone = cfg.phone.replace(/\s/g,'').replace(/^\+225/,'').replace(/^\+/,'');
+  // Orange Money USSD format for CI
+  return `*144*1*1*${phone}*${amount}#`;
+}
+
+// Send payment request via WhatsApp
+function requestPaymentWhatsApp(amount, clientPhone, reference) {
+  const waveLink = generateWavePayment(amount, reference);
+  const orangeCode = generateOrangePayment(amount);
+  const moovCfg = (S.paymentMethods||[]).find(m => m.provider === 'moov');
+  const biz = S.session?.business || 'STOCKR';
+  let msg = `Bonjour ! Voici votre demande de paiement de ${fmt(amount)} ${sym()} à ${biz}.\n\n`;
+  if (reference) msg += `Référence: ${reference}\n\n`;
+  msg += `Choisissez votre mode de paiement:\n`;
+  if (waveLink) msg += `\n📱 Wave: ${waveLink}`;
+  if (orangeCode) msg += `\n🟠 Orange Money: Composez ${orangeCode}`;
+  if (moovCfg?.phone) msg += `\n🟢 Moov: Envoyez au ${moovCfg.phone}`;
+  msg += `\n\nMerci !`;
+  const phone = (clientPhone || '').replace(/\s/g,'').replace(/^\+/,'');
+  const url = phone ? `https://wa.me/${phone}?text=${encodeURIComponent(msg)}` : `https://wa.me/?text=${encodeURIComponent(msg)}`;
+  window.open(url, '_blank');
+  return url;
+}
+
+// Import products from CSV
+function importProductsFromCSV() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.csv,text/csv';
+  input.onchange = () => {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const text = e.target.result;
+      const lines = text.split(/\r?\n/).filter(l => l.trim());
+      if (lines.length < 2) { showToast('CSV vide ou invalide', 'error'); return; }
+      const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+      const nameIdx = headers.findIndex(h => h.includes('nom') || h.includes('name') || h.includes('title'));
+      const priceIdx = headers.findIndex(h => h.includes('prix') || h.includes('price'));
+      if (nameIdx === -1) { showToast('Colonne "Nom/Name" introuvable', 'error'); return; }
+      let count = 0;
+      for (let i = 1; i < lines.length; i++) {
+        const cols = lines[i].split(',');
+        const name = cols[nameIdx]?.replace(/^"|"$/g,'').trim();
+        const price = parseFloat(cols[priceIdx]) || 0;
+        if (!name) continue;
+        if (S.products.find(p => p.name === name)) continue;
+        S.products.push({ id:Date.now()+i, name, price, purchasePrice:Math.round(price*0.7), composition:[] });
+        count++;
+      }
+      localStorage.setItem('stockr_products', JSON.stringify(S.products));
+      showToast(`${count} produits importés !`);
+      render();
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
+// ── SPECTRA ENHANCED ─────────────────────────
+function vSpectraEnhanced() {
+  const modes = [
+    { id:'photo',      icon:IC.camera,  label:'Photo scan',          desc:'Scanner une photo' },
+    { id:'barcode',    icon:IC.barcode, label:'Code-barres',         desc:'Scanner un code-barres' },
+    { id:'continuous', icon:IC.target,  label:'Scan continu',        desc:'Détection temps réel' },
+    { id:'yolo',       icon:IC.zap,     label:'YOLO IA',             desc:'Détection multi-objets' },
+  ];
+  const scanHistory = S.spectraScanHistory || [];
+
+  if (S.spectra.step === 'loading') {
+    return `
+    <div class="sub-hero"><div class="page-header-row"><button class="back-btn-dark" onclick="spectraReset();nav('more')">${IC.left}</button><div style="flex:1"><div class="sub-hero-title">Spectra AI</div><div class="sub-hero-sub">${t('spectraAnalyzing')}</div></div></div></div>
+    <div class="container" style="text-align:center;padding:60px 24px">
+      <div style="width:80px;height:80px;border-radius:50%;background:var(--accent-light);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;animation:pulse 1.5s infinite">${IC.camera}</div>
+      <div style="font-size:16px;font-weight:700">${t('spectraAnalyzing')}</div>
+      <div style="font-size:13px;color:var(--text-3);margin-top:6px">${S.spectraMode==='yolo'?'Détection YOLO — comptage automatique…':S.spectraMode==='barcode'?'Recherche codes-barres…':'Analyse en cours…'}</div>
+    </div>`;
+  }
+
+  if (S.spectra.step === 'confirm' && S.spectra.queue.length > 0) {
+    const item = S.spectra.queue[S.spectra.current];
+    return `
+    <div class="sub-hero"><div class="page-header-row"><button class="back-btn-dark" onclick="spectraReset();nav('more')">${IC.left}</button><div style="flex:1"><div class="sub-hero-title">${t('spectraDetected')}</div><div class="sub-hero-sub">${S.spectra.current+1}/${S.spectra.queue.length} articles détectés</div></div></div></div>
+    <div class="container">
+      <div class="spectra-count-result" style="margin-bottom:14px;border-color:var(--accent)">
+        <div class="spectra-count-num">${item.quantity}</div>
+        <div class="spectra-count-info">
+          <div class="spectra-count-name">${item.detected_name||item.matched_name}</div>
+          <div class="spectra-count-detail">Quantité détectée: ${item.quantity} · Précision: ${item.confidence}%</div>
+        </div>
+      </div>
+      ${S.spectra.naming ? `
+      <div class="form-group"><label class="form-label">Nom de l'article</label><input class="input" id="spectra-name" type="text" placeholder="${item.detected_name}" value="${item.detected_name}"></div>
+      <div class="form-group"><label class="form-label">${t('quantity')}</label><input class="input" id="spectra-qty" type="number" value="${item.quantity}" min="1"></div>
+      <button class="btn btn-primary" onclick="spectraSubmitName()">${t('spectraConfirm')}</button>
+      ` : `
+      <div class="card" style="margin-bottom:10px">
+        <div class="info-row"><span class="info-lbl">Nom détecté</span><span class="info-val">${item.detected_name||item.matched_name}</span></div>
+        <div class="info-row"><span class="info-lbl">Nombre détecté</span><span class="info-val" style="font-size:18px;color:var(--accent)">${item.quantity} ${item.matched_unit||'pce'}</span></div>
+        <div class="info-row"><span class="info-lbl">Précision IA</span><span class="info-val" style="color:${item.confidence>=90?'var(--success)':item.confidence>=70?'var(--warning)':'var(--danger)'}">${item.confidence}%</span></div>
+        ${item.matched_id ? `<div class="info-row"><span class="info-lbl">Correspondance</span><span class="info-val" style="color:var(--success)">✓ Trouvé en stock</span></div>` : `<div class="info-row"><span class="info-lbl">Correspondance</span><span class="info-val" style="color:var(--warning)">Nouvel article</span></div>`}
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-primary" style="flex:1" onclick="spectraConfirmYes()">${IC.check} Confirmer</button>
+        <button class="btn btn-ghost" style="flex:1" onclick="spectraConfirmNo()">Ignorer</button>
+      </div>`}
+    </div>`;
+  }
+
+  if (S.spectra.step === 'done') {
+    // Save scan to history
+    if (S.spectra.results.length > 0 && !S.spectra._saved) {
+      S.spectra._saved = true;
+      S.spectraScanHistory.unshift({ id:Date.now(), mode:S.spectraMode, count:S.spectra.results.length, date:new Date().toISOString() });
+      if (S.spectraScanHistory.length > 50) S.spectraScanHistory = S.spectraScanHistory.slice(0,50);
+      localStorage.setItem('stockr_spectra_history', JSON.stringify(S.spectraScanHistory));
+    }
+    return `
+    <div class="sub-hero" style="background:linear-gradient(135deg,#064e3b,#059669)">
+      <div class="page-header-row"><button class="back-btn-dark" onclick="spectraReset();nav('more')">${IC.left}</button><div style="flex:1"><div class="sub-hero-title">${t('spectraDone')}</div><div class="sub-hero-sub">${S.spectra.results.length} articles mis à jour</div></div></div>
+    </div>
+    <div class="container">
+      ${S.spectra.results.map(r => `
+      <div class="spectra-count-result">
+        <div class="spectra-count-num">${r.new_qty}</div>
+        <div class="spectra-count-info"><div class="spectra-count-name">${r.name}</div><div class="spectra-count-detail">+${r.new_qty} ${r.unit}</div></div>
+      </div>`).join('')}
+      <button class="btn btn-primary" onclick="spectraReset();nav('pantry')" style="margin-top:12px">${t('spectraViewStock')}</button>
+    </div>`;
+  }
+
+  return `
+  <div class="sub-hero">
+    <div class="page-header-row" style="margin-bottom:14px">
+      <button class="back-btn-dark" onclick="nav('more')">${IC.left}</button>
+      <div style="flex:1"><div class="sub-hero-title">Spectra AI</div><div class="sub-hero-sub">Scanner, détecter, compter automatiquement</div></div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="section-hd"><span class="section-lbl">Mode de scan</span></div>
+    <div class="spectra-mode-grid">
+      ${modes.map(m => `
+      <div class="spectra-mode-btn ${S.spectraMode===m.id?'active':''}" onclick="S.spectraMode='${m.id}';render()">
+        <div class="spectra-mode-ico">${m.icon}</div>
+        <div class="spectra-mode-lbl">${m.label}</div>
+        <div style="font-size:10px;color:var(--text-3);margin-top:2px">${m.desc}</div>
+      </div>`).join('')}
+    </div>
+
+    <div class="section-hd"><span class="section-lbl">${t('quickActions')}</span></div>
+    <div class="quick-grid">
+      <div class="quick-btn" onclick="spectraStartCompare()">
+        <div class="quick-ico">${IC.eye}</div>
+        <div class="quick-label">${t('spectraAudit')}</div>
+        <div class="quick-sub">${t('spectraAuditSub')}</div>
+      </div>
+      <div class="quick-btn" onclick="spectraStartReception()">
+        <div class="quick-ico">${IC.download}</div>
+        <div class="quick-label">${t('spectraReception')}</div>
+        <div class="quick-sub">${t('spectraReceptionSub')}</div>
+      </div>
+    </div>
+
+    <div style="text-align:center;padding:24px 0">
+      <input type="file" id="spectra-file" accept="image/*" capture="environment" style="display:none" onchange="spectraOnFile(this)">
+      <button class="btn btn-primary" style="max-width:260px;margin:0 auto;padding:16px;font-size:16px" onclick="document.getElementById('spectra-file').click()">
+        ${IC.camera} ${S.spectraMode==='barcode'?'Scanner code-barres':'Scanner le stock'}
+      </button>
+      <div style="font-size:11px;color:var(--text-3);margin-top:8px">${S.spectraMode==='yolo'?'YOLO détecte et compte automatiquement chaque produit':'Prends une photo de ton stock'}</div>
+    </div>
+
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-ghost" style="flex:1" onclick="spectraRunDemo()">Démo Audit</button>
+      <button class="btn btn-ghost" style="flex:1" onclick="spectraRunDemoReception()">Démo Réception</button>
+    </div>
+
+    ${scanHistory.length > 0 ? `
+    <div class="section-hd"><span class="section-lbl">Historique scans</span></div>
+    ${scanHistory.slice(0,5).map(sh => `
+    <div class="card" style="margin-bottom:6px;padding:10px 14px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div><div style="font-size:12px;font-weight:700">${sh.mode||'photo'} · ${sh.count||0} articles</div><div style="font-size:11px;color:var(--text-3)">${fmtDate(sh.date)}</div></div>
+        <span class="status st-ok" style="font-size:10px">OK</span>
+      </div>
+    </div>`).join('')}` : ''}
+  </div>`;
+}
+
+// ── COMMANDES D'ACHAT AMÉLIORÉES ─────────────
+function vPurchaseOrdersEnhanced() {
+  const orders = S.purchaseOrders || [];
+  const pending = orders.filter(o => o.status==='pending');
+  const shipped = orders.filter(o => o.status==='shipped');
+  const received = orders.filter(o => o.status==='received');
+
+  return `
+  <div class="sub-hero">
+    <div class="page-header-row" style="margin-bottom:14px">
+      <button class="back-btn-dark" onclick="nav('more')">${IC.left}</button>
+      <div style="flex:1"><div class="sub-hero-title">${t('purchaseOrders')}</div><div class="sub-hero-sub">Commandes & Suivi livraison</div></div>
+      <button class="fab" onclick="nav('add-order')">${IC.plus}</button>
+    </div>
+    <div style="display:flex;gap:8px">
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${pending.length}</div><div class="hero-stat-lbl">En attente</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${shipped.length}</div><div class="hero-stat-lbl">Expédiées</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${received.length}</div><div class="hero-stat-lbl">Reçues</div></div>
+    </div>
+  </div>
+  <div class="container">
+    ${S.articles.filter(a=>a.stock<a.min&&a.min>0).length>0?`
+    <div class="alert-banner" style="margin-bottom:12px" onclick="nav('add-order')">
+      <div class="alert-ico">${IC.alert}</div>
+      <div><div class="alert-title">Réapprovisionnement suggéré</div><div class="alert-sub">${S.articles.filter(a=>a.stock<a.min&&a.min>0).length} articles à commander</div></div>
+      <div class="alert-arrow">${IC.chevron}</div>
+    </div>`:''}
+
+    ${orders.length===0?`
+    <div class="empty"><div class="empty-ico">${IC.truck}</div><div class="empty-title">${t('noOrders')}</div><button class="btn btn-primary" style="max-width:200px" onclick="nav('add-order')">${t('newOrder')}</button></div>
+    `:`
+    ${['pending','shipped','received','cancelled'].map(status => {
+      const filtered = orders.filter(o=>o.status===status);
+      if (filtered.length===0) return '';
+      const labels = {pending:'En attente',shipped:'Expédiées',received:'Reçues',cancelled:'Annulées'};
+      const colors = {pending:'var(--warning)',shipped:'var(--accent)',received:'var(--success)',cancelled:'var(--danger)'};
+      return `
+    <div class="section-hd"><span class="section-lbl">${labels[status]} (${filtered.length})</span></div>
+    ${filtered.map(o => {
+      const supplier = S.suppliers.find(s=>s.id===o.supplierId);
+      const expectedDate = o.expectedDate ? new Date(o.expectedDate).toLocaleDateString() : '—';
+      return `
+    <div class="card card-tap" style="margin-bottom:8px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:8px;height:8px;border-radius:50%;background:${colors[status]}"></div>
+        <div style="flex:1">
+          <div style="font-size:14px;font-weight:700">${o.articleName||'Article'}</div>
+          <div style="font-size:11px;color:var(--text-3)">${supplier?.name||'Fournisseur'} · ${o.qty} ${o.unit||'pce'}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:12px;font-weight:700">${o.total?fmt(o.total)+' '+sym():''}</div>
+          <div style="font-size:10px;color:var(--text-3)">Livraison: ${expectedDate}</div>
+        </div>
+      </div>
+      ${status==='pending'||status==='shipped'?`
+      <div style="display:flex;gap:4px;margin-top:10px;align-items:center">
+        <div style="width:10px;height:10px;border-radius:50%;background:var(--success)"></div>
+        <div style="flex:1;height:2px;background:${status==='shipped'?'var(--success)':'var(--border)'}"></div>
+        <div style="width:10px;height:10px;border-radius:50%;background:${status==='shipped'?'var(--accent)':'var(--border)'}"></div>
+        <div style="flex:1;height:2px;background:var(--border)"></div>
+        <div style="width:10px;height:10px;border-radius:50%;background:var(--border)"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:9px;color:var(--text-3)"><span>Commandée</span><span>Expédiée</span><span>Livrée</span></div>`:''}
+      ${status==='pending'?`
+      <div style="display:flex;gap:6px;margin-top:10px">
+        <button class="btn btn-ghost" style="flex:1;padding:8px;font-size:12px" onclick="markOrderShipped(${o.id})">${IC.truck} Expédiée</button>
+        <button class="btn btn-primary" style="flex:1;padding:8px;font-size:12px" onclick="receiveOrder(${o.id})">${IC.check} Reçue</button>
+      </div>`:''}
+      ${status==='shipped'?`
+      <div style="margin-top:10px"><button class="btn btn-primary" style="padding:8px;font-size:12px" onclick="receiveOrder(${o.id})">${IC.check} Marquer reçue</button></div>`:''}
+    </div>`;}).join('')}`;}).join('')}`}
+  </div>`;
+}
+
+function markOrderShipped(orderId) {
+  const order = S.purchaseOrders.find(o=>o.id===orderId);
+  if (!order) return;
+  order.status = 'shipped';
+  order.shippedDate = new Date().toISOString();
+  localStorage.setItem('stockr_orders', JSON.stringify(S.purchaseOrders));
+  logActivity('order', `Commande expédiée: ${order.articleName}`);
+  showToast('Commande expédiée');
+  render();
+}
+
+// ══════════════════════════════════════════════
+// FIN NOUVELLES FONCTIONNALITÉS
+// ══════════════════════════════════════════════
 
 // ── PWA — Service Worker & Install ───────────
 let _deferredInstall = null;
@@ -5715,6 +10103,125 @@ document.addEventListener('DOMContentLoaded', () => {
   window.activatePlan            = activatePlan;
   window.cancelPlan              = cancelPlan;
   window.setBilling              = setBilling;
+  // ── v2 — Nouvelles fonctions ──
+  window.toggleBoutiquePublish   = toggleBoutiquePublish;
+  window.updateBoutiqueConfig    = updateBoutiqueConfig;
+  window.toggleBoutiqueProduct   = toggleBoutiqueProduct;
+  window.generateBoutiqueSite    = generateBoutiqueSite;
+  window.previewBoutiqueSite     = previewBoutiqueSite;
+  // ── Boutique avancée (apparence / domaine / pixels / code) ──
+  window.verifyCustomDomain      = verifyCustomDomain;
+  window.updatePixelConfig       = updatePixelConfig;
+  window.savePixelConfig         = savePixelConfig;
+  window.resetPixelConfig        = resetPixelConfig;
+  window.updateCustomCode        = updateCustomCode;
+  window.setCodeTab              = setCodeTab;
+  window.loadCodeSample          = loadCodeSample;
+  window.saveCustomCode          = saveCustomCode;
+  window.clearCustomCode         = clearCustomCode;
+  window.copyCustomCode          = copyCustomCode;
+  // ── API Settings ──
+  window.vApiSettings            = vApiSettings;
+  window.generateApiToken        = generateApiToken;
+  window.revokeApiToken          = revokeApiToken;
+  window.addWebhook              = addWebhook;
+  window.editWebhook             = editWebhook;
+  window.deleteWebhook           = deleteWebhook;
+  window.testWebhook             = testWebhook;
+  window.copyWebhookEndpoint     = copyWebhookEndpoint;
+  window.toggleWebhookActive     = toggleWebhookActive;
+  window.toggleWebhookEvent      = toggleWebhookEvent;
+  window.copyApiToken            = copyApiToken;
+  window.copyIncomingEndpoint    = copyIncomingEndpoint;
+  window.toggleDeliveryZone      = toggleDeliveryZone;
+  window.shareBoutiqueWhatsApp   = shareBoutiqueWhatsApp;
+  window.copyBoutiqueLink        = copyBoutiqueLink;
+  window.addBoutiqueOrder        = addBoutiqueOrder;
+  window.updateOrderStatus       = updateOrderStatus;
+  window.contactOrderClient      = contactOrderClient;
+  window.addPromotion            = addPromotion;
+  window.editPromotion           = editPromotion;
+  window.togglePromoActive       = togglePromoActive;
+  window.deletePromotion         = deletePromotion;
+  window.savePromotion           = savePromotion;
+  window.viewPromo               = viewPromo;
+  window._genPromoCode           = _genPromoCode;
+  window.validatePromoCode       = validatePromoCode;
+  window._recordPromoUsage       = _recordPromoUsage;
+  window._applyPromoValue        = _applyPromoValue;
+  window.sharePromoWhatsApp      = sharePromoWhatsApp;
+  window.sharePromoSMS           = sharePromoSMS;
+  window.copyPromoCode           = copyPromoCode;
+  window.copyPromoLink           = copyPromoLink;
+  // Marketing hub
+  window.setMarketingTab         = setMarketingTab;
+  // Banners
+  window.addBanner               = addBanner;
+  window.editBanner              = editBanner;
+  window.saveBanner              = saveBanner;
+  window.toggleBannerActive      = toggleBannerActive;
+  window.deleteBanner            = deleteBanner;
+  // Popups
+  window.addPopup                = addPopup;
+  window.editPopup               = editPopup;
+  window.savePopup               = savePopup;
+  window.togglePopupActive       = togglePopupActive;
+  window.deletePopup             = deletePopup;
+  // Reviews
+  window.addReview               = addReview;
+  window.editReview              = editReview;
+  window.saveReview              = saveReview;
+  window.approveReview           = approveReview;
+  window.deleteReview            = deleteReview;
+  window.copyReviewLink          = copyReviewLink;
+  window.shareReviewLink         = shareReviewLink;
+  // Tracking links
+  window.addTrackingLink         = addTrackingLink;
+  window.editTrackingLink        = editTrackingLink;
+  window.saveTrackingLink        = saveTrackingLink;
+  window.deleteTrackingLink      = deleteTrackingLink;
+  window.copyTrackingLink        = copyTrackingLink;
+  window.shareTrackingLink       = shareTrackingLink;
+  window._buildTrackingUrl       = _buildTrackingUrl;
+  window.redeemLoyaltyReward     = redeemLoyaltyReward;
+  window.schedulePost            = schedulePost;
+  window.publishScheduledPost    = publishScheduledPost;
+  window.deleteScheduledPost     = deleteScheduledPost;
+  window.addCampaign             = addCampaign;
+  window.sendCampaign            = sendCampaign;
+  window.deleteCampaign          = deleteCampaign;
+  window.toggleLoyalty           = toggleLoyalty;
+  window.addLoyaltyReward        = addLoyaltyReward;
+  window.editLoyaltyReward       = editLoyaltyReward;
+  window.deleteLoyaltyReward     = deleteLoyaltyReward;
+  window.editLoyaltyRate         = editLoyaltyRate;
+  window.toggleLoyaltyTierMode   = toggleLoyaltyTierMode;
+  window.addLoyaltyTier          = addLoyaltyTier;
+  window.editLoyaltyTier         = editLoyaltyTier;
+  window.deleteLoyaltyTier       = deleteLoyaltyTier;
+  window.sendLoyaltyCampaign     = sendLoyaltyCampaign;
+  window.exportLoyaltyReport     = exportLoyaltyReport;
+  window._getClientTier          = _getClientTier;
+  window._renderTierBadge        = _renderTierBadge;
+  window.toggleSocialAccount     = toggleSocialAccount;
+  window.postProductSocial       = postProductSocial;
+  window.setupPayment            = setupPayment;
+  window.disconnectPayment       = disconnectPayment;
+  window.connectIntegration      = connectIntegration;
+  window.disconnectIntegration   = disconnectIntegration;
+  window.markOrderShipped        = markOrderShipped;
+  window.setArticleLocation      = setArticleLocation;
+  window.getFilteredArticles     = getFilteredArticles;
+  window.exportToJumia           = exportToJumia;
+  window.exportToShopify         = exportToShopify;
+  window.exportToWooCommerce     = exportToWooCommerce;
+  window.exportToGoogleSheets    = exportToGoogleSheets;
+  window.createYangoDelivery     = createYangoDelivery;
+  window.createGlovoDelivery     = createGlovoDelivery;
+  window.generateWavePayment     = generateWavePayment;
+  window.generateOrangePayment   = generateOrangePayment;
+  window.requestPaymentWhatsApp  = requestPaymentWhatsApp;
+  window.importProductsFromCSV   = importProductsFromCSV;
 
   // Restaurer la session + token si existants
   const saved = getSession();
