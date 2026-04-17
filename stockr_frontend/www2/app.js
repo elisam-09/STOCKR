@@ -836,59 +836,81 @@ function shareViaWhatsApp(sales) {
   const csym = S.session?.currency_symbol || 'FCFA';
   const biz  = S.session?.business || S.session?.name || 'Mon Commerce';
   const date = new Date(sales[0].date).toLocaleDateString('fr-FR');
+  const time = new Date(sales[0].date).toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
   const invId = _invNum(sales[0].id);
   const total = sales.reduce((s, v) => s + v.total, 0);
   const taxRate = parseFloat(S.session?.tax_rate) || 0;
-  const pmLabels = {cash:'Especes',wave:'Wave',orange:'Orange Money',moov:'Moov Money',mtn:'MTN MoMo',paypal:'PayPal',visa:'Carte bancaire'};
+  const pmLabels = {cash:'💵 Espèces',wave:'🌊 Wave',orange:'🟠 Orange Money',moov:'🔵 Moov Money',mtn:'🟡 MTN MoMo',paypal:'💳 PayPal',visa:'💳 Carte bancaire'};
   const pm = sales[0]?.paymentMethod || 'cash';
   const clientName = sales[0]?.clientName;
   const client = clientName ? S.clients.find(c => c.name === clientName || String(c.id) === String(sales[0]?.clientId)) : null;
   const loc = S.currentLocation ? S.locations.find(l => l.id === S.currentLocation) : null;
+  const tier = client ? _getClientTier(client) : null;
 
   const lines = [
-    '================================',
-    `       *${biz}*`,
-    loc ? `       ${loc.name}` : '',
-    S.session?.email ? `       ${S.session.email}` : '',
-    '================================',
+    `╔═══════════════════════════╗`,
+    `   🛍️  *${biz}*`,
+    loc ? `   📍 ${loc.name}` : '',
+    S.session?.phone ? `   📞 ${S.session.phone}` : '',
+    S.session?.email ? `   📧 ${S.session.email}` : '',
+    `╚═══════════════════════════╝`,
     '',
-    `*RECU N° ${invId}*`,
-    `Date : ${date}`,
-    clientName ? `Client : ${clientName}` : '',
-    client?.phone ? `Tel : ${client.phone}` : '',
+    `🧾 *REÇU N° ${invId}*`,
+    `📅 ${date} à ${time}`,
+    clientName ? `👤 *${clientName}*${tier ? '  '+(tier.icon||'')+' '+tier.name : ''}` : '',
+    client?.phone ? `📱 ${client.phone}` : '',
     '',
-    '--------------------------------',
+    `━━━━━━━━━━━━━━━━━━━━━━━━━`,
+    `🛒 *Détail de la commande*`,
+    `━━━━━━━━━━━━━━━━━━━━━━━━━`,
   ];
   sales.forEach(s => {
     const u = s.qty > 0 ? Math.round(s.total / s.qty) : 0;
-    lines.push(`${s.productName}`);
-    lines.push(`  ${s.qty} x ${fmt(u)} ${csym} = *${fmt(s.total)} ${csym}*`);
+    lines.push(`▸ ${s.productName}`);
+    lines.push(`   ${s.qty} × ${fmt(u)} = *${fmt(s.total)} ${csym}*`);
   });
-  lines.push('--------------------------------');
+  lines.push(`━━━━━━━━━━━━━━━━━━━━━━━━━`);
   if (sales[0]?.promoName) {
-    lines.push(`Promo : ${sales[0].promoName} (-${sales[0].promoDiscount||0}%)`);
+    lines.push(`🎯 Promo : ${sales[0].promoName} (-${sales[0].promoDiscount||0}%)`);
   }
-  lines.push(`Sous-total : ${fmt(total)} ${csym}`);
+  lines.push(`💰 Sous-total : ${fmt(total)} ${csym}`);
   if (taxRate > 0) {
     const tva = Math.round(total * taxRate / 100);
-    lines.push(`TVA (${taxRate}%) : ${fmt(tva)} ${csym}`);
-    lines.push(`*TOTAL TTC : ${fmt(total + tva)} ${csym}*`);
+    lines.push(`📊 TVA (${taxRate}%) : ${fmt(tva)} ${csym}`);
+    lines.push(`✨ *TOTAL TTC : ${fmt(total + tva)} ${csym}* ✨`);
   } else {
-    lines.push(`*TOTAL : ${fmt(total)} ${csym}*`);
+    lines.push(`✨ *TOTAL : ${fmt(total)} ${csym}* ✨`);
   }
   lines.push('');
-  lines.push(`Paiement : ${pmLabels[pm] || pm}`);
-  if (S.loyaltyConfig?.enabled && client?.loyaltyPoints > 0) {
-    lines.push(`Points fidelite : ${client.loyaltyPoints} pts`);
+  lines.push(`✅ Payé via ${pmLabels[pm] || pm}`);
+  if (S.loyaltyConfig?.enabled && client) {
+    const mult = tier?.multiplier || 1;
+    const ptsEarned = Math.floor(total * (S.loyaltyConfig.pointsPerFcfa || 1) * mult);
+    if (ptsEarned > 0) {
+      lines.push('');
+      lines.push(`🎁 *+${ptsEarned} pts fidélité${mult>1?' (x'+mult+')':''}*`);
+      lines.push(`💎 Solde : ${client.loyaltyPoints || 0} pts`);
+      if (tier?.nextTier) {
+        lines.push(`🎯 Plus que ${fmt(tier.toNext)} ${tier.mode==='points'?'pts':csym} → ${tier.nextTier.icon||''} ${tier.nextTier.name}`);
+      }
+    }
+  }
+  // Tracking link
+  const boutiqueUrl = S.boutiqueConfig?.publicUrl || '';
+  if (boutiqueUrl) {
+    lines.push('');
+    lines.push(`🔗 Suivi commande : ${boutiqueUrl}/suivi?inv=${invId}`);
   }
   lines.push('');
-  lines.push('Merci pour votre achat !');
-  lines.push(`_${biz} — Propulse par STOCKR_`);
+  lines.push(`🙏 *Merci pour votre achat !*`);
+  lines.push(`💫 À très bientôt chez ${biz}`);
+  lines.push('');
+  lines.push(`_Propulsé par STOCKR ⚡_`);
 
   // Target client's WhatsApp if phone available
   const phone = client?.phone?.replace(/[\s\-\(\)]/g, '') || '';
   const waUrl = phone ? `https://wa.me/${phone}?text=` : 'https://wa.me/?text=';
-  window.open(waUrl + encodeURIComponent(lines.filter(l=>l!=='').join('\n')), '_blank');
+  window.open(waUrl + encodeURIComponent(lines.filter(l=>l!=='').join('\n').replace(/\n{3,}/g,'\n\n')), '_blank');
 }
 
 // ── Chart ─────────────────────────────────────
@@ -1084,7 +1106,42 @@ const S = {
   // Activity feed
   activities: JSON.parse(localStorage.getItem('stockr_activities') || '[]'),
   // Boutique state
-  boutiqueConfig: JSON.parse(localStorage.getItem('stockr_boutique') || '{"name":"","description":"","theme":"modern","published":false,"products":[],"deliveryFees":0,"deliveryZones":[],"visits":0}'),
+  boutiqueConfig: (() => {
+    const bc = JSON.parse(localStorage.getItem('stockr_boutique') || '{"name":"","description":"","theme":"modern","published":false,"products":[],"deliveryFees":0,"deliveryZones":[],"visits":0}');
+    // SEO
+    if (bc.seoTitle === undefined) bc.seoTitle = '';
+    if (bc.seoDescription === undefined) bc.seoDescription = '';
+    if (bc.seoKeywords === undefined) bc.seoKeywords = '';
+    if (bc.ogImage === undefined) bc.ogImage = '';
+    // Annonces + livraison
+    if (bc.announcement === undefined) bc.announcement = '';
+    if (bc.announcementActive === undefined) bc.announcementActive = false;
+    if (bc.deliveryInfo === undefined) bc.deliveryInfo = '';
+    if (bc.deliveryTime === undefined) bc.deliveryTime = '24-48h';
+    if (bc.freeDeliveryFrom === undefined) bc.freeDeliveryFrom = 0;
+    // Horaires
+    if (!bc.businessHours) bc.businessHours = [
+      { day:'Lundi',    open:'08:00', close:'18:00', closed:false },
+      { day:'Mardi',    open:'08:00', close:'18:00', closed:false },
+      { day:'Mercredi', open:'08:00', close:'18:00', closed:false },
+      { day:'Jeudi',    open:'08:00', close:'18:00', closed:false },
+      { day:'Vendredi', open:'08:00', close:'18:00', closed:false },
+      { day:'Samedi',   open:'09:00', close:'17:00', closed:false },
+      { day:'Dimanche', open:'',      close:'',      closed:true  },
+    ];
+    // Conditions générales
+    if (bc.conditions === undefined) bc.conditions = '';
+    if (bc.returnPolicy === undefined) bc.returnPolicy = '';
+    // FAQ
+    if (!bc.faqs) bc.faqs = [];
+    // Témoignages
+    if (!bc.testimonials) bc.testimonials = [];
+    // Réseaux sociaux
+    if (!bc.socials) bc.socials = { whatsapp:'', facebook:'', instagram:'', tiktok:'', youtube:'' };
+    // URL publique
+    if (bc.publicUrl === undefined) bc.publicUrl = '';
+    return bc;
+  })(),
   boutiqueOrders: JSON.parse(localStorage.getItem('stockr_boutique_orders') || '[]'),
   // Marketing state
   promotions: JSON.parse(localStorage.getItem('stockr_promotions') || '[]'),
@@ -2133,7 +2190,13 @@ function render() {
     'boutique-domain': vBoutiqueDomain,
     'boutique-pixels': vBoutiquePixels,
     'boutique-code': vBoutiqueCode,
+    'boutique-seo': vBoutiqueSEO,
+    'boutique-hours': vBoutiqueHours,
+    'boutique-policies': vBoutiquePolicies,
+    'boutique-faq': vBoutiqueFAQ,
     'api-settings': vApiSettings,
+    'loyalty': () => { S.marketingTab = 'loyalty'; S.view = 'marketing'; return vMarketing(); },
+    'boutique-orders': () => { S.view = 'boutique'; return vBoutique(); },
   };
   viewEl.innerHTML = (map[S.view] || vHome)();
   if (!S.globalSearch) viewEl.scrollTop = 0;
@@ -2146,7 +2209,7 @@ function render() {
     if (gs) { gs.focus(); gs.setSelectionRange(gs.value.length, gs.value.length); }
   }
 
-  const hideNav = ['detail','add','add-product','edit-product','add-client','client-detail','notifications','catalog','add-supplier','supplier-detail','stock-history','purchase-orders','add-order','pricing','subscription','boutique','boutique-appearance','boutique-domain','boutique-pixels','boutique-code','marketing','social-media','payments-setup','integrations','api-settings','spectra','clients'].includes(S.view);
+  const hideNav = ['detail','add','add-product','edit-product','add-client','client-detail','notifications','catalog','add-supplier','supplier-detail','stock-history','purchase-orders','add-order','pricing','subscription','boutique','boutique-appearance','boutique-domain','boutique-pixels','boutique-code','boutique-seo','boutique-hours','boutique-policies','boutique-faq','marketing','social-media','payments-setup','integrations','api-settings','spectra','clients'].includes(S.view);
   navEl.style.display = hideNav ? 'none' : '';
   if (!hideNav) navEl.innerHTML = renderNav();
 }
@@ -2711,6 +2774,7 @@ function vPantry() {
       <button class="back-btn" onclick="nav('home')">${IC.left}</button>
       <div class="page-title">${t('stock')}</div>
       <div style="display:flex;gap:8px;align-items:center">
+        <button class="fab fab-outline" onclick="exportStockCSV()" title="Exporter CSV">⬇</button>
         <button class="fab fab-outline" onclick="nav('spectra')" title="Spectra">${IC.camera}</button>
         <button class="fab" onclick="nav('add')">${IC.plus}</button>
       </div>
@@ -2763,13 +2827,40 @@ function vPantry() {
 
 // ── PRODUCTS ──────────────────────────────────
 function vProducts() {
+  const q = (S.productSearch || '').toLowerCase();
+  const filter = S.productFilter || 'all';
+  let list = S.products.filter(p => p.name.toLowerCase().includes(q));
+  if (filter === 'available') list = list.filter(p => productMaxMake(p) > 0);
+  else if (filter === 'unavailable') list = list.filter(p => productMaxMake(p) === 0);
+  else if (filter === 'promo') list = list.filter(p => _getActivePromo(p.id));
+  else if (filter === 'boutique') list = list.filter(p => (S.boutiqueConfig?.products||[]).includes(p.id));
+
+  const totalAvail = S.products.filter(p => productMaxMake(p) > 0).length;
+  const totalPromo = S.products.filter(p => _getActivePromo(p.id)).length;
+  const totalBoutique = S.products.filter(p => (S.boutiqueConfig?.products||[]).includes(p.id)).length;
+
   return `
   <div class="page-header">
     <div class="page-header-row">
       <button class="back-btn" onclick="nav('home')">${IC.left}</button>
       <div class="page-title">${t('finishedProducts')}</div>
-      <button class="fab" onclick="nav('add-product')">${IC.plus}</button>
+      <div style="display:flex;gap:6px">
+        <button class="fab fab-outline" onclick="importProductsFromCSV()" title="Importer CSV">${IC.upload||'⬆'}</button>
+        <button class="fab" onclick="nav('add-product')">${IC.plus}</button>
+      </div>
     </div>
+    ${S.products.length > 0 ? `
+    <div class="search-wrap">
+      <span class="search-ico">${IC.search}</span>
+      <input class="input input-search" type="text" placeholder="    Rechercher un produit" value="${q.replace(/"/g,'&quot;')}" oninput="S.productSearch=this.value;render()">
+    </div>
+    <div class="filter-row">
+      <button class="filter-chip ${filter==='all'?'active':''}" onclick="S.productFilter='all';render()">${t('all')} (${S.products.length})</button>
+      <button class="filter-chip ${filter==='available'?'active':''}" onclick="S.productFilter='available';render()">✓ Disponibles (${totalAvail})</button>
+      <button class="filter-chip ${filter==='unavailable'?'active':''}" onclick="S.productFilter='unavailable';render()">⚠ Indispo. (${S.products.length-totalAvail})</button>
+      ${totalPromo>0?`<button class="filter-chip ${filter==='promo'?'active':''}" onclick="S.productFilter='promo';render()">🎯 Promo (${totalPromo})</button>`:''}
+      ${totalBoutique>0?`<button class="filter-chip ${filter==='boutique'?'active':''}" onclick="S.productFilter='boutique';render()">🛍️ Boutique (${totalBoutique})</button>`:''}
+    </div>` : ''}
   </div>
   <div class="container">
     ${S.products.length===0 ? `
@@ -2778,9 +2869,15 @@ function vProducts() {
       <div class="empty-title">${t('noProducts')}</div>
       <div class="empty-text">${t('noProductsSub')}</div>
       <button class="btn btn-primary" style="width:auto;padding:11px 24px" onclick="nav('add-product')">${t('createProduct')}</button>
-    </div>` : S.products.map((p,i) => {
+    </div>` : list.length === 0 ? `
+    <div class="empty" style="padding:30px 18px">
+      <div style="font-size:32px;margin-bottom:8px">🔍</div>
+      <div class="empty-title">${t('noResults')}</div>
+    </div>` : list.map((p,i) => {
       const avail   = productMaxMake(p);
       const canMake = avail > 0;
+      const promo = _getActivePromo(p.id);
+      const inShop = (S.boutiqueConfig?.products||[]).includes(p.id);
       const recipeNames = p.composition.map(c => {
         const a = S.articles.find(a => a.id === c.id);
         return a ? `${fmtQty(c.qty)} ${a.unit} ${a.name}` : null;
@@ -2790,7 +2887,7 @@ function vProducts() {
         <div class="article-row">
           <div class="article-avatar">${initials(p.name)}</div>
           <div class="article-info">
-            <div class="article-name">${p.name}</div>
+            <div class="article-name">${p.name}${promo?' <span style="font-size:10px;padding:1px 6px;border-radius:4px;background:#ef444415;color:#ef4444;font-weight:700;margin-left:4px">-'+promo.discount+'%</span>':''}${inShop?' <span style="font-size:10px;padding:1px 6px;border-radius:4px;background:var(--accent-light);color:var(--accent);font-weight:700;margin-left:4px">🛍️</span>':''}</div>
             <div class="article-meta" style="font-weight:700;color:var(--text-2)">${fmt(p.price)} ${sym()}${p.purchasePrice > 0 ? ` <span style="font-size:11px;font-weight:600;color:${marginPct(p)>=20?'var(--success)':marginPct(p)>=0?'var(--warning)':'var(--danger)'};margin-left:6px">${marginPct(p)}% ${t('margin')}</span>` : ''}</div>
             ${p.purchasePrice > 0 ? `<div class="article-meta" style="margin-top:1px;font-size:11px;color:var(--text-3)">${t('costLabel')}: ${fmt(p.purchasePrice)} · ${t('profitUnit')}: ${fmt(profitUnit(p))} ${sym()}/u</div>` : ''}
             ${recipeNames ? `<div class="article-meta" style="margin-top:2px;color:var(--text-3)">${recipeNames}</div>` : ''}
@@ -2798,6 +2895,7 @@ function vProducts() {
           <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
             <span class="status ${canMake?'st-ok':'st-out'}">${canMake?IC.check:IC.xmark} ${canMake?avail+' '+t('available'):t('unavailable')}</span>
             <div style="display:flex;gap:6px">
+              <button onclick="toggleBoutiqueProduct(${p.id})" title="${inShop?'Retirer de la boutique':'Ajouter à la boutique'}" style="background:${inShop?'var(--accent-light)':'none'};border:1px solid ${inShop?'var(--accent)':'var(--gray-3)'};border-radius:6px;padding:4px 8px;cursor:pointer;color:${inShop?'var(--accent)':'var(--text-2)'}">🛍️</button>
               <button onclick="nav('edit-product',{editProductId:${p.id}})" style="background:none;border:1px solid var(--gray-3);border-radius:6px;padding:4px 8px;cursor:pointer;color:var(--text-2)">${IC.settings}</button>
               <button onclick="deleteProduct(${p.id})" style="background:none;border:1px solid var(--gray-3);border-radius:6px;padding:4px 8px;cursor:pointer;color:var(--text-2)">${IC.trash}</button>
             </div>
@@ -5630,15 +5728,19 @@ function vMore() {
   const activePromos = (S.promotions || []).filter(p => p.active).length;
   const connectedSocial = (S.socialAccounts || []).filter(a => a.connected).length;
   const activePayments = (S.paymentMethods || []).filter(p => p.active).length;
+  const scheduledPostsCount = (S.scheduledPosts || []).filter(p => p.status === 'scheduled' || p.status === 'due').length;
+  const loyaltyClients = (S.clients||[]).filter(c => (c.loyaltyPoints||0) > 0).length;
+  const boutiquePending = (S.boutiqueOrders||[]).filter(o => o.status === 'pending' || !o.status).length;
 
   const items = [
-    { id:'clients',         icon:IC.users,      label:t('clients')||'Clients',          sub:`${S.clients.length} client(s)`, color:'#0ea5e9' },
-    { id:'boutique',        icon:IC.shop,       label:t('boutique')||'Boutique',        sub:'Boutique en ligne',       color:'#4F46E5', badge: S.boutiqueConfig?.published ? '●' : null },
+    { id:'clients',         icon:IC.users,      label:t('clients')||'Clients',          sub:`${S.clients.length} client(s)${loyaltyClients>0?' · '+loyaltyClients+' fid.':''}`, color:'#0ea5e9' },
+    { id:'boutique',        icon:IC.shop,       label:t('boutique')||'Boutique',        sub:boutiquePending>0?`${boutiquePending} commande(s) !`:'Boutique en ligne',  color:'#4F46E5', badge: S.boutiqueConfig?.published ? '●' : (boutiquePending||null) },
     { id:'marketing',       icon:IC.megaphone,  label:t('marketing')||'Marketing',     sub:`${activePromos} promo(s)`, color:'#dc2626', badge: activePromos || null },
-    { id:'social-media',    icon:IC.share2,     label:t('socialMedia')||'Reseaux',     sub:`${connectedSocial} connecte(s)`, color:'#e1306c' },
+    { id:'loyalty',         icon:IC.star,       label:'Fidélité',                       sub:S.loyaltyConfig?.enabled?`${loyaltyClients} clients`:'Désactivé',  color:'#F59E0B', badge: S.loyaltyConfig?.enabled ? '●' : null },
+    { id:'social-media',    icon:IC.share2,     label:t('socialMedia')||'Reseaux',     sub:`${connectedSocial} connecte(s)${scheduledPostsCount>0?' · '+scheduledPostsCount+' prog.':''}`, color:'#e1306c', badge: scheduledPostsCount || null },
     { id:'payments-setup',  icon:IC.wallet,     label:t('payments')||'Paiements',      sub:`${activePayments} actif(s)`, color:'#ff6600' },
     { id:'purchase-orders', icon:IC.truck,      label:t('purchaseOrders')||'Commandes', sub:`${pendingOrders} en attente`, color:'#059669', badge: pendingOrders || null },
-    { id:'integrations',    icon:IC.link,       label:t('integrations')||'Integrations', sub:'Apps & services',         color:'#7c3aed' },
+    { id:'integrations',    icon:IC.link,       label:t('integrations')||'Integrations', sub:`${(S.integrationsConfig||[]).filter(i=>i.connected).length} actif(s)`,  color:'#7c3aed' },
     { id:'suppliers',       icon:IC.package,    label:t('suppliers')||'Fournisseurs',  sub:`${S.suppliers.length} enregistre(s)`, color:'#0891b2' },
     { id:'stock-history',   icon:IC.trending,   label:t('stockHistory')||'Mouvements', sub:`${S.stockMovements.length} entrees`, color:'#334155' },
     { id:'spectra',         icon:IC.camera,     label:'Spectra AI',                    sub:'Scanner & compter',        color:'#6366f1' },
@@ -5646,6 +5748,12 @@ function vMore() {
     { id:'pricing',         icon:IC.star,       label:t('pricing')||'Tarifs',          sub:t('myPlan')||'Mon plan',    color:'#eab308' },
     { id:'settings',        icon:IC.settings,   label:t('settings')||'Parametres',     sub:t('myAccount')||'Compte',   color:'#64748b' },
   ];
+
+  // Alerts / rappels
+  const alerts = [];
+  if (boutiquePending > 0) alerts.push({ icon:'🛒', color:'#4F46E5', text:`${boutiquePending} commande${boutiquePending>1?'s':''} boutique à traiter`, action:"nav('boutique')" });
+  if (scheduledPostsCount > 0) alerts.push({ icon:'📅', color:'#e1306c', text:`${scheduledPostsCount} publication${scheduledPostsCount>1?'s':''} programmée${scheduledPostsCount>1?'s':''}`, action:"nav('social-media')" });
+  if (pendingOrders > 0) alerts.push({ icon:'📦', color:'#059669', text:`${pendingOrders} commande${pendingOrders>1?'s':''} fournisseur en cours`, action:"nav('purchase-orders')" });
 
   return `
   <div class="page-header">
@@ -5655,6 +5763,15 @@ function vMore() {
     </div>
   </div>
   <div class="container">
+    ${alerts.length > 0 ? `
+    <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px">
+      ${alerts.map(a => `
+      <div onclick="${a.action}" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:${a.color}10;border-left:3px solid ${a.color};border-radius:10px;cursor:pointer">
+        <div style="font-size:18px">${a.icon}</div>
+        <div style="flex:1;font-size:13px;font-weight:600;color:${a.color}">${a.text}</div>
+        <div style="color:${a.color}">${IC.chevron}</div>
+      </div>`).join('')}
+    </div>` : ''}
     <div class="more-grid">
       ${items.map((it,i) => `
       <div class="more-item anim" onclick="nav('${it.id}')" style="animation-delay:${i*30}ms">
@@ -5779,6 +5896,34 @@ function vBoutique() {
           <div class="btc-sub">${bc.customDomain || bc.domain ? (bc.customDomain||bc.domain+'.stockr.shop') : 'Configurer URL'}</div>
         </div>
       </button>
+      <button class="boutique-tool-card" onclick="nav('boutique-seo')">
+        <div class="btc-ico" style="background:#10B98110;color:#10B981">🔍</div>
+        <div class="btc-txt">
+          <div class="btc-title">SEO & Annonces</div>
+          <div class="btc-sub">${bc.seoTitle ? '✓ Configuré' : 'Titre, description, bannière'}</div>
+        </div>
+      </button>
+      <button class="boutique-tool-card" onclick="nav('boutique-hours')">
+        <div class="btc-ico" style="background:#F59E0B10;color:#F59E0B">🕒</div>
+        <div class="btc-txt">
+          <div class="btc-title">Horaires & Livraison</div>
+          <div class="btc-sub">${(bc.businessHours||[]).filter(h=>!h.closed).length}j/7 · ${bc.deliveryTime||'24-48h'}</div>
+        </div>
+      </button>
+      <button class="boutique-tool-card" onclick="nav('boutique-policies')">
+        <div class="btc-ico" style="background:#64748B10;color:#64748B">📋</div>
+        <div class="btc-txt">
+          <div class="btc-title">CGV & Retours</div>
+          <div class="btc-sub">${bc.conditions ? '✓ Rédigé' : 'Conditions de vente'}</div>
+        </div>
+      </button>
+      <button class="boutique-tool-card" onclick="nav('boutique-faq')">
+        <div class="btc-ico" style="background:#A855F710;color:#A855F7">❓</div>
+        <div class="btc-txt">
+          <div class="btc-title">FAQ & Témoignages</div>
+          <div class="btc-sub">${(bc.faqs||[]).length} FAQ · ${(bc.testimonials||[]).length} avis</div>
+        </div>
+      </button>
       <button class="boutique-tool-card" onclick="nav('boutique-pixels')">
         <div class="btc-ico" style="background:#DC262610;color:#DC2626">📊</div>
         <div class="btc-txt">
@@ -5794,6 +5939,12 @@ function vBoutique() {
         </div>
       </button>
     </div>
+
+    ${bc.announcementActive && bc.announcement ? `
+    <div class="card" style="background:linear-gradient(135deg,#4F46E5,#7C3AED);color:#fff;margin-bottom:10px;border:none">
+      <div style="font-size:11px;opacity:.8;margin-bottom:4px">📣 ANNONCE ACTIVE</div>
+      <div style="font-size:14px;font-weight:600">${bc.announcement}</div>
+    </div>` : ''}
 
     <div class="card" style="margin-bottom:10px;border:2px dashed var(--accent)">
       <div class="card-title">${IC.globe} Génération du site</div>
@@ -6568,6 +6719,366 @@ function copyCustomCode(tab) {
   if (!val) { showToast('Rien à copier', 'error'); return; }
   navigator.clipboard.writeText(val);
   showToast('Code copié ✓');
+}
+
+// ── Boutique SEO & Annonces ─────────────────
+function vBoutiqueSEO() {
+  const bc = S.boutiqueConfig;
+  return `
+  <div class="sub-hero">
+    <div class="page-header-row">
+      <button class="back-btn-dark" onclick="nav('boutique')">${IC.left}</button>
+      <div style="flex:1">
+        <div class="sub-hero-title">🔍 SEO & Annonces</div>
+        <div class="sub-hero-sub">Référencement Google · bannière promo</div>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">📣 Annonce en haut du site</div>
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:10px">Affichée sur toutes les pages (ex. "Livraison gratuite dès 10 000 ${sym()} !")</div>
+      <div class="form-group">
+        <label class="form-label">Texte de l'annonce</label>
+        <input class="input" value="${(bc.announcement||'').replace(/"/g,'&quot;')}" oninput="updateBoutiqueConfig('announcement',this.value)" placeholder="Ex: 🎁 -10% sur tout jusqu'à dimanche !">
+      </div>
+      <label style="display:flex;align-items:center;gap:8px;margin-top:10px;cursor:pointer">
+        <input type="checkbox" ${bc.announcementActive?'checked':''} onchange="updateBoutiqueConfig('announcementActive',this.checked);render()">
+        <span style="font-size:13px">Activer l'annonce</span>
+      </label>
+      ${bc.announcementActive && bc.announcement ? `
+      <div style="margin-top:10px;padding:10px;background:linear-gradient(135deg,#4F46E5,#7C3AED);color:#fff;border-radius:8px;font-size:13px;font-weight:600;text-align:center">${bc.announcement}</div>` : ''}
+    </div>
+
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">🔍 Référencement Google (SEO)</div>
+      <div class="form-group">
+        <label class="form-label">Titre SEO (55-60 car.)</label>
+        <input class="input" value="${(bc.seoTitle||'').replace(/"/g,'&quot;')}" oninput="updateBoutiqueConfig('seoTitle',this.value)" placeholder="Ex: ${bc.name||'Ma Boutique'} — Livraison Abidjan">
+        <div style="font-size:10px;color:${(bc.seoTitle||'').length>60?'var(--danger)':'var(--text-3)'};margin-top:2px">${(bc.seoTitle||'').length}/60</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description SEO (150-160 car.)</label>
+        <textarea class="input" rows="3" oninput="updateBoutiqueConfig('seoDescription',this.value)" placeholder="Décrivez ce que vend votre boutique...">${bc.seoDescription||''}</textarea>
+        <div style="font-size:10px;color:${(bc.seoDescription||'').length>160?'var(--danger)':'var(--text-3)'};margin-top:2px">${(bc.seoDescription||'').length}/160</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Mots-clés (virgules)</label>
+        <input class="input" value="${(bc.seoKeywords||'').replace(/"/g,'&quot;')}" oninput="updateBoutiqueConfig('seoKeywords',this.value)" placeholder="boutique abidjan, livraison côte ivoire...">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Image de partage (URL)</label>
+        <input class="input" value="${(bc.ogImage||'').replace(/"/g,'&quot;')}" oninput="updateBoutiqueConfig('ogImage',this.value)" placeholder="https://... (1200x630px recommandé)">
+        <div style="font-size:10px;color:var(--text-3);margin-top:2px">Affichée lors du partage WhatsApp/Facebook</div>
+      </div>
+
+      <div style="margin-top:14px;padding:12px;background:var(--gray-1);border-radius:8px">
+        <div style="font-size:10px;color:var(--text-3);margin-bottom:6px">APERÇU GOOGLE</div>
+        <div style="color:#1a0dab;font-size:16px;font-weight:400">${bc.seoTitle || bc.name || 'Ma Boutique'}</div>
+        <div style="color:#006621;font-size:12px">${bc.publicUrl || (bc.domain||'maboutique')+'.stockr.shop'}</div>
+        <div style="color:#4d5156;font-size:12px;line-height:1.4;margin-top:2px">${bc.seoDescription || bc.description || 'Description de votre boutique...'}</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:14px">
+      <div class="card-title">🔗 Réseaux sociaux publics</div>
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:10px">Liens affichés en bas de votre boutique</div>
+      ${[
+        {k:'whatsapp',  icon:'💬', label:'WhatsApp',  ph:'+225 07 XX XX XX XX'},
+        {k:'facebook',  icon:'📘', label:'Facebook',  ph:'facebook.com/...'},
+        {k:'instagram', icon:'📷', label:'Instagram', ph:'instagram.com/...'},
+        {k:'tiktok',    icon:'🎵', label:'TikTok',    ph:'tiktok.com/@...'},
+        {k:'youtube',   icon:'▶️',  label:'YouTube',   ph:'youtube.com/...'},
+      ].map(s => `
+      <div class="form-group" style="margin-bottom:8px">
+        <label class="form-label">${s.icon} ${s.label}</label>
+        <input class="input" value="${(bc.socials?.[s.k]||'').replace(/"/g,'&quot;')}" oninput="updateBoutiqueSocial('${s.k}',this.value)" placeholder="${s.ph}">
+      </div>`).join('')}
+    </div>
+
+    <button class="btn btn-primary" style="width:100%" onclick="showToast('✓ SEO enregistré');nav('boutique')">💾 Enregistrer et retour</button>
+  </div>`;
+}
+
+function updateBoutiqueSocial(key, val) {
+  S.boutiqueConfig.socials = S.boutiqueConfig.socials || {};
+  S.boutiqueConfig.socials[key] = val;
+  localStorage.setItem('stockr_boutique', JSON.stringify(S.boutiqueConfig));
+}
+
+// ── Boutique Horaires & Livraison ─────────────
+function vBoutiqueHours() {
+  const bc = S.boutiqueConfig;
+  const hours = bc.businessHours || [];
+  const now = new Date();
+  const today = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'][now.getDay()];
+  const todaySlot = hours.find(h => h.day === today);
+  const isOpen = todaySlot && !todaySlot.closed && todaySlot.open && todaySlot.close &&
+    now.toTimeString().slice(0,5) >= todaySlot.open && now.toTimeString().slice(0,5) <= todaySlot.close;
+  return `
+  <div class="sub-hero">
+    <div class="page-header-row">
+      <button class="back-btn-dark" onclick="nav('boutique')">${IC.left}</button>
+      <div style="flex:1">
+        <div class="sub-hero-title">🕒 Horaires & Livraison</div>
+        <div class="sub-hero-sub">${isOpen?'🟢 Ouvert actuellement':'🔴 Fermé'}</div>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">🕒 Horaires d'ouverture</div>
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:10px">Laissez vide pour "fermé" — affichés sur votre boutique</div>
+      ${hours.map((h,i) => `
+      <div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)">
+        <div style="width:80px;font-weight:600;font-size:13px">${h.day}</div>
+        ${h.closed ? `
+          <div style="flex:1;color:var(--text-3);font-size:12px;font-style:italic">Fermé</div>
+          <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" onclick="toggleHourClosed(${i})">Ouvrir</button>
+        ` : `
+          <input type="time" class="input" value="${h.open||''}" oninput="updateHour(${i},'open',this.value)" style="width:90px;padding:6px 8px">
+          <span style="color:var(--text-3)">→</span>
+          <input type="time" class="input" value="${h.close||''}" oninput="updateHour(${i},'close',this.value)" style="width:90px;padding:6px 8px">
+          <button class="btn btn-ghost" style="font-size:11px;padding:4px 8px;color:var(--danger)" onclick="toggleHourClosed(${i})">✕</button>
+        `}
+      </div>`).join('')}
+    </div>
+
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">🚚 Livraison</div>
+      <div class="form-group">
+        <label class="form-label">Délai de livraison</label>
+        <input class="input" value="${(bc.deliveryTime||'').replace(/"/g,'&quot;')}" oninput="updateBoutiqueConfig('deliveryTime',this.value)" placeholder="Ex: 24-48h, 2-3 jours">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Livraison gratuite à partir de (${sym()})</label>
+        <input class="input" type="number" value="${bc.freeDeliveryFrom||0}" oninput="updateBoutiqueConfig('freeDeliveryFrom',parseFloat(this.value)||0)" placeholder="0 = désactivé">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Informations complémentaires</label>
+        <textarea class="input" rows="3" oninput="updateBoutiqueConfig('deliveryInfo',this.value)" placeholder="Ex: Livraison le lendemain avant 18h pour toute commande avant 14h...">${bc.deliveryInfo||''}</textarea>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" style="width:100%" onclick="showToast('✓ Horaires enregistrés');nav('boutique')">💾 Enregistrer et retour</button>
+  </div>`;
+}
+
+function updateHour(i, key, val) {
+  S.boutiqueConfig.businessHours[i][key] = val;
+  localStorage.setItem('stockr_boutique', JSON.stringify(S.boutiqueConfig));
+}
+function toggleHourClosed(i) {
+  const h = S.boutiqueConfig.businessHours[i];
+  h.closed = !h.closed;
+  if (!h.closed) { h.open = h.open || '09:00'; h.close = h.close || '18:00'; }
+  localStorage.setItem('stockr_boutique', JSON.stringify(S.boutiqueConfig));
+  render();
+}
+
+// ── Boutique CGV & Retours ──────────────────
+function vBoutiquePolicies() {
+  const bc = S.boutiqueConfig;
+  return `
+  <div class="sub-hero">
+    <div class="page-header-row">
+      <button class="back-btn-dark" onclick="nav('boutique')">${IC.left}</button>
+      <div style="flex:1">
+        <div class="sub-hero-title">📋 CGV & Retours</div>
+        <div class="sub-hero-sub">Conditions générales · politique de retour</div>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="card" style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div class="card-title" style="margin-bottom:0">📜 Conditions générales de vente</div>
+        <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" onclick="loadCgvTemplate()">📋 Modèle</button>
+      </div>
+      <textarea class="input" rows="10" oninput="updateBoutiqueConfig('conditions',this.value)" placeholder="Rédigez vos CGV — ou chargez un modèle...">${bc.conditions||''}</textarea>
+      <div style="font-size:10px;color:var(--text-3);margin-top:4px">${(bc.conditions||'').length} caractères</div>
+    </div>
+
+    <div class="card" style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div class="card-title" style="margin-bottom:0">🔄 Politique de retour / remboursement</div>
+        <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" onclick="loadReturnTemplate()">📋 Modèle</button>
+      </div>
+      <textarea class="input" rows="6" oninput="updateBoutiqueConfig('returnPolicy',this.value)" placeholder="Ex: Vous disposez de 7 jours pour retourner un produit...">${bc.returnPolicy||''}</textarea>
+    </div>
+
+    <button class="btn btn-primary" style="width:100%" onclick="showToast('✓ Politiques enregistrées');nav('boutique')">💾 Enregistrer et retour</button>
+  </div>`;
+}
+
+function loadCgvTemplate() {
+  const biz = S.boutiqueConfig.name || S.session?.business || 'Ma Boutique';
+  const tpl = `CONDITIONS GÉNÉRALES DE VENTE — ${biz}
+
+1. OBJET
+Les présentes CGV régissent les relations entre ${biz} et ses clients pour toute commande passée via notre boutique en ligne.
+
+2. COMMANDES
+Toute commande passée implique l'acceptation pleine et entière des présentes CGV. Les commandes sont validées dès réception du paiement.
+
+3. PRIX
+Les prix sont indiqués en ${S.session?.currency_symbol||'FCFA'} TTC. ${biz} se réserve le droit de modifier ses tarifs à tout moment.
+
+4. PAIEMENT
+Le paiement s'effectue via les moyens indiqués (Wave, Orange Money, Espèces, etc.).
+
+5. LIVRAISON
+Les délais de livraison sont indicatifs. ${biz} s'engage à livrer dans les meilleurs délais selon la zone.
+
+6. RÉCLAMATIONS
+Toute réclamation doit être faite par WhatsApp ou email dans les 48h suivant la réception.
+
+7. DONNÉES PERSONNELLES
+Vos données sont utilisées uniquement pour traiter votre commande et ne sont jamais partagées.
+
+8. LITIGES
+En cas de litige, une solution amiable sera recherchée avant toute action judiciaire. Droit applicable : République de Côte d'Ivoire.`;
+  S.boutiqueConfig.conditions = tpl;
+  localStorage.setItem('stockr_boutique', JSON.stringify(S.boutiqueConfig));
+  showToast('Modèle CGV chargé');
+  render();
+}
+function loadReturnTemplate() {
+  const tpl = `POLITIQUE DE RETOUR ET REMBOURSEMENT
+
+• Vous disposez de 7 jours après réception pour signaler un problème.
+• Les articles doivent être retournés dans leur état d'origine, non utilisés.
+• Les frais de retour sont à la charge du client sauf erreur de notre part.
+• Le remboursement est effectué sous 48-72h après réception et vérification du colis.
+• Articles non retournables : produits personnalisés, articles périssables, produits d'hygiène ouverts.
+• Contact : WhatsApp ou email pour initier un retour.`;
+  S.boutiqueConfig.returnPolicy = tpl;
+  localStorage.setItem('stockr_boutique', JSON.stringify(S.boutiqueConfig));
+  showToast('Modèle de retour chargé');
+  render();
+}
+
+// ── Boutique FAQ & Témoignages ──────────────
+function vBoutiqueFAQ() {
+  const bc = S.boutiqueConfig;
+  const faqs = bc.faqs || [];
+  const testimonials = bc.testimonials || [];
+  return `
+  <div class="sub-hero">
+    <div class="page-header-row">
+      <button class="back-btn-dark" onclick="nav('boutique')">${IC.left}</button>
+      <div style="flex:1">
+        <div class="sub-hero-title">❓ FAQ & Témoignages</div>
+        <div class="sub-hero-sub">${faqs.length} FAQ · ${testimonials.length} avis</div>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="section-hd">
+      <span class="section-lbl">FAQ (${faqs.length})</span>
+      <button class="fab" style="width:32px;height:32px" onclick="addBoutiqueFAQ()">${IC.plus}</button>
+    </div>
+    ${faqs.length === 0 ? `
+    <div class="card" style="text-align:center;padding:20px">
+      <div style="color:var(--text-3);font-size:13px;margin-bottom:10px">Aucune FAQ encore</div>
+      <button class="btn btn-ghost" style="font-size:12px" onclick="addBoutiqueFAQ()">+ Ajouter une question</button>
+      <button class="btn btn-ghost" style="font-size:12px;margin-left:6px" onclick="loadFAQPreset()">📋 Pack FAQ pré-rempli</button>
+    </div>` : faqs.map((f,i) => `
+    <div class="card" style="margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+        <div style="flex:1">
+          <div style="font-weight:600;font-size:14px;color:var(--accent);margin-bottom:6px">❓ ${f.q}</div>
+          <div style="font-size:13px;color:var(--text-2);line-height:1.5">${f.a}</div>
+        </div>
+        <button class="btn btn-ghost" style="font-size:12px;padding:4px 10px" onclick="editBoutiqueFAQ(${i})">${IC.edit||'✎'}</button>
+        <button class="btn btn-ghost" style="font-size:12px;padding:4px 8px;color:var(--danger)" onclick="deleteBoutiqueFAQ(${i})">${IC.trash||'🗑'}</button>
+      </div>
+    </div>`).join('')}
+
+    <div class="section-hd" style="margin-top:14px">
+      <span class="section-lbl">⭐ Témoignages clients (${testimonials.length})</span>
+      <button class="fab" style="width:32px;height:32px" onclick="addBoutiqueTestimonial()">${IC.plus}</button>
+    </div>
+    ${testimonials.length === 0 ? `
+    <div class="card" style="text-align:center;padding:20px">
+      <div style="color:var(--text-3);font-size:13px;margin-bottom:10px">Aucun témoignage</div>
+      <button class="btn btn-ghost" style="font-size:12px" onclick="addBoutiqueTestimonial()">+ Ajouter un avis</button>
+    </div>` : testimonials.map((tt,i) => `
+    <div class="card" style="margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+        <div style="flex:1">
+          <div style="color:#F59E0B;font-size:14px;margin-bottom:4px">${'★'.repeat(tt.stars||5)}${'☆'.repeat(5-(tt.stars||5))}</div>
+          <div style="font-size:13px;color:var(--text-2);font-style:italic;margin-bottom:6px">"${tt.text}"</div>
+          <div style="font-size:12px;color:var(--text-3);font-weight:600">— ${tt.author||'Client'}${tt.location?' · '+tt.location:''}</div>
+        </div>
+        <button class="btn btn-ghost" style="font-size:12px;padding:4px 8px;color:var(--danger)" onclick="deleteBoutiqueTestimonial(${i})">${IC.trash||'🗑'}</button>
+      </div>
+    </div>`).join('')}
+
+    <button class="btn btn-primary" style="width:100%;margin-top:14px" onclick="nav('boutique')">← Retour boutique</button>
+  </div>`;
+}
+
+function addBoutiqueFAQ() {
+  const q = prompt('Question :');
+  if (!q) return;
+  const a = prompt('Réponse :');
+  if (!a) return;
+  S.boutiqueConfig.faqs = S.boutiqueConfig.faqs || [];
+  S.boutiqueConfig.faqs.push({ q, a });
+  localStorage.setItem('stockr_boutique', JSON.stringify(S.boutiqueConfig));
+  showToast('FAQ ajoutée ✓');
+  render();
+}
+function editBoutiqueFAQ(i) {
+  const f = S.boutiqueConfig.faqs[i];
+  const q = prompt('Question :', f.q);
+  if (!q) return;
+  const a = prompt('Réponse :', f.a);
+  if (!a) return;
+  S.boutiqueConfig.faqs[i] = { q, a };
+  localStorage.setItem('stockr_boutique', JSON.stringify(S.boutiqueConfig));
+  showToast('FAQ modifiée ✓');
+  render();
+}
+function deleteBoutiqueFAQ(i) {
+  if (!confirm('Supprimer cette FAQ ?')) return;
+  S.boutiqueConfig.faqs.splice(i, 1);
+  localStorage.setItem('stockr_boutique', JSON.stringify(S.boutiqueConfig));
+  showToast('FAQ supprimée');
+  render();
+}
+function loadFAQPreset() {
+  S.boutiqueConfig.faqs = [
+    { q:'Comment passer commande ?', a:'Sélectionnez vos produits puis cliquez sur "Commander" — vous êtes redirigé vers WhatsApp pour finaliser.' },
+    { q:'Quels sont les délais de livraison ?', a:`La livraison se fait en ${S.boutiqueConfig.deliveryTime||'24-48h'} selon votre zone.` },
+    { q:'Quels moyens de paiement acceptez-vous ?', a:'Wave, Orange Money, MTN MoMo, Moov Money, espèces à la livraison.' },
+    { q:'Puis-je retourner un produit ?', a:'Oui, vous disposez de 7 jours après réception pour retourner un produit non utilisé.' },
+    { q:'Livrez-vous en dehors d\'Abidjan ?', a:`Oui, nous livrons dans ${(S.boutiqueConfig.deliveryZones||[]).length||'plusieurs'} zones. Contactez-nous pour confirmer.` },
+  ];
+  localStorage.setItem('stockr_boutique', JSON.stringify(S.boutiqueConfig));
+  showToast('Pack FAQ chargé ✓');
+  render();
+}
+
+function addBoutiqueTestimonial() {
+  const text = prompt('Témoignage du client :');
+  if (!text) return;
+  const author = prompt('Nom du client :') || 'Client satisfait';
+  const stars = parseInt(prompt('Note (1-5) :', '5') || '5', 10);
+  const location = prompt('Ville (optionnel) :') || '';
+  S.boutiqueConfig.testimonials = S.boutiqueConfig.testimonials || [];
+  S.boutiqueConfig.testimonials.push({ text, author, stars: Math.max(1, Math.min(5, stars)), location, date: new Date().toISOString() });
+  localStorage.setItem('stockr_boutique', JSON.stringify(S.boutiqueConfig));
+  showToast('Témoignage ajouté ✓');
+  render();
+}
+function deleteBoutiqueTestimonial(i) {
+  if (!confirm('Supprimer ce témoignage ?')) return;
+  S.boutiqueConfig.testimonials.splice(i, 1);
+  localStorage.setItem('stockr_boutique', JSON.stringify(S.boutiqueConfig));
+  showToast('Témoignage supprimé');
+  render();
 }
 
 function previewBoutiqueSite() {
@@ -8309,6 +8820,26 @@ function sendLoyaltyCampaign() {
   }
   showToast(`Relance envoyee a ${first.name} (ouvrez WhatsApp pour les autres)`);
 }
+function exportStockCSV() {
+  const rows = [['Article','Stock','Unite','Seuil','Prix_achat','Prix_vente','Valeur_stock','Expiration','Emplacement']];
+  S.articles.forEach(a => {
+    const loc = S.locations.find(l => l.id === a.locationId);
+    rows.push([
+      a.name||'', a.stock||0, a.unit||'', a.min||0,
+      a.purchasePrice||0, a.price||0, (a.stock||0)*(a.price||0),
+      a.expiry||'', loc?.name||''
+    ]);
+  });
+  const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob(['\uFEFF'+csv], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `stockr_stock_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('📊 Stock exporté en CSV');
+}
 function exportLoyaltyReport() {
   const rows = [['Client','Telephone','Points','Depense_cumulee','Palier','Echanges']];
   S.clients.forEach(c => {
@@ -9817,6 +10348,7 @@ document.addEventListener('DOMContentLoaded', () => {
   window.deleteLoyaltyTier       = deleteLoyaltyTier;
   window.sendLoyaltyCampaign     = sendLoyaltyCampaign;
   window.exportLoyaltyReport     = exportLoyaltyReport;
+  window.exportStockCSV          = exportStockCSV;
   window._getClientTier          = _getClientTier;
   window._renderTierBadge        = _renderTierBadge;
   window.toggleSocialAccount     = toggleSocialAccount;
@@ -9838,6 +10370,18 @@ document.addEventListener('DOMContentLoaded', () => {
   window.generateOrangePayment   = generateOrangePayment;
   window.requestPaymentWhatsApp  = requestPaymentWhatsApp;
   window.importProductsFromCSV   = importProductsFromCSV;
+  // Boutique extras
+  window.updateBoutiqueSocial    = updateBoutiqueSocial;
+  window.updateHour              = updateHour;
+  window.toggleHourClosed        = toggleHourClosed;
+  window.loadCgvTemplate         = loadCgvTemplate;
+  window.loadReturnTemplate      = loadReturnTemplate;
+  window.addBoutiqueFAQ          = addBoutiqueFAQ;
+  window.editBoutiqueFAQ         = editBoutiqueFAQ;
+  window.deleteBoutiqueFAQ       = deleteBoutiqueFAQ;
+  window.loadFAQPreset           = loadFAQPreset;
+  window.addBoutiqueTestimonial  = addBoutiqueTestimonial;
+  window.deleteBoutiqueTestimonial = deleteBoutiqueTestimonial;
 
   // Restaurer la session + token si existants
   const saved = getSession();
@@ -9846,7 +10390,66 @@ document.addEventListener('DOMContentLoaded', () => {
     S.session = { id: saved.id, name: saved.name, email: saved.email, business: saved.business, currency: saved.currency, currency_symbol: saved.currency_symbol, tax_rate: saved.tax_rate };
     render(); // Affiche l'app immédiatement
     loadData(); // Charge les données en arrière-plan
+    // Auto-reminder 6s après l'ouverture
+    setTimeout(runBootReminders, 6000);
+    // Vérifie périodiquement les posts programmés échus (toutes les 5 minutes)
+    setInterval(checkDueScheduledPosts, 5 * 60 * 1000);
   } else {
     render(); // Affiche l'écran auth
   }
 });
+
+// ── Boot reminders & auto-scheduler ─────────────
+function checkDueScheduledPosts() {
+  try {
+    const now = Date.now();
+    const due = (S.scheduledPosts || []).filter(p => {
+      if (p.status !== 'scheduled') return false;
+      const ts = new Date(p.scheduleDate || p.date).getTime();
+      return ts && ts <= now;
+    });
+    if (!due.length) return;
+    due.forEach(p => { p.status = 'due'; p.dueSince = p.dueSince || now; });
+    localStorage.setItem('stockr_posts', JSON.stringify(S.scheduledPosts));
+    showToast(`🔔 ${due.length} publication${due.length>1?'s':''} programmée${due.length>1?'s':''} à publier`, 'info');
+  } catch(e) {}
+}
+
+function runBootReminders() {
+  try {
+    const reminders = [];
+    // 1) Posts programmés échus
+    checkDueScheduledPosts();
+    const duePosts = (S.scheduledPosts||[]).filter(p => p.status === 'due' || (p.status==='scheduled' && new Date(p.scheduleDate||p.date).getTime() <= Date.now()));
+    if (duePosts.length) reminders.push({ icon:'📅', text:`${duePosts.length} post${duePosts.length>1?'s':''} à publier`, action:()=>nav('social') });
+    // 2) Stock critique
+    const lowStock = (S.articles||[]).filter(a => (a.quantity||0) <= (a.alertThreshold || 5) && (a.quantity||0) > 0);
+    const outStock = (S.articles||[]).filter(a => (a.quantity||0) === 0);
+    if (outStock.length) reminders.push({ icon:'🚨', text:`${outStock.length} article${outStock.length>1?'s':''} en rupture`, action:()=>nav('pantry') });
+    else if (lowStock.length) reminders.push({ icon:'⚠️', text:`${lowStock.length} article${lowStock.length>1?'s':''} en stock bas`, action:()=>nav('pantry') });
+    // 3) Commandes boutique en attente
+    const pendingOrders = (S.boutiqueOrders||[]).filter(o => o.status === 'pending' || !o.status);
+    if (pendingOrders.length) reminders.push({ icon:'🛒', text:`${pendingOrders.length} commande${pendingOrders.length>1?'s':''} en attente`, action:()=>nav('boutique-orders') });
+    // 4) Campagnes programmées échues
+    const dueCampaigns = (S.campaigns||[]).filter(c => c.status === 'scheduled' && new Date(c.scheduleDate||c.date).getTime() <= Date.now());
+    if (dueCampaigns.length) reminders.push({ icon:'📣', text:`${dueCampaigns.length} campagne${dueCampaigns.length>1?'s':''} prête${dueCampaigns.length>1?'s':''}`, action:()=>nav('marketing') });
+    // 5) Clients VIP inactifs depuis 30j
+    if (S.loyaltyConfig?.enabled && S.clients?.length) {
+      const cutoff = Date.now() - 30*86400000;
+      const inactiveVip = S.clients.filter(c => {
+        const lastSale = Math.max(...S.sales.filter(s => s.clientId === c.id).map(s => new Date(s.date).getTime()).concat([0]));
+        if (!lastSale || lastSale > cutoff) return false;
+        const t = _getClientTier(c);
+        return t && (t.id === 'gold' || t.id === 'platinum');
+      });
+      if (inactiveVip.length) reminders.push({ icon:'💎', text:`${inactiveVip.length} client${inactiveVip.length>1?'s':''} VIP inactif${inactiveVip.length>1?'s':''}`, action:()=>nav('loyalty') });
+    }
+    // Affiche toast groupé
+    if (reminders.length) {
+      const main = reminders[0];
+      showToast(`${main.icon} ${main.text}${reminders.length>1?' · +'+(reminders.length-1):''}`, 'info');
+    }
+  } catch(e) { console.warn('runBootReminders', e); }
+}
+window.runBootReminders = runBootReminders;
+window.checkDueScheduledPosts = checkDueScheduledPosts;
