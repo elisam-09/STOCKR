@@ -2184,12 +2184,10 @@ function render() {
 
 function renderNav() {
   const tabs = [
-    { id:'home',      icon:IC.home,   label:t('home')     },
     { id:'pantry',    icon:IC.box,    label:t('stock')    },
     { id:'products',  icon:IC.tag,    label:t('products') },
+    { id:'home',      icon:IC.home,   label:t('home')     },
     { id:'sales',     icon:IC.dollar, label:t('sales')    },
-    { id:'clients',   icon:IC.users,  label:t('clients')  },
-    { id:'sova',      icon:IC.sova,   label:'SOVA'        },
     { id:'financial', icon:IC.bar,    label:t('bilan')    },
   ];
   return tabs.map(t => `
@@ -3262,8 +3260,8 @@ function vSova() {
     if (alertPreds.length === 0) return `
     <div class="sova-empty">
       <div style="font-size:40px">🌿</div>
-      <div class="sova-empty-title">Aucune alerte</div>
-      <div class="sova-empty-sub">Tout est bien approvisionné. SOVA veille.</div>
+      <div class="sova-empty-title">Pas encore de recommandations</div>
+      <div class="sova-empty-sub">Tout est bien approvisionné. SOVA veille sur ton stock.</div>
     </div>`;
 
     return alertPreds.map((p, i) => {
