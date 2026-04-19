@@ -2,7 +2,7 @@
 // Stratégie : Cache-first pour assets statiques,
 //             Network-first pour l'API
 
-const CACHE_NAME = 'stockr-v18';
+const CACHE_NAME = 'stockr-v21-spectra-precise';
 const STATIC_ASSETS = [
   '/',
   '/index.html',

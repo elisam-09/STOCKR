@@ -15,13 +15,15 @@
   --gray-1: #F4F4F4;
   --white:  #FFFFFF;
 
-  --bg:      #F2F2F2;
-  --surface: #FFFFFF;
-  --border:  #E0E0E0;
+  --bg:       #F2F2F2;
+  --surface:  #FFFFFF;
+  --card-bg:  #FFFFFF;
+  --border:   #E0E0E0;
 
-  --text:   #0A0A0A;
-  --text-2: #4A4A4A;
-  --text-3: #8A8A8A;
+  --text:    #0A0A0A;
+  --text-1:  #0A0A0A;
+  --text-2:  #4A4A4A;
+  --text-3:  #8A8A8A;
 
   --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 
@@ -56,6 +58,151 @@
   --shadow-md: 0 4px 12px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
   --shadow-lg: 0 8px 30px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04);
   --shadow-accent: 0 4px 14px rgba(79,70,229,0.25);
+}
+
+/* ═════════════════════════════════════════════
+   🌙 DARK MODE — Palette premium et lisible
+   ═════════════════════════════════════════════ */
+[data-theme="dark"] {
+  --bg:       #0F1115;      /* Fond principal : bleu nuit profond */
+  --surface:  #181B23;      /* Cartes et surfaces : un cran plus clair */
+  --card-bg:  #1E2230;      /* Cartes imbriquées : encore plus clair */
+  --border:   #2A2F3E;      /* Bordures subtiles */
+
+  --text:    #F1F3F8;       /* Texte principal : quasi-blanc chaud */
+  --text-1:  #F1F3F8;
+  --text-2:  #B8BECC;       /* Texte secondaire : gris clair lisible */
+  --text-3:  #7C8395;       /* Texte tertiaire : gris moyen */
+
+  --gray-1:  #1E2230;       /* Niveaux de gris inversés pour dark */
+  --gray-2:  #252A38;
+  --gray-3:  #2F3545;
+  --gray-4:  #4A5262;
+  --gray-5:  #6B7285;
+  --gray-6:  #8A91A5;
+  --gray-7:  #252A38;       /* Utilisé pour surfaces secondaires */
+  --gray-8:  #181B23;
+  --gray-9:  #0F1115;
+
+  /* Accents plus lumineux pour dark mode */
+  --accent:        #7C73FF;
+  --accent-light:  rgba(124,115,255,0.12);
+  --accent-muted:  #A8A2FF;
+  --accent-dark:   #5B52D9;
+
+  --success:       #10B981;
+  --success-light: rgba(16,185,129,0.12);
+  --success-muted: #34D399;
+
+  --warning:       #F59E0B;
+  --warning-light: rgba(245,158,11,0.12);
+  --warning-muted: #FBBF24;
+
+  --danger:        #EF4444;
+  --danger-light:  rgba(239,68,68,0.12);
+  --danger-muted:  #F87171;
+
+  /* Shadows plus prononcées en dark pour profondeur */
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.25);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.35), 0 1px 3px rgba(0,0,0,0.20);
+  --shadow-lg: 0 8px 30px rgba(0,0,0,0.45), 0 2px 8px rgba(0,0,0,0.25);
+  --shadow-accent: 0 4px 20px rgba(124,115,255,0.35);
+}
+
+/* ── Dark mode — overrides de surfaces ─────────── */
+[data-theme="dark"] body {
+  background: #05060A;
+}
+[data-theme="dark"] #app {
+  background: var(--bg);
+  box-shadow: 0 0 0 6px #0A0B0F, 0 0 0 10px #050608;
+}
+[data-theme="dark"] #nav {
+  background: rgba(24,27,35,0.92);
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+[data-theme="dark"] .card {
+  background: var(--surface);
+  border-color: var(--border);
+  color: var(--text-1);
+}
+[data-theme="dark"] .input,
+[data-theme="dark"] textarea.input,
+[data-theme="dark"] select.input,
+[data-theme="dark"] input[type="text"],
+[data-theme="dark"] input[type="email"],
+[data-theme="dark"] input[type="tel"],
+[data-theme="dark"] input[type="number"],
+[data-theme="dark"] input[type="password"],
+[data-theme="dark"] input[type="url"],
+[data-theme="dark"] input[type="date"],
+[data-theme="dark"] input[type="time"],
+[data-theme="dark"] input[type="search"],
+[data-theme="dark"] select,
+[data-theme="dark"] textarea {
+  background: var(--card-bg) !important;
+  border-color: var(--border) !important;
+  color: var(--text-1) !important;
+  caret-color: var(--accent);
+}
+[data-theme="dark"] .input:focus,
+[data-theme="dark"] textarea.input:focus,
+[data-theme="dark"] select.input:focus,
+[data-theme="dark"] input:focus,
+[data-theme="dark"] textarea:focus,
+[data-theme="dark"] select:focus {
+  background: var(--surface) !important;
+  color: var(--text-1) !important;
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 3px rgba(124,115,255,0.18) !important;
+}
+[data-theme="dark"] .input::placeholder,
+[data-theme="dark"] textarea::placeholder,
+[data-theme="dark"] input::placeholder { color: var(--text-3) !important; opacity: 0.7; }
+[data-theme="dark"] option { background: var(--surface) !important; color: var(--text-1) !important; }
+[data-theme="dark"] .chip,
+[data-theme="dark"] .filter-chip { background: var(--card-bg); border-color: var(--border); color: var(--text-2); }
+[data-theme="dark"] .chip.active,
+[data-theme="dark"] .filter-chip.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+[data-theme="dark"] .btn-ghost { background: var(--card-bg); border-color: var(--border); color: var(--text-1); }
+[data-theme="dark"] .btn-ghost:hover { background: var(--gray-2); }
+[data-theme="dark"] .sub-hero { background: linear-gradient(135deg, #1A1E2A 0%, #11141C 100%); }
+[data-theme="dark"] .page-header { background: var(--bg); }
+[data-theme="dark"] .back-btn { background: var(--card-bg); color: var(--text-1); border: 1px solid var(--border); }
+[data-theme="dark"] .fab-outline { background: var(--card-bg); border-color: var(--border); color: var(--text-1); }
+[data-theme="dark"] .status { background: var(--gray-2); }
+[data-theme="dark"] .progress { background: var(--gray-2); }
+[data-theme="dark"] .toggle-btn { background: var(--card-bg); color: var(--text-2); }
+[data-theme="dark"] .toggle-btn.t-active { background: var(--accent); color: #fff; }
+[data-theme="dark"] .search-wrap .input-search { background: var(--card-bg); border-color: var(--border); color: var(--text-1); }
+[data-theme="dark"] .info-row { border-color: var(--border); }
+[data-theme="dark"] .info-lbl { color: var(--text-3); }
+[data-theme="dark"] .info-val { color: var(--text-1); }
+[data-theme="dark"] .empty { color: var(--text-2); }
+[data-theme="dark"] .empty-title { color: var(--text-1); }
+[data-theme="dark"] .empty-text { color: var(--text-3); }
+[data-theme="dark"] .section-lbl { color: var(--text-2); }
+[data-theme="dark"] .form-label { color: var(--text-2); }
+[data-theme="dark"] .article-name,
+[data-theme="dark"] .sale-prod,
+[data-theme="dark"] .cart-item-name { color: var(--text-1); }
+[data-theme="dark"] .article-meta,
+[data-theme="dark"] .sale-date { color: var(--text-3); }
+[data-theme="dark"] hr { border-color: var(--border); }
+[data-theme="dark"] .alert-banner { background: var(--card-bg); border-color: var(--border); color: var(--text-1); }
+[data-theme="dark"] .modal-body,
+[data-theme="dark"] .modal-content { background: var(--surface); color: var(--text-1); border-color: var(--border); }
+[data-theme="dark"] .toast { background: var(--gray-2); color: var(--text-1); border: 1px solid var(--border); }
+[data-theme="dark"] .page-title,
+[data-theme="dark"] .card-title { color: var(--text-1); }
+[data-theme="dark"] .nav-tab { color: var(--text-3); }
+[data-theme="dark"] .nav-tab.active { color: var(--accent); }
+[data-theme="dark"] .qty-val { background: var(--card-bg); color: var(--text-1); }
+[data-theme="dark"] .qty-ctrl { background: var(--card-bg); color: var(--text-1); border-color: var(--border); }
+
+/* Transitions douces lors du switch de thème */
+body, #app, .card, .input, .btn, .chip, .filter-chip, #nav {
+  transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
 }
 
 /* ── Reset ─────────────────────────────────── */
@@ -178,7 +325,16 @@ body {
   50%      { opacity: 0.6; }
 }
 
-.anim { animation: fadeUp 0.3s cubic-bezier(0.2, 0, 0, 1) both; }
+/* ── Animations d'entrée : uniquement au changement de vue, pas à chaque re-render */
+.anim { animation: none; }
+body.view-entering .anim { animation: fadeUp 0.3s cubic-bezier(0.2, 0, 0, 1) both; }
+
+/* Respect user motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  body.view-entering .anim,
+  .anim { animation: none !important; }
+  * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}
 
 /* ── Hero ───────────────────────────────────── */
 .hero {
@@ -775,10 +931,10 @@ body.dark .pred-card.critical { background: rgba(220,38,38,0.1); }
 body.dark .pred-card.warning  { background: rgba(217,119,6,0.1); }
 body.dark .pred-card.ok       { background: rgba(5,150,105,0.1); }
 body.dark .btn-primary { box-shadow: 0 4px 14px rgba(79,70,229,0.35); }
-body.dark .input:focus { background: var(--surface); color: var(--text); }
-body.dark .input { background: var(--gray-1); color: var(--text); border-color: var(--border); }
-body.dark select.input { background: var(--gray-1); color: var(--text); }
-body.dark select.input option { background: var(--surface); color: var(--text); }
+body.dark .input:focus { background: var(--surface) !important; color: var(--text) !important; border-color: var(--accent) !important; }
+body.dark .input { background: var(--gray-1) !important; color: var(--text) !important; border-color: var(--border); caret-color: var(--accent); }
+body.dark select.input { background: var(--gray-1) !important; color: var(--text) !important; }
+body.dark select.input option { background: var(--surface) !important; color: var(--text) !important; }
 body.dark .card { background: var(--surface); }
 body.dark .metric-card { background: var(--surface); }
 body.dark .quick-btn { background: var(--surface); border-color: var(--border); }
@@ -796,6 +952,84 @@ body.dark .sale-total { color: var(--text); }
 body.dark .page-title { color: var(--text); }
 body.dark textarea.input { background: var(--gray-1); color: var(--text); }
 body.dark textarea.input:focus { background: var(--surface); color: var(--text); }
+
+/* ── Dark mode extensive fixes (BATCH 3) ── */
+body.dark input[type="text"],
+body.dark input[type="email"],
+body.dark input[type="tel"],
+body.dark input[type="number"],
+body.dark input[type="password"],
+body.dark input[type="url"],
+body.dark input[type="date"],
+body.dark input[type="time"],
+body.dark input[type="search"],
+body.dark select,
+body.dark textarea {
+  background: var(--gray-1);
+  color: var(--text);
+  border-color: var(--border);
+}
+body.dark input::placeholder, body.dark textarea::placeholder { color: var(--text-3); opacity: 0.7; }
+body.dark option { background: var(--surface); color: var(--text); }
+/* Info banners (cartes info bleu/jaune) restent claires mais texte sombre = OK */
+/* Loyalty stats card (rendu light auparavant sur var gradient) */
+body.dark .loyalty-stats-card { background: linear-gradient(135deg, rgba(79,70,229,0.15), var(--surface)); }
+.loyalty-stats-card { background: linear-gradient(135deg, #EEF2FF, #FFF); }
+
+/* Unit dropdown visibility */
+body.dark .unit-dropdown { background: var(--surface); border-color: var(--border); }
+body.dark .unit-opt { color: var(--text); }
+body.dark .unit-opt:hover { background: var(--gray-1); }
+
+/* Overlays de popups */
+body.dark #popup-overlay > div { background: var(--surface) !important; color: var(--text) !important; }
+
+/* Labels et textes génériques */
+body.dark label, body.dark .field-label { color: var(--text-2); }
+
+/* Buttons ghost en dark */
+body.dark .btn-ghost { background: var(--gray-1); color: var(--text); border-color: var(--border); }
+body.dark .btn-ghost:hover { background: var(--gray-2); }
+
+/* Chart.js legende */
+body.dark canvas { filter: brightness(0.95); }
+
+/* Modale panier, bundles, divers */
+body.dark .cart-sheet, body.dark .bundle-modal, body.dark .sheet, body.dark .modal-sheet {
+  background: var(--surface); color: var(--text);
+}
+body.dark .cart-sheet input, body.dark .cart-sheet select { background: var(--gray-1); color: var(--text); }
+
+/* Pastilles / badges info sur fonds light (on renforce le contraste) */
+body.dark [style*="background:#EFF6FF"],
+body.dark [style*="background: #EFF6FF"] { background: rgba(59,130,246,0.12) !important; color: #93C5FD !important; }
+body.dark [style*="background:#FEF3C7"],
+body.dark [style*="background: #FEF3C7"] { background: rgba(245,158,11,0.12) !important; color: #FCD34D !important; }
+body.dark [style*="background:#D1FAE5"],
+body.dark [style*="background: #D1FAE5"] { background: rgba(16,185,129,0.12) !important; color: #6EE7B7 !important; }
+body.dark [style*="background:#FEE2E2"],
+body.dark [style*="background: #FEE2E2"] { background: rgba(239,68,68,0.12) !important; color: #FCA5A5 !important; }
+body.dark [style*="background:#F3E8FF"],
+body.dark [style*="background: #F3E8FF"] { background: rgba(139,92,246,0.12) !important; color: #C4B5FD !important; }
+
+/* Tableaux & listes alternées */
+body.dark tr:nth-child(even) { background: var(--gray-1); }
+body.dark th { background: var(--surface); color: var(--text-2); border-bottom-color: var(--border); }
+body.dark td { border-bottom-color: var(--border); color: var(--text); }
+
+/* Empty states et hints */
+body.dark .empty, body.dark .empty-text { color: var(--text-2); }
+body.dark .empty-ico { filter: grayscale(0.2) brightness(0.9); }
+
+/* Code / monospace boxes */
+body.dark code, body.dark pre { background: var(--gray-1); color: #A5F3FC; }
+
+/* Sub-hero stats */
+body.dark .hero-stat-val { color: var(--text); }
+body.dark .hero-stat-lbl { color: var(--text-2); }
+
+/* Hover état sur cartes */
+body.dark .card:hover { border-color: var(--border); }
 
 /* ── Unit Combobox ── */
 .unit-combo {
@@ -2531,4 +2765,117 @@ body.dark textarea.input:focus { background: var(--surface); color: var(--text);
   font-weight: 700;
   font-size: 13px;
   margin-top: 2px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ANTI-BLINK — Animations d'entrée uniquement au changement de vue
+   (Corrige le "blink" à chaque clic sur un bouton)
+   ═══════════════════════════════════════════════════════════════ */
+body:not(.view-entering) .card,
+body:not(.view-entering) .sale-item,
+body:not(.view-entering) .article-card,
+body:not(.view-entering) .chart-card,
+body:not(.view-entering) .auth-card,
+body:not(.view-entering) .metric-card,
+body:not(.view-entering) .pred-card,
+body:not(.view-entering) .reco-card,
+body:not(.view-entering) [style*="fadeUp"],
+body:not(.view-entering) [style*="fadeInUp"] {
+  animation: none !important;
+}
+
+/* Accélère les animations d'entrée pour réduire la sensation de blink */
+body.view-entering .card:not(.anim) { animation: fadeUp 0.22s ease both; }
+
+/* ═══════════════════════════════════════════════════════════════
+   PROMO CODE INPUT — plus gros, plus lisible
+   ═══════════════════════════════════════════════════════════════ */
+.promo-code-input,
+input.promo-code,
+input[name="promoCode"],
+input[name="code"].promo,
+#promo-code-field,
+.promo-form .input[type="text"][placeholder*="CODE" i],
+.promo-form .input[type="text"][placeholder*="code" i] {
+  font-size: 20px !important;
+  font-weight: 800 !important;
+  letter-spacing: 3px !important;
+  padding: 16px 18px !important;
+  text-transform: uppercase;
+  text-align: center;
+  font-family: 'Inter', monospace;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HERO ACCENT — La couleur personnalisée doit être visible
+   sur le top header et la sub-hero, y compris en dark mode
+   ═══════════════════════════════════════════════════════════════ */
+.hero {
+  background: linear-gradient(140deg,
+    color-mix(in srgb, var(--accent) 85%, #0a0a2e) 0%,
+    color-mix(in srgb, var(--accent) 70%, #000) 40%,
+    var(--accent) 100%
+  );
+}
+[data-theme="dark"] .hero,
+body.dark .hero {
+  background: linear-gradient(140deg,
+    color-mix(in srgb, var(--accent) 25%, #050318) 0%,
+    color-mix(in srgb, var(--accent) 45%, #0f0e2a) 40%,
+    color-mix(in srgb, var(--accent) 75%, #1e1b4b) 100%
+  ) !important;
+}
+[data-theme="dark"] .sub-hero,
+body.dark .sub-hero {
+  background: linear-gradient(140deg,
+    color-mix(in srgb, var(--accent) 20%, #0f1115) 0%,
+    color-mix(in srgb, var(--accent) 40%, #181B23) 100%
+  ) !important;
+}
+/* Fallback pour anciens navigateurs sans color-mix */
+@supports not (background: color-mix(in srgb, red, blue)) {
+  .hero { background: linear-gradient(140deg, var(--accent-dark) 0%, var(--accent) 60%, var(--accent-muted) 100%); }
+  [data-theme="dark"] .hero, body.dark .hero { background: linear-gradient(140deg, #050318 0%, #0f0e2a 30%, var(--accent-dark) 60%, var(--accent) 100%) !important; }
+  [data-theme="dark"] .sub-hero, body.dark .sub-hero { background: linear-gradient(140deg, #0f1115 0%, var(--accent-dark) 100%) !important; }
+}
+
+/* Assure contraste texte blanc sur hero en dark mode */
+[data-theme="dark"] .hero,
+[data-theme="dark"] .hero *,
+body.dark .hero,
+body.dark .hero * { color: #fff; }
+[data-theme="dark"] .hero .hero-sub,
+[data-theme="dark"] .sub-hero,
+body.dark .hero .hero-sub { color: rgba(255,255,255,0.85); }
+
+/* ═══════════════════════════════════════════════════════════════
+   FIX FINAL : dark mode input contraste garanti (anti-white-on-white)
+   ═══════════════════════════════════════════════════════════════ */
+[data-theme="dark"] input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
+[data-theme="dark"] textarea,
+[data-theme="dark"] select,
+body.dark input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
+body.dark textarea,
+body.dark select {
+  color: #F1F3F8 !important;
+  -webkit-text-fill-color: #F1F3F8 !important;
+}
+[data-theme="dark"] input:focus:not([type="checkbox"]):not([type="radio"]),
+[data-theme="dark"] textarea:focus,
+[data-theme="dark"] select:focus,
+body.dark input:focus:not([type="checkbox"]):not([type="radio"]),
+body.dark textarea:focus,
+body.dark select:focus {
+  background: #232834 !important;
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+  border-color: var(--accent) !important;
+}
+
+/* Autofill fix Chrome en dark mode */
+[data-theme="dark"] input:-webkit-autofill,
+body.dark input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px var(--card-bg) inset !important;
+  -webkit-text-fill-color: #F1F3F8 !important;
+  caret-color: var(--accent);
 }

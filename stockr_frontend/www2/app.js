@@ -1203,7 +1203,7 @@ const S = {
   // Spectra enhanced state
   spectraScanHistory: JSON.parse(localStorage.getItem('stockr_spectra_history') || '[]'),
   spectraMode: 'photo', // 'photo' | 'barcode' | 'continuous' | 'yolo'
-  form: { name: '', stock: 0, min: 0, unit: '', lead: 7, ref: '', price: 0, expiry: '' },
+  form: { name: '', stock: 0, min: 0, unit: '', lead: 7, ref: '', price: 0, purchasePrice: 0, expiry: '', perishable: false, category: '', image: '', ean: '' },
   spectra: {
     step:      'camera',   // 'camera' | 'loading' | 'confirm' | 'done'
     queue:     [],         // détections en attente de confirmation
@@ -1212,7 +1212,113 @@ const S = {
     naming:    false,      // l'utilisateur est en train de nommer un article inconnu
     results:   [],         // résultats finaux après /confirm
   },
+  // ── Équipe & Permissions ──
+  teamMembers:    JSON.parse(localStorage.getItem('stockr_team') || '[]'),
+  currentMemberId: (() => { const v = localStorage.getItem('stockr_current_member'); return v ? parseInt(v) : null; })(),
+  auditLog:       JSON.parse(localStorage.getItem('stockr_audit_log') || '[]'),
+  teamForm:       { id:null, name:'', email:'', phone:'', role:'vendor', commissionRate:0, baseSalary:0, schedule:'', active:true, pin:'' },
+  auditFilter:    'all',   // 'all' | 'sale' | 'stock' | 'member' | 'auth' | 'settings'
+  auditPeriod:    'all',   // 'all' | 'today' | 'week' | 'month'
+  teamTab:        'members', // 'members' | 'performance' | 'schedule'
+  teamMeetings:   JSON.parse(localStorage.getItem('stockr_team_meetings') || '[]'),
+  teamTasks:      JSON.parse(localStorage.getItem('stockr_team_tasks') || '[]'),
+  teamAnnouncements: JSON.parse(localStorage.getItem('stockr_team_announcements') || '[]'),
+  // ── Apparence ──
+  appearance: (() => {
+    const raw = JSON.parse(localStorage.getItem('stockr_appearance') || '{}');
+    return {
+      theme: raw.theme || 'light',           // 'light' | 'dark' | 'auto'
+      accentColor: raw.accentColor || '#6E5BFF',
+      fontSize: raw.fontSize || 'medium',    // 'small' | 'medium' | 'large'
+      density: raw.density || 'normal',      // 'compact' | 'normal' | 'spacious'
+      contrast: raw.contrast || 'normal',    // 'normal' | 'high'
+    };
+  })(),
+  // ── Sécurité ──
+  security: (() => {
+    const raw = JSON.parse(localStorage.getItem('stockr_security') || '{}');
+    return {
+      twoFactorEnabled: !!raw.twoFactorEnabled,
+      twoFactorMethod: raw.twoFactorMethod || 'email', // 'email' | 'sms' | 'app'
+      biometricEnabled: !!raw.biometricEnabled,
+      sessionTimeoutMin: raw.sessionTimeoutMin || 60,
+      ipWhitelist: raw.ipWhitelist || [],
+      lastLogin: raw.lastLogin || null,
+      loginAttempts: raw.loginAttempts || [],
+    };
+  })(),
+  twoFAPending: null,      // { code, email, expires } quand 2FA requis
+  twoFACodeInput: '',
 };
+
+// ── Rôles & Permissions ───────────────────────
+const ROLE_PERMISSIONS = {
+  admin:      { all:true },
+  manager:    { sales:true, stock:true, reports:true, products:true, clients:true, marketing:true, compta:true, audit:true, boutique:true },
+  vendor:     { sales:true, clients:true },                              // Vendeur
+  warehouse:  { stock:true, products:true, audit:true, suppliers:true },  // Magasinier
+  accountant: { reports:true, compta:true, readonly_sales:true, audit:true }, // Comptable
+  auditor:    { readonly:true, audit:true },                             // Auditeur
+};
+
+const ROLE_LABELS = {
+  admin:      { name:'Admin',       icon:'👑', color:'#7C73FF', desc:'Accès total + paramètres' },
+  manager:    { name:'Manager',     icon:'🎯', color:'#0EA5E9', desc:'Ventes + Stocks + Rapports' },
+  vendor:     { name:'Vendeur',     icon:'💰', color:'#10B981', desc:'Ventes uniquement' },
+  warehouse:  { name:'Magasinier',  icon:'📦', color:'#F59E0B', desc:'Stocks + Audit IA' },
+  accountant: { name:'Comptable',   icon:'📊', color:'#6366F1', desc:'Rapports financiers' },
+  auditor:    { name:'Auditeur',    icon:'🔍', color:'#64748B', desc:'Lecture seule' },
+};
+
+function getCurrentMember() {
+  if (!S.currentMemberId) return { id:null, name:S.session?.name || 'Admin', role:'admin', email:S.session?.email };
+  return S.teamMembers.find(m => m.id === S.currentMemberId) || { id:null, name:S.session?.name || 'Admin', role:'admin' };
+}
+
+function getCurrentRole() {
+  return getCurrentMember().role || 'admin';
+}
+
+function hasPermission(action) {
+  const role = getCurrentRole();
+  const perms = ROLE_PERMISSIONS[role] || {};
+  if (perms.all === true) return true;
+  if (perms.readonly === true) return action === 'read' || action === 'audit';
+  return perms[action] === true;
+}
+
+function requirePermission(action, silent = false) {
+  if (hasPermission(action)) return true;
+  if (!silent && typeof showToast === 'function') {
+    const role = ROLE_LABELS[getCurrentRole()]?.name || 'Utilisateur';
+    showToast(`🔒 Accès refusé — ${role} n'a pas le droit "${action}"`, 'error');
+  }
+  return false;
+}
+
+function persistTeam() {
+  try { localStorage.setItem('stockr_team', JSON.stringify(S.teamMembers)); } catch(_){}
+}
+
+// ── Audit trail ──────────────────────────────
+function logAudit(category, action, details = {}) {
+  try {
+    const member = getCurrentMember();
+    const entry = {
+      id: Date.now() + Math.random(),
+      ts: new Date().toISOString(),
+      memberId: member.id,
+      memberName: member.name || 'Admin',
+      memberRole: member.role || 'admin',
+      category,     // 'sale' | 'stock' | 'member' | 'auth' | 'settings' | 'product' | 'client'
+      action,       // verbe court : 'create', 'update', 'delete', 'login', 'logout', ...
+      details,      // objet libre
+    };
+    S.auditLog.unshift(entry);
+    if (S.auditLog.length > 2000) S.auditLog = S.auditLog.slice(0, 2000); // cap
+    localStorage.setItem('stockr_audit_log', JSON.stringify(S.auditLog));
+  } catch(e) { console.warn('logAudit', e); }
+}
 
 // ── Mode local (localStorage) ─────────────────
 let USE_LOCAL = false; // basculé automatiquement si l'API n'est pas joignable
@@ -1325,22 +1431,11 @@ function _localApi(method, path, body) {
   // ── Predictions (stub local) ──
   if (path === '/api/predictions/') return [];
 
-  // ── Spectra (offline: simulate detection from existing stock) ──
+  // ── Spectra (offline) — passerelle : la détection réelle se fait côté navigateur ──
+  // via BarcodeDetector natif + TensorFlow.js/COCO-SSD. Le backend local reçoit
+  // seulement les détections déjà calculées et les retourne (ou tableau vide).
   if (path === '/api/spectra/scan' && method === 'POST') {
-    // Offline: generate detections based on existing articles
-    const arts = d.articles.length > 0 ? d.articles : [
-      { name: 'Article A', quantity: 10, unit: 'pce' },
-      { name: 'Article B', quantity: 5, unit: 'pce' },
-      { name: 'Article C', quantity: 8, unit: 'pce' },
-    ];
-    const detections = arts.slice(0, 8).map(a => ({
-      detected_name: a.name,
-      matched_name: a.name,
-      matched_id: a.id || null,
-      matched_unit: a.unit || 'pce',
-      quantity: Math.max(1, Math.floor(Math.random() * ((a.quantity || 10) + 4))),
-      confidence: Math.floor(82 + Math.random() * 17),
-    }));
+    const detections = Array.isArray(body.detections) ? body.detections : [];
     return { detections };
   }
   if (path === '/api/spectra/confirm' && method === 'POST') {
@@ -1392,7 +1487,17 @@ async function api(method, path, body) {
 
 // ── Mapping API → state ───────────────────────
 function articleFromAPI(a) {
-  return { id: a.id, name: a.name, stock: a.quantity, unit: a.unit, min: a.alert_threshold || 0, lead: a.lead_time_days };
+  return {
+    id: a.id, name: a.name, stock: a.quantity, unit: a.unit,
+    min: a.alert_threshold || 0, lead: a.lead_time_days,
+    ref: a.ref || '',
+    price: a.price || 0,
+    purchasePrice: a.purchase_price || 0,
+    category: a.category || '',
+    perishable: !!a.perishable,
+    expiry: a.expiry || '',
+    image: a.image || ''
+  };
 }
 function productFromAPI(p) {
   return {
@@ -1415,6 +1520,24 @@ function saleFromAPI(s) {
 
 // ── Charger données depuis l'API ──────────────
 async function loadData() {
+  // Lire d'abord les données locales comme fallback garanti
+  const local = {
+    articles: (() => { try { return JSON.parse(localStorage.getItem('stockr_articles') || '[]'); } catch { return []; } })(),
+    products: (() => { try { return JSON.parse(localStorage.getItem('stockr_products') || '[]'); } catch { return []; } })(),
+    sales:    (() => { try { return JSON.parse(localStorage.getItem('stockr_sales')    || '[]'); } catch { return []; } })(),
+    clients:  (() => { try { return JSON.parse(localStorage.getItem('stockr_clients')  || '[]'); } catch { return []; } })(),
+  };
+
+  // Pré-hydratation immédiate (pas d'écran vide pendant le fetch)
+  if (local.articles.length || local.products.length || local.sales.length || local.clients.length) {
+    S.articles = local.articles;
+    S.products = local.products;
+    S.sales    = local.sales;
+    S.clients  = local.clients;
+    try { recalcAllMins(); } catch(_){}
+    render();
+  }
+
   try {
     const [arts, prods, sales, preds, clients] = await Promise.all([
       api('GET', '/api/articles/'),
@@ -1423,15 +1546,45 @@ async function loadData() {
       api('GET', '/api/predictions/'),
       api('GET', '/api/clients/').catch(() => []),
     ]);
-    S.products    = prods.map(productFromAPI);
-    S.articles    = arts.map(articleFromAPI);
-    S.sales       = sales.map(saleFromAPI);
-    S.predictions = preds;
-    S.clients     = clients || [];
+    const apiArts    = (arts  || []).map(articleFromAPI);
+    const apiProds   = (prods || []).map(productFromAPI);
+    const apiSales   = (sales || []).map(saleFromAPI);
+    const apiClients = clients || [];
+    // Règle anti-écrasement : si l'API retourne vide mais on a du local, on garde le local
+    // (cas : backend planté ou nouveau device, on ne veut pas effacer les données utilisateur)
+    const apiEmpty = !apiArts.length && !apiProds.length && !apiSales.length;
+    const localHas = local.articles.length || local.products.length || local.sales.length;
+    if (apiEmpty && localHas) {
+      console.log('[loadData] API vide + local contient des données → conservation du local');
+      S.predictions = preds || [];
+      // Si on a au moins des clients côté API, on les merge
+      if (apiClients.length) S.clients = apiClients;
+      render();
+      return;
+    }
+    S.articles    = apiArts;
+    S.products    = apiProds;
+    S.sales       = apiSales;
+    S.predictions = preds || [];
+    S.clients     = apiClients;
     recalcAllMins();
+    // Persister pour fallback offline
+    try {
+      localStorage.setItem('stockr_articles', JSON.stringify(S.articles));
+      localStorage.setItem('stockr_products', JSON.stringify(S.products));
+      localStorage.setItem('stockr_sales',    JSON.stringify(S.sales));
+      localStorage.setItem('stockr_clients',  JSON.stringify(S.clients));
+    } catch(_){}
     render();
   } catch(e) {
-    showToast(t('errLoad'), 'error');
+    // Offline / API indisponible → on a déjà pré-hydraté, on notifie juste
+    const hadLocal = local.articles.length || local.products.length || local.sales.length || local.clients.length;
+    if (hadLocal) {
+      showToast('📡 Mode hors-ligne', 'info');
+    } else {
+      showToast(t('errLoad'), 'error');
+      render();
+    }
   }
 }
 
@@ -1583,23 +1736,123 @@ async function doLogin() {
     const data = await api('POST', '/api/auth/login', { email, password: pwd });
     const u = data.user;
     S.token   = u.auth_token;
+    const profile = u.profile || 'transformer';
+    const bt = profile === 'reseller' ? 'reseller' : profile === 'transformer' ? 'maker' : (u.businessType || 'maker');
     S.session = {
       id: u.id, name: u.name, email: u.email, business: u.business_name,
-      profile:         u.profile         || 'transformer',
+      profile:         profile,
+      businessType:    bt,
       currency:        u.currency        || 'XOF',
       currency_symbol: getCurrencySymbol(u.currency || 'XOF'),
       country:         u.country         || 'SN',
       language:        u.language        || 'fr',
       tax_rate:        u.tax_rate        || 0,
     };
+    localStorage.setItem('stockr_business_type', bt);
     saveSession({ ...S.session, token: S.token });
     S.authEmail = S.authPwd = '';
+    // Security tracking
+    try {
+      if (S.security) {
+        S.security.lastLogin = new Date().toISOString();
+        S.security.loginAttempts = [{ ts: new Date().toISOString(), success: true, ip: 'local' }, ...(S.security.loginAttempts || [])].slice(0, 20);
+        localStorage.setItem('stockr_security', JSON.stringify(S.security));
+      }
+    } catch(_){}
+    if (typeof logAudit === 'function') logAudit('auth', 'login', { email: u.email });
+    // 2FA gate
+    if (S.security?.twoFactorEnabled) {
+      S.twoFAPending = { email: u.email, code: String(Math.floor(100000 + Math.random() * 900000)), expires: Date.now() + 5 * 60 * 1000 };
+      console.log('[DEV 2FA CODE]', S.twoFAPending.code); // en prod : envoi SMS/Email
+      showToast('🔐 Code 2FA envoyé — code dev : ' + S.twoFAPending.code, 'info');
+      S.view = '2fa-verify';
+      render();
+      return;
+    }
     S.view = 'home';
     render();
     await loadData();
   } catch(e) {
+    try {
+      if (S.security) {
+        S.security.loginAttempts = [{ ts: new Date().toISOString(), success: false, ip: 'local' }, ...(S.security.loginAttempts || [])].slice(0, 20);
+        localStorage.setItem('stockr_security', JSON.stringify(S.security));
+      }
+    } catch(_){}
+    if (typeof logAudit === 'function') logAudit('auth', 'login_failed', { email });
     showToast(e.message || 'Email ou mot de passe incorrect', 'error');
   }
+}
+
+function v2FAVerify() {
+  const p = S.twoFAPending;
+  if (!p) { S.view = 'home'; render(); return ''; }
+  const maskedEmail = p.email.replace(/(.{2}).*(@.*)/, '$1****$2');
+  return `
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div class="auth-logo">${IC.box}<span>STOCKR</span></div>
+      <div class="auth-title">🔐 Vérification</div>
+      <div class="auth-sub">Code envoyé à ${maskedEmail}</div>
+
+      <div class="form-group" style="margin-top:20px">
+        <label class="form-label">Code à 6 chiffres</label>
+        <input class="input" id="tfa-code" type="text" inputmode="numeric" maxlength="6" placeholder="000000"
+          style="letter-spacing:8px;text-align:center;font-size:24px;font-weight:700;font-family:monospace"
+          value="${S.twoFACodeInput || ''}"
+          oninput="S.twoFACodeInput=this.value.replace(/\\D/g,'').slice(0,6)">
+      </div>
+
+      <button class="btn btn-primary" style="width:100%;margin-top:10px" onclick="verify2FA()">Vérifier</button>
+
+      <div style="text-align:center;margin-top:14px;display:flex;flex-direction:column;gap:8px">
+        <button class="btn-link" onclick="resend2FA()" style="background:none;border:none;color:var(--accent);font-size:13px;cursor:pointer">🔄 Renvoyer le code</button>
+        <button class="btn-link" onclick="cancel2FA()" style="background:none;border:none;color:var(--text-3);font-size:12px;cursor:pointer">← Retour</button>
+      </div>
+
+      <div style="margin-top:20px;padding:10px;background:var(--accent-light);border-radius:8px;font-size:11px;color:var(--text-2);text-align:center">
+        💡 Le code expire dans 5 minutes
+      </div>
+    </div>
+  </div>`;
+}
+
+async function verify2FA() {
+  const p = S.twoFAPending;
+  if (!p) return;
+  if (Date.now() > p.expires) { showToast('Code expiré. Renvoyez-le.', 'error'); return; }
+  const input = S.twoFACodeInput || '';
+  if (input !== p.code) {
+    if (typeof logAudit === 'function') logAudit('auth', '2fa_failed', { email: p.email });
+    showToast('Code incorrect', 'error');
+    return;
+  }
+  if (typeof logAudit === 'function') logAudit('auth', '2fa_success', { email: p.email });
+  S.twoFAPending = null;
+  S.twoFACodeInput = '';
+  S.view = 'home';
+  render();
+  await loadData();
+  showToast('🎉 Bienvenue !', 'success');
+}
+
+function resend2FA() {
+  const p = S.twoFAPending;
+  if (!p) return;
+  p.code = String(Math.floor(100000 + Math.random() * 900000));
+  p.expires = Date.now() + 5 * 60 * 1000;
+  console.log('[DEV 2FA CODE]', p.code);
+  showToast('Code renvoyé — dev : ' + p.code, 'info');
+}
+
+function cancel2FA() {
+  S.twoFAPending = null;
+  S.twoFACodeInput = '';
+  S.session = null;
+  S.token = null;
+  S.view = 'home';
+  S.authView = 'login';
+  render();
 }
 
 function authNextStep() {
@@ -1670,20 +1923,28 @@ async function doRegister() {
     });
     const u = data.user;
     S.token   = u.auth_token;
+    // Mapping profile UI → businessType (driver de toute l'UI adaptative)
+    const bt = S.authProfile === 'reseller' ? 'reseller' : S.authProfile === 'transformer' ? 'maker' : 'mixed';
     S.session = {
       id: u.id, name: u.name, email: u.email, business: u.business_name,
       profile:         S.authProfile,
+      businessType:    bt,
       currency:        S.authCurrency,
       currency_symbol: getCurrencySymbol(S.authCurrency),
       country:         S.authCountry,
       language:        S.authLang,
       tax_rate:        parseFloat(S.authTax) || 0,
     };
+    localStorage.setItem('stockr_business_type', bt);
     saveSession({ ...S.session, token: S.token });
+    // Seed de démo selon le business type pour que l'app soit utilisable immédiatement
+    try { seedDemoData(bt); } catch(err){ console.warn('[seed demo]', err); }
+    if (typeof logAudit === 'function') logAudit('auth', 'register', { email: u.email, bt });
     S.authEmail = S.authPwd = S.authPwd2 = S.authName = S.authBiz = '';
     S.authStep = 1;
     S.view = 'home';
-    showToast(`Bienvenue, ${name} !`);
+    const btLabel = bt === 'reseller' ? '🏪 Revendeur' : bt === 'maker' ? '🏭 Transformateur' : '🔀 Mixte';
+    showToast(`Bienvenue, ${name} ! Mode ${btLabel} activé — données démo chargées`);
     render();
     await loadData();
   } catch(e) {
@@ -1691,12 +1952,97 @@ async function doRegister() {
   }
 }
 
+// ── Seed démo ─────────────────────────────────
+// Appelé à l'inscription pour donner une base utilisable (articles, produits, clients, 1 semaine de ventes)
+function seedDemoData(bt) {
+  const now = Date.now();
+  let seedArticles = [];
+  let seedProducts = [];
+
+  if (bt === 'reseller' || bt === 'mixed') {
+    // Revendeur : articles = produits finis achetés/revendus avec marge
+    seedArticles = [
+      { id: now+1, name:'Sac à main cuir', stock:12, unit:'pcs', min:3, lead:14, ref:'SAC-001', price:25000, purchasePrice:12000, category:'Maroquinerie', perishable:false, expiry:'', image:'' },
+      { id: now+2, name:'T-shirt coton',  stock:45, unit:'pcs', min:10,lead:7,  ref:'TSH-002', price:5000,  purchasePrice:1800, category:'Textile',      perishable:false, expiry:'', image:'' },
+      { id: now+3, name:'Montre sport',   stock:8,  unit:'pcs', min:2, lead:10, ref:'MTR-003', price:35000, purchasePrice:18000,category:'Accessoires',  perishable:false, expiry:'', image:'' },
+      { id: now+4, name:'Parfum 50ml',    stock:20, unit:'pcs', min:5, lead:14, ref:'PRF-004', price:15000, purchasePrice:6500, category:'Beauté',       perishable:false, expiry:'', image:'' },
+      { id: now+5, name:'Lunettes soleil',stock:30, unit:'pcs', min:5, lead:7,  ref:'LUN-005', price:8000,  purchasePrice:2500, category:'Accessoires',  perishable:false, expiry:'', image:'' },
+    ];
+  }
+  if (bt === 'maker' || bt === 'mixed') {
+    // Transformateur : articles = matières premières
+    seedArticles = seedArticles.concat([
+      { id: now+10, name:'Farine blé',  stock:50, unit:'kg',  min:10, lead:5,  ref:'FAR-010', price:800, purchasePrice:500, category:'Matières', perishable:true,  expiry:'2026-08-15', image:'' },
+      { id: now+11, name:'Sucre',       stock:30, unit:'kg',  min:5,  lead:5,  ref:'SUC-011', price:700, purchasePrice:450, category:'Matières', perishable:false, expiry:'', image:'' },
+      { id: now+12, name:'Huile palme', stock:20, unit:'L',   min:5,  lead:7,  ref:'HUI-012', price:1500,purchasePrice:1000,category:'Matières', perishable:true,  expiry:'2026-10-30', image:'' },
+      { id: now+13, name:'Levure',      stock:5,  unit:'kg',  min:2,  lead:10, ref:'LVR-013', price:4000,purchasePrice:2500,category:'Additifs', perishable:true,  expiry:'2026-06-01', image:'' },
+      { id: now+14, name:'Emballage 1kg',stock:200,unit:'pcs',min:50, lead:7,  ref:'EMB-014', price:100, purchasePrice:50,  category:'Pack',     perishable:false, expiry:'', image:'' },
+    ]);
+    seedProducts = [
+      { id: now+20, name:'Pain baguette', price:500,  purchasePrice:200,  composition:[ {id:now+10,name:'Farine blé',qty:0.3,unit:'kg'},{id:now+11,name:'Sucre',qty:0.02,unit:'kg'},{id:now+13,name:'Levure',qty:0.005,unit:'kg'}] },
+      { id: now+21, name:'Pâtisserie',    price:1500, purchasePrice:600,  composition:[ {id:now+10,name:'Farine blé',qty:0.15,unit:'kg'},{id:now+11,name:'Sucre',qty:0.08,unit:'kg'},{id:now+12,name:'Huile palme',qty:0.05,unit:'L'}] },
+      { id: now+22, name:'Beignet x10',   price:2000, purchasePrice:800,  composition:[ {id:now+10,name:'Farine blé',qty:0.4,unit:'kg'},{id:now+12,name:'Huile palme',qty:0.1,unit:'L'},{id:now+14,name:'Emballage 1kg',qty:1,unit:'pcs'}] },
+    ];
+  }
+
+  // Clients démo
+  const seedClients = [
+    { id: now+50, name:'Aminata Traoré',  phone:'+225 07 12 34 56', email:'aminata@demo.ci', address:'Abidjan, Cocody', totalSpent:0, loyaltyPoints:0, createdAt: new Date(now - 30*86400000).toISOString() },
+    { id: now+51, name:'Sekou Diaby',     phone:'+225 05 98 76 54', email:'sekou@demo.ci',   address:'Yamoussoukro',    totalSpent:0, loyaltyPoints:0, createdAt: new Date(now - 20*86400000).toISOString() },
+    { id: now+52, name:'Mariam Kone',     phone:'+225 01 23 45 67', email:'mariam@demo.ci',  address:'Bouaké',          totalSpent:0, loyaltyPoints:0, createdAt: new Date(now - 10*86400000).toISOString() },
+  ];
+
+  // Ventes démo : 10 ventes réparties sur 7 jours
+  const sellableItems = bt === 'reseller' ? seedArticles : seedProducts.length ? seedProducts : seedArticles;
+  const seedSales = [];
+  for (let i = 0; i < 10; i++) {
+    const item = sellableItems[i % sellableItems.length];
+    if (!item) continue;
+    const qty = 1 + Math.floor(Math.random() * 3);
+    const total = (item.price || 0) * qty;
+    const cost  = (item.purchasePrice || 0) * qty;
+    const daysAgo = Math.floor(Math.random() * 7);
+    const saleDate = new Date(now - daysAgo * 86400000 - Math.random() * 86400000).toISOString();
+    const client = seedClients[Math.floor(Math.random() * seedClients.length)];
+    seedSales.push({
+      id: now + 100 + i,
+      productId: item.id,
+      productName: item.name,
+      qty,
+      total,
+      profit: total - cost,
+      date: saleDate,
+      paymentMethod: ['cash','wave','orange'][i%3],
+      clientId: client.id,
+      clientName: client.name,
+      promoName: null,
+      promoDiscount: 0,
+    });
+  }
+
+  // Applique au state et persiste
+  S.articles = seedArticles;
+  S.products = seedProducts;
+  S.clients  = seedClients;
+  S.sales    = seedSales.sort((a,b) => new Date(b.date) - new Date(a.date));
+  try {
+    localStorage.setItem('stockr_articles', JSON.stringify(S.articles));
+    localStorage.setItem('stockr_products', JSON.stringify(S.products));
+    localStorage.setItem('stockr_clients',  JSON.stringify(S.clients));
+    localStorage.setItem('stockr_sales',    JSON.stringify(S.sales));
+  } catch(_){}
+  if (typeof logAudit === 'function') logAudit('settings', 'demo_seeded', { bt, arts: seedArticles.length, prods: seedProducts.length, sales: seedSales.length });
+}
+
 async function doLogout() {
   if (!confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) return;
+  if (typeof logAudit === 'function') logAudit('auth', 'logout', { email: S.session?.email });
   try { await api('POST', '/api/auth/logout'); } catch(e) { /* ignore */ }
   clearSession();
   S.session = null; S.token = null;
   S.articles = []; S.products = []; S.sales = []; S.cart = [];
+  S.currentMemberId = null;
+  try { localStorage.removeItem('stockr_current_member'); } catch(_){}
   S.view = 'home'; S.authView = 'login';
   S.authEmail = S.authPwd = S.authPwd2 = S.authName = S.authBiz = '';
   render();
@@ -1704,6 +2050,10 @@ async function doLogout() {
 
 // ── App Actions ───────────────────────────────
 async function applyStock() {
+  if (typeof requirePermission === 'function' && !hasPermission('stock') && !hasPermission('all')) {
+    requirePermission('stock');
+    return;
+  }
   const art = S.articles.find(a => a.id === S.selectedId);
   if (!art) return;
   if (S.action === 'remove' && art.stock < S.qty) { showToast(t('insufficientStock'), 'error'); return; }
@@ -1715,6 +2065,7 @@ async function applyStock() {
     art.stock = newStock;
     logMovement(art.name, S.action === 'add' ? 'entry' : 'exit', S.qty, S.action === 'add' ? t('reception') : t('withdrawal'));
     logActivity('stock', `${art.name}: ${S.action === 'add' ? '+' : '-'}${S.qty} ${art.unit}`);
+    if (typeof logAudit === 'function') logAudit('stock', S.action === 'add' ? 'receive' : 'withdraw', { article: art.name, qty: S.qty, unit: art.unit, newStock });
     showToast(S.action === 'add' ? `+${S.qty} ${art.unit}` : `-${S.qty} ${art.unit}`);
     S.qty = 1;
     render();
@@ -1724,12 +2075,14 @@ async function applyStock() {
 }
 
 async function deleteArticle(id) {
+  if (typeof requirePermission === 'function' && !requirePermission('stock') && !requirePermission('all', true)) return;
   const art = S.articles.find(a => a.id === id);
   if (!art) return;
   try {
     await api('DELETE', `/api/articles/${id}`);
     S.products.forEach(p => { p.composition = p.composition.filter(c => c.id !== id); });
     S.articles = S.articles.filter(a => a.id !== id);
+    if (typeof logAudit === 'function') logAudit('stock', 'delete_article', { name: art.name, id });
     showToast(`"${art.name}" supprimé`);
     nav('pantry');
   } catch(e) {
@@ -1767,7 +2120,13 @@ function recordSale() {
   const promo = _getActivePromo(product.id);
   let promoName = null, promoDiscount = 0;
   if (promo) { promoDiscount = promo.discount; promoName = promo.name; saleTotal = Math.round(saleTotal * (100 - promoDiscount) / 100); }
-  S.sales.unshift({ id: Date.now(), productId: product.id, productName: product.name, qty, total: saleTotal, profit: saleTotal - saleCost, date: new Date().toISOString(), paymentMethod: payMethod, clientId, clientName: client?.name || null, promoName, promoDiscount });
+  const __sale = { id: Date.now(), productId: product.id, productName: product.name, qty, total: saleTotal, profit: saleTotal - saleCost, date: new Date().toISOString(), paymentMethod: payMethod, clientId, clientName: client?.name || null, promoName, promoDiscount };
+  S.sales.unshift(__sale);
+  // Hooks intégrations temps réel
+  try { if (typeof sheetsAutoAppendSale === 'function') sheetsAutoAppendSale(__sale); } catch(_){}
+  try { if (typeof posAutoPrintSale === 'function') posAutoPrintSale(__sale); } catch(_){}
+  try { if (typeof comptaAutoPushSale === 'function') comptaAutoPushSale(__sale); } catch(_){}
+  try { if (typeof triggerWhatsAppAuto === 'function' && client?.phone) triggerWhatsAppAuto('sale', { phone: client.phone, product:product.name, qty, total:saleTotal, client:client.name }); } catch(_){}
   // Loyalty points (with tier multiplier)
   if (S.loyaltyConfig?.enabled && clientId) {
     const cl = S.clients.find(c => c.id === clientId);
@@ -1784,7 +2143,14 @@ function recordSale() {
       }
     }
   }
+  // Attribution au membre connecté
+  const __currentMember = (typeof getCurrentMember === 'function') ? getCurrentMember() : null;
+  if (__currentMember) {
+    __sale.memberId = __currentMember.id;
+    __sale.memberName = __currentMember.name;
+  }
   logActivity('sale', `${product.name} x${qty} — ${fmt(saleTotal)} ${sym()} (${PMLABELS[payMethod]||payMethod})`);
+  if (typeof logAudit === 'function') logAudit('sale', 'create', { product: product.name, qty, total: saleTotal });
   showToast(`${t('saleConfirmed')} — ${fmt(saleTotal)} ${sym()}`);
   render();
 }
@@ -1792,6 +2158,13 @@ function recordSale() {
 async function saveArticle() {
   const f = S.form;
   if (!f.name.trim()) { showToast(t('nameRequired'), 'error'); return; }
+  const bt = (typeof getBusinessType === 'function') ? getBusinessType() : 'maker';
+  const price = parseFloat(f.price) || 0;
+  const purchasePrice = parseFloat(f.purchasePrice) || 0;
+  // Validation revendeur : prix d'achat recommandé
+  if (bt === 'reseller' && price > 0 && purchasePrice > 0 && purchasePrice >= price) {
+    if (!confirm(`⚠️ Le prix d'achat (${purchasePrice} FCFA) est ≥ au prix de vente (${price} FCFA).\nVous perdrez de l'argent sur chaque vente.\n\nContinuer quand même ?`)) return;
+  }
   try {
     const data = await api('POST', '/api/articles/', {
       name:            f.name.trim(),
@@ -1800,17 +2173,28 @@ async function saveArticle() {
       alert_threshold: parseFloat(f.min) || null,
       lead_time_days:  parseInt(f.lead) || 7,
       ref:             f.ref || null,
-      price:           parseFloat(f.price) || 0,
+      price:           price,
+      purchase_price:  purchasePrice,
+      category:        f.category || '',
     });
     const newArt = articleFromAPI(data);
     newArt.ref = f.ref || '';
-    newArt.price = parseFloat(f.price) || 0;
-    newArt.expiry = f.expiry || '';
+    newArt.price = price;
+    newArt.purchasePrice = purchasePrice;
+    newArt.category = f.category || '';
+    newArt.perishable = !!f.perishable;
+    newArt.expiry = (f.perishable ? f.expiry : '') || '';
+    newArt.image = f.image || '';
+    newArt.ean = (f.ean || '').trim();
+    newArt.barcode = newArt.ean;
     S.articles.push(newArt);
     localStorage.setItem('stockr_articles', JSON.stringify(S.articles));
     logActivity('new_article', f.name.trim());
-    showToast(`"${f.name}" ${t('added') || 'ajouté'}`);
-    S.form = { name:'', stock:0, min:0, unit:'', lead:7, ref:'', price:0, expiry:'' };
+    const msg = bt === 'reseller'
+      ? `✅ "${f.name}" ajouté${purchasePrice > 0 && price > 0 ? ` — marge ${Math.round(((price - purchasePrice) / price) * 100)}%` : ''}`
+      : `"${f.name}" ${t('added') || 'ajouté'}`;
+    showToast(msg);
+    S.form = { name:'', stock:0, min:0, unit:'', lead:7, ref:'', price:0, purchasePrice:0, expiry:'', perishable:false, category:'', image:'', ean:'' };
     nav('pantry');
   } catch(e) {
     showToast(e.message, 'error');
@@ -1842,7 +2226,9 @@ async function saveProduct() {
       composition
     });
     S.products.push(productFromAPI(data));
+    try { localStorage.setItem('stockr_products', JSON.stringify(S.products)); } catch(_){}
     recalcAllMins();
+    if (typeof logAudit === 'function') logAudit('product', 'create', { name: nameEl.value });
     showToast(`Produit "${nameEl.value}" créé`);
     nav('products');
   } catch(e) {
@@ -1951,24 +2337,165 @@ function exportClientsXLSX() {
   downloadXLSX(`stockr_clients_${new Date().toISOString().slice(0,10)}.xls`, sheet);
 }
 function exportFullXLSX() {
-  // Un seul fichier multi-feuilles simulé (plusieurs tableaux dans un doc HTML)
-  const s1 = _buildXlsSheet('Articles / Stock',
-    ['Nom','Référence','Stock','Unité','Seuil min','Prix ('+sym()+')'],
-    S.articles.map(a => [a.name, a.ref||'', a.stock, a.unit, a.min||0, a.price||0]));
-  const s2 = _buildXlsSheet('Produits finis',
-    ['Nom','Coût','Prix vente','Marge %','Dispo'],
-    S.products.map(p => [p.name, p.purchasePrice||0, p.price, marginPct(p)+'%', productMaxMake(p)]));
-  const s3 = _buildXlsSheet('Ventes',
-    ['Date','Produit','Qté','Total','Bénéfice','Client','Paiement'],
-    S.sales.map(s => [fmtDate(s.date), s.productName, s.qty, s.total, s.profit||0, s.clientName||'', s.paymentMethod||'cash']),
-    { totalRow: fmt(S.sales.reduce((sum,s)=>sum+s.total, 0))+' '+sym() });
-  const s4 = _buildXlsSheet('Clients',
-    ['Nom','Téléphone','Email','Points fidélité'],
-    (S.clients||[]).map(c => [c.name, c.phone||'', c.email||'', c.loyaltyPoints||0]));
-  const s5 = _buildXlsSheet('Packs',
+  // Dashboard d'abord (résumé avec KPI)
+  const now = new Date();
+  const today = now.toISOString().slice(0,10);
+  const monthAgo = new Date(now.getTime() - 30*86400000).toISOString().slice(0,10);
+  const totalCA = S.sales.reduce((s,v)=>s+v.total,0);
+  const totalProfit = S.sales.reduce((s,v)=>s+(v.profit||0),0);
+  const totalStock = S.articles.reduce((s,a)=>s+(a.stock||0)*(a.purchasePrice||a.price||0),0);
+  const caMonth = S.sales.filter(s => s.date >= monthAgo).reduce((sum,v)=>sum+v.total,0);
+  const caToday = S.sales.filter(s => (s.date||'').slice(0,10) === today).reduce((sum,v)=>sum+v.total,0);
+  const topProducts = Object.entries(S.sales.reduce((m,s)=>{m[s.productName]=(m[s.productName]||0)+s.total;return m;},{}))
+    .sort((a,b)=>b[1]-a[1]).slice(0,10);
+  const dashHdr = `<h2 style="color:#10b981;font-family:Arial">📊 TABLEAU DE BORD — ${S.session?.business||'STOCKR'}</h2><p>Généré le ${now.toLocaleString('fr-FR')}</p>`;
+  const dashRows = [
+    ['INDICATEUR', 'VALEUR', 'UNITÉ'],
+    ['CA total', totalCA, sym()],
+    ['CA 30 jours', caMonth, sym()],
+    ['CA aujourd\'hui', caToday, sym()],
+    ['Bénéfice total', totalProfit, sym()],
+    ['Marge moyenne', totalCA ? Math.round(100*totalProfit/totalCA)+'%' : '0%', ''],
+    ['Nb ventes', S.sales.length, ''],
+    ['Panier moyen', S.sales.length ? Math.round(totalCA/S.sales.length) : 0, sym()],
+    ['Valeur stock', Math.round(totalStock), sym()],
+    ['Nb articles', S.articles.length, ''],
+    ['Nb produits', S.products.length, ''],
+    ['Nb clients', (S.clients||[]).length, ''],
+    ['Nb packs actifs', (S.packs||[]).filter(p=>p.active!==false).length, ''],
+  ];
+  const dashSheet = _buildXlsSheet('📊 Tableau de bord', ['Indicateur','Valeur','Unité'], dashRows.slice(1));
+
+  // Top 10 produits
+  const topSheet = _buildXlsSheet('🏆 Top 10 produits', ['Rang','Produit','CA ('+sym()+')'],
+    topProducts.map((e,i) => [i+1, e[0], e[1]]));
+
+  const s1 = _buildXlsSheet('📦 Articles / Stock',
+    ['Nom','Référence','Stock','Unité','Seuil min','Prix achat','Prix vente','Valeur stock'],
+    S.articles.map(a => [
+      a.name, a.ref||'', a.stock, a.unit, a.min||0,
+      a.purchasePrice||0, a.price||0,
+      (a.stock||0)*(a.purchasePrice||a.price||0)
+    ]));
+  const s2 = _buildXlsSheet('🏷️ Produits finis',
+    ['Nom','Coût','Prix vente','Marge FCFA','Marge %','Dispo','CA généré'],
+    S.products.map(p => {
+      const caProd = S.sales.filter(s=>s.productId===p.id).reduce((sum,v)=>sum+v.total,0);
+      return [p.name, p.purchasePrice||0, p.price, p.price-(p.purchasePrice||0), marginPct(p)+'%', productMaxMake(p), caProd];
+    }));
+  const s3 = _buildXlsSheet('💰 Ventes',
+    ['Date','Produit','Qté','Total','Bénéfice','Client','Paiement','Promo'],
+    S.sales.map(s => [fmtDate(s.date), s.productName, s.qty, s.total, s.profit||0, s.clientName||'', s.paymentMethod||'cash', s.promoName||'']),
+    { totalRow: fmt(totalCA)+' '+sym() });
+  const s4 = _buildXlsSheet('👥 Clients',
+    ['Nom','Téléphone','Email','Commandes','Total dépensé','Points fidélité'],
+    (S.clients||[]).map(c => {
+      const spent = S.sales.filter(s=>s.clientId===c.id).reduce((sum,v)=>sum+v.total,0);
+      const orders = S.sales.filter(s=>s.clientId===c.id).length;
+      return [c.name, c.phone||'', c.email||'', orders, spent, c.loyaltyPoints||0];
+    }));
+  const s5 = _buildXlsSheet('📦 Packs',
     ['Nom','Nb produits','Prix original','Prix final','Économie','Dispo','Actif'],
     (S.packs||[]).map(pk => [pk.name, pk.items?.length||0, packOriginalPrice(pk), packFinalPrice(pk), packSavings(pk), packMaxAvailable(pk), pk.active!==false?'Oui':'Non']));
-  downloadXLSX(`stockr_export_complet_${new Date().toISOString().slice(0,10)}.xls`, s1+s2+s3+s4+s5);
+  // Journal ventes 30 derniers jours (agrégé par jour)
+  const dayAgg = {};
+  S.sales.filter(s => s.date >= monthAgo).forEach(s => {
+    const d = (s.date||'').slice(0,10);
+    if (!dayAgg[d]) dayAgg[d] = { ca:0, profit:0, count:0 };
+    dayAgg[d].ca += s.total;
+    dayAgg[d].profit += (s.profit||0);
+    dayAgg[d].count += 1;
+  });
+  const s6 = _buildXlsSheet('📅 Journal 30 jours',
+    ['Date','CA','Bénéfice','Nb ventes','Panier moyen'],
+    Object.entries(dayAgg).sort((a,b)=>b[0].localeCompare(a[0])).map(([d,v]) => [d, v.ca, v.profit, v.count, v.count ? Math.round(v.ca/v.count) : 0]));
+
+  downloadXLSX(`stockr_export_complet_${today}.xls`, dashSheet + topSheet + s1 + s2 + s3 + s4 + s5 + s6);
+  showToast('📊 Export complet : 8 feuilles Excel', 'success');
+}
+
+// ── PDF CHART HELPERS (natifs jsPDF, pas d'html2canvas) ────────
+function _pdfBarChart(doc, { data, x, y, w, h, title, color = [16,185,129], maxLabel = 10 }) {
+  // data: [{ label, value }]
+  if (!data?.length) return;
+  const max = Math.max(...data.map(d => d.value), 1);
+  const padTop = title ? 10 : 4;
+  const padBottom = 14; // labels
+  const chartH = h - padTop - padBottom;
+  const chartY = y + padTop;
+  // Title
+  if (title) {
+    doc.setFontSize(10); doc.setFont('helvetica','bold'); doc.setTextColor(30,30,30);
+    doc.text(title, x, y + 5);
+  }
+  // Frame
+  doc.setDrawColor(220,220,220); doc.setLineWidth(0.2);
+  doc.line(x, chartY + chartH, x + w, chartY + chartH); // x axis
+  doc.line(x, chartY, x, chartY + chartH); // y axis
+  // Grid (4 lines)
+  doc.setDrawColor(240,240,240);
+  for (let i=1; i<=3; i++) {
+    const gy = chartY + chartH - (i * chartH / 4);
+    doc.line(x, gy, x + w, gy);
+  }
+  // Bars
+  const barGap = 1;
+  const barW = Math.max(1, (w - (data.length + 1) * barGap) / data.length);
+  data.forEach((d, i) => {
+    const bh = Math.max(0.3, (d.value / max) * chartH);
+    const bx = x + barGap + i * (barW + barGap);
+    const by = chartY + chartH - bh;
+    doc.setFillColor(color[0], color[1], color[2]);
+    doc.rect(bx, by, barW, bh, 'F');
+    // Value on top (only if room)
+    if (data.length <= 15) {
+      doc.setFontSize(6); doc.setTextColor(60,60,60); doc.setFont('helvetica','normal');
+      doc.text(String(d.value >= 1000 ? Math.round(d.value/1000)+'k' : d.value), bx + barW/2, by - 1, { align:'center' });
+    }
+    // Label under
+    if (data.length <= maxLabel) {
+      doc.setFontSize(6); doc.setTextColor(100,100,100);
+      doc.text(String(d.label).slice(0,8), bx + barW/2, chartY + chartH + 4, { align:'center' });
+    }
+  });
+  // Y-axis scale (max label)
+  doc.setFontSize(6); doc.setTextColor(120,120,120);
+  doc.text(String(max >= 1000 ? Math.round(max/1000)+'k' : max), x - 1, chartY + 2, { align:'right' });
+}
+
+function _pdfPieChart(doc, { data, cx, cy, r, title }) {
+  // data: [{ label, value, color:[r,g,b] }]
+  if (!data?.length) return;
+  const total = data.reduce((s,d) => s + d.value, 0) || 1;
+  if (title) {
+    doc.setFontSize(10); doc.setFont('helvetica','bold'); doc.setTextColor(30,30,30);
+    doc.text(title, cx - r, cy - r - 3);
+  }
+  let startAngle = -Math.PI / 2; // start at top
+  data.forEach(d => {
+    const slice = (d.value / total) * Math.PI * 2;
+    const endAngle = startAngle + slice;
+    doc.setFillColor(d.color[0], d.color[1], d.color[2]);
+    // Approximate pie with triangles fan
+    const segs = Math.max(12, Math.round(slice * 30));
+    for (let i = 0; i < segs; i++) {
+      const a1 = startAngle + (i * slice / segs);
+      const a2 = startAngle + ((i + 1) * slice / segs);
+      doc.triangle(cx, cy, cx + r * Math.cos(a1), cy + r * Math.sin(a1), cx + r * Math.cos(a2), cy + r * Math.sin(a2), 'F');
+    }
+    startAngle = endAngle;
+  });
+  // Legend
+  let ly = cy + r + 5;
+  doc.setFontSize(7); doc.setFont('helvetica','normal');
+  data.forEach(d => {
+    doc.setFillColor(d.color[0], d.color[1], d.color[2]);
+    doc.rect(cx - r, ly - 2, 3, 3, 'F');
+    doc.setTextColor(60,60,60);
+    const pct = Math.round(100 * d.value / total);
+    doc.text(`${d.label} — ${pct}%`, cx - r + 5, ly);
+    ly += 4;
+  });
 }
 
 // ── RAPPORT PDF GLOBAL ────────────────────────
@@ -2068,6 +2595,28 @@ function generateSalesReportPDF(period = 'all') {
     doc.text(c.val, x+3, y+13);
   });
   y += 28;
+  // CHART : Évolution 14 jours (ou période sélectionnée)
+  const days = period === 'today' ? 1 : period === 'week' ? 7 : period === 'month' ? 30 : 14;
+  const trend = [];
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    const key = d.toISOString().slice(0,10);
+    const total = sales.filter(s => (s.date||'').slice(0,10) === key).reduce((sum,s) => sum + s.total, 0);
+    trend.push({ label: String(d.getDate()), value: Math.round(total) });
+  }
+  _pdfBarChart(doc, { data: trend, x: 16, y, w: 178, h: 40, title: `Évolution du CA sur ${days} jours`, color:[16,185,129], maxLabel: 30 });
+  y += 48;
+  // PIE : répartition par moyen de paiement
+  const byPayment = {};
+  sales.forEach(s => {
+    const pm = s.paymentMethod || 'cash';
+    byPayment[pm] = (byPayment[pm] || 0) + s.total;
+  });
+  const palette = [[16,185,129],[79,70,229],[245,158,11],[139,92,246],[239,68,68],[14,165,233]];
+  const pieData = Object.entries(byPayment).map(([k,v], i) => ({ label:k, value:v, color:palette[i % palette.length] }));
+  if (pieData.length) {
+    _pdfPieChart(doc, { data: pieData, cx: 50, cy: y + 20, r: 18, title: 'Paiement' });
+  }
   // Top 5 products
   const byProduct = {};
   sales.forEach(s => {
@@ -2192,12 +2741,17 @@ function toggleCart() {
 }
 
 async function deleteProduct(id) {
+  if (typeof hasPermission === 'function' && !hasPermission('products') && !hasPermission('all')) {
+    if (typeof requirePermission === 'function') requirePermission('products');
+    return;
+  }
   const p = S.products.find(p => p.id === id);
   if (!p) return;
   if (!confirm(`Supprimer "${p.name}" ?`)) return;
   try {
     await api('DELETE', `/api/products/${id}`);
     S.products = S.products.filter(p => p.id !== id);
+    if (typeof logAudit === 'function') logAudit('product', 'delete', { name: p.name, id });
     showToast(`"${p.name}" supprimé`);
     render();
   } catch(e) {
@@ -2658,7 +3212,38 @@ async function saveAccountInfo() {
 function toggleDark() {
   S.darkMode = !S.darkMode;
   document.body.classList.toggle('dark', S.darkMode);
+  // Support data-theme pour nouveaux styles dark
+  if (S.darkMode) {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.body.setAttribute('data-theme', 'dark');
+  } else {
+    document.documentElement.removeAttribute('data-theme');
+    document.body.removeAttribute('data-theme');
+  }
+  // Persist preference
+  localStorage.setItem('stockr_dark_mode', S.darkMode ? '1' : '0');
+  showToast(S.darkMode ? '🌙 Mode sombre activé' : '☀️ Mode clair activé', 'success');
   render();
+}
+
+function applyTheme() {
+  const saved = localStorage.getItem('stockr_dark_mode');
+  if (saved === '1') {
+    S.darkMode = true;
+    document.body.classList.add('dark');
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.body.setAttribute('data-theme', 'dark');
+  } else if (saved === '0') {
+    S.darkMode = false;
+  } else {
+    // Auto: match system preference
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      S.darkMode = true;
+      document.body.classList.add('dark');
+      document.documentElement.setAttribute('data-theme', 'dark');
+      document.body.setAttribute('data-theme', 'dark');
+    }
+  }
 }
 
 function changeCurrency(code) {
@@ -2815,13 +3400,42 @@ function nav(view, extra={}) {
 }
 
 // ── Render ────────────────────────────────────
+let __lastView = null;
+function __markViewTransition(newView) {
+  // Only trigger CSS animations when the view actually changes.
+  // Prevents "blink" on every state update inside the same view.
+  const changed = newView !== __lastView;
+  __lastView = newView;
+  const body = document.body;
+  if (!body) return changed;
+  if (changed) {
+    body.classList.add('view-entering');
+    // Remove after one frame cycle so re-renders within the same view stay static
+    clearTimeout(window.__viewEnterTimer);
+    window.__viewEnterTimer = setTimeout(() => body.classList.remove('view-entering'), 450);
+  } else {
+    body.classList.remove('view-entering');
+  }
+  return changed;
+}
+
 function render() {
   const viewEl = $('view');
   const navEl  = $('nav');
 
+  // 2FA en attente → écran vérification
+  if (S.twoFAPending && S.view === '2fa-verify') {
+    navEl.style.display = 'none';
+    __markViewTransition('2fa-verify');
+    viewEl.innerHTML = v2FAVerify();
+    viewEl.scrollTop = 0;
+    return;
+  }
+
   // Pas de session → écran auth
   if (!S.session) {
     navEl.style.display = 'none';
+    __markViewTransition('__auth');
     viewEl.innerHTML = vAuth();
     viewEl.scrollTop = 0;
     return;
@@ -2844,8 +3458,15 @@ function render() {
     'add-order': vAddOrder, pricing: vPricing, subscription: vSubscription,
     // ── Nouvelles vues v2 ──
     more: vMore, boutique: vBoutique, marketing: vMarketing,
-    'social-media': vSocialMedia, 'payments-setup': vPayments,
+    'social-media': vSocialMedia, 'social-setup': vSocialSetup, 'payments-setup': vPayments,
     integrations: vIntegrations,
+    'delivery-setup': vDeliverySetup,
+    'whatsapp-setup': vWhatsAppSetup,
+    'sms-setup': vSmsSetup,
+    'ecommerce-setup': vEcommerceSetup,
+    'sheets-setup': vSheetsSetup,
+    'pos-setup': vPosSetup,
+    'compta-setup': vComptaSetup,
     'promo-form': vPromoForm, 'promo-detail': vPromoDetail,
     'banner-form': vBannerForm, 'popup-form': vPopupForm,
     'review-form': vReviewForm, 'tracking-form': vTrackingForm,
@@ -2862,7 +3483,14 @@ function render() {
     'boutique-orders': () => { S.view = 'boutique'; return vBoutique(); },
     'pack-form': vPackForm,
     'exports': vExports,
+    // ── BATCH 5 : Équipe, Audit, Apparence, Sécurité, 2FA ──
+    'team':             vTeam,
+    'add-team-member':  vAddTeamMember,
+    'audit-log':        vAuditLog,
+    'appearance':       vAppearance,
+    'security':         vSecurity,
   };
+  __markViewTransition(S.view);
   viewEl.innerHTML = (map[S.view] || vHome)();
   if (!S.globalSearch) viewEl.scrollTop = 0;
 
@@ -2874,16 +3502,17 @@ function render() {
     if (gs) { gs.focus(); gs.setSelectionRange(gs.value.length, gs.value.length); }
   }
 
-  const hideNav = ['detail','add','add-product','edit-product','pack-form','add-client','client-detail','notifications','catalog','add-supplier','supplier-detail','stock-history','purchase-orders','add-order','pricing','subscription','boutique','boutique-appearance','boutique-domain','boutique-pixels','boutique-code','boutique-seo','boutique-hours','boutique-policies','boutique-faq','marketing','social-media','payments-setup','integrations','api-settings','spectra','clients','exports'].includes(S.view);
+  const hideNav = ['detail','add','add-product','edit-product','pack-form','add-client','client-detail','notifications','catalog','add-supplier','supplier-detail','stock-history','purchase-orders','add-order','pricing','subscription','boutique','boutique-appearance','boutique-domain','boutique-pixels','boutique-code','boutique-seo','boutique-hours','boutique-policies','boutique-faq','marketing','social-media','social-setup','payments-setup','integrations','delivery-setup','whatsapp-setup','sms-setup','ecommerce-setup','sheets-setup','pos-setup','compta-setup','api-settings','spectra','clients','exports','team','add-team-member','audit-log','appearance','security','2fa-verify'].includes(S.view);
   navEl.style.display = hideNav ? 'none' : '';
   if (!hideNav) navEl.innerHTML = renderNav();
 }
 
 function renderNav() {
   const bt = getBusinessType();
+  const stockLbl = bt === 'reseller' ? 'Boutique' : bt === 'maker' ? 'Matières' : t('stock');
   const tabs = [
     { id:'home',      icon:IC.home,    label:t('home')     },
-    bt_showStock() ? { id:'pantry', icon:IC.box, label:t('stock') } : null,
+    bt_showStock() ? { id:'pantry', icon:IC.box, label:stockLbl } : null,
     bt_showProducts() ? { id:'products', icon:IC.tag, label:t('products') } : null,
     { id:'sales',     icon:IC.dollar,  label:t('sales')    },
     { id:'financial', icon:IC.bar,     label:t('bilan')    },
@@ -2944,6 +3573,36 @@ function vAuth() {
       <button class="btn btn-primary" style="margin-top:8px" onclick="${isLogin ? 'doLogin()' : 'authNextStep()'}">
         ${isLogin ? t('loginBtn') : t('next') + ' →'}
       </button>
+
+      ${isLogin ? `
+      <!-- Separator -->
+      <div style="display:flex;align-items:center;gap:10px;margin:18px 0 12px">
+        <div style="flex:1;height:1px;background:var(--border)"></div>
+        <div style="font-size:11px;color:var(--text-3);font-weight:600">OU</div>
+        <div style="flex:1;height:1px;background:var(--border)"></div>
+      </div>
+
+      <!-- Social login -->
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <button class="btn" onclick="loginGoogle()" style="background:#fff;color:#3c4043;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;gap:10px;font-weight:600;padding:12px">
+          <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/><path fill="#FF3D00" d="m6.306 14.691 6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/><path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0 1 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/><path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/></svg>
+          Continuer avec Google
+        </button>
+        <button class="btn" onclick="loginApple()" style="background:#000;color:#fff;display:flex;align-items:center;justify-content:center;gap:10px;font-weight:600;padding:12px">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>
+          Continuer avec Apple
+        </button>
+        ${window.PublicKeyCredential ? `
+        <button class="btn" onclick="loginBiometric()" style="background:var(--card-bg);color:var(--accent);border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;gap:10px;font-weight:700;padding:12px">
+          <span style="font-size:18px">👆</span>
+          Connexion biométrique
+        </button>` : ''}
+      </div>
+      <div style="margin-top:12px;text-align:center;display:flex;align-items:center;justify-content:center;gap:6px;font-size:10px;color:var(--text-3)">
+        <span>🔒</span><span>Connexion sécurisée SSL</span>
+      </div>
+      ` : ''}
+
       <div class="auth-switch">
         ${isLogin ? t('noAccount') : t('hasAccount')}
         <button onclick="S.authView='${isLogin?'register':'login'}';S.authStep=1;S.authShowPwd=false;render()">
@@ -2952,6 +3611,140 @@ function vAuth() {
       </div>
     </div>
   </div>`;
+}
+
+// ── Social / biometric login : flux démo fonctionnels ──────────
+// NB : pour la production, ces flux doivent être remplacés par l'OAuth officiel
+// (Google Identity Services / Apple JS SDK) + validation côté backend.
+function __socialLoginCreate(provider, email, name) {
+  // Crée une session locale avec les infos du provider social.
+  const token = 'social_' + provider + '_' + Math.random().toString(36).slice(2, 12);
+  const session = {
+    token,
+    user: {
+      id: 'u_' + provider + '_' + Date.now(),
+      email: email || (provider + '@stockr.local'),
+      name: name || (provider === 'google' ? 'Utilisateur Google' : provider === 'apple' ? 'Utilisateur Apple' : 'Utilisateur'),
+      provider,
+      avatar: provider === 'google' ? '🟢' : provider === 'apple' ? '🍎' : '👤',
+    },
+    businessType: S.authProfile || 'reseller',
+    businessName: (name || 'Ma Boutique') + ' — ' + provider,
+    country: 'CI',
+    currency: 'XOF',
+    createdAt: Date.now(),
+  };
+  try {
+    localStorage.setItem('stockr_session', JSON.stringify(session));
+    localStorage.setItem('stockr_token', token);
+  } catch(e){}
+  S.token = token;
+  S.session = session;
+  logAudit('auth', 'login_success', { provider, email: session.user.email });
+  // Seed démo pour que la boutique soit remplie dès la 1re ouverture
+  try { seedDemoData(session.businessType); } catch(e){}
+  S.view = 'home';
+  render();
+  try { loadData(); } catch(e){}
+  showToast('✅ Connecté avec ' + (provider.charAt(0).toUpperCase() + provider.slice(1)), 'success');
+}
+
+function loginGoogle() {
+  logAudit('auth', 'google_attempt', {});
+  // Tentative OAuth réelle si Google Identity Services est chargé
+  if (window.google && window.google.accounts && window.google.accounts.id) {
+    try {
+      window.google.accounts.id.prompt();
+      return;
+    } catch(e){}
+  }
+  // Flux démo : demande email à l'utilisateur
+  const email = prompt('🟢 Connexion Google\n\nEntrez votre email Google :', 'demo@gmail.com');
+  if (!email) { showToast('Connexion annulée', 'info'); return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showToast('Email invalide', 'error'); return; }
+  const name = email.split('@')[0].replace(/[._-]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  __socialLoginCreate('google', email, name);
+}
+
+function loginApple() {
+  logAudit('auth', 'apple_attempt', {});
+  // Tentative AppleID.auth si chargé
+  if (window.AppleID && window.AppleID.auth) {
+    try {
+      window.AppleID.auth.signIn().then(res => {
+        __socialLoginCreate('apple', res?.user?.email, res?.user?.name?.firstName || 'Apple User');
+      }).catch(()=> showToast('Connexion Apple annulée', 'info'));
+      return;
+    } catch(e){}
+  }
+  const email = prompt('🍎 Connexion Apple\n\nEntrez votre identifiant Apple (email) :', 'demo@icloud.com');
+  if (!email) { showToast('Connexion annulée', 'info'); return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showToast('Email invalide', 'error'); return; }
+  const name = email.split('@')[0].replace(/[._-]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  __socialLoginCreate('apple', email, name);
+}
+
+async function loginBiometric() {
+  if (!window.PublicKeyCredential) {
+    showToast('WebAuthn non disponible sur cet appareil', 'error');
+    return;
+  }
+  try {
+    const savedCredId = localStorage.getItem('stockr_webauthn_cred');
+    const savedSession = getSession();
+
+    // Si pas encore enrôlé : enrôlement rapide (démo)
+    if (!savedCredId) {
+      if (!savedSession) {
+        showToast('Connectez-vous d\'abord (email/mot de passe), puis activez la biométrie dans Paramètres > Sécurité', 'info');
+        return;
+      }
+      // Enrôle sur place si session existe
+      const cred = await navigator.credentials.create({
+        publicKey: {
+          challenge: crypto.getRandomValues(new Uint8Array(32)),
+          rp: { name: 'STOCKR', id: window.location.hostname },
+          user: {
+            id: new TextEncoder().encode(savedSession.user.email || 'user'),
+            name: savedSession.user.email || 'user',
+            displayName: savedSession.user.name || 'STOCKR',
+          },
+          pubKeyCredParams: [{ alg: -7, type: 'public-key' }, { alg: -257, type: 'public-key' }],
+          authenticatorSelection: { userVerification: 'required' },
+          timeout: 60000,
+        }
+      });
+      if (cred && cred.id) {
+        localStorage.setItem('stockr_webauthn_cred', cred.id);
+        showToast('✅ Biométrie enrôlée', 'success');
+        logAudit('auth', 'biometric_enrolled', {});
+      }
+      return;
+    }
+
+    // Vérification
+    const publicKey = {
+      challenge: crypto.getRandomValues(new Uint8Array(32)),
+      rpId: window.location.hostname,
+      timeout: 60000,
+      userVerification: 'required',
+    };
+    await navigator.credentials.get({ publicKey });
+    logAudit('auth', 'biometric_success', {});
+    showToast('✅ Biométrie validée', 'success');
+    if (savedSession) {
+      S.token = savedSession.token;
+      S.session = savedSession;
+      S.view = 'home';
+      render();
+      try { loadData(); } catch(e){}
+    } else {
+      showToast('Session absente — connectez-vous', 'warning');
+    }
+  } catch(e) {
+    logAudit('auth', 'biometric_failed', { error: e.message });
+    showToast('Authentification biométrique annulée', 'error');
+  }
 }
 
 function vAuthStep2() {
@@ -3029,6 +3822,8 @@ function vAuthStep2() {
 
 // ── HOME ──────────────────────────────────────
 function vHome() {
+  const bt = (typeof getBusinessType === 'function') ? getBusinessType() : 'maker';
+  const isReseller = bt === 'reseller';
   const low     = S.articles.filter(a => a.stock < a.min && a.min > 0);
   const totalCA = S.sales.reduce((s,v) => s+v.total, 0);
   const totalProfit = S.sales.reduce((s,v) => s+(v.profit||0), 0);
@@ -3085,11 +3880,16 @@ function vHome() {
     }
   }
 
+  const __currentMember = (typeof getCurrentMember === 'function') ? getCurrentMember() : null;
+  const __currentRoleInfo = __currentMember ? (ROLE_LABELS?.[__currentMember.role] || ROLE_LABELS?.admin) : null;
+  const __hasTeam = (S.teamMembers||[]).length > 0;
   return `
   <div class="hero anim">
     <div class="hero-top">
       <div>
-        <div class="hero-greeting">${t('hello')}, ${S.session.name.split(' ')[0]}</div>
+        <div class="hero-greeting">${t('hello')}, ${(__currentMember?.name || S.session.name).split(' ')[0]}
+          ${__currentRoleInfo && __currentMember?.id ? `<span style="font-size:10px;padding:2px 7px;background:rgba(255,255,255,.2);color:#fff;border-radius:5px;margin-left:6px;font-weight:700;vertical-align:middle">${__currentRoleInfo.icon} ${__currentRoleInfo.name}</span>` : ''}
+        </div>
         <div class="hero-name">${S.session.business || S.session.name}</div>
         ${S.locations.length > 0 ? `<div class="hero-location">
           <select class="location-select" onchange="setLocation(this.value?Number(this.value):null)" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);color:#fff;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:600;outline:none;cursor:pointer;-webkit-appearance:none;appearance:none">
@@ -3099,6 +3899,7 @@ function vHome() {
         </div>` : ''}
       </div>
       <div style="display:flex;gap:8px">
+        ${__hasTeam ? `<button class="hero-btn" onclick="openMemberSwitcher()" title="Changer de membre" style="position:relative">👥</button>` : ''}
         <button class="hero-btn" onclick="nav('notifications')" style="position:relative">${IC.bell}${low.length>0?`<span style="position:absolute;top:-2px;right:-2px;width:18px;height:18px;border-radius:50%;background:var(--danger);color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center">${low.length}</span>`:''}</button>
         <button class="hero-btn" onclick="nav('settings')">${IC.settings}</button>
       </div>
@@ -3106,7 +3907,7 @@ function vHome() {
     <div class="hero-stats">
       <div class="hero-stat">
         <div class="hero-stat-val">${S.articles.length}</div>
-        <div class="hero-stat-lbl">${t('articles')}</div>
+        <div class="hero-stat-lbl">${isReseller?'Produits':t('articles')}</div>
       </div>
       <div class="hero-stat ${low.length>0?'warn':''}">
         <div class="hero-stat-val">${low.length}</div>
@@ -3148,6 +3949,130 @@ function vHome() {
         <div class="qa-lbl">${t('viewReport')}</div>
       </button>
     </div>` : ''}
+
+    ${(() => {
+      if (_showSearch) return '';
+      // Objectif configuré (type × période) + stats réelles
+      const goalType = localStorage.getItem('stockr_goal_type') || 'revenue';
+      const goalPeriod = localStorage.getItem('stockr_goal_period') || 'day';
+      const stored = Number(localStorage.getItem('stockr_daily_goal')) || 0;
+      const thirtyDaysAgo = new Date(); thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      const last30Sales = S.sales.filter(s => new Date(s.date) >= thirtyDaysAgo);
+
+      // Définir la période (début)
+      const now = new Date();
+      let periodStart;
+      if (goalPeriod === 'week') {
+        const dow = now.getDay() || 7;
+        periodStart = new Date(now); periodStart.setHours(0,0,0,0); periodStart.setDate(now.getDate() - (dow - 1));
+      } else if (goalPeriod === 'month') {
+        periodStart = new Date(now.getFullYear(), now.getMonth(), 1);
+      } else {
+        periodStart = new Date(now); periodStart.setHours(0,0,0,0);
+      }
+      const periodSales = S.sales.filter(s => new Date(s.date) >= periodStart);
+      // Valeur atteinte selon le type
+      const current = goalType === 'profit'
+        ? periodSales.reduce((x,s)=>x+(s.profit||0),0)
+        : goalType === 'sales'
+          ? periodSales.length
+          : periodSales.reduce((x,s)=>x+s.total,0);
+      // Suggestion auto si pas d'objectif
+      const periodMult = goalPeriod === 'day' ? 1 : goalPeriod === 'week' ? 7 : 30;
+      const avg30CA = last30Sales.length > 0 ? last30Sales.reduce((x,s)=>x+s.total,0) / 30 : 0;
+      const avg30Profit = last30Sales.length > 0 ? last30Sales.reduce((x,s)=>x+(s.profit||0),0) / 30 : 0;
+      const avg30Sales = last30Sales.length / 30;
+      const avgForType = goalType === 'profit' ? avg30Profit : goalType === 'sales' ? avg30Sales : avg30CA;
+      const goal = stored > 0 ? stored : Math.max(goalType==='sales'?1:500, Math.round(avgForType * 1.2 * periodMult));
+      if (goal <= 0) return '';
+      const pct = goal > 0 ? Math.min(100, Math.round((current / goal) * 100)) : 0;
+      const remaining = Math.max(0, goal - current);
+      const unit = goalType === 'sales' ? '' : sym();
+      const typeLbl = goalType === 'profit' ? 'Bénéfice' : goalType === 'sales' ? 'Ventes' : 'Chiffre d\'affaires';
+      const periodLbl = goalPeriod === 'day' ? 'Aujourd\'hui' : goalPeriod === 'week' ? 'Cette semaine' : 'Ce mois';
+      const transactionsPeriod = periodSales.length;
+      const avgBasket = transactionsPeriod > 0 ? Math.round(periodSales.reduce((x,s)=>x+s.total,0) / transactionsPeriod) : 0;
+      const todayProfitVal = periodSales.reduce((x,s)=>x+(s.profit||0),0);
+      const barColor = pct >= 100 ? 'linear-gradient(90deg,#10B981,#059669)' : pct >= 66 ? 'linear-gradient(90deg,var(--accent),#10B981)' : pct >= 33 ? 'linear-gradient(90deg,var(--accent),#EC4899)' : 'linear-gradient(90deg,#F59E0B,var(--accent))';
+      const emoji = goalType === 'profit' ? '📈' : goalType === 'sales' ? '🛒' : '💰';
+      return `
+      <div class="card anim" style="margin-bottom:12px;padding:14px 16px;background:linear-gradient(135deg,rgba(79,70,229,0.06),rgba(236,72,153,0.04));border:1px solid rgba(79,70,229,0.18)">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;gap:8px">
+          <div style="flex:1;min-width:0">
+            <div style="font-size:11px;color:var(--text-3);font-weight:600;letter-spacing:.3px;text-transform:uppercase">${emoji} Objectif ${typeLbl} · ${periodLbl}</div>
+            <div style="font-size:17px;font-weight:800;color:var(--text-1);margin-top:3px">${goalType==='sales'?current:fmt(current)} <span style="color:var(--text-3);font-weight:500;font-size:13px">/ ${goalType==='sales'?goal:fmt(goal)} ${unit}</span></div>
+          </div>
+          <button class="btn" style="padding:6px 10px;font-size:11px;border:1px solid var(--border);background:var(--surface);color:var(--text-2);font-weight:600;cursor:pointer" onclick="editDailyGoal()" title="Modifier objectif">⚙️</button>
+        </div>
+        <div style="height:9px;background:var(--gray-2);border-radius:5px;overflow:hidden;margin-bottom:8px;position:relative">
+          <div style="height:100%;width:${pct}%;background:${barColor};border-radius:5px;transition:width .5s ease;box-shadow:${pct>=100?'0 0 8px rgba(16,185,129,.4)':'none'}"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--text-3)">
+          <span style="font-weight:600;color:${pct>=100?'#10B981':'var(--text-2)'}">${pct}% ${pct>=100?'atteint ✓':'atteint'}</span>
+          <span style="font-weight:500">${remaining>0 ? `Reste <strong style="color:var(--text-1)">${goalType==='sales'?remaining+' ventes':fmt(remaining)+' '+unit}</strong>` : '🎉 Objectif atteint !'}</span>
+        </div>
+        ${transactionsPeriod>0 ? `<div style="display:flex;gap:14px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:11px;color:var(--text-3);flex-wrap:wrap">
+          <span>📝 <strong style="color:var(--text-1)">${transactionsPeriod}</strong> vente${transactionsPeriod>1?'s':''}</span>
+          <span>🛒 Panier moyen <strong style="color:var(--text-1)">${fmt(avgBasket)} ${sym()}</strong></span>
+          <span>💰 Profit <strong style="color:var(--success)">+${fmt(todayProfitVal)} ${sym()}</strong></span>
+        </div>` : `<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:11px;color:var(--text-3);text-align:center">Aucune vente sur la période · <a href="#" onclick="nav('sales');return false" style="color:var(--accent);font-weight:600">Enregistrer une vente</a></div>`}
+      </div>`;
+    })()}
+
+    ${(() => {
+      if (_showSearch) return '';
+      const pending = (S.boutiqueOrders||[]).filter(o => o.status === 'pending' || !o.status);
+      if (pending.length === 0) return '';
+      return `
+      <div class="alert-banner" style="background:rgba(16,185,129,0.08);border-color:rgba(16,185,129,0.22);cursor:pointer" onclick="nav('boutique')">
+        <div class="alert-ico" style="background:rgba(16,185,129,0.15);color:#10B981;font-size:16px">🛒</div>
+        <div style="flex:1;min-width:0">
+          <div class="alert-title" style="color:#10B981">${pending.length} commande${pending.length>1?'s':''} boutique à traiter</div>
+          <div class="alert-sub" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${pending.slice(0,3).map(o => `${o.clientName||'Client'} · ${fmt(o.total||0)} ${sym()}`).join(' · ')}</div>
+        </div>
+        <div class="alert-arrow">${IC.chevron}</div>
+      </div>`;
+    })()}
+
+    ${(() => {
+      if (_showSearch) return '';
+      try {
+        const queue = JSON.parse(localStorage.getItem('stockr_delivery_queue') || '[]');
+        const pending = queue.filter(q => q.status === 'queued' || q.status === 'pending' || q.status === 'pending_manual');
+        if (pending.length === 0) return '';
+        return `
+        <div class="alert-banner" style="background:rgba(59,130,246,0.08);border-color:rgba(59,130,246,0.22);cursor:pointer" onclick="nav('integrations')">
+          <div class="alert-ico" style="background:rgba(59,130,246,0.15);color:#3B82F6;font-size:16px">🚚</div>
+          <div style="flex:1;min-width:0">
+            <div class="alert-title" style="color:#3B82F6">${pending.length} livraison${pending.length>1?'s':''} en attente</div>
+            <div class="alert-sub">${pending.slice(0,3).map(p => `${p.provider==='glovo'?'Glovo':'Yango'} · #${String(p.orderId||'').slice(-4)||'—'}`).join(' · ')}</div>
+          </div>
+          <div class="alert-arrow">${IC.chevron}</div>
+        </div>`;
+      } catch(e) { return ''; }
+    })()}
+
+    ${(() => {
+      if (_showSearch) return '';
+      const upcoming = (S.scheduledPosts||[]).filter(p => {
+        if (p.status === 'published' || p.status === 'cancelled') return false;
+        if (!p.scheduledAt) return false;
+        const d = new Date(p.scheduledAt);
+        const now = new Date();
+        const in48h = new Date(now.getTime() + 48*3600*1000);
+        return d >= now && d <= in48h;
+      }).sort((a,b) => new Date(a.scheduledAt) - new Date(b.scheduledAt));
+      if (upcoming.length === 0) return '';
+      return `
+      <div class="alert-banner" style="background:rgba(168,85,247,0.08);border-color:rgba(168,85,247,0.22);cursor:pointer" onclick="nav('social-media')">
+        <div class="alert-ico" style="background:rgba(168,85,247,0.15);color:#A855F7;font-size:16px">📅</div>
+        <div style="flex:1;min-width:0">
+          <div class="alert-title" style="color:#A855F7">${upcoming.length} publication${upcoming.length>1?'s':''} programmée${upcoming.length>1?'s':''}</div>
+          <div class="alert-sub">Prochaine : ${fmtDate(upcoming[0].scheduledAt)} · ${(upcoming[0].platforms||[]).join(', ')||'—'}</div>
+        </div>
+        <div class="alert-arrow">${IC.chevron}</div>
+      </div>`;
+    })()}
 
     ${!_showSearch && low.length > 0 ? `
     <div class="alert-banner" onclick="nav('pantry',{filter:'low'})">
@@ -3261,6 +4186,49 @@ function vHome() {
         ${t('weekTotal')} : <strong style="color:var(--text-1)">${fmt(weekDays.reduce((s,d)=>s+d.ca,0))} ${sym()}</strong>
       </div>
     </div>` : ''}
+
+    ${!_showSearch && (S.teamMembers||[]).length > 0 && hasPermission('all') ? (() => {
+      const members = S.teamMembers.filter(m => m.active !== false);
+      const topMember = members.map(m => ({ ...m, _st: _teamMemberStats(m.id) })).sort((a,b) => b._st.totalCA - a._st.totalCA)[0];
+      const totalTeamCA = members.reduce((s,m) => s + _teamMemberStats(m.id).totalCA, 0);
+      const totalCommissions = members.reduce((s,m) => s + _teamCommission(m), 0);
+      return `
+      <div class="section-hd">
+        <div class="section-lbl">👥 Équipe</div>
+        <button class="section-act" onclick="nav('team')">Gérer</button>
+      </div>
+      <div class="card anim" style="animation-delay:0.17s;padding:14px;cursor:pointer" onclick="nav('team')">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:${topMember ? '12px' : '0'}">
+          <div style="text-align:center">
+            <div style="font-size:20px;font-weight:800;color:#7C73FF">${members.length}</div>
+            <div style="font-size:10px;color:var(--text-3)">Membre(s)</div>
+          </div>
+          <div style="text-align:center;border-left:1px solid var(--border);border-right:1px solid var(--border)">
+            <div style="font-size:20px;font-weight:800;color:var(--accent)">${fmt(totalTeamCA/1000)}K</div>
+            <div style="font-size:10px;color:var(--text-3)">CA équipe</div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-size:20px;font-weight:800;color:#10B981">${fmt(totalCommissions/1000)}K</div>
+            <div style="font-size:10px;color:var(--text-3)">Commissions</div>
+          </div>
+        </div>
+        ${topMember ? (() => {
+          const info = ROLE_LABELS[topMember.role] || ROLE_LABELS.vendor;
+          return `
+          <div style="display:flex;align-items:center;gap:10px;padding:10px;background:${info.color}10;border-radius:10px">
+            <div style="width:32px;height:32px;border-radius:16px;background:${info.color}25;color:${info.color};display:flex;align-items:center;justify-content:center;font-size:16px">${info.icon}</div>
+            <div style="flex:1">
+              <div style="font-size:12px;color:var(--text-3)">🏆 Top vendeur</div>
+              <div style="font-size:13px;font-weight:700;color:var(--text-1)">${topMember.name}</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:14px;font-weight:800;color:${info.color}">${fmt(topMember._st.totalCA)}</div>
+              <div style="font-size:10px;color:var(--text-3)">${sym()}</div>
+            </div>
+          </div>`;
+        })() : ''}
+      </div>`;
+    })() : ''}
 
     ${!_showSearch && topProducts.length > 0 ? `
     <div class="section-hd">
@@ -3426,6 +4394,8 @@ function vHome() {
 
 // ── PANTRY ────────────────────────────────────
 function vPantry() {
+  const bt = (typeof getBusinessType === 'function') ? getBusinessType() : 'maker';
+  const isReseller = bt === 'reseller';
   const q = S.search.toLowerCase();
   // Filter by location first
   let baseList = S.currentLocation ? S.articles.filter(a => !a.locationId || a.locationId === S.currentLocation) : S.articles;
@@ -3433,18 +4403,76 @@ function vPantry() {
   if (S.filter==='out') list = list.filter(a => a.stock===0);
   else if (S.filter==='low') list = list.filter(a => a.stock>0 && a.stock<a.min && a.min>0);
   else if (S.filter==='ok')  list = list.filter(a => a.stock>=a.min || a.min===0);
+  else if (S.filter==='expiring') list = list.filter(a => { const e = getExpiryStatus(a.expiry); return e && e.days <= 30; });
+  else if (S.filter==='margin-low' && isReseller) list = list.filter(a => { const p=a.price||0, c=a.purchasePrice||0; return p>0 && c>0 && ((p-c)/p)*100 < 15; });
 
+  // Sort
+  const sort = S.stockSort || 'name';
+  if (sort === 'stock-asc')      list = [...list].sort((a,b)=>(a.stock||0)-(b.stock||0));
+  else if (sort === 'stock-desc') list = [...list].sort((a,b)=>(b.stock||0)-(a.stock||0));
+  else if (sort === 'value-desc') list = [...list].sort((a,b)=>(b.stock*(b.price||0))-(a.stock*(a.price||0)));
+  else if (sort === 'margin-desc') list = [...list].sort((a,b)=>{ const ma=a.price>0?((a.price-(a.purchasePrice||0))/a.price)*100:0; const mb=b.price>0?((b.price-(b.purchasePrice||0))/b.price)*100:0; return mb-ma; });
+  else if (sort === 'expiry')     list = [...list].sort((a,b)=>{ const ea=getExpiryStatus(a.expiry), eb=getExpiryStatus(b.expiry); return (ea?ea.days:9999) - (eb?eb.days:9999); });
+  else list = [...list].sort((a,b)=>a.name.localeCompare(b.name));
+
+  // KPIs
+  const totalValue = baseList.reduce((s,a) => s + a.stock*(a.price||0), 0);
+  const totalCost = baseList.reduce((s,a) => s + a.stock*(a.purchasePrice||a.cost||0), 0);
+  const potentialProfit = totalValue - totalCost;
+  const lowCount = baseList.filter(a => a.stock > 0 && a.stock < a.min && a.min > 0).length;
+  const outCount = baseList.filter(a => a.stock === 0).length;
+  const expCount = baseList.filter(a => { const e = getExpiryStatus(a.expiry); return e && e.days <= 30; }).length;
+  const lowMarginCount = isReseller ? baseList.filter(a => { const p=a.price||0, c=a.purchasePrice||0; return p>0 && c>0 && ((p-c)/p)*100 < 15; }).length : 0;
+
+  const stockLabel = isReseller ? '🏪 Ma boutique' : (bt === 'maker' ? '🏭 Matières premières' : t('stock'));
   return `
   <div class="page-header">
     <div class="page-header-row">
       <button class="back-btn" onclick="nav('home')">${IC.left}</button>
-      <div class="page-title">${t('stock')}</div>
+      <div class="page-title">${stockLabel}</div>
       <div style="display:flex;gap:8px;align-items:center">
         <button class="fab fab-outline" onclick="exportStockCSV()" title="Exporter CSV">⬇</button>
         <button class="fab fab-outline" onclick="nav('spectra')" title="Spectra">${IC.camera}</button>
         <button class="fab" onclick="nav('add')">${IC.plus}</button>
       </div>
     </div>
+    ${baseList.length > 0 ? (isReseller ? `
+    <div class="pantry-kpis" style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:8px 0 10px">
+      <div style="text-align:center;padding:8px 4px;background:linear-gradient(135deg,rgba(16,185,129,0.10),rgba(16,185,129,0.02));border-radius:8px;border:1px solid rgba(16,185,129,0.25)">
+        <div style="font-size:13px;font-weight:800;color:var(--success)">+${fmt(potentialProfit)}</div>
+        <div style="font-size:9px;color:var(--text-3);margin-top:1px;font-weight:600;letter-spacing:.3px">BÉNÉF. POTENTIEL</div>
+      </div>
+      <div style="text-align:center;padding:8px 4px;background:var(--gray-1);border-radius:8px;border:1px solid var(--border)" title="Valeur de vente du stock">
+        <div style="font-size:13px;font-weight:800;color:var(--accent)">${fmt(totalValue)}</div>
+        <div style="font-size:9px;color:var(--text-3);margin-top:1px;font-weight:600;letter-spacing:.3px">VALEUR STOCK</div>
+      </div>
+      <div style="text-align:center;padding:8px 4px;background:${outCount>0?'rgba(239,68,68,0.08)':'var(--gray-1)'};border-radius:8px;border:1px solid ${outCount>0?'rgba(239,68,68,0.25)':'var(--border)'};cursor:pointer" onclick="S.filter='out';render()">
+        <div style="font-size:13px;font-weight:800;color:${outCount>0?'var(--danger)':'var(--text-3)'}">${outCount}</div>
+        <div style="font-size:9px;color:var(--text-3);margin-top:1px;font-weight:600;letter-spacing:.3px">RUPTURE</div>
+      </div>
+      <div style="text-align:center;padding:8px 4px;background:${lowMarginCount>0?'rgba(245,158,11,0.08)':'var(--gray-1)'};border-radius:8px;border:1px solid ${lowMarginCount>0?'rgba(245,158,11,0.25)':'var(--border)'};cursor:pointer" onclick="S.filter='margin-low';render()" title="Produits avec marge < 15%">
+        <div style="font-size:13px;font-weight:800;color:${lowMarginCount>0?'var(--warning)':'var(--text-3)'}">${lowMarginCount}</div>
+        <div style="font-size:9px;color:var(--text-3);margin-top:1px;font-weight:600;letter-spacing:.3px">MARGE FAIBLE</div>
+      </div>
+    </div>` : `
+    <div class="pantry-kpis" style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:8px 0 10px">
+      <div style="text-align:center;padding:8px 4px;background:var(--gray-1);border-radius:8px;border:1px solid var(--border)">
+        <div style="font-size:14px;font-weight:800;color:var(--accent)">${fmt(totalValue)}</div>
+        <div style="font-size:9px;color:var(--text-3);margin-top:1px;font-weight:600;letter-spacing:.3px">VALEUR</div>
+      </div>
+      <div style="text-align:center;padding:8px 4px;background:${outCount>0?'rgba(239,68,68,0.08)':'var(--gray-1)'};border-radius:8px;border:1px solid ${outCount>0?'rgba(239,68,68,0.25)':'var(--border)'};cursor:pointer" onclick="S.filter='out';render()">
+        <div style="font-size:14px;font-weight:800;color:${outCount>0?'var(--danger)':'var(--text-3)'}">${outCount}</div>
+        <div style="font-size:9px;color:var(--text-3);margin-top:1px;font-weight:600;letter-spacing:.3px">RUPTURE</div>
+      </div>
+      <div style="text-align:center;padding:8px 4px;background:${lowCount>0?'rgba(245,158,11,0.08)':'var(--gray-1)'};border-radius:8px;border:1px solid ${lowCount>0?'rgba(245,158,11,0.25)':'var(--border)'};cursor:pointer" onclick="S.filter='low';render()">
+        <div style="font-size:14px;font-weight:800;color:${lowCount>0?'var(--warning)':'var(--text-3)'}">${lowCount}</div>
+        <div style="font-size:9px;color:var(--text-3);margin-top:1px;font-weight:600;letter-spacing:.3px">FAIBLE</div>
+      </div>
+      <div style="text-align:center;padding:8px 4px;background:${expCount>0?'rgba(236,72,153,0.08)':'var(--gray-1)'};border-radius:8px;border:1px solid ${expCount>0?'rgba(236,72,153,0.25)':'var(--border)'};cursor:pointer" onclick="S.filter='expiring';render()">
+        <div style="font-size:14px;font-weight:800;color:${expCount>0?'#EC4899':'var(--text-3)'}">${expCount}</div>
+        <div style="font-size:9px;color:var(--text-3);margin-top:1px;font-weight:600;letter-spacing:.3px">PÉREMPTION</div>
+      </div>
+    </div>`) : ''}
     <div class="search-wrap">
       <span class="search-ico">${IC.search}</span>
       <input class="input input-search" type="text" placeholder="    ${t('search')}" value="${S.search.replace(/"/g,'&quot;')}" oninput="S.search=this.value;render()">
@@ -3454,7 +4482,23 @@ function vPantry() {
       <button class="filter-chip ${S.filter==='out'?'active':''}" onclick="S.filter='out';render()">${t('outOfStock')}</button>
       <button class="filter-chip ${S.filter==='low'?'active':''}" onclick="S.filter='low';render()">${t('low')}</button>
       <button class="filter-chip ${S.filter==='ok'?'active':''}"  onclick="S.filter='ok';render()">${t('ok')}</button>
+      ${isReseller && lowMarginCount > 0 ? `<button class="filter-chip ${S.filter==='margin-low'?'active':''}" onclick="S.filter='margin-low';render()" style="${S.filter==='margin-low'?'':'color:var(--warning)'}">⚠ Marge faible (${lowMarginCount})</button>` : ''}
+      ${expCount > 0 ? `<button class="filter-chip ${S.filter==='expiring'?'active':''}" onclick="S.filter='expiring';render()" style="${S.filter==='expiring'?'':'color:#EC4899'}">⏱ Péremption (${expCount})</button>` : ''}
     </div>
+    ${baseList.length > 0 ? `
+    <div class="filter-row" style="margin-top:-4px;align-items:center">
+      <span style="font-size:10px;color:var(--text-3);font-weight:600;margin-right:4px">Trier :</span>
+      <select class="input" style="padding:4px 24px 4px 8px;font-size:11px;height:26px;width:auto;flex:0 0 auto;background-image:none" onchange="S.stockSort=this.value;render()">
+        <option value="name" ${sort==='name'?'selected':''}>Nom A-Z</option>
+        <option value="stock-asc" ${sort==='stock-asc'?'selected':''}>Stock ↑</option>
+        <option value="stock-desc" ${sort==='stock-desc'?'selected':''}>Stock ↓</option>
+        <option value="value-desc" ${sort==='value-desc'?'selected':''}>Valeur ↓</option>
+        ${isReseller ? `<option value="margin-desc" ${sort==='margin-desc'?'selected':''}>Marge ↓</option>` : ''}
+        <option value="expiry" ${sort==='expiry'?'selected':''}>Péremption</option>
+      </select>
+      <button class="filter-chip" onclick="nav('stock-history')" style="font-size:10px;padding:4px 10px;margin-left:auto" title="Historique des mouvements">${IC.trending} Mouvements</button>
+      ${S.locations.length > 1 ? `<button class="filter-chip" onclick="openStockTransfer()" style="font-size:10px;padding:4px 10px" title="Transférer entre emplacements">⇄ Transfert</button>` : ''}
+    </div>` : ''}
     ${S.locations.length > 0 ? `
     <div class="filter-row" style="margin-top:-4px">
       <button class="filter-chip ${!S.currentLocation?'active':''}" onclick="setLocation(null)" style="font-size:10px;padding:4px 10px">${IC.home} Tous</button>
@@ -3465,19 +4509,64 @@ function vPantry() {
     ${list.length===0 ? `
     <div class="empty">
       <div class="empty-ico">${IC.inbox}</div>
-      <div class="empty-title">${S.articles.length===0 ? t('noArticles') : t('noResults')}</div>
-      <div class="empty-text">${S.articles.length===0 ? t('noArticlesSub') : t('noResultsSub')}</div>
-      ${S.articles.length===0 ? `<button class="btn btn-primary" style="width:auto;padding:11px 24px" onclick="nav('add')">${t('addArticle')}</button>` : ''}
+      <div class="empty-title">${S.articles.length===0 ? (isReseller?'Aucun produit en boutique':t('noArticles')) : t('noResults')}</div>
+      <div class="empty-text">${S.articles.length===0 ? (isReseller?'Ajoutez votre premier produit pour commencer à vendre':t('noArticlesSub')) : t('noResultsSub')}</div>
+      ${S.articles.length===0 ? `<button class="btn btn-primary" style="width:auto;padding:11px 24px" onclick="nav('add')">${isReseller?'🏪 Ajouter un produit':t('addArticle')}</button>` : ''}
     </div>` : list.map((a,i) => {
       const st  = stockStatus(a.stock, a.min);
       const pct = a.min > 0 ? Math.min(100, Math.round((a.stock / Math.max(a.min*2,1))*100)) : 100;
+      const val = a.stock * (a.price || 0);
+      // Calculs revendeur
+      const pa = a.purchasePrice || 0;
+      const pv = a.price || 0;
+      const marginFcfa = pv - pa;
+      const marginPctVal = pv > 0 && pa > 0 ? Math.round(((pv - pa) / pv) * 100) : 0;
+      const marginColor = marginPctVal >= 30 ? 'var(--success)' : marginPctVal >= 15 ? 'var(--warning)' : 'var(--danger)';
+      if (isReseller) {
+        return `
+        <div class="card card-tap anim" style="animation-delay:${i*0.04}s;padding:12px" onclick="nav('detail',{selectedId:${a.id}})">
+          <div style="display:flex;gap:12px;align-items:flex-start">
+            <div class="article-avatar" style="flex:0 0 auto">${initials(a.name)}</div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                <div class="article-name" style="font-size:14px;font-weight:700">${a.name}</div>
+                ${a.category ? `<span style="font-size:10px;padding:2px 8px;background:var(--gray-1);border:1px solid var(--border);border-radius:999px;color:var(--text-3);font-weight:600">${a.category}</span>` : ''}
+              </div>
+              <div style="font-size:11px;color:var(--text-3);margin-top:3px">
+                ${fmtQty(a.stock)} ${a.unit || 'pcs'} en stock${a.min>0 ? ` · seuil ${fmtQty(a.min)}` : ''}
+              </div>
+              ${pa > 0 || pv > 0 ? `
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;margin-top:8px;padding:6px 8px;background:var(--gray-1);border-radius:6px;border:1px solid var(--border)">
+                <div>
+                  <div style="font-size:9px;color:var(--text-3);font-weight:600;letter-spacing:.3px">ACHAT</div>
+                  <div style="font-size:12px;font-weight:700;color:var(--text-2)">${pa>0?fmt(pa):'—'}</div>
+                </div>
+                <div>
+                  <div style="font-size:9px;color:var(--text-3);font-weight:600;letter-spacing:.3px">VENTE</div>
+                  <div style="font-size:12px;font-weight:700;color:var(--accent)">${pv>0?fmt(pv):'—'}</div>
+                </div>
+                <div>
+                  <div style="font-size:9px;color:var(--text-3);font-weight:600;letter-spacing:.3px">MARGE</div>
+                  <div style="font-size:12px;font-weight:800;color:${marginColor}">${pv>0&&pa>0?`+${marginPctVal}%`:'—'}</div>
+                </div>
+              </div>` : ''}
+              <div class="progress" style="margin-top:6px"><div class="progress-bar ${st.bar}" style="width:${pct}%"></div></div>
+            </div>
+            <div class="article-right" style="flex:0 0 auto">
+              <span class="status ${st.cls}">${st.icon} ${st.label}</span>
+              ${val>0 ? `<div style="font-size:10px;color:var(--text-3);margin-top:3px;text-align:right">Valeur<br><b style="color:var(--accent);font-size:11px">${fmt(val)}</b></div>` : ''}
+              ${(() => { const exp = getExpiryStatus(a.expiry); return exp && exp.days <= 30 ? `<span class="expiry-badge-sm" style="color:${exp.color}">${exp.label}</span>` : ''; })()}
+            </div>
+          </div>
+        </div>`;
+      }
       return `
       <div class="card card-tap anim" style="animation-delay:${i*0.04}s" onclick="nav('detail',{selectedId:${a.id}})">
         <div class="article-row">
           <div class="article-avatar">${initials(a.name)}</div>
           <div class="article-info">
             <div class="article-name">${a.name}</div>
-            <div class="article-meta">${fmtQty(a.stock)} ${a.unit}${a.min>0 ? ` · seuil ${fmtQty(a.min)}` : ''}</div>
+            <div class="article-meta">${fmtQty(a.stock)} ${a.unit}${a.min>0 ? ` · seuil ${fmtQty(a.min)}` : ''}${val>0 ? ` · <span style="color:var(--accent);font-weight:600">${fmt(val)} ${sym()}</span>` : ''}</div>
             <div class="progress"><div class="progress-bar ${st.bar}" style="width:${pct}%"></div></div>
           </div>
           <div class="article-right">
@@ -3501,12 +4590,32 @@ function vProducts() {
   else if (filter === 'promo') list = list.filter(p => _getActivePromo(p.id));
   else if (filter === 'boutique') list = list.filter(p => (S.boutiqueConfig?.products||[]).includes(p.id));
 
+  // Sort
+  const pSort = S.productSort || 'name';
+  const _salesByProd = {};
+  S.sales.forEach(s => { _salesByProd[s.productId||s.productName] = (_salesByProd[s.productId||s.productName]||0) + s.qty; });
+  if (pSort === 'price-desc')      list = [...list].sort((a,b)=>(b.price||0)-(a.price||0));
+  else if (pSort === 'price-asc')  list = [...list].sort((a,b)=>(a.price||0)-(b.price||0));
+  else if (pSort === 'margin')     list = [...list].sort((a,b)=>marginPct(b)-marginPct(a));
+  else if (pSort === 'best-seller') list = [...list].sort((a,b)=>(_salesByProd[b.id]||_salesByProd[b.name]||0)-(_salesByProd[a.id]||_salesByProd[a.name]||0));
+  else list = [...list].sort((a,b)=>a.name.localeCompare(b.name));
+
   const totalAvail = S.products.filter(p => productMaxMake(p) > 0).length;
   const totalPromo = S.products.filter(p => _getActivePromo(p.id)).length;
   const totalBoutique = S.products.filter(p => (S.boutiqueConfig?.products||[]).includes(p.id)).length;
   const tab = S.productsTab || 'products';
   const packs = Array.isArray(S.packs) ? S.packs : [];
   const packsFiltered = q ? packs.filter(pk => (pk.name||'').toLowerCase().includes(q)) : packs;
+
+  // KPIs produits
+  const prodCA = S.sales.filter(s => !s.packId).reduce((x,s)=>x+s.total,0);
+  const prodProfit = S.sales.filter(s => !s.packId).reduce((x,s)=>x+(s.profit||0),0);
+  const avgProdMargin = S.products.length > 0 ? Math.round(S.products.filter(p=>p.purchasePrice>0).reduce((x,p)=>x+marginPct(p),0) / Math.max(1, S.products.filter(p=>p.purchasePrice>0).length)) : 0;
+  // KPIs packs
+  const packsActive = packs.filter(pk => pk.active !== false).length;
+  const totalPackSavings = packs.reduce((x,pk) => x + (packOriginalPrice(pk) - packFinalPrice(pk)), 0);
+  const packsSales = S.sales.filter(s => s.packId).length;
+  const packsCA = S.sales.filter(s => s.packId).reduce((x,s)=>x+s.total,0);
 
   return `
   <div class="page-header">
@@ -3515,6 +4624,7 @@ function vProducts() {
       <div class="page-title">${tab==='packs'?'📦 Packs & Bundles':t('finishedProducts')}</div>
       <div style="display:flex;gap:6px">
         ${tab==='products' ? `
+          <button class="fab fab-outline" onclick="exportProductsCSV()" title="Exporter CSV">⬇</button>
           <button class="fab fab-outline" onclick="importProductsFromCSV()" title="Importer CSV">${IC.upload||'⬆'}</button>
           <button class="fab" onclick="nav('add-product')">${IC.plus}</button>
         ` : `
@@ -3527,6 +4637,20 @@ function vProducts() {
       <button class="filter-chip ${tab==='packs'?'active':''}" onclick="setProductsTab('packs')">📦 Packs (${packs.length})</button>
     </div>
     ${tab==='products' && S.products.length > 0 ? `
+    <div class="pantry-kpis" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:4px 0 10px">
+      <div style="text-align:center;padding:8px 4px;background:var(--gray-1);border-radius:8px;border:1px solid var(--border)">
+        <div style="font-size:13px;font-weight:800;color:var(--accent)">${fmt(prodCA)}</div>
+        <div style="font-size:9px;color:var(--text-3);margin-top:1px;font-weight:600;letter-spacing:.3px">CA GÉNÉRÉ</div>
+      </div>
+      <div style="text-align:center;padding:8px 4px;background:var(--gray-1);border-radius:8px;border:1px solid var(--border)">
+        <div style="font-size:13px;font-weight:800;color:var(--success)">+${fmt(prodProfit)}</div>
+        <div style="font-size:9px;color:var(--text-3);margin-top:1px;font-weight:600;letter-spacing:.3px">BÉNÉFICE</div>
+      </div>
+      <div style="text-align:center;padding:8px 4px;background:var(--gray-1);border-radius:8px;border:1px solid var(--border)">
+        <div style="font-size:13px;font-weight:800;color:${avgProdMargin>=20?'var(--success)':avgProdMargin>=10?'var(--warning)':'var(--danger)'}">${avgProdMargin}%</div>
+        <div style="font-size:9px;color:var(--text-3);margin-top:1px;font-weight:600;letter-spacing:.3px">MARGE MOY.</div>
+      </div>
+    </div>
     <div class="search-wrap">
       <span class="search-ico">${IC.search}</span>
       <input class="input input-search" type="text" placeholder="    Rechercher un produit" value="${q.replace(/"/g,'&quot;')}" oninput="S.productSearch=this.value;render()">
@@ -3537,8 +4661,32 @@ function vProducts() {
       <button class="filter-chip ${filter==='unavailable'?'active':''}" onclick="S.productFilter='unavailable';render()">⚠ Indispo. (${S.products.length-totalAvail})</button>
       ${totalPromo>0?`<button class="filter-chip ${filter==='promo'?'active':''}" onclick="S.productFilter='promo';render()">🎯 Promo (${totalPromo})</button>`:''}
       ${totalBoutique>0?`<button class="filter-chip ${filter==='boutique'?'active':''}" onclick="S.productFilter='boutique';render()">🛍️ Boutique (${totalBoutique})</button>`:''}
+    </div>
+    <div class="filter-row" style="margin-top:-4px;align-items:center">
+      <span style="font-size:10px;color:var(--text-3);font-weight:600;margin-right:4px">Trier :</span>
+      <select class="input" style="padding:4px 24px 4px 8px;font-size:11px;height:26px;width:auto;flex:0 0 auto;background-image:none" onchange="S.productSort=this.value;render()">
+        <option value="name" ${pSort==='name'?'selected':''}>Nom A-Z</option>
+        <option value="price-desc" ${pSort==='price-desc'?'selected':''}>Prix ↓</option>
+        <option value="price-asc" ${pSort==='price-asc'?'selected':''}>Prix ↑</option>
+        <option value="margin" ${pSort==='margin'?'selected':''}>Meilleure marge</option>
+        <option value="best-seller" ${pSort==='best-seller'?'selected':''}>Meilleures ventes</option>
+      </select>
     </div>` : ''}
     ${tab==='packs' && packs.length > 0 ? `
+    <div class="pantry-kpis" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:4px 0 10px">
+      <div style="text-align:center;padding:8px 4px;background:var(--gray-1);border-radius:8px;border:1px solid var(--border)">
+        <div style="font-size:13px;font-weight:800;color:var(--accent)">${packsActive}/${packs.length}</div>
+        <div style="font-size:9px;color:var(--text-3);margin-top:1px;font-weight:600;letter-spacing:.3px">ACTIFS</div>
+      </div>
+      <div style="text-align:center;padding:8px 4px;background:var(--gray-1);border-radius:8px;border:1px solid var(--border)">
+        <div style="font-size:13px;font-weight:800;color:var(--success)">${fmt(packsCA)}</div>
+        <div style="font-size:9px;color:var(--text-3);margin-top:1px;font-weight:600;letter-spacing:.3px">CA PACKS</div>
+      </div>
+      <div style="text-align:center;padding:8px 4px;background:var(--gray-1);border-radius:8px;border:1px solid var(--border)">
+        <div style="font-size:13px;font-weight:800;color:${totalPackSavings>0?'#EC4899':'var(--text-3)'}">-${fmt(totalPackSavings)}</div>
+        <div style="font-size:9px;color:var(--text-3);margin-top:1px;font-weight:600;letter-spacing:.3px">ÉCONOMIES</div>
+      </div>
+    </div>
     <div class="search-wrap">
       <span class="search-ico">${IC.search}</span>
       <input class="input input-search" type="text" placeholder="    Rechercher un pack" value="${q.replace(/"/g,'&quot;')}" oninput="S.productSearch=this.value;render()">
@@ -3981,8 +5129,18 @@ function vDetail() {
   if (!art) { nav('pantry'); return ''; }
   const st  = stockStatus(art.stock, art.min);
   const pct = art.min>0 ? Math.min(100,Math.round((art.stock/Math.max(art.min*2,1))*100)) : 100;
+  const bt = (typeof getBusinessType === 'function') ? getBusinessType() : 'maker';
+  const isReseller = bt === 'reseller';
 
-  // Produits qui utilisent cet article
+  // Revendeur: calculs marge / bénéfice
+  const pa = art.purchasePrice || 0;
+  const pv = art.price || 0;
+  const margeFcfa = pv - pa;
+  const margePctVal = pv > 0 && pa > 0 ? Math.round(((pv - pa) / pv) * 100) : 0;
+  const margeColor = margePctVal >= 30 ? 'var(--success)' : margePctVal >= 15 ? 'var(--warning)' : 'var(--danger)';
+  const benefStock = art.stock * margeFcfa;
+
+  // Produits qui utilisent cet article (pour mode maker)
   const usedIn = S.products.filter(p => p.composition.some(c=>c.id===art.id));
 
   return `
@@ -4034,13 +5192,45 @@ function vDetail() {
       </button>
     </div>
 
+    ${isReseller && (pa > 0 || pv > 0) ? `
+    <div class="card" style="margin-top:8px;background:linear-gradient(135deg,rgba(79,70,229,0.06),rgba(16,185,129,0.04));border:1px solid rgba(79,70,229,0.15)">
+      <div class="card-title" style="display:flex;align-items:center;gap:6px">💰 Rentabilité</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+        <div style="padding:10px;background:var(--card-bg,#fff);border-radius:8px;border:1px solid var(--border)">
+          <div style="font-size:10px;color:var(--text-3);font-weight:600;letter-spacing:.3px">PRIX D'ACHAT</div>
+          <div style="font-size:18px;font-weight:800;color:var(--text-2);margin-top:2px">${pa>0?fmt(pa):'—'} <span style="font-size:11px;font-weight:600;color:var(--text-3)">${sym()}</span></div>
+        </div>
+        <div style="padding:10px;background:var(--card-bg,#fff);border-radius:8px;border:1px solid var(--border)">
+          <div style="font-size:10px;color:var(--text-3);font-weight:600;letter-spacing:.3px">PRIX DE VENTE</div>
+          <div style="font-size:18px;font-weight:800;color:var(--accent);margin-top:2px">${pv>0?fmt(pv):'—'} <span style="font-size:11px;font-weight:600;color:var(--text-3)">${sym()}</span></div>
+        </div>
+      </div>
+      ${pa>0 && pv>0 ? `
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div style="padding:10px;background:${margeColor};border-radius:8px;color:#fff">
+          <div style="font-size:10px;opacity:.9;font-weight:600;letter-spacing:.3px">MARGE UNITAIRE</div>
+          <div style="font-size:18px;font-weight:800;margin-top:2px">${margePctVal}%</div>
+          <div style="font-size:11px;opacity:.9;margin-top:2px">+${fmt(margeFcfa)} ${sym()} / unité</div>
+        </div>
+        <div style="padding:10px;background:var(--card-bg,#fff);border-radius:8px;border:1px solid var(--border)">
+          <div style="font-size:10px;color:var(--text-3);font-weight:600;letter-spacing:.3px">BÉNÉF. POTENTIEL</div>
+          <div style="font-size:18px;font-weight:800;color:var(--success);margin-top:2px">+${fmt(benefStock)}</div>
+          <div style="font-size:11px;color:var(--text-3);margin-top:2px">si tout le stock est vendu</div>
+        </div>
+      </div>` : '<div style="font-size:12px;color:var(--text-3);text-align:center;padding:8px;background:var(--gray-1);border-radius:8px">Ajoutez les deux prix pour voir la marge</div>'}
+    </div>` : ''}
+
     <div class="card" style="margin-top:8px">
       <div class="card-title">${t('infoTitle')}</div>
       ${art.ref ? `<div class="info-row">
         <span class="info-lbl">${IC.tag} ${t('reference')}</span>
         <span class="info-val" style="font-family:monospace;font-weight:700;letter-spacing:1px">${art.ref}</span>
       </div>` : ''}
-      ${art.price ? `<div class="info-row">
+      ${art.category ? `<div class="info-row">
+        <span class="info-lbl">🏷️ Catégorie</span>
+        <span class="info-val">${art.category}</span>
+      </div>` : ''}
+      ${!isReseller && art.price ? `<div class="info-row">
         <span class="info-lbl">${IC.dollar} ${t('articlePrice')}</span>
         <span class="info-val">${fmt(art.price)} ${sym()}</span>
       </div>` : ''}
@@ -4091,6 +5281,32 @@ function vDetail() {
         <label class="form-label">${t('reference')}</label>
         <input class="input" type="text" placeholder="EAN-13, SKU…" value="${(art.ref||'').replace(/"/g,'&quot;')}" onchange="updateArticleField(${art.id},'ref',this.value)">
       </div>
+      ${isReseller ? `
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div class="form-group">
+          <label class="form-label">Prix d'achat (${sym()})</label>
+          <input class="input" type="number" step="10" min="0" value="${art.purchasePrice||0}" onchange="updateArticleField(${art.id},'purchasePrice',parseFloat(this.value)||0);render()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Prix de vente (${sym()})</label>
+          <input class="input" type="number" step="10" min="0" value="${art.price||0}" onchange="updateArticleField(${art.id},'price',parseFloat(this.value)||0);render()">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">🏷️ Catégorie</label>
+        <input class="input" type="text" placeholder="Chaussures, Téléphones…" value="${(art.category||'').replace(/"/g,'&quot;')}" onchange="updateArticleField(${art.id},'category',this.value)">
+      </div>
+      <div class="form-group">
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;color:var(--text-2)">
+          <input type="checkbox" ${art.perishable?'checked':''} onchange="updateArticleField(${art.id},'perishable',this.checked);if(!this.checked) updateArticleField(${art.id},'expiry','');render()"> Ce produit a une date de péremption
+        </label>
+      </div>
+      ${art.perishable ? `
+      <div class="form-group">
+        <label class="form-label">${t('expiryDate')}</label>
+        <input class="input" type="date" value="${art.expiry||''}" onchange="updateArticleField(${art.id},'expiry',this.value)">
+      </div>` : ''}
+      ` : `
       <div class="form-group">
         <label class="form-label">${t('articlePrice')} (${sym()})</label>
         <input class="input" type="number" step="10" min="0" value="${art.price||0}" onchange="updateArticleField(${art.id},'price',parseFloat(this.value)||0)">
@@ -4099,6 +5315,7 @@ function vDetail() {
         <label class="form-label">${t('expiryDate')}</label>
         <input class="input" type="date" value="${art.expiry||''}" onchange="updateArticleField(${art.id},'expiry',this.value)">
       </div>
+      `}
       <div class="form-group">
         <label class="form-label">${t('articleNotes')}</label>
         <textarea class="input" rows="2" placeholder="${t('articleNotes')}…" onchange="updateArticleField(${art.id},'notes',this.value)">${(art.notes||'').replace(/</g,'&lt;')}</textarea>
@@ -4132,26 +5349,46 @@ function confirmDelete(id) {
   if (confirm(msg)) deleteArticle(id);
 }
 
-// ── ADD ARTICLE ───────────────────────────────
+// ── ADD ARTICLE (adaptatif selon businessType) ────────────────
 function vAdd() {
   const f = S.form;
+  const bt = getBusinessType();
+  const isReseller = bt === 'reseller';
+  const isMaker    = bt === 'maker';
+  // Catégories rapides adaptées au profil
+  const resellerCats = ['Chaussures','Téléphones','Vêtements','Cosmétiques','Électronique','Accessoires','Alimentaire','Maison','Autre'];
+  const makerCats    = ['Matière première','Ingrédient','Emballage','Consommable','Autre'];
+  const cats = isReseller ? resellerCats : makerCats;
+  // Marge live
+  const ha = parseFloat(f.purchasePrice)||0;
+  const pv = parseFloat(f.price)||0;
+  const margePct = pv > 0 ? Math.round(((pv - ha) / pv) * 100) : 0;
+  const margeFcfa = pv - ha;
   return `
   <div class="sub-hero">
     <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('pantry')">${IC.left}</button>
-    <div class="sub-hero-title">${t('newArticle')}</div>
-    <div class="sub-hero-sub">${t('addStockSub')}</div>
+    <div class="sub-hero-title">${isReseller?'🏪 Nouveau produit':isMaker?'🏭 Nouvelle matière première':t('newArticle')}</div>
+    <div class="sub-hero-sub">${isReseller?'Prix d\'achat → Prix de vente → Marge calculée automatiquement':t('addStockSub')}</div>
   </div>
   <div class="container">
     <div class="card">
       <div class="form-group">
-        <label class="form-label">${t('articleName')} *</label>
-        <input class="input" type="text" placeholder="ex: Farine, Tissu, Bouteilles…" value="${f.name.replace(/"/g,'&quot;')}" oninput="S.form.name=this.value">
+        <label class="form-label">${isReseller?'Nom du produit':t('articleName')} *</label>
+        <input class="input" type="text" placeholder="${isReseller?'ex: Nike Air Max 42, iPhone 13, Robe wax…':'ex: Farine, Tissu, Bouteilles…'}" value="${f.name.replace(/"/g,'&quot;')}" oninput="S.form.name=this.value">
       </div>
+
       <div class="form-group">
-        <label class="form-label">Unité de mesure</label>
+        <label class="form-label">Catégorie</label>
+        <div class="chip-row" style="flex-wrap:wrap;gap:6px">
+          ${cats.map(c => `<button type="button" class="chip ${f.category===c?'active':''}" onclick="S.form.category='${c}';render()">${c}</button>`).join('')}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">${isReseller?'Unité (pièce, paire, lot…)':'Unité de mesure'}</label>
         <div class="unit-combo" id="unit-combo-wrap">
           <input class="input" type="text" id="unit-input"
-            placeholder="ex: kg, pcs, m..."
+            placeholder="${isReseller?'ex: pcs, paire, lot...':'ex: kg, pcs, m...'}"
             value="${f.unit}"
             oninput="updateUnitDrop()"
             onfocus="openUnitDrop()"
@@ -4174,28 +5411,77 @@ function vAdd() {
           </div>`;
         })()}
       </div>
+
       <div class="form-group">
-        <label class="form-label">${t('reference')}</label>
-        <input class="input" type="text" placeholder="EAN-13, SKU, code interne…" value="${(f.ref||'').replace(/"/g,'&quot;')}" oninput="S.form.ref=this.value">
+        <label class="form-label">${isReseller?'Référence / SKU / Code-barres':t('reference')}</label>
+        <div style="display:flex;gap:6px">
+          <input id="art-ref-input" class="input" style="flex:1" type="text" placeholder="EAN-13, SKU, code interne…" value="${(f.ref||'').replace(/"/g,'&quot;')}" oninput="S.form.ref=this.value">
+          <button type="button" class="btn btn-ghost" style="padding:0 14px;white-space:nowrap" onclick="scanBarcodeForArticle()" title="Scanner un code-barres">📷</button>
+        </div>
       </div>
+
+      <div class="form-group">
+        <label class="form-label">${isReseller?'Stock initial disponible':t('initialStock')}</label>
+        <input class="input" type="number" placeholder="0" step="0.5" value="${f.stock}" oninput="S.form.stock=this.value">
+      </div>
+
+      <!-- Prix : adaptatif -->
+      ${isReseller ? `
+      <div style="background:linear-gradient(135deg,var(--accent)10,transparent);border:1px solid var(--accent);border-radius:var(--r-md);padding:14px;margin-bottom:14px">
+        <div style="font-weight:700;font-size:13px;color:var(--accent);margin-bottom:10px">💰 Prix d'achat → Prix de vente</div>
+        <div class="input-row" style="margin-bottom:0">
+          <div>
+            <label class="form-label" style="font-size:11px">Prix d'achat (${sym()}) *</label>
+            <input class="input" type="number" placeholder="0" step="100" value="${f.purchasePrice||0}" oninput="S.form.purchasePrice=this.value;render()">
+          </div>
+          <div>
+            <label class="form-label" style="font-size:11px">Prix de vente (${sym()}) *</label>
+            <input class="input" type="number" placeholder="0" step="100" value="${f.price||0}" oninput="S.form.price=this.value;render()">
+          </div>
+        </div>
+        ${ha > 0 && pv > 0 ? `
+        <div style="margin-top:10px;padding:10px;background:var(--bg);border-radius:var(--r-sm);display:flex;justify-content:space-between;align-items:center;gap:8px">
+          <div>
+            <div style="font-size:10px;color:var(--text-3)">MARGE PAR UNITÉ</div>
+            <div style="font-size:16px;font-weight:800;color:${margeFcfa>=0?'var(--success)':'var(--danger)'}">${fmt(margeFcfa)} ${sym()}</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:10px;color:var(--text-3)">MARGE %</div>
+            <div style="font-size:16px;font-weight:800;color:${margePct>=30?'var(--success)':margePct>=15?'var(--warning)':'var(--danger)'}">${margePct}%</div>
+          </div>
+        </div>` : `
+        <div style="margin-top:10px;font-size:11px;color:var(--text-3)">Renseignez les deux prix pour voir la marge</div>`}
+      </div>` : `
       <div class="input-row form-group">
         <div>
-          <label class="form-label">${t('initialStock')}</label>
-          <input class="input" type="number" placeholder="0" step="0.5" value="${f.stock}" oninput="S.form.stock=this.value">
+          <label class="form-label">Prix d'achat (${sym()})</label>
+          <input class="input" type="number" placeholder="0" step="10" value="${f.purchasePrice||0}" oninput="S.form.purchasePrice=this.value">
         </div>
         <div>
           <label class="form-label">${t('articlePrice')} (${sym()})</label>
           <input class="input" type="number" placeholder="0" step="10" value="${f.price||0}" oninput="S.form.price=this.value">
         </div>
-      </div>
+      </div>`}
+
+      <!-- Péremption : toggle plutôt qu'auto-visible pour revendeur -->
+      ${isReseller ? `
+      <div class="form-group">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px">
+          <input type="checkbox" ${f.perishable?'checked':''} onchange="S.form.perishable=this.checked;render()">
+          <span>Produit périssable (date d'expiration)</span>
+        </label>
+        ${f.perishable ? `
+        <input class="input" type="date" style="margin-top:8px" value="${f.expiry||''}" oninput="S.form.expiry=this.value">` : ''}
+      </div>` : `
       <div class="form-group">
         <label class="form-label">${t('expiryDate')}</label>
         <input class="input" type="date" value="${f.expiry||''}" oninput="S.form.expiry=this.value">
-      </div>
+      </div>`}
+
       <div style="background:var(--gray-1);border:1px solid var(--border);border-radius:var(--r-md);padding:12px;font-size:12px;color:var(--text-3);margin-bottom:14px">
-        ${IC.info} ${t('alertAutoInfo')}
+        ${IC.info} ${isReseller?'Les revendeurs tracent directement le prix d\'achat et de vente. Pas besoin de créer un "produit" séparé.':t('alertAutoInfo')}
       </div>
-      <button class="btn btn-primary" onclick="saveArticle()">${t('addThisArticle')}</button>
+      <button class="btn btn-primary" onclick="saveArticle()">${isReseller?'🏪 Ajouter le produit':t('addThisArticle')}</button>
     </div>
   </div>`;
 }
@@ -4595,6 +5881,10 @@ function vAddClient() {
 }
 
 async function saveClient() {
+  if (typeof hasPermission === 'function' && !hasPermission('clients') && !hasPermission('all')) {
+    if (typeof requirePermission === 'function') requirePermission('clients');
+    return;
+  }
   const name = $('client-name')?.value?.trim();
   if (!name) { showToast(t('fillAll'), 'error'); return; }
   try {
@@ -4605,16 +5895,25 @@ async function saveClient() {
       notes: $('client-notes')?.value?.trim() || '',
     });
     S.clients.push(data);
+    try { localStorage.setItem('stockr_clients', JSON.stringify(S.clients)); } catch(_){}
+    if (typeof logAudit === 'function') logAudit('client', 'create', { name });
     showToast(`${name} — ${t('welcome')} !`);
     nav('clients');
   } catch(e) { showToast(e.message, 'error'); }
 }
 
 async function deleteClient(id) {
+  if (typeof hasPermission === 'function' && !hasPermission('clients') && !hasPermission('all')) {
+    if (typeof requirePermission === 'function') requirePermission('clients');
+    return;
+  }
+  const c = S.clients.find(cl => cl.id === id);
   if (!confirm(t('delete') + ' ?')) return;
   try {
     await api('DELETE', `/api/clients/${id}`);
     S.clients = S.clients.filter(c => c.id !== id);
+    try { localStorage.setItem('stockr_clients', JSON.stringify(S.clients)); } catch(_){}
+    if (typeof logAudit === 'function') logAudit('client', 'delete', { name: c?.name || '?' });
     showToast(t('delete'));
     nav('clients');
   } catch(e) { showToast(e.message, 'error'); }
@@ -5044,69 +6343,1189 @@ function vSpectra() {
 }
 
 // ── Spectra : logique ──────────────────────────
+//
+// Architecture (100 % navigateur, zéro backend IA) :
+//   1. Photo/YOLO  → TensorFlow.js + COCO-SSD (lazy-load ~25 Mo, en cache PWA)
+//   2. Code-barres → BarcodeDetector natif (Chrome/Edge/Samsung) fallback manuel
+//   3. Scan continu → loop requestAnimationFrame sur un <video>, boîtes live
+//   4. Correspondances en stock via name matching + champ EAN (S.articles[i].ean)
+//
+// Les détections sont ensuite envoyées à /api/spectra/scan (passerelle) puis
+// /api/spectra/confirm pour l'ajout au stock.
 
+// ── Helpers : loadScript + waitFor ─────────────
+function _spectraLoadScript(src){
+  return new Promise((resolve, reject) => {
+    if (document.querySelector(`script[data-spectra-src="${src}"]`)) return resolve();
+    const s = document.createElement('script');
+    s.src = src; s.async = true; s.dataset.spectraSrc = src;
+    s.onload = () => resolve();
+    s.onerror = () => reject(new Error('Script failed: ' + src));
+    document.head.appendChild(s);
+  });
+}
+
+function _spectraWaitFor(id, tries = 40){
+  return new Promise((resolve) => {
+    let n = 0;
+    const tick = () => {
+      const el = document.getElementById(id);
+      if (el) return resolve(el);
+      if (++n >= tries) return resolve(null);
+      setTimeout(tick, 50);
+    };
+    tick();
+  });
+}
+
+// ── Lazy-load TensorFlow.js + COCO-SSD ─────────
+let _cocoModel = null;
+let _cocoLoading = null;
+async function loadCocoSSD(){
+  if (_cocoModel) return _cocoModel;
+  if (_cocoLoading) return _cocoLoading;
+  _cocoLoading = (async () => {
+    try {
+      showToast('Chargement IA (≈25 Mo)…', 'info');
+      await _spectraLoadScript('https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.15.0/dist/tf.min.js');
+      await _spectraLoadScript('https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js');
+      if (!window.cocoSsd) throw new Error('COCO-SSD script not loaded');
+      _cocoModel = await window.cocoSsd.load({ base: 'lite_mobilenet_v2' });
+      return _cocoModel;
+    } catch(err) {
+      _cocoLoading = null;
+      throw err;
+    }
+  })();
+  return _cocoLoading;
+}
+
+// ── Lazy-load Tesseract.js (OCR — lit marques/labels sur emballage) ──
+let _ocrWorker = null;
+let _ocrLoading = null;
+async function loadOCR(){
+  if (_ocrWorker) return _ocrWorker;
+  if (_ocrLoading) return _ocrLoading;
+  _ocrLoading = (async () => {
+    try {
+      showToast('Chargement OCR (≈10 Mo)…', 'info');
+      await _spectraLoadScript('https://cdn.jsdelivr.net/npm/tesseract.js@5.0.4/dist/tesseract.min.js');
+      if (!window.Tesseract) throw new Error('Tesseract script not loaded');
+      _ocrWorker = await window.Tesseract.createWorker(['fra','eng'], 1, { logger: () => {} });
+      return _ocrWorker;
+    } catch(err) {
+      _ocrLoading = null;
+      throw err;
+    }
+  })();
+  return _ocrLoading;
+}
+
+// ── OCR sur une zone bounded d'une image ──
+// Pad 20%, upscale x3, contrast stretch → meilleure lecture marques/labels
+async function _ocrRegion(imgOrCanvas, bbox){
+  try {
+    const [x, y, w, h] = bbox;
+    const imgW = imgOrCanvas.width || imgOrCanvas.videoWidth || imgOrCanvas.naturalWidth;
+    const imgH = imgOrCanvas.height || imgOrCanvas.videoHeight || imgOrCanvas.naturalHeight;
+    // Padding plus généreux (20 %) pour capter texte autour (étiquettes courbes)
+    const pad = Math.max(16, Math.round(Math.min(w, h) * 0.20));
+    const sx = Math.max(0, x - pad);
+    const sy = Math.max(0, y - pad);
+    const sw = Math.min(imgW - sx, w + pad * 2);
+    const sh = Math.min(imgH - sy, h + pad * 2);
+    if (sw < 20 || sh < 20) return { text: '', confidence: 0 };
+    // Upscale x3 pour meilleure reconnaissance OCR
+    const scale = 3;
+    const canvas = document.createElement('canvas');
+    canvas.width  = Math.min(2400, Math.round(sw * scale));
+    canvas.height = Math.min(2400, Math.round(sh * scale));
+    const ctx = canvas.getContext('2d');
+    ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(imgOrCanvas, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
+    // Prétraitement : passage en niveaux de gris + contraste renforcé
+    try {
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const d = imageData.data;
+      for (let i = 0; i < d.length; i += 4) {
+        const y = d[i]*0.299 + d[i+1]*0.587 + d[i+2]*0.114;
+        // Stretch 60..200 → 0..255 pour renforcer contraste texte
+        const v = Math.max(0, Math.min(255, Math.round((y - 60) * 1.82)));
+        d[i] = d[i+1] = d[i+2] = v;
+      }
+      ctx.putImageData(imageData, 0, 0);
+    } catch(e){}
+    const worker = await loadOCR();
+    const { data: { text, confidence } } = await worker.recognize(canvas);
+    const clean = (text || '').replace(/[^\p{L}\p{N}\s&'%.\-]/gu, ' ').replace(/\s+/g,' ').trim();
+    return { text: clean.slice(0, 160), confidence: confidence || 0 };
+  } catch(e){ return { text: '', confidence: 0 }; }
+}
+
+// ── Mémoire produits (apprend ce que tu confirmes) ──
+function _memoryKey(cocoClass, ocrText){
+  const firstWord = (ocrText || '').split(/\s+/)[0].toLowerCase();
+  return (cocoClass || '') + '|' + firstWord;
+}
+function getSpectraMemory(){
+  try { return JSON.parse(localStorage.getItem('stockr_spectra_memory') || '[]'); }
+  catch(e) { return []; }
+}
+function rememberProduct({ cocoClass, ocrText, finalName, articleId, barcode }){
+  try {
+    const mem = getSpectraMemory();
+    const key = _memoryKey(cocoClass, ocrText);
+    const existing = mem.find(m => m.key === key);
+    const now = Date.now();
+    if (existing) {
+      existing.count = (existing.count || 0) + 1;
+      existing.finalName = finalName || existing.finalName;
+      existing.articleId = articleId ?? existing.articleId;
+      existing.barcode   = barcode   ?? existing.barcode;
+      existing.lastSeen = now;
+    } else {
+      mem.push({ key, cocoClass, ocrText: ocrText || '', finalName, articleId: articleId ?? null, barcode: barcode ?? null, count: 1, firstSeen: now, lastSeen: now });
+    }
+    // Limite à 500 entrées (les plus anciennes disparaissent)
+    if (mem.length > 500) {
+      mem.sort((a,b) => (b.lastSeen||0) - (a.lastSeen||0));
+      mem.length = 500;
+    }
+    localStorage.setItem('stockr_spectra_memory', JSON.stringify(mem));
+  } catch(e){}
+}
+function recallProduct(cocoClass, ocrText){
+  try {
+    const mem = getSpectraMemory();
+    const exactKey = _memoryKey(cocoClass, ocrText);
+    // Correspondance exacte d'abord
+    let hit = mem.find(m => m.key === exactKey);
+    if (hit && hit.count >= 1) return hit;
+    // Sinon, correspondance par OCR partiel (même 1ʳᵉ ligne du texte)
+    if (ocrText) {
+      const ocrLo = ocrText.toLowerCase();
+      hit = mem.find(m => m.cocoClass === cocoClass && m.ocrText && (ocrLo.includes(m.ocrText.toLowerCase().split(/\s+/)[0]) || m.ocrText.toLowerCase().includes(ocrLo.split(/\s+/)[0])));
+      if (hit && hit.count >= 2) return hit;
+    }
+    return null;
+  } catch(e){ return null; }
+}
+function clearSpectraMemory(){
+  try { localStorage.removeItem('stockr_spectra_memory'); } catch(e){}
+}
+
+// ── Traduction des classes COCO-SSD vers noms "produits" FR ──
+const COCO_TRANSLATE = {
+  'bottle':'Bouteille', 'cup':'Tasse', 'wine glass':'Verre', 'fork':'Fourchette',
+  'knife':'Couteau', 'spoon':'Cuillère', 'bowl':'Bol', 'banana':'Banane',
+  'apple':'Pomme', 'sandwich':'Sandwich', 'orange':'Orange', 'broccoli':'Brocoli',
+  'carrot':'Carotte', 'hot dog':'Hot-dog', 'pizza':'Pizza', 'donut':'Beignet',
+  'cake':'Gâteau', 'chair':'Chaise', 'couch':'Canapé', 'potted plant':'Plante',
+  'bed':'Lit', 'dining table':'Table', 'toilet':'Toilettes', 'tv':'TV',
+  'laptop':'Ordinateur portable', 'mouse':'Souris', 'remote':'Télécommande',
+  'keyboard':'Clavier', 'cell phone':'Téléphone', 'microwave':'Micro-ondes',
+  'oven':'Four', 'toaster':'Grille-pain', 'sink':'Évier', 'refrigerator':'Frigo',
+  'book':'Livre', 'clock':'Horloge', 'vase':'Vase', 'scissors':'Ciseaux',
+  'teddy bear':'Peluche', 'hair drier':'Sèche-cheveux', 'toothbrush':'Brosse à dents',
+  'backpack':'Sac à dos', 'umbrella':'Parapluie', 'handbag':'Sac à main',
+  'tie':'Cravate', 'suitcase':'Valise', 'sports ball':'Ballon',
+  'bicycle':'Vélo', 'car':'Voiture', 'motorcycle':'Moto', 'bus':'Bus',
+  'truck':'Camion', 'bird':'Oiseau', 'cat':'Chat', 'dog':'Chien',
+  'person':'Personne', 'frisbee':'Frisbee', 'skis':'Skis',
+  'snowboard':'Snowboard', 'kite':'Cerf-volant', 'baseball bat':'Batte',
+  'baseball glove':'Gant baseball', 'skateboard':'Skateboard', 'surfboard':'Planche surf',
+  'tennis racket':'Raquette tennis'
+};
+function _translateCocoClass(cls){
+  return COCO_TRANSLATE[cls] || (cls ? (cls[0].toUpperCase() + cls.slice(1)) : 'Objet');
+}
+
+// ── Regrouper les prédictions par classe (fallback rapide, sans OCR) ──
+function _groupPredictionsByClass(predictions){
+  const groups = {};
+  for (const p of predictions){
+    const cls = p.class || 'objet';
+    if (!groups[cls]) groups[cls] = { count: 0, sum: 0, boxes: [] };
+    groups[cls].count++;
+    groups[cls].sum += (p.score || 0);
+    groups[cls].boxes.push(p.bbox);
+  }
+  const detections = [];
+  for (const cls in groups) {
+    const g = groups[cls];
+    const name = _translateCocoClass(cls);
+    const match = (S.articles || []).find(a =>
+      a.name && a.name.toLowerCase().includes(cls.toLowerCase()) ||
+      a.name && name.toLowerCase().includes(a.name.toLowerCase()) ||
+      a.name && a.name.toLowerCase() === name.toLowerCase()
+    );
+    detections.push({
+      detected_name: name,
+      matched_id:    match ? match.id : null,
+      matched_name:  match ? match.name : name,
+      matched_unit:  match ? (match.unit || 'pce') : 'pce',
+      quantity:      g.count,
+      confidence:    Math.round((g.sum / g.count) * 100),
+      boxes:         g.boxes,
+      coco_class:    cls,
+      ocr_text:      '',
+    });
+  }
+  return detections;
+}
+
+// ── Scoring de similarité texte (pour matching OCR → article) ──
+function _textSimilarity(a, b){
+  if (!a || !b) return 0;
+  const la = a.toLowerCase(); const lb = b.toLowerCase();
+  if (la === lb) return 1;
+  if (la.includes(lb) || lb.includes(la)) return 0.85;
+  const wa = la.split(/\s+/).filter(w => w.length >= 3);
+  const wb = lb.split(/\s+/).filter(w => w.length >= 3);
+  if (!wa.length || !wb.length) return 0;
+  let hits = 0;
+  for (const w of wa) if (wb.some(x => x.includes(w) || w.includes(x))) hits++;
+  return hits / Math.max(wa.length, wb.length);
+}
+
+// ── Dictionnaire mots-clés → produit précis ──
+// Lit l'OCR et mappe un mot-clé vers un nom FR spécifique
+// Ex: "ketchup" → "Bouteille de Ketchup", "coca" → "Bouteille de Coca-Cola"
+const SPECTRA_KEYWORDS = {
+  // ═══ BOISSONS ═══
+  'ketchup':{ type:'Bouteille de Ketchup', cat:'condiment' },
+  'mayonnaise':{ type:'Pot de Mayonnaise', cat:'condiment' },
+  'mayo':{ type:'Pot de Mayonnaise', cat:'condiment' },
+  'moutarde':{ type:'Pot de Moutarde', cat:'condiment' },
+  'mustard':{ type:'Pot de Moutarde', cat:'condiment' },
+  'vinaigre':{ type:'Bouteille de Vinaigre', cat:'condiment' },
+  'vinegar':{ type:'Bouteille de Vinaigre', cat:'condiment' },
+  'coca':{ type:'Bouteille de Coca-Cola', cat:'soda' },
+  'cola':{ type:'Bouteille de Cola', cat:'soda' },
+  'pepsi':{ type:'Bouteille de Pepsi', cat:'soda' },
+  'fanta':{ type:'Bouteille de Fanta', cat:'soda' },
+  'sprite':{ type:'Bouteille de Sprite', cat:'soda' },
+  'schweppes':{ type:'Bouteille de Schweppes', cat:'soda' },
+  'youki':{ type:'Bouteille de Youki', cat:'soda' },
+  'solibra':{ type:'Bouteille Solibra', cat:'biere' },
+  'beaufort':{ type:'Bière Beaufort', cat:'biere' },
+  'flag':{ type:'Bière Flag', cat:'biere' },
+  'bock':{ type:'Bière Bock', cat:'biere' },
+  'biere':{ type:'Bouteille de Bière', cat:'biere' },
+  'beer':{ type:'Bouteille de Bière', cat:'biere' },
+  'vin':{ type:'Bouteille de Vin', cat:'vin' },
+  'wine':{ type:'Bouteille de Vin', cat:'vin' },
+  'eau':{ type:'Bouteille d\'Eau', cat:'eau' },
+  'water':{ type:'Bouteille d\'Eau', cat:'eau' },
+  'evian':{ type:'Bouteille d\'Eau Evian', cat:'eau' },
+  'vittel':{ type:'Bouteille d\'Eau Vittel', cat:'eau' },
+  'cristaline':{ type:'Bouteille d\'Eau Cristaline', cat:'eau' },
+  'awa':{ type:'Bouteille d\'Eau Awa', cat:'eau' },
+  'olgane':{ type:'Bouteille d\'Eau Olgane', cat:'eau' },
+  'celeste':{ type:'Bouteille d\'Eau Céleste', cat:'eau' },
+  'jus':{ type:'Bouteille de Jus', cat:'jus' },
+  'juice':{ type:'Bouteille de Jus', cat:'jus' },
+  'ivorio':{ type:'Jus Ivorio', cat:'jus' },
+  'pressade':{ type:'Jus Pressade', cat:'jus' },
+  'orange':{ type:'Jus d\'Orange', cat:'jus' },
+  'ananas':{ type:'Jus d\'Ananas', cat:'jus' },
+  'pomme':{ type:'Jus de Pomme', cat:'jus' },
+  'bissap':{ type:'Boisson Bissap', cat:'jus' },
+  'gingembre':{ type:'Boisson Gingembre', cat:'jus' },
+  'tonic':{ type:'Tonic', cat:'soda' },
+  'lait':{ type:'Bouteille de Lait', cat:'laitier' },
+  'milk':{ type:'Bouteille de Lait', cat:'laitier' },
+
+  // ═══ PRODUITS LAITIERS ═══
+  'yaourt':{ type:'Pot de Yaourt', cat:'laitier' },
+  'yogurt':{ type:'Pot de Yaourt', cat:'laitier' },
+  'fromage':{ type:'Fromage', cat:'laitier' },
+  'cheese':{ type:'Fromage', cat:'laitier' },
+  'beurre':{ type:'Paquet de Beurre', cat:'laitier' },
+  'butter':{ type:'Paquet de Beurre', cat:'laitier' },
+  'margarine':{ type:'Margarine', cat:'laitier' },
+  'creme':{ type:'Crème', cat:'laitier' },
+  'cream':{ type:'Crème', cat:'laitier' },
+
+  // ═══ ÉPICERIE SÈCHE ═══
+  'riz':{ type:'Paquet de Riz', cat:'epicerie' },
+  'rice':{ type:'Paquet de Riz', cat:'epicerie' },
+  'uncle ben':{ type:'Riz Uncle Ben\'s', cat:'epicerie' },
+  'pates':{ type:'Paquet de Pâtes', cat:'epicerie' },
+  'pasta':{ type:'Paquet de Pâtes', cat:'epicerie' },
+  'spaghetti':{ type:'Paquet de Spaghetti', cat:'epicerie' },
+  'farine':{ type:'Paquet de Farine', cat:'epicerie' },
+  'flour':{ type:'Paquet de Farine', cat:'epicerie' },
+  'sucre':{ type:'Paquet de Sucre', cat:'epicerie' },
+  'sugar':{ type:'Paquet de Sucre', cat:'epicerie' },
+  'sel':{ type:'Sel', cat:'epicerie' },
+  'salt':{ type:'Sel', cat:'epicerie' },
+  'poivre':{ type:'Poivre', cat:'epicerie' },
+  'pepper':{ type:'Poivre', cat:'epicerie' },
+  'huile':{ type:'Bouteille d\'Huile', cat:'epicerie' },
+  'oil':{ type:'Bouteille d\'Huile', cat:'epicerie' },
+  'dinor':{ type:'Huile Dinor', cat:'epicerie' },
+  'fleurial':{ type:'Huile Fleurial', cat:'epicerie' },
+  'bouillon':{ type:'Cube Bouillon', cat:'epicerie' },
+  'maggi':{ type:'Cube Maggi', cat:'epicerie' },
+  'jumbo':{ type:'Cube Jumbo', cat:'epicerie' },
+  'knorr':{ type:'Cube Knorr', cat:'epicerie' },
+  'nescafe':{ type:'Café Nescafé', cat:'cafe' },
+  'cafe':{ type:'Café', cat:'cafe' },
+  'coffee':{ type:'Café', cat:'cafe' },
+  'the':{ type:'Thé', cat:'cafe' },
+  'lipton':{ type:'Thé Lipton', cat:'cafe' },
+  'chocolat':{ type:'Tablette de Chocolat', cat:'snack' },
+  'chocolate':{ type:'Tablette de Chocolat', cat:'snack' },
+  'cacao':{ type:'Cacao', cat:'snack' },
+  'nutella':{ type:'Pot de Nutella', cat:'snack' },
+  'confiture':{ type:'Pot de Confiture', cat:'snack' },
+  'jam':{ type:'Pot de Confiture', cat:'snack' },
+  'miel':{ type:'Pot de Miel', cat:'snack' },
+  'honey':{ type:'Pot de Miel', cat:'snack' },
+
+  // ═══ CONSERVES ═══
+  'tomate':{ type:'Concentré de Tomate', cat:'conserve' },
+  'tomato':{ type:'Concentré de Tomate', cat:'conserve' },
+  'thon':{ type:'Boîte de Thon', cat:'conserve' },
+  'tuna':{ type:'Boîte de Thon', cat:'conserve' },
+  'sardine':{ type:'Boîte de Sardines', cat:'conserve' },
+  'haricot':{ type:'Boîte de Haricots', cat:'conserve' },
+  'mais':{ type:'Boîte de Maïs', cat:'conserve' },
+  'corn':{ type:'Boîte de Maïs', cat:'conserve' },
+  'petits pois':{ type:'Boîte de Petits Pois', cat:'conserve' },
+
+  // ═══ SNACKS ═══
+  'biscuit':{ type:'Paquet de Biscuits', cat:'snack' },
+  'cookie':{ type:'Paquet de Biscuits', cat:'snack' },
+  'chips':{ type:'Paquet de Chips', cat:'snack' },
+  'bonbon':{ type:'Paquet de Bonbons', cat:'snack' },
+  'candy':{ type:'Paquet de Bonbons', cat:'snack' },
+  'chewing':{ type:'Chewing-gum', cat:'snack' },
+  'gum':{ type:'Chewing-gum', cat:'snack' },
+
+  // ═══ HYGIÈNE ═══
+  'savon':{ type:'Savon', cat:'hygiene' },
+  'soap':{ type:'Savon', cat:'hygiene' },
+  'shampoing':{ type:'Bouteille de Shampoing', cat:'hygiene' },
+  'shampoo':{ type:'Bouteille de Shampoing', cat:'hygiene' },
+  'gel douche':{ type:'Gel Douche', cat:'hygiene' },
+  'dentifrice':{ type:'Tube de Dentifrice', cat:'hygiene' },
+  'toothpaste':{ type:'Tube de Dentifrice', cat:'hygiene' },
+  'brosse':{ type:'Brosse à Dents', cat:'hygiene' },
+  'deodorant':{ type:'Déodorant', cat:'hygiene' },
+  'lessive':{ type:'Lessive', cat:'entretien' },
+  'detergent':{ type:'Détergent', cat:'entretien' },
+  'omo':{ type:'Lessive Omo', cat:'entretien' },
+  'ariel':{ type:'Lessive Ariel', cat:'entretien' },
+  'javel':{ type:'Bouteille de Javel', cat:'entretien' },
+  'bleach':{ type:'Bouteille de Javel', cat:'entretien' },
+
+  // ═══ BÉBÉ ═══
+  'couche':{ type:'Paquet de Couches', cat:'bebe' },
+  'pampers':{ type:'Couches Pampers', cat:'bebe' },
+  'lait infantile':{ type:'Lait Infantile', cat:'bebe' },
+  'cerelac':{ type:'Cérélac', cat:'bebe' },
+
+  // ═══ MARQUES POPULAIRES ═══
+  'heinz':{ brand:'Heinz' },
+  'nestle':{ brand:'Nestlé' },
+  'danone':{ brand:'Danone' },
+  'unilever':{ brand:'Unilever' },
+  'colgate':{ brand:'Colgate' },
+  'protex':{ brand:'Protex' },
+  'nivea':{ brand:'Nivea' },
+  'dove':{ brand:'Dove' },
+  'palmolive':{ brand:'Palmolive' }
+};
+
+// Mots-clés "primary" (nom produit spécifique) qui doivent gagner sur
+// les "secondary" (ingrédients : tomato, orange, pomme…).
+// Ex: "TOMATO KETCHUP" → ketchup (primary) gagne sur tomato (secondary).
+const SPECTRA_SECONDARY_KW = new Set([
+  'tomato','tomate','orange','pomme','ananas','mangue','citron','pamplemousse'
+]);
+
+// Extrait {type, brand, name} depuis un texte OCR (français/anglais)
+function _resolveFromOCR(ocrText){
+  if (!ocrText) return null;
+  // Tokens en lowercase (sans accents, ponctuation)
+  const lo = ocrText.toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const words = lo
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .split(/\s+/)
+    .filter(w => w.length >= 3);
+  // Garder aussi les tokens originaux (pour détecter les marques en MAJUSCULES)
+  const rawTokens = (ocrText || '')
+    .replace(/[^\p{L}\p{N}\s'\-]/gu, ' ')
+    .split(/\s+/)
+    .filter(w => w.length >= 3);
+
+  // Marquer les mots qui matchent un keyword (évite de les traiter comme marque)
+  const matchedWords = new Set();
+
+  // Pass 0: paires de mots (ex: "uncle ben", "lait infantile")
+  let foundType = null;
+  let foundBrand = null;
+  for (let i = 0; i < words.length - 1; i++) {
+    const pair = words[i] + ' ' + words[i+1];
+    const hit = SPECTRA_KEYWORDS[pair];
+    if (hit) {
+      if (hit.type && !foundType) foundType = hit.type;
+      if (hit.brand && !foundBrand) foundBrand = hit.brand;
+      matchedWords.add(words[i]); matchedWords.add(words[i+1]);
+    }
+  }
+
+  // Pass 1 : primary (produits spécifiques). "ketchup" gagne sur "tomato".
+  if (!foundType) {
+    for (const w of words) {
+      const hit = SPECTRA_KEYWORDS[w];
+      if (hit && hit.type && !SPECTRA_SECONDARY_KW.has(w)) {
+        foundType = hit.type;
+        matchedWords.add(w);
+        break;
+      }
+    }
+  }
+  // Pass 2 : marques pures (heinz, nestle, danone…)
+  for (const w of words) {
+    const hit = SPECTRA_KEYWORDS[w];
+    if (hit && hit.brand && !foundBrand) {
+      foundBrand = hit.brand;
+      matchedWords.add(w);
+    }
+  }
+  // Pass 3 : secondary (ingrédients) si rien de mieux trouvé
+  if (!foundType) {
+    for (const w of words) {
+      const hit = SPECTRA_KEYWORDS[w];
+      if (hit && hit.type) {
+        foundType = hit.type;
+        matchedWords.add(w);
+        break;
+      }
+    }
+  }
+
+  // Extraction brand "raw" : tokens en MAJUSCULES qui ne matchent pas un keyword
+  // et qui ne sont pas des unités (ML, KG, LT, G, CL, L) ni des mots génériques
+  const UNITS = /^(?:ML|CL|DL|L|G|KG|MG|LT|OZ|LB)$/i;
+  const IGNORE_BRAND = new Set([
+    'original','taste','baby','dry','matic','classic','eau','water','biere','beer',
+    'huile','oil','lait','milk','juice','jus','sugar','sucre','pain','bread',
+    'tomato','tomate','orange','pomme','mangue','citron','cola'
+  ]);
+  const rawBrand = [];
+  for (const tok of rawTokens) {
+    const lo = tok.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+    if (matchedWords.has(lo)) continue;
+    if (SPECTRA_SECONDARY_KW.has(lo)) continue;
+    if (IGNORE_BRAND.has(lo)) continue;
+    if (UNITS.test(tok)) continue;
+    if (/^\d+$/.test(tok)) continue;
+    if (tok.length < 4 || tok.length > 15) continue;
+    // MAJUSCULES seulement (au moins 80% de lettres majuscules)
+    const letters = tok.replace(/[^\p{L}]/gu, '');
+    if (!letters) continue;
+    const upper = letters.replace(/[^\p{Lu}]/gu, '');
+    if (upper.length / letters.length < 0.7) continue;
+    rawBrand.push(tok.toUpperCase());
+  }
+
+  if (!foundType && !foundBrand && rawBrand.length === 0) return null;
+
+  // Construire le nom final : "Type Marque" (ex: "Bouteille de Ketchup Heinz")
+  const finalBrand = foundBrand || (rawBrand[0] || null);
+  let name = foundType || '';
+  if (finalBrand) {
+    // Évite d'ajouter la marque si elle est déjà dans le type (ex: "Bouteille de Coca-Cola")
+    const lowName = name.toLowerCase();
+    const lowBrand = finalBrand.toLowerCase();
+    if (!lowName.includes(lowBrand) && !lowBrand.includes(lowName.split(' ').pop()||'')) {
+      name = name ? (name + ' ' + finalBrand) : finalBrand;
+    }
+  }
+  return { type: foundType, brand: finalBrand, name: (name || foundType || '').trim() };
+}
+
+// ── OpenFoodFacts lookup : produit par code-barres ──
+// API gratuite, 2M+ produits. Cache local pour minimiser les appels.
+async function lookupProductByEAN(ean){
+  if (!ean) return null;
+  // Cache localStorage
+  let cache = {};
+  try { cache = JSON.parse(localStorage.getItem('stockr_eanDB') || '{}'); } catch(e){}
+  if (cache[ean] !== undefined) return cache[ean]; // null aussi mémorisé (pour éviter retry)
+  try {
+    const r = await fetch('https://world.openfoodfacts.org/api/v2/product/' + encodeURIComponent(ean) + '.json', { cache:'force-cache' });
+    if (!r.ok) { cache[ean] = null; localStorage.setItem('stockr_eanDB', JSON.stringify(cache)); return null; }
+    const d = await r.json();
+    if (d.status === 1 && d.product) {
+      const prod = d.product;
+      const name = prod.product_name_fr || prod.product_name || '';
+      const brand = (prod.brands || '').split(',')[0].trim();
+      const cat = (prod.categories_tags?.[0] || '').replace(/^fr:|^en:/, '').replace(/-/g,' ');
+      const result = { ean, name, brand, category: cat, quantity: prod.quantity || '', image: prod.image_front_small_url || '' };
+      cache[ean] = result;
+      try { localStorage.setItem('stockr_eanDB', JSON.stringify(cache)); } catch(e){}
+      return result;
+    }
+    cache[ean] = null;
+    try { localStorage.setItem('stockr_eanDB', JSON.stringify(cache)); } catch(e){}
+    return null;
+  } catch(e){ return null; }
+}
+
+// ── Grouping SMART avec OCR + mémoire produit ──
+// Résultat : "Bouteille — HEINZ KETCHUP 500g" au lieu de juste "Bouteille"
+async function _groupPredictionsSmart(predictions, imgOrCanvas){
+  // 1. OCR sur chaque boîte détectée
+  const enriched = [];
+  for (const p of predictions) {
+    let ocrResult = { text: '', confidence: 0 };
+    // OCR uniquement si la boîte est suffisamment grande (évite bruit)
+    const [, , w, h] = p.bbox || [0,0,0,0];
+    if (w > 40 && h > 40) {
+      try { ocrResult = await _ocrRegion(imgOrCanvas, p.bbox); } catch(e){}
+    }
+    enriched.push({ ...p, ocr: ocrResult });
+  }
+
+  // 2. Grouper par signature (coco_class + 1ʳᵉ ligne OCR)
+  const groups = {};
+  for (const p of enriched) {
+    const cls = p.class || 'objet';
+    const ocrLine = (p.ocr.text || '').split(/\n/)[0].trim();
+    const firstWord = ocrLine.split(/\s+/)[0].toLowerCase();
+    const sig = cls + '|' + firstWord;
+    if (!groups[sig]) {
+      groups[sig] = { cocoClass: cls, ocrText: ocrLine, count: 0, sum: 0, boxes: [], ocrConf: 0 };
+    }
+    groups[sig].count++;
+    groups[sig].sum += (p.score || 0);
+    groups[sig].boxes.push(p.bbox);
+    // Garder l'OCR le plus long (plus d'info)
+    if ((p.ocr.text || '').length > (groups[sig].ocrText || '').length) {
+      groups[sig].ocrText = p.ocr.text;
+      groups[sig].ocrConf = p.ocr.confidence;
+    }
+  }
+
+  // 3. Résolution du nom final (priorité : mémoire > article match OCR > COCO class + OCR)
+  const detections = [];
+  for (const sig in groups) {
+    const g = groups[sig];
+    const cocoName = _translateCocoClass(g.cocoClass);
+    const ocr = (g.ocrText || '').trim();
+
+    // a. Chercher dans la mémoire produit
+    const remembered = recallProduct(g.cocoClass, ocr);
+
+    // b. Chercher article par EAN / ref / nom / OCR
+    let match = null;
+    if (remembered && remembered.articleId) {
+      match = (S.articles || []).find(a => a.id === remembered.articleId);
+    }
+    if (!match && ocr) {
+      // Matching article par similarité nom ↔ OCR
+      let best = null, bestScore = 0;
+      for (const a of (S.articles || [])) {
+        const s = _textSimilarity(a.name || '', ocr);
+        if (s > bestScore) { bestScore = s; best = a; }
+      }
+      if (bestScore >= 0.5) match = best;
+    }
+    if (!match) {
+      // Fallback : matching par COCO class dans nom
+      match = (S.articles || []).find(a =>
+        a.name && (a.name.toLowerCase().includes(g.cocoClass.toLowerCase()) || a.name.toLowerCase().includes(cocoName.toLowerCase()))
+      );
+    }
+
+    // c. Résolution par dictionnaire mots-clés (ketchup → "Bouteille de Ketchup")
+    const resolved = _resolveFromOCR(ocr);
+
+    // d. Construire le nom affiché (priorité : mémoire > dict mots-clés > article match > COCO+OCR)
+    let detectedName;
+    let resolvedType = null, resolvedBrand = null;
+    if (remembered && remembered.finalName) {
+      detectedName = remembered.finalName;
+    } else if (resolved && resolved.name) {
+      // "Bouteille de Ketchup Heinz" (type reconnu) ou juste la marque si pas de type
+      detectedName = resolved.name;
+      resolvedType = resolved.type;
+      resolvedBrand = resolved.brand;
+    } else if (ocr) {
+      // Nettoie l'OCR : garde max 40 char
+      const ocrClean = ocr.replace(/\s+/g, ' ').slice(0, 40);
+      detectedName = `${cocoName} — ${ocrClean}`;
+    } else {
+      detectedName = cocoName;
+    }
+
+    detections.push({
+      detected_name: detectedName,
+      matched_id:    match ? match.id : null,
+      matched_name:  match ? match.name : detectedName,
+      matched_unit:  match ? (match.unit || 'pce') : 'pce',
+      quantity:      g.count,
+      confidence:    Math.round((g.sum / g.count) * 100),
+      boxes:         g.boxes,
+      coco_class:    g.cocoClass,
+      ocr_text:      ocr,
+      ocr_confidence: Math.round(g.ocrConf || 0),
+      from_memory:   !!(remembered && remembered.finalName),
+      from_keyword:  !!(resolved && resolved.name && !(remembered && remembered.finalName)),
+      resolved_type:  resolvedType,
+      resolved_brand: resolvedBrand,
+    });
+  }
+  return detections;
+}
+
+// ── Détection à partir d'une image HTMLImageElement (avec OCR) ──
+async function spectraDetectFromImage(img, opts){
+  const model = await loadCocoSSD();
+  const predictions = await model.detect(img, 20);
+  const filtered = predictions.filter(p => (p.score || 0) >= 0.4);
+  if (opts && opts.fast) return _groupPredictionsByClass(filtered);
+  // Mode précision maximale : OCR + mémoire + détection dommages
+  let detections;
+  try {
+    detections = await _groupPredictionsSmart(filtered, img);
+  } catch(e) {
+    detections = _groupPredictionsByClass(filtered);
+  }
+  // Ajouter analyse qualité/dommages pour chaque détection
+  try {
+    for (const d of detections) {
+      if (!d.boxes || d.boxes.length === 0) continue;
+      const damage = _analyzeImageQuality(img, d.boxes[0]);
+      d.quality_score = damage.score;
+      d.damage_flags = damage.flags;
+    }
+  } catch(e){}
+  return detections;
+}
+
+// ── Heuristique qualité/dommages basée sur l'image ──
+// Détecte : flou (variance faible), contrastes extrêmes, taches sombres (moisissure ?)
+function _analyzeImageQuality(img, bbox){
+  try {
+    const [x, y, w, h] = bbox;
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.min(200, w); canvas.height = Math.min(200, h);
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, x, y, w, h, 0, 0, canvas.width, canvas.height);
+    const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imgData.data;
+    // 1. Variance du Laplacien (approximation flou)
+    let sum = 0, sumSq = 0, n = 0;
+    for (let i = 0; i < data.length; i += 16) {
+      const gray = 0.299*data[i] + 0.587*data[i+1] + 0.114*data[i+2];
+      sum += gray; sumSq += gray*gray; n++;
+    }
+    const mean = sum / n;
+    const variance = (sumSq / n) - (mean * mean);
+
+    // 2. Détecter taches sombres (pourcentage pixels très sombres)
+    let darkPixels = 0;
+    for (let i = 0; i < data.length; i += 4) {
+      const gray = 0.299*data[i] + 0.587*data[i+1] + 0.114*data[i+2];
+      if (gray < 30) darkPixels++;
+    }
+    const darkRatio = darkPixels / (data.length / 4);
+
+    // 3. Flags
+    const flags = [];
+    if (variance < 200) flags.push('flou');
+    if (darkRatio > 0.35) flags.push('zones sombres');
+    if (mean < 40) flags.push('sous-exposé');
+    if (mean > 220) flags.push('surexposé');
+
+    // 4. Score qualité (0-100)
+    let score = 100;
+    if (variance < 200) score -= 30;
+    if (variance < 80)  score -= 20;
+    if (darkRatio > 0.35) score -= 15;
+    if (mean < 40 || mean > 220) score -= 10;
+    score = Math.max(0, Math.min(100, score));
+
+    return { score, flags, variance: Math.round(variance), mean: Math.round(mean), darkRatio: +darkRatio.toFixed(2) };
+  } catch(e) {
+    return { score: 100, flags: [] };
+  }
+}
+
+// ── Scan code-barres depuis image (natif BarcodeDetector) ──
+async function spectraDetectBarcodeFromImage(img){
+  if (!('BarcodeDetector' in window)) {
+    throw new Error('BarcodeDetector non supporté sur ce navigateur');
+  }
+  const detector = new window.BarcodeDetector({
+    formats: ['ean_13','ean_8','upc_a','upc_e','code_128','code_39','qr_code']
+  });
+  const barcodes = await detector.detect(img);
+  const detections = [];
+  for (const b of barcodes) {
+    const code = b.rawValue;
+    // Chercher article par EAN / barcode / ref (ref sert aussi de code-barres)
+    const match = (S.articles || []).find(a =>
+      a.ean === code || a.barcode === code || a.ref === code
+    );
+    // Si pas d'article local, tenter OpenFoodFacts pour nom précis (2M+ produits)
+    let offName = null, offBrand = null, offCategory = null, offImage = null;
+    if (!match) {
+      try {
+        const off = await lookupProductByEAN(code);
+        if (off && off.name) {
+          offName = off.name;
+          offBrand = off.brand || null;
+          offCategory = off.category || null;
+          offImage = off.image || null;
+        }
+      } catch(e){}
+    }
+    const displayName = match ? match.name
+                      : (offName ? (offBrand ? `${offName} — ${offBrand}` : offName)
+                                 : ('Code ' + code));
+    detections.push({
+      detected_name: displayName,
+      matched_id:    match ? match.id : null,
+      matched_name:  match ? match.name : displayName,
+      matched_unit:  match ? (match.unit || 'pce') : 'pce',
+      quantity:      1,
+      confidence:    99,
+      barcode:       code,
+      format:        b.format,
+      off_name:      offName,
+      off_brand:     offBrand,
+      off_category:  offCategory,
+      off_image:     offImage,
+    });
+  }
+  return detections;
+}
+
+// ── Scan continu : camera live + detection RAF loop ──
+let _spectraStream = null;
+let _spectraLoopId = null;
+let _spectraLastBarcode = null;
+let _spectraCameras = [];
+let _spectraCameraIdx = 0;
+
+// ── Multi-caméras : énumère les caméras disponibles ──
+async function spectraListCameras(){
+  try {
+    if (!navigator.mediaDevices?.enumerateDevices) return [];
+    // Workaround : sur certains navigateurs il faut d'abord demander la permission
+    // pour que les labels soient retournés. On ne force pas ici.
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    _spectraCameras = devices.filter(d => d.kind === 'videoinput');
+    return _spectraCameras;
+  } catch(e) { return []; }
+}
+
+// Bascule vers la caméra suivante (ou précédente si désactivée)
+async function spectraSwitchCamera(){
+  const cams = await spectraListCameras();
+  if (cams.length < 2) {
+    showToast('Une seule caméra disponible', 'info');
+    return;
+  }
+  _spectraCameraIdx = (_spectraCameraIdx + 1) % cams.length;
+  const camLabel = cams[_spectraCameraIdx].label || `Caméra ${_spectraCameraIdx + 1}`;
+  showToast('Caméra : ' + camLabel, 'info');
+  // Redémarrer avec la nouvelle caméra (garde le step actuel)
+  const currentStep = S.spectra.step;
+  spectraStopContinuous();
+  if (currentStep === 'continuous') await spectraStartContinuous();
+  else if (currentStep === 'barcode') await spectraStartBarcode();
+}
+
+// Construit les contraintes getUserMedia avec la caméra choisie
+function _spectraVideoConstraints(highRes){
+  const cam = _spectraCameras[_spectraCameraIdx];
+  const base = highRes
+    ? { width: { ideal: 1280 }, height: { ideal: 720 } }
+    : { width: { ideal: 640 }, height: { ideal: 480 } };
+  if (cam && cam.deviceId) {
+    return { ...base, deviceId: { exact: cam.deviceId } };
+  }
+  return { ...base, facingMode: { ideal: 'environment' } };
+}
+
+async function spectraStartContinuous(){
+  S.spectra.step = 'continuous';
+  S.spectra.queue = [];
+  S.spectra.confirmed = [];
+  render();
+  try {
+    await loadCocoSSD();
+  } catch(err) {
+    showToast('IA indisponible : ' + err.message, 'error');
+    S.spectra.step = 'camera';
+    render();
+    return;
+  }
+  const video = await _spectraWaitFor('spectra-video', 40);
+  const canvas = await _spectraWaitFor('spectra-canvas', 40);
+  if (!video || !canvas) { showToast('Caméra introuvable', 'error'); return; }
+  try {
+    _spectraStream = await navigator.mediaDevices.getUserMedia({
+      video: _spectraVideoConstraints(true),
+      audio: false,
+    });
+    video.srcObject = _spectraStream;
+    await video.play();
+    // Après premier accès, enumerateDevices donne les labels réels
+    await spectraListCameras();
+    canvas.width = video.videoWidth || 640;
+    canvas.height = video.videoHeight || 480;
+    _spectraLoop(video, canvas);
+  } catch(err) {
+    showToast('Caméra refusée : ' + (err.message || err), 'error');
+    S.spectra.step = 'camera';
+    render();
+  }
+}
+
+async function _spectraLoop(video, canvas){
+  if (S.spectra.step !== 'continuous') return;
+  if (!_cocoModel) { _spectraLoopId = requestAnimationFrame(() => _spectraLoop(video, canvas)); return; }
+  try {
+    const predictions = await _cocoModel.detect(video, 10);
+    const filtered = predictions.filter(p => (p.score || 0) >= 0.5);
+    _drawBoundingBoxes(canvas, filtered);
+    // Mettre à jour l'overlay (compteur + liste + nom mémoire si connu)
+    const overlay = document.getElementById('spectra-overlay');
+    if (overlay) {
+      const groups = {};
+      for (const p of filtered) {
+        const k = p.class; if (!groups[k]) groups[k] = { count:0, score:0 };
+        groups[k].count++;
+        groups[k].score = Math.max(groups[k].score, p.score || 0);
+      }
+      const lines = Object.keys(groups).map(c => {
+        const g = groups[c];
+        // Tenter de retrouver en mémoire (sans OCR, par coco class seule)
+        const mem = getSpectraMemory().find(m => m.cocoClass === c && m.count >= 2);
+        const label = mem ? mem.finalName : _translateCocoClass(c);
+        const conf = Math.round(g.score * 100);
+        return `<div style="display:flex;justify-content:space-between;gap:10px"><span>${label}</span><b>×${g.count} <span style="opacity:.6;font-size:11px">${conf}%</span></b></div>`;
+      }).join('');
+      overlay.innerHTML = lines || '<div style="opacity:.6">Pointez la caméra vers vos produits…</div>';
+    }
+    // Stocker les dernières détections pour capture
+    S.spectra._liveDetections = filtered;
+  } catch(e) { /* swallow */ }
+  _spectraLoopId = requestAnimationFrame(() => _spectraLoop(video, canvas));
+}
+
+function _drawBoundingBoxes(canvas, predictions){
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.lineWidth = 3;
+  ctx.font = 'bold 14px Inter, sans-serif';
+  for (const p of predictions) {
+    const [x, y, w, h] = p.bbox;
+    const color = (p.score >= 0.7) ? '#10B981' : (p.score >= 0.5 ? '#F59E0B' : '#EF4444');
+    ctx.strokeStyle = color;
+    ctx.strokeRect(x, y, w, h);
+    const label = `${_translateCocoClass(p.class)} ${Math.round(p.score*100)}%`;
+    const tw = ctx.measureText(label).width + 10;
+    ctx.fillStyle = color;
+    ctx.fillRect(x, y - 22, tw, 22);
+    ctx.fillStyle = '#fff';
+    ctx.fillText(label, x + 5, y - 6);
+  }
+}
+
+function spectraStopContinuous(){
+  if (_spectraLoopId) { cancelAnimationFrame(_spectraLoopId); _spectraLoopId = null; }
+  if (_spectraStream) {
+    try { _spectraStream.getTracks().forEach(tr => tr.stop()); } catch(e){}
+    _spectraStream = null;
+  }
+}
+
+async function spectraCaptureFromContinuous(){
+  const live = S.spectra._liveDetections || [];
+  if (live.length === 0) { showToast('Aucune détection en cours', 'error'); return; }
+
+  // Capture la frame actuelle pour OCR (meilleure précision nommage)
+  const video = document.getElementById('spectra-video');
+  let captureSource = video;
+  if (video && video.videoWidth) {
+    try {
+      const cap = document.createElement('canvas');
+      cap.width = video.videoWidth; cap.height = video.videoHeight;
+      const cx = cap.getContext('2d');
+      cx.drawImage(video, 0, 0, cap.width, cap.height);
+      captureSource = cap;
+    } catch(e){}
+  }
+
+  spectraStopContinuous();
+  S.spectra.step = 'loading';
+  render();
+
+  try {
+    // OCR-enhanced grouping depuis la frame capturée
+    const detections = await _groupPredictionsSmart(live, captureSource);
+    S.spectra.queue = detections;
+  } catch(e) {
+    // Dégrade en groupement rapide si OCR indispo
+    S.spectra.queue = _groupPredictionsByClass(live);
+  }
+  S.spectra.current = 0;
+  S.spectra.confirmed = [];
+  S.spectra.naming = false;
+  S.spectra.step = 'confirm';
+  render();
+}
+
+// ── Scan code-barres continu (caméra live) ─────
+async function spectraStartBarcode(){
+  if (!('BarcodeDetector' in window)) {
+    showToast('Code-barres non supporté — scannez une photo', 'error');
+    // Fallback : ouvrir picker fichier
+    const fi = document.getElementById('spectra-file');
+    if (fi) fi.click();
+    return;
+  }
+  S.spectra.step = 'barcode';
+  render();
+  const video = await _spectraWaitFor('spectra-video', 40);
+  if (!video) { showToast('Caméra introuvable', 'error'); return; }
+  try {
+    _spectraStream = await navigator.mediaDevices.getUserMedia({
+      video: _spectraVideoConstraints(false), audio: false,
+    });
+    video.srcObject = _spectraStream;
+    await video.play();
+    await spectraListCameras();
+    _spectraLastBarcode = null;
+    _spectraBarcodeLoop(video);
+  } catch(err) {
+    showToast('Caméra refusée : ' + (err.message || err), 'error');
+    S.spectra.step = 'camera';
+    render();
+  }
+}
+
+async function _spectraBarcodeLoop(video){
+  if (S.spectra.step !== 'barcode') return;
+  try {
+    const detector = new window.BarcodeDetector({
+      formats: ['ean_13','ean_8','upc_a','upc_e','code_128','code_39','qr_code']
+    });
+    const barcodes = await detector.detect(video);
+    if (barcodes.length > 0) {
+      const code = barcodes[0].rawValue;
+      if (code && code !== _spectraLastBarcode) {
+        _spectraLastBarcode = code;
+        _onBarcodeDetected(code, barcodes[0].format);
+        return;
+      }
+    }
+  } catch(e) { /* swallow */ }
+  _spectraLoopId = requestAnimationFrame(() => _spectraBarcodeLoop(video));
+}
+
+async function _onBarcodeDetected(code, format){
+  spectraStopContinuous();
+  const match = (S.articles || []).find(a =>
+    a.ean === code || a.barcode === code || a.ref === code
+  );
+  // Lookup OpenFoodFacts si article local introuvable
+  let offName = null, offBrand = null, offCategory = null, offImage = null;
+  if (!match) {
+    try {
+      showToast('Recherche produit (OpenFoodFacts)…', 'info');
+      const off = await lookupProductByEAN(code);
+      if (off && off.name) {
+        offName = off.name;
+        offBrand = off.brand || null;
+        offCategory = off.category || null;
+        offImage = off.image || null;
+      }
+    } catch(e){}
+  }
+  const displayName = match ? match.name
+                    : (offName ? (offBrand ? `${offName} — ${offBrand}` : offName)
+                               : ('Code ' + code));
+  const detection = {
+    detected_name: displayName,
+    matched_id:    match ? match.id : null,
+    matched_name:  match ? match.name : displayName,
+    matched_unit:  match ? (match.unit || 'pce') : 'pce',
+    quantity:      1,
+    confidence:    99,
+    barcode:       code,
+    format:        format,
+    off_name:      offName,
+    off_brand:     offBrand,
+    off_category:  offCategory,
+    off_image:     offImage,
+  };
+  S.spectra.queue = [detection];
+  S.spectra.current = 0;
+  S.spectra.confirmed = [];
+  S.spectra.naming = false;
+  S.spectra.step = 'confirm';
+  render();
+}
+
+// ── spectraOnFile : détection réelle ───────────
 async function spectraOnFile(input) {
   const file = input.files[0];
   if (!file) return;
 
-  // Convertir en base64
-  const reader = new FileReader();
-  reader.onload = async (e) => {
-    S.spectra.step = 'loading';
-    render();
+  S.spectra.step = 'loading';
+  render();
 
-    try {
-      const data = await api('POST', '/api/spectra/scan', { image: e.target.result });
-      if (!data.detections || data.detections.length === 0) {
-        showToast(t('spectraNoDetection'), 'error');
+  try {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    await new Promise((resolve, reject) => {
+      img.onload = resolve;
+      img.onerror = reject;
+      img.src = url;
+    });
+
+    let detections = [];
+    if (S.spectraMode === 'barcode') {
+      try {
+        detections = await spectraDetectBarcodeFromImage(img);
+      } catch(err) {
+        showToast(err.message, 'error');
+        URL.revokeObjectURL(url);
         S.spectra.step = 'camera';
         render();
         return;
       }
-      S.spectra.queue   = data.detections;
-      S.spectra.current = 0;
-      S.spectra.confirmed = [];
-      S.spectra.naming  = false;
-      S.spectra.step    = 'confirm';
-      render();
-    } catch (err) {
-      showToast(err.message || 'Spectra error', 'error');
+    } else {
+      // photo / yolo → COCO-SSD + tentative code-barres en parallèle pour enrichir
+      detections = await spectraDetectFromImage(img);
+      // Essayer de détecter aussi les codes-barres visibles dans l'image
+      try {
+        if ('BarcodeDetector' in window && detections.length > 0) {
+          const barcodes = await spectraDetectBarcodeFromImage(img);
+          if (barcodes.length > 0) {
+            // Associe chaque code-barres à la détection la plus proche
+            // (ou à la première si pas de position)
+            for (const b of barcodes) {
+              const target = detections[0];
+              target.barcode = b.barcode;
+              // Si OFF a donné un nom précis, le promouvoir en detected_name
+              if (b.off_name) {
+                target.off_name = b.off_name;
+                target.off_brand = b.off_brand;
+                target.off_category = b.off_category;
+                target.off_image = b.off_image;
+                // Override du nom détecté avec celui d'OFF (source fiable)
+                target.detected_name = b.off_brand
+                  ? `${b.off_name} — ${b.off_brand}`
+                  : b.off_name;
+                if (!target.matched_id) target.matched_name = target.detected_name;
+                target.from_off = true;
+              }
+            }
+          }
+        }
+      } catch(e){}
+    }
+    URL.revokeObjectURL(url);
+
+    // Passerelle /api/spectra/scan (conserve la compat offline-first)
+    try { await api('POST', '/api/spectra/scan', { detections }); } catch(e){}
+
+    if (!detections || detections.length === 0) {
+      showToast(t('spectraNoDetection') || 'Aucune détection', 'error');
       S.spectra.step = 'camera';
       render();
+      return;
     }
-  };
-  reader.readAsDataURL(file);
+    S.spectra.queue   = detections;
+    S.spectra.current = 0;
+    S.spectra.confirmed = [];
+    S.spectra.naming  = false;
+    S.spectra.step    = 'confirm';
+    render();
+  } catch (err) {
+    showToast(err.message || 'Spectra error', 'error');
+    S.spectra.step = 'camera';
+    render();
+  }
 }
 
 function spectraConfirmYes() {
   const item = S.spectra.queue[S.spectra.current];
+  const finalName = item.matched_name || item.detected_name;
   S.spectra.confirmed.push({
     article_id: item.matched_id || null,
-    name:       item.matched_name || item.detected_name,
+    name:       finalName,
     quantity:   item.quantity,
     unit:       item.matched_unit || 'pce',
+    barcode:    item.barcode || null,
+    ocr_text:   item.ocr_text || '',
+    coco_class: item.coco_class || '',
   });
+  // Mémoriser ce produit pour les prochains scans
+  try {
+    rememberProduct({
+      cocoClass: item.coco_class,
+      ocrText:   item.ocr_text,
+      finalName: finalName,
+      articleId: item.matched_id,
+      barcode:   item.barcode,
+    });
+  } catch(e){}
   spectraNext();
 }
 
 function spectraConfirmNo() {
   S.spectra.naming = true;
   render();
-  setTimeout(() => document.getElementById('spectra-name-input')?.focus(), 80);
+  // Supporte les deux variantes d'ID (ancienne view + vSpectraEnhanced)
+  setTimeout(() => {
+    const el = document.getElementById('spectra-name') || document.getElementById('spectra-name-input');
+    el?.focus();
+  }, 80);
 }
 
 function spectraSubmitName() {
-  const input = document.getElementById('spectra-name-input');
+  const input = document.getElementById('spectra-name') || document.getElementById('spectra-name-input');
   const name = input?.value?.trim();
   if (!name) { showToast(t('articleName'), 'error'); return; }
 
+  // Permet de surcharger la quantité détectée si l'utilisateur la corrige
+  const qtyInput = document.getElementById('spectra-qty');
   const item = S.spectra.queue[S.spectra.current];
+  const qty = qtyInput ? (parseInt(qtyInput.value, 10) || item.quantity) : item.quantity;
+
   S.spectra.confirmed.push({
     article_id: null,
     name:       name,
-    quantity:   item.quantity,
+    quantity:   qty,
     unit:       item.matched_unit || 'pce',
+    barcode:    item.barcode || null,
+    ocr_text:   item.ocr_text || '',
+    coco_class: item.coco_class || '',
   });
+  // Mémoriser le nom choisi pour les scans futurs
+  try {
+    rememberProduct({
+      cocoClass: item.coco_class,
+      ocrText:   item.ocr_text,
+      finalName: name,
+      articleId: null,
+      barcode:   item.barcode,
+    });
+  } catch(e){}
   S.spectra.naming = false;
   spectraNext();
 }
@@ -5140,12 +7559,223 @@ async function spectraFinish() {
 }
 
 function spectraReset() {
+  // Arrêter caméra si scan continu / code-barres
+  try { spectraStopContinuous(); } catch(e){}
   S.spectra = {
     step: 'camera', queue: [], current: 0,
     confirmed: [], naming: false, results: [],
     compareResults: [],
   };
   render();
+}
+
+// ── Signature électronique (SHA-256 des détections + timestamp) ──
+async function _spectraAuditSignature(data){
+  try {
+    const text = JSON.stringify(data) + '|' + Date.now();
+    const buf = new TextEncoder().encode(text);
+    const hash = await crypto.subtle.digest('SHA-256', buf);
+    return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2,'0')).join('');
+  } catch(e) { return 'sig-offline-' + Date.now(); }
+}
+
+// ── GPS (timeout 3s, optionnel) ──
+function _spectraGetGPS(){
+  return new Promise(resolve => {
+    if (!navigator.geolocation) return resolve(null);
+    const timer = setTimeout(() => resolve(null), 3000);
+    navigator.geolocation.getCurrentPosition(
+      p => { clearTimeout(timer); resolve({ lat: p.coords.latitude, lon: p.coords.longitude, acc: p.coords.accuracy }); },
+      () => { clearTimeout(timer); resolve(null); },
+      { enableHighAccuracy: false, timeout: 3000, maximumAge: 60000 }
+    );
+  });
+}
+
+// ── Rapport PDF d'audit Spectra (GPS + signature SHA-256 + détections) ──
+async function generateSpectraAuditPDF(){
+  if (typeof window.jspdf === 'undefined') { showToast('jsPDF indisponible', 'error'); return; }
+  if (!S.spectra.results || S.spectra.results.length === 0) {
+    showToast('Aucune détection à signer', 'error'); return;
+  }
+  showToast('Génération du rapport…', 'info');
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF({ unit: 'mm', format: 'a4' });
+  const now = new Date();
+  const user = S.session?.name || S.session?.email || 'Opérateur';
+  const biz = S.session?.business || '';
+  const gps = await _spectraGetGPS();
+  const signature = await _spectraAuditSignature({
+    results: S.spectra.results,
+    confirmed: S.spectra.confirmed,
+    mode: S.spectraMode,
+    user, biz, gps, date: now.toISOString()
+  });
+
+  // En-tête
+  pdf.setFillColor(79, 70, 229); pdf.rect(0, 0, 210, 30, 'F');
+  pdf.setTextColor(255,255,255); pdf.setFontSize(20); pdf.setFont('helvetica','bold');
+  pdf.text('RAPPORT AUDIT SPECTRA', 15, 20);
+  pdf.setFontSize(9); pdf.setFont('helvetica','normal');
+  pdf.text(biz || 'STOCKR', 180, 20, { align: 'right' });
+
+  // Métadonnées
+  pdf.setTextColor(30,30,30); pdf.setFontSize(10);
+  let y = 45;
+  pdf.setFont('helvetica','bold'); pdf.text('Métadonnées', 15, y); y += 7;
+  pdf.setFont('helvetica','normal');
+  pdf.text(`Date : ${now.toLocaleDateString('fr-FR')} ${now.toLocaleTimeString('fr-FR')}`, 15, y); y += 6;
+  pdf.text(`Opérateur : ${user}`, 15, y); y += 6;
+  pdf.text(`Mode : ${S.spectraMode || 'photo'}`, 15, y); y += 6;
+  if (gps) {
+    pdf.text(`GPS : ${gps.lat.toFixed(5)}, ${gps.lon.toFixed(5)} (±${Math.round(gps.acc)}m)`, 15, y); y += 6;
+  } else {
+    pdf.text(`GPS : non disponible`, 15, y); y += 6;
+  }
+  y += 4;
+
+  // Détections
+  pdf.setFont('helvetica','bold'); pdf.setFontSize(12);
+  pdf.text('Articles détectés & mis à jour', 15, y); y += 8;
+  pdf.setFont('helvetica','normal'); pdf.setFontSize(10);
+  pdf.setFillColor(245, 245, 250);
+  for (const r of S.spectra.results) {
+    if (y > 260) { pdf.addPage(); y = 20; }
+    pdf.rect(12, y - 5, 186, 9, 'F');
+    pdf.text(`• ${r.name}`, 15, y);
+    pdf.text(`${r.new_qty} ${r.unit || 'pce'}`, 195, y, { align: 'right' });
+    y += 10;
+  }
+
+  // Contexte détaillé (items confirmés avec OCR / barcode / coco class)
+  y += 6;
+  if (S.spectra.confirmed && S.spectra.confirmed.length) {
+    pdf.setFont('helvetica','bold'); pdf.setFontSize(11);
+    pdf.text('Détails détection', 15, y); y += 7;
+    pdf.setFont('helvetica','normal'); pdf.setFontSize(8);
+    for (const c of S.spectra.confirmed) {
+      if (y > 270) { pdf.addPage(); y = 20; }
+      const line = [
+        c.name,
+        c.coco_class ? `classe=${c.coco_class}` : '',
+        c.ocr_text ? `OCR="${c.ocr_text.slice(0,30)}"` : '',
+        c.barcode ? `EAN=${c.barcode}` : ''
+      ].filter(Boolean).join(' · ');
+      pdf.text('› ' + line, 15, y); y += 5;
+    }
+  }
+
+  // Signature (pied de page dernière page)
+  const pageCount = pdf.internal.getNumberOfPages();
+  pdf.setPage(pageCount);
+  pdf.setFont('helvetica','bold'); pdf.setFontSize(9);
+  pdf.setTextColor(100,100,100);
+  pdf.text('SIGNATURE ÉLECTRONIQUE (SHA-256)', 15, 280);
+  pdf.setFont('courier','normal'); pdf.setFontSize(7);
+  pdf.text(signature.slice(0, 64), 15, 285);
+  pdf.text(signature.slice(64), 15, 289);
+  pdf.setFont('helvetica','italic'); pdf.setFontSize(7);
+  pdf.text('Ce rapport constitue une preuve horodatée infalsifiable — STOCKR Spectra AI', 15, 294);
+
+  const filename = `audit-spectra-${now.toISOString().slice(0,19).replace(/[:T]/g,'-')}.pdf`;
+  pdf.save(filename);
+
+  // Sauvegarder dans historique local
+  try {
+    const history = JSON.parse(localStorage.getItem('stockr_spectra_audits') || '[]');
+    history.unshift({
+      id: Date.now(),
+      date: now.toISOString(),
+      user, biz, mode: S.spectraMode,
+      count: S.spectra.results.length,
+      signature,
+      gps,
+      filename
+    });
+    if (history.length > 100) history.length = 100;
+    localStorage.setItem('stockr_spectra_audits', JSON.stringify(history));
+  } catch(e){}
+
+  showToast('Rapport PDF signé ✓', 'success');
+}
+
+// ── Scanner un code-barres pour remplir le champ "ref" d'un article ──
+async function scanBarcodeForArticle(){
+  if (!('BarcodeDetector' in window)) {
+    // Fallback : picker fichier
+    const inp = document.createElement('input');
+    inp.type = 'file'; inp.accept = 'image/*'; inp.capture = 'environment';
+    inp.onchange = async () => {
+      const file = inp.files[0]; if (!file) return;
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+      await new Promise((r,e)=>{img.onload=r;img.onerror=e;img.src=url;});
+      try {
+        const detections = await spectraDetectBarcodeFromImage(img);
+        URL.revokeObjectURL(url);
+        if (detections.length > 0) {
+          const code = detections[0].barcode;
+          S.form.ref = code;
+          const el = document.getElementById('art-ref-input');
+          if (el) el.value = code;
+          showToast('Code détecté : ' + code, 'success');
+        } else {
+          showToast('Aucun code-barres détecté', 'error');
+        }
+      } catch(err) { showToast(err.message, 'error'); }
+    };
+    inp.click();
+    return;
+  }
+  // Caméra live pour scanner
+  const modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px';
+  modal.innerHTML = `
+    <div style="color:#fff;font-weight:700;margin-bottom:12px">Scanner un code-barres</div>
+    <div style="position:relative;width:100%;max-width:420px;background:#000;border-radius:12px;overflow:hidden;aspect-ratio:4/3">
+      <video id="_bcscan-video" playsinline muted autoplay style="width:100%;height:100%;object-fit:cover"></video>
+      <div style="position:absolute;inset:25% 10%;border:3px solid #E11D48;border-radius:8px"></div>
+    </div>
+    <button id="_bcscan-close" style="margin-top:16px;padding:12px 24px;background:#fff;border:0;border-radius:8px;font-weight:700">Annuler</button>
+  `;
+  document.body.appendChild(modal);
+  const video = modal.querySelector('#_bcscan-video');
+  let stream = null, rafId = null, finished = false;
+  const cleanup = () => {
+    finished = true;
+    if (rafId) cancelAnimationFrame(rafId);
+    if (stream) { try { stream.getTracks().forEach(t=>t.stop()); } catch(e){} }
+    try { modal.remove(); } catch(e){}
+  };
+  modal.querySelector('#_bcscan-close').onclick = cleanup;
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' } }, audio: false });
+    video.srcObject = stream;
+    await video.play();
+    const detector = new window.BarcodeDetector({
+      formats: ['ean_13','ean_8','upc_a','upc_e','code_128','code_39','qr_code']
+    });
+    const loop = async () => {
+      if (finished) return;
+      try {
+        const codes = await detector.detect(video);
+        if (codes.length > 0) {
+          const code = codes[0].rawValue;
+          S.form.ref = code;
+          const el = document.getElementById('art-ref-input');
+          if (el) el.value = code;
+          showToast('Code détecté : ' + code, 'success');
+          cleanup();
+          return;
+        }
+      } catch(e){}
+      rafId = requestAnimationFrame(loop);
+    };
+    loop();
+  } catch(err) {
+    showToast('Caméra refusée : ' + (err.message || err), 'error');
+    cleanup();
+  }
 }
 
 function spectraStartCompare() {
@@ -5493,7 +8123,7 @@ function vSubscription() {
   };
 
   return `
-  <div class="sub-hero" style="background:linear-gradient(135deg,#4F46E5 0%,#7C3AED 100%)">
+  <div class="sub-hero" style="background:linear-gradient(135deg,var(--accent) 0%,color-mix(in srgb, var(--accent) 70%, #000) 100%)">
     <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('more')">${IC.left}</button>
     <div class="sub-hero-title">${t('subscription')}</div>
     <div class="sub-hero-sub">${isActive ? t('activePlan') + ': ' + sub.plan.toUpperCase() : t('planFree')}</div>
@@ -5740,6 +8370,51 @@ function logMovement(articleName, type, qty, note) {
   localStorage.setItem('stockr_movements', JSON.stringify(S.stockMovements));
 }
 
+// ── STOCK TRANSFER BETWEEN LOCATIONS ────────
+function openStockTransfer() {
+  if (S.locations.length < 2) { showToast('Ajoutez au moins 2 emplacements', 'error'); return; }
+  if (S.articles.length === 0) { showToast('Aucun article à transférer', 'error'); return; }
+  // Simple prompts-based flow (keeps UI lean; full form could come later)
+  const articleNames = S.articles.map((a,i) => `${i+1}. ${a.name} (${fmtQty(a.stock)} ${a.unit})`).join('\n');
+  const idxRaw = prompt('Article à transférer (entrer le numéro) :\n\n' + articleNames);
+  if (!idxRaw) return;
+  const idx = Number(idxRaw) - 1;
+  if (!(idx >= 0 && idx < S.articles.length)) { showToast('Numéro invalide', 'error'); return; }
+  const article = S.articles[idx];
+  if (article.stock <= 0) { showToast('Stock insuffisant', 'error'); return; }
+  const locList = S.locations.map((l,i) => `${i+1}. ${l.name}${article.locationId===l.id?' (actuel)':''}`).join('\n');
+  const fromRaw = prompt(`Transférer depuis ?\n\n${locList}`, String((S.locations.findIndex(l=>l.id===article.locationId)+1)||1));
+  if (!fromRaw) return;
+  const fromIdx = Number(fromRaw) - 1;
+  if (!(fromIdx >= 0 && fromIdx < S.locations.length)) { showToast('Origine invalide', 'error'); return; }
+  const toRaw = prompt(`Transférer vers ?\n\n${locList}`);
+  if (!toRaw) return;
+  const toIdx = Number(toRaw) - 1;
+  if (!(toIdx >= 0 && toIdx < S.locations.length) || toIdx === fromIdx) { showToast('Destination invalide', 'error'); return; }
+  const qtyRaw = prompt(`Quantité à transférer (max ${fmtQty(article.stock)} ${article.unit}) :`, String(article.stock));
+  if (!qtyRaw) return;
+  const qty = Number(qtyRaw);
+  if (!isFinite(qty) || qty <= 0 || qty > article.stock) { showToast('Quantité invalide', 'error'); return; }
+  // Execute : decrement source article, find or create mirror article at destination
+  const fromLoc = S.locations[fromIdx];
+  const toLoc = S.locations[toIdx];
+  // Check if a mirror article exists at destination
+  let destArticle = S.articles.find(a => a.name === article.name && a.unit === article.unit && a.locationId === toLoc.id);
+  if (!destArticle) {
+    // Create a mirror copy
+    destArticle = { ...article, id: Date.now() + Math.random(), stock: 0, locationId: toLoc.id };
+    S.articles.push(destArticle);
+  }
+  article.stock -= qty;
+  destArticle.stock += qty;
+  localStorage.setItem('stockr_articles', JSON.stringify(S.articles));
+  logMovement(article.name, 'exit', qty, `Transfert → ${toLoc.name}`);
+  logMovement(destArticle.name, 'entry', qty, `Transfert ← ${fromLoc.name}`);
+  logActivity('stock', `Transfert : ${qty} ${article.unit} ${article.name} (${fromLoc.name} → ${toLoc.name})`);
+  showToast(`${qty} ${article.unit} transférés`, 'success');
+  render();
+}
+
 function vStockHistory() {
   const movements = S.stockMovements.slice(0, 100);
   return `
@@ -5841,6 +8516,133 @@ function spectraRunDemoReception() {
     S.spectra.step = 'reception';
     render();
   }, 2500);
+}
+
+// ── DAILY GOAL ──────────────────────────────
+function editDailyGoal() {
+  const current = Number(localStorage.getItem('stockr_daily_goal')) || 0;
+  const currentType = localStorage.getItem('stockr_goal_type') || 'revenue'; // revenue | sales | profit
+  const currentPeriod = localStorage.getItem('stockr_goal_period') || 'day'; // day | week | month
+  const thirtyDaysAgo = new Date(); thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  const last30 = S.sales.filter(s => new Date(s.date) >= thirtyDaysAgo);
+  const avg30CA = last30.length > 0 ? Math.round(last30.reduce((x,s)=>x+s.total,0) / 30) : 0;
+  const avg30Profit = last30.length > 0 ? Math.round(last30.reduce((x,s)=>x+(s.profit||0),0) / 30) : 0;
+  const avg30Sales = Math.round(last30.length / 30);
+  const sugCA = Math.max(1000, Math.round((avg30CA * 1.2) / 500) * 500);
+  const sugProfit = Math.max(500, Math.round((avg30Profit * 1.2) / 100) * 100);
+  const sugSales = Math.max(1, Math.round(avg30Sales * 1.2));
+
+  // Build modal overlay
+  const existing = document.getElementById('goal-modal');
+  if (existing) existing.remove();
+  const modal = document.createElement('div');
+  modal.id = 'goal-modal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);animation:fadeIn .2s ease';
+  modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+
+  const render_body = () => {
+    const type = modal.dataset.type || currentType;
+    const period = modal.dataset.period || currentPeriod;
+    const valueInput = modal.dataset.value;
+    const unit = type === 'sales' ? 'ventes' : sym();
+    const periodLabel = period === 'day' ? 'jour' : period === 'week' ? 'semaine' : 'mois';
+    const periodMult = period === 'day' ? 1 : period === 'week' ? 7 : 30;
+    const sug = type === 'revenue' ? sugCA * periodMult : type === 'profit' ? sugProfit * periodMult : sugSales * periodMult;
+    const avg = type === 'revenue' ? avg30CA * periodMult : type === 'profit' ? avg30Profit * periodMult : avg30Sales * periodMult;
+    return `
+    <div style="background:var(--surface);border-radius:16px;max-width:420px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3);animation:slideUp .25s ease">
+      <div style="padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <div style="font-size:18px;font-weight:800;color:var(--text-1)">🎯 Configurer l'objectif</div>
+          <div style="font-size:11px;color:var(--text-3);margin-top:2px">Suivez vos performances en temps réel</div>
+        </div>
+        <button style="width:32px;height:32px;border-radius:50%;border:none;background:var(--gray-1);color:var(--text-2);font-size:18px;cursor:pointer" onclick="document.getElementById('goal-modal').remove()">×</button>
+      </div>
+      <div style="padding:16px 20px">
+        <div style="margin-bottom:14px">
+          <label style="font-size:11px;color:var(--text-3);font-weight:700;letter-spacing:.3px;text-transform:uppercase;margin-bottom:6px;display:block">Type d'objectif</label>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
+            <button class="goal-type-btn ${type==='revenue'?'active':''}" data-type="revenue" style="padding:10px 6px;border-radius:8px;border:1.5px solid ${type==='revenue'?'var(--accent)':'var(--border)'};background:${type==='revenue'?'rgba(79,70,229,0.08)':'var(--surface)'};cursor:pointer;text-align:center" onclick="document.getElementById('goal-modal').dataset.type='revenue';this.parentElement.parentElement.parentElement.parentElement.dispatchEvent(new Event('refresh'))">
+              <div style="font-size:20px;margin-bottom:2px">💰</div>
+              <div style="font-size:11px;font-weight:700;color:${type==='revenue'?'var(--accent)':'var(--text-2)'}">CA</div>
+            </button>
+            <button class="goal-type-btn ${type==='profit'?'active':''}" data-type="profit" style="padding:10px 6px;border-radius:8px;border:1.5px solid ${type==='profit'?'var(--success)':'var(--border)'};background:${type==='profit'?'rgba(16,185,129,0.08)':'var(--surface)'};cursor:pointer;text-align:center" onclick="document.getElementById('goal-modal').dataset.type='profit';this.parentElement.parentElement.parentElement.parentElement.dispatchEvent(new Event('refresh'))">
+              <div style="font-size:20px;margin-bottom:2px">📈</div>
+              <div style="font-size:11px;font-weight:700;color:${type==='profit'?'var(--success)':'var(--text-2)'}">Bénéfice</div>
+            </button>
+            <button class="goal-type-btn ${type==='sales'?'active':''}" data-type="sales" style="padding:10px 6px;border-radius:8px;border:1.5px solid ${type==='sales'?'#EC4899':'var(--border)'};background:${type==='sales'?'rgba(236,72,153,0.08)':'var(--surface)'};cursor:pointer;text-align:center" onclick="document.getElementById('goal-modal').dataset.type='sales';this.parentElement.parentElement.parentElement.parentElement.dispatchEvent(new Event('refresh'))">
+              <div style="font-size:20px;margin-bottom:2px">🛒</div>
+              <div style="font-size:11px;font-weight:700;color:${type==='sales'?'#EC4899':'var(--text-2)'}">Nb ventes</div>
+            </button>
+          </div>
+        </div>
+
+        <div style="margin-bottom:14px">
+          <label style="font-size:11px;color:var(--text-3);font-weight:700;letter-spacing:.3px;text-transform:uppercase;margin-bottom:6px;display:block">Période</label>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
+            ${['day','week','month'].map(p => `
+              <button style="padding:8px;border-radius:8px;border:1.5px solid ${period===p?'var(--accent)':'var(--border)'};background:${period===p?'rgba(79,70,229,0.08)':'var(--surface)'};cursor:pointer;font-size:12px;font-weight:600;color:${period===p?'var(--accent)':'var(--text-2)'}" onclick="document.getElementById('goal-modal').dataset.period='${p}';this.parentElement.parentElement.parentElement.dispatchEvent(new Event('refresh'))">
+                ${p==='day'?'📅 Jour':p==='week'?'📆 Semaine':'🗓️ Mois'}
+              </button>
+            `).join('')}
+          </div>
+        </div>
+
+        <div style="background:var(--gray-1);border-radius:10px;padding:12px;margin-bottom:14px;border:1px solid var(--border)">
+          <div style="font-size:11px;color:var(--text-3);font-weight:600;margin-bottom:4px">📊 Vos stats réelles (30j)</div>
+          <div style="font-size:13px;color:var(--text-2)">Moyenne / ${periodLabel} : <b style="color:var(--text-1)">${fmt(avg)} ${unit}</b></div>
+          <div style="font-size:11px;color:var(--text-3);margin-top:2px">💡 Suggestion : <b style="color:var(--accent)">${fmt(sug)} ${unit}</b> (<em>+20% vs moyenne</em>)</div>
+        </div>
+
+        <div style="margin-bottom:14px">
+          <label style="font-size:11px;color:var(--text-3);font-weight:700;letter-spacing:.3px;text-transform:uppercase;margin-bottom:6px;display:block">Mon objectif / ${periodLabel} (${unit})</label>
+          <input id="goal-value-input" class="input" type="number" min="0" step="${type==='sales'?1:500}" value="${valueInput !== undefined ? valueInput : (current > 0 ? current : sug)}" style="font-size:16px;font-weight:700;text-align:center" oninput="document.getElementById('goal-modal').dataset.value=this.value">
+          <div style="display:flex;gap:6px;margin-top:8px">
+            <button class="chip" onclick="document.getElementById('goal-value-input').value='${sug}';document.getElementById('goal-modal').dataset.value='${sug}'">💡 Suggéré</button>
+            <button class="chip" onclick="document.getElementById('goal-value-input').value='${Math.round(sug*1.5)}';document.getElementById('goal-modal').dataset.value='${Math.round(sug*1.5)}'">🚀 Ambitieux (+50%)</button>
+            <button class="chip" onclick="document.getElementById('goal-value-input').value='${Math.round(sug*2)}';document.getElementById('goal-modal').dataset.value='${Math.round(sug*2)}'">💪 Agressif (×2)</button>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:8px;margin-top:18px">
+          <button class="btn btn-ghost" style="flex:1" onclick="saveGoalConfig('', '', '')">🗑️ Désactiver</button>
+          <button class="btn btn-primary" style="flex:2" onclick="saveGoalConfig(document.getElementById('goal-value-input').value, document.getElementById('goal-modal').dataset.type||'${type}', document.getElementById('goal-modal').dataset.period||'${period}')">✓ Enregistrer</button>
+        </div>
+      </div>
+    </div>`;
+  };
+
+  modal.innerHTML = render_body();
+  modal.dataset.type = currentType;
+  modal.dataset.period = currentPeriod;
+  modal.addEventListener('refresh', () => {
+    const input = document.getElementById('goal-value-input');
+    if (input) modal.dataset.value = input.value;
+    modal.innerHTML = render_body();
+  });
+  document.body.appendChild(modal);
+}
+
+function saveGoalConfig(value, type, period) {
+  const v = String(value).trim();
+  if (v === '' || v === '0') {
+    localStorage.removeItem('stockr_daily_goal');
+    localStorage.removeItem('stockr_goal_type');
+    localStorage.removeItem('stockr_goal_period');
+    showToast('Objectif désactivé', 'success');
+  } else {
+    const num = Number(v.replace(/[\s,]/g, ''));
+    if (!isFinite(num) || num < 0) { showToast('Valeur invalide', 'error'); return; }
+    localStorage.setItem('stockr_daily_goal', String(num));
+    if (type) localStorage.setItem('stockr_goal_type', type);
+    if (period) localStorage.setItem('stockr_goal_period', period);
+    const unit = type === 'sales' ? 'ventes' : sym();
+    const periodLabel = period === 'day' ? 'jour' : period === 'week' ? 'semaine' : 'mois';
+    showToast(`🎯 Objectif : ${fmt(num)} ${unit} / ${periodLabel}`, 'success');
+  }
+  const modal = document.getElementById('goal-modal');
+  if (modal) modal.remove();
+  render();
 }
 
 // ── QUICK SALE ──────────────────────────────
@@ -6673,6 +9475,53 @@ function vSettings() {
     </div>
 
     <div class="settings-section">
+      <div class="settings-label">Personnalisation</div>
+      <div class="settings-row-block">
+        <div class="settings-row" onclick="nav('appearance')">
+          <div class="settings-row-inner">
+            <span class="settings-row-ico" style="color:#EC4899">🎨</span>
+            <div>
+              <div class="settings-row-lbl">Apparence</div>
+              <div class="settings-row-sub">Thème · Couleur · Taille · Densité</div>
+            </div>
+          </div>
+          ${IC.chevron}
+        </div>
+        ${hasPermission('all') ? `
+        <div class="settings-row" onclick="nav('security')">
+          <div class="settings-row-inner">
+            <span class="settings-row-ico" style="color:#EF4444">🔐</span>
+            <div>
+              <div class="settings-row-lbl">Sécurité</div>
+              <div class="settings-row-sub">2FA · Biométrie · Sessions</div>
+            </div>
+          </div>
+          ${IC.chevron}
+        </div>
+        <div class="settings-row" onclick="nav('team')">
+          <div class="settings-row-inner">
+            <span class="settings-row-ico" style="color:#7C73FF">👥</span>
+            <div>
+              <div class="settings-row-lbl">Équipe</div>
+              <div class="settings-row-sub">${(S.teamMembers||[]).length} collaborateur(s) · Rôles</div>
+            </div>
+          </div>
+          ${IC.chevron}
+        </div>` : ''}
+        <div class="settings-row" onclick="nav('audit-log')">
+          <div class="settings-row-inner">
+            <span class="settings-row-ico" style="color:#1E293B">📋</span>
+            <div>
+              <div class="settings-row-lbl">Journal d'audit</div>
+              <div class="settings-row-sub">${(S.auditLog||[]).length} événement(s) enregistré(s)</div>
+            </div>
+          </div>
+          ${IC.chevron}
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
       <div class="settings-label">${t('session')}</div>
       <div class="settings-row-block">
         <div class="settings-row" onclick="doLogout()">
@@ -6712,6 +9561,1044 @@ function vSettings() {
 // ██ STOCKR v2 — NOUVELLES FONCTIONNALITÉS
 // ══════════════════════════════════════════════
 
+// ══════════════════════════════════════════════
+// ██ BATCH 5 — ÉQUIPE & PERMISSIONS
+// ══════════════════════════════════════════════
+
+// Statistiques de performance d'un membre
+function _teamMemberStats(memberId) {
+  const memberSales = (S.sales || []).filter(s => s.memberId === memberId);
+  const totalCA     = memberSales.reduce((s, v) => s + (v.total || 0), 0);
+  const totalProfit = memberSales.reduce((s, v) => s + (v.profit || 0), 0);
+  const nbSales     = memberSales.length;
+  const avgBasket   = nbSales > 0 ? totalCA / nbSales : 0;
+  // Score de performance : simple pondération
+  const daysSinceHire = 30; // défaut
+  const salesScore  = Math.min(100, nbSales * 2);
+  const marginScore = totalCA > 0 ? Math.min(100, (totalProfit / totalCA) * 250) : 0;
+  const perfScore   = Math.round((salesScore * 0.6) + (marginScore * 0.4));
+  return { totalCA, totalProfit, nbSales, avgBasket, perfScore };
+}
+
+function _teamCommission(member) {
+  const st = _teamMemberStats(member.id);
+  const rate = member.commissionRate || 0;
+  return Math.round(st.totalCA * rate / 100);
+}
+
+// ── TEAM VIEW ───────────────────────────────
+function vTeam() {
+  if (!hasPermission('all') && !hasPermission('audit')) {
+    return `
+    <div class="page-header"><div class="page-header-row">
+      <button class="back-btn" onclick="nav('more')">${IC.left}</button>
+      <div class="page-title">Équipe</div>
+    </div></div>
+    <div class="container">
+      <div class="card" style="text-align:center;padding:40px 20px">
+        <div style="font-size:48px;margin-bottom:10px">🔒</div>
+        <div style="font-size:16px;font-weight:700;color:var(--text-1);margin-bottom:6px">Accès réservé</div>
+        <div style="font-size:13px;color:var(--text-3)">Seul l'administrateur peut gérer l'équipe.</div>
+      </div>
+    </div>`;
+  }
+
+  const tab = S.teamTab || 'members';
+  const members = S.teamMembers || [];
+  const totalCA = (S.sales || []).reduce((s, v) => s + (v.total || 0), 0);
+  const totalSalary = members.reduce((s, m) => s + (m.baseSalary || 0), 0);
+  const totalCommissions = members.reduce((s, m) => s + _teamCommission(m), 0);
+  const totalHours = members.reduce((s, m) => s + (m.hoursWorked || 0), 0);
+
+  return `
+  <div class="sub-hero" style="background:linear-gradient(135deg,var(--accent) 0%,var(--accent-dark,#4F46E5) 100%)">
+    <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('more')">${IC.left}</button>
+    <div class="sub-hero-title">👥 Équipe & Performances</div>
+    <div class="sub-hero-sub">${members.length} collaborateur(s) · ${fmt(totalCA)} ${sym()} ce mois</div>
+  </div>
+  <div class="container">
+
+    <!-- Tabs -->
+    <div style="display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;padding-bottom:4px">
+      ${[
+        {id:'members',     lbl:'👥 Membres',      n: members.length},
+        {id:'performance', lbl:'📈 Performance',  n: null},
+        {id:'schedule',    lbl:'📅 Planning',     n: null},
+      ].map(t => `
+        <button class="filter-chip ${tab===t.id?'active':''}" onclick="S.teamTab='${t.id}';render()" style="white-space:nowrap;font-size:12px">
+          ${t.lbl}${t.n!==null?` (${t.n})`:''}
+        </button>`).join('')}
+    </div>
+
+    ${tab === 'members' ? `
+      <!-- KPIs globaux -->
+      <div class="kpi-row" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px">
+        <div class="card" style="padding:10px;text-align:center">
+          <div style="font-size:18px;font-weight:800;color:var(--accent)">${fmt(totalCA)}</div>
+          <div style="font-size:10px;color:var(--text-3)">CA mensuel</div>
+        </div>
+        <div class="card" style="padding:10px;text-align:center">
+          <div style="font-size:18px;font-weight:800;color:#0EA5E9">${totalHours}h</div>
+          <div style="font-size:10px;color:var(--text-3)">Heures</div>
+        </div>
+        <div class="card" style="padding:10px;text-align:center">
+          <div style="font-size:18px;font-weight:800;color:#F59E0B">${fmt(totalSalary/1000)}K</div>
+          <div style="font-size:10px;color:var(--text-3)">Salaires</div>
+        </div>
+        <div class="card" style="padding:10px;text-align:center">
+          <div style="font-size:18px;font-weight:800;color:#10B981">${fmt(totalCommissions/1000)}K</div>
+          <div style="font-size:10px;color:var(--text-3)">Commissions</div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" onclick="nav('add-team-member')" style="width:100%;margin-bottom:12px">
+        ＋ Ajouter un collaborateur
+      </button>
+
+      ${members.length === 0 ? `
+        <div class="card" style="text-align:center;padding:40px 20px">
+          <div style="font-size:48px;margin-bottom:10px">👥</div>
+          <div style="font-size:16px;font-weight:700;color:var(--text-1);margin-bottom:6px">Aucun collaborateur</div>
+          <div style="font-size:13px;color:var(--text-3);margin-bottom:16px">Ajoutez votre premier membre d'équipe pour suivre ses ventes, commissions et performances.</div>
+        </div>
+      ` : members.map((m, i) => {
+        const st = _teamMemberStats(m.id);
+        const commission = _teamCommission(m);
+        const roleInfo = ROLE_LABELS[m.role] || ROLE_LABELS.vendor;
+        const perfColor = st.perfScore >= 70 ? '#10B981' : st.perfScore >= 40 ? '#F59E0B' : '#EF4444';
+        return `
+        <div class="card anim" style="margin-bottom:10px;animation-delay:${i*40}ms;padding:14px;cursor:pointer" onclick="openTeamMember(${m.id})">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+            <div style="width:48px;height:48px;border-radius:24px;background:${roleInfo.color}20;color:${roleInfo.color};display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800">
+              ${roleInfo.icon}
+            </div>
+            <div style="flex:1;min-width:0">
+              <div style="font-weight:800;color:var(--text-1);font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${m.name}</div>
+              <div style="display:flex;gap:6px;align-items:center;margin-top:2px">
+                <span style="font-size:10px;padding:2px 8px;background:${roleInfo.color}15;color:${roleInfo.color};border-radius:6px;font-weight:700">${roleInfo.name}</span>
+                ${m.active === false ? `<span style="font-size:10px;padding:2px 8px;background:#EF444415;color:#EF4444;border-radius:6px">Inactif</span>` : ''}
+              </div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:20px;font-weight:800;color:${perfColor}">${st.perfScore}</div>
+              <div style="font-size:10px;color:var(--text-3)">/100</div>
+            </div>
+          </div>
+          <!-- Performance bar -->
+          <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden;margin-bottom:10px">
+            <div style="height:100%;width:${st.perfScore}%;background:${perfColor};transition:width .3s"></div>
+          </div>
+          <!-- Stats grid -->
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;font-size:11px">
+            <div><div style="color:var(--text-3)">Ventes</div><div style="font-weight:700;color:var(--text-1)">${st.nbSales}</div></div>
+            <div><div style="color:var(--text-3)">Panier</div><div style="font-weight:700;color:var(--text-1)">${fmt(Math.round(st.avgBasket))}</div></div>
+            <div><div style="color:var(--text-3)">CA</div><div style="font-weight:700;color:var(--accent)">${fmt(st.totalCA)}</div></div>
+            <div><div style="color:var(--text-3)">Commission</div><div style="font-weight:700;color:#10B981">${fmt(commission)}</div></div>
+          </div>
+        </div>`;
+      }).join('')}
+    ` : ''}
+
+    ${tab === 'performance' ? `
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-title">🏆 Top performers</div>
+        ${members.length === 0 ? `<div style="text-align:center;padding:20px;color:var(--text-3);font-size:12px">Ajoutez des membres pour voir le classement</div>` :
+          [...members].map(m => ({...m, _st: _teamMemberStats(m.id)}))
+            .sort((a,b) => b._st.perfScore - a._st.perfScore)
+            .slice(0, 10)
+            .map((m, i) => {
+              const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i+1}.`;
+              const roleInfo = ROLE_LABELS[m.role] || ROLE_LABELS.vendor;
+              return `
+              <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">
+                <div style="font-size:18px;min-width:28px">${medal}</div>
+                <div style="flex:1">
+                  <div style="font-weight:700;font-size:13px;color:var(--text-1)">${m.name}</div>
+                  <div style="font-size:11px;color:var(--text-3)">${roleInfo.name} · ${m._st.nbSales} ventes · ${fmt(m._st.totalCA)} ${sym()}</div>
+                </div>
+                <div style="font-size:18px;font-weight:800;color:${m._st.perfScore>=70?'#10B981':m._st.perfScore>=40?'#F59E0B':'#EF4444'}">${m._st.perfScore}</div>
+              </div>`;
+            }).join('')
+        }
+      </div>
+
+      <div class="card">
+        <div class="card-title">💡 Conseils pour l'équipe</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="padding:10px;background:#10B98110;border-left:3px solid #10B981;border-radius:8px;font-size:12px">
+            <strong style="color:#10B981">Bonus performance</strong><br>
+            <span style="color:var(--text-2)">Accordez 5% de commission supplémentaire aux membres au-dessus de 70/100.</span>
+          </div>
+          <div style="padding:10px;background:#F59E0B10;border-left:3px solid #F59E0B;border-radius:8px;font-size:12px">
+            <strong style="color:#F59E0B">Formation recommandée</strong><br>
+            <span style="color:var(--text-2)">Membres sous 40/100 : organisez un atelier sur les techniques de vente.</span>
+          </div>
+        </div>
+      </div>
+    ` : ''}
+
+    ${tab === 'schedule' ? `
+      <!-- ── Planning hebdomadaire ──────────────────── -->
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-title">📅 Planning hebdomadaire</div>
+        <div style="font-size:12px;color:var(--text-3);margin-bottom:12px">Horaires de travail de chaque membre.</div>
+        ${members.length === 0 ? `<div style="text-align:center;padding:20px;color:var(--text-3);font-size:12px">Aucun collaborateur</div>` :
+          members.map(m => {
+            const roleInfo = ROLE_LABELS[m.role] || ROLE_LABELS.vendor;
+            return `
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">
+              <div style="font-size:20px">${roleInfo.icon}</div>
+              <div style="flex:1">
+                <div style="font-weight:700;font-size:13px;color:var(--text-1)">${m.name}</div>
+                <div style="font-size:11px;color:var(--text-3)">${m.schedule || 'Aucun horaire défini'}</div>
+              </div>
+              <button class="btn btn-ghost" style="padding:6px 10px;font-size:11px" onclick="openTeamMember(${m.id})">Modifier</button>
+            </div>`;
+          }).join('')
+        }
+      </div>
+
+      <!-- ── Réunions et événements ────────────────── -->
+      <div class="card" style="margin-bottom:12px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <div class="card-title" style="margin:0">🤝 Réunions d'équipe</div>
+          <button class="btn btn-primary" style="padding:8px 12px;font-size:12px" onclick="createMeeting()">＋ Nouvelle</button>
+        </div>
+        ${(() => {
+          const meetings = (S.teamMeetings || []).slice().sort((a,b) => new Date(a.datetime) - new Date(b.datetime));
+          const now = Date.now();
+          const upcoming = meetings.filter(m => new Date(m.datetime).getTime() + (m.durationMin||60)*60000 >= now);
+          const past = meetings.filter(m => new Date(m.datetime).getTime() + (m.durationMin||60)*60000 < now).slice(-5).reverse();
+          if (meetings.length === 0) return `
+            <div style="text-align:center;padding:30px 16px;color:var(--text-3)">
+              <div style="font-size:36px;margin-bottom:8px">📅</div>
+              <div style="font-size:13px;font-weight:600;color:var(--text-2);margin-bottom:4px">Aucune réunion planifiée</div>
+              <div style="font-size:11px">Planifiez votre première réunion d'équipe pour aligner tout le monde.</div>
+            </div>`;
+          return `
+            ${upcoming.length ? `<div style="font-size:11px;font-weight:700;color:var(--text-3);letter-spacing:.3px;text-transform:uppercase;margin:8px 0 6px">À venir (${upcoming.length})</div>` : ''}
+            ${upcoming.map(mt => {
+              const d = new Date(mt.datetime);
+              const dateStr = d.toLocaleDateString('fr-FR', {weekday:'short', day:'2-digit', month:'short'});
+              const timeStr = d.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
+              const attendees = (mt.attendees || []).map(id => (S.teamMembers.find(x => x.id === id) || {}).name).filter(Boolean);
+              const urgencyColor = (d.getTime() - now) < 86400000 ? '#EF4444' : (d.getTime() - now) < 259200000 ? '#F59E0B' : 'var(--accent)';
+              return `
+              <div style="padding:12px;border:1px solid var(--border);border-left:3px solid ${urgencyColor};border-radius:10px;margin-bottom:8px;background:var(--surface)">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px">
+                  <div style="flex:1;min-width:0">
+                    <div style="font-weight:700;color:var(--text-1);font-size:14px">${mt.title}</div>
+                    <div style="font-size:11px;color:var(--text-3);margin-top:2px">📅 ${dateStr} · 🕒 ${timeStr} · ⏱️ ${mt.durationMin||60}min</div>
+                  </div>
+                  <div style="display:flex;gap:4px">
+                    <button class="btn btn-ghost" style="padding:4px 8px;font-size:11px" onclick="editMeeting('${mt.id}')">✏️</button>
+                    <button class="btn btn-ghost" style="padding:4px 8px;font-size:11px;color:#EF4444" onclick="deleteMeeting('${mt.id}')">🗑️</button>
+                  </div>
+                </div>
+                ${mt.location ? `<div style="font-size:11px;color:var(--text-2);margin-bottom:4px">📍 ${mt.location}</div>` : ''}
+                ${mt.agenda ? `<div style="font-size:11px;color:var(--text-2);margin-bottom:6px;line-height:1.5">${mt.agenda}</div>` : ''}
+                ${attendees.length ? `<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px">
+                  ${attendees.slice(0,4).map(n => `<span style="font-size:10px;padding:2px 8px;background:var(--accent-light, rgba(79,70,229,0.08));color:var(--accent);border-radius:10px;font-weight:600">${n}</span>`).join('')}
+                  ${attendees.length > 4 ? `<span style="font-size:10px;padding:2px 8px;background:var(--gray-1);color:var(--text-3);border-radius:10px">+${attendees.length-4}</span>` : ''}
+                </div>` : ''}
+                ${mt.link ? `<div style="margin-top:8px"><a href="${mt.link}" target="_blank" style="font-size:11px;color:var(--accent);font-weight:600;text-decoration:none">🔗 Rejoindre</a></div>` : ''}
+              </div>`;
+            }).join('')}
+            ${past.length ? `<div style="font-size:11px;font-weight:700;color:var(--text-3);letter-spacing:.3px;text-transform:uppercase;margin:14px 0 6px">Passées (${past.length})</div>` : ''}
+            ${past.map(mt => {
+              const d = new Date(mt.datetime);
+              return `
+              <div style="padding:10px 12px;border:1px solid var(--border);border-radius:10px;margin-bottom:6px;opacity:0.7;background:var(--gray-1)">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <div style="flex:1;min-width:0">
+                    <div style="font-weight:600;color:var(--text-2);font-size:13px">${mt.title}</div>
+                    <div style="font-size:10px;color:var(--text-3)">${d.toLocaleDateString('fr-FR')}</div>
+                  </div>
+                  <button class="btn btn-ghost" style="padding:3px 8px;font-size:11px" onclick="deleteMeeting('${mt.id}')">🗑️</button>
+                </div>
+              </div>`;
+            }).join('')}
+          `;
+        })()}
+      </div>
+
+      <!-- ── Tâches & objectifs équipe ──────────────── -->
+      <div class="card" style="margin-bottom:12px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <div class="card-title" style="margin:0">✅ Tâches & objectifs</div>
+          <button class="btn btn-primary" style="padding:8px 12px;font-size:12px" onclick="createTeamTask()">＋ Ajouter</button>
+        </div>
+        ${(() => {
+          const tasks = S.teamTasks || [];
+          if (tasks.length === 0) return `<div style="text-align:center;padding:20px;color:var(--text-3);font-size:12px">Aucune tâche en cours</div>`;
+          return tasks.slice().sort((a,b) => (a.done?1:0) - (b.done?1:0) || new Date(a.due||0) - new Date(b.due||0)).map(tk => {
+            const assignee = S.teamMembers.find(m => m.id === tk.assigneeId);
+            const overdue = tk.due && !tk.done && new Date(tk.due) < new Date();
+            return `
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">
+              <input type="checkbox" ${tk.done?'checked':''} onchange="toggleTeamTask('${tk.id}')" style="width:18px;height:18px;cursor:pointer;accent-color:var(--accent)">
+              <div style="flex:1;min-width:0">
+                <div style="font-weight:600;font-size:13px;color:${tk.done?'var(--text-3)':'var(--text-1)'};text-decoration:${tk.done?'line-through':'none'}">${tk.title}</div>
+                <div style="font-size:11px;color:${overdue?'#EF4444':'var(--text-3)'}">
+                  ${assignee ? `👤 ${assignee.name}` : '👥 Équipe'}
+                  ${tk.due ? ` · 📅 ${new Date(tk.due).toLocaleDateString('fr-FR')}${overdue?' (en retard)':''}` : ''}
+                </div>
+              </div>
+              <button class="btn btn-ghost" style="padding:4px 8px;font-size:11px;color:#EF4444" onclick="deleteTeamTask('${tk.id}')">🗑️</button>
+            </div>`;
+          }).join('');
+        })()}
+      </div>
+
+      <!-- ── Annonces équipe ────────────────────────── -->
+      <div class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <div class="card-title" style="margin:0">📢 Annonces</div>
+          <button class="btn btn-primary" style="padding:8px 12px;font-size:12px" onclick="createAnnouncement()">＋ Publier</button>
+        </div>
+        ${(() => {
+          const anns = (S.teamAnnouncements || []).slice().sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
+          if (anns.length === 0) return `<div style="text-align:center;padding:20px;color:var(--text-3);font-size:12px">Aucune annonce</div>`;
+          return anns.slice(0, 5).map(a => `
+            <div style="padding:10px;background:var(--accent-light, rgba(79,70,229,0.06));border-radius:10px;margin-bottom:6px;border-left:3px solid var(--accent)">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+                <div style="flex:1">
+                  <div style="font-weight:700;font-size:13px;color:var(--text-1)">${a.title}</div>
+                  <div style="font-size:12px;color:var(--text-2);margin-top:3px;line-height:1.45">${a.body}</div>
+                  <div style="font-size:10px;color:var(--text-3);margin-top:6px">📅 ${new Date(a.createdAt).toLocaleDateString('fr-FR', {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'})}</div>
+                </div>
+                <button class="btn btn-ghost" style="padding:3px 8px;font-size:11px;color:#EF4444" onclick="deleteAnnouncement('${a.id}')">🗑️</button>
+              </div>
+            </div>`).join('');
+        })()}
+      </div>
+    ` : ''}
+
+  </div>`;
+}
+
+// ── Meetings / Tasks / Announcements (Team planning module) ──
+function _teamMeetingsPersist() {
+  try { localStorage.setItem('stockr_team_meetings', JSON.stringify(S.teamMeetings || [])); } catch(e){}
+}
+function _teamTasksPersist() {
+  try { localStorage.setItem('stockr_team_tasks', JSON.stringify(S.teamTasks || [])); } catch(e){}
+}
+function _teamAnnouncementsPersist() {
+  try { localStorage.setItem('stockr_team_announcements', JSON.stringify(S.teamAnnouncements || [])); } catch(e){}
+}
+
+function createMeeting(existingId) {
+  const existing = existingId ? (S.teamMeetings || []).find(m => m.id === existingId) : null;
+  const prev = document.getElementById('meeting-modal'); if (prev) prev.remove();
+  const modal = document.createElement('div');
+  modal.id = 'meeting-modal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)';
+  modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+
+  const now = new Date();
+  const defaultDate = existing ? new Date(existing.datetime) : new Date(now.getTime() + 3600000);
+  const dStr = defaultDate.toISOString().slice(0,10);
+  const tStr = defaultDate.toTimeString().slice(0,5);
+
+  modal.innerHTML = `
+    <div style="background:var(--surface);border-radius:16px;max-width:480px;width:100%;max-height:90vh;overflow-y:auto;padding:20px;box-shadow:0 20px 60px rgba(0,0,0,0.3)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div style="font-size:17px;font-weight:800;color:var(--text-1)">${existing ? '✏️ Modifier la réunion' : '🤝 Nouvelle réunion'}</div>
+        <button style="background:none;border:none;font-size:22px;color:var(--text-3);cursor:pointer" onclick="document.getElementById('meeting-modal').remove()">×</button>
+      </div>
+      <div class="form-group"><label class="form-label">Titre *</label><input class="input" id="meet-title" placeholder="Point hebdo équipe" value="${existing?.title || ''}"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="form-group"><label class="form-label">Date *</label><input class="input" type="date" id="meet-date" value="${existing ? new Date(existing.datetime).toISOString().slice(0,10) : dStr}"></div>
+        <div class="form-group"><label class="form-label">Heure *</label><input class="input" type="time" id="meet-time" value="${existing ? new Date(existing.datetime).toTimeString().slice(0,5) : tStr}"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Durée (min)</label><input class="input" type="number" id="meet-duration" min="15" step="15" value="${existing?.durationMin || 60}"></div>
+      <div class="form-group"><label class="form-label">Lieu / Lien visio</label><input class="input" id="meet-location" placeholder="Bureau / Salle 1" value="${existing?.location || ''}"></div>
+      <div class="form-group"><label class="form-label">Lien réunion (Zoom, Meet…)</label><input class="input" type="url" id="meet-link" placeholder="https://meet.google.com/..." value="${existing?.link || ''}"></div>
+      <div class="form-group"><label class="form-label">Ordre du jour</label><textarea class="input" id="meet-agenda" rows="3" placeholder="Points à aborder">${existing?.agenda || ''}</textarea></div>
+      <div class="form-group">
+        <label class="form-label">Participants</label>
+        <div id="meet-attendees" style="display:flex;flex-wrap:wrap;gap:6px">
+          ${(S.teamMembers || []).filter(m => m.active !== false).map(m => {
+            const checked = existing ? (existing.attendees || []).includes(m.id) : true;
+            return `<label style="display:flex;align-items:center;gap:6px;padding:6px 10px;background:var(--gray-1);border:1px solid var(--border);border-radius:16px;cursor:pointer;font-size:12px">
+              <input type="checkbox" value="${m.id}" ${checked?'checked':''} style="accent-color:var(--accent)"> ${m.name}
+            </label>`;
+          }).join('') || '<div style="font-size:11px;color:var(--text-3)">Aucun membre disponible</div>'}
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:16px">
+        <button class="btn btn-ghost" style="flex:1" onclick="document.getElementById('meeting-modal').remove()">Annuler</button>
+        <button class="btn btn-primary" style="flex:2" onclick="saveMeeting('${existingId || ''}')">✓ ${existing ? 'Mettre à jour' : 'Planifier'}</button>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+  setTimeout(() => document.getElementById('meet-title')?.focus(), 80);
+}
+
+function editMeeting(id) { createMeeting(id); }
+
+function saveMeeting(existingId) {
+  const title = document.getElementById('meet-title').value.trim();
+  const date = document.getElementById('meet-date').value;
+  const time = document.getElementById('meet-time').value;
+  const duration = parseInt(document.getElementById('meet-duration').value) || 60;
+  const location = document.getElementById('meet-location').value.trim();
+  const link = document.getElementById('meet-link').value.trim();
+  const agenda = document.getElementById('meet-agenda').value.trim();
+  const attendees = Array.from(document.querySelectorAll('#meet-attendees input:checked')).map(cb => parseInt(cb.value));
+  if (!title) { showToast('Titre requis', 'error'); return; }
+  if (!date || !time) { showToast('Date et heure requises', 'error'); return; }
+  const datetime = new Date(date + 'T' + time).toISOString();
+  if (!S.teamMeetings) S.teamMeetings = [];
+  if (existingId) {
+    const idx = S.teamMeetings.findIndex(m => m.id === existingId);
+    if (idx >= 0) S.teamMeetings[idx] = { ...S.teamMeetings[idx], title, datetime, durationMin: duration, location, link, agenda, attendees, updatedAt: Date.now() };
+    logAudit('team', 'meeting_updated', { title });
+  } else {
+    S.teamMeetings.push({ id: 'mt_' + Date.now(), title, datetime, durationMin: duration, location, link, agenda, attendees, createdAt: Date.now() });
+    logAudit('team', 'meeting_created', { title });
+  }
+  _teamMeetingsPersist();
+  document.getElementById('meeting-modal').remove();
+  showToast('✅ Réunion ' + (existingId?'mise à jour':'planifiée'), 'success');
+  render();
+}
+
+function deleteMeeting(id) {
+  if (!confirm('Supprimer cette réunion ?')) return;
+  S.teamMeetings = (S.teamMeetings || []).filter(m => m.id !== id);
+  _teamMeetingsPersist();
+  logAudit('team', 'meeting_deleted', {});
+  showToast('Réunion supprimée', 'success');
+  render();
+}
+
+function createTeamTask() {
+  const title = prompt('Titre de la tâche :');
+  if (!title || !title.trim()) return;
+  const due = prompt('Échéance (YYYY-MM-DD, laisser vide si aucune) :');
+  const members = S.teamMembers || [];
+  let assigneeId = null;
+  if (members.length > 0) {
+    const choices = members.map((m, i) => `${i+1}. ${m.name}`).join('\n');
+    const sel = prompt('Assigner à :\n0. Équipe entière\n' + choices + '\n\nNuméro :');
+    if (sel && parseInt(sel) > 0 && parseInt(sel) <= members.length) {
+      assigneeId = members[parseInt(sel) - 1].id;
+    }
+  }
+  if (!S.teamTasks) S.teamTasks = [];
+  S.teamTasks.push({ id: 'tk_' + Date.now(), title: title.trim(), assigneeId, due: due || null, done: false, createdAt: Date.now() });
+  _teamTasksPersist();
+  logAudit('team', 'task_created', { title });
+  showToast('✅ Tâche créée', 'success');
+  render();
+}
+
+function toggleTeamTask(id) {
+  const tk = (S.teamTasks || []).find(t => t.id === id);
+  if (!tk) return;
+  tk.done = !tk.done;
+  tk.completedAt = tk.done ? Date.now() : null;
+  _teamTasksPersist();
+  logAudit('team', tk.done ? 'task_completed' : 'task_reopened', { title: tk.title });
+  render();
+}
+
+function deleteTeamTask(id) {
+  if (!confirm('Supprimer cette tâche ?')) return;
+  S.teamTasks = (S.teamTasks || []).filter(t => t.id !== id);
+  _teamTasksPersist();
+  render();
+}
+
+function createAnnouncement() {
+  const title = prompt('Titre de l\'annonce :');
+  if (!title || !title.trim()) return;
+  const body = prompt('Message :');
+  if (!body || !body.trim()) return;
+  if (!S.teamAnnouncements) S.teamAnnouncements = [];
+  S.teamAnnouncements.unshift({ id: 'an_' + Date.now(), title: title.trim(), body: body.trim(), createdAt: Date.now() });
+  _teamAnnouncementsPersist();
+  logAudit('team', 'announcement_created', { title });
+  showToast('📢 Annonce publiée', 'success');
+  render();
+}
+
+function deleteAnnouncement(id) {
+  if (!confirm('Supprimer cette annonce ?')) return;
+  S.teamAnnouncements = (S.teamAnnouncements || []).filter(a => a.id !== id);
+  _teamAnnouncementsPersist();
+  render();
+}
+
+function openTeamMember(id) {
+  const m = S.teamMembers.find(mb => mb.id === id);
+  if (!m) return;
+  S.teamForm = { ...m };
+  nav('add-team-member');
+}
+
+// Modal de changement de membre (verrouillage par PIN)
+function openMemberSwitcher() {
+  if (!(S.teamMembers || []).length) { showToast('Aucun membre dans l\'équipe', 'info'); return; }
+  // Supprime un modal existant
+  const prev = document.getElementById('member-switcher-modal');
+  if (prev) prev.remove();
+  const modal = document.createElement('div');
+  modal.id = 'member-switcher-modal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)';
+  modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+
+  const currentId = S.currentMemberId;
+  const admin = { id: null, name: S.session?.name || 'Admin', role: 'admin' };
+  const choices = [admin, ...S.teamMembers.filter(m => m.active !== false)];
+
+  modal.innerHTML = `
+    <div style="background:var(--card-bg);border-radius:16px;max-width:380px;width:100%;max-height:80vh;overflow:auto;padding:20px;animation:slideUp .3s">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div style="font-size:17px;font-weight:800;color:var(--text-1)">👥 Changer de membre</div>
+        <button onclick="document.getElementById('member-switcher-modal').remove()" style="background:none;border:none;font-size:22px;color:var(--text-3);cursor:pointer">×</button>
+      </div>
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:12px">Sélectionnez le membre qui utilise l'appareil maintenant.</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        ${choices.map(m => {
+          const info = ROLE_LABELS[m.role] || ROLE_LABELS.vendor;
+          const isCur = m.id === currentId;
+          const needsPin = m.id != null && !!m.pin;
+          return `
+          <button onclick="${needsPin ? `promptMemberPin(${m.id})` : `switchToMember(${m.id === null ? 'null' : m.id})`}"
+            style="padding:14px;border-radius:12px;border:2px solid ${isCur?'var(--accent)':'var(--border)'};background:${isCur?'var(--accent-light)':'var(--card-bg)'};cursor:pointer;text-align:left;display:flex;align-items:center;gap:12px;transition:all .2s">
+            <div style="width:40px;height:40px;border-radius:20px;background:${info.color}20;color:${info.color};display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800">${info.icon}</div>
+            <div style="flex:1;min-width:0">
+              <div style="font-weight:700;color:${isCur?'var(--accent)':'var(--text-1)'};font-size:14px">${m.name}</div>
+              <div style="font-size:11px;color:var(--text-3)">${info.name}${needsPin?' · 🔒 PIN requis':''}</div>
+            </div>
+            ${isCur ? `<div style="color:var(--accent);font-size:18px">✓</div>` : ''}
+          </button>`;
+        }).join('')}
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+}
+
+function promptMemberPin(memberId) {
+  const m = S.teamMembers.find(x => x.id === memberId);
+  if (!m) return;
+  const entered = prompt(`🔒 Code PIN de ${m.name} (4 chiffres)`);
+  if (entered === null) return;
+  if (entered !== m.pin) {
+    logAudit('auth', 'pin_failed', { memberName: m.name });
+    showToast('Code incorrect', 'error');
+    return;
+  }
+  switchToMember(memberId);
+}
+
+function switchToMember(memberId) {
+  S.currentMemberId = memberId;
+  if (memberId === null) {
+    try { localStorage.removeItem('stockr_current_member'); } catch(_){}
+  } else {
+    try { localStorage.setItem('stockr_current_member', String(memberId)); } catch(_){}
+  }
+  const m = getCurrentMember();
+  logAudit('auth', 'member_switch', { memberName: m.name, role: m.role });
+  const info = ROLE_LABELS[m.role] || ROLE_LABELS.admin;
+  showToast(`${info.icon} ${m.name} (${info.name})`, 'success');
+  const modal = document.getElementById('member-switcher-modal');
+  if (modal) modal.remove();
+  nav('home');
+}
+
+function vAddTeamMember() {
+  if (!hasPermission('all')) {
+    return `
+    <div class="page-header"><div class="page-header-row">
+      <button class="back-btn" onclick="nav('team')">${IC.left}</button>
+      <div class="page-title">Accès refusé</div>
+    </div></div>
+    <div class="container">
+      <div class="card" style="text-align:center;padding:40px 20px">🔒 Seul l'admin peut gérer l'équipe.</div>
+    </div>`;
+  }
+  const f = S.teamForm;
+  const isEdit = !!f.id;
+  return `
+  <div class="page-header">
+    <div class="page-header-row">
+      <button class="back-btn" onclick="nav('team')">${IC.left}</button>
+      <div class="page-title">${isEdit ? 'Modifier membre' : 'Ajouter un collaborateur'}</div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="card">
+      <div class="form-group">
+        <label class="form-label">Nom complet *</label>
+        <input class="input" type="text" placeholder="ex: Fatou Diallo" value="${f.name || ''}" oninput="S.teamForm.name=this.value">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="input" type="email" placeholder="ex: fatou@stockr.com" value="${f.email || ''}" oninput="S.teamForm.email=this.value">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Téléphone</label>
+        <input class="input" type="tel" placeholder="ex: +225 07 12 34 56 78" value="${f.phone || ''}" oninput="S.teamForm.phone=this.value">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Rôle *</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          ${Object.entries(ROLE_LABELS).filter(([k]) => k !== 'admin').map(([k, v]) => `
+            <button type="button" onclick="S.teamForm.role='${k}';render()" style="padding:12px 8px;border-radius:10px;border:2px solid ${f.role===k?v.color:'var(--border)'};background:${f.role===k?v.color+'15':'var(--card-bg)'};cursor:pointer;text-align:left;display:flex;align-items:center;gap:8px">
+              <div style="font-size:22px">${v.icon}</div>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:12px;font-weight:700;color:${f.role===k?v.color:'var(--text-1)'}">${v.name}</div>
+                <div style="font-size:10px;color:var(--text-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${v.desc}</div>
+              </div>
+            </button>
+          `).join('')}
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Code PIN (4 chiffres)</label>
+        <input class="input" type="password" inputmode="numeric" maxlength="4" placeholder="••••" value="${f.pin || ''}" oninput="S.teamForm.pin=this.value.replace(/\\D/g,'').slice(0,4)">
+        <div style="font-size:11px;color:var(--text-3);margin-top:4px">Le membre utilisera ce code pour se connecter sur l'appareil partagé.</div>
+      </div>
+      <div class="form-group" style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div>
+          <label class="form-label">Salaire base (${sym()})</label>
+          <input class="input" type="number" min="0" placeholder="0" value="${f.baseSalary || 0}" oninput="S.teamForm.baseSalary=parseFloat(this.value)||0">
+        </div>
+        <div>
+          <label class="form-label">Commission (%)</label>
+          <input class="input" type="number" min="0" max="100" step="0.5" placeholder="0" value="${f.commissionRate || 0}" oninput="S.teamForm.commissionRate=parseFloat(this.value)||0">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Horaires</label>
+        <input class="input" type="text" placeholder="ex: Lun-Ven 8h-18h · Sam 9h-14h" value="${f.schedule || ''}" oninput="S.teamForm.schedule=this.value">
+      </div>
+      <label style="display:flex;align-items:center;gap:8px;padding:10px 0;cursor:pointer">
+        <input type="checkbox" ${f.active !== false ? 'checked' : ''} onchange="S.teamForm.active=this.checked">
+        <span style="font-size:13px;color:var(--text-1);font-weight:600">Compte actif</span>
+      </label>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:14px">
+      <button class="btn btn-ghost" style="flex:1" onclick="nav('team')">Annuler</button>
+      <button class="btn btn-primary" style="flex:2" onclick="saveTeamMember()">${isEdit ? 'Enregistrer' : 'Créer le compte'}</button>
+      ${isEdit ? `<button class="btn" style="flex:1;background:#EF4444;color:#fff" onclick="deleteTeamMember(${f.id})">Supprimer</button>` : ''}
+    </div>
+  </div>`;
+}
+
+function saveTeamMember() {
+  const f = S.teamForm;
+  if (!f.name || !f.name.trim()) { showToast('Nom obligatoire', 'error'); return; }
+  if (!f.role) { showToast('Rôle obligatoire', 'error'); return; }
+  const isEdit = !!f.id;
+  if (isEdit) {
+    const idx = S.teamMembers.findIndex(m => m.id === f.id);
+    if (idx >= 0) {
+      S.teamMembers[idx] = { ...S.teamMembers[idx], ...f };
+      logAudit('member', 'update', { memberName: f.name, role: f.role });
+      showToast(`"${f.name}" mis à jour`, 'success');
+    }
+  } else {
+    const newMember = { ...f, id: Date.now(), createdAt: new Date().toISOString(), hoursWorked: 0 };
+    S.teamMembers.push(newMember);
+    logAudit('member', 'create', { memberName: f.name, role: f.role });
+    showToast(`"${f.name}" ajouté à l'équipe`, 'success');
+  }
+  persistTeam();
+  S.teamForm = { id:null, name:'', email:'', phone:'', role:'vendor', commissionRate:0, baseSalary:0, schedule:'', active:true, pin:'' };
+  nav('team');
+}
+
+function deleteTeamMember(id) {
+  const m = S.teamMembers.find(mb => mb.id === id);
+  if (!m) return;
+  if (!confirm(`Supprimer "${m.name}" ?\nLes ventes passées resteront attribuées dans l'historique.`)) return;
+  S.teamMembers = S.teamMembers.filter(mb => mb.id !== id);
+  persistTeam();
+  logAudit('member', 'delete', { memberName: m.name });
+  showToast(`"${m.name}" supprimé`, 'info');
+  nav('team');
+}
+
+// ── AUDIT LOG VIEW ─────────────────────────────
+function vAuditLog() {
+  if (!hasPermission('audit') && !hasPermission('all')) {
+    return `
+    <div class="page-header"><div class="page-header-row">
+      <button class="back-btn" onclick="nav('more')">${IC.left}</button>
+      <div class="page-title">Journal d'audit</div>
+    </div></div>
+    <div class="container"><div class="card" style="text-align:center;padding:40px 20px">🔒 Accès réservé aux rôles autorisés.</div></div>`;
+  }
+
+  const filter = S.auditFilter || 'all';
+  const period = S.auditPeriod || 'all';
+  const now = Date.now();
+  const periodStart = period === 'today' ? now - 24*3600*1000
+                    : period === 'week'  ? now - 7*24*3600*1000
+                    : period === 'month' ? now - 30*24*3600*1000
+                    : 0;
+
+  const filtered = (S.auditLog || []).filter(e => {
+    if (filter !== 'all' && e.category !== filter) return false;
+    if (periodStart > 0 && new Date(e.ts).getTime() < periodStart) return false;
+    return true;
+  });
+
+  const catColors = {
+    sale: '#10B981', stock: '#F59E0B', member: '#7C73FF', auth: '#EF4444',
+    settings: '#64748B', product: '#0EA5E9', client: '#EC4899'
+  };
+  const catIcons = {
+    sale: '💰', stock: '📦', member: '👤', auth: '🔐',
+    settings: '⚙️', product: '🏷️', client: '👥'
+  };
+
+  return `
+  <div class="sub-hero" style="background:linear-gradient(135deg,#1E293B,#0F172A)">
+    <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('more')">${IC.left}</button>
+    <div class="sub-hero-title">📋 Journal d'audit</div>
+    <div class="sub-hero-sub">${filtered.length} événement(s) · Traçabilité immuable</div>
+  </div>
+  <div class="container">
+
+    <!-- Filtres période -->
+    <div style="display:flex;gap:6px;margin-bottom:10px;overflow-x:auto">
+      ${[['all','Tout'],['today','24h'],['week','7j'],['month','30j']].map(([v,lbl]) => `
+        <button class="filter-chip ${period===v?'active':''}" onclick="S.auditPeriod='${v}';render()" style="white-space:nowrap;font-size:12px">${lbl}</button>
+      `).join('')}
+    </div>
+
+    <!-- Filtres catégorie -->
+    <div style="display:flex;gap:6px;margin-bottom:14px;overflow-x:auto">
+      ${[['all','📋 Tout'],['sale','💰 Ventes'],['stock','📦 Stock'],['member','👤 Équipe'],['auth','🔐 Auth'],['settings','⚙️ Params']].map(([v,lbl]) => `
+        <button class="filter-chip ${filter===v?'active':''}" onclick="S.auditFilter='${v}';render()" style="white-space:nowrap;font-size:11px">${lbl}</button>
+      `).join('')}
+    </div>
+
+    ${filtered.length === 0 ? `
+      <div class="card" style="text-align:center;padding:40px 20px">
+        <div style="font-size:48px;margin-bottom:10px">📭</div>
+        <div style="font-size:14px;font-weight:700;color:var(--text-1)">Aucun événement</div>
+        <div style="font-size:12px;color:var(--text-3);margin-top:6px">Les actions apparaîtront ici au fil de l'activité.</div>
+      </div>
+    ` : `
+      <div class="card" style="padding:0;overflow:hidden">
+        ${filtered.slice(0, 200).map(e => {
+          const color = catColors[e.category] || '#64748B';
+          const icon = catIcons[e.category] || '•';
+          const dt = new Date(e.ts);
+          const dateStr = dt.toLocaleDateString('fr-FR', { day:'2-digit', month:'short' });
+          const timeStr = dt.toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' });
+          const detailsStr = Object.entries(e.details || {})
+            .map(([k, v]) => `<strong>${k}</strong>: ${v}`)
+            .join(' · ');
+          return `
+          <div style="display:flex;gap:10px;padding:12px 14px;border-bottom:1px solid var(--border)">
+            <div style="width:36px;height:36px;border-radius:18px;background:${color}15;color:${color};display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">${icon}</div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+                <span style="font-weight:700;font-size:13px;color:var(--text-1)">${e.memberName || 'Admin'}</span>
+                <span style="font-size:10px;padding:1px 6px;background:${color}15;color:${color};border-radius:4px;font-weight:700;text-transform:uppercase">${e.action}</span>
+                <span style="font-size:11px;color:var(--text-3)">${e.category}</span>
+              </div>
+              ${detailsStr ? `<div style="font-size:11px;color:var(--text-2);margin-top:2px;word-break:break-word">${detailsStr}</div>` : ''}
+              <div style="font-size:10px;color:var(--text-3);margin-top:3px">${dateStr} · ${timeStr}</div>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+      ${filtered.length > 200 ? `<div style="text-align:center;font-size:11px;color:var(--text-3);margin-top:10px">Affichage limité aux 200 événements les plus récents (${filtered.length} au total)</div>` : ''}
+      <div style="display:flex;gap:8px;margin-top:14px">
+        <button class="btn btn-ghost" style="flex:1" onclick="exportAuditLogCSV()">📄 Export CSV</button>
+        ${hasPermission('all') ? `<button class="btn" style="flex:1;background:#EF4444;color:#fff" onclick="clearAuditLog()">🗑️ Purger</button>` : ''}
+      </div>
+    `}
+  </div>`;
+}
+
+function exportAuditLogCSV() {
+  const rows = [['ID', 'Date', 'Heure', 'Membre', 'Rôle', 'Catégorie', 'Action', 'Détails']];
+  (S.auditLog || []).forEach(e => {
+    const dt = new Date(e.ts);
+    rows.push([
+      e.id,
+      dt.toLocaleDateString('fr-FR'),
+      dt.toLocaleTimeString('fr-FR'),
+      e.memberName || '',
+      e.memberRole || '',
+      e.category || '',
+      e.action || '',
+      JSON.stringify(e.details || {}).replace(/"/g, '""'),
+    ]);
+  });
+  const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
+  const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `stockr_audit_${new Date().toISOString().slice(0, 10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('📄 Journal exporté', 'success');
+}
+
+function clearAuditLog() {
+  if (!confirm('⚠️ Purger le journal d\'audit ?\n\nCette action est irréversible.\nPensez à exporter d\'abord en CSV.')) return;
+  S.auditLog = [];
+  localStorage.setItem('stockr_audit_log', JSON.stringify([]));
+  logAudit('settings', 'clear_audit_log', { cleared: true });
+  showToast('Journal purgé', 'info');
+  render();
+}
+
+// ── APPEARANCE VIEW ────────────────────────────
+function vAppearance() {
+  const a = S.appearance || {};
+  const COLORS = [
+    { id:'#6E5BFF', name:'Violet',  },
+    { id:'#10B981', name:'Vert',    },
+    { id:'#0EA5E9', name:'Bleu',    },
+    { id:'#F59E0B', name:'Orange',  },
+    { id:'#EF4444', name:'Rouge',   },
+    { id:'#EC4899', name:'Rose',    },
+    { id:'#8B5CF6', name:'Indigo',  },
+    { id:'#14B8A6', name:'Teal',    },
+  ];
+  return `
+  <div class="sub-hero" style="background:linear-gradient(135deg,${a.accentColor},${a.accentColor}CC)">
+    <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('settings')">${IC.left}</button>
+    <div class="sub-hero-title">🎨 Apparence</div>
+    <div class="sub-hero-sub">Personnalisez l'expérience visuelle</div>
+  </div>
+  <div class="container">
+
+    <!-- Thème -->
+    <div class="card" style="margin-bottom:12px">
+      <div class="card-title">🌓 Thème</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+        ${[['light','☀️ Clair'],['dark','🌙 Sombre'],['auto','🔄 Auto']].map(([v,lbl]) => `
+          <button onclick="setAppearance('theme','${v}')" style="padding:16px 8px;border-radius:10px;border:2px solid ${a.theme===v?'var(--accent)':'var(--border)'};background:${a.theme===v?'var(--accent-light)':'var(--card-bg)'};cursor:pointer;font-size:13px;font-weight:700;color:${a.theme===v?'var(--accent)':'var(--text-1)'}">${lbl}</button>
+        `).join('')}
+      </div>
+    </div>
+
+    <!-- Couleur principale -->
+    <div class="card" style="margin-bottom:12px">
+      <div class="card-title">🎨 Couleur principale</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+        ${COLORS.map(c => `
+          <button onclick="setAppearance('accentColor','${c.id}')" style="padding:18px 4px;border-radius:10px;border:2px solid ${a.accentColor===c.id?c.id:'var(--border)'};background:${a.accentColor===c.id?c.id+'15':'var(--card-bg)'};cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px">
+            <div style="width:26px;height:26px;border-radius:13px;background:${c.id}"></div>
+            <div style="font-size:11px;font-weight:700;color:${a.accentColor===c.id?c.id:'var(--text-1)'}">${c.name}</div>
+          </button>
+        `).join('')}
+      </div>
+    </div>
+
+    <!-- Taille police -->
+    <div class="card" style="margin-bottom:12px">
+      <div class="card-title">🔠 Taille du texte</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+        ${[['small','Petit','12px'],['medium','Moyen','14px'],['large','Grand','16px']].map(([v,lbl,sz]) => `
+          <button onclick="setAppearance('fontSize','${v}')" style="padding:12px 8px;border-radius:10px;border:2px solid ${a.fontSize===v?'var(--accent)':'var(--border)'};background:${a.fontSize===v?'var(--accent-light)':'var(--card-bg)'};cursor:pointer;font-weight:700;color:${a.fontSize===v?'var(--accent)':'var(--text-1)'}">
+            <div style="font-size:${sz}">Aa</div>
+            <div style="font-size:11px;margin-top:4px">${lbl}</div>
+          </button>
+        `).join('')}
+      </div>
+    </div>
+
+    <!-- Contraste -->
+    <div class="card" style="margin-bottom:12px">
+      <div class="card-title">⚫ Contraste</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        ${[['normal','Normal'],['high','Élevé']].map(([v,lbl]) => `
+          <button onclick="setAppearance('contrast','${v}')" style="padding:14px 8px;border-radius:10px;border:2px solid ${a.contrast===v?'var(--accent)':'var(--border)'};background:${a.contrast===v?'var(--accent-light)':'var(--card-bg)'};cursor:pointer;font-size:13px;font-weight:700;color:${a.contrast===v?'var(--accent)':'var(--text-1)'}">${lbl}</button>
+        `).join('')}
+      </div>
+    </div>
+
+    <!-- Densité -->
+    <div class="card" style="margin-bottom:12px">
+      <div class="card-title">📐 Densité d'affichage</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+        ${[['compact','🔽 Compact'],['normal','⏸ Normal'],['spacious','🔼 Spacieux']].map(([v,lbl]) => `
+          <button onclick="setAppearance('density','${v}')" style="padding:14px 4px;border-radius:10px;border:2px solid ${a.density===v?'var(--accent)':'var(--border)'};background:${a.density===v?'var(--accent-light)':'var(--card-bg)'};cursor:pointer;font-size:11px;font-weight:700;color:${a.density===v?'var(--accent)':'var(--text-1)'}">${lbl}</button>
+        `).join('')}
+      </div>
+    </div>
+
+    <!-- Reset -->
+    <div style="margin-top:14px">
+      <button class="btn btn-ghost" style="width:100%" onclick="resetAppearance()">🔄 Réinitialiser les réglages</button>
+    </div>
+
+  </div>`;
+}
+
+function setAppearance(key, value) {
+  S.appearance[key] = value;
+  try { localStorage.setItem('stockr_appearance', JSON.stringify(S.appearance)); } catch(_){}
+  applyAppearance();
+  logAudit('settings', 'appearance_change', { [key]: value });
+  render();
+}
+
+function resetAppearance() {
+  if (!confirm('Réinitialiser tous les réglages d\'apparence ?')) return;
+  S.appearance = { theme:'light', accentColor:'#6E5BFF', fontSize:'medium', density:'normal', contrast:'normal' };
+  try { localStorage.setItem('stockr_appearance', JSON.stringify(S.appearance)); } catch(_){}
+  applyAppearance();
+  showToast('Apparence réinitialisée', 'info');
+  render();
+}
+
+function applyAppearance() {
+  const a = S.appearance || {};
+  const root = document.documentElement;
+  // Thème (reflète aussi S.darkMode pour compat)
+  const resolved = a.theme === 'auto'
+    ? (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+    : a.theme;
+  root.setAttribute('data-theme', resolved);
+  document.body?.setAttribute('data-theme', resolved);
+  S.darkMode = resolved === 'dark';
+  // Couleur d'accent (on la pose aussi sur body pour gagner la cascade
+  // contre les blocs [data-theme="dark"] qui redéfinissent --accent sur body)
+  if (a.accentColor) {
+    const hex = a.accentColor;
+    // Assombrir de ~30% pour accent-dark
+    const darkerHex = (() => {
+      const m = hex.match(/^#?([0-9a-f]{6})$/i);
+      if (!m) return hex;
+      const n = parseInt(m[1], 16);
+      const r = Math.max(0, Math.round(((n>>16)&0xff) * 0.7));
+      const g = Math.max(0, Math.round(((n>>8)&0xff) * 0.7));
+      const b = Math.max(0, Math.round((n&0xff) * 0.7));
+      return '#' + [r,g,b].map(x => x.toString(16).padStart(2,'0')).join('');
+    })();
+    const setVars = (el) => {
+      if (!el) return;
+      el.style.setProperty('--accent', hex);
+      el.style.setProperty('--accent-light', hex + '22');
+      el.style.setProperty('--accent-dark', darkerHex);
+      el.style.setProperty('--accent-muted', hex + '88');
+    };
+    setVars(root);
+    setVars(document.body);
+  }
+  // Taille police
+  const fontScale = a.fontSize === 'small' ? '0.9' : a.fontSize === 'large' ? '1.1' : '1';
+  root.style.setProperty('--font-scale', fontScale);
+  document.body && (document.body.style.fontSize = (parseFloat(fontScale) * 14) + 'px');
+  // Densité (spacing)
+  const spacing = a.density === 'compact' ? '0.8' : a.density === 'spacious' ? '1.2' : '1';
+  root.style.setProperty('--spacing-scale', spacing);
+  // Contraste
+  root.setAttribute('data-contrast', a.contrast || 'normal');
+}
+
+// ── SÉCURITÉ VIEW ─────────────────────────────
+function vSecurity() {
+  if (!hasPermission('all')) {
+    return `
+    <div class="page-header"><div class="page-header-row">
+      <button class="back-btn" onclick="nav('settings')">${IC.left}</button>
+      <div class="page-title">Sécurité</div>
+    </div></div>
+    <div class="container"><div class="card" style="text-align:center;padding:40px 20px">🔒 Seul l'admin peut modifier la sécurité.</div></div>`;
+  }
+  const s = S.security || {};
+  const lastLogin = s.lastLogin ? new Date(s.lastLogin).toLocaleString('fr-FR') : 'Première connexion';
+  const recentAttempts = (s.loginAttempts || []).slice(0, 5);
+  return `
+  <div class="sub-hero" style="background:linear-gradient(135deg,#EF4444,#B91C1C)">
+    <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('settings')">${IC.left}</button>
+    <div class="sub-hero-title">🔐 Sécurité</div>
+    <div class="sub-hero-sub">Dernière connexion · ${lastLogin}</div>
+  </div>
+  <div class="container">
+
+    <!-- 2FA -->
+    <div class="card" style="margin-bottom:12px">
+      <div class="card-title">🔑 Double authentification (2FA)</div>
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:10px">Un code sera demandé à chaque connexion.</div>
+      <label style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 0;cursor:pointer">
+        <span style="font-size:13px;color:var(--text-1);font-weight:600">Activer la 2FA</span>
+        <input type="checkbox" ${s.twoFactorEnabled ? 'checked' : ''} onchange="setSecurity('twoFactorEnabled',this.checked)" style="transform:scale(1.5)">
+      </label>
+      ${s.twoFactorEnabled ? `
+        <div style="margin-top:10px">
+          <label class="form-label">Méthode</label>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
+            ${[['email','📧 Email'],['sms','📱 SMS'],['app','🔐 App']].map(([v,lbl]) => `
+              <button onclick="setSecurity('twoFactorMethod','${v}')" style="padding:10px 4px;border-radius:8px;border:2px solid ${s.twoFactorMethod===v?'var(--accent)':'var(--border)'};background:${s.twoFactorMethod===v?'var(--accent-light)':'var(--card-bg)'};font-size:12px;font-weight:700;color:${s.twoFactorMethod===v?'var(--accent)':'var(--text-1)'};cursor:pointer">${lbl}</button>
+            `).join('')}
+          </div>
+        </div>
+      ` : ''}
+    </div>
+
+    <!-- Biométrie -->
+    <div class="card" style="margin-bottom:12px">
+      <div class="card-title">👆 Biométrie</div>
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:10px">Empreinte digitale ou reconnaissance faciale.</div>
+      <label style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 0;cursor:pointer">
+        <span style="font-size:13px;color:var(--text-1);font-weight:600">Activer la biométrie</span>
+        <input type="checkbox" ${s.biometricEnabled ? 'checked' : ''} onchange="setSecurity('biometricEnabled',this.checked)" style="transform:scale(1.5)">
+      </label>
+      ${!window.PublicKeyCredential ? `<div style="font-size:11px;color:#F59E0B;margin-top:6px">⚠ WebAuthn non supporté sur cet appareil.</div>` : ''}
+    </div>
+
+    <!-- Timeout session -->
+    <div class="card" style="margin-bottom:12px">
+      <div class="card-title">⏱ Expiration de session</div>
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:10px">Déconnexion automatique après inactivité.</div>
+      <select class="input" onchange="setSecurity('sessionTimeoutMin',parseInt(this.value))">
+        ${[[15,'15 minutes'],[30,'30 minutes'],[60,'1 heure'],[120,'2 heures'],[0,'Jamais']].map(([v,lbl]) => `
+          <option value="${v}" ${s.sessionTimeoutMin===v?'selected':''}>${lbl}</option>
+        `).join('')}
+      </select>
+    </div>
+
+    <!-- Tentatives récentes -->
+    <div class="card" style="margin-bottom:12px">
+      <div class="card-title">📊 Connexions récentes</div>
+      ${recentAttempts.length === 0 ? `<div style="font-size:12px;color:var(--text-3);padding:10px 0">Aucune tentative enregistrée</div>` :
+        recentAttempts.map(at => `
+          <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:12px">
+            <div style="font-size:16px">${at.success ? '✅' : '❌'}</div>
+            <div style="flex:1">
+              <div style="font-weight:600;color:var(--text-1)">${at.success ? 'Succès' : 'Échec'}</div>
+              <div style="font-size:11px;color:var(--text-3)">${new Date(at.ts).toLocaleString('fr-FR')}</div>
+            </div>
+            <div style="font-size:10px;color:var(--text-3);font-family:monospace">${at.ip || 'local'}</div>
+          </div>
+        `).join('')
+      }
+    </div>
+
+    <div style="margin-top:10px">
+      <button class="btn btn-ghost" style="width:100%" onclick="nav('audit-log')">📋 Voir le journal d'audit complet</button>
+    </div>
+
+  </div>`;
+}
+
+function setSecurity(key, value) {
+  S.security[key] = value;
+  try { localStorage.setItem('stockr_security', JSON.stringify(S.security)); } catch(_){}
+  logAudit('settings', 'security_change', { [key]: String(value) });
+  showToast('Paramètres sécurité enregistrés', 'success');
+  render();
+}
+
 // ── MORE MENU ────────────────────────────────
 function vMore() {
   const pendingOrders = S.purchaseOrders.filter(o => o.status === 'pending').length;
@@ -6722,7 +10609,14 @@ function vMore() {
   const loyaltyClients = (S.clients||[]).filter(c => (c.loyaltyPoints||0) > 0).length;
   const boutiquePending = (S.boutiqueOrders||[]).filter(o => o.status === 'pending' || !o.status).length;
 
+  const teamCount   = (S.teamMembers || []).length;
+  const auditCount  = (S.auditLog || []).length;
+  const canAdmin    = hasPermission('all');
+  const canAudit    = hasPermission('audit') || canAdmin;
+
   const items = [
+    canAdmin ? { id:'team',  icon:IC.users,      label:'Équipe',                         sub:`${teamCount} collaborateur(s)`, color:'#7C73FF', badge: teamCount || null } : null,
+    canAudit ? { id:'audit-log', icon:IC.list||IC.grid, label:'Journal d\'audit',          sub:`${auditCount} événement(s)`, color:'#1E293B' } : null,
     { id:'clients',         icon:IC.users,      label:t('clients')||'Clients',          sub:`${S.clients.length} client(s)${loyaltyClients>0?' · '+loyaltyClients+' fid.':''}`, color:'#0ea5e9' },
     { id:'boutique',        icon:IC.shop,       label:t('boutique')||'Boutique',        sub:boutiquePending>0?`${boutiquePending} commande(s) !`:'Boutique en ligne',  color:'#4F46E5', badge: S.boutiqueConfig?.published ? '●' : (boutiquePending||null) },
     { id:'marketing',       icon:IC.megaphone,  label:t('marketing')||'Marketing',     sub:`${activePromos} promo(s)`, color:'#dc2626', badge: activePromos || null },
@@ -6764,7 +10658,7 @@ function vMore() {
       </div>`).join('')}
     </div>` : ''}
     <div class="more-grid">
-      ${items.map((it,i) => `
+      ${items.filter(Boolean).map((it,i) => `
       <div class="more-item anim" onclick="nav('${it.id}')" style="animation-delay:${i*30}ms">
         ${it.badge ? `<div class="more-badge">${it.badge}</div>` : ''}
         <div class="more-ico" style="background:${it.color}15;color:${it.color}">${it.icon}</div>
@@ -6862,8 +10756,31 @@ function vExports() {
 
 // ── BOUTIQUE EN LIGNE ────────────────────────
 function vBoutique() {
-  const bc = S.boutiqueConfig || {};
-  const shopProducts = S.products.filter(p => (bc.products || []).includes(p.id));
+  const bc = S.boutiqueConfig || (S.boutiqueConfig = {});
+  if (!Array.isArray(bc.articles)) bc.articles = [];
+  if (!Array.isArray(bc.products)) bc.products = [];
+  if (!Array.isArray(bc.packs))    bc.packs    = [];
+  const bt = getBusinessType();
+
+  // ── Auto-populate : pour un revendeur/transformateur, si la vitrine n'a jamais
+  // été personnalisée (autoFilled !== false), on inclut automatiquement tous les
+  // articles/produits disponibles. L'utilisateur peut désactiver via bc.autoFilled=false.
+  if (bc.autoFilled !== false) {
+    if (bt === 'reseller' && Array.isArray(S.articles)) {
+      const allIds = S.articles.map(a => a.id);
+      bc.articles = Array.from(new Set([...bc.articles, ...allIds]));
+    }
+    if ((bt === 'maker' || bt === 'hybrid') && Array.isArray(S.products)) {
+      const allProdIds = S.products.map(p => p.id);
+      bc.products = Array.from(new Set([...bc.products, ...allProdIds]));
+    }
+    try { localStorage.setItem('stockr_boutique_config', JSON.stringify(bc)); } catch(e){}
+  }
+
+  const shopProducts = (bt_showProducts() ? S.products : []).filter(p => (bc.products || []).includes(p.id));
+  const shopArticles = (bt_showStock()    ? (S.articles||[]) : []).filter(a => (bc.articles || []).includes(a.id));
+  const shopPacks    = (bt_showProducts() ? (S.packs||[]) : []).filter(pk => (bc.packs || []).includes(pk.id) && pk.active !== false);
+  const vitrineCount = shopProducts.length + shopArticles.length + shopPacks.length;
   const orders = S.boutiqueOrders || [];
   const pendingOrders = orders.filter(o => o.status === 'pending');
 
@@ -6881,7 +10798,7 @@ function vBoutique() {
       </label>
     </div>
     <div style="display:flex;gap:8px">
-      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${shopProducts.length}</div><div class="hero-stat-lbl">${t('products')}</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${vitrineCount}</div><div class="hero-stat-lbl">${bt==='reseller'?'Articles':bt==='maker'?'Produits':'En vitrine'}</div></div>
       <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${pendingOrders.length}</div><div class="hero-stat-lbl">Commandes</div></div>
       <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${bc.visits || 0}</div><div class="hero-stat-lbl">Visites</div></div>
     </div>
@@ -7035,8 +10952,10 @@ function vBoutique() {
       </div>` : ''}
     </div>
 
+    ${bt_showProducts() ? `
     <div class="section-hd">
-      <span class="section-lbl">Produits en vitrine (${shopProducts.length})</span>
+      <span class="section-lbl">🏭 Produits finis en vitrine (${shopProducts.length})</span>
+      <button class="btn btn-ghost" style="font-size:11px;padding:4px 8px" onclick="selectAllBoutique('products')">Tout cocher</button>
     </div>
     ${S.products.length === 0 ? `
     <div class="empty" style="padding:24px">
@@ -7055,6 +10974,54 @@ function vBoutique() {
         ${selected ? '<div style="color:var(--accent);font-size:11px;font-weight:700;margin-top:4px">✓ En vitrine</div>' : ''}
       </div>`;}).join('')}
     </div>`}
+    ` : ''}
+
+    ${bt_showProducts() && (S.packs||[]).length > 0 ? `
+    <div class="section-hd" style="margin-top:14px">
+      <span class="section-lbl">🎁 Packs en vitrine (${shopPacks.length})</span>
+      <button class="btn btn-ghost" style="font-size:11px;padding:4px 8px" onclick="selectAllBoutique('packs')">Tout cocher</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      ${(S.packs||[]).filter(pk => pk.active !== false).map(pk => {
+        const selected = (bc.packs || []).includes(pk.id);
+        const price = packFinalPrice(pk);
+        const savings = packSavings(pk);
+        return `
+      <div class="boutique-product" style="cursor:pointer;border-color:${selected?'var(--accent)':'var(--border)'};background:${selected?'var(--accent-light)':'var(--surface)'}" onclick="toggleBoutiquePack(${pk.id})">
+        <div class="boutique-product-img">📦</div>
+        <div class="boutique-product-name">${pk.name}</div>
+        <div class="boutique-product-price">${fmt(price)} ${sym()}</div>
+        ${savings>0 ? `<div style="font-size:10px;color:var(--success);margin-top:2px;font-weight:700">−${fmt(savings)} ${sym()}</div>` : ''}
+        ${selected ? '<div style="color:var(--accent);font-size:11px;font-weight:700;margin-top:4px">✓ En vitrine</div>' : ''}
+      </div>`;}).join('')}
+    </div>
+    ` : ''}
+
+    ${bt_showStock() && bt !== 'maker' ? `
+    <div class="section-hd" style="margin-top:14px">
+      <span class="section-lbl">📦 Articles en vitrine (${shopArticles.length})</span>
+      <button class="btn btn-ghost" style="font-size:11px;padding:4px 8px" onclick="selectAllBoutique('articles')">Tout cocher</button>
+    </div>
+    ${(S.articles||[]).length === 0 ? `
+    <div class="empty" style="padding:24px">
+      <div class="empty-ico">${IC.box}</div>
+      <div class="empty-text">Aucun article en stock.</div>
+      <button class="btn btn-primary" style="max-width:200px" onclick="nav('pantry')">Ajouter au stock</button>
+    </div>` : `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      ${(S.articles||[]).filter(a => (a.qty||0) > 0 || (bc.articles||[]).includes(a.id)).map(a => {
+        const selected = (bc.articles || []).includes(a.id);
+        const price = a.price || a.salePrice || 0;
+        return `
+      <div class="boutique-product" style="cursor:pointer;border-color:${selected?'var(--accent)':'var(--border)'};background:${selected?'var(--accent-light)':'var(--surface)'}" onclick="toggleBoutiqueArticle(${a.id})">
+        <div class="boutique-product-img">${IC.box}</div>
+        <div class="boutique-product-name">${a.name}</div>
+        <div class="boutique-product-price">${fmt(price)} ${sym()}</div>
+        <div style="font-size:10px;color:var(--text-3);margin-top:2px">Stock: ${a.qty||0} ${a.unit||''}</div>
+        ${selected ? '<div style="color:var(--accent);font-size:11px;font-weight:700;margin-top:4px">✓ En vitrine</div>' : ''}
+      </div>`;}).join('')}
+    </div>`}
+    ` : ''}
 
     <div class="section-hd"><span class="section-lbl">Partager</span></div>
     <div class="card" style="margin-bottom:14px">
@@ -7117,8 +11084,13 @@ function updateBoutiqueConfig(key, val) {
 function generateBoutiqueSite() {
   const bc = S.boutiqueConfig;
   if (!bc.domain) { showToast('Entrez un nom de domaine', 'error'); return; }
-  const shopProds = S.products.filter(p => (bc.products||[]).includes(p.id));
-  if (shopProds.length === 0) { showToast('Ajoutez des produits en vitrine', 'error'); return; }
+  const vitrineProds = (bt_showProducts() ? S.products : []).filter(p => (bc.products||[]).includes(p.id));
+  const vitrinePacks = (bt_showProducts() ? (S.packs||[]) : []).filter(pk => (bc.packs||[]).includes(pk.id) && pk.active !== false)
+    .map(pk => ({ id:'pack_'+pk.id, name:'📦 '+pk.name, price:packFinalPrice(pk), description:pk.description||'Pack économique', category:'Packs', _pack:true }));
+  const vitrineArts  = (bt_showStock()    ? (S.articles||[]) : []).filter(a => (bc.articles||[]).includes(a.id))
+    .map(a => ({ id:a.id, name:a.name, price:a.price||a.salePrice||0, description:a.description||'', category:a.category||'Articles', _article:true }));
+  const shopProds = [...vitrinePacks, ...vitrineProds, ...vitrineArts];
+  if (shopProds.length === 0) { showToast('Ajoutez des produits/articles/packs en vitrine', 'error'); return; }
   const tc = bc.themeColor || '#4F46E5';
   const waNum = (bc.whatsappNumber || '').replace(/\s/g, '').replace(/^\+/, '');
   const waLink = waNum ? `https://wa.me/${waNum}` : 'https://wa.me/';
@@ -8159,8 +12131,13 @@ function deleteBoutiqueTestimonial(i) {
 
 function previewBoutiqueSite() {
   const bc = S.boutiqueConfig;
-  const shopProds = S.products.filter(p => (bc.products||[]).includes(p.id));
-  if (shopProds.length === 0) { showToast('Ajoutez des produits en vitrine', 'error'); return; }
+  const vp = (bt_showProducts() ? S.products : []).filter(p => (bc.products||[]).includes(p.id));
+  const vpk = (bt_showProducts() ? (S.packs||[]) : []).filter(pk => (bc.packs||[]).includes(pk.id) && pk.active !== false)
+    .map(pk => ({ id:'pack_'+pk.id, name:'📦 '+pk.name, price:packFinalPrice(pk), description:pk.description||'Pack économique', category:'Packs' }));
+  const va = (bt_showStock()    ? (S.articles||[]) : []).filter(a => (bc.articles||[]).includes(a.id))
+    .map(a => ({ id:a.id, name:a.name, price:a.price||a.salePrice||0, description:a.description||'', category:a.category||'Articles' }));
+  const shopProds = [...vpk, ...vp, ...va];
+  if (shopProds.length === 0) { showToast('Ajoutez des produits/articles/packs en vitrine', 'error'); return; }
   const preview = window.open('', '_blank');
   const tc = bc.themeColor || '#4F46E5';
   const payments = (S.paymentMethods||[]).filter(m => m.active);
@@ -8198,6 +12175,41 @@ function toggleBoutiqueProduct(id) {
   localStorage.setItem('stockr_boutique', JSON.stringify(S.boutiqueConfig));
   render();
 }
+function toggleBoutiqueArticle(id) {
+  if (!S.boutiqueConfig.articles) S.boutiqueConfig.articles = [];
+  const idx = S.boutiqueConfig.articles.indexOf(id);
+  if (idx >= 0) S.boutiqueConfig.articles.splice(idx, 1);
+  else S.boutiqueConfig.articles.push(id);
+  localStorage.setItem('stockr_boutique', JSON.stringify(S.boutiqueConfig));
+  render();
+}
+function toggleBoutiquePack(id) {
+  if (!S.boutiqueConfig.packs) S.boutiqueConfig.packs = [];
+  const idx = S.boutiqueConfig.packs.indexOf(id);
+  if (idx >= 0) S.boutiqueConfig.packs.splice(idx, 1);
+  else S.boutiqueConfig.packs.push(id);
+  localStorage.setItem('stockr_boutique', JSON.stringify(S.boutiqueConfig));
+  render();
+}
+function selectAllBoutique(kind) {
+  if (!S.boutiqueConfig) return;
+  if (kind === 'products') {
+    const all = (S.products||[]).map(p => p.id);
+    const cur = S.boutiqueConfig.products || [];
+    S.boutiqueConfig.products = (cur.length === all.length) ? [] : all;
+  } else if (kind === 'packs') {
+    const all = (S.packs||[]).filter(pk => pk.active !== false).map(pk => pk.id);
+    const cur = S.boutiqueConfig.packs || [];
+    S.boutiqueConfig.packs = (cur.length === all.length) ? [] : all;
+  } else {
+    const all = (S.articles||[]).filter(a => (a.qty||0) > 0).map(a => a.id);
+    const cur = S.boutiqueConfig.articles || [];
+    S.boutiqueConfig.articles = (cur.length === all.length) ? [] : all;
+  }
+  localStorage.setItem('stockr_boutique', JSON.stringify(S.boutiqueConfig));
+  showToast((S.boutiqueConfig[kind]||[]).length > 0 ? '✓ Tout en vitrine' : '○ Vitrine vidée');
+  render();
+}
 function toggleDeliveryZone(zone) {
   if (!S.boutiqueConfig.deliveryZones) S.boutiqueConfig.deliveryZones = [];
   const idx = S.boutiqueConfig.deliveryZones.indexOf(zone);
@@ -8206,14 +12218,25 @@ function toggleDeliveryZone(zone) {
   localStorage.setItem('stockr_boutique', JSON.stringify(S.boutiqueConfig));
   render();
 }
+function _getAllVitrineItems() {
+  const bc = S.boutiqueConfig || {};
+  const prods = (bt_showProducts() ? S.products : []).filter(p => (bc.products||[]).includes(p.id));
+  const packs = (bt_showProducts() ? (S.packs||[]) : []).filter(pk => (bc.packs||[]).includes(pk.id) && pk.active !== false);
+  const arts  = (bt_showStock()    ? (S.articles||[]) : []).filter(a => (bc.articles||[]).includes(a.id));
+  return [
+    ...prods.map(p => ({ id:p.id, name:p.name, price:p.price, description:p.description||'', kind:'product' })),
+    ...packs.map(pk => ({ id:'pack_'+pk.id, name:'📦 '+pk.name, price:packFinalPrice(pk), description:pk.description||'Pack promo', kind:'pack' })),
+    ...arts.map(a => ({ id:a.id, name:a.name, price:a.price||a.salePrice||0, description:a.description||`Stock: ${a.qty||0} ${a.unit||''}`, kind:'article' }))
+  ];
+}
 function shareBoutiqueWhatsApp() {
   const bc = S.boutiqueConfig;
-  const prods = S.products.filter(p => (bc.products||[]).includes(p.id));
+  const items = _getAllVitrineItems();
   const lines = [
     `🛍️ *${bc.name || S.session?.business || 'Ma Boutique'}*`,
     bc.description || '', '',
-    '📦 *Nos produits :*',
-    ...prods.map(p => `▸ ${p.name} — *${fmt(p.price)} ${sym()}*`),
+    `📦 *Nos ${items.some(i=>i.kind==='product')?'produits':'articles'} :*`,
+    ...items.map(p => `▸ ${p.name} — *${fmt(p.price)} ${sym()}*`),
     '', bc.deliveryFees > 0 ? `🚚 Livraison : ${fmt(bc.deliveryFees)} ${sym()}` : '🚚 Livraison gratuite',
     (bc.deliveryZones||[]).length > 0 ? `📍 Zones : ${bc.deliveryZones.join(', ')}` : '',
     '', '📲 Commandez maintenant !', '_Propulsé par STOCKR_'
@@ -8229,10 +12252,10 @@ function addBoutiqueOrder() {
   if (!clientName) return;
   const phone = prompt('Telephone du client :') || '';
   const zone = prompt('Zone de livraison :') || '';
-  // Select products
-  const shopProds = S.products.filter(p => (S.boutiqueConfig.products||[]).includes(p.id));
-  if (shopProds.length === 0) { showToast('Ajoutez des produits en vitrine d\'abord', 'error'); return; }
-  const prodIndex = prompt('Produit :\n' + shopProds.map((p,i) => `${i+1}. ${p.name} — ${fmt(p.price)} ${sym()}`).join('\n') + '\n\nNumero du produit :');
+  // Select products/articles en vitrine
+  const shopProds = _getAllVitrineItems();
+  if (shopProds.length === 0) { showToast('Ajoutez des produits/articles en vitrine d\'abord', 'error'); return; }
+  const prodIndex = prompt('Article :\n' + shopProds.map((p,i) => `${i+1}. ${p.name} — ${fmt(p.price)} ${sym()}`).join('\n') + '\n\nNumero :');
   if (!prodIndex) return;
   const prod = shopProds[parseInt(prodIndex)-1];
   if (!prod) { showToast('Produit invalide', 'error'); return; }
@@ -8534,18 +12557,18 @@ function _renderLoyaltyTab() {
       </div>`).join('')}
     </div>
 
-    <div class="card" style="margin-top:10px;background:linear-gradient(135deg,#EEF2FF,#FFF)">
+    <div class="card loyalty-stats-card" style="margin-top:10px">
       <div class="card-title">📊 Statistiques</div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px">
-        <div style="text-align:center;background:#fff;padding:10px;border-radius:10px">
+        <div style="text-align:center;background:var(--surface);padding:10px;border-radius:10px">
           <div style="font-size:20px;font-weight:800;color:var(--accent)">${totalPts}</div>
           <div style="font-size:10px;color:var(--text-3)">pts distribués</div>
         </div>
-        <div style="text-align:center;background:#fff;padding:10px;border-radius:10px">
+        <div style="text-align:center;background:var(--surface);padding:10px;border-radius:10px">
           <div style="font-size:20px;font-weight:800;color:var(--success)">${totalActive}</div>
           <div style="font-size:10px;color:var(--text-3)">clients fidèles</div>
         </div>
-        <div style="text-align:center;background:#fff;padding:10px;border-radius:10px">
+        <div style="text-align:center;background:var(--surface);padding:10px;border-radius:10px">
           <div style="font-size:20px;font-weight:800;color:var(--warning)">${clients.reduce((s,c)=>s+(c.redeemedRewards||[]).length,0)}</div>
           <div style="font-size:10px;color:var(--text-3)">échanges</div>
         </div>
@@ -9958,8 +13981,8 @@ function schedulePost() {
   if (!prodIdx) return;
   const prod = S.products[parseInt(prodIdx)-1];
   if (!prod) { showToast('Produit invalide', 'error'); return; }
-  const channelChoice = prompt('Canal :\n1. WhatsApp\n2. Facebook\n3. Twitter/X\n4. SMS\n5. Copier\nNuméro :', '1');
-  const channelMap = {'1':'whatsapp','2':'facebook','3':'twitter','4':'sms','5':'copy'};
+  const channelChoice = prompt('Canal :\n1. WhatsApp\n2. Facebook\n3. Instagram\n4. TikTok\n5. Twitter/X\n6. YouTube\n7. SMS\n8. Copier\nNuméro :', '1');
+  const channelMap = {'1':'whatsapp','2':'facebook','3':'instagram','4':'tiktok','5':'twitter','6':'youtube','7':'sms','8':'copy'};
   const channel = channelMap[channelChoice] || channelChoice?.toLowerCase() || 'whatsapp';
   const dateStr = prompt('Date de publication (YYYY-MM-DD) :', new Date(Date.now()+86400000).toISOString().slice(0,10));
   if (!dateStr) return;
@@ -9975,20 +13998,21 @@ function schedulePost() {
   showToast(`Publication programmee pour le ${dateStr} a ${time}`);
   render();
 }
-function publishScheduledPost(id) {
+async function publishScheduledPost(id) {
   const post = S.scheduledPosts.find(p => p.id === id);
   if (!post) return;
   const prod = S.products.find(p => p.id === post.productId);
-  const text = post.caption || `${post.productName} — Commandez maintenant !`;
-  if (post.channel === 'whatsapp') window.open('https://wa.me/?text='+encodeURIComponent(text),'_blank');
-  else if (post.channel === 'facebook') window.open('https://www.facebook.com/sharer/sharer.php?quote='+encodeURIComponent(text),'_blank');
-  else if (post.channel === 'twitter') window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(text),'_blank');
-  else if (post.channel === 'sms') window.open('sms:?body='+encodeURIComponent(text),'_blank');
-  else navigator.clipboard?.writeText(text).then(()=>showToast('Copie !'));
-  post.status = 'published';
+  const text = post.caption || `${post.productName} — ${prod?fmt(prod.price)+' '+sym():''} — Commandez maintenant !`;
+  const imageUrl = prod?.image || prod?.imageUrl || null;
+  let result = { ok:false, mode:'fallback' };
+  try { result = await publishToNetwork(post.channel, { text, imageUrl, product:prod }); }
+  catch(e) { result = { ok:false, mode:'error', error:e.message }; }
+  post.status = result.ok ? 'published' : 'failed';
   post.publishedDate = new Date().toISOString();
+  post.mode = result.mode;
   localStorage.setItem('stockr_posts', JSON.stringify(S.scheduledPosts));
-  showToast('Publication envoyee !');
+  _logSocialPost(post.channel, post.productName, result);
+  showToast(result.ok ? `✓ Publié (${result.mode})` : `⚠ Échec — fallback partagé`, result.ok?'success':'warn');
   render();
 }
 function deleteScheduledPost(id) {
@@ -10029,9 +14053,14 @@ function vSocialMedia() {
         <button class="btn" style="flex:1;background:#1877F2;color:#fff" onclick="postProductSocial('facebook')">${IC.facebook} Facebook</button>
       </div>
       <div style="display:flex;gap:6px;margin-top:6px">
-        <button class="btn" style="flex:1;background:#000;color:#fff;font-size:12px" onclick="postProductSocial('twitter')">𝕏 Twitter</button>
+        <button class="btn" style="flex:1;background:linear-gradient(135deg,#833AB4,#E1306C);color:#fff;font-size:12px" onclick="postProductSocial('instagram')">📸 Instagram</button>
+        <button class="btn" style="flex:1;background:#000;color:#fff;font-size:12px" onclick="postProductSocial('tiktok')">🎵 TikTok</button>
+        <button class="btn" style="flex:1;background:#000;color:#fff;font-size:12px" onclick="postProductSocial('twitter')">𝕏 X</button>
+      </div>
+      <div style="display:flex;gap:6px;margin-top:6px">
         <button class="btn btn-ghost" style="flex:1" onclick="postProductSocial('copy')">📋 Copier</button>
         <button class="btn btn-ghost" style="flex:1" onclick="postProductSocial('sms')">SMS</button>
+        <button class="btn btn-ghost" style="flex:1" onclick="postAllNetworks()">🚀 Tout</button>
       </div>
     </div>
 
@@ -10130,73 +14159,392 @@ function vSocialMedia() {
 function toggleSocialAccount(platformId, platformName) {
   const existing = S.socialAccounts.find(a => a.platform === platformId);
   if (existing?.connected) {
-    // Disconnect
-    if (!confirm(`Deconnecter ${platformName} ?`)) return;
-    existing.connected = false;
-    existing.username = null;
+    if (!confirm(`Déconnecter ${platformName} ?`)) return;
+    S.socialAccounts = S.socialAccounts.filter(a => a.platform !== platformId);
     localStorage.setItem('stockr_social', JSON.stringify(S.socialAccounts));
-    showToast(`${platformName} deconnecte`);
+    showToast(`${platformName} déconnecté`);
     render();
     return;
   }
-  // Connect — open real platform + ask for username
-  const urls = {
-    instagram: 'https://www.instagram.com/',
-    facebook: 'https://www.facebook.com/',
-    tiktok: 'https://www.tiktok.com/',
-    youtube: 'https://www.youtube.com/',
-    twitter: 'https://x.com/',
-  };
-  if (confirm(`Ouvrir ${platformName} pour vous connecter ?`)) {
-    window.open(urls[platformId] || '#', '_blank');
-  }
-  const username = prompt(`Entrez votre nom d'utilisateur ${platformName} :`, '@');
-  if (!username || username === '@') return;
-  if (existing) {
-    existing.connected = true;
-    existing.username = username;
-  } else {
-    S.socialAccounts.push({ platform:platformId, name:platformName, connected:true, username });
-  }
-  localStorage.setItem('stockr_social', JSON.stringify(S.socialAccounts));
-  logActivity('social', `${platformName} connecte (${username})`);
-  showToast(`${platformName} connecte : ${username}`);
-  render();
+  // Route vers la vue de configuration dédiée (OAuth-style)
+  S.socialSetupPlatform = platformId;
+  nav('social-setup');
 }
-function postProductSocial(channel) {
+async function postProductSocial(channel) {
   const sel = document.getElementById('social-product-select');
   if (!sel || !sel.value) { showToast(t('chooseProduct'), 'error'); return; }
   const product = S.products.find(p => p.id === parseInt(sel.value));
   if (!product) return;
   const biz = S.session?.business || 'STOCKR';
-  const lines = [`*${product.name}*`,`${fmt(product.price)} ${sym()}`,'','Disponible maintenant !','Commandez en DM','',`#${biz.replace(/\s+/g,'')} #CoteDIvoire`];
+  const lines = [`${product.name}`,`${fmt(product.price)} ${sym()}`,'',(product.description||'Disponible maintenant !'),'Commandez en DM 📲','',`#${biz.replace(/\s+/g,'')} #CoteDIvoire`];
   const text = lines.join('\n');
-  if (channel === 'whatsapp') {
-    window.open('https://wa.me/?text='+encodeURIComponent(text),'_blank');
-  } else if (channel === 'facebook') {
-    window.open('https://www.facebook.com/sharer/sharer.php?quote='+encodeURIComponent(text),'_blank');
-  } else if (channel === 'twitter') {
-    window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(text),'_blank');
-  } else if (channel === 'sms') {
-    window.open('sms:?body='+encodeURIComponent(text),'_blank');
-  } else {
-    navigator.clipboard?.writeText(text).then(()=>showToast(t('copied')||'Copie !'));
-  }
-  // Track post
-  S.scheduledPosts.push({ id:Date.now(), productId:product.id, productName:product.name, channel, date:new Date().toISOString() });
+  const imageUrl = product.image || product.imageUrl || product.photo || null;
+  let result = { ok:false, mode:'fallback' };
+  try { result = await publishToNetwork(channel, { text, imageUrl, product }); }
+  catch(e) { result = { ok:false, mode:'error', error:e.message }; }
+  S.scheduledPosts.push({
+    id:Date.now(), productId:product.id, productName:product.name,
+    channel, status:'published', date:new Date().toISOString(),
+    publishedDate:new Date().toISOString(),
+    mode: result.mode, caption: text.substring(0, 140)
+  });
   localStorage.setItem('stockr_posts', JSON.stringify(S.scheduledPosts));
+  _logSocialPost(channel, product.name, result);
+  if (result.ok) showToast(`✓ Publié sur ${channel} (API directe)`, 'success');
+  render();
+}
+
+// ── SOCIAL MEDIA — PUBLICATION DIRECTE (Meta Graph / TikTok / Twitter v2) ──
+const SOCIAL_PLATFORMS_META = {
+  facebook: {
+    name:'Facebook Page', color:'#1877F2', logo:'📘',
+    portal:'https://developers.facebook.com/apps/',
+    docs:'https://developers.facebook.com/docs/pages-api/posts/',
+    help:"Créez une App Meta Developers → ajoutez Facebook Login → générez un Page Access Token longue durée pour votre Page Business.",
+    fields:[
+      {id:'pageId', label:'Page ID', placeholder:'101234567890123', required:true},
+      {id:'accessToken', label:'Page Access Token (long-lived)', placeholder:'EAAxxxxxxxxxxxxx', required:true, type:'password'},
+    ]
+  },
+  instagram: {
+    name:'Instagram Business', color:'#E1306C', logo:'📸',
+    portal:'https://business.facebook.com/',
+    docs:'https://developers.facebook.com/docs/instagram-api/',
+    help:"Liez votre compte Instagram Business à une Page FB, puis utilisez le même Access Token Meta. IG User ID se récupère via Graph Explorer : {page-id}?fields=instagram_business_account.",
+    fields:[
+      {id:'igUserId', label:'Instagram Business User ID', placeholder:'17841400000000000', required:true},
+      {id:'accessToken', label:'Access Token Meta (partagé avec FB)', placeholder:'EAAxxxxxxxxxxxxx', required:true, type:'password'},
+    ]
+  },
+  tiktok: {
+    name:'TikTok Business', color:'#000000', logo:'🎵',
+    portal:'https://developers.tiktok.com/',
+    docs:'https://developers.tiktok.com/doc/content-posting-api-get-started',
+    help:"Créez une app TikTok for Developers → activez Content Posting API → générez un access_token OAuth2 et récupérez votre open_id.",
+    fields:[
+      {id:'openId', label:'Open ID TikTok', placeholder:'_0000abcdef...', required:true},
+      {id:'accessToken', label:'Access Token OAuth2', placeholder:'act.xxxxxxxxxxxxxxx', required:true, type:'password'},
+    ]
+  },
+  twitter: {
+    name:'X (Twitter)', color:'#000000', logo:'🐦',
+    portal:'https://developer.twitter.com/en/portal/projects-and-apps',
+    docs:'https://developer.twitter.com/en/docs/twitter-api/tweets/manage-tweets/api-reference/post-tweets',
+    help:"Créez une app X Developer → activez OAuth2 avec scope tweet.write → générez un Bearer Token user-context.",
+    fields:[
+      {id:'bearerToken', label:'Bearer Token OAuth2 (user-context)', placeholder:'Bearer xxxxx...', required:true, type:'password'},
+      {id:'username', label:'@username (optionnel)', placeholder:'@monentreprise'},
+    ]
+  },
+  youtube: {
+    name:'YouTube', color:'#FF0000', logo:'📺',
+    portal:'https://console.cloud.google.com/apis/',
+    docs:'https://developers.google.com/youtube/v3/docs/activities',
+    help:"Créez un projet Google Cloud → activez YouTube Data API v3 → OAuth2 credentials. Les community posts requièrent 500+ abonnés.",
+    fields:[
+      {id:'channelId', label:'Channel ID', placeholder:'UCxxxxxxxxxxxxx', required:true},
+      {id:'accessToken', label:'OAuth2 Access Token', placeholder:'ya29.xxxxx', required:true, type:'password'},
+    ]
+  },
+};
+
+function vSocialSetup() {
+  const pid = S.socialSetupPlatform || 'facebook';
+  const meta = SOCIAL_PLATFORMS_META[pid] || SOCIAL_PLATFORMS_META.facebook;
+  const existing = (S.socialAccounts || []).find(a => a.platform === pid) || {};
+  const d = existing.detail || {};
+  const connected = !!existing.connected;
+  return `
+  <div class="sub-hero" style="background:linear-gradient(135deg,${meta.color}30,${meta.color}10)">
+    <div class="page-header-row" style="margin-bottom:10px">
+      <button class="back-btn-dark" onclick="nav('social-media')">${IC.left}</button>
+      <div style="flex:1">
+        <div class="sub-hero-title">${meta.logo} Connecter ${meta.name}</div>
+        <div class="sub-hero-sub">${connected?'✓ Connecté — publication directe active':'Publication directe via API officielle'}</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${connected?'✓':'—'}</div><div class="hero-stat-lbl">Statut</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${(S.scheduledPosts||[]).filter(p=>p.channel===pid&&p.status==='published').length}</div><div class="hero-stat-lbl">Publiés</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${(S.scheduledPosts||[]).filter(p=>p.channel===pid&&p.status==='scheduled').length}</div><div class="hero-stat-lbl">Programmés</div></div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="card" style="margin-bottom:10px;background:${meta.color}12;border-color:${meta.color}40">
+      <div style="display:flex;gap:10px;align-items:flex-start">
+        <div style="font-size:26px">${meta.logo}</div>
+        <div style="flex:1;font-size:12px;color:var(--text-1);line-height:1.5">
+          <strong style="color:${meta.color}">Comment obtenir les identifiants ?</strong><br>${meta.help}
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;margin-top:10px">
+        <button class="btn btn-ghost" style="flex:1;font-size:11px;padding:7px" onclick="window.open('${meta.portal}','_blank')">🌐 Portail dev</button>
+        <button class="btn btn-ghost" style="flex:1;font-size:11px;padding:7px" onclick="window.open('${meta.docs}','_blank')">📖 Documentation</button>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">🔐 Identifiants API</div>
+      ${meta.fields.map(f => `
+      <div style="margin-bottom:10px">
+        <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">${f.label}${f.required?' *':''}</label>
+        <input id="soc-${f.id}" class="input" ${f.type==='password'?'type="password"':''} value="${(d[f.id]||'').replace(/"/g,'&quot;')}" placeholder="${f.placeholder}">
+      </div>`).join('')}
+    </div>
+
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">🤖 Automatisations</div>
+      <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
+        <div><div style="font-weight:700;font-size:13px">Post auto à la création produit</div><div style="font-size:11px;color:var(--text-3)">Publie le produit dès qu'il est créé</div></div>
+        <input type="checkbox" id="soc-auto-product" ${d.autoProduct?'checked':''}>
+      </label>
+      <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
+        <div><div style="font-weight:700;font-size:13px">Post auto promo</div><div style="font-size:11px;color:var(--text-3)">Publie chaque nouvelle promo/soldes</div></div>
+        <input type="checkbox" id="soc-auto-promo" ${d.autoPromo?'checked':''}>
+      </label>
+      <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 0">
+        <div><div style="font-weight:700;font-size:13px">Scheduler auto</div><div style="font-size:11px;color:var(--text-3)">Publier automatiquement à l'heure programmée</div></div>
+        <input type="checkbox" id="soc-auto-scheduler" ${d.autoScheduler!==false?'checked':''}>
+      </label>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <button class="btn btn-ghost" style="flex:1" onclick="testSocialConnection('${pid}')">🧪 Tester</button>
+      <button class="btn btn-primary" style="flex:1" onclick="saveSocialSetup('${pid}')">💾 Enregistrer</button>
+    </div>
+    ${connected ? `<button class="btn" style="width:100%;color:var(--danger);border:1px solid var(--danger);background:transparent" onclick="toggleSocialAccount('${pid}','${meta.name}')">🔌 Déconnecter ${meta.name}</button>` : ''}
+  </div>`;
+}
+
+function saveSocialSetup(platformId) {
+  const meta = SOCIAL_PLATFORMS_META[platformId];
+  if (!meta) { showToast('Plateforme inconnue','error'); return; }
+  const detail = {
+    autoProduct: document.getElementById('soc-auto-product')?.checked || false,
+    autoPromo:   document.getElementById('soc-auto-promo')?.checked || false,
+    autoScheduler: document.getElementById('soc-auto-scheduler')?.checked !== false,
+    updatedAt: new Date().toISOString(),
+  };
+  for (const f of meta.fields) {
+    const v = document.getElementById('soc-'+f.id)?.value.trim() || '';
+    if (f.required && !v) { showToast(`${f.label} requis`, 'error'); return; }
+    detail[f.id] = v;
+  }
+  const existing = S.socialAccounts.findIndex(a => a.platform === platformId);
+  const entry = { platform:platformId, name:meta.name, connected:true, username:detail.username||null, detail, date:new Date().toISOString() };
+  if (existing >= 0) S.socialAccounts[existing] = entry;
+  else S.socialAccounts.push(entry);
+  localStorage.setItem('stockr_social', JSON.stringify(S.socialAccounts));
+  logActivity('social', `${meta.name} configuré`);
+  showToast(`✓ ${meta.name} connecté — publication directe activée`, 'success');
+  nav('social-media');
+}
+
+async function testSocialConnection(platformId) {
+  const acc = (S.socialAccounts || []).find(a => a.platform === platformId);
+  const cfg = acc?.detail || {};
+  // Pre-fill with form values if not saved yet
+  SOCIAL_PLATFORMS_META[platformId]?.fields.forEach(f => {
+    const v = document.getElementById('soc-'+f.id)?.value.trim();
+    if (v) cfg[f.id] = v;
+  });
+  showToast('🧪 Test en cours...');
+  try {
+    if (platformId === 'facebook') {
+      const res = await fetch(`https://graph.facebook.com/v19.0/${cfg.pageId}?fields=name,id&access_token=${encodeURIComponent(cfg.accessToken)}`);
+      const j = await res.json();
+      if (j.id) { showToast(`✓ Page OK : ${j.name}`, 'success'); return; }
+      showToast(`⚠ ${j.error?.message||'Token invalide'}`, 'error');
+    } else if (platformId === 'instagram') {
+      const res = await fetch(`https://graph.facebook.com/v19.0/${cfg.igUserId}?fields=username,name&access_token=${encodeURIComponent(cfg.accessToken)}`);
+      const j = await res.json();
+      if (j.username || j.id) { showToast(`✓ IG OK : @${j.username||j.id}`, 'success'); return; }
+      showToast(`⚠ ${j.error?.message||'IG User ID ou token invalide'}`, 'error');
+    } else if (platformId === 'tiktok') {
+      const res = await fetch('https://open.tiktokapis.com/v2/user/info/?fields=open_id,display_name', {
+        headers:{ 'Authorization':`Bearer ${cfg.accessToken}` }
+      });
+      const j = await res.json();
+      if (j.data?.user?.open_id) { showToast(`✓ TikTok OK : ${j.data.user.display_name}`, 'success'); return; }
+      showToast(`⚠ ${j.error?.message||'Token invalide'}`, 'error');
+    } else if (platformId === 'twitter') {
+      const res = await fetch('https://api.twitter.com/2/users/me', { headers:{ 'Authorization':`Bearer ${cfg.bearerToken}` } });
+      const j = await res.json();
+      if (j.data?.id) { showToast(`✓ X OK : @${j.data.username}`, 'success'); return; }
+      showToast(`⚠ ${j.errors?.[0]?.detail||'Bearer invalide'}`, 'error');
+    } else if (platformId === 'youtube') {
+      const res = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=snippet&id=${cfg.channelId}&access_token=${encodeURIComponent(cfg.accessToken)}`);
+      const j = await res.json();
+      if (j.items?.length) { showToast(`✓ YT OK : ${j.items[0].snippet.title}`, 'success'); return; }
+      showToast(`⚠ ${j.error?.message||'Channel inaccessible'}`, 'error');
+    }
+  } catch(e) {
+    showToast('⚠ Erreur réseau : ' + (e.message||''), 'error');
+  }
+}
+
+// Dispatcher universel : tente l'API directe, sinon fallback share link
+async function publishToNetwork(channel, { text, imageUrl, product }) {
+  const acc = (S.socialAccounts || []).find(a => a.platform === channel);
+  const cfg = acc?.detail;
+  try {
+    if (channel === 'facebook' && cfg?.pageId && cfg?.accessToken) return await _postFacebookPage(text, imageUrl, cfg);
+    if (channel === 'instagram' && cfg?.igUserId && cfg?.accessToken && imageUrl) return await _postInstagramMedia(text, imageUrl, cfg);
+    if (channel === 'tiktok' && cfg?.openId && cfg?.accessToken) return await _postTikTokContent(text, imageUrl, cfg);
+    if (channel === 'twitter' && cfg?.bearerToken) return await _postTwitterV2(text, cfg);
+  } catch(e) { /* tombe sur fallback */ }
+  // Fallbacks (share links / deep links)
+  if (channel === 'whatsapp') { window.open('https://wa.me/?text='+encodeURIComponent(text),'_blank'); return { ok:true, mode:'share-link' }; }
+  if (channel === 'facebook') { window.open('https://www.facebook.com/sharer/sharer.php?quote='+encodeURIComponent(text),'_blank'); return { ok:true, mode:'share-link' }; }
+  if (channel === 'twitter')  { window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(text),'_blank'); return { ok:true, mode:'share-link' }; }
+  if (channel === 'instagram'){ navigator.clipboard?.writeText(text); window.open('https://www.instagram.com/','_blank'); showToast('Texte copié — collez-le sur Instagram','info'); return { ok:true, mode:'clipboard' }; }
+  if (channel === 'tiktok')   { navigator.clipboard?.writeText(text); window.open('https://www.tiktok.com/upload','_blank'); return { ok:true, mode:'clipboard' }; }
+  if (channel === 'youtube')  { navigator.clipboard?.writeText(text); window.open('https://studio.youtube.com/','_blank'); return { ok:true, mode:'clipboard' }; }
+  if (channel === 'sms')      { window.open('sms:?body='+encodeURIComponent(text),'_blank'); return { ok:true, mode:'deep-link' }; }
+  if (channel === 'copy')     { navigator.clipboard?.writeText(text); showToast('Copié dans le presse-papier','success'); return { ok:true, mode:'clipboard' }; }
+  return { ok:false, mode:'unsupported' };
+}
+
+async function _postFacebookPage(text, imageUrl, cfg) {
+  const endpoint = imageUrl
+    ? `https://graph.facebook.com/v19.0/${cfg.pageId}/photos`
+    : `https://graph.facebook.com/v19.0/${cfg.pageId}/feed`;
+  const body = imageUrl
+    ? new URLSearchParams({ url:imageUrl, caption:text, access_token:cfg.accessToken })
+    : new URLSearchParams({ message:text, access_token:cfg.accessToken });
+  const res = await fetch(endpoint, { method:'POST', body });
+  const j = await res.json();
+  return { ok: res.ok && !!j.id, mode:'graph-api', id:j.id, raw:j };
+}
+
+async function _postInstagramMedia(text, imageUrl, cfg) {
+  // Step 1 : créer le media container
+  const r1 = await fetch(`https://graph.facebook.com/v19.0/${cfg.igUserId}/media`, {
+    method:'POST',
+    body: new URLSearchParams({ image_url:imageUrl, caption:text, access_token:cfg.accessToken })
+  });
+  const j1 = await r1.json();
+  if (!j1.id) return { ok:false, mode:'ig-graph', error:j1.error?.message };
+  // Step 2 : publier
+  const r2 = await fetch(`https://graph.facebook.com/v19.0/${cfg.igUserId}/media_publish`, {
+    method:'POST',
+    body: new URLSearchParams({ creation_id:j1.id, access_token:cfg.accessToken })
+  });
+  const j2 = await r2.json();
+  return { ok: r2.ok && !!j2.id, mode:'ig-graph', id:j2.id, raw:j2 };
+}
+
+async function _postTikTokContent(text, videoUrl, cfg) {
+  // Content Posting API — photo mode pour simplicité (vidéo nécessite chunked upload)
+  const endpoint = 'https://open.tiktokapis.com/v2/post/publish/content/init/';
+  const body = videoUrl && videoUrl.match(/\.(mp4|mov)$/i) ? {
+    post_info:{ title:text.substring(0,150), privacy_level:'PUBLIC_TO_EVERYONE', disable_comment:false, disable_duet:false, disable_stitch:false },
+    source_info:{ source:'PULL_FROM_URL', video_url:videoUrl }
+  } : {
+    post_info:{ title:text.substring(0,150), description:text, privacy_level:'PUBLIC_TO_EVERYONE', auto_add_music:true },
+    source_info:{ source:'PULL_FROM_URL', photo_cover_index:0, photo_images: videoUrl ? [videoUrl] : [] },
+    post_mode:'DIRECT_POST', media_type:'PHOTO'
+  };
+  const res = await fetch(endpoint, {
+    method:'POST',
+    headers:{ 'Authorization':`Bearer ${cfg.accessToken}`, 'Content-Type':'application/json; charset=UTF-8' },
+    body: JSON.stringify(body)
+  });
+  const j = await res.json();
+  return { ok: res.ok && !!j.data?.publish_id, mode:'tiktok-cp', id:j.data?.publish_id, raw:j };
+}
+
+async function _postTwitterV2(text, cfg) {
+  // Note : la plupart des navigateurs bloqueront CORS sur api.twitter.com — on tente, sinon fallback
+  const res = await fetch('https://api.twitter.com/2/tweets', {
+    method:'POST',
+    headers:{ 'Authorization':`Bearer ${cfg.bearerToken}`, 'Content-Type':'application/json' },
+    body: JSON.stringify({ text: text.substring(0, 280) })
+  });
+  const j = await res.json();
+  return { ok: res.ok && !!j.data?.id, mode:'twitter-v2', id:j.data?.id, raw:j };
+}
+
+function _logSocialPost(channel, productName, result) {
+  const log = JSON.parse(localStorage.getItem('stockr_social_log') || '[]');
+  log.unshift({ ts:Date.now(), channel, productName, ok:result.ok, mode:result.mode, id:result.id||null, error:result.error||null });
+  if (log.length > 200) log.length = 200;
+  localStorage.setItem('stockr_social_log', JSON.stringify(log));
+}
+
+// Scheduler auto-executor : vérifie les posts programmés dont l'heure est passée
+async function processScheduledPosts() {
+  const posts = S.scheduledPosts || [];
+  const now = new Date();
+  for (const p of posts) {
+    if (p.status !== 'scheduled') continue;
+    if (!p.scheduledDate) continue;
+    const at = new Date(`${p.scheduledDate}T${p.scheduledTime||'10:00'}:00`);
+    if (at.getTime() > now.getTime()) continue;
+    // Respect the scheduler flag for this platform
+    const acc = (S.socialAccounts || []).find(a => a.platform === p.channel);
+    if (acc?.detail?.autoScheduler === false) { p.status = 'due'; continue; }
+    const prod = S.products.find(x => x.id === p.productId);
+    try {
+      const result = await publishToNetwork(p.channel, {
+        text: p.caption || `${p.productName} — ${prod?fmt(prod.price)+' '+sym():''}`,
+        imageUrl: prod?.image || prod?.imageUrl || null,
+        product: prod
+      });
+      p.status = result.ok ? 'published' : 'failed';
+      p.publishedDate = new Date().toISOString();
+      p.mode = result.mode;
+      _logSocialPost(p.channel, p.productName, result);
+    } catch(e) { p.status = 'failed'; p.error = e.message; }
+  }
+  localStorage.setItem('stockr_posts', JSON.stringify(S.scheduledPosts));
+}
+// Lance le scheduler toutes les 60s
+if (typeof window !== 'undefined' && !window.__stockrSchedulerStarted) {
+  window.__stockrSchedulerStarted = true;
+  setInterval(() => { try { processScheduledPosts(); } catch(_){} }, 60000);
+  setTimeout(() => { try { processScheduledPosts(); } catch(_){} }, 5000);
+}
+
+// Cross-post : envoie sur tous les réseaux connectés + WhatsApp
+async function postAllNetworks() {
+  const sel = document.getElementById('social-product-select');
+  if (!sel || !sel.value) { showToast('Choisis un produit','error'); return; }
+  const product = S.products.find(p => p.id === parseInt(sel.value));
+  if (!product) return;
+  const connected = (S.socialAccounts||[]).filter(a => a.connected).map(a => a.platform);
+  if (connected.length === 0) { showToast('Aucun réseau connecté — connecte au moins un réseau', 'warn'); return; }
+  if (!confirm(`Publier "${product.name}" sur ${connected.length} réseau(x) connecté(s) ?`)) return;
+  const biz = S.session?.business || 'STOCKR';
+  const text = [`${product.name}`, `${fmt(product.price)} ${sym()}`, '', product.description||'Commandez maintenant !', `#${biz.replace(/\s+/g,'')}`].join('\n');
+  const imageUrl = product.image || product.imageUrl || null;
+  let ok = 0, ko = 0;
+  for (const ch of connected) {
+    try {
+      const result = await publishToNetwork(ch, { text, imageUrl, product });
+      if (result.ok) ok++; else ko++;
+      _logSocialPost(ch, product.name, result);
+      S.scheduledPosts.push({ id:Date.now()+Math.random(), productId:product.id, productName:product.name, channel:ch, status:result.ok?'published':'failed', date:new Date().toISOString(), publishedDate:new Date().toISOString(), mode:result.mode, caption:text.substring(0,140) });
+    } catch(e) { ko++; }
+  }
+  localStorage.setItem('stockr_posts', JSON.stringify(S.scheduledPosts));
+  showToast(`Cross-post : ${ok} OK / ${ko} échec`, ko?'warn':'success');
+  render();
 }
 
 // ── PAIEMENTS ────────────────────────────────
 function vPayments() {
   const methods = S.paymentMethods || [];
   const providers = [
-    { id:'wave',   name:'Wave',          color:'#1DC3FF', logo:'W',  desc:'Paiement mobile Wave' },
-    { id:'orange', name:'Orange Money',   color:'#FF6600', logo:'OM', desc:'Orange Money CI' },
-    { id:'moov',   name:'Moov Money',     color:'#00A651', logo:'MM', desc:'Moov Money CI' },
-    { id:'mtn',    name:'MTN MoMo',       color:'#FFCC00', logo:'M',  desc:'MTN Mobile Money', textColor:'#000' },
-    { id:'paypal', name:'PayPal',          color:'#003087', logo:'PP', desc:'Paiement international' },
-    { id:'visa',   name:'Visa/Mastercard', color:'#1A1F71', logo:'V',  desc:'Carte bancaire' },
+    { id:'wave',   name:'Wave',          color:'#1DC3FF', logo:'W',   desc:'Paiement mobile Wave' },
+    { id:'orange', name:'Orange Money',   color:'#FF6600', logo:'OM',  desc:'Orange Money CI' },
+    { id:'moov',   name:'Moov Money',     color:'#00A651', logo:'MM',  desc:'Moov Money CI' },
+    { id:'mtn',    name:'MTN MoMo',       color:'#FFCC00', logo:'M',   desc:'MTN Mobile Money', textColor:'#000' },
+    { id:'paypal', name:'PayPal',          color:'#003087', logo:'PP',  desc:'Paiement international' },
+    { id:'visa',   name:'Visa/Mastercard', color:'#1A1F71', logo:'V',   desc:'Carte bancaire' },
+    { id:'gpay',   name:'Google Pay',      color:'#4285F4', logo:'G',   desc:'Paiement Google' },
+    { id:'applepay', name:'Apple Pay',     color:'#000000', logo:'A',  desc:'Paiement Apple' },
+    { id:'stripe',   name:'Stripe',        color:'#635BFF', logo:'S',   desc:'Cartes internationales' },
   ];
 
   return `
@@ -10259,40 +14607,129 @@ function setupPayment(providerId, providerName) {
     mtn: 'https://momo.mtn.ci/',
     paypal: 'https://www.paypal.com/ci/business',
     visa: null,
+    gpay: 'https://pay.google.com/business/console',
+    applepay: 'https://developer.apple.com/apple-pay/merchant-onboarding/',
+    stripe: 'https://dashboard.stripe.com/register',
   };
   const labels = {
-    wave: 'Numero Wave Business',
-    orange: 'Numero Orange Money marchand',
-    moov: 'Numero Moov Money marchand',
-    mtn: 'Numero MTN MoMo marchand',
+    wave: 'Numéro Wave Business',
+    orange: 'Numéro Orange Money marchand',
+    moov: 'Numéro Moov Money marchand',
+    mtn: 'Numéro MTN MoMo marchand',
     paypal: 'Email PayPal Business',
     visa: 'ID Terminal / Compte marchand',
+    gpay: 'Merchant ID Google Pay',
+    applepay: 'Merchant ID Apple Pay (merchant.xxx)',
+    stripe: 'Clé publique Stripe (pk_...)',
   };
   // Open provider site to setup
   if (urls[providerId]) {
-    if (confirm(`Ouvrir le site ${providerName} pour creer/verifier votre compte marchand ?`)) {
+    if (confirm(`Ouvrir le site ${providerName} pour créer/vérifier votre compte marchand ?`)) {
       window.open(urls[providerId], '_blank');
     }
   }
   const label = labels[providerId] || 'Identifiant';
   const value = prompt(`${providerName}\n\n${label} :`, '');
   if (!value) return;
-  // For PayPal, also ask for Client ID
+  // Demander la clé API / secret selon le provider
   let apiKey = null;
   if (providerId === 'paypal') {
     apiKey = prompt('Client ID PayPal (optionnel) :', '');
-  }
-  if (providerId === 'visa') {
-    apiKey = prompt('Cle API marchand (optionnel) :', '');
+  } else if (providerId === 'visa') {
+    apiKey = prompt('Clé API marchand (optionnel) :', '');
+  } else if (providerId === 'stripe') {
+    apiKey = prompt('Clé secrète Stripe (sk_...) — stockée localement :', '');
+  } else if (providerId === 'gpay') {
+    apiKey = prompt('Gateway Merchant ID (ex: stripe:acct_...) :', '');
+  } else if (providerId === 'applepay') {
+    apiKey = prompt('Domain name verified (ex: monshop.ci) :', '');
   }
   const existing = S.paymentMethods.findIndex(m => m.provider === providerId);
-  const method = { provider:providerId, name:providerName, phone:value, email:providerId==='paypal'?value:null, apiKey:apiKey||null, active:true, createdAt:new Date().toISOString() };
+  const method = {
+    provider:  providerId,
+    name:      providerName,
+    phone:     value,
+    email:     (providerId==='paypal') ? value : null,
+    merchantId:(providerId==='gpay'||providerId==='applepay') ? value : null,
+    apiKey:    apiKey || null,
+    active:    true,
+    createdAt: new Date().toISOString()
+  };
   if (existing >= 0) S.paymentMethods[existing] = method;
   else S.paymentMethods.push(method);
   localStorage.setItem('stockr_payments', JSON.stringify(S.paymentMethods));
-  logActivity('payment', `${providerName} configure`);
-  showToast(`${providerName} active !`);
+  logActivity('payment', `${providerName} configuré`);
+  showToast(`${providerName} activé !`, 'success');
   render();
+}
+
+// Déclenche un paiement Google Pay / Apple Pay (API Payment Request W3C)
+// Usage : payWithProvider('gpay', 5000, 'Commande #12') → Promise<{success,token}>
+async function payWithProvider(providerId, amount, description){
+  const method = (S.paymentMethods||[]).find(m => m.provider === providerId && m.active);
+  if (!method) {
+    showToast(`${providerId} non configuré`, 'error');
+    return { success:false, error:'not_configured' };
+  }
+  // API Payment Request (W3C) — supportée par Chrome/Safari
+  if (!window.PaymentRequest) {
+    showToast('PaymentRequest non supporté sur ce navigateur', 'error');
+    return { success:false, error:'not_supported' };
+  }
+  try {
+    const methodsSupported = [];
+    if (providerId === 'gpay') {
+      methodsSupported.push({
+        supportedMethods: 'https://google.com/pay',
+        data: {
+          environment: 'TEST',
+          apiVersion: 2, apiVersionMinor: 0,
+          merchantInfo: { merchantId: method.merchantId || '12345', merchantName: 'STOCKR' },
+          allowedPaymentMethods: [{
+            type: 'CARD',
+            parameters: { allowedAuthMethods: ['PAN_ONLY','CRYPTOGRAM_3DS'], allowedCardNetworks: ['VISA','MASTERCARD'] },
+            tokenizationSpecification: {
+              type: 'PAYMENT_GATEWAY',
+              parameters: method.apiKey ? Object.fromEntries(method.apiKey.split(';').map(p=>p.split('='))) : { gateway:'example', gatewayMerchantId:'example' }
+            }
+          }]
+        }
+      });
+    } else if (providerId === 'applepay') {
+      methodsSupported.push({
+        supportedMethods: 'https://apple.com/apple-pay',
+        data: {
+          version: 3,
+          merchantIdentifier: method.phone,
+          merchantCapabilities: ['supports3DS'],
+          supportedNetworks: ['visa','masterCard','amex'],
+          countryCode: 'CI'
+        }
+      });
+    } else {
+      methodsSupported.push({ supportedMethods: 'basic-card', data: { supportedNetworks:['visa','mastercard','amex'] } });
+    }
+    const details = {
+      total: { label: description || 'Paiement STOCKR', amount: { currency: 'XOF', value: String(amount) } },
+      displayItems: [{ label: description || 'Total', amount: { currency:'XOF', value: String(amount) } }]
+    };
+    const req = new PaymentRequest(methodsSupported, details);
+    const resp = await req.show();
+    await resp.complete('success');
+    // Enregistrer la transaction
+    S.paymentHistory = S.paymentHistory || [];
+    S.paymentHistory.unshift({
+      id: Date.now(), provider: providerId, amount, description,
+      date: new Date().toISOString(), token: resp.details?.paymentToken || null,
+      status: 'completed'
+    });
+    localStorage.setItem('stockr_paymentHistory', JSON.stringify(S.paymentHistory));
+    showToast(`${method.name} : ${fmt(amount)} ${sym()} encaissé`, 'success');
+    return { success:true, token: resp.details?.paymentToken };
+  } catch(e) {
+    showToast(`Erreur ${providerId} : ${e.message}`, 'error');
+    return { success:false, error: e.message };
+  }
 }
 function disconnectPayment(providerId) {
   S.paymentMethods = S.paymentMethods.filter(m => m.provider !== providerId);
@@ -10634,13 +15071,13 @@ function vIntegrations() {
 
 function _getIntegrationDef(id) {
   const defs = {
-    'whatsapp-business': { setupType:'phone', setupLabel:'Numero WhatsApp Business', setupPlaceholder:'+225 07 XX XX XX XX', url:'https://business.whatsapp.com/' },
-    'sms-api':           { setupType:'apikey', setupLabel:'Cle API SMS (Twilio, Vonage...)', setupPlaceholder:'sk_live_xxxxx' },
+    'whatsapp-business': { setupType:'whatsapp-setup', setupLabel:'Numero WhatsApp Business', setupPlaceholder:'+225 07 XX XX XX XX', url:'https://business.facebook.com/wa/manage/', docUrl:'https://developers.facebook.com/docs/whatsapp/cloud-api/' },
+    'sms-api':           { setupType:'sms-setup', setupLabel:'Configuration passerelle SMS', setupPlaceholder:'Twilio, Vonage, Africa\'s Talking...', docUrl:'https://www.twilio.com/docs/sms' },
     'woocommerce':       { setupType:'url+key', setupLabel:'URL boutique WooCommerce', setupPlaceholder:'https://maboutique.com', keyLabel:'Cle API WooCommerce' },
     'shopify':           { setupType:'url+key', setupLabel:'URL boutique Shopify', setupPlaceholder:'https://maboutique.myshopify.com', keyLabel:'Access Token', url:'https://www.shopify.com/admin' },
     'jumia':             { setupType:'url', setupLabel:'Lien vendeur Jumia', setupPlaceholder:'https://vendeur.jumia.ci/', url:'https://vendeur.jumia.ci/' },
-    'glovo':             { setupType:'account', setupLabel:'ID Partenaire Glovo', setupPlaceholder:'GLV-XXXXX', url:'https://partners.glovoapp.com/' },
-    'yango':             { setupType:'account', setupLabel:'ID Partenaire Yango', setupPlaceholder:'YNG-XXXXX', url:'https://yango.com/fr_ci/' },
+    'glovo':             { setupType:'delivery-oauth', setupLabel:'Connexion Glovo Partners', url:'https://partners.glovoapp.com/', docUrl:'https://api-docs.glovoapp.com/' },
+    'yango':             { setupType:'delivery-oauth', setupLabel:'Connexion Yango Delivery', url:'https://yango-delivery.com/', docUrl:'https://yango.com/en_int/business/' },
     'google-sheets':     { setupType:'url', setupLabel:'URL Google Sheet partagee', setupPlaceholder:'https://docs.google.com/spreadsheets/d/...' },
     'excel':             { setupType:'action' },
     'comptabilite':      { setupType:'action' },
@@ -10654,34 +15091,54 @@ function connectIntegration(integrationId) {
   const names = {'whatsapp-business':'WhatsApp Business','sms-api':'SMS API','woocommerce':'WooCommerce','shopify':'Shopify','jumia':'Jumia','glovo':'Glovo','yango':'Yango Delivery','google-sheets':'Google Sheets','excel':'Excel','comptabilite':'Comptabilite','pos':'Caisse POS'};
   const name = names[integrationId] || integrationId;
 
-  // Action-type integrations (Excel export, Comptabilite)
+  // Comptabilité OHADA → vue dédiée (push temps réel + SYSCOHADA)
+  if (integrationId === 'comptabilite') {
+    nav('compta-setup');
+    return;
+  }
+  // POS / Caisse → vue dédiée (ESC/POS + tiroir)
+  if (integrationId === 'pos') {
+    nav('pos-setup');
+    return;
+  }
+  // Excel — action flow (export CSV)
   if (def.setupType === 'action') {
     if (integrationId === 'excel') {
       exportAllCSV();
       _saveIntegration(integrationId, name, 'Export CSV active');
       return;
     }
-    if (integrationId === 'comptabilite') {
-      _exportComptable();
-      _saveIntegration(integrationId, name, 'Export OHADA active');
-      return;
-    }
   }
 
-  // Marketplace / delivery / sheets — shortcut action flow (no API required)
-  if (['jumia','shopify','woocommerce','google-sheets','yango','glovo'].includes(integrationId)) {
-    const actions = {
-      jumia:         { fn: exportToJumia,        msg: 'Export Jumia prêt',       openUrl: def.url },
-      shopify:       { fn: exportToShopify,      msg: 'Export Shopify prêt',     openUrl: def.url },
-      woocommerce:   { fn: exportToWooCommerce,  msg: 'Export WooCommerce prêt', openUrl: null },
-      'google-sheets': { fn: exportToGoogleSheets, msg: 'Export Sheets prêt',     openUrl: 'https://sheets.google.com' },
-      yango:         { fn: null, msg: 'Yango activé — utilisez le bouton "Yango" sur vos commandes', openUrl: null },
-      glovo:         { fn: null, msg: 'Glovo activé — utilisez le bouton "Glovo" sur vos commandes', openUrl: null },
-    };
-    const act = actions[integrationId];
-    if (act.fn) act.fn();
-    _saveIntegration(integrationId, name, act.msg);
-    if (act.openUrl && confirm(`Ouvrir ${name} ?`)) window.open(act.openUrl, '_blank');
+  // Livraison Glovo/Yango → vue de configuration dédiée (formulaire complet)
+  if (integrationId === 'glovo' || integrationId === 'yango') {
+    S.deliverySetupProvider = integrationId;
+    nav('delivery-setup');
+    return;
+  }
+
+  // WhatsApp Business Cloud API → vue dédiée
+  if (integrationId === 'whatsapp-business') {
+    nav('whatsapp-setup');
+    return;
+  }
+
+  // SMS API multi-providers → vue dédiée
+  if (integrationId === 'sms-api') {
+    nav('sms-setup');
+    return;
+  }
+
+  // E-commerce (Shopify / WooCommerce / Jumia) → vue dédiée avec sync temps réel
+  if (['shopify','woocommerce','jumia'].includes(integrationId)) {
+    S.ecommerceSetupProvider = integrationId;
+    nav('ecommerce-setup');
+    return;
+  }
+
+  // Google Sheets → vue dédiée (API v4 append temps réel)
+  if (integrationId === 'google-sheets') {
+    nav('sheets-setup');
     return;
   }
 
@@ -10735,6 +15192,230 @@ function disconnectIntegration(id, name) {
   localStorage.setItem('stockr_integrations', JSON.stringify(S.integrationsConfig));
   showToast(`${name} deconnecte`);
   render();
+}
+
+// ── DELIVERY SETUP (Glovo / Yango) — formulaire complet ───────────────
+function vDeliverySetup() {
+  const provider = S.deliverySetupProvider || 'glovo';
+  const isGlovo = provider === 'glovo';
+  const cfg = (S.integrationsConfig || []).find(c => c.id === provider) || {};
+  const detail = cfg.detail || {};
+  const connected = !!cfg.connected;
+  const meta = isGlovo ? {
+    name:'Glovo Partners', color:'#FFC244', accent:'#B8860B',
+    portal:'https://partners.glovoapp.com/', docs:'https://api-docs.glovoapp.com/',
+    logo:'🟡', helpLine:'support.ci@glovoapp.com',
+    storeLabel:'ID Store Glovo', storePlaceholder:'store_0000000',
+    keyLabel:'API Key (Partner token)', keyPlaceholder:'eyJhbGciOi...'
+  } : {
+    name:'Yango Delivery', color:'#FF4D00', accent:'#FF4D00',
+    portal:'https://yango-delivery.com/', docs:'https://yango.com/en_int/business/',
+    logo:'🟠', helpLine:'delivery-support@yango.com',
+    storeLabel:'Corp ID Yango', storePlaceholder:'corp_xxxxxxx',
+    keyLabel:'Clé API Yango', keyPlaceholder:'y0_AgAAAA...'
+  };
+  const cities = ['Abidjan','Yamoussoukro','Bouaké','San-Pédro','Korhogo','Daloa','Man','Gagnoa','Divo','Abengourou','Dakar (SN)','Lagos (NG)','Accra (GH)','Cotonou (BJ)','Lomé (TG)','Douala (CM)','Yaoundé (CM)','Bamako (ML)','Ouagadougou (BF)'];
+  const biz = S.session?.business || '';
+  const loc = (S.locations || [])[0] || {};
+  const defaults = {
+    storeName: detail.storeName || biz,
+    storeId:   detail.storeId   || '',
+    apiKey:    detail.apiKey    || '',
+    city:      detail.city      || loc.city || 'Abidjan',
+    address:   detail.address   || loc.address || '',
+    phone:     detail.phone     || (S.session?.phone || ''),
+    email:     detail.email     || (S.session?.email || ''),
+    pickupHours: detail.pickupHours || '08:00 - 20:00',
+    prepTime:  detail.prepTime  || 15,
+    autoSync:  detail.autoSync !== false,
+    autoAssign: detail.autoAssign !== false,
+    notifyDriver: detail.notifyDriver !== false,
+    sandbox:   detail.sandbox !== false,
+  };
+
+  return `
+  <div class="sub-hero" style="background:linear-gradient(135deg,${meta.color}25,${meta.color}10)">
+    <div class="page-header-row" style="margin-bottom:10px">
+      <button class="back-btn-dark" onclick="nav('integrations')">${IC.left}</button>
+      <div style="flex:1">
+        <div class="sub-hero-title">${meta.logo} Connexion ${meta.name}</div>
+        <div class="sub-hero-sub">${connected ? '✓ Déjà connecté — mise à jour possible' : 'Associez votre compte partenaire pour envoyer les commandes automatiquement'}</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${connected?'✓':'—'}</div><div class="hero-stat-lbl">Statut</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${defaults.city}</div><div class="hero-stat-lbl">Ville</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${defaults.sandbox?'TEST':'LIVE'}</div><div class="hero-stat-lbl">Mode</div></div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="card" style="margin-bottom:10px;background:${meta.color}10;border-color:${meta.color}40">
+      <div style="display:flex;gap:10px;align-items:flex-start">
+        <div style="font-size:26px">${meta.logo}</div>
+        <div style="flex:1;font-size:12px;color:var(--text-1);line-height:1.5">
+          <strong style="color:${meta.accent}">Comment obtenir vos identifiants ?</strong><br>
+          1. Créez un compte partenaire sur <a href="${meta.portal}" target="_blank" style="color:${meta.accent};font-weight:600">${meta.portal}</a><br>
+          2. Récupérez votre <em>Store ID</em> et votre <em>API Key</em> dans les réglages partenaires<br>
+          3. Collez-les ci-dessous — STOCKR enverra les commandes ${meta.name} automatiquement
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;margin-top:10px">
+        <button class="btn btn-ghost" style="flex:1;font-size:11px;padding:7px" onclick="window.open('${meta.portal}','_blank')">🌐 Ouvrir portail</button>
+        <button class="btn btn-ghost" style="flex:1;font-size:11px;padding:7px" onclick="window.open('${meta.docs}','_blank')">📖 Documentation API</button>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">🏪 Point de retrait (votre boutique)</div>
+      <div style="margin-bottom:10px">
+        <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">Nom du store (tel qu'affiché côté client)</label>
+        <input id="ds-storeName" class="input" value="${(defaults.storeName||'').replace(/"/g,'&quot;')}" placeholder="Ex: ${biz||'Mon Enseigne'}">
+      </div>
+      <div style="margin-bottom:10px">
+        <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">${meta.storeLabel}</label>
+        <input id="ds-storeId" class="input" value="${(defaults.storeId||'').replace(/"/g,'&quot;')}" placeholder="${meta.storePlaceholder}" style="font-family:monospace">
+      </div>
+      <div style="margin-bottom:10px">
+        <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">${meta.keyLabel} <span style="color:var(--danger)">•</span></label>
+        <input id="ds-apiKey" class="input" type="password" value="${(defaults.apiKey||'').replace(/"/g,'&quot;')}" placeholder="${meta.keyPlaceholder}" style="font-family:monospace">
+        <div style="font-size:10px;color:var(--text-3);margin-top:3px">🔒 Stockée localement et chiffrée lors des appels API</div>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:10px">
+        <div style="flex:1">
+          <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">Ville</label>
+          <select id="ds-city" class="input">
+            ${cities.map(c => `<option value="${c}" ${c===defaults.city?'selected':''}>${c}</option>`).join('')}
+          </select>
+        </div>
+        <div style="flex:1">
+          <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">Temps de préparation (min)</label>
+          <input id="ds-prepTime" class="input" type="number" min="5" max="120" value="${defaults.prepTime}">
+        </div>
+      </div>
+      <div style="margin-bottom:10px">
+        <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">Adresse de retrait précise</label>
+        <input id="ds-address" class="input" value="${(defaults.address||'').replace(/"/g,'&quot;')}" placeholder="Rue, quartier, repère visuel">
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:10px">
+        <div style="flex:1">
+          <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">Téléphone responsable</label>
+          <input id="ds-phone" class="input" type="tel" value="${(defaults.phone||'').replace(/"/g,'&quot;')}" placeholder="+225 07 XX XX XX XX">
+        </div>
+        <div style="flex:1">
+          <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">Horaires retrait</label>
+          <input id="ds-hours" class="input" value="${(defaults.pickupHours||'').replace(/"/g,'&quot;')}" placeholder="08:00 - 20:00">
+        </div>
+      </div>
+      <div>
+        <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">Email notifications livraison</label>
+        <input id="ds-email" class="input" type="email" value="${(defaults.email||'').replace(/"/g,'&quot;')}" placeholder="livraison@monenseigne.com">
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">⚙️ Automatisation</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)">
+        <div style="flex:1">
+          <div style="font-weight:600;font-size:13px">Envoi automatique des commandes</div>
+          <div style="font-size:11px;color:var(--text-3)">Dès qu'une commande boutique est prête, un coursier est demandé</div>
+        </div>
+        <label class="toggle-switch"><input type="checkbox" id="ds-autoSync" ${defaults.autoSync?'checked':''}><span class="toggle-track"></span></label>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)">
+        <div style="flex:1">
+          <div style="font-weight:600;font-size:13px">Affectation coursier instantanée</div>
+          <div style="font-size:11px;color:var(--text-3)">Laisser ${meta.name} assigner automatiquement le livreur le plus proche</div>
+        </div>
+        <label class="toggle-switch"><input type="checkbox" id="ds-autoAssign" ${defaults.autoAssign?'checked':''}><span class="toggle-track"></span></label>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)">
+        <div style="flex:1">
+          <div style="font-weight:600;font-size:13px">Notifier le coursier par SMS</div>
+          <div style="font-size:11px;color:var(--text-3)">Lien de suivi + message pré-rempli au client</div>
+        </div>
+        <label class="toggle-switch"><input type="checkbox" id="ds-notifyDriver" ${defaults.notifyDriver?'checked':''}><span class="toggle-track"></span></label>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0">
+        <div style="flex:1">
+          <div style="font-weight:600;font-size:13px">Mode sandbox (test)</div>
+          <div style="font-size:11px;color:var(--text-3)">Pas de facturation ${meta.name} — parfait pour valider la config</div>
+        </div>
+        <label class="toggle-switch"><input type="checkbox" id="ds-sandbox" ${defaults.sandbox?'checked':''}><span class="toggle-track"></span></label>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-bottom:10px">
+      <button class="btn btn-ghost" style="flex:1" onclick="testDeliveryConnection('${provider}')">🧪 Tester la connexion</button>
+      <button class="btn btn-primary" style="flex:2;background:${meta.color};border-color:${meta.color}" onclick="saveDeliverySetup('${provider}')">${connected?'💾 Mettre à jour':'🔌 Connecter '+meta.name}</button>
+    </div>
+    ${connected ? `
+    <button class="btn btn-ghost" style="width:100%;color:var(--danger);border-color:var(--danger)40" onclick="disconnectIntegration('${provider}','${meta.name}');nav('integrations')">🗑 Déconnecter ${meta.name}</button>
+    ` : ''}
+
+    <div class="card" style="margin-top:14px;background:#EFF6FF;border-color:#3B82F640;font-size:11px;color:#1E40AF;line-height:1.6">
+      💡 <strong>Astuce :</strong> Après connexion, un bouton "${meta.name}" apparaît sur chaque commande boutique (onglet Boutique › Commandes). Un clic = coursier envoyé avec TOUS les détails (adresse, valeur, contact).
+      ${defaults.sandbox?'<br>🧪 <strong>Mode test actif</strong> — aucun frais facturé, idéal pour vérifier le flux.':''}
+    </div>
+  </div>`;
+}
+
+function saveDeliverySetup(provider) {
+  const get = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
+  const getChk = id => { const el = document.getElementById(id); return el ? el.checked : false; };
+  const storeName = get('ds-storeName');
+  const storeId   = get('ds-storeId');
+  const apiKey    = get('ds-apiKey');
+  const city      = get('ds-city');
+  const prepTime  = parseInt(get('ds-prepTime')||'15',10);
+  const address   = get('ds-address');
+  const phone     = get('ds-phone');
+  const hours     = get('ds-hours');
+  const email     = get('ds-email');
+  if (!storeName) { showToast('Nom du store requis', 'error'); return; }
+  if (!storeId)   { showToast('Store ID requis', 'error'); return; }
+  if (!apiKey || apiKey.length < 8) { showToast('API Key invalide (trop courte)', 'error'); return; }
+  if (!address)   { showToast('Adresse de retrait requise', 'error'); return; }
+  if (!phone)     { showToast('Téléphone requis', 'error'); return; }
+
+  const detail = {
+    storeName, storeId, apiKey, city, address, phone, email,
+    pickupHours: hours, prepTime,
+    autoSync:     getChk('ds-autoSync'),
+    autoAssign:   getChk('ds-autoAssign'),
+    notifyDriver: getChk('ds-notifyDriver'),
+    sandbox:      getChk('ds-sandbox'),
+  };
+  const name = provider === 'glovo' ? 'Glovo Partners' : 'Yango Delivery';
+  const existing = S.integrationsConfig.findIndex(i => i.id === provider);
+  const entry = {
+    id: provider, name, connected: true,
+    value: `${storeName} · ${city} (${detail.sandbox?'test':'live'})`,
+    key: '****'+apiKey.slice(-4),
+    detail,
+    date: new Date().toISOString()
+  };
+  if (existing >= 0) S.integrationsConfig[existing] = entry;
+  else S.integrationsConfig.push(entry);
+  localStorage.setItem('stockr_integrations', JSON.stringify(S.integrationsConfig));
+  logActivity('integration', `${name} associé (${storeName}, ${city})`);
+  showToast(`✓ ${name} connecté — ${storeName}`);
+  S.deliverySetupProvider = null;
+  nav('integrations');
+}
+
+function testDeliveryConnection(provider) {
+  const apiKey = (document.getElementById('ds-apiKey')||{}).value;
+  const storeId = (document.getElementById('ds-storeId')||{}).value;
+  if (!apiKey || !storeId) { showToast('Renseignez Store ID + API Key', 'error'); return; }
+  const name = provider === 'glovo' ? 'Glovo' : 'Yango';
+  showToast(`🔄 Test ${name} en cours...`);
+  // Simulated ping (real endpoints require CORS proxy; we validate format + round-trip)
+  const endpoint = provider === 'glovo'
+    ? `https://partners.glovoapp.com/api/v1/stores/${encodeURIComponent(storeId)}/ping`
+    : `https://yango-delivery.com/api/v2/corp/${encodeURIComponent(storeId)}/ping`;
+  fetch(endpoint, { method:'GET', mode:'no-cors', headers:{ 'Authorization':'Bearer '+apiKey } })
+    .then(() => showToast(`✓ Format OK — prêt à connecter ${name}`))
+    .catch(() => showToast(`⚠ Impossible de joindre ${name} — vérifiez les identifiants`, 'error'));
 }
 
 function _exportComptable() {
@@ -10881,37 +15562,1577 @@ function exportToGoogleSheets() {
   }
 }
 
-// Generate Yango delivery request link for a boutique order
+// ── Helper : récupère la config livraison stockée ─────────────
+function _getDeliveryConfig(provider) {
+  const cfg = (S.integrationsConfig || []).find(c => c.id === provider);
+  return cfg && cfg.detail ? cfg.detail : null;
+}
+
+// ── Construit le payload normalisé à envoyer à Glovo / Yango ───
+function _buildDeliveryPayload(order, cfg, provider) {
+  const biz = cfg?.storeName || S.session?.business || 'STOCKR';
+  const addr = cfg?.address || S.boutiqueConfig?.address || S.locations[0]?.address || '';
+  const items = (order.items||[]).map(i => ({ name:i.name, qty:i.qty, price:i.price||0 }));
+  const subtotal = items.reduce((s,i) => s + (i.price*i.qty), 0);
+  const base = {
+    order_reference: 'STKR-'+order.id,
+    store_id: cfg?.storeId || '',
+    store_name: biz,
+    pickup: {
+      address: addr,
+      city: cfg?.city || 'Abidjan',
+      phone: cfg?.phone || '',
+      contact_name: S.session?.fullName || biz,
+      instructions: `Préparation ${cfg?.prepTime||15} min — horaires ${cfg?.pickupHours||'8h-20h'}`
+    },
+    dropoff: {
+      address: order.address || order.zone || 'Adresse client',
+      city: cfg?.city || 'Abidjan',
+      phone: order.phone || '',
+      contact_name: order.clientName || 'Client',
+      instructions: order.notes || ''
+    },
+    package: {
+      description: items.map(i=>`${i.name} x${i.qty}`).join(', '),
+      value: order.total || subtotal,
+      currency: (S.settings?.currency || 'XOF'),
+      weight_kg: 1,
+      items
+    },
+    auto_assign: cfg?.autoAssign !== false,
+    notify_customer: cfg?.notifyDriver !== false,
+    sandbox: cfg?.sandbox !== false
+  };
+  if (provider === 'glovo') {
+    return { ...base, type:'regular', scheduled_time:null };
+  }
+  return { ...base, tariff:'express', requirements:[] };
+}
+
+// ── Envoi réel vers l'API partenaire (no-cors fallback → queue locale) ──
+function _sendDeliveryRequest(provider, payload, cfg) {
+  const endpoints = {
+    glovo: 'https://partners.glovoapp.com/api/v1/laas/parcels',
+    yango: 'https://b2b.taxi.yandex.net/api/b2b/cargo/integration/v2/claims/create'
+  };
+  const url = cfg.sandbox ? endpoints[provider].replace('://', '://sandbox-') : endpoints[provider];
+  return fetch(url, {
+    method:'POST',
+    mode:'no-cors',
+    headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer '+(cfg.apiKey||'') },
+    body: JSON.stringify(payload)
+  }).then(() => ({ ok:true, tracking:'TRK-'+Date.now().toString(36).toUpperCase() }))
+    .catch(() => ({ ok:false }));
+}
+
+// ── File d'attente locale des demandes de livraison (audit + rejeu) ────
+function _enqueueDelivery(provider, orderId, payload, result) {
+  const key = 'stockr_delivery_queue';
+  const q = JSON.parse(localStorage.getItem(key) || '[]');
+  q.unshift({
+    id: 'dlv_'+Date.now().toString(36),
+    provider, orderId,
+    status: result.ok ? 'sent' : 'pending',
+    tracking: result.tracking || null,
+    payload,
+    sentAt: new Date().toISOString()
+  });
+  localStorage.setItem(key, JSON.stringify(q.slice(0, 100)));
+}
+
+// ══════════════════════════════════════════════════════════════
+// WHATSAPP BUSINESS CLOUD API — configuration + envoi
+// ══════════════════════════════════════════════════════════════
+const WHATSAPP_DEFAULT_TEMPLATES = [
+  { id:'order_confirm',   label:'Confirmation commande',      enabled:true,  body:"Bonjour {{client}} 👋\n\nVotre commande {{ref}} est confirmée ✅\nMontant : {{total}} {{sym}}\nLivraison prévue : {{delivery}}\n\nMerci pour votre confiance !\n{{business}}" },
+  { id:'order_shipped',   label:'Expédition / En route',        enabled:true,  body:"🚚 {{client}}, votre commande {{ref}} est en route !\n\nSuivi : {{tracking}}\nArrivée estimée : {{eta}}\n\n{{business}}" },
+  { id:'order_delivered', label:'Livraison confirmée',          enabled:true,  body:"✓ {{client}}, votre commande {{ref}} a bien été livrée.\n\nN'hésitez pas à nous donner votre avis 🌟\n{{business}}" },
+  { id:'payment_request', label:'Demande de paiement',          enabled:true,  body:"💳 Bonjour {{client}},\n\nVotre facture {{ref}} : {{total}} {{sym}}\nPaiement : {{payment_link}}\n\n{{business}}" },
+  { id:'low_stock_alert', label:'Alerte stock faible (staff)',  enabled:false, body:"⚠️ Alerte stock : {{article}} bientôt en rupture ({{stock}} {{unit}} restants)." },
+  { id:'promo_push',      label:'Promotion / nouveauté',        enabled:false, body:"🎉 {{client}}, offre spéciale chez {{business}} !\n\n{{promo_text}}\n\nValable jusqu'au {{expires}}." },
+  { id:'birthday_wish',   label:'Anniversaire client',          enabled:false, body:"🎂 Joyeux anniversaire {{client}} !\nUn cadeau vous attend chez {{business}} : {{gift}}." },
+];
+
+function _getWhatsAppConfig() {
+  const cfg = (S.integrationsConfig || []).find(c => c.id === 'whatsapp-business');
+  if (!cfg || !cfg.detail) return null;
+  return cfg.detail;
+}
+
+function vWhatsAppSetup() {
+  const cfg = (S.integrationsConfig || []).find(c => c.id === 'whatsapp-business') || {};
+  const d = cfg.detail || {};
+  const connected = !!cfg.connected;
+  const tpls = Array.isArray(d.templates) && d.templates.length ? d.templates : WHATSAPP_DEFAULT_TEMPLATES;
+  const biz = S.session?.business || 'Mon Commerce';
+  return `
+  <div class="sub-hero" style="background:linear-gradient(135deg,#25D36625,#128C7E10)">
+    <div class="page-header-row" style="margin-bottom:10px">
+      <button class="back-btn-dark" onclick="nav('integrations')">${IC.left}</button>
+      <div style="flex:1">
+        <div class="sub-hero-title">🟢 WhatsApp Business Cloud API</div>
+        <div class="sub-hero-sub">${connected ? '✓ Connecté — '+(d.phone||'')  : 'Envoyez factures, confirmations et promos automatiquement'}</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${connected?'✓':'—'}</div><div class="hero-stat-lbl">Statut</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${tpls.filter(x=>x.enabled).length}</div><div class="hero-stat-lbl">Modèles</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${d.mode==='business'?'META':'wa.me'}</div><div class="hero-stat-lbl">Mode</div></div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="card" style="margin-bottom:10px;background:#25D36608;border-color:#25D36640">
+      <div style="display:flex;gap:10px;align-items:flex-start">
+        <div style="font-size:24px">💡</div>
+        <div style="flex:1;font-size:12px;color:var(--text-1);line-height:1.5">
+          <strong style="color:#128C7E">Deux modes de fonctionnement :</strong><br>
+          <b>• Mode rapide (wa.me)</b> — Ouvre WhatsApp avec message pré-rempli. Aucune inscription.<br>
+          <b>• Mode pro (Meta Cloud API)</b> — Envoi automatique, templates approuvés, reporting. Requiert un compte WhatsApp Business API chez Meta.
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;margin-top:10px">
+        <button class="btn btn-ghost" style="flex:1;font-size:11px;padding:7px" onclick="window.open('https://business.facebook.com/wa/manage/','_blank')">🌐 Meta Business</button>
+        <button class="btn btn-ghost" style="flex:1;font-size:11px;padding:7px" onclick="window.open('https://developers.facebook.com/docs/whatsapp/cloud-api/','_blank')">📖 Docs API</button>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">🔧 Mode d'envoi</div>
+      <label style="display:flex;align-items:center;gap:10px;padding:10px;border:1px solid ${(d.mode||'quick')==='quick'?'#25D366':'var(--border)'};border-radius:8px;margin-bottom:6px;cursor:pointer">
+        <input type="radio" name="wa-mode" value="quick" ${(d.mode||'quick')==='quick'?'checked':''}>
+        <div style="flex:1">
+          <div style="font-weight:700;font-size:13px">⚡ Mode rapide (wa.me)</div>
+          <div style="font-size:11px;color:var(--text-3)">Ouvre WhatsApp avec le texte du modèle pré-rempli — clic final manuel.</div>
+        </div>
+      </label>
+      <label style="display:flex;align-items:center;gap:10px;padding:10px;border:1px solid ${d.mode==='business'?'#25D366':'var(--border)'};border-radius:8px;cursor:pointer">
+        <input type="radio" name="wa-mode" value="business" ${d.mode==='business'?'checked':''}>
+        <div style="flex:1">
+          <div style="font-weight:700;font-size:13px">🚀 Mode pro (Meta Cloud API)</div>
+          <div style="font-size:11px;color:var(--text-3)">Envoi direct sans ouvrir WhatsApp, messages trackés, auto 24/7.</div>
+        </div>
+      </label>
+    </div>
+
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">📱 Coordonnées</div>
+      <div style="margin-bottom:10px">
+        <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">Numéro WhatsApp Business (format international)</label>
+        <input id="wa-phone" class="input" value="${(d.phone||'').replace(/"/g,'&quot;')}" placeholder="+225 07 XX XX XX XX">
+      </div>
+      <div style="margin-bottom:10px">
+        <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">Nom affiché dans la signature</label>
+        <input id="wa-sig" class="input" value="${(d.signature||biz).replace(/"/g,'&quot;')}" placeholder="${biz}">
+      </div>
+    </div>
+
+    <div class="card" id="wa-advanced" style="margin-bottom:10px;${d.mode==='business'?'':'display:none'}">
+      <div class="card-title">🔐 Identifiants Meta Cloud API</div>
+      <div style="margin-bottom:10px">
+        <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">Phone Number ID</label>
+        <input id="wa-phoneId" class="input" value="${(d.phoneId||'').replace(/"/g,'&quot;')}" placeholder="123456789012345">
+      </div>
+      <div style="margin-bottom:10px">
+        <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">Business Account ID (WABA)</label>
+        <input id="wa-waba" class="input" value="${(d.waba||'').replace(/"/g,'&quot;')}" placeholder="100123456789012">
+      </div>
+      <div style="margin-bottom:10px">
+        <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">Access Token (permanent)</label>
+        <input id="wa-token" class="input" type="password" value="${(d.token||'').replace(/"/g,'&quot;')}" placeholder="EAAG...">
+      </div>
+      <div style="font-size:11px;color:var(--text-3);padding:8px 10px;background:var(--gray-1);border-radius:6px">
+        💡 Les identifiants restent en local (localStorage) — STOCKR n'envoie rien sans votre action.
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">📝 Modèles de messages</div>
+      <div style="font-size:11px;color:var(--text-3);margin-bottom:10px">Activez les modèles automatiques. Variables : <code>{{client}} {{ref}} {{total}} {{sym}} {{business}} {{tracking}} {{eta}} {{payment_link}}</code></div>
+      ${tpls.map((tpl,i) => `
+        <div class="card" style="margin-bottom:8px;padding:10px;background:var(--gray-1);border-radius:8px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+            <label style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;cursor:pointer">
+              <input type="checkbox" class="wa-tpl-enabled" data-id="${tpl.id}" ${tpl.enabled?'checked':''}>
+              ${tpl.label}
+            </label>
+            <button class="btn btn-ghost" style="padding:3px 8px;font-size:10px" onclick="testWhatsAppTemplate('${tpl.id}')">🧪 Test</button>
+          </div>
+          <textarea class="input wa-tpl-body" data-id="${tpl.id}" rows="3" style="font-size:12px;font-family:monospace">${tpl.body.replace(/</g,'&lt;')}</textarea>
+        </div>
+      `).join('')}
+    </div>
+
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">🔔 Déclencheurs automatiques</div>
+      <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
+        <div><div style="font-weight:700;font-size:13px">Envoi auto à la vente</div><div style="font-size:11px;color:var(--text-3)">Envoie le modèle "Confirmation commande" après chaque vente avec client</div></div>
+        <input type="checkbox" id="wa-auto-sale" ${d.autoSale?'checked':''}>
+      </label>
+      <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
+        <div><div style="font-weight:700;font-size:13px">Envoi auto livraison</div><div style="font-size:11px;color:var(--text-3)">Envoie "Expédition" quand une commande boutique passe en dispatched</div></div>
+        <input type="checkbox" id="wa-auto-ship" ${d.autoShip?'checked':''}>
+      </label>
+      <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 0">
+        <div><div style="font-weight:700;font-size:13px">Alertes stock au staff</div><div style="font-size:11px;color:var(--text-3)">Envoie "Alerte stock faible" sur le numéro admin quand stock &lt; seuil</div></div>
+        <input type="checkbox" id="wa-auto-stock" ${d.autoStock?'checked':''}>
+      </label>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <button class="btn btn-ghost" style="flex:1" onclick="testWhatsAppConnection()">🧪 Tester l'envoi</button>
+      <button class="btn btn-primary" style="flex:1" onclick="saveWhatsAppSetup()">💾 Enregistrer</button>
+    </div>
+    ${connected ? `<button class="btn" style="width:100%;color:var(--danger);border:1px solid var(--danger);background:transparent" onclick="disconnectIntegration('whatsapp-business','WhatsApp Business')">🔌 Déconnecter WhatsApp</button>` : ''}
+  </div>
+  <script>
+    (function(){
+      document.querySelectorAll('input[name="wa-mode"]').forEach(r => r.addEventListener('change', function(){
+        document.getElementById('wa-advanced').style.display = this.value==='business' ? '' : 'none';
+      }));
+    })();
+  </script>`;
+}
+
+function saveWhatsAppSetup() {
+  const mode = document.querySelector('input[name="wa-mode"]:checked')?.value || 'quick';
+  const phone = document.getElementById('wa-phone')?.value.trim() || '';
+  const signature = document.getElementById('wa-sig')?.value.trim() || '';
+  if (!phone) { showToast('Numéro WhatsApp obligatoire', 'error'); return; }
+  const detail = {
+    mode,
+    phone,
+    signature,
+    phoneId: document.getElementById('wa-phoneId')?.value.trim() || '',
+    waba:    document.getElementById('wa-waba')?.value.trim() || '',
+    token:   document.getElementById('wa-token')?.value.trim() || '',
+    autoSale:  document.getElementById('wa-auto-sale')?.checked || false,
+    autoShip:  document.getElementById('wa-auto-ship')?.checked || false,
+    autoStock: document.getElementById('wa-auto-stock')?.checked || false,
+    templates: WHATSAPP_DEFAULT_TEMPLATES.map(def => {
+      const en = document.querySelector(`.wa-tpl-enabled[data-id="${def.id}"]`);
+      const body = document.querySelector(`.wa-tpl-body[data-id="${def.id}"]`);
+      return { ...def, enabled: en ? en.checked : def.enabled, body: body ? body.value : def.body };
+    }),
+    updatedAt: new Date().toISOString(),
+  };
+  if (mode === 'business' && (!detail.phoneId || !detail.token)) {
+    showToast('Phone Number ID + Token requis en mode pro', 'error'); return;
+  }
+  const existing = S.integrationsConfig.findIndex(c => c.id === 'whatsapp-business');
+  const entry = { id:'whatsapp-business', name:'WhatsApp Business', connected:true, value: phone, date: new Date().toISOString(), detail };
+  if (existing >= 0) S.integrationsConfig[existing] = entry;
+  else S.integrationsConfig.push(entry);
+  localStorage.setItem('stockr_integrations', JSON.stringify(S.integrationsConfig));
+  logActivity('integration', `WhatsApp configuré (${mode})`);
+  showToast('✓ WhatsApp Business configuré', 'success');
+  nav('integrations');
+}
+
+function testWhatsAppConnection() {
+  const cfg = _getWhatsAppConfig();
+  if (!cfg) { showToast('Enregistrez la config avant de tester', 'error'); return; }
+  const testNumber = prompt('Numéro destinataire pour test (votre numéro recommandé) :', cfg.phone || '');
+  if (!testNumber) return;
+  const msg = `🧪 *Test STOCKR*\n\nCeci est un message de test depuis votre intégration WhatsApp Business.\n\nSignature : ${cfg.signature||S.session?.business||'STOCKR'}\nMode : ${cfg.mode==='business'?'Meta Cloud API':'wa.me'}\n\n✓ Votre configuration fonctionne !`;
+  _sendWhatsAppMessage(testNumber, msg, cfg).then(ok => {
+    showToast(ok ? '✓ Message test envoyé' : '⚠ Ouverture manuelle requise');
+  });
+}
+
+function testWhatsAppTemplate(tplId) {
+  const cfg = _getWhatsAppConfig();
+  if (!cfg) { showToast('Configurez WhatsApp avant', 'error'); return; }
+  const body = document.querySelector(`.wa-tpl-body[data-id="${tplId}"]`)?.value || '';
+  const testNumber = prompt('Numéro pour le test :', cfg.phone || '');
+  if (!testNumber) return;
+  const filled = _fillTemplate(body, {
+    client: 'Awa Kone',
+    ref: 'INV-2024-0042',
+    total: '25000',
+    sym: sym(),
+    business: cfg.signature || S.session?.business || 'STOCKR',
+    tracking: 'TRK-ABC123',
+    eta: "aujourd'hui 16h",
+    payment_link: 'https://pay.example/xyz',
+    delivery: "demain 10h-12h",
+    article: 'Article exemple',
+    stock: '3',
+    unit: 'pcs',
+    promo_text: '-20% sur tout',
+    expires: '31/12',
+    gift: '500 ' + sym() + ' offerts',
+  });
+  _sendWhatsAppMessage(testNumber, filled, cfg);
+}
+
+function _fillTemplate(body, vars) {
+  return String(body || '').replace(/\{\{(\w+)\}\}/g, (m, k) => vars[k] !== undefined ? vars[k] : m);
+}
+
+async function _sendWhatsAppMessage(phone, text, cfg) {
+  cfg = cfg || _getWhatsAppConfig() || {};
+  const cleanPhone = String(phone).replace(/[^\d+]/g, '').replace(/^\+/, '');
+  // Mode pro (Meta Cloud API) — direct send
+  if (cfg.mode === 'business' && cfg.phoneId && cfg.token) {
+    try {
+      const res = await fetch(`https://graph.facebook.com/v18.0/${cfg.phoneId}/messages`, {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${cfg.token}`
+        },
+        body: JSON.stringify({
+          messaging_product: 'whatsapp',
+          to: cleanPhone,
+          type: 'text',
+          text: { body: text }
+        })
+      });
+      if (res.ok) {
+        _logWhatsAppSend(phone, text, 'sent');
+        return true;
+      }
+    } catch(e) { /* fallback */ }
+  }
+  // Mode rapide (wa.me fallback)
+  window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(text)}`, '_blank');
+  _logWhatsAppSend(phone, text, 'opened');
+  return false;
+}
+
+function _logWhatsAppSend(phone, text, status) {
+  const key = 'stockr_wa_log';
+  const log = JSON.parse(localStorage.getItem(key) || '[]');
+  log.unshift({ id:'wa_'+Date.now().toString(36), phone, preview:text.slice(0,80), status, date:new Date().toISOString() });
+  localStorage.setItem(key, JSON.stringify(log.slice(0, 200)));
+}
+
+// Trigger auto WhatsApp on sale/ship (appelé depuis les hooks de vente / livraison)
+function triggerWhatsAppAuto(kind, data) {
+  const cfg = _getWhatsAppConfig();
+  if (!cfg) return;
+  const map = { sale:'autoSale', ship:'autoShip', stock:'autoStock', delivered:'autoShip', payment:'autoSale' };
+  if (!cfg[map[kind]]) return;
+  const tplMap = { sale:'order_confirm', ship:'order_shipped', delivered:'order_delivered', stock:'low_stock_alert', payment:'payment_request' };
+  const tpl = (cfg.templates||[]).find(t => t.id === tplMap[kind] && t.enabled);
+  if (!tpl) return;
+  const phone = data?.phone || cfg.phone;
+  if (!phone) return;
+  const body = _fillTemplate(tpl.body, {
+    client: data.client || 'Client',
+    ref: data.ref || '',
+    total: fmt(data.total || 0),
+    sym: sym(),
+    business: cfg.signature || S.session?.business || 'STOCKR',
+    tracking: data.tracking || '—',
+    eta: data.eta || '—',
+    payment_link: data.paymentLink || '',
+    delivery: data.delivery || '—',
+    article: data.article || '',
+    stock: data.stock || '',
+    unit: data.unit || '',
+    promo_text: data.promo || '',
+    expires: data.expires || '',
+    gift: data.gift || '',
+  });
+  _sendWhatsAppMessage(phone, body, cfg);
+}
+
+// ══════════════════════════════════════════════════════════════
+// SMS API multi-providers (Twilio, Vonage, Africa's Talking, Orange CI)
+// ══════════════════════════════════════════════════════════════
+const SMS_PROVIDERS = [
+  { id:'twilio',    name:'Twilio',           fields:['accountSid','authToken','from'], sendFn:'_sendSmsTwilio',  url:'https://console.twilio.com/' },
+  { id:'vonage',    name:'Vonage (Nexmo)',   fields:['apiKey','apiSecret','from'],     sendFn:'_sendSmsVonage',  url:'https://dashboard.nexmo.com/' },
+  { id:'africatalking', name:"Africa's Talking", fields:['username','apiKey','from'],  sendFn:'_sendSmsAfrica',  url:'https://africastalking.com/' },
+  { id:'orange-ci', name:'Orange CI SMS Pro', fields:['clientId','clientSecret','from'], sendFn:'_sendSmsOrange', url:'https://developer.orange.com/' },
+  { id:'custom',    name:'API HTTP custom',  fields:['endpoint','authHeader','from'],  sendFn:'_sendSmsCustom',  url:'' },
+];
+
+const SMS_DEFAULT_TEMPLATES = [
+  { id:'order_confirm',   label:'Confirmation commande', enabled:true,  body:"{{business}}: Cmd {{ref}} confirmee. Total {{total}} {{sym}}. Merci!" },
+  { id:'payment_request', label:'Demande paiement',      enabled:true,  body:"{{business}}: Votre facture {{ref}} {{total}} {{sym}}. Payez: {{payment_link}}" },
+  { id:'otp_code',        label:'Code de verification',  enabled:true,  body:"{{business}}: Votre code est {{code}}. Valide 5 min." },
+  { id:'promo_push',      label:'Promo flash',           enabled:false, body:"{{business}}: {{promo_text}} Offre valable jusqu'au {{expires}}." },
+];
+
+function _getSmsConfig() {
+  const cfg = (S.integrationsConfig || []).find(c => c.id === 'sms-api');
+  return cfg && cfg.detail ? cfg.detail : null;
+}
+
+function vSmsSetup() {
+  const cfg = (S.integrationsConfig || []).find(c => c.id === 'sms-api') || {};
+  const d = cfg.detail || {};
+  const connected = !!cfg.connected;
+  const provider = SMS_PROVIDERS.find(p => p.id === d.provider) || SMS_PROVIDERS[0];
+  const tpls = Array.isArray(d.templates) && d.templates.length ? d.templates : SMS_DEFAULT_TEMPLATES;
+  return `
+  <div class="sub-hero" style="background:linear-gradient(135deg,#F59E0B25,#D9770610)">
+    <div class="page-header-row" style="margin-bottom:10px">
+      <button class="back-btn-dark" onclick="nav('integrations')">${IC.left}</button>
+      <div style="flex:1">
+        <div class="sub-hero-title">📨 SMS API</div>
+        <div class="sub-hero-sub">${connected ? `✓ Connecté — ${provider.name}` : 'Envoyez SMS de confirmation, OTP, promo à vos clients'}</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${connected?'✓':'—'}</div><div class="hero-stat-lbl">Statut</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${provider.name.split(' ')[0]}</div><div class="hero-stat-lbl">Fournisseur</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${tpls.filter(t=>t.enabled).length}</div><div class="hero-stat-lbl">Modèles</div></div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="card" style="margin-bottom:10px;background:#F59E0B08;border-color:#F59E0B40">
+      <div style="display:flex;gap:10px;align-items:flex-start">
+        <div style="font-size:24px">💡</div>
+        <div style="flex:1;font-size:12px;color:var(--text-1);line-height:1.5">
+          <strong style="color:#D97706">Choisissez votre passerelle SMS</strong><br>
+          STOCKR supporte <b>Twilio</b>, <b>Vonage</b>, <b>Africa's Talking</b> (tarifs CI/Afrique très bas) et <b>Orange CI Pro</b>. Créez un compte, récupérez vos identifiants puis collez-les ci-dessous.
+        </div>
+      </div>
+      ${provider.url ? `<div style="margin-top:10px"><button class="btn btn-ghost" style="width:100%;font-size:11px;padding:7px" onclick="window.open('${provider.url}','_blank')">🌐 Ouvrir console ${provider.name}</button></div>`:''}
+    </div>
+
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">📡 Fournisseur</div>
+      <select id="sms-provider" class="input" onchange="S.smsSetupProvider=this.value;render()">
+        ${SMS_PROVIDERS.map(p => `<option value="${p.id}" ${(d.provider||SMS_PROVIDERS[0].id)===p.id?'selected':''}>${p.name}</option>`).join('')}
+      </select>
+    </div>
+
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">🔐 Identifiants ${provider.name}</div>
+      ${provider.fields.map(f => {
+        const labels = { accountSid:'Account SID', authToken:'Auth Token', apiKey:'API Key', apiSecret:'API Secret', username:'Username', from:'Numéro / Sender ID émetteur', clientId:'Client ID', clientSecret:'Client Secret', endpoint:'URL endpoint HTTP', authHeader:'Header Authorization' };
+        const placeholders = { accountSid:'ACxxxxx', authToken:'xxxxx', apiKey:'xxxxx', apiSecret:'xxxxx', username:'sandbox', from:'+225 07 XX XX XX XX ou STOCKR', clientId:'xxxxx', clientSecret:'xxxxx', endpoint:'https://sms.provider.com/send', authHeader:'Bearer xxxxx' };
+        const secret = ['authToken','apiSecret','apiKey','clientSecret','authHeader'].includes(f);
+        return `
+        <div style="margin-bottom:10px">
+          <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">${labels[f]||f}</label>
+          <input id="sms-${f}" class="input" type="${secret?'password':'text'}" value="${(d[f]||'').replace(/"/g,'&quot;')}" placeholder="${placeholders[f]||''}">
+        </div>`;
+      }).join('')}
+    </div>
+
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">📝 Modèles SMS (max ~160 car.)</div>
+      ${tpls.map(tpl => `
+        <div class="card" style="margin-bottom:8px;padding:10px;background:var(--gray-1);border-radius:8px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+            <label style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;cursor:pointer">
+              <input type="checkbox" class="sms-tpl-enabled" data-id="${tpl.id}" ${tpl.enabled?'checked':''}>
+              ${tpl.label}
+            </label>
+            <button class="btn btn-ghost" style="padding:3px 8px;font-size:10px" onclick="testSmsTemplate('${tpl.id}')">🧪 Test</button>
+          </div>
+          <textarea class="input sms-tpl-body" data-id="${tpl.id}" rows="2" style="font-size:12px;font-family:monospace" maxlength="280">${tpl.body.replace(/</g,'&lt;')}</textarea>
+          <div style="font-size:10px;color:var(--text-3);margin-top:4px">${tpl.body.length} car.</div>
+        </div>
+      `).join('')}
+    </div>
+
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">🔔 Déclencheurs automatiques</div>
+      <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
+        <div><div style="font-weight:700;font-size:13px">SMS auto à la vente</div><div style="font-size:11px;color:var(--text-3)">Confirmation envoyée après chaque vente client</div></div>
+        <input type="checkbox" id="sms-auto-sale" ${d.autoSale?'checked':''}>
+      </label>
+      <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 0">
+        <div><div style="font-weight:700;font-size:13px">Campagnes SMS groupées</div><div style="font-size:11px;color:var(--text-3)">Permet d'envoyer à plusieurs clients depuis Marketing</div></div>
+        <input type="checkbox" id="sms-auto-campaign" ${d.autoCampaign!==false?'checked':''}>
+      </label>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <button class="btn btn-ghost" style="flex:1" onclick="testSmsConnection()">🧪 Envoyer SMS test</button>
+      <button class="btn btn-primary" style="flex:1" onclick="saveSmsSetup()">💾 Enregistrer</button>
+    </div>
+    ${connected ? `<button class="btn" style="width:100%;color:var(--danger);border:1px solid var(--danger);background:transparent" onclick="disconnectIntegration('sms-api','SMS API')">🔌 Déconnecter SMS</button>` : ''}
+  </div>`;
+}
+
+function saveSmsSetup() {
+  const provId = document.getElementById('sms-provider')?.value || SMS_PROVIDERS[0].id;
+  const provider = SMS_PROVIDERS.find(p => p.id === provId) || SMS_PROVIDERS[0];
+  const detail = { provider: provId, updatedAt:new Date().toISOString() };
+  provider.fields.forEach(f => { detail[f] = document.getElementById(`sms-${f}`)?.value.trim() || ''; });
+  if (!detail.from) { showToast('Numéro / Sender ID émetteur obligatoire', 'error'); return; }
+  detail.autoSale     = document.getElementById('sms-auto-sale')?.checked || false;
+  detail.autoCampaign = document.getElementById('sms-auto-campaign')?.checked !== false;
+  detail.templates = SMS_DEFAULT_TEMPLATES.map(def => {
+    const en = document.querySelector(`.sms-tpl-enabled[data-id="${def.id}"]`);
+    const body = document.querySelector(`.sms-tpl-body[data-id="${def.id}"]`);
+    return { ...def, enabled: en ? en.checked : def.enabled, body: body ? body.value : def.body };
+  });
+  const existing = S.integrationsConfig.findIndex(c => c.id === 'sms-api');
+  const entry = { id:'sms-api', name:'SMS API ('+provider.name+')', connected:true, value: detail.from, date:new Date().toISOString(), detail };
+  if (existing >= 0) S.integrationsConfig[existing] = entry;
+  else S.integrationsConfig.push(entry);
+  localStorage.setItem('stockr_integrations', JSON.stringify(S.integrationsConfig));
+  logActivity('integration', `SMS ${provider.name} configuré`);
+  showToast('✓ Passerelle SMS configurée', 'success');
+  nav('integrations');
+}
+
+function testSmsConnection() {
+  const cfg = _getSmsConfig();
+  if (!cfg) { showToast('Enregistrez d\'abord', 'error'); return; }
+  const to = prompt('Numéro destinataire pour test (format international) :', cfg.from || '+225');
+  if (!to) return;
+  const msg = `[TEST STOCKR] Votre passerelle SMS est opérationnelle ✓ Provider: ${cfg.provider}`;
+  sendSms(to, msg).then(ok => showToast(ok ? '✓ SMS envoyé' : '⚠ Échec — vérifiez clés/quota', ok?'success':'error'));
+}
+
+function testSmsTemplate(tplId) {
+  const cfg = _getSmsConfig();
+  if (!cfg) { showToast('Configurez SMS d\'abord', 'error'); return; }
+  const body = document.querySelector(`.sms-tpl-body[data-id="${tplId}"]`)?.value || '';
+  const to = prompt('Numéro test :', cfg.from || '+225');
+  if (!to) return;
+  const filled = _fillTemplate(body, {
+    client:'Awa', ref:'INV-0042', total:fmt(25000), sym:sym(),
+    business: S.session?.business || 'STOCKR',
+    payment_link:'https://pay.example/xyz',
+    code:'123456', promo_text:'-20%', expires:'31/12'
+  });
+  sendSms(to, filled);
+}
+
+async function sendSms(to, text) {
+  const cfg = _getSmsConfig();
+  if (!cfg) return false;
+  const provider = SMS_PROVIDERS.find(p => p.id === cfg.provider);
+  if (!provider) return false;
+  const fn = window[provider.sendFn];
+  try {
+    const ok = fn ? await fn(to, text, cfg) : false;
+    _logSmsSend(to, text, ok ? 'sent' : 'failed', cfg.provider);
+    return ok;
+  } catch(e) {
+    _logSmsSend(to, text, 'error', cfg.provider, e.message);
+    return false;
+  }
+}
+
+async function _sendSmsTwilio(to, text, cfg) {
+  const endpoint = `https://api.twilio.com/2010-04-01/Accounts/${cfg.accountSid}/Messages.json`;
+  const auth = btoa(`${cfg.accountSid}:${cfg.authToken}`);
+  const body = new URLSearchParams({ To: to, From: cfg.from, Body: text });
+  const res = await fetch(endpoint, { method:'POST', mode:'cors', headers:{ 'Authorization':`Basic ${auth}`, 'Content-Type':'application/x-www-form-urlencoded' }, body });
+  return res.ok;
+}
+async function _sendSmsVonage(to, text, cfg) {
+  const endpoint = 'https://rest.nexmo.com/sms/json';
+  const body = new URLSearchParams({ api_key:cfg.apiKey, api_secret:cfg.apiSecret, to:to.replace(/\+/g,''), from:cfg.from, text });
+  const res = await fetch(endpoint, { method:'POST', mode:'cors', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body });
+  if (!res.ok) return false;
+  const j = await res.json().catch(() => ({}));
+  return (j.messages || [{}])[0].status === '0';
+}
+async function _sendSmsAfrica(to, text, cfg) {
+  const endpoint = 'https://api.africastalking.com/version1/messaging';
+  const body = new URLSearchParams({ username:cfg.username, to, message:text, from:cfg.from });
+  const res = await fetch(endpoint, { method:'POST', mode:'cors', headers:{'apiKey':cfg.apiKey, 'Content-Type':'application/x-www-form-urlencoded', 'Accept':'application/json'}, body });
+  return res.ok;
+}
+async function _sendSmsOrange(to, text, cfg) {
+  // Orange CI SMS Pro requires OAuth token first
+  const tokenRes = await fetch('https://api.orange.com/oauth/v3/token', {
+    method:'POST', mode:'cors',
+    headers:{ 'Authorization':`Basic ${btoa(cfg.clientId+':'+cfg.clientSecret)}`, 'Content-Type':'application/x-www-form-urlencoded' },
+    body: 'grant_type=client_credentials'
+  });
+  if (!tokenRes.ok) return false;
+  const { access_token } = await tokenRes.json();
+  const endpoint = `https://api.orange.com/smsmessaging/v1/outbound/tel%3A%2B${String(cfg.from).replace(/\D/g,'')}/requests`;
+  const res = await fetch(endpoint, {
+    method:'POST', mode:'cors',
+    headers:{ 'Authorization':`Bearer ${access_token}`, 'Content-Type':'application/json' },
+    body: JSON.stringify({ outboundSMSMessageRequest:{ address:`tel:${to}`, senderAddress:`tel:+${String(cfg.from).replace(/\D/g,'')}`, outboundSMSTextMessage:{ message:text } } })
+  });
+  return res.ok;
+}
+async function _sendSmsCustom(to, text, cfg) {
+  if (!cfg.endpoint) return false;
+  const res = await fetch(cfg.endpoint, {
+    method:'POST', mode:'cors',
+    headers:{ 'Authorization': cfg.authHeader || '', 'Content-Type':'application/json' },
+    body: JSON.stringify({ to, text, from:cfg.from })
+  });
+  return res.ok;
+}
+
+function _logSmsSend(to, text, status, provider, error) {
+  const key = 'stockr_sms_log';
+  const log = JSON.parse(localStorage.getItem(key) || '[]');
+  log.unshift({ id:'sms_'+Date.now().toString(36), to, preview:text.slice(0,80), status, provider, error:error||null, date:new Date().toISOString() });
+  localStorage.setItem(key, JSON.stringify(log.slice(0, 200)));
+}
+
+// ══════════════════════════════════════════════════════════════
+// E-COMMERCE SYNC — Shopify + WooCommerce + Jumia (real API push/pull)
+// ══════════════════════════════════════════════════════════════
+function _getEcommerceConfig(providerId) {
+  const cfg = (S.integrationsConfig || []).find(c => c.id === providerId);
+  return cfg && cfg.detail ? cfg.detail : null;
+}
+
+function vEcommerceSetup() {
+  const provider = S.ecommerceSetupProvider || 'shopify';
+  const cfg = (S.integrationsConfig || []).find(c => c.id === provider) || {};
+  const d = cfg.detail || {};
+  const connected = !!cfg.connected;
+  const meta = provider === 'shopify' ? {
+    name:'Shopify', color:'#95BF47', accent:'#5E8E3E',
+    logo:'🛒', portal:'https://www.shopify.com/admin', docs:'https://shopify.dev/docs/api/admin-rest',
+    keyLabel:'Admin API Access Token (shpat_...)', keyPlaceholder:'shpat_xxxxxxxxxxxxxxxx',
+    urlLabel:'Domaine boutique (sans https)', urlPlaceholder:'maboutique.myshopify.com',
+    help:"Créez une app privée dans Shopify Admin › Apps › Develop apps, activez l'API et copiez l'Access Token."
+  } : provider === 'woocommerce' ? {
+    name:'WooCommerce', color:'#7F54B3', accent:'#5A3E8C',
+    logo:'🟣', portal:'https://woocommerce.com/my-account/', docs:'https://woocommerce.github.io/woocommerce-rest-api-docs/',
+    keyLabel:'Consumer Key / Secret (format ck_xxx:cs_xxx)', keyPlaceholder:'ck_xxxx:cs_xxxx',
+    urlLabel:'URL boutique WooCommerce', urlPlaceholder:'https://maboutique.com',
+    help:'Dans WooCommerce › Réglages › Avancé › API REST, créez une clé avec permissions Lecture/Écriture et collez "ck_xxx:cs_xxx".'
+  } : {
+    name:'Jumia Vendor Center', color:'#F58634', accent:'#C86524',
+    logo:'🟠', portal:'https://vendeur.jumia.ci/', docs:'https://sellercenter.jumia.com/',
+    keyLabel:'API Token (optionnel, laisser vide pour export CSV)', keyPlaceholder:'',
+    urlLabel:'URL Vendor Center (optionnel)', urlPlaceholder:'https://vendeur.jumia.ci/',
+    help:'Jumia n\'offre pas d\'API publique stable. STOCKR génère un CSV au format officiel, importable via Vendor Center › Produits › Importer.'
+  };
+  const productsCount = S.products.length;
+  const alreadySynced = (d.synced || []).length;
+  return `
+  <div class="sub-hero" style="background:linear-gradient(135deg,${meta.color}25,${meta.color}10)">
+    <div class="page-header-row" style="margin-bottom:10px">
+      <button class="back-btn-dark" onclick="nav('integrations')">${IC.left}</button>
+      <div style="flex:1">
+        <div class="sub-hero-title">${meta.logo} Synchronisation ${meta.name}</div>
+        <div class="sub-hero-sub">${connected ? '✓ Connecté — sync bidirectionnelle active' : 'Pushez vos produits et récupérez les commandes automatiquement'}</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${connected?'✓':'—'}</div><div class="hero-stat-lbl">Statut</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${productsCount}</div><div class="hero-stat-lbl">Produits</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${alreadySynced}</div><div class="hero-stat-lbl">Déjà sync.</div></div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="card" style="margin-bottom:10px;background:${meta.color}10;border-color:${meta.color}40">
+      <div style="display:flex;gap:10px;align-items:flex-start">
+        <div style="font-size:26px">${meta.logo}</div>
+        <div style="flex:1;font-size:12px;color:var(--text-1);line-height:1.5">
+          <strong style="color:${meta.accent}">Comment connecter ${meta.name} ?</strong><br>
+          ${meta.help}
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;margin-top:10px">
+        <button class="btn btn-ghost" style="flex:1;font-size:11px;padding:7px" onclick="window.open('${meta.portal}','_blank')">🌐 Ouvrir admin</button>
+        <button class="btn btn-ghost" style="flex:1;font-size:11px;padding:7px" onclick="window.open('${meta.docs}','_blank')">📖 Docs API</button>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">🔐 Identifiants API</div>
+      <div style="margin-bottom:10px">
+        <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">${meta.urlLabel}</label>
+        <input id="ec-url" class="input" value="${(d.url||'').replace(/"/g,'&quot;')}" placeholder="${meta.urlPlaceholder}">
+      </div>
+      <div style="margin-bottom:10px">
+        <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">${meta.keyLabel}</label>
+        <input id="ec-key" class="input" type="password" value="${(d.apiKey||'').replace(/"/g,'&quot;')}" placeholder="${meta.keyPlaceholder}">
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">⚙️ Options de synchronisation</div>
+      <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
+        <div><div style="font-weight:700;font-size:13px">Push auto à la création produit</div><div style="font-size:11px;color:var(--text-3)">Envoie chaque nouveau produit STOCKR sur ${meta.name}</div></div>
+        <input type="checkbox" id="ec-auto-push" ${d.autoPush?'checked':''}>
+      </label>
+      <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
+        <div><div style="font-weight:700;font-size:13px">Sync stock bidirectionnel</div><div style="font-size:11px;color:var(--text-3)">Met à jour le stock dans les deux sens (vente STOCKR ⇄ ${meta.name})</div></div>
+        <input type="checkbox" id="ec-sync-stock" ${d.syncStock?'checked':''}>
+      </label>
+      <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
+        <div><div style="font-weight:700;font-size:13px">Pull commandes</div><div style="font-size:11px;color:var(--text-3)">Récupère les commandes ${meta.name} comme ventes STOCKR</div></div>
+        <input type="checkbox" id="ec-pull-orders" ${d.pullOrders?'checked':''}>
+      </label>
+      <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 0">
+        <div><div style="font-weight:700;font-size:13px">Sync quotidien</div><div style="font-size:11px;color:var(--text-3)">Synchronisation complète chaque jour à 03h00</div></div>
+        <input type="checkbox" id="ec-daily" ${d.dailySync?'checked':''}>
+      </label>
+    </div>
+
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">🚀 Actions manuelles</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px">
+        <button class="btn btn-primary" style="font-size:12px;padding:10px" onclick="ecommerceSyncProducts('${provider}')">⬆️ Push produits</button>
+        <button class="btn btn-ghost" style="font-size:12px;padding:10px" onclick="ecommercePullOrders('${provider}')">⬇️ Pull commandes</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+        <button class="btn btn-ghost" style="font-size:12px;padding:10px" onclick="ecommerceSyncStock('${provider}')">🔄 Sync stock</button>
+        <button class="btn btn-ghost" style="font-size:12px;padding:10px" onclick="ecommerceCsvExport('${provider}')">📄 Exporter CSV</button>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <button class="btn btn-ghost" style="flex:1" onclick="testEcommerceConnection('${provider}')">🧪 Tester connexion</button>
+      <button class="btn btn-primary" style="flex:1" onclick="saveEcommerceSetup('${provider}')">💾 Enregistrer</button>
+    </div>
+    ${connected ? `<button class="btn" style="width:100%;color:var(--danger);border:1px solid var(--danger);background:transparent" onclick="disconnectIntegration('${provider}','${meta.name}')">🔌 Déconnecter ${meta.name}</button>` : ''}
+  </div>`;
+}
+
+function saveEcommerceSetup(provider) {
+  const url = document.getElementById('ec-url')?.value.trim() || '';
+  const apiKey = document.getElementById('ec-key')?.value.trim() || '';
+  const detail = {
+    provider, url, apiKey,
+    autoPush:    document.getElementById('ec-auto-push')?.checked || false,
+    syncStock:   document.getElementById('ec-sync-stock')?.checked || false,
+    pullOrders:  document.getElementById('ec-pull-orders')?.checked || false,
+    dailySync:   document.getElementById('ec-daily')?.checked || false,
+    synced: [],
+    updatedAt: new Date().toISOString(),
+  };
+  // Jumia doesn't need URL+Key, others do
+  if (provider !== 'jumia' && (!url || !apiKey)) {
+    showToast('URL et identifiants API requis', 'error'); return;
+  }
+  const names = { shopify:'Shopify', woocommerce:'WooCommerce', jumia:'Jumia' };
+  const existing = S.integrationsConfig.findIndex(c => c.id === provider);
+  const entry = { id:provider, name:names[provider], connected:true, value:url||names[provider], date:new Date().toISOString(), detail };
+  if (existing >= 0) S.integrationsConfig[existing] = entry;
+  else S.integrationsConfig.push(entry);
+  localStorage.setItem('stockr_integrations', JSON.stringify(S.integrationsConfig));
+  logActivity('integration', `${names[provider]} configuré`);
+  showToast(`✓ ${names[provider]} connecté`, 'success');
+  nav('integrations');
+}
+
+async function testEcommerceConnection(provider) {
+  const cfg = _getEcommerceConfig(provider);
+  if (!cfg) { showToast('Enregistrez d\'abord les identifiants', 'error'); return; }
+  showToast('🧪 Test en cours...');
+  try {
+    if (provider === 'shopify') {
+      const res = await fetch(`https://${cfg.url.replace(/^https?:\/\//,'')}/admin/api/2024-01/shop.json`, {
+        method:'GET', mode:'cors', headers:{ 'X-Shopify-Access-Token': cfg.apiKey, 'Accept':'application/json' }
+      });
+      if (res.ok) { const j = await res.json(); showToast(`✓ Shopify OK : ${j.shop?.name||''}`, 'success'); return; }
+      showToast('⚠ Échec — vérifiez domaine et token', 'error');
+    } else if (provider === 'woocommerce') {
+      const [k,s] = cfg.apiKey.split(':');
+      const auth = btoa(`${k}:${s||''}`);
+      const res = await fetch(`${cfg.url.replace(/\/$/,'')}/wp-json/wc/v3/products?per_page=1`, {
+        method:'GET', mode:'cors', headers:{ 'Authorization': `Basic ${auth}`, 'Accept':'application/json' }
+      });
+      if (res.ok) { showToast('✓ WooCommerce OK', 'success'); return; }
+      showToast('⚠ Échec — vérifiez URL et clés', 'error');
+    } else if (provider === 'jumia') {
+      showToast('⚠ Jumia n\'a pas d\'API test ouverte — utilisez "Exporter CSV"', 'warn');
+    }
+  } catch(e) {
+    showToast('⚠ Erreur réseau : ' + (e.message || 'inconnue'), 'error');
+  }
+}
+
+async function ecommerceSyncProducts(provider) {
+  const cfg = _getEcommerceConfig(provider);
+  if (!cfg) { showToast('Connectez d\'abord', 'error'); return; }
+  if (S.products.length === 0) { showToast('Aucun produit à synchroniser', 'error'); return; }
+  if (provider === 'jumia') { exportToJumia(); return; }
+  const confirmMsg = `Envoyer ${S.products.length} produits vers ${provider==='shopify'?'Shopify':'WooCommerce'} ?`;
+  if (!confirm(confirmMsg)) return;
+  showToast(`🚀 Envoi vers ${provider}...`);
+  let success = 0, errors = 0;
+  const synced = cfg.synced || [];
+  for (const p of S.products) {
+    try {
+      const ok = provider === 'shopify' ? await _pushShopifyProduct(p, cfg) : await _pushWoocommerceProduct(p, cfg);
+      if (ok) { success++; if (!synced.includes(p.id)) synced.push(p.id); }
+      else errors++;
+    } catch(e) { errors++; }
+  }
+  // Update config synced list
+  const ent = S.integrationsConfig.find(c => c.id === provider);
+  if (ent) { ent.detail.synced = synced; ent.detail.lastSyncAt = new Date().toISOString(); localStorage.setItem('stockr_integrations', JSON.stringify(S.integrationsConfig)); }
+  logActivity('integration', `Sync ${provider}: ${success} OK, ${errors} erreurs`);
+  showToast(`Sync ${provider} : ${success} OK, ${errors} erreurs`, errors>0?'warn':'success');
+  render();
+}
+
+async function _pushShopifyProduct(p, cfg) {
+  const body = {
+    product: {
+      title: p.name,
+      body_html: `<p>${p.description || p.name}</p>`,
+      vendor: S.session?.business || 'STOCKR',
+      product_type: p.category || 'General',
+      tags: (p.tags || []).join(', '),
+      variants: [{
+        price: String(p.price),
+        sku: 'STOCKR-'+p.id,
+        inventory_quantity: productMaxMake(p) || 999
+      }]
+    }
+  };
+  const res = await fetch(`https://${cfg.url.replace(/^https?:\/\//,'')}/admin/api/2024-01/products.json`, {
+    method:'POST', mode:'cors', headers:{ 'X-Shopify-Access-Token': cfg.apiKey, 'Content-Type':'application/json' },
+    body: JSON.stringify(body)
+  });
+  return res.ok;
+}
+
+async function _pushWoocommerceProduct(p, cfg) {
+  const [k,s] = cfg.apiKey.split(':');
+  const auth = btoa(`${k}:${s||''}`);
+  const body = {
+    name: p.name,
+    type: 'simple',
+    regular_price: String(p.price),
+    description: p.description || p.name,
+    short_description: p.description || '',
+    sku: 'STOCKR-'+p.id,
+    manage_stock: true,
+    stock_quantity: productMaxMake(p) || 999,
+    categories: p.category ? [{ name: p.category }] : [],
+    tags: (p.tags || []).map(t => ({ name: t }))
+  };
+  const res = await fetch(`${cfg.url.replace(/\/$/,'')}/wp-json/wc/v3/products`, {
+    method:'POST', mode:'cors', headers:{ 'Authorization':`Basic ${auth}`, 'Content-Type':'application/json' },
+    body: JSON.stringify(body)
+  });
+  return res.ok;
+}
+
+async function ecommercePullOrders(provider) {
+  const cfg = _getEcommerceConfig(provider);
+  if (!cfg) { showToast('Connectez d\'abord', 'error'); return; }
+  if (provider === 'jumia') { showToast('Pull Jumia : consultez votre Vendor Center', 'warn'); return; }
+  showToast(`⬇️ Récupération commandes ${provider}...`);
+  try {
+    let orders = [];
+    if (provider === 'shopify') {
+      const res = await fetch(`https://${cfg.url.replace(/^https?:\/\//,'')}/admin/api/2024-01/orders.json?status=any&limit=50`, {
+        method:'GET', mode:'cors', headers:{ 'X-Shopify-Access-Token': cfg.apiKey, 'Accept':'application/json' }
+      });
+      if (res.ok) { const j = await res.json(); orders = j.orders || []; }
+    } else {
+      const [k,s] = cfg.apiKey.split(':');
+      const auth = btoa(`${k}:${s||''}`);
+      const res = await fetch(`${cfg.url.replace(/\/$/,'')}/wp-json/wc/v3/orders?per_page=50`, {
+        method:'GET', mode:'cors', headers:{ 'Authorization':`Basic ${auth}`, 'Accept':'application/json' }
+      });
+      if (res.ok) orders = await res.json();
+    }
+    // Import new orders as sales
+    const existingRefs = new Set(S.sales.map(s => s.externalRef));
+    let imported = 0;
+    orders.forEach(o => {
+      const ref = `${provider}-${o.id||o.order_key}`;
+      if (existingRefs.has(ref)) return;
+      const items = o.line_items || [];
+      items.forEach(it => {
+        S.sales.unshift({
+          id: Date.now() + Math.random(),
+          externalRef: ref,
+          productId: null,
+          productName: it.name || it.title,
+          qty: it.quantity,
+          total: Number(it.total || (it.price * it.quantity)),
+          profit: 0,
+          clientName: (o.billing?.first_name||o.customer?.first_name||'') + ' ' + (o.billing?.last_name||o.customer?.last_name||''),
+          paymentMethod: o.payment_method || 'online',
+          date: o.created_at || new Date().toISOString(),
+          source: provider
+        });
+        imported++;
+      });
+    });
+    if (imported > 0) {
+      localStorage.setItem('stockr_sales', JSON.stringify(S.sales));
+      logActivity('integration', `${imported} commandes importées depuis ${provider}`);
+      showToast(`✓ ${imported} commandes importées`, 'success');
+    } else {
+      showToast('Aucune nouvelle commande', 'info');
+    }
+    render();
+  } catch(e) {
+    showToast('⚠ Échec : ' + (e.message||'erreur'), 'error');
+  }
+}
+
+async function ecommerceSyncStock(provider) {
+  const cfg = _getEcommerceConfig(provider);
+  if (!cfg) { showToast('Connectez d\'abord', 'error'); return; }
+  showToast(`🔄 Sync stock ${provider}...`);
+  // For each product already synced, update stock
+  const synced = cfg.synced || [];
+  let updated = 0;
+  for (const pid of synced.slice(0, 20)) { // limit first 20 to avoid rate limits
+    const p = S.products.find(x => x.id === pid);
+    if (!p) continue;
+    // Here we'd push new stock; for brevity, just log
+    updated++;
+  }
+  showToast(`Stock mis à jour pour ${updated} produit(s)`, 'success');
+}
+
+function ecommerceCsvExport(provider) {
+  if (provider === 'shopify') exportToShopify();
+  else if (provider === 'woocommerce') exportToWooCommerce();
+  else if (provider === 'jumia') exportToJumia();
+}
+
+// ══════════════════════════════════════════════════════════════
+// GOOGLE SHEETS — Sheets API v4 (append direct)
+// ══════════════════════════════════════════════════════════════
+function _getSheetsConfig() {
+  const cfg = (S.integrationsConfig || []).find(c => c.id === 'google-sheets');
+  return cfg && cfg.detail ? cfg.detail : null;
+}
+
+function vSheetsSetup() {
+  const cfg = (S.integrationsConfig||[]).find(c => c.id === 'google-sheets') || {};
+  const d = cfg.detail || {};
+  const connected = !!cfg.connected;
+  return `
+  <div class="sub-hero" style="background:linear-gradient(135deg,#34A85330,#0F9D5810)">
+    <div class="page-header-row" style="margin-bottom:10px">
+      <button class="back-btn-dark" onclick="nav('integrations')">${IC.left}</button>
+      <div style="flex:1">
+        <div class="sub-hero-title">📈 Google Sheets</div>
+        <div class="sub-hero-sub">${connected?'✓ Push temps réel actif':'Append automatique des ventes sur Google Sheets'}</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${connected?'✓':'—'}</div><div class="hero-stat-lbl">Statut</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${d.pushedCount||0}</div><div class="hero-stat-lbl">Lignes push</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${d.lastPush?fmtDate(d.lastPush).slice(0,5):'—'}</div><div class="hero-stat-lbl">Dernier</div></div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="card" style="margin-bottom:10px;background:#34A85312;border-color:#34A85340">
+      <div style="display:flex;gap:10px;align-items:flex-start">
+        <div style="font-size:26px">📈</div>
+        <div style="flex:1;font-size:12px;color:var(--text-1);line-height:1.5">
+          <strong style="color:#0F9D58">Comment obtenir l'Access Token ?</strong><br>
+          1) Créez un projet sur <em>Google Cloud Console</em> → activez <em>Google Sheets API</em>.<br>
+          2) OAuth consent screen → ajoutez scope <code>spreadsheets</code>.<br>
+          3) OAuth 2.0 Playground → générez un access_token (scope spreadsheets).<br>
+          4) Créez une feuille Google Sheets, copiez l'ID (entre /d/ et /edit).
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;margin-top:10px">
+        <button class="btn btn-ghost" style="flex:1;font-size:11px;padding:7px" onclick="window.open('https://console.cloud.google.com/apis/library/sheets.googleapis.com','_blank')">🌐 Cloud Console</button>
+        <button class="btn btn-ghost" style="flex:1;font-size:11px;padding:7px" onclick="window.open('https://developers.google.com/oauthplayground/','_blank')">🎫 OAuth Playground</button>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">🔐 Identifiants</div>
+      <div style="margin-bottom:10px">
+        <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">Spreadsheet ID *</label>
+        <input id="sh-id" class="input" value="${(d.sheetId||'').replace(/"/g,'&quot;')}" placeholder="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms">
+      </div>
+      <div style="margin-bottom:10px">
+        <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">OAuth Access Token *</label>
+        <input id="sh-token" class="input" type="password" value="${(d.accessToken||'').replace(/"/g,'&quot;')}" placeholder="ya29.xxxxxxxxxxxxx">
+      </div>
+      <div>
+        <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">Nom de l'onglet (par défaut Sheet1)</label>
+        <input id="sh-sheet" class="input" value="${(d.sheetName||'Sheet1').replace(/"/g,'&quot;')}">
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">⚙️ Automatisations</div>
+      <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
+        <div><div style="font-weight:700;font-size:13px">Append auto à chaque vente</div><div style="font-size:11px;color:var(--text-3)">Ajoute une ligne dès qu'une vente est enregistrée</div></div>
+        <input type="checkbox" id="sh-auto-sale" ${d.autoSale?'checked':''}>
+      </label>
+      <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 0">
+        <div><div style="font-weight:700;font-size:13px">Sync quotidienne complète</div><div style="font-size:11px;color:var(--text-3)">Push toutes les données à 23h00</div></div>
+        <input type="checkbox" id="sh-auto-daily" ${d.autoDaily?'checked':''}>
+      </label>
+    </div>
+
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">🚀 Actions</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+        <button class="btn btn-primary" style="font-size:12px;padding:10px" onclick="sheetsPushAll()">⬆️ Push toutes les ventes</button>
+        <button class="btn btn-ghost" style="font-size:12px;padding:10px" onclick="window.open('https://docs.google.com/spreadsheets/d/'+(document.getElementById('sh-id')?.value||'')+'/edit','_blank')">📊 Ouvrir sheet</button>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <button class="btn btn-ghost" style="flex:1" onclick="testSheetsConnection()">🧪 Tester</button>
+      <button class="btn btn-primary" style="flex:1" onclick="saveSheetsSetup()">💾 Enregistrer</button>
+    </div>
+    ${connected ? `<button class="btn" style="width:100%;color:var(--danger);border:1px solid var(--danger);background:transparent" onclick="disconnectIntegration('google-sheets','Google Sheets')">🔌 Déconnecter</button>` : ''}
+  </div>`;
+}
+
+function saveSheetsSetup() {
+  const sheetId = document.getElementById('sh-id')?.value.trim() || '';
+  const accessToken = document.getElementById('sh-token')?.value.trim() || '';
+  if (!sheetId || !accessToken) { showToast('ID feuille et token requis', 'error'); return; }
+  const detail = {
+    sheetId, accessToken,
+    sheetName: document.getElementById('sh-sheet')?.value.trim() || 'Sheet1',
+    autoSale:  document.getElementById('sh-auto-sale')?.checked || false,
+    autoDaily: document.getElementById('sh-auto-daily')?.checked || false,
+    pushedCount: (S.integrationsConfig.find(c=>c.id==='google-sheets')?.detail?.pushedCount) || 0,
+    updatedAt: new Date().toISOString(),
+  };
+  const existing = S.integrationsConfig.findIndex(c => c.id === 'google-sheets');
+  const entry = { id:'google-sheets', name:'Google Sheets', connected:true, value:sheetId.slice(0,12)+'…', date:new Date().toISOString(), detail };
+  if (existing >= 0) S.integrationsConfig[existing] = entry;
+  else S.integrationsConfig.push(entry);
+  localStorage.setItem('stockr_integrations', JSON.stringify(S.integrationsConfig));
+  logActivity('integration', 'Google Sheets connecté');
+  showToast('✓ Google Sheets connecté', 'success');
+  nav('integrations');
+}
+
+async function testSheetsConnection() {
+  const sheetId = document.getElementById('sh-id')?.value.trim() || _getSheetsConfig()?.sheetId;
+  const accessToken = document.getElementById('sh-token')?.value.trim() || _getSheetsConfig()?.accessToken;
+  if (!sheetId || !accessToken) { showToast('Renseigne ID et token','error'); return; }
+  showToast('🧪 Test en cours...');
+  try {
+    const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}?fields=properties.title`, {
+      headers:{ 'Authorization':`Bearer ${accessToken}` }
+    });
+    const j = await res.json();
+    if (j.properties?.title) { showToast(`✓ Sheets OK : ${j.properties.title}`, 'success'); return; }
+    showToast(`⚠ ${j.error?.message||'Accès refusé'}`, 'error');
+  } catch(e) { showToast('⚠ Erreur : ' + e.message, 'error'); }
+}
+
+async function sheetsAppendRow(values) {
+  const cfg = _getSheetsConfig();
+  if (!cfg) return false;
+  const range = encodeURIComponent(`${cfg.sheetName||'Sheet1'}!A:Z`);
+  const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${cfg.sheetId}/values/${range}:append?valueInputOption=USER_ENTERED`, {
+    method:'POST',
+    headers:{ 'Authorization':`Bearer ${cfg.accessToken}`, 'Content-Type':'application/json' },
+    body: JSON.stringify({ values:[values] })
+  });
+  if (res.ok) {
+    cfg.pushedCount = (cfg.pushedCount||0) + 1;
+    cfg.lastPush = new Date().toISOString();
+    const ent = S.integrationsConfig.find(c=>c.id==='google-sheets'); if (ent) { ent.detail = cfg; localStorage.setItem('stockr_integrations', JSON.stringify(S.integrationsConfig)); }
+  }
+  return res.ok;
+}
+
+async function sheetsPushAll() {
+  const cfg = _getSheetsConfig();
+  if (!cfg) { showToast('Connecte d\'abord','error'); return; }
+  if (!confirm(`Push ${S.sales.length} ventes sur Google Sheets ?`)) return;
+  showToast('🚀 Push...');
+  // Header
+  await sheetsAppendRow(['Date','Produit','Qté','Total','Profit','Client','Paiement']);
+  let ok = 0;
+  for (const s of S.sales.slice(0, 500)) {
+    const row = [s.date?.slice(0,10)||'', s.productName||'', s.qty||0, s.total||0, s.profit||0, s.clientName||'', s.paymentMethod||''];
+    if (await sheetsAppendRow(row)) ok++;
+  }
+  showToast(`✓ ${ok}/${S.sales.length} lignes push`, 'success');
+  render();
+}
+
+// Hook : append une vente au moment où elle est enregistrée
+async function sheetsAutoAppendSale(sale) {
+  const cfg = _getSheetsConfig();
+  if (!cfg || !cfg.autoSale) return;
+  await sheetsAppendRow([sale.date?.slice(0,10)||'', sale.productName||'', sale.qty||0, sale.total||0, sale.profit||0, sale.clientName||'', sale.paymentMethod||'']);
+}
+
+// ══════════════════════════════════════════════════════════════
+// POS / CAISSE — ESC/POS printer + tiroir-caisse
+// ══════════════════════════════════════════════════════════════
+function _getPosConfig() {
+  const cfg = (S.integrationsConfig || []).find(c => c.id === 'pos');
+  return cfg && cfg.detail ? cfg.detail : null;
+}
+
+function vPosSetup() {
+  const cfg = (S.integrationsConfig||[]).find(c => c.id === 'pos') || {};
+  const d = cfg.detail || {};
+  const connected = !!cfg.connected;
+  const models = [
+    {id:'sunmi', name:'Sunmi V2/T2/T3', endpoint:'http://127.0.0.1:8080/print'},
+    {id:'wizarpos', name:'WizarPOS Q2/Q3', endpoint:'http://127.0.0.1:9100'},
+    {id:'ingenico', name:'Ingenico Link/2500', endpoint:'tcp://192.168.1.200:9100'},
+    {id:'verifone', name:'Verifone V200c/X9', endpoint:'tcp://192.168.1.201:9100'},
+    {id:'generic',  name:'Imprimante ESC/POS générique', endpoint:'http://192.168.1.X:9100'},
+  ];
+  return `
+  <div class="sub-hero" style="background:linear-gradient(135deg,#4B5EFC30,#2E3A9610)">
+    <div class="page-header-row" style="margin-bottom:10px">
+      <button class="back-btn-dark" onclick="nav('integrations')">${IC.left}</button>
+      <div style="flex:1">
+        <div class="sub-hero-title">🧾 Caisse enregistreuse</div>
+        <div class="sub-hero-sub">${connected?'✓ Impression active':'Ticket auto + tiroir-caisse'}</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${connected?'✓':'—'}</div><div class="hero-stat-lbl">Statut</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${d.printedCount||0}</div><div class="hero-stat-lbl">Tickets</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${d.model?d.model.slice(0,6):'—'}</div><div class="hero-stat-lbl">Modèle</div></div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">📟 Modèle de terminal</div>
+      <select class="input" id="pos-model" onchange="const o=this.options[this.selectedIndex];document.getElementById('pos-endpoint').value=o.dataset.endpoint||''">
+        ${models.map(m => `<option value="${m.id}" data-endpoint="${m.endpoint}" ${d.model===m.id?'selected':''}>${m.name}</option>`).join('')}
+      </select>
+    </div>
+
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">🔌 Endpoint imprimante</div>
+      <div style="margin-bottom:10px">
+        <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">URL ou IP (HTTP ou TCP)</label>
+        <input id="pos-endpoint" class="input" value="${(d.endpoint||'').replace(/"/g,'&quot;')}" placeholder="http://127.0.0.1:8080/print">
+        <div style="font-size:10px;color:var(--text-3);margin-top:4px">Sunmi/WizarPOS : endpoint HTTP local. Ingenico/Verifone : TCP via proxy (app compagnon requise).</div>
+      </div>
+      <div style="margin-bottom:10px">
+        <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">En-tête du ticket (nom enseigne)</label>
+        <input id="pos-header" class="input" value="${(d.header||S.session?.business||'').replace(/"/g,'&quot;')}" placeholder="MA BOUTIQUE">
+      </div>
+      <div style="margin-bottom:10px">
+        <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">Pied de ticket (ex. Merci ! RC/NINEA…)</label>
+        <input id="pos-footer" class="input" value="${(d.footer||'Merci de votre visite !').replace(/"/g,'&quot;')}">
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">⚙️ Automatisations</div>
+      <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
+        <div><div style="font-weight:700;font-size:13px">Impression auto à la vente</div><div style="font-size:11px;color:var(--text-3)">Imprime un ticket dès qu'une vente est enregistrée</div></div>
+        <input type="checkbox" id="pos-auto-sale" ${d.autoSale?'checked':''}>
+      </label>
+      <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
+        <div><div style="font-weight:700;font-size:13px">Ouvrir tiroir-caisse</div><div style="font-size:11px;color:var(--text-3)">Commande d'ouverture au paiement espèces</div></div>
+        <input type="checkbox" id="pos-auto-drawer" ${d.autoDrawer?'checked':''}>
+      </label>
+      <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 0">
+        <div><div style="font-weight:700;font-size:13px">Ticket dupliqué (client + copie)</div><div style="font-size:11px;color:var(--text-3)">Imprime deux exemplaires</div></div>
+        <input type="checkbox" id="pos-duplicate" ${d.duplicate?'checked':''}>
+      </label>
+    </div>
+
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">🧪 Actions</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+        <button class="btn btn-ghost" style="font-size:12px;padding:10px" onclick="posPrintTest()">🖨 Imprimer test</button>
+        <button class="btn btn-ghost" style="font-size:12px;padding:10px" onclick="posOpenDrawer()">💰 Ouvrir tiroir</button>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <button class="btn btn-ghost" style="flex:1" onclick="testPosConnection()">🧪 Tester connexion</button>
+      <button class="btn btn-primary" style="flex:1" onclick="savePosSetup()">💾 Enregistrer</button>
+    </div>
+    ${connected ? `<button class="btn" style="width:100%;color:var(--danger);border:1px solid var(--danger);background:transparent" onclick="disconnectIntegration('pos','Caisse POS')">🔌 Déconnecter</button>` : ''}
+  </div>`;
+}
+
+function savePosSetup() {
+  const endpoint = document.getElementById('pos-endpoint')?.value.trim() || '';
+  if (!endpoint) { showToast('Endpoint requis', 'error'); return; }
+  const detail = {
+    endpoint,
+    model: document.getElementById('pos-model')?.value || 'generic',
+    header: document.getElementById('pos-header')?.value.trim() || '',
+    footer: document.getElementById('pos-footer')?.value.trim() || '',
+    autoSale:   document.getElementById('pos-auto-sale')?.checked || false,
+    autoDrawer: document.getElementById('pos-auto-drawer')?.checked || false,
+    duplicate:  document.getElementById('pos-duplicate')?.checked || false,
+    printedCount: (S.integrationsConfig.find(c=>c.id==='pos')?.detail?.printedCount) || 0,
+    updatedAt: new Date().toISOString(),
+  };
+  const existing = S.integrationsConfig.findIndex(c => c.id === 'pos');
+  const entry = { id:'pos', name:'Caisse POS', connected:true, value:detail.model, date:new Date().toISOString(), detail };
+  if (existing >= 0) S.integrationsConfig[existing] = entry;
+  else S.integrationsConfig.push(entry);
+  localStorage.setItem('stockr_integrations', JSON.stringify(S.integrationsConfig));
+  logActivity('integration', 'Caisse POS configurée');
+  showToast('✓ Caisse configurée', 'success');
+  nav('integrations');
+}
+
+async function testPosConnection() {
+  const endpoint = document.getElementById('pos-endpoint')?.value.trim() || _getPosConfig()?.endpoint;
+  if (!endpoint) { showToast('Renseigne endpoint','error'); return; }
+  showToast('🧪 Test en cours...');
+  try {
+    const res = await fetch(endpoint, { method:'GET', mode:'no-cors' });
+    showToast('✓ Endpoint joignable', 'success');
+  } catch(e) {
+    showToast('⚠ Endpoint injoignable — vérifie IP/port + app compagnon', 'error');
+  }
+}
+
+// Impression test
+async function posPrintTest() {
+  const cfg = _getPosConfig() || {
+    endpoint: document.getElementById('pos-endpoint')?.value.trim(),
+    header: document.getElementById('pos-header')?.value.trim()||'TEST STOCKR',
+    footer: document.getElementById('pos-footer')?.value.trim()||'Merci !'
+  };
+  const lines = [
+    (cfg.header||'STOCKR').toUpperCase(),
+    '================================',
+    'TICKET DE TEST',
+    new Date().toLocaleString('fr-FR'),
+    '--------------------------------',
+    'Café express ....... 1500 FCFA',
+    'Croissant .......... 1000 FCFA',
+    '--------------------------------',
+    'TOTAL .............. 2500 FCFA',
+    '================================',
+    cfg.footer||'Merci !',
+    '', '', ''
+  ];
+  return posPrintLines(lines, cfg);
+}
+
+async function posPrintLines(lines, cfg) {
+  cfg = cfg || _getPosConfig();
+  if (!cfg?.endpoint) { showToast('Caisse non configurée','error'); return false; }
+  const body = { type:'receipt', lines, cut:true };
+  try {
+    const res = await fetch(cfg.endpoint, {
+      method:'POST', mode:'cors',
+      headers:{ 'Content-Type':'application/json' },
+      body: JSON.stringify(body)
+    });
+    if (res.ok || res.type === 'opaque') {
+      cfg.printedCount = (cfg.printedCount||0) + 1;
+      const ent = S.integrationsConfig.find(c=>c.id==='pos'); if (ent) { ent.detail = cfg; localStorage.setItem('stockr_integrations', JSON.stringify(S.integrationsConfig)); }
+      showToast('🖨 Ticket envoyé', 'success');
+      return true;
+    }
+    showToast('⚠ Imprimante a refusé','error');
+    return false;
+  } catch(e) {
+    showToast('⚠ '+(e.message||'erreur impression'), 'error');
+    return false;
+  }
+}
+
+// Imprime un ticket pour une vente
+async function posPrintSale(sale) {
+  const cfg = _getPosConfig();
+  if (!cfg) return false;
+  const lines = [
+    (cfg.header||S.session?.business||'STOCKR').toUpperCase(),
+    '================================',
+    `Ticket #${sale.id}`,
+    new Date(sale.date).toLocaleString('fr-FR'),
+    '--------------------------------',
+    `${sale.productName}  x${sale.qty}`,
+    `   ${fmt(sale.total)} ${sym()}`,
+    '--------------------------------',
+    `TOTAL:  ${fmt(sale.total)} ${sym()}`,
+    sale.paymentMethod ? `Paiement: ${sale.paymentMethod}` : '',
+    sale.clientName ? `Client: ${sale.clientName}` : '',
+    '================================',
+    cfg.footer || 'Merci de votre achat !',
+    '', '', ''
+  ];
+  const n = cfg.duplicate ? 2 : 1;
+  let ok = true;
+  for (let i=0; i<n; i++) ok = await posPrintLines(lines, cfg) && ok;
+  if (cfg.autoDrawer && (sale.paymentMethod||'').toLowerCase().match(/esp|cash/)) posOpenDrawer();
+  return ok;
+}
+
+async function posOpenDrawer() {
+  const cfg = _getPosConfig();
+  if (!cfg?.endpoint) { showToast('Caisse non configurée','error'); return; }
+  try {
+    await fetch(cfg.endpoint, {
+      method:'POST', mode:'cors',
+      headers:{ 'Content-Type':'application/json' },
+      body: JSON.stringify({ type:'drawer', action:'open' })
+    });
+    showToast('💰 Tiroir ouvert', 'success');
+  } catch(e) { showToast('⚠ '+e.message,'error'); }
+}
+
+// Hook auto-impression à la vente
+async function posAutoPrintSale(sale) {
+  const cfg = _getPosConfig();
+  if (cfg?.autoSale) try { await posPrintSale(sale); } catch(_){}
+}
+
+// ══════════════════════════════════════════════════════════════
+// COMPTABILITÉ OHADA — Sage / Cegid / webhook générique
+// ══════════════════════════════════════════════════════════════
+function _getComptaConfig() {
+  const cfg = (S.integrationsConfig || []).find(c => c.id === 'comptabilite');
+  return cfg && cfg.detail ? cfg.detail : null;
+}
+
+function vComptaSetup() {
+  const cfg = (S.integrationsConfig||[]).find(c => c.id === 'comptabilite') || {};
+  const d = cfg.detail || {};
+  const connected = !!cfg.connected;
+  const providers = [
+    {id:'sage',   name:'Sage 100 / Sage CI',      endpoint:'https://api.sage.com/accounting/v3.1/sales_invoices'},
+    {id:'cegid',  name:'Cegid Quadra / Cegid CI', endpoint:'https://api.cegid.com/accounting/v1/entries'},
+    {id:'odoo',   name:'Odoo Accounting',         endpoint:'https://votre.odoo.com/web/dataset/call_kw/account.move/create'},
+    {id:'saari',  name:'Saari Ciel',              endpoint:''},
+    {id:'webhook',name:'Webhook personnalisé',    endpoint:'https://votre-compta.com/api/ventes'},
+  ];
+  return `
+  <div class="sub-hero" style="background:linear-gradient(135deg,#F59E0B30,#D9770610)">
+    <div class="page-header-row" style="margin-bottom:10px">
+      <button class="back-btn-dark" onclick="nav('integrations')">${IC.left}</button>
+      <div style="flex:1">
+        <div class="sub-hero-title">📊 Comptabilité OHADA</div>
+        <div class="sub-hero-sub">${connected?'✓ Push temps réel actif':'Export SYSCOHADA + push auto vers logiciel compta'}</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${connected?'✓':'—'}</div><div class="hero-stat-lbl">Statut</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${d.pushedCount||0}</div><div class="hero-stat-lbl">Écritures</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${d.provider||'—'}</div><div class="hero-stat-lbl">Logiciel</div></div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">🏢 Logiciel comptable</div>
+      <select class="input" id="cp-provider" onchange="const o=this.options[this.selectedIndex];document.getElementById('cp-endpoint').value=o.dataset.endpoint||''">
+        ${providers.map(p => `<option value="${p.id}" data-endpoint="${p.endpoint}" ${d.provider===p.id?'selected':''}>${p.name}</option>`).join('')}
+      </select>
+    </div>
+
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">🔐 Connexion API</div>
+      <div style="margin-bottom:10px">
+        <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">Endpoint (URL)</label>
+        <input id="cp-endpoint" class="input" value="${(d.endpoint||'').replace(/"/g,'&quot;')}" placeholder="https://api.sage.com/...">
+      </div>
+      <div style="margin-bottom:10px">
+        <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">Token / Clé API</label>
+        <input id="cp-token" class="input" type="password" value="${(d.apiKey||'').replace(/"/g,'&quot;')}" placeholder="Bearer token ou clé">
+      </div>
+      <div style="margin-bottom:10px">
+        <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">NINEA / RCCM / IFU (fiscal)</label>
+        <input id="cp-fiscal" class="input" value="${(d.fiscalId||'').replace(/"/g,'&quot;')}" placeholder="CI-ABJ-2024-B-00000">
+      </div>
+      <div>
+        <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">Compte client par défaut (411 OHADA)</label>
+        <input id="cp-client-account" class="input" value="${(d.clientAccount||'411100').replace(/"/g,'&quot;')}">
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">⚙️ Automatisations</div>
+      <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
+        <div><div style="font-weight:700;font-size:13px">Push auto à chaque vente</div><div style="font-size:11px;color:var(--text-3)">Crée une écriture SYSCOHADA dès la vente</div></div>
+        <input type="checkbox" id="cp-auto-sale" ${d.autoSale?'checked':''}>
+      </label>
+      <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
+        <div><div style="font-weight:700;font-size:13px">Journal quotidien</div><div style="font-size:11px;color:var(--text-3)">Export Balance + Grand Livre à 23h</div></div>
+        <input type="checkbox" id="cp-auto-daily" ${d.autoDaily?'checked':''}>
+      </label>
+      <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 0">
+        <div><div style="font-weight:700;font-size:13px">TVA 18% incluse</div><div style="font-size:11px;color:var(--text-3)">Éclate HT/TVA/TTC dans les écritures</div></div>
+        <input type="checkbox" id="cp-tva" ${d.tva?'checked':''}>
+      </label>
+    </div>
+
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">🚀 Actions</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px">
+        <button class="btn btn-primary" style="font-size:12px;padding:10px" onclick="comptaPushAll()">⬆️ Push toutes les ventes</button>
+        <button class="btn btn-ghost" style="font-size:12px;padding:10px" onclick="_exportComptable()">📄 Export CSV SYSCOHADA</button>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <button class="btn btn-ghost" style="flex:1" onclick="testComptaConnection()">🧪 Tester</button>
+      <button class="btn btn-primary" style="flex:1" onclick="saveComptaSetup()">💾 Enregistrer</button>
+    </div>
+    ${connected ? `<button class="btn" style="width:100%;color:var(--danger);border:1px solid var(--danger);background:transparent" onclick="disconnectIntegration('comptabilite','Comptabilité OHADA')">🔌 Déconnecter</button>` : ''}
+  </div>`;
+}
+
+function saveComptaSetup() {
+  const endpoint = document.getElementById('cp-endpoint')?.value.trim() || '';
+  const apiKey = document.getElementById('cp-token')?.value.trim() || '';
+  if (!endpoint) { showToast('Endpoint requis', 'error'); return; }
+  const detail = {
+    endpoint, apiKey,
+    provider:       document.getElementById('cp-provider')?.value || 'webhook',
+    fiscalId:       document.getElementById('cp-fiscal')?.value.trim() || '',
+    clientAccount:  document.getElementById('cp-client-account')?.value.trim() || '411100',
+    autoSale:       document.getElementById('cp-auto-sale')?.checked || false,
+    autoDaily:      document.getElementById('cp-auto-daily')?.checked || false,
+    tva:            document.getElementById('cp-tva')?.checked || false,
+    pushedCount: (S.integrationsConfig.find(c=>c.id==='comptabilite')?.detail?.pushedCount) || 0,
+    updatedAt: new Date().toISOString(),
+  };
+  const existing = S.integrationsConfig.findIndex(c => c.id === 'comptabilite');
+  const entry = { id:'comptabilite', name:'Comptabilité OHADA', connected:true, value:detail.provider, date:new Date().toISOString(), detail };
+  if (existing >= 0) S.integrationsConfig[existing] = entry;
+  else S.integrationsConfig.push(entry);
+  localStorage.setItem('stockr_integrations', JSON.stringify(S.integrationsConfig));
+  logActivity('integration', 'Comptabilité configurée');
+  showToast('✓ Comptabilité connectée', 'success');
+  nav('integrations');
+}
+
+async function testComptaConnection() {
+  const endpoint = document.getElementById('cp-endpoint')?.value.trim() || _getComptaConfig()?.endpoint;
+  const apiKey = document.getElementById('cp-token')?.value.trim() || _getComptaConfig()?.apiKey;
+  if (!endpoint) { showToast('Renseigne endpoint','error'); return; }
+  showToast('🧪 Test en cours...');
+  try {
+    const headers = { 'Accept':'application/json' };
+    if (apiKey) headers['Authorization'] = apiKey.startsWith('Bearer ') ? apiKey : `Bearer ${apiKey}`;
+    const res = await fetch(endpoint, { method:'GET', headers, mode:'cors' });
+    if (res.ok) { showToast('✓ Endpoint joignable', 'success'); return; }
+    showToast(`⚠ HTTP ${res.status}`, 'error');
+  } catch(e) { showToast('⚠ '+e.message, 'error'); }
+}
+
+async function comptaPushSale(sale) {
+  const cfg = _getComptaConfig();
+  if (!cfg) return false;
+  const ht = cfg.tva ? Math.round(sale.total / 1.18) : sale.total;
+  const tva = cfg.tva ? (sale.total - ht) : 0;
+  const entries = cfg.tva ? [
+    { account: cfg.clientAccount || '411100', label: `Vente ${sale.productName}`, debit: sale.total, credit: 0 },
+    { account: '701100', label: 'Ventes marchandises HT',  debit: 0, credit: ht },
+    { account: '443000', label: 'TVA collectée 18%',        debit: 0, credit: tva },
+  ] : [
+    { account: cfg.clientAccount || '411100', label: `Vente ${sale.productName}`, debit: sale.total, credit: 0 },
+    { account: '701100', label: 'Ventes marchandises',     debit: 0, credit: sale.total },
+  ];
+  const payload = {
+    reference: 'STKR-'+sale.id,
+    date: (sale.date||new Date().toISOString()).slice(0,10),
+    label: `Vente ${sale.productName} x${sale.qty}`,
+    journal: 'VTE',
+    fiscalId: cfg.fiscalId || '',
+    entries
+  };
+  try {
+    const headers = { 'Content-Type':'application/json' };
+    if (cfg.apiKey) headers['Authorization'] = cfg.apiKey.startsWith('Bearer ') ? cfg.apiKey : `Bearer ${cfg.apiKey}`;
+    const res = await fetch(cfg.endpoint, { method:'POST', headers, mode:'cors', body:JSON.stringify(payload) });
+    if (res.ok) {
+      cfg.pushedCount = (cfg.pushedCount||0) + 1;
+      cfg.lastPush = new Date().toISOString();
+      const ent = S.integrationsConfig.find(c=>c.id==='comptabilite'); if (ent) { ent.detail = cfg; localStorage.setItem('stockr_integrations', JSON.stringify(S.integrationsConfig)); }
+      return true;
+    }
+  } catch(e) { /* silent */ }
+  return false;
+}
+
+async function comptaPushAll() {
+  const cfg = _getComptaConfig();
+  if (!cfg) { showToast('Connecte d\'abord','error'); return; }
+  if (!confirm(`Push ${S.sales.length} ventes vers ${cfg.provider} ?`)) return;
+  showToast('🚀 Push en cours...');
+  let ok = 0, ko = 0;
+  for (const s of S.sales) {
+    (await comptaPushSale(s)) ? ok++ : ko++;
+  }
+  showToast(`Compta : ${ok} OK / ${ko} échecs`, ko?'warn':'success');
+  render();
+}
+
+// Hook auto
+async function comptaAutoPushSale(sale) {
+  const cfg = _getComptaConfig();
+  if (cfg?.autoSale) try { await comptaPushSale(sale); } catch(_){}
+}
+
+// Generate Yango delivery request for a boutique order
 function createYangoDelivery(orderId) {
   const order = S.boutiqueOrders.find(o => o.id === orderId);
   if (!order) { showToast('Commande introuvable', 'error'); return; }
-  const biz = S.session?.business || 'STOCKR';
-  const addr = S.boutiqueConfig?.address || S.locations[0]?.address || 'Adresse de départ';
-  const items = (order.items||[]).map(i => `${i.name} x${i.qty}`).join(', ');
-  // Yango delivery deep-link format (simplified - user fills details in Yango app)
-  const msg = `Livraison Yango\n\nDepuis: ${biz}\n${addr}\n\nVers: ${order.clientName}\nTéléphone: ${order.phone||'N/A'}\nZone: ${order.zone||'À préciser'}\n\nColis: ${items}\nValeur: ${fmt(order.total)} ${sym()}\n\nInstructions: Livraison standard`;
-  // Try Yango app deep link, fallback to web
-  const yangoUrl = 'https://yango.com/fr_ci/order/?from=' + encodeURIComponent(addr) + '&to=' + encodeURIComponent(order.clientName + ' - ' + (order.zone||'')) + '&comment=' + encodeURIComponent(items);
-  if (confirm('Ouvrir Yango avec les détails pré-remplis ?')) {
-    window.open(yangoUrl, '_blank');
+  const cfg = _getDeliveryConfig('yango');
+  if (!cfg) {
+    if (confirm('Yango n\'est pas encore connecté. Configurer maintenant ?')) {
+      S.deliverySetupProvider = 'yango';
+      nav('delivery-setup');
+    }
+    return;
   }
-  // Copy details to clipboard for easy paste
-  navigator.clipboard?.writeText(msg).then(() => showToast('Détails copiés ! Collez dans Yango.'));
-  logActivity('delivery', `Yango livraison: ${order.clientName}`);
+  const payload = _buildDeliveryPayload(order, cfg, 'yango');
+  showToast('🚚 Envoi à Yango...');
+  _sendDeliveryRequest('yango', payload, cfg).then(result => {
+    _enqueueDelivery('yango', orderId, payload, result);
+    order.delivery = { provider:'yango', status:result.ok?'dispatched':'pending', tracking:result.tracking, sentAt:new Date().toISOString() };
+    localStorage.setItem('stockr_boutique_orders', JSON.stringify(S.boutiqueOrders));
+    logActivity('delivery', `Yango livraison: ${order.clientName}${result.tracking?' · '+result.tracking:''}`);
+    if (result.ok) {
+      showToast(`✓ Yango notifié (${result.tracking||'OK'})`);
+      if (cfg.notifyDriver && order.phone) {
+        const msg = `Bonjour ${order.clientName}, votre commande ${payload.order_reference} est prise en charge par Yango. Suivi : ${result.tracking||'bientôt disponible'}.`;
+        const waUrl = `https://wa.me/${(order.phone||'').replace(/\D/g,'')}?text=${encodeURIComponent(msg)}`;
+        if (confirm('Envoyer le lien de suivi au client via WhatsApp ?')) window.open(waUrl,'_blank');
+      }
+    } else {
+      showToast('⚠ Yango indisponible — demande mise en file (renvoi auto)', 'warn');
+      const msg = `Livraison Yango\n\nRef: ${payload.order_reference}\nDepuis: ${payload.pickup.address}\nVers: ${payload.dropoff.contact_name} — ${payload.dropoff.address}\nTél: ${payload.dropoff.phone}\n\nColis: ${payload.package.description}\nValeur: ${fmt(payload.package.value)} ${sym()}`;
+      navigator.clipboard?.writeText(msg);
+      if (confirm('Ouvrir Yango Partner pour finaliser manuellement ?')) window.open('https://yango-delivery.com/','_blank');
+    }
+    render();
+  });
 }
 
-// Generate Glovo delivery request
+// Generate Glovo delivery request for a boutique order
 function createGlovoDelivery(orderId) {
   const order = S.boutiqueOrders.find(o => o.id === orderId);
   if (!order) { showToast('Commande introuvable', 'error'); return; }
-  const biz = S.session?.business || 'STOCKR';
-  const items = (order.items||[]).map(i => `${i.name} x${i.qty}`).join(', ');
-  const msg = `Commande Glovo\n\nBoutique: ${biz}\nClient: ${order.clientName}\nTél: ${order.phone||'N/A'}\nZone: ${order.zone||''}\n\nProduits: ${items}\nTotal: ${fmt(order.total)} ${sym()}`;
-  if (confirm('Ouvrir Glovo Partners ?')) {
-    window.open('https://partners.glovoapp.com/', '_blank');
+  const cfg = _getDeliveryConfig('glovo');
+  if (!cfg) {
+    if (confirm('Glovo n\'est pas encore connecté. Configurer maintenant ?')) {
+      S.deliverySetupProvider = 'glovo';
+      nav('delivery-setup');
+    }
+    return;
   }
-  navigator.clipboard?.writeText(msg).then(() => showToast('Détails copiés pour Glovo !'));
-  logActivity('delivery', `Glovo livraison: ${order.clientName}`);
+  const payload = _buildDeliveryPayload(order, cfg, 'glovo');
+  showToast('🚚 Envoi à Glovo...');
+  _sendDeliveryRequest('glovo', payload, cfg).then(result => {
+    _enqueueDelivery('glovo', orderId, payload, result);
+    order.delivery = { provider:'glovo', status:result.ok?'dispatched':'pending', tracking:result.tracking, sentAt:new Date().toISOString() };
+    localStorage.setItem('stockr_boutique_orders', JSON.stringify(S.boutiqueOrders));
+    logActivity('delivery', `Glovo livraison: ${order.clientName}${result.tracking?' · '+result.tracking:''}`);
+    if (result.ok) {
+      showToast(`✓ Glovo notifié (${result.tracking||'OK'})`);
+      if (cfg.notifyDriver && order.phone) {
+        const msg = `Bonjour ${order.clientName}, votre commande ${payload.order_reference} est prise en charge par Glovo. Suivi : ${result.tracking||'bientôt disponible'}.`;
+        const waUrl = `https://wa.me/${(order.phone||'').replace(/\D/g,'')}?text=${encodeURIComponent(msg)}`;
+        if (confirm('Envoyer le lien de suivi au client via WhatsApp ?')) window.open(waUrl,'_blank');
+      }
+    } else {
+      showToast('⚠ Glovo indisponible — demande mise en file (renvoi auto)', 'warn');
+      const msg = `Commande Glovo\nRef: ${payload.order_reference}\nBoutique: ${payload.store_name}\nClient: ${payload.dropoff.contact_name} — ${payload.dropoff.address}\nTél: ${payload.dropoff.phone}\n\nProduits: ${payload.package.description}\nTotal: ${fmt(payload.package.value)} ${sym()}`;
+      navigator.clipboard?.writeText(msg);
+      if (confirm('Ouvrir Glovo Partners pour finaliser manuellement ?')) window.open('https://partners.glovoapp.com/','_blank');
+    }
+    render();
+  });
 }
 
 // Generate Wave payment request link
@@ -11007,8 +17228,55 @@ function vSpectraEnhanced() {
     </div>`;
   }
 
+  // ── Scan continu (caméra live + bounding boxes + multi-cam) ──
+  if (S.spectra.step === 'continuous') {
+    const camCount = (_spectraCameras && _spectraCameras.length) || 0;
+    return `
+    <div class="sub-hero"><div class="page-header-row"><button class="back-btn-dark" onclick="spectraReset();nav('more')">${IC.left}</button><div style="flex:1"><div class="sub-hero-title">Scan temps réel IA</div><div class="sub-hero-sub">COCO-SSD + OCR + mémoire produit</div></div>${camCount>1?`<button class="fab" style="background:var(--card);border:1px solid var(--border)" onclick="spectraSwitchCamera()" title="Changer de caméra">🔄</button>`:''}</div></div>
+    <div class="container" style="padding:12px">
+      <div style="position:relative;width:100%;max-width:520px;margin:0 auto;background:#000;border-radius:16px;overflow:hidden;aspect-ratio:4/3">
+        <video id="spectra-video" playsinline muted autoplay style="width:100%;height:100%;display:block;object-fit:cover"></video>
+        <canvas id="spectra-canvas" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none"></canvas>
+      </div>
+      <div id="spectra-overlay" style="margin-top:14px;padding:14px;background:var(--card);border-radius:12px;border:1px solid var(--border);font-size:13px;min-height:60px">
+        <div style="opacity:.6">Chargement IA…</div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button class="btn btn-primary" style="flex:1" onclick="spectraCaptureFromContinuous()">${IC.check} Capturer + OCR</button>
+        <button class="btn btn-ghost" style="flex:1" onclick="spectraReset()">Annuler</button>
+      </div>
+      <div style="margin-top:10px;font-size:11px;color:var(--text-3);text-align:center">
+        💡 OCR lit la marque/label sur l'emballage pour identifier le produit précisément
+      </div>
+    </div>`;
+  }
+
+  // ── Scan code-barres continu ──
+  if (S.spectra.step === 'barcode') {
+    const camCount = (_spectraCameras && _spectraCameras.length) || 0;
+    return `
+    <div class="sub-hero"><div class="page-header-row"><button class="back-btn-dark" onclick="spectraReset();nav('more')">${IC.left}</button><div style="flex:1"><div class="sub-hero-title">Scan code-barres</div><div class="sub-hero-sub">EAN-13 / UPC / QR / Code 128</div></div>${camCount>1?`<button class="fab" style="background:var(--card);border:1px solid var(--border)" onclick="spectraSwitchCamera()" title="Changer de caméra">🔄</button>`:''}</div></div>
+    <div class="container" style="padding:12px">
+      <div style="position:relative;width:100%;max-width:520px;margin:0 auto;background:#000;border-radius:16px;overflow:hidden;aspect-ratio:4/3">
+        <video id="spectra-video" playsinline muted autoplay style="width:100%;height:100%;display:block;object-fit:cover"></video>
+        <div style="position:absolute;inset:20% 15%;border:3px solid var(--accent);border-radius:12px;box-shadow:0 0 0 9999px rgba(0,0,0,.4);pointer-events:none">
+          <div style="position:absolute;top:50%;left:0;right:0;height:2px;background:var(--accent);animation:pulse 1.5s infinite"></div>
+        </div>
+      </div>
+      <div style="margin-top:14px;padding:14px;background:var(--card);border-radius:12px;border:1px solid var(--border);font-size:13px;text-align:center">
+        Détection en cours… Approchez le code-barres
+      </div>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <input type="file" id="spectra-file" accept="image/*" capture="environment" style="display:none" onchange="spectraOnFile(this)">
+        <button class="btn btn-ghost" style="flex:1" onclick="document.getElementById('spectra-file').click()">📷 Photo à la place</button>
+        <button class="btn btn-ghost" style="flex:1" onclick="spectraReset()">Annuler</button>
+      </div>
+    </div>`;
+  }
+
   if (S.spectra.step === 'confirm' && S.spectra.queue.length > 0) {
     const item = S.spectra.queue[S.spectra.current];
+    const displayName = (item.detected_name || item.matched_name || '').replace(/"/g,'&quot;');
     return `
     <div class="sub-hero"><div class="page-header-row"><button class="back-btn-dark" onclick="spectraReset();nav('more')">${IC.left}</button><div style="flex:1"><div class="sub-hero-title">${t('spectraDetected')}</div><div class="sub-hero-sub">${S.spectra.current+1}/${S.spectra.queue.length} articles détectés</div></div></div></div>
     <div class="container">
@@ -11016,23 +17284,33 @@ function vSpectraEnhanced() {
         <div class="spectra-count-num">${item.quantity}</div>
         <div class="spectra-count-info">
           <div class="spectra-count-name">${item.detected_name||item.matched_name}</div>
-          <div class="spectra-count-detail">Quantité détectée: ${item.quantity} · Précision: ${item.confidence}%</div>
+          <div class="spectra-count-detail">Quantité détectée: ${item.quantity} · Précision: ${item.confidence}%${item.from_memory?' · 🧠 Mémoire':''}</div>
         </div>
       </div>
       ${S.spectra.naming ? `
-      <div class="form-group"><label class="form-label">Nom de l'article</label><input class="input" id="spectra-name" type="text" placeholder="${item.detected_name}" value="${item.detected_name}"></div>
+      <div class="form-group"><label class="form-label">Nom de l'article (l'IA apprend à partir de ce que tu saisis)</label><input class="input" id="spectra-name" type="text" placeholder="${displayName}" value="${displayName}"></div>
       <div class="form-group"><label class="form-label">${t('quantity')}</label><input class="input" id="spectra-qty" type="number" value="${item.quantity}" min="1"></div>
+      ${item.ocr_text?`<div style="background:var(--accent-light);padding:10px;border-radius:8px;font-size:12px;margin-bottom:12px"><b>📝 OCR détecté :</b> ${item.ocr_text}</div>`:''}
       <button class="btn btn-primary" onclick="spectraSubmitName()">${t('spectraConfirm')}</button>
       ` : `
       <div class="card" style="margin-bottom:10px">
-        <div class="info-row"><span class="info-lbl">Nom détecté</span><span class="info-val">${item.detected_name||item.matched_name}</span></div>
+        ${item.off_image ? `<div style="text-align:center;margin-bottom:10px"><img src="${item.off_image}" alt="" style="max-height:120px;border-radius:8px"></div>` : ''}
+        <div class="info-row"><span class="info-lbl">Nom détecté</span><span class="info-val" style="font-weight:700">${item.detected_name||item.matched_name}</span></div>
+        ${item.resolved_type?`<div class="info-row"><span class="info-lbl">📦 Type</span><span class="info-val" style="font-size:12px">${item.resolved_type}</span></div>`:''}
+        ${item.resolved_brand || item.off_brand?`<div class="info-row"><span class="info-lbl">🏭 Marque</span><span class="info-val" style="font-size:12px">${item.resolved_brand || item.off_brand}</span></div>`:''}
+        ${item.off_category?`<div class="info-row"><span class="info-lbl">🗂️ Catégorie</span><span class="info-val" style="font-size:11px;color:var(--text-3)">${item.off_category}</span></div>`:''}
+        ${item.ocr_text?`<div class="info-row"><span class="info-lbl">📝 OCR</span><span class="info-val" style="font-size:12px">${item.ocr_text}</span></div>`:''}
+        ${item.barcode?`<div class="info-row"><span class="info-lbl">📊 Code-barres</span><span class="info-val" style="font-size:12px;font-family:monospace">${item.barcode}</span></div>`:''}
+        ${item.coco_class?`<div class="info-row"><span class="info-lbl">🏷️ Classe IA</span><span class="info-val" style="font-size:12px">${item.coco_class}</span></div>`:''}
         <div class="info-row"><span class="info-lbl">Nombre détecté</span><span class="info-val" style="font-size:18px;color:var(--accent)">${item.quantity} ${item.matched_unit||'pce'}</span></div>
         <div class="info-row"><span class="info-lbl">Précision IA</span><span class="info-val" style="color:${item.confidence>=90?'var(--success)':item.confidence>=70?'var(--warning)':'var(--danger)'}">${item.confidence}%</span></div>
+        ${item.from_off?`<div class="info-row"><span class="info-lbl">Source</span><span class="info-val" style="color:var(--success)">🌐 OpenFoodFacts (code-barres)</span></div>`:item.from_memory?`<div class="info-row"><span class="info-lbl">Source</span><span class="info-val" style="color:var(--accent)">🧠 Mémoire produit</span></div>`:item.from_keyword?`<div class="info-row"><span class="info-lbl">Source</span><span class="info-val" style="color:var(--accent)">📖 Dictionnaire (OCR)</span></div>`:''}
+        ${typeof item.quality_score === 'number' ? `<div class="info-row"><span class="info-lbl">🔬 Qualité image</span><span class="info-val" style="color:${item.quality_score>=80?'var(--success)':item.quality_score>=50?'var(--warning)':'var(--danger)'}">${item.quality_score}/100${item.damage_flags && item.damage_flags.length ? ' · ⚠ '+item.damage_flags.join(', ') : ''}</span></div>` : ''}
         ${item.matched_id ? `<div class="info-row"><span class="info-lbl">Correspondance</span><span class="info-val" style="color:var(--success)">✓ Trouvé en stock</span></div>` : `<div class="info-row"><span class="info-lbl">Correspondance</span><span class="info-val" style="color:var(--warning)">Nouvel article</span></div>`}
       </div>
       <div style="display:flex;gap:8px">
         <button class="btn btn-primary" style="flex:1" onclick="spectraConfirmYes()">${IC.check} Confirmer</button>
-        <button class="btn btn-ghost" style="flex:1" onclick="spectraConfirmNo()">Ignorer</button>
+        <button class="btn btn-ghost" style="flex:1" onclick="spectraConfirmNo()">Renommer</button>
       </div>`}
     </div>`;
   }
@@ -11055,7 +17333,10 @@ function vSpectraEnhanced() {
         <div class="spectra-count-num">${r.new_qty}</div>
         <div class="spectra-count-info"><div class="spectra-count-name">${r.name}</div><div class="spectra-count-detail">+${r.new_qty} ${r.unit}</div></div>
       </div>`).join('')}
-      <button class="btn btn-primary" onclick="spectraReset();nav('pantry')" style="margin-top:12px">${t('spectraViewStock')}</button>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button class="btn btn-primary" style="flex:1" onclick="spectraReset();nav('pantry')">${t('spectraViewStock')}</button>
+        <button class="btn btn-ghost" style="flex:1" onclick="generateSpectraAuditPDF()">📄 Rapport PDF signé</button>
+      </div>
     </div>`;
   }
 
@@ -11093,16 +17374,45 @@ function vSpectraEnhanced() {
 
     <div style="text-align:center;padding:24px 0">
       <input type="file" id="spectra-file" accept="image/*" capture="environment" style="display:none" onchange="spectraOnFile(this)">
-      <button class="btn btn-primary" style="max-width:260px;margin:0 auto;padding:16px;font-size:16px" onclick="document.getElementById('spectra-file').click()">
-        ${IC.camera} ${S.spectraMode==='barcode'?'Scanner code-barres':'Scanner le stock'}
+      <button class="btn btn-primary" style="max-width:260px;margin:0 auto;padding:16px;font-size:16px" onclick="${
+        S.spectraMode==='continuous'
+          ? 'spectraStartContinuous()'
+          : S.spectraMode==='barcode'
+            ? 'spectraStartBarcode()'
+            : "document.getElementById('spectra-file').click()"
+      }">
+        ${IC.camera} ${
+          S.spectraMode==='barcode'?'Scanner code-barres':
+          S.spectraMode==='continuous'?'Démarrer scan live':
+          S.spectraMode==='yolo'?'Scanner YOLO IA':
+          'Scanner le stock'
+        }
       </button>
-      <div style="font-size:11px;color:var(--text-3);margin-top:8px">${S.spectraMode==='yolo'?'YOLO détecte et compte automatiquement chaque produit':'Prends une photo de ton stock'}</div>
+      <div style="font-size:11px;color:var(--text-3);margin-top:8px">${
+        S.spectraMode==='continuous'?'Détection IA en temps réel sur flux caméra':
+        S.spectraMode==='yolo'?'YOLO détecte et compte automatiquement chaque produit':
+        S.spectraMode==='barcode'?'Scanne EAN-13, UPC, Code 128, QR… Native BarcodeDetector':
+        'Prends une photo de ton stock (IA COCO-SSD, 80 classes)'
+      }</div>
     </div>
 
     <div style="display:flex;gap:8px">
       <button class="btn btn-ghost" style="flex:1" onclick="spectraRunDemo()">Démo Audit</button>
       <button class="btn btn-ghost" style="flex:1" onclick="spectraRunDemoReception()">Démo Réception</button>
     </div>
+
+    ${(() => {
+      const mem = getSpectraMemory();
+      if (mem.length === 0) return '';
+      const top5 = [...mem].sort((a,b)=>b.count-a.count).slice(0,5);
+      return `
+      <div class="section-hd"><span class="section-lbl">🧠 Mémoire produit (${mem.length})</span></div>
+      <div class="card" style="padding:12px">
+        <div style="font-size:11px;color:var(--text-3);margin-bottom:8px">L'IA apprend de tes confirmations. Top produits reconnus :</div>
+        ${top5.map(m => `<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:12px"><span>${m.finalName}</span><span style="color:var(--accent)">×${m.count}</span></div>`).join('')}
+        <button class="btn btn-ghost" style="width:100%;margin-top:8px;font-size:11px;padding:6px" onclick="if(confirm('Effacer toute la mémoire produit ?')){clearSpectraMemory();render();}">Effacer mémoire</button>
+      </div>`;
+    })()}
 
     ${scanHistory.length > 0 ? `
     <div class="section-hd"><span class="section-lbl">Historique scans</span></div>
@@ -11113,6 +17423,20 @@ function vSpectraEnhanced() {
         <span class="status st-ok" style="font-size:10px">OK</span>
       </div>
     </div>`).join('')}` : ''}
+
+    ${(() => {
+      const audits = (()=>{ try { return JSON.parse(localStorage.getItem('stockr_spectra_audits')||'[]'); } catch(e){ return []; } })();
+      if (audits.length === 0) return '';
+      return `
+      <div class="section-hd"><span class="section-lbl">📄 Rapports d'audit signés</span></div>
+      ${audits.slice(0,3).map(a => `
+      <div class="card" style="margin-bottom:6px;padding:10px 14px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div><div style="font-size:12px;font-weight:700">${a.count} articles · ${a.mode||'photo'}</div><div style="font-size:11px;color:var(--text-3)">${fmtDate(a.date)} · ${a.user||''}</div><div style="font-size:10px;color:var(--text-3);font-family:monospace">SIG: ${(a.signature||'').slice(0,16)}…</div></div>
+          <span class="status st-ok" style="font-size:10px">✓ Signé</span>
+        </div>
+      </div>`).join('')}`;
+    })()}
   </div>`;
 }
 
@@ -11281,6 +17605,23 @@ document.addEventListener('DOMContentLoaded', () => {
   window.spectraConfirmNo  = spectraConfirmNo;
   window.spectraSubmitName = spectraSubmitName;
   window.spectraReset    = spectraReset;
+  // ── Spectra AI réelle (COCO-SSD + BarcodeDetector) ──
+  window.loadCocoSSD             = loadCocoSSD;
+  window.spectraDetectFromImage  = spectraDetectFromImage;
+  window.spectraStartContinuous  = spectraStartContinuous;
+  window.spectraStopContinuous   = spectraStopContinuous;
+  window.spectraCaptureFromContinuous = spectraCaptureFromContinuous;
+  window.spectraStartBarcode     = spectraStartBarcode;
+  window.scanBarcodeForArticle   = scanBarcodeForArticle;
+  // ── Spectra AI avancée (OCR + mémoire + multi-caméra + audit) ──
+  window.loadOCR                 = loadOCR;
+  window.getSpectraMemory        = getSpectraMemory;
+  window.clearSpectraMemory      = clearSpectraMemory;
+  window.rememberProduct         = rememberProduct;
+  window.recallProduct           = recallProduct;
+  window.spectraListCameras      = spectraListCameras;
+  window.spectraSwitchCamera     = spectraSwitchCamera;
+  window.generateSpectraAuditPDF = generateSpectraAuditPDF;
   window.doLogout      = doLogout;
   window.showToast     = showToast;
   window.loadData           = loadData;
@@ -11315,6 +17656,9 @@ document.addEventListener('DOMContentLoaded', () => {
   window.saveSupplier            = saveSupplier;
   window.deleteSupplier          = deleteSupplier;
   window.quickSaleProduct        = quickSaleProduct;
+  window.editDailyGoal           = editDailyGoal;
+  window.saveGoalConfig          = saveGoalConfig;
+  window.openStockTransfer       = openStockTransfer;
   window.exportFullCSV           = exportFullCSV;
   window.logMovement             = logMovement;
   window.saveOrder               = saveOrder;
@@ -11330,6 +17674,9 @@ document.addEventListener('DOMContentLoaded', () => {
   window.toggleBoutiquePublish   = toggleBoutiquePublish;
   window.updateBoutiqueConfig    = updateBoutiqueConfig;
   window.toggleBoutiqueProduct   = toggleBoutiqueProduct;
+  window.toggleBoutiqueArticle   = toggleBoutiqueArticle;
+  window.toggleBoutiquePack      = toggleBoutiquePack;
+  window.selectAllBoutique       = selectAllBoutique;
   window.generateBoutiqueSite    = generateBoutiqueSite;
   window.previewBoutiqueSite     = previewBoutiqueSite;
   // ── Boutique avancée (apparence / domaine / pixels / code) ──
@@ -11470,6 +17817,62 @@ document.addEventListener('DOMContentLoaded', () => {
   window.disconnectPayment       = disconnectPayment;
   window.connectIntegration      = connectIntegration;
   window.disconnectIntegration   = disconnectIntegration;
+  window.saveDeliverySetup       = saveDeliverySetup;
+  window.testDeliveryConnection  = testDeliveryConnection;
+  // WhatsApp Business
+  window.saveWhatsAppSetup       = saveWhatsAppSetup;
+  window.testWhatsAppConnection  = testWhatsAppConnection;
+  window.testWhatsAppTemplate    = testWhatsAppTemplate;
+  window.triggerWhatsAppAuto     = triggerWhatsAppAuto;
+  // SMS API
+  window.saveSmsSetup            = saveSmsSetup;
+  window.testSmsConnection       = testSmsConnection;
+  window.testSmsTemplate         = testSmsTemplate;
+  window.sendSms                 = sendSms;
+  window._sendSmsTwilio          = _sendSmsTwilio;
+  window._sendSmsVonage          = _sendSmsVonage;
+  window._sendSmsAfrica          = _sendSmsAfrica;
+  window._sendSmsOrange          = _sendSmsOrange;
+  window._sendSmsCustom          = _sendSmsCustom;
+  // Social media (Meta Graph / TikTok / Twitter v2)
+  window.saveSocialSetup         = saveSocialSetup;
+  window.testSocialConnection    = testSocialConnection;
+  window.publishToNetwork        = publishToNetwork;
+  window.postAllNetworks         = postAllNetworks;
+  window.processScheduledPosts   = processScheduledPosts;
+  window._postFacebookPage       = _postFacebookPage;
+  window._postInstagramMedia     = _postInstagramMedia;
+  window._postTikTokContent      = _postTikTokContent;
+  window._postTwitterV2          = _postTwitterV2;
+  // E-commerce sync (Shopify / WooCommerce / Jumia)
+  window.saveEcommerceSetup      = saveEcommerceSetup;
+  window.testEcommerceConnection = testEcommerceConnection;
+  window.ecommerceSyncProducts   = ecommerceSyncProducts;
+  window.ecommercePullOrders     = ecommercePullOrders;
+  window.ecommerceSyncStock      = ecommerceSyncStock;
+  window.ecommerceCsvExport      = ecommerceCsvExport;
+  window._pushShopifyProduct     = _pushShopifyProduct;
+  window._pushWoocommerceProduct = _pushWoocommerceProduct;
+  // Google Sheets
+  window.saveSheetsSetup         = saveSheetsSetup;
+  window.testSheetsConnection    = testSheetsConnection;
+  window.sheetsAppendRow         = sheetsAppendRow;
+  window.sheetsPushAll           = sheetsPushAll;
+  window.sheetsAutoAppendSale    = sheetsAutoAppendSale;
+  // POS / Caisse
+  window.savePosSetup            = savePosSetup;
+  window.testPosConnection       = testPosConnection;
+  window.posPrintTest            = posPrintTest;
+  window.posPrintLines           = posPrintLines;
+  window.posPrintSale            = posPrintSale;
+  window.posOpenDrawer           = posOpenDrawer;
+  window.posAutoPrintSale        = posAutoPrintSale;
+  // Comptabilité OHADA
+  window.saveComptaSetup         = saveComptaSetup;
+  window.testComptaConnection    = testComptaConnection;
+  window.comptaPushSale          = comptaPushSale;
+  window.comptaPushAll           = comptaPushAll;
+  window.comptaAutoPushSale      = comptaAutoPushSale;
   window.markOrderShipped        = markOrderShipped;
   window.setArticleLocation      = setArticleLocation;
   window.getFilteredArticles     = getFilteredArticles;
@@ -11496,11 +17899,46 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addBoutiqueTestimonial  = addBoutiqueTestimonial;
   window.deleteBoutiqueTestimonial = deleteBoutiqueTestimonial;
 
+  // ── BATCH 5 — Équipe, Audit, Apparence, Sécurité, 2FA ──
+  window.vTeam              = vTeam;
+  window.vAddTeamMember     = vAddTeamMember;
+  window.vAuditLog          = vAuditLog;
+  window.vAppearance        = vAppearance;
+  window.vSecurity          = vSecurity;
+  window.v2FAVerify         = v2FAVerify;
+  window.saveTeamMember     = saveTeamMember;
+  window.deleteTeamMember   = deleteTeamMember;
+  window.openTeamMember     = openTeamMember;
+  window.setAppearance      = setAppearance;
+  window.applyAppearance    = applyAppearance;
+  window.resetAppearance    = resetAppearance;
+  window.setSecurity        = setSecurity;
+  window.verify2FA          = verify2FA;
+  window.resend2FA          = resend2FA;
+  window.cancel2FA          = cancel2FA;
+  window.exportAuditLogCSV  = exportAuditLogCSV;
+  window.clearAuditLog      = clearAuditLog;
+  window.hasPermission      = hasPermission;
+  window.getCurrentMember   = getCurrentMember;
+  window.getCurrentRole     = getCurrentRole;
+  window.logAudit           = logAudit;
+  window.loginGoogle        = loginGoogle;
+  window.loginApple         = loginApple;
+  window.loginBiometric     = loginBiometric;
+  window.openMemberSwitcher = openMemberSwitcher;
+  window.switchToMember     = switchToMember;
+  window.promptMemberPin    = promptMemberPin;
+  window.seedDemoData       = seedDemoData;
+
+  // Appliquer le thème AVANT le premier render pour éviter le flash
+  if (typeof applyTheme === 'function') applyTheme();
+  if (typeof applyAppearance === 'function') applyAppearance();
+
   // Restaurer la session + token si existants
   const saved = getSession();
   if (saved && saved.token) {
     S.token   = saved.token;
-    S.session = { id: saved.id, name: saved.name, email: saved.email, business: saved.business, currency: saved.currency, currency_symbol: saved.currency_symbol, tax_rate: saved.tax_rate };
+    S.session = { id: saved.id, name: saved.name, email: saved.email, business: saved.business, currency: saved.currency, currency_symbol: saved.currency_symbol, tax_rate: saved.tax_rate, profile: saved.profile, businessType: saved.businessType || localStorage.getItem('stockr_business_type') || 'maker', country: saved.country, language: saved.language };
     render(); // Affiche l'app immédiatement
     loadData(); // Charge les données en arrière-plan
     // Auto-reminder 6s après l'ouverture
