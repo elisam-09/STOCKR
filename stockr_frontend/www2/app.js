@@ -125,6 +125,13 @@ function fmtQty(n) {
   if (n == null || Math.abs(n) < 0.01) return '0';
   return parseFloat(parseFloat(n).toFixed(4)).toString();
 }
+// Affiche les quantités de recette dans l'unité la plus lisible (g au lieu de kg si < 1 kg)
+function fmtRecipeQty(qty, unit) {
+  if (qty == null) return `0 ${unit}`;
+  if (unit === 'kg' && qty < 1)  return `${Math.round(qty * 1000)} g`;
+  if (unit === 'L'  && qty < 1)  return `${Math.round(qty * 1000)} mL`;
+  return `${parseFloat(parseFloat(qty).toFixed(3))} ${unit}`;
+}
 
 // ── API base ──────────────────────────────────
 const API_BASE = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
@@ -1829,7 +1836,7 @@ function exportProductsCSV() {
   S.products.forEach(p => {
     const comp = p.composition.map(c => {
       const a = S.articles.find(a => a.id === c.id);
-      return a ? `${c.qty} ${a.unit} ${a.name}` : '';
+      return a ? `${fmtRecipeQty(c.qty, a.unit)} ${a.name}` : '';
     }).filter(Boolean).join(' + ');
     rows.push([p.name, p.purchasePrice || 0, p.price, marginPct(p) + '%', profitUnit(p), comp]);
   });
@@ -2843,7 +2850,7 @@ function vProducts() {
       const canMake = avail > 0;
       const recipeNames = p.composition.map(c => {
         const a = S.articles.find(a => a.id === c.id);
-        return a ? `${fmtQty(c.qty)} ${a.unit} ${a.name}` : null;
+        return a ? `${fmtRecipeQty(c.qty, a.unit)} ${a.name}` : null;
       }).filter(Boolean).join(' · ');
       return `
       <div class="card anim" style="animation-delay:${i*0.05}s">
