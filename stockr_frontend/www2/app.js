@@ -310,6 +310,18 @@ const LANGS = {
     activityStock:'Stock modifié', activityNewArt:'Article ajouté',
     activityNewClient:'Client ajouté', activityOrder:'Commande créée',
     justNow:'À l\'instant', minutesAgo:'min', hoursAgo:'h',
+    // Audit log
+    auditLogTitle:'Journal d\'audit', auditLogSub:'Traçabilité immuable',
+    auditAll:'Tout', auditToday:'24h', auditWeek:'7j', auditMonth:'30j',
+    auditCatAll:'📋 Tout', auditCatSale:'💰 Ventes', auditCatStock:'📦 Stock',
+    auditCatMember:'👤 Équipe', auditCatAuth:'🔐 Auth', auditCatSettings:'⚙️ Params',
+    auditCatProduct:'🏷️ Produits', auditCatClient:'👥 Clients',
+    auditNoEvents:'Aucun événement', auditNoEventsSub:'Les actions apparaîtront ici au fil de l\'activité.',
+    auditExportCSV:'📄 Export CSV', auditPurge:'🗑️ Purger',
+    auditAccessDenied:'🔒 Accès réservé aux rôles autorisés.',
+    auditEventCount:'événement(s)', auditDisplayLimited:'Affichage limité aux 200 événements les plus récents',
+    auditConfirmPurge:'⚠️ Purger le journal d\'audit ?\n\nCette action est irréversible.\nPensez à exporter d\'abord en CSV.',
+    auditPurged:'Journal purgé', auditExported:'📄 Journal exporté',
     // Advanced metrics
     stockTurnover:'Rotation stock', salesVelocity:'Vélocité ventes',
     avgDailySales:'Ventes/jour moy.', bestDay:'Meilleur jour',
@@ -534,6 +546,18 @@ const LANGS = {
     activityStock:'Stock modified', activityNewArt:'Article added',
     activityNewClient:'Client added', activityOrder:'Order created',
     justNow:'Just now', minutesAgo:'min', hoursAgo:'h',
+    // Audit log
+    auditLogTitle:'Audit log', auditLogSub:'Immutable traceability',
+    auditAll:'All', auditToday:'24h', auditWeek:'7d', auditMonth:'30d',
+    auditCatAll:'📋 All', auditCatSale:'💰 Sales', auditCatStock:'📦 Stock',
+    auditCatMember:'👤 Team', auditCatAuth:'🔐 Auth', auditCatSettings:'⚙️ Settings',
+    auditCatProduct:'🏷️ Products', auditCatClient:'👥 Clients',
+    auditNoEvents:'No events yet', auditNoEventsSub:'Actions will appear here as activity happens.',
+    auditExportCSV:'📄 Export CSV', auditPurge:'🗑️ Purge',
+    auditAccessDenied:'🔒 Access restricted to authorized roles.',
+    auditEventCount:'event(s)', auditDisplayLimited:'Display limited to 200 most recent events',
+    auditConfirmPurge:'⚠️ Purge the audit log?\n\nThis action is irreversible.\nExport as CSV first.',
+    auditPurged:'Log purged', auditExported:'📄 Log exported',
     // Advanced metrics
     stockTurnover:'Stock turnover', salesVelocity:'Sales velocity',
     avgDailySales:'Avg daily sales', bestDay:'Best day',
@@ -1841,11 +1865,32 @@ async function doLogin() {
     if (typeof logAudit === 'function') logAudit('auth', 'login', { email: u.email });
     // 2FA gate
     if (S.security?.twoFactorEnabled) {
-      S.twoFAPending = { email: u.email, code: String(Math.floor(100000 + Math.random() * 900000)), expires: Date.now() + 5 * 60 * 1000 };
-      console.log('[DEV 2FA CODE]', S.twoFAPending.code); // en prod : envoi SMS/Email
-      showToast('🔐 Code 2FA envoyé — code dev : ' + S.twoFAPending.code, 'info');
+      const code = String(Math.floor(100000 + Math.random() * 900000));
+      S.twoFAPending = { email: u.email, code, expires: Date.now() + 5 * 60 * 1000, method: S.security.twoFactorMethod || 'email' };
       S.view = '2fa-verify';
       render();
+      // Envoi réel (email/SMS) en arrière-plan
+      (async () => {
+        const method = S.security.twoFactorMethod || 'email';
+        if (method === 'email') {
+          const r = await _sendVerificationEmail(u.email, code, 'Connexion BARO');
+          if (r.ok) showToast('📧 Code envoyé à ' + u.email, 'success');
+          else {
+            showToast('📧 Email non configuré — code : ' + code + ' (voir Paramètres > Sécurité)', 'info');
+          }
+        } else if (method === 'sms') {
+          const phone = S.security.twoFactorPhone || u.phone || '';
+          if (!phone) { showToast('Numéro SMS manquant — code : ' + code, 'info'); return; }
+          const r = await _sendVerificationSMS(phone, code, 'Connexion BARO');
+          if (r.ok) showToast('📱 SMS envoyé à ' + phone, 'success');
+          else {
+            showToast('📱 SMS non configuré — code : ' + code, 'info');
+          }
+        } else {
+          // app-based TOTP / fallback
+          showToast('🔐 Code : ' + code, 'info');
+        }
+      })();
       return;
     }
     S.view = 'home';
@@ -1896,6 +1941,96 @@ function v2FAVerify() {
   </div>`;
 }
 
+// ── Envoi vérification EMAIL via EmailJS (gratuit, client-side, 200/mois) ──
+async function _sendVerificationEmail(email, code, purpose) {
+  const cfg = {
+    serviceId:  localStorage.getItem('stockr_emailjs_service') || '',
+    templateId: localStorage.getItem('stockr_emailjs_template') || '',
+    publicKey:  localStorage.getItem('stockr_emailjs_public') || '',
+  };
+  if (!cfg.serviceId || !cfg.templateId || !cfg.publicKey) {
+    // Fallback : mailto: deep link pour que l'utilisateur copie le code reçu dans l'app
+    console.log('[2FA CODE]', code);
+    return { ok: false, reason: 'emailjs_not_configured', code };
+  }
+  try {
+    const body = {
+      service_id: cfg.serviceId,
+      template_id: cfg.templateId,
+      user_id: cfg.publicKey,
+      template_params: {
+        to_email: email,
+        to_name: email.split('@')[0],
+        code: code,
+        purpose: purpose || 'Vérification BARO',
+        app_name: 'BARO',
+        expires_min: '5'
+      }
+    };
+    const res = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    if (!res.ok) {
+      const txt = await res.text();
+      console.warn('EmailJS error', res.status, txt);
+      return { ok: false, reason: 'http_' + res.status, detail: txt, code };
+    }
+    return { ok: true, code };
+  } catch (e) {
+    console.warn('EmailJS error', e);
+    return { ok: false, reason: 'network', error: e, code };
+  }
+}
+
+// ── Envoi vérification SMS via webhook configurable (Twilio Function, AT, etc.) ──
+async function _sendVerificationSMS(phone, code, purpose) {
+  const webhook = localStorage.getItem('stockr_sms_webhook') || '';
+  const apiKey  = localStorage.getItem('stockr_sms_apikey') || '';
+  if (!webhook) {
+    // Pas de webhook → proposer sms: deep link pour envoyer manuellement
+    console.log('[2FA SMS CODE]', code);
+    return { ok: false, reason: 'sms_not_configured', code };
+  }
+  try {
+    const body = {
+      to: phone,
+      message: `[BARO] Code de vérification : ${code} (valide 5 min). Ne le partagez pas.`,
+      purpose: purpose || 'verification',
+      code: code,
+    };
+    const res = await fetch(webhook, {
+      method: 'POST',
+      headers: Object.assign(
+        { 'Content-Type': 'application/json' },
+        apiKey ? { 'Authorization': 'Bearer ' + apiKey } : {}
+      ),
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) {
+      return { ok: false, reason: 'http_' + res.status, code };
+    }
+    return { ok: true, code };
+  } catch(e) {
+    console.warn('SMS webhook error', e);
+    return { ok: false, reason: 'network', error: e, code };
+  }
+}
+
+// Ouvre le vrai compose-email du navigateur/OS avec le code pré-rempli
+function _openMailtoVerification(email, code) {
+  const subj = encodeURIComponent('[BARO] Code de vérification');
+  const body = encodeURIComponent(
+    `Bonjour,\n\nVotre code de vérification BARO est : ${code}\n\nIl expire dans 5 minutes.\nNe le partagez avec personne.\n\n— L'équipe BARO`
+  );
+  window.open(`mailto:${encodeURIComponent(email)}?subject=${subj}&body=${body}`, '_blank');
+}
+function _openSmsVerification(phone, code) {
+  const msg = encodeURIComponent(`[BARO] Code de vérification : ${code} (valide 5 min).`);
+  window.location.href = `sms:${phone}?body=${msg}`;
+}
+
 async function verify2FA() {
   const p = S.twoFAPending;
   if (!p) return;
@@ -1915,13 +2050,25 @@ async function verify2FA() {
   showToast('🎉 Bienvenue !', 'success');
 }
 
-function resend2FA() {
+async function resend2FA() {
   const p = S.twoFAPending;
   if (!p) return;
   p.code = String(Math.floor(100000 + Math.random() * 900000));
   p.expires = Date.now() + 5 * 60 * 1000;
-  console.log('[DEV 2FA CODE]', p.code);
-  showToast('Code renvoyé — dev : ' + p.code, 'info');
+  const method = p.method || S.security?.twoFactorMethod || 'email';
+  if (method === 'email') {
+    const r = await _sendVerificationEmail(p.email, p.code, 'Connexion BARO');
+    if (r.ok) showToast('📧 Code renvoyé à ' + p.email, 'success');
+    else showToast('Code : ' + p.code + ' (email non configuré)', 'info');
+  } else if (method === 'sms') {
+    const phone = S.security?.twoFactorPhone || '';
+    if (!phone) { showToast('Numéro manquant — code : ' + p.code, 'info'); return; }
+    const r = await _sendVerificationSMS(phone, p.code, 'Connexion BARO');
+    if (r.ok) showToast('📱 SMS renvoyé à ' + phone, 'success');
+    else showToast('Code : ' + p.code + ' (SMS non configuré)', 'info');
+  } else {
+    showToast('Code : ' + p.code, 'info');
+  }
 }
 
 function cancel2FA() {
@@ -3578,6 +3725,10 @@ function render() {
     'audit-log':        vAuditLog,
     'appearance':       vAppearance,
     'security':         vSecurity,
+    'spectra-ai-setup': vSpectraAISetup,
+    'oauth-setup': vOAuthSetup,
+    'notifications-setup': vNotificationsSetup,
+    'video-library': vVideoLibrary,
   };
   __markViewTransition(S.view);
   viewEl.innerHTML = (map[S.view] || vHome)();
@@ -3799,41 +3950,237 @@ function __submitSocialLogin(provider) {
   __socialLoginCreate(provider, email, name);
 }
 
-function loginGoogle() {
-  if (typeof logAudit === 'function') logAudit('auth', 'google_attempt', {});
-  // OAuth réel si Google Identity Services chargé
-  if (window.google && window.google.accounts && window.google.accounts.id) {
-    try {
-      window.google.accounts.id.initialize({
-        client_id: window.__GOOGLE_CLIENT_ID__ || '',
-        callback: (res) => {
-          try {
-            const payload = JSON.parse(atob(res.credential.split('.')[1]));
-            __socialLoginCreate('google', payload.email, payload.name, payload.picture);
-          } catch(e) { __showSocialModal('google'); }
-        },
-      });
-      window.google.accounts.id.prompt();
-      return;
-    } catch(e){}
-  }
-  // Fallback modal propre (pas de prompt natif moche)
-  __showSocialModal('google');
+// ── OAuth réel : Google Identity Services (accounts.google.com) ────
+function _loadGoogleGSI() {
+  return new Promise((resolve, reject) => {
+    if (window.google?.accounts?.id) return resolve();
+    const existing = document.getElementById('gsi-script');
+    if (existing) { existing.addEventListener('load', resolve); existing.addEventListener('error', reject); return; }
+    const script = document.createElement('script');
+    script.id = 'gsi-script';
+    script.src = 'https://accounts.google.com/gsi/client';
+    script.async = true;
+    script.defer = true;
+    script.onload = resolve;
+    script.onerror = reject;
+    document.head.appendChild(script);
+  });
 }
 
-function loginApple() {
-  if (typeof logAudit === 'function') logAudit('auth', 'apple_attempt', {});
-  if (window.AppleID && window.AppleID.auth) {
-    try {
-      window.AppleID.auth.signIn().then(res => {
-        const email = res?.user?.email || res?.authorization?.id_token;
-        const fullName = (res?.user?.name?.firstName || '') + ' ' + (res?.user?.name?.lastName || '');
-        __socialLoginCreate('apple', email, fullName.trim() || 'Apple User');
-      }).catch(()=> __showSocialModal('apple'));
+function _loadAppleJS() {
+  return new Promise((resolve, reject) => {
+    if (window.AppleID?.auth) return resolve();
+    const existing = document.getElementById('apple-script');
+    if (existing) { existing.addEventListener('load', resolve); existing.addEventListener('error', reject); return; }
+    const script = document.createElement('script');
+    script.id = 'apple-script';
+    script.src = 'https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js';
+    script.async = true;
+    script.defer = true;
+    script.onload = resolve;
+    script.onerror = reject;
+    document.head.appendChild(script);
+  });
+}
+
+async function loginGoogle() {
+  if (typeof logAudit === 'function') logAudit('auth', 'google_attempt', {});
+  const clientId = (localStorage.getItem('stockr_google_client_id') || '').trim();
+
+  // Pas de Client ID configuré → redirection réelle vers accounts.google.com via OAuth 2.0 authorize endpoint
+  // Utilise un client ID public BARO si disponible, sinon propose la configuration
+  if (!clientId) {
+    // Fallback : redirection OAuth avec prompt de configuration
+    const proceed = confirm(
+      '🔐 Connexion Google réelle\n\n' +
+      'Pour se connecter via Google, vous devez configurer un Google OAuth Client ID :\n\n' +
+      '1. Cliquez OK pour ouvrir la page de configuration\n' +
+      '2. Créez un Client ID gratuit sur console.cloud.google.com\n' +
+      '3. Revenez vous connecter avec Google\n\n' +
+      'Annulez pour utiliser la connexion simplifiée.'
+    );
+    if (proceed) {
+      nav('oauth-setup');
       return;
-    } catch(e){}
+    }
+    __showSocialModal('google');
+    return;
   }
-  __showSocialModal('apple');
+
+  // Avec Client ID → vrai flow OAuth 2.0 redirection accounts.google.com
+  try {
+    await _loadGoogleGSI();
+    if (!window.google?.accounts?.oauth2) throw new Error('GSI not loaded');
+
+    // Flow 1 : Implicit flow (token direct) — redirige réellement sur accounts.google.com
+    const tokenClient = window.google.accounts.oauth2.initTokenClient({
+      client_id: clientId,
+      scope: 'openid email profile',
+      callback: async (tokenResponse) => {
+        if (!tokenResponse.access_token) {
+          showToast('Connexion Google annulée', 'error');
+          return;
+        }
+        // Récupérer les infos utilisateur avec le token
+        try {
+          const userInfo = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+            headers: { 'Authorization': 'Bearer ' + tokenResponse.access_token }
+          }).then(r => r.json());
+          __socialLoginCreate('google', userInfo.email, userInfo.name || userInfo.given_name, userInfo.picture);
+        } catch (e) {
+          showToast('Erreur récupération infos Google', 'error');
+          __showSocialModal('google');
+        }
+      },
+      error_callback: (err) => {
+        showToast('Connexion Google échouée : ' + (err?.message || 'erreur inconnue'), 'error');
+      }
+    });
+
+    // Ouvre réellement accounts.google.com dans une popup/redirect
+    tokenClient.requestAccessToken({ prompt: 'select_account' });
+  } catch(e) {
+    console.warn('Google OAuth error', e);
+    // Dernier fallback : redirection directe vers accounts.google.com
+    const redirectUri = window.location.origin + window.location.pathname;
+    const state = Math.random().toString(36).slice(2) + Date.now().toString(36);
+    const nonce = Math.random().toString(36).slice(2) + Date.now().toString(36);
+    localStorage.setItem('stockr_oauth_state', state);
+    localStorage.setItem('stockr_oauth_nonce', nonce);
+    localStorage.setItem('stockr_oauth_provider', 'google');
+    const authUrl = 'https://accounts.google.com/o/oauth2/v2/auth?' +
+      'client_id=' + encodeURIComponent(clientId) +
+      '&redirect_uri=' + encodeURIComponent(redirectUri) +
+      '&response_type=' + encodeURIComponent('id_token token') +
+      '&scope=' + encodeURIComponent('openid email profile') +
+      '&state=' + encodeURIComponent(state) +
+      '&nonce=' + encodeURIComponent(nonce) +
+      '&prompt=select_account';
+    window.location.href = authUrl;
+  }
+}
+
+async function loginApple() {
+  if (typeof logAudit === 'function') logAudit('auth', 'apple_attempt', {});
+  const serviceId = (localStorage.getItem('stockr_apple_service_id') || '').trim();
+
+  if (!serviceId) {
+    const proceed = confirm(
+      '🍎 Connexion Apple réelle\n\n' +
+      'Pour se connecter via Apple, vous devez configurer un Apple Service ID :\n\n' +
+      '1. Cliquez OK pour ouvrir la configuration\n' +
+      '2. Créez un Service ID sur developer.apple.com\n' +
+      '3. Revenez vous connecter avec Apple\n\n' +
+      'Annulez pour utiliser la connexion simplifiée.'
+    );
+    if (proceed) {
+      nav('oauth-setup');
+      return;
+    }
+    __showSocialModal('apple');
+    return;
+  }
+
+  try {
+    await _loadAppleJS();
+    if (!window.AppleID?.auth) throw new Error('AppleID.auth not loaded');
+
+    const redirectUri = window.location.origin + window.location.pathname;
+    window.AppleID.auth.init({
+      clientId: serviceId,
+      scope: 'name email',
+      redirectURI: redirectUri,
+      state: Math.random().toString(36).slice(2),
+      nonce: Math.random().toString(36).slice(2),
+      usePopup: true,
+    });
+
+    const res = await window.AppleID.auth.signIn();
+    // res.authorization.id_token : JWT
+    // res.user : { name: { firstName, lastName }, email } (seulement à la 1re connexion)
+    let email = '', name = '';
+    try {
+      const idToken = res?.authorization?.id_token;
+      if (idToken) {
+        const payload = JSON.parse(atob(idToken.split('.')[1]));
+        email = payload.email || '';
+      }
+    } catch(e){}
+    email = email || res?.user?.email || 'apple_user@' + serviceId;
+    const fn = res?.user?.name?.firstName || '';
+    const ln = res?.user?.name?.lastName || '';
+    name = (fn + ' ' + ln).trim() || email.split('@')[0] || 'Utilisateur Apple';
+    __socialLoginCreate('apple', email, name);
+  } catch(e) {
+    console.warn('Apple Sign-In error', e);
+    if (e?.error === 'popup_closed_by_user') {
+      showToast('Connexion Apple annulée', 'info');
+    } else {
+      showToast('Erreur Apple Sign-In : ' + (e?.message || e?.error || 'inconnue'), 'error');
+      __showSocialModal('apple');
+    }
+  }
+}
+
+// ── OAuth callback handler : détecte id_token/access_token après redirection ──
+function _handleOAuthCallback() {
+  if (!window.location.hash || window.location.hash.length < 2) return false;
+  const hashParams = new URLSearchParams(window.location.hash.slice(1));
+  const idToken = hashParams.get('id_token');
+  const accessToken = hashParams.get('access_token');
+  const state = hashParams.get('state');
+  const error = hashParams.get('error');
+  const expectedState = localStorage.getItem('stockr_oauth_state');
+  const provider = localStorage.getItem('stockr_oauth_provider') || 'google';
+
+  if (error) {
+    showToast('OAuth error : ' + error, 'error');
+    history.replaceState(null, '', window.location.pathname);
+    localStorage.removeItem('stockr_oauth_state');
+    localStorage.removeItem('stockr_oauth_provider');
+    return true;
+  }
+  if (!idToken && !accessToken) return false;
+  if (state && expectedState && state !== expectedState) {
+    showToast('OAuth state mismatch — possible attaque CSRF, annulé', 'error');
+    history.replaceState(null, '', window.location.pathname);
+    return true;
+  }
+
+  // Nettoie l'URL
+  history.replaceState(null, '', window.location.pathname);
+  localStorage.removeItem('stockr_oauth_state');
+  localStorage.removeItem('stockr_oauth_provider');
+  localStorage.removeItem('stockr_oauth_nonce');
+
+  (async () => {
+    try {
+      let email = '', name = '', picture = '';
+      if (idToken) {
+        const payload = JSON.parse(atob(idToken.split('.')[1]));
+        email = payload.email || '';
+        name = payload.name || payload.given_name || '';
+        picture = payload.picture || '';
+      }
+      if (!email && accessToken && provider === 'google') {
+        const userInfo = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+          headers: { 'Authorization': 'Bearer ' + accessToken }
+        }).then(r => r.json());
+        email = userInfo.email;
+        name = userInfo.name || userInfo.given_name;
+        picture = userInfo.picture;
+      }
+      if (email) {
+        __socialLoginCreate(provider, email, name || email.split('@')[0], picture);
+      } else {
+        showToast('OAuth : email non obtenu', 'error');
+      }
+    } catch (e) {
+      console.warn('OAuth callback parse error', e);
+      showToast('Erreur traitement OAuth', 'error');
+    }
+  })();
+  return true;
 }
 
 async function loginBiometric() {
@@ -6377,6 +6724,11 @@ function vSpectra() {
           ${IC.truck} &nbsp; ${t('spectraReception')} ${t('spectraDemo')}
         </button>
       </div>
+
+      <!-- Bouton config IA Gemini Vision -->
+      <button class="spectra-demo-btn" style="background:linear-gradient(135deg,#4285F4,#7C3AED);color:#fff;border:none;margin-top:10px;width:100%;font-weight:800" onclick="nav('spectra-ai-setup')">
+        ✨ &nbsp; ${localStorage.getItem('stockr_gemini_key') ? 'Spectra AI activé — Configurer' : 'Activer Spectra AI (IA précise)'}
+      </button>
     </div>
 
     <input id="spectra-file" type="file" accept="image/*" capture="environment"
@@ -6750,6 +7102,112 @@ function _textSimilarity(a, b){
 // Lit l'OCR et mappe un mot-clé vers un nom FR spécifique
 // Ex: "ketchup" → "Bouteille de Ketchup", "coca" → "Bouteille de Coca-Cola"
 const SPECTRA_KEYWORDS = {
+  // ═══ SMARTPHONES HAUT DE GAMME (modèles précis 2025-2026) ═══
+  'iphone17promax':{ type:'Apple iPhone 17 Pro Max', brand:'Apple', cat:'smartphone' },
+  'iphone17pro':{ type:'Apple iPhone 17 Pro', brand:'Apple', cat:'smartphone' },
+  'iphone17':{ type:'Apple iPhone 17', brand:'Apple', cat:'smartphone' },
+  'iphone16promax':{ type:'Apple iPhone 16 Pro Max', brand:'Apple', cat:'smartphone' },
+  'iphone16pro':{ type:'Apple iPhone 16 Pro', brand:'Apple', cat:'smartphone' },
+  'iphone16':{ type:'Apple iPhone 16', brand:'Apple', cat:'smartphone' },
+  'iphone15':{ type:'Apple iPhone 15', brand:'Apple', cat:'smartphone' },
+  'iphone14':{ type:'Apple iPhone 14', brand:'Apple', cat:'smartphone' },
+  'iphone13':{ type:'Apple iPhone 13', brand:'Apple', cat:'smartphone' },
+  'iphone12':{ type:'Apple iPhone 12', brand:'Apple', cat:'smartphone' },
+  'iphone11':{ type:'Apple iPhone 11', brand:'Apple', cat:'smartphone' },
+  'galaxys26ultra':{ type:'Samsung Galaxy S26 Ultra', brand:'Samsung', cat:'smartphone' },
+  'galaxys26':{ type:'Samsung Galaxy S26', brand:'Samsung', cat:'smartphone' },
+  'galaxys25ultra':{ type:'Samsung Galaxy S25 Ultra', brand:'Samsung', cat:'smartphone' },
+  'galaxys24ultra':{ type:'Samsung Galaxy S24 Ultra', brand:'Samsung', cat:'smartphone' },
+  'galaxyz':{ type:'Samsung Galaxy Z Fold', brand:'Samsung', cat:'smartphone' },
+  'galaxynote':{ type:'Samsung Galaxy Note', brand:'Samsung', cat:'smartphone' },
+  'pixel8':{ type:'Google Pixel 8', brand:'Google', cat:'smartphone' },
+  'pixel9':{ type:'Google Pixel 9', brand:'Google', cat:'smartphone' },
+  'pixel10':{ type:'Google Pixel 10', brand:'Google', cat:'smartphone' },
+  'techno':{ brand:'Tecno' },
+  'itel':{ brand:'Itel' },
+  'infinix':{ brand:'Infinix' },
+
+  // ═══ ORDINATEURS PORTABLES (modèles précis) ═══
+  'macbookairm4':{ type:'Apple MacBook Air M4 13"', brand:'Apple', cat:'laptop' },
+  'macbookairm3':{ type:'Apple MacBook Air M3 13"', brand:'Apple', cat:'laptop' },
+  'macbookairm2':{ type:'Apple MacBook Air M2 13"', brand:'Apple', cat:'laptop' },
+  'macbookprom4':{ type:'Apple MacBook Pro M4', brand:'Apple', cat:'laptop' },
+  'macbookprom3':{ type:'Apple MacBook Pro M3', brand:'Apple', cat:'laptop' },
+  'elitebook840':{ type:'HP EliteBook 840 G11', brand:'HP', cat:'laptop' },
+  'elitebook830':{ type:'HP EliteBook 830', brand:'HP', cat:'laptop' },
+  'probook':{ type:'HP ProBook', brand:'HP', cat:'laptop' },
+  'zbook':{ type:'HP ZBook', brand:'HP', cat:'laptop' },
+  'xps':{ type:'Dell XPS', brand:'Dell', cat:'laptop' },
+  'latitude':{ type:'Dell Latitude', brand:'Dell', cat:'laptop' },
+  'precision':{ type:'Dell Precision', brand:'Dell', cat:'laptop' },
+  'thinkbook':{ type:'Lenovo ThinkBook', brand:'Lenovo', cat:'laptop' },
+  'yoga':{ type:'Lenovo Yoga', brand:'Lenovo', cat:'laptop' },
+  'legion':{ type:'Lenovo Legion', brand:'Lenovo', cat:'laptop' },
+  'zenbook':{ type:'ASUS ZenBook', brand:'ASUS', cat:'laptop' },
+  'rog':{ type:'ASUS ROG', brand:'ASUS', cat:'laptop' },
+  'vivobook':{ type:'ASUS VivoBook', brand:'ASUS', cat:'laptop' },
+  'surface':{ type:'Microsoft Surface', brand:'Microsoft', cat:'laptop' },
+
+  // ═══ TABLETTES ═══
+  'ipadpro13':{ type:'Apple iPad Pro 13" M4', brand:'Apple', cat:'tablet' },
+  'ipadpro11':{ type:'Apple iPad Pro 11"', brand:'Apple', cat:'tablet' },
+  'ipadair':{ type:'Apple iPad Air', brand:'Apple', cat:'tablet' },
+  'ipadmini':{ type:'Apple iPad Mini', brand:'Apple', cat:'tablet' },
+  'galaxytabs10':{ type:'Samsung Galaxy Tab S10 Ultra', brand:'Samsung', cat:'tablet' },
+  'galaxytabs9':{ type:'Samsung Galaxy Tab S9', brand:'Samsung', cat:'tablet' },
+  'galaxytab':{ type:'Samsung Galaxy Tab', brand:'Samsung', cat:'tablet' },
+
+  // ═══ CONSOLES & GAMING ═══
+  'ps5pro':{ type:'Sony PlayStation 5 Pro', brand:'Sony', cat:'console' },
+  'ps5':{ type:'Sony PlayStation 5', brand:'Sony', cat:'console' },
+  'ps4':{ type:'Sony PlayStation 4', brand:'Sony', cat:'console' },
+  'xboxseriesx':{ type:'Microsoft Xbox Series X', brand:'Microsoft', cat:'console' },
+  'xboxseriess':{ type:'Microsoft Xbox Series S', brand:'Microsoft', cat:'console' },
+  'switch':{ type:'Nintendo Switch', brand:'Nintendo', cat:'console' },
+  'switcholed':{ type:'Nintendo Switch OLED', brand:'Nintendo', cat:'console' },
+  'dualsense':{ type:'Manette DualSense', brand:'Sony', cat:'console' },
+
+  // ═══ APPAREILS PHOTO HDG ═══
+  'nikonz9':{ type:'Nikon Z9', brand:'Nikon', cat:'photo' },
+  'nikonz8':{ type:'Nikon Z8', brand:'Nikon', cat:'photo' },
+  'canoneosr5':{ type:'Canon EOS R5', brand:'Canon', cat:'photo' },
+  'canoneosr3':{ type:'Canon EOS R3', brand:'Canon', cat:'photo' },
+  'sonyalpha':{ type:'Sony Alpha', brand:'Sony', cat:'photo' },
+  'sonya7':{ type:'Sony A7', brand:'Sony', cat:'photo' },
+  'fujifilm':{ brand:'Fujifilm' },
+  'djimini':{ type:'DJI Mini 4 Pro', brand:'DJI', cat:'drone' },
+  'djimavic':{ type:'DJI Mavic', brand:'DJI', cat:'drone' },
+  'gopro':{ type:'GoPro', brand:'GoPro', cat:'photo' },
+
+  // ═══ AUDIO HDG ═══
+  'bosequietcomfort':{ type:'Bose QuietComfort Ultra', brand:'Bose', cat:'audio' },
+  'sonywf1000':{ type:'Sony WF-1000XM6', brand:'Sony', cat:'audio' },
+  'sonywh1000':{ type:'Sony WH-1000XM5', brand:'Sony', cat:'audio' },
+  'airpodspro':{ type:'Apple AirPods Pro', brand:'Apple', cat:'audio' },
+  'airpodsmax':{ type:'Apple AirPods Max', brand:'Apple', cat:'audio' },
+  'jbl':{ type:'Enceinte JBL', brand:'JBL', cat:'audio' },
+  'marshall':{ brand:'Marshall' },
+  'sennheiser':{ brand:'Sennheiser' },
+
+  // ═══ MONTRES CONNECTÉES ═══
+  'applewatchultra':{ type:'Apple Watch Ultra 3', brand:'Apple', cat:'watch' },
+  'applewatch9':{ type:'Apple Watch Series 9', brand:'Apple', cat:'watch' },
+  'applewatchse':{ type:'Apple Watch SE', brand:'Apple', cat:'watch' },
+  'garminfenix':{ type:'Garmin Fenix 8X', brand:'Garmin', cat:'watch' },
+  'garminforerunner':{ type:'Garmin Forerunner', brand:'Garmin', cat:'watch' },
+  'galaxywatch':{ type:'Samsung Galaxy Watch', brand:'Samsung', cat:'watch' },
+  'casiofw':{ type:'Casio F-91W', brand:'Casio', cat:'watch' },
+  'gshock':{ type:'Casio G-Shock', brand:'Casio', cat:'watch' },
+
+  // ═══ STOCKAGE & ACCESSOIRES PC ═══
+  'wdmypassport':{ type:'WD My Passport', brand:'Western Digital', cat:'stockage' },
+  'seagatebackup':{ type:'Seagate Backup Plus', brand:'Seagate', cat:'stockage' },
+  'sandiskextreme':{ type:'SanDisk Extreme Pro', brand:'SanDisk', cat:'stockage' },
+  'lexarcfx':{ type:'Lexar CFexpress Type B', brand:'Lexar', cat:'stockage' },
+  'mxmaster':{ type:'Logitech MX Master 3S', brand:'Logitech', cat:'peripherique' },
+  'mxkeys':{ type:'Logitech MX Keys S', brand:'Logitech', cat:'peripherique' },
+  'lgultrafine':{ type:'LG UltraFine 27" 4K', brand:'LG', cat:'moniteur' },
+
   // ═══ BOISSONS ═══
   'ketchup':{ type:'Bouteille de Ketchup', cat:'condiment' },
   'mayonnaise':{ type:'Pot de Mayonnaise', cat:'condiment' },
@@ -7096,6 +7554,79 @@ const SPECTRA_KEYWORDS = {
   'niveasun':{ type:'Crème Solaire Nivea', brand:'Nivea', cat:'sante' },
   'proteinpowder':{ type:'Protéine en Poudre', cat:'nutrition' },
   'goldstandard':{ type:'Gold Standard', brand:'Optimum Nutrition', cat:'nutrition' },
+
+  // ═══ PRODUITS CI / AFRICA (spécifiques marchés) ═══
+  'candiauht':{ type:'Lait Candia UHT 1L', brand:'Candia', cat:'laitier' },
+  'kirene15':{ type:'Eau Kirène 1.5L', brand:'Kirène', cat:'eau' },
+  'awa05':{ type:'Eau Awa 0.5L', brand:'Awa', cat:'eau' },
+  'cococacola33':{ type:'Canette Coca-Cola 33cl', brand:'Coca-Cola', cat:'soda' },
+  'fantaorange50':{ type:'Fanta Orange 50cl', brand:'Fanta', cat:'soda' },
+  'youki125':{ type:'Youki Cocktail 1.25L', brand:'Youki', cat:'soda' },
+  'beaufort50':{ type:'Bière Beaufort 50cl', brand:'Beaufort', cat:'biere' },
+  'castlemilk':{ type:'Castle Milk Stout 33cl', brand:'Castle', cat:'biere' },
+  'barondevalls':{ type:'Vin Baron de Valls 75cl', brand:'Baron de Valls', cat:'vin' },
+  'nescafe200':{ type:'Nescafé Classic 200g', brand:'Nescafé', cat:'cafe' },
+  'lecomplement':{ type:'Café Le Complément 250g', brand:'Le Complément', cat:'cafe' },
+  'liptonyellow':{ type:'Thé Lipton Yellow Label', brand:'Lipton', cat:'cafe' },
+  'milomalt':{ type:'Milo Choco-Malt', brand:'Nestlé', cat:'petitdej' },
+  'reinesaba':{ type:'Confiture Reine Saba', brand:'Reine Saba', cat:'condiment' },
+  'dinor1l':{ type:'Huile Dinor 1L', brand:'Dinor', cat:'epicerie' },
+  'rizmaman5':{ type:'Sac de Riz Maman 5kg', brand:'Maman', cat:'epicerie' },
+  'rizunclesam':{ type:'Riz Uncle Sam 25kg', brand:'Uncle Sam', cat:'epicerie' },
+  'pateemaman':{ type:'Pâte de Tomate Maman', brand:'Maman', cat:'conserve' },
+  'maggistarboullon':{ type:'Bouillon Maggi Star', brand:'Maggi', cat:'epicerie' },
+  'sosuco1kg':{ type:'Sucre SOSUCO 1kg', brand:'SOSUCO', cat:'epicerie' },
+  'panzani500':{ type:'Spaghettis Panzani 500g', brand:'Panzani', cat:'epicerie' },
+
+  // ═══ HYGIÈNE (spécifiques) ═══
+  'fanicoblanc':{ type:'Savon Fanico Blanc', brand:'Fanico', cat:'hygiene' },
+  'colgate75':{ type:'Dentifrice Colgate Total 75ml', brand:'Colgate', cat:'hygiene' },
+  'headshoulders400':{ type:'Shampoing Head & Shoulders 400ml', brand:'Head & Shoulders', cat:'hygiene' },
+  'omomatic':{ type:'Lessive Omo Matic 2kg', brand:'OMO', cat:'entretien' },
+  'pampers4':{ type:'Couches Pampers Size 4', brand:'Pampers', cat:'bebe' },
+  'petitmarseillaisamande':{ type:'Gel Douche Le Petit Marseillais Amande', brand:'Le Petit Marseillais', cat:'hygiene' },
+  'lotuspapier':{ type:'Papier Toilette Lotus 12 rouleaux', brand:'Lotus', cat:'entretien' },
+  'duracellaa':{ type:'Piles Duracell AA x4', brand:'Duracell', cat:'pile' },
+  'mrproperjaune':{ type:'Détergent Mr. Proper 1L', brand:'Mr. Proper', cat:'entretien' },
+
+  // ═══ MODE / CHAUSSURES (spécifiques) ═══
+  'cotedivoire':{ type:'Maillot Côte d\'Ivoire FIF', brand:'FIF', cat:'sport' },
+  'airforce1':{ type:'Nike Air Force 1 Low', brand:'Nike', cat:'chaussures' },
+  'stansmith':{ type:'Adidas Stan Smith', brand:'Adidas', cat:'chaussures' },
+  'jansportbig':{ type:'Sac à dos JanSport Big Student', brand:'JanSport', cat:'maroquinerie' },
+  'levis501':{ type:'Jean Levi\'s 501 Original', brand:'Levi\'s', cat:'mode' },
+  'uniqlooxford':{ type:'Chemise Uniqlo Oxford', brand:'Uniqlo', cat:'mode' },
+  'neweray':{ type:'Casquette New Era Yankees', brand:'New Era', cat:'mode' },
+  'casiof91':{ type:'Montre Casio F-91W', brand:'Casio', cat:'watch' },
+  'raybanwayfarer':{ type:'Ray-Ban Wayfarer Classic', brand:'Ray-Ban', cat:'lunettes' },
+
+  // ═══ OUTILS / QUINCAILLERIE (spécifiques) ═══
+  'quartz4l':{ type:'Huile Moteur Total Quartz 4L', brand:'Total', cat:'auto' },
+  'philipsled':{ type:'Ampoule Philips LED 10W E27', brand:'Philips', cat:'quincaillerie' },
+  'stanleymarteau':{ type:'Marteau Stanley Manche Bois', brand:'Stanley', cat:'outillage' },
+  'facomisoryl':{ type:'Tournevis Facom Isoryl', brand:'Facom', cat:'outillage' },
+  'facom12':{ type:'Clé à Molette Facom 12"', brand:'Facom', cat:'outillage' },
+  'stanleyfatmax':{ type:'Mètre Stanley FatMax 8m', brand:'Stanley', cat:'outillage' },
+  'boschgsr':{ type:'Perceuse Bosch GSR 18V-55', brand:'Bosch', cat:'outillage' },
+  'gardena20m':{ type:'Tuyau Gardena 20m', brand:'Gardena', cat:'jardin' },
+  'astral10l':{ type:'Peinture Astral 10L Blanc', brand:'Astral', cat:'quincaillerie' },
+
+  // ═══ PAPETERIE (spécifiques) ═══
+  'clairefontaineA4':{ type:'Cahier Clairefontaine A4 Seyès', brand:'Clairefontaine', cat:'papeterie' },
+  'biccristal':{ type:'Stylo Bic Cristal x10', brand:'Bic', cat:'papeterie' },
+  'esselteA4':{ type:'Classeur Esselte A4', brand:'Esselte', cat:'papeterie' },
+  'rapidsupreme':{ type:'Agrafeuse Rapid Supreme S50', brand:'Rapid', cat:'papeterie' },
+  'hp305xl':{ type:'Cartouche HP 305XL Noir', brand:'HP', cat:'papeterie' },
+  'doubleaa4':{ type:'Papier A4 Double A 80g', brand:'Double A', cat:'papeterie' },
+  'stabilobossjaune':{ type:'Surligneur Stabilo Boss Jaune x4', brand:'Stabilo', cat:'papeterie' },
+  'caselogic156':{ type:'Sacoche Case Logic 15.6"', brand:'Case Logic', cat:'maroquinerie' },
+
+  // ═══ SANTÉ (spécifiques) ═══
+  'alvitylsirop':{ type:'Alvityl Multivitaminé Sirop', brand:'Alvityl', cat:'sante' },
+  'dafalgan1g':{ type:'Dafalgan 1g Effervescent', brand:'Dafalgan', cat:'sante' },
+  'niveasun200':{ type:'Nivea Sun Protect 200ml FPS50', brand:'Nivea', cat:'sante' },
+  'goldstandard1kg':{ type:'Protéine Gold Standard 1kg', brand:'Optimum Nutrition', cat:'nutrition' },
+  'elastoplastassortiment':{ type:'Pansements Elastoplast Assortiment', brand:'Elastoplast', cat:'sante' },
 };
 
 // Mots-clés "primary" (nom produit spécifique) qui doivent gagner sur
@@ -7393,8 +7924,101 @@ async function _groupPredictionsSmart(predictions, imgOrCanvas){
   return detections;
 }
 
+// ── IA Gemini Vision (Google AI Studio) ─────────
+// Reconnaissance précise de produits (iPhone 17 Pro Max, Nescafé 200g, etc.)
+// Utilise la clé API stockée dans localStorage (stockr_gemini_key).
+// Plan gratuit : https://aistudio.google.com/app/apikey
+async function _spectraGeminiVision(imgOrCanvas) {
+  const apiKey = localStorage.getItem('stockr_gemini_key');
+  if (!apiKey) return null;
+  try {
+    // Convert image to base64
+    const canvas = imgOrCanvas instanceof HTMLCanvasElement
+      ? imgOrCanvas
+      : (() => {
+          const c = document.createElement('canvas');
+          c.width = imgOrCanvas.naturalWidth || imgOrCanvas.videoWidth || imgOrCanvas.width;
+          c.height = imgOrCanvas.naturalHeight || imgOrCanvas.videoHeight || imgOrCanvas.height;
+          c.getContext('2d').drawImage(imgOrCanvas, 0, 0);
+          return c;
+        })();
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+    const base64 = dataUrl.split(',')[1];
+
+    const prompt = `You are Spectra, a product recognition AI for retail inventory management.
+Analyze this image and identify ALL visible commercial products with maximum precision.
+
+For EACH product detected, provide:
+1. exact_name: The precise commercial name (e.g., "Apple iPhone 17 Pro Max Titane Clair", "Nescafé Classic 200g", "Samsung Galaxy S26 Ultra Titane Noir")
+2. brand: The brand name
+3. category: One of [electronics, smartphone, laptop, tablet, watch, audio, photo, drink, food, hygiene, household, beauty, clothing, shoes, bag, tool, stationery, health, toy, auto, other]
+4. quantity: How many visible (count)
+5. bbox: Bounding box [x, y, width, height] as percentages 0-100 of image dimensions
+6. confidence: 0-100
+
+Return STRICTLY valid JSON array, no other text:
+[{"exact_name":"...","brand":"...","category":"...","quantity":1,"bbox":[x,y,w,h],"confidence":85}]
+
+Be precise with model numbers and specifications (M4, 13", Pro Max, 500g, etc.). Focus on RETAIL products.`;
+
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{
+          parts: [
+            { text: prompt },
+            { inline_data: { mime_type: 'image/jpeg', data: base64 } }
+          ]
+        }],
+        generationConfig: { temperature: 0.2, topK: 32, topP: 1, maxOutputTokens: 2048 }
+      })
+    });
+    if (!response.ok) {
+      console.warn('[Spectra AI] API error:', response.status);
+      return null;
+    }
+    const data = await response.json();
+    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    // Extract JSON array (strip markdown code fences if any)
+    const jsonMatch = text.match(/\[[\s\S]*\]/);
+    if (!jsonMatch) return null;
+    const products = JSON.parse(jsonMatch[0]);
+    // Convert to spectra detection format
+    const imgW = canvas.width;
+    const imgH = canvas.height;
+    return products.map((p, i) => ({
+      id: `ai_${Date.now()}_${i}`,
+      cocoClass: p.category || 'object',
+      detectedName: p.exact_name || 'Produit',
+      brand: p.brand || '',
+      category: p.category || 'other',
+      count: p.quantity || 1,
+      confidence: p.confidence || 80,
+      boxes: [[ // Convert % to px
+        (p.bbox?.[0] || 0) * imgW / 100,
+        (p.bbox?.[1] || 0) * imgH / 100,
+        (p.bbox?.[2] || 50) * imgW / 100,
+        (p.bbox?.[3] || 50) * imgH / 100
+      ]],
+      source: 'gemini',
+      ai_powered: true,
+    }));
+  } catch (e) {
+    console.warn('[Spectra AI] error:', e.message);
+    return null;
+  }
+}
+
 // ── Détection à partir d'une image HTMLImageElement (avec OCR) ──
 async function spectraDetectFromImage(img, opts){
+  // PRIORITÉ 1 : Gemini Vision IA si clé API disponible (reconnaissance précise)
+  const aiResults = await _spectraGeminiVision(img);
+  if (aiResults && aiResults.length > 0) {
+    showToast(`🤖 Spectra AI : ${aiResults.length} produit(s) reconnu(s)`, 'success');
+    return aiResults;
+  }
+
   const model = await loadCocoSSD();
   const predictions = await model.detect(img, 20);
   const filtered = predictions.filter(p => (p.score || 0) >= 0.4);
@@ -8919,6 +9543,31 @@ function editDailyGoal() {
   modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);animation:fadeIn .2s ease';
   modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
 
+  // Helper global : appelé directement par les boutons (pas d'event custom)
+  window.__goalSetType = (t) => {
+    const m = document.getElementById('goal-modal');
+    if (!m) return;
+    const input = document.getElementById('goal-value-input');
+    if (input) m.dataset.value = input.value;
+    m.dataset.type = t;
+    m.innerHTML = render_body();
+  };
+  window.__goalSetPeriod = (p) => {
+    const m = document.getElementById('goal-modal');
+    if (!m) return;
+    const input = document.getElementById('goal-value-input');
+    if (input) m.dataset.value = input.value;
+    m.dataset.period = p;
+    m.innerHTML = render_body();
+  };
+  window.__goalSetValue = (v) => {
+    const m = document.getElementById('goal-modal');
+    if (!m) return;
+    m.dataset.value = String(v);
+    const input = document.getElementById('goal-value-input');
+    if (input) input.value = String(v);
+  };
+
   const render_body = () => {
     const type = modal.dataset.type || currentType;
     const period = modal.dataset.period || currentPeriod;
@@ -8929,27 +9578,27 @@ function editDailyGoal() {
     const sug = type === 'revenue' ? sugCA * periodMult : type === 'profit' ? sugProfit * periodMult : sugSales * periodMult;
     const avg = type === 'revenue' ? avg30CA * periodMult : type === 'profit' ? avg30Profit * periodMult : avg30Sales * periodMult;
     return `
-    <div style="background:var(--surface);border-radius:16px;max-width:420px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3);animation:slideUp .25s ease">
+    <div style="background:var(--surface);border-radius:16px;max-width:420px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3);animation:slideUp .25s ease" onclick="event.stopPropagation()">
       <div style="padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
         <div>
           <div style="font-size:18px;font-weight:800;color:var(--text-1)">🎯 Configurer l'objectif</div>
           <div style="font-size:11px;color:var(--text-3);margin-top:2px">Suivez vos performances en temps réel</div>
         </div>
-        <button style="width:32px;height:32px;border-radius:50%;border:none;background:var(--gray-1);color:var(--text-2);font-size:18px;cursor:pointer" onclick="document.getElementById('goal-modal').remove()">×</button>
+        <button type="button" style="width:32px;height:32px;border-radius:50%;border:none;background:var(--gray-1);color:var(--text-2);font-size:18px;cursor:pointer" onclick="document.getElementById('goal-modal').remove()">×</button>
       </div>
       <div style="padding:16px 20px">
         <div style="margin-bottom:14px">
           <label style="font-size:11px;color:var(--text-3);font-weight:700;letter-spacing:.3px;text-transform:uppercase;margin-bottom:6px;display:block">Type d'objectif</label>
           <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
-            <button class="goal-type-btn ${type==='revenue'?'active':''}" data-type="revenue" style="padding:10px 6px;border-radius:8px;border:1.5px solid ${type==='revenue'?'var(--accent)':'var(--border)'};background:${type==='revenue'?'rgba(79,70,229,0.08)':'var(--surface)'};cursor:pointer;text-align:center" onclick="document.getElementById('goal-modal').dataset.type='revenue';this.parentElement.parentElement.parentElement.parentElement.dispatchEvent(new Event('refresh'))">
+            <button type="button" class="goal-type-btn ${type==='revenue'?'active':''}" style="padding:10px 6px;border-radius:8px;border:1.5px solid ${type==='revenue'?'var(--accent)':'var(--border)'};background:${type==='revenue'?'rgba(79,70,229,0.08)':'var(--surface)'};cursor:pointer;text-align:center" onclick="__goalSetType('revenue')">
               <div style="font-size:20px;margin-bottom:2px">💰</div>
               <div style="font-size:11px;font-weight:700;color:${type==='revenue'?'var(--accent)':'var(--text-2)'}">CA</div>
             </button>
-            <button class="goal-type-btn ${type==='profit'?'active':''}" data-type="profit" style="padding:10px 6px;border-radius:8px;border:1.5px solid ${type==='profit'?'var(--success)':'var(--border)'};background:${type==='profit'?'rgba(16,185,129,0.08)':'var(--surface)'};cursor:pointer;text-align:center" onclick="document.getElementById('goal-modal').dataset.type='profit';this.parentElement.parentElement.parentElement.parentElement.dispatchEvent(new Event('refresh'))">
+            <button type="button" class="goal-type-btn ${type==='profit'?'active':''}" style="padding:10px 6px;border-radius:8px;border:1.5px solid ${type==='profit'?'var(--success)':'var(--border)'};background:${type==='profit'?'rgba(16,185,129,0.08)':'var(--surface)'};cursor:pointer;text-align:center" onclick="__goalSetType('profit')">
               <div style="font-size:20px;margin-bottom:2px">📈</div>
               <div style="font-size:11px;font-weight:700;color:${type==='profit'?'var(--success)':'var(--text-2)'}">Bénéfice</div>
             </button>
-            <button class="goal-type-btn ${type==='sales'?'active':''}" data-type="sales" style="padding:10px 6px;border-radius:8px;border:1.5px solid ${type==='sales'?'#EC4899':'var(--border)'};background:${type==='sales'?'rgba(236,72,153,0.08)':'var(--surface)'};cursor:pointer;text-align:center" onclick="document.getElementById('goal-modal').dataset.type='sales';this.parentElement.parentElement.parentElement.parentElement.dispatchEvent(new Event('refresh'))">
+            <button type="button" class="goal-type-btn ${type==='sales'?'active':''}" style="padding:10px 6px;border-radius:8px;border:1.5px solid ${type==='sales'?'#EC4899':'var(--border)'};background:${type==='sales'?'rgba(236,72,153,0.08)':'var(--surface)'};cursor:pointer;text-align:center" onclick="__goalSetType('sales')">
               <div style="font-size:20px;margin-bottom:2px">🛒</div>
               <div style="font-size:11px;font-weight:700;color:${type==='sales'?'#EC4899':'var(--text-2)'}">Nb ventes</div>
             </button>
@@ -8960,7 +9609,7 @@ function editDailyGoal() {
           <label style="font-size:11px;color:var(--text-3);font-weight:700;letter-spacing:.3px;text-transform:uppercase;margin-bottom:6px;display:block">Période</label>
           <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
             ${['day','week','month','year'].map(p => `
-              <button style="padding:8px 4px;border-radius:8px;border:1.5px solid ${period===p?'var(--accent)':'var(--border)'};background:${period===p?'rgba(79,70,229,0.08)':'var(--surface)'};cursor:pointer;font-size:11px;font-weight:600;color:${period===p?'var(--accent)':'var(--text-2)'}" onclick="document.getElementById('goal-modal').dataset.period='${p}';this.parentElement.parentElement.parentElement.dispatchEvent(new Event('refresh'))">
+              <button type="button" style="padding:8px 4px;border-radius:8px;border:1.5px solid ${period===p?'var(--accent)':'var(--border)'};background:${period===p?'rgba(79,70,229,0.08)':'var(--surface)'};cursor:pointer;font-size:11px;font-weight:600;color:${period===p?'var(--accent)':'var(--text-2)'}" onclick="__goalSetPeriod('${p}')">
                 ${p==='day'?'📅 Jour':p==='week'?'📆 Sem.':p==='month'?'🗓️ Mois':'🎊 Année'}
               </button>
             `).join('')}
@@ -8975,30 +9624,25 @@ function editDailyGoal() {
 
         <div style="margin-bottom:14px">
           <label style="font-size:11px;color:var(--text-3);font-weight:700;letter-spacing:.3px;text-transform:uppercase;margin-bottom:6px;display:block">Mon objectif / ${periodLabel} (${unit})</label>
-          <input id="goal-value-input" class="input" type="number" min="0" step="${type==='sales'?1:500}" value="${valueInput !== undefined ? valueInput : (current > 0 ? current : sug)}" style="font-size:16px;font-weight:700;text-align:center" oninput="document.getElementById('goal-modal').dataset.value=this.value">
-          <div style="display:flex;gap:6px;margin-top:8px">
-            <button class="chip" onclick="document.getElementById('goal-value-input').value='${sug}';document.getElementById('goal-modal').dataset.value='${sug}'">💡 Suggéré</button>
-            <button class="chip" onclick="document.getElementById('goal-value-input').value='${Math.round(sug*1.5)}';document.getElementById('goal-modal').dataset.value='${Math.round(sug*1.5)}'">🚀 Ambitieux (+50%)</button>
-            <button class="chip" onclick="document.getElementById('goal-value-input').value='${Math.round(sug*2)}';document.getElementById('goal-modal').dataset.value='${Math.round(sug*2)}'">💪 Agressif (×2)</button>
+          <input id="goal-value-input" class="input" type="number" min="0" step="${type==='sales'?1:500}" value="${valueInput !== undefined ? valueInput : (current > 0 ? current : sug)}" style="font-size:18px;font-weight:700;text-align:center;min-height:50px" oninput="document.getElementById('goal-modal').dataset.value=this.value">
+          <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
+            <button type="button" class="chip" onclick="__goalSetValue(${sug})">💡 Suggéré</button>
+            <button type="button" class="chip" onclick="__goalSetValue(${Math.round(sug*1.5)})">🚀 Ambitieux (+50%)</button>
+            <button type="button" class="chip" onclick="__goalSetValue(${Math.round(sug*2)})">💪 Agressif (×2)</button>
           </div>
         </div>
 
         <div style="display:flex;gap:8px;margin-top:18px">
-          <button class="btn btn-ghost" style="flex:1" onclick="saveGoalConfig('', '', '')">🗑️ Désactiver</button>
-          <button class="btn btn-primary" style="flex:2" onclick="saveGoalConfig(document.getElementById('goal-value-input').value, document.getElementById('goal-modal').dataset.type||'${type}', document.getElementById('goal-modal').dataset.period||'${period}')">✓ Enregistrer</button>
+          <button type="button" class="btn btn-ghost" style="flex:1" onclick="saveGoalConfig('', '', '')">🗑️ Désactiver</button>
+          <button type="button" class="btn btn-primary" style="flex:2" onclick="saveGoalConfig(document.getElementById('goal-value-input').value, document.getElementById('goal-modal').dataset.type||'${type}', document.getElementById('goal-modal').dataset.period||'${period}')">✓ Enregistrer</button>
         </div>
       </div>
     </div>`;
   };
 
-  modal.innerHTML = render_body();
   modal.dataset.type = currentType;
   modal.dataset.period = currentPeriod;
-  modal.addEventListener('refresh', () => {
-    const input = document.getElementById('goal-value-input');
-    if (input) modal.dataset.value = input.value;
-    modal.innerHTML = render_body();
-  });
+  modal.innerHTML = render_body();
   document.body.appendChild(modal);
 }
 
@@ -9877,6 +10521,16 @@ function vSettings() {
           </div>
           ${IC.chevron}
         </div>
+        <div class="settings-row" onclick="nav('oauth-setup')">
+          <div class="settings-row-inner">
+            <span class="settings-row-ico" style="color:#4285F4">🔗</span>
+            <div>
+              <div class="settings-row-lbl">Connexions OAuth</div>
+              <div class="settings-row-sub">${localStorage.getItem('stockr_google_client_id')?'🟢':'⚪'} Google · ${localStorage.getItem('stockr_apple_service_id')?'🟢':'⚪'} Apple</div>
+            </div>
+          </div>
+          ${IC.chevron}
+        </div>
         <div class="settings-row" onclick="nav('team')">
           <div class="settings-row-inner">
             <span class="settings-row-ico" style="color:#7C73FF">👥</span>
@@ -10605,14 +11259,375 @@ function deleteTeamMember(id) {
 }
 
 // ── AUDIT LOG VIEW ─────────────────────────────
+// ── SPECTRA AI SETUP (Gemini Vision) ─────────────
+function vSpectraAISetup() {
+  const key = localStorage.getItem('stockr_gemini_key') || '';
+  const model = localStorage.getItem('stockr_gemini_model') || 'gemini-2.0-flash-exp';
+  const isActive = !!key;
+  return `
+  <div class="sub-hero" style="background:linear-gradient(135deg,#4285F4,#7C3AED)">
+    <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('spectra')">${IC.left}</button>
+    <div class="sub-hero-title">✨ Spectra AI (Gemini Vision)</div>
+    <div class="sub-hero-sub">${isActive ? '🟢 IA activée — reconnaissance précise' : '⚪ Activez pour reconnaissance précise'}</div>
+  </div>
+  <div class="container">
+
+    <div class="card" style="margin-bottom:12px;border-left:4px solid ${isActive?'var(--success)':'var(--accent)'}">
+      <div style="font-size:15px;font-weight:800;color:var(--text-1);margin-bottom:8px">
+        ${isActive ? '✅ Spectra AI actif' : '🚀 Activer Spectra AI'}
+      </div>
+      <div style="font-size:13px;color:var(--text-2);line-height:1.5;margin-bottom:12px">
+        Spectra AI utilise <strong>Google Gemini 2.0 Vision</strong> pour reconnaître les produits avec une précision extrême (modèles exacts : iPhone 17 Pro Max, MacBook Air M4, Nescafé 200g, etc.).
+      </div>
+      <div style="background:var(--gray-1);padding:12px;border-radius:10px;font-size:12px;color:var(--text-2);line-height:1.6">
+        <strong>Comment ça marche :</strong><br>
+        1. Obtenez une clé API gratuite sur <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--accent);font-weight:700">Google AI Studio</a> (gratuit à vie, 1500 requêtes/jour)<br>
+        2. Collez-la ici<br>
+        3. Spectra reconnaît les produits avec leur nom exact<br>
+        <strong style="color:var(--success)">✨ Gratuit jusqu'à 1500 scans/jour</strong>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:12px">
+      <div class="card-title">🔑 Clé API Gemini</div>
+      <input id="gemini-key-input" class="input" type="password" placeholder="AIzaSyXXX..." value="${key}" autocomplete="off" style="font-family:monospace;font-size:14px !important">
+      <div style="font-size:11px;color:var(--text-3);margin-top:6px">🔒 Stockée uniquement sur votre appareil (localStorage)</div>
+
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button class="btn btn-ghost" style="flex:1" onclick="document.getElementById('gemini-key-input').type=document.getElementById('gemini-key-input').type==='password'?'text':'password'">👁️ Afficher / Masquer</button>
+        <button class="btn btn-primary" style="flex:1;background:#4285F4" onclick="saveGeminiKey()">💾 Enregistrer</button>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:12px">
+      <div class="card-title">🎯 Modèle IA</div>
+      <select id="gemini-model-select" class="input" onchange="localStorage.setItem('stockr_gemini_model', this.value);showToast('Modèle mis à jour','success')">
+        <option value="gemini-2.0-flash-exp" ${model==='gemini-2.0-flash-exp'?'selected':''}>Gemini 2.0 Flash (⚡ Rapide, précis, gratuit)</option>
+        <option value="gemini-1.5-flash" ${model==='gemini-1.5-flash'?'selected':''}>Gemini 1.5 Flash (Stable)</option>
+        <option value="gemini-1.5-pro" ${model==='gemini-1.5-pro'?'selected':''}>Gemini 1.5 Pro (Ultra précis)</option>
+      </select>
+    </div>
+
+    ${isActive ? `
+    <button class="btn btn-ghost" style="width:100%;margin-bottom:10px" onclick="testGeminiKey()">🧪 Tester la clé (envoyer une image test)</button>
+    <button class="btn btn-ghost" style="width:100%;color:var(--danger);border-color:var(--danger)" onclick="if(confirm('Supprimer la clé API ?')){localStorage.removeItem('stockr_gemini_key');showToast('Clé supprimée','info');render()}">🗑️ Supprimer la clé</button>
+    ` : ''}
+
+    <div class="card" style="margin-top:14px;background:var(--gray-1);text-align:center;padding:16px">
+      <div style="font-size:12px;color:var(--text-2);line-height:1.6">
+        💡 <strong>Sans clé API</strong>, Spectra utilise la reconnaissance locale (COCO-SSD + OCR + dictionnaire de 300+ produits CI).<br>
+        <strong>Avec Gemini AI</strong>, la précision est proche de ChatGPT Vision.
+      </div>
+    </div>
+  </div>`;
+}
+
+function saveGeminiKey() {
+  const key = (document.getElementById('gemini-key-input')?.value || '').trim();
+  if (!key) {
+    showToast('Entrez une clé API', 'error');
+    return;
+  }
+  if (!/^AIza[0-9A-Za-z_-]{35,}/.test(key)) {
+    if (!confirm('Format de clé inhabituel (ne commence pas par AIza...). Continuer quand même ?')) return;
+  }
+  localStorage.setItem('stockr_gemini_key', key);
+  showToast('🤖 Spectra AI activé !', 'success');
+  render();
+}
+
+async function testGeminiKey() {
+  showToast('🧪 Test en cours...', 'info');
+  // Créer une image test simple (carré rouge) pour vérifier la clé
+  const canvas = document.createElement('canvas');
+  canvas.width = 200; canvas.height = 200;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#FF0000'; ctx.fillRect(0, 0, 200, 200);
+  ctx.fillStyle = '#FFF'; ctx.font = 'bold 30px sans-serif';
+  ctx.fillText('TEST', 60, 110);
+  const img = new Image();
+  img.src = canvas.toDataURL();
+  await new Promise(r => img.onload = r);
+  const result = await _spectraGeminiVision(img);
+  if (result && result.length > 0) {
+    showToast(`✅ Clé valide — ${result.length} élément(s) détecté(s)`, 'success');
+  } else {
+    showToast('❌ Clé invalide ou quota dépassé', 'error');
+  }
+}
+
+// ── OAUTH SETUP (Google + Apple Sign-In) ────────
+function vOAuthSetup() {
+  const googleId = localStorage.getItem('stockr_google_client_id') || '';
+  const appleId  = localStorage.getItem('stockr_apple_service_id') || '';
+  const origin   = window.location.origin;
+  const redirect = window.location.origin + window.location.pathname;
+  return `
+  <div class="sub-hero" style="background:linear-gradient(135deg,#4285F4,#000)">
+    <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav(getSession()?'more':'auth')">${IC.left}</button>
+    <div class="sub-hero-title">🔐 Connexions OAuth</div>
+    <div class="sub-hero-sub">${googleId ? '🟢 Google OK' : '⚪ Google'} · ${appleId ? '🟢 Apple OK' : '⚪ Apple'}</div>
+  </div>
+  <div class="container">
+
+    <div class="card" style="margin-bottom:12px;background:linear-gradient(135deg,#EFF6FF,#F3E8FF);border:1.5px solid #4285F4">
+      <div style="font-size:14px;font-weight:800;color:#1E3A8A;margin-bottom:6px">ℹ️ Pourquoi configurer ?</div>
+      <div style="font-size:12px;color:#3730A3;line-height:1.6">
+        BARO ouvre <strong>le vrai accounts.google.com</strong> et <strong>le vrai Sign in with Apple</strong>.
+        Pour activer ces flux OAuth 2.0, vous devez créer vos propres identifiants gratuits chez Google/Apple et les coller ci-dessous.
+        <br><br>
+        Sans config : mode "connexion simplifiée" (saisie manuelle email+nom).
+      </div>
+    </div>
+
+    <!-- ── Google ── -->
+    <div class="card" style="margin-bottom:12px;border-left:4px solid ${googleId?'var(--success)':'#4285F4'}">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <div style="width:40px;height:40px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.1)">
+          <svg width="24" height="24" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34.1 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20c11 0 20-8 20-20 0-1.3-.1-2.6-.4-3.9z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.1 18.9 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34.1 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.5-5.3l-6.2-5.2c-2 1.5-4.6 2.5-7.3 2.5-5.2 0-9.6-3.3-11.2-8l-6.5 5C9.6 39.7 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.2 5.6l6.2 5.2c-.4.4 6.7-4.9 6.7-14.8 0-1.3-.1-2.6-.4-3.9z"/></svg>
+        </div>
+        <div style="flex:1">
+          <div style="font-size:15px;font-weight:800;color:var(--text-1)">Google Sign-In</div>
+          <div style="font-size:11px;color:var(--text-2)">${googleId ? 'Configuré' : 'Non configuré'}</div>
+        </div>
+      </div>
+
+      <details style="margin-bottom:10px">
+        <summary style="cursor:pointer;font-size:12px;font-weight:700;color:#4285F4;padding:6px 0">📖 Comment obtenir un Client ID Google (2 min)</summary>
+        <div style="font-size:12px;color:var(--text-2);line-height:1.7;padding:8px 0 0 12px;border-left:2px solid #4285F4">
+          1. Ouvrez <a href="https://console.cloud.google.com/apis/credentials" target="_blank" style="color:#4285F4;font-weight:700">console.cloud.google.com/apis/credentials</a><br>
+          2. Créez un projet (ou utilisez un existant)<br>
+          3. <strong>Créer des identifiants</strong> → <strong>ID client OAuth</strong><br>
+          4. Type : <strong>Application Web</strong><br>
+          5. <strong>Origines JavaScript autorisées</strong> : <code style="background:var(--gray-1);padding:2px 6px;border-radius:4px;font-size:11px;word-break:break-all">${origin}</code>
+          <button class="btn btn-ghost" style="padding:4px 8px;font-size:11px;margin-left:6px" onclick="navigator.clipboard.writeText('${origin}');showToast('Copié','success')">📋</button><br>
+          6. <strong>URI de redirection autorisés</strong> : <code style="background:var(--gray-1);padding:2px 6px;border-radius:4px;font-size:11px;word-break:break-all">${redirect}</code>
+          <button class="btn btn-ghost" style="padding:4px 8px;font-size:11px;margin-left:6px" onclick="navigator.clipboard.writeText('${redirect}');showToast('Copié','success')">📋</button><br>
+          7. Copiez le <strong>Client ID</strong> (finit par <code>.apps.googleusercontent.com</code>) ci-dessous
+        </div>
+      </details>
+
+      <label class="form-label">Client ID Google</label>
+      <input id="google-client-id-input" class="input" type="text" placeholder="123456789-xxx.apps.googleusercontent.com" value="${googleId}" style="font-family:monospace;font-size:13px !important">
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button class="btn btn-ghost" style="flex:1" onclick="saveGoogleClientId()">💾 Enregistrer</button>
+        ${googleId ? `<button class="btn btn-primary" style="flex:1;background:#4285F4;border-color:#4285F4" onclick="loginGoogle()">🧪 Tester</button>` : ''}
+      </div>
+      ${googleId ? `<button class="btn btn-ghost" style="width:100%;margin-top:8px;color:var(--danger);border-color:var(--danger)" onclick="if(confirm('Supprimer le Client ID Google ?')){localStorage.removeItem('stockr_google_client_id');showToast('Supprimé','info');render()}">🗑️ Supprimer</button>` : ''}
+    </div>
+
+    <!-- ── Apple ── -->
+    <div class="card" style="margin-bottom:12px;border-left:4px solid ${appleId?'var(--success)':'#000'}">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <div style="width:40px;height:40px;background:#000;border-radius:50%;display:flex;align-items:center;justify-content:center">
+          <svg width="22" height="22" viewBox="0 0 170 170" fill="#fff"><path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.197-2.12-9.973-3.17-14.34-3.17-4.58 0-9.492 1.05-14.746 3.17-5.262 2.13-9.501 3.24-12.742 3.35-4.929.21-9.842-1.96-14.746-6.52-3.13-2.73-7.045-7.41-11.735-14.04-5.032-7.08-9.169-15.29-12.41-24.65-3.471-10.11-5.211-19.9-5.211-29.38 0-10.86 2.346-20.228 7.045-28.088 3.693-6.31 8.606-11.29 14.755-14.95 6.149-3.66 12.793-5.53 19.948-5.65 3.916 0 9.045 1.21 15.417 3.59 6.354 2.39 10.428 3.6 12.205 3.6 1.33 0 5.857-1.415 13.533-4.23 7.258-2.62 13.382-3.71 18.397-3.28 13.59 1.1 23.81 6.45 30.63 16.09-12.15 7.37-18.16 17.68-18.04 30.92.11 10.31 3.85 18.89 11.2 25.71 3.33 3.16 7.05 5.6 11.19 7.34-.9 2.61-1.85 5.11-2.86 7.51zM119.11 7.24c0 8.102-2.96 15.667-8.86 22.669-7.12 8.324-15.732 13.134-25.071 12.375a25.222 25.222 0 0 1-.188-3.07c0-7.778 3.386-16.102 9.399-22.908 3.002-3.446 6.82-6.311 11.45-8.597 4.62-2.252 8.99-3.497 13.1-3.71.12 1.083.17 2.166.17 3.24z"/></svg>
+        </div>
+        <div style="flex:1">
+          <div style="font-size:15px;font-weight:800;color:var(--text-1)">Sign in with Apple</div>
+          <div style="font-size:11px;color:var(--text-2)">${appleId ? 'Configuré' : 'Non configuré'}</div>
+        </div>
+      </div>
+
+      <details style="margin-bottom:10px">
+        <summary style="cursor:pointer;font-size:12px;font-weight:700;color:#000;padding:6px 0">📖 Comment obtenir un Services ID Apple (compte dev $99/an requis)</summary>
+        <div style="font-size:12px;color:var(--text-2);line-height:1.7;padding:8px 0 0 12px;border-left:2px solid #000">
+          1. Ouvrez <a href="https://developer.apple.com/account/resources/identifiers/list/serviceId" target="_blank" style="color:#000;font-weight:700">developer.apple.com/account/resources/identifiers</a><br>
+          2. Créez un <strong>Services ID</strong> (ex: <code>com.votreapp.baro.web</code>)<br>
+          3. Activez <strong>Sign In with Apple</strong><br>
+          4. Ajoutez le domaine : <code style="background:var(--gray-1);padding:2px 6px;border-radius:4px;font-size:11px">${window.location.hostname}</code><br>
+          5. URL de retour : <code style="background:var(--gray-1);padding:2px 6px;border-radius:4px;font-size:11px;word-break:break-all">${redirect}</code><br>
+          6. Collez le Services ID ci-dessous
+        </div>
+      </details>
+
+      <label class="form-label">Services ID Apple</label>
+      <input id="apple-service-id-input" class="input" type="text" placeholder="com.votreapp.baro.web" value="${appleId}" style="font-family:monospace;font-size:13px !important">
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button class="btn btn-ghost" style="flex:1" onclick="saveAppleServiceId()">💾 Enregistrer</button>
+        ${appleId ? `<button class="btn btn-primary" style="flex:1;background:#000;border-color:#000" onclick="loginApple()">🧪 Tester</button>` : ''}
+      </div>
+      ${appleId ? `<button class="btn btn-ghost" style="width:100%;margin-top:8px;color:var(--danger);border-color:var(--danger)" onclick="if(confirm('Supprimer le Services ID Apple ?')){localStorage.removeItem('stockr_apple_service_id');showToast('Supprimé','info');render()}">🗑️ Supprimer</button>` : ''}
+    </div>
+
+    <div class="card" style="margin-top:14px;background:var(--gray-1);padding:14px">
+      <div style="font-size:12px;color:var(--text-2);line-height:1.6">
+        🔒 <strong>Sécurité</strong> : les Client IDs sont publics (pas un secret) et stockés localement sur votre appareil.<br>
+        ⚡ <strong>Astuce</strong> : une fois configuré, les connexions s'ouvrent dans une popup/redirection réelle Google/Apple.
+      </div>
+    </div>
+  </div>`;
+}
+
+function saveGoogleClientId() {
+  const el = document.getElementById('google-client-id-input');
+  const id = (el?.value || '').trim();
+  if (!id) { showToast('Entrez un Client ID', 'error'); return; }
+  if (!id.endsWith('.apps.googleusercontent.com')) {
+    if (!confirm('Format inhabituel (devrait finir par .apps.googleusercontent.com). Continuer ?')) return;
+  }
+  localStorage.setItem('stockr_google_client_id', id);
+  showToast('✅ Client ID Google enregistré', 'success');
+  render();
+}
+
+function saveAppleServiceId() {
+  const el = document.getElementById('apple-service-id-input');
+  const id = (el?.value || '').trim();
+  if (!id) { showToast('Entrez un Services ID', 'error'); return; }
+  localStorage.setItem('stockr_apple_service_id', id);
+  showToast('✅ Services ID Apple enregistré', 'success');
+  render();
+}
+
+// ── NOTIFICATIONS SETUP (EmailJS + SMS webhook) ──
+function vNotificationsSetup() {
+  const svc  = localStorage.getItem('stockr_emailjs_service') || '';
+  const tpl  = localStorage.getItem('stockr_emailjs_template') || '';
+  const pub  = localStorage.getItem('stockr_emailjs_public') || '';
+  const smsHook = localStorage.getItem('stockr_sms_webhook') || '';
+  const smsKey  = localStorage.getItem('stockr_sms_apikey') || '';
+  const emailActive = !!(svc && tpl && pub);
+  const smsActive = !!smsHook;
+  return `
+  <div class="sub-hero" style="background:linear-gradient(135deg,#10B981,#0EA5E9)">
+    <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('security')">${IC.left}</button>
+    <div class="sub-hero-title">📧 Notifications réelles</div>
+    <div class="sub-hero-sub">${emailActive ? '🟢' : '⚪'} Email · ${smsActive ? '🟢' : '⚪'} SMS</div>
+  </div>
+  <div class="container">
+
+    <!-- ── EmailJS ── -->
+    <div class="card" style="margin-bottom:12px;border-left:4px solid ${emailActive?'var(--success)':'#0EA5E9'}">
+      <div style="font-size:15px;font-weight:800;color:var(--text-1);margin-bottom:6px">📧 EmailJS (envoi d'emails réel)</div>
+      <div style="font-size:12px;color:var(--text-2);line-height:1.6;margin-bottom:10px">
+        Service client-side gratuit <strong>200 emails/mois</strong> — envoie depuis votre Gmail/Outlook sans backend.
+      </div>
+
+      <details style="margin-bottom:10px">
+        <summary style="cursor:pointer;font-size:12px;font-weight:700;color:#0EA5E9;padding:6px 0">📖 Setup (3 min)</summary>
+        <div style="font-size:12px;color:var(--text-2);line-height:1.7;padding:8px 0 0 12px;border-left:2px solid #0EA5E9">
+          1. Créez un compte <a href="https://www.emailjs.com/" target="_blank" style="color:#0EA5E9;font-weight:700">emailjs.com</a> (gratuit)<br>
+          2. Ajoutez un <strong>Service</strong> Gmail (connectez votre compte)<br>
+          3. Créez un <strong>Template</strong> avec variables <code>{{to_email}}</code>, <code>{{to_name}}</code>, <code>{{code}}</code>, <code>{{purpose}}</code>, <code>{{expires_min}}</code><br>
+          4. Copiez les IDs ci-dessous<br>
+          <strong style="color:var(--success)">Limite gratuite : 200 emails/mois</strong>
+        </div>
+      </details>
+
+      <label class="form-label">Service ID</label>
+      <input id="emailjs-service" class="input" type="text" placeholder="service_xxxxxxx" value="${svc}" style="font-family:monospace;font-size:13px !important">
+      <label class="form-label" style="margin-top:8px">Template ID</label>
+      <input id="emailjs-template" class="input" type="text" placeholder="template_xxxxxxx" value="${tpl}" style="font-family:monospace;font-size:13px !important">
+      <label class="form-label" style="margin-top:8px">Public Key</label>
+      <input id="emailjs-public" class="input" type="text" placeholder="AbCdEfGhIjKlMn123" value="${pub}" style="font-family:monospace;font-size:13px !important">
+
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button class="btn btn-ghost" style="flex:1" onclick="saveEmailJSConfig()">💾 Enregistrer</button>
+        ${emailActive ? `<button class="btn btn-primary" style="flex:1;background:#0EA5E9" onclick="testVerificationEmail()">🧪 Tester</button>` : ''}
+      </div>
+      ${emailActive ? `<button class="btn btn-ghost" style="width:100%;margin-top:8px;color:var(--danger);border-color:var(--danger)" onclick="if(confirm('Supprimer la config EmailJS ?')){['stockr_emailjs_service','stockr_emailjs_template','stockr_emailjs_public'].forEach(k=>localStorage.removeItem(k));showToast('Supprimé','info');render()}">🗑️ Supprimer</button>` : ''}
+    </div>
+
+    <!-- ── SMS Webhook ── -->
+    <div class="card" style="margin-bottom:12px;border-left:4px solid ${smsActive?'var(--success)':'#F59E0B'}">
+      <div style="font-size:15px;font-weight:800;color:var(--text-1);margin-bottom:6px">📱 SMS via Webhook</div>
+      <div style="font-size:12px;color:var(--text-2);line-height:1.6;margin-bottom:10px">
+        Connectez Twilio, Africa's Talking, Orange SMS API, ou tout webhook custom.
+      </div>
+
+      <details style="margin-bottom:10px">
+        <summary style="cursor:pointer;font-size:12px;font-weight:700;color:#F59E0B;padding:6px 0">📖 Setup (options multiples)</summary>
+        <div style="font-size:12px;color:var(--text-2);line-height:1.7;padding:8px 0 0 12px;border-left:2px solid #F59E0B">
+          <strong>Option 1 — Twilio Function</strong> : créez une fonction qui reçoit <code>{ to, message }</code> et appelle Twilio Messages API<br>
+          <strong>Option 2 — Africa's Talking</strong> (Côte d'Ivoire) : <a href="https://africastalking.com/" target="_blank" style="color:#F59E0B;font-weight:700">africastalking.com</a><br>
+          <strong>Option 3 — Orange Developer</strong> : <a href="https://developer.orange.com/" target="_blank" style="color:#F59E0B;font-weight:700">developer.orange.com</a><br>
+          <strong>Payload envoyé</strong> : <code>{ to: "+22507...", message: "...", code: "123456" }</code>
+        </div>
+      </details>
+
+      <label class="form-label">URL Webhook</label>
+      <input id="sms-webhook" class="input" type="url" placeholder="https://api.example.com/send-sms" value="${smsHook}" style="font-family:monospace;font-size:13px !important">
+      <label class="form-label" style="margin-top:8px">Clé API (optionnel — envoyée en Bearer)</label>
+      <input id="sms-apikey" class="input" type="password" placeholder="sk_xxx..." value="${smsKey}" style="font-family:monospace;font-size:13px !important">
+
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button class="btn btn-ghost" style="flex:1" onclick="saveSMSConfig()">💾 Enregistrer</button>
+        ${smsActive ? `<button class="btn btn-primary" style="flex:1;background:#F59E0B" onclick="testVerificationSMS()">🧪 Tester</button>` : ''}
+      </div>
+      ${smsActive ? `<button class="btn btn-ghost" style="width:100%;margin-top:8px;color:var(--danger);border-color:var(--danger)" onclick="if(confirm('Supprimer la config SMS ?')){['stockr_sms_webhook','stockr_sms_apikey'].forEach(k=>localStorage.removeItem(k));showToast('Supprimé','info');render()}">🗑️ Supprimer</button>` : ''}
+    </div>
+
+    <div class="card" style="background:var(--gray-1);padding:14px">
+      <div style="font-size:12px;color:var(--text-2);line-height:1.6">
+        🔒 Les clés sont stockées uniquement sur cet appareil. Pour un usage production multi-utilisateurs, recommandé de router via votre backend.
+      </div>
+    </div>
+  </div>`;
+}
+
+function saveEmailJSConfig() {
+  const svc = document.getElementById('emailjs-service')?.value?.trim();
+  const tpl = document.getElementById('emailjs-template')?.value?.trim();
+  const pub = document.getElementById('emailjs-public')?.value?.trim();
+  if (!svc || !tpl || !pub) { showToast('Renseignez les 3 champs', 'error'); return; }
+  localStorage.setItem('stockr_emailjs_service', svc);
+  localStorage.setItem('stockr_emailjs_template', tpl);
+  localStorage.setItem('stockr_emailjs_public', pub);
+  showToast('✅ EmailJS configuré — envoi email réel activé', 'success');
+  render();
+}
+
+function saveSMSConfig() {
+  const url = document.getElementById('sms-webhook')?.value?.trim();
+  const key = document.getElementById('sms-apikey')?.value?.trim();
+  if (!url) { showToast('Entrez une URL webhook', 'error'); return; }
+  if (!/^https?:\/\//.test(url)) { showToast('URL invalide (doit commencer par http/https)', 'error'); return; }
+  localStorage.setItem('stockr_sms_webhook', url);
+  if (key) localStorage.setItem('stockr_sms_apikey', key); else localStorage.removeItem('stockr_sms_apikey');
+  showToast('✅ SMS webhook configuré', 'success');
+  render();
+}
+
+async function testVerificationEmail() {
+  const email = (S.security?.twoFactorEmail || S.session?.email || '').trim();
+  if (!email) { showToast('Configurez d\'abord votre email', 'error'); return; }
+  const code = String(Math.floor(100000 + Math.random() * 900000));
+  showToast('🧪 Envoi en cours...', 'info');
+  const r = await _sendVerificationEmail(email, code, 'Test BARO');
+  if (r.ok) showToast('✅ Email envoyé à ' + email + ' — code : ' + code, 'success');
+  else if (r.reason === 'emailjs_not_configured') {
+    if (confirm('EmailJS non configuré.\n\nOuvrir votre app mail avec le code pré-rempli ?')) {
+      _openMailtoVerification(email, code);
+    }
+  } else {
+    showToast('❌ Erreur : ' + (r.reason || 'inconnue'), 'error');
+  }
+}
+
+async function testVerificationSMS() {
+  const phone = (S.security?.twoFactorPhone || '').trim();
+  if (!phone) { showToast('Entrez un numéro', 'error'); return; }
+  const code = String(Math.floor(100000 + Math.random() * 900000));
+  showToast('🧪 Envoi en cours...', 'info');
+  const r = await _sendVerificationSMS(phone, code, 'Test BARO');
+  if (r.ok) showToast('✅ SMS envoyé à ' + phone + ' — code : ' + code, 'success');
+  else if (r.reason === 'sms_not_configured') {
+    if (confirm('Aucun webhook SMS configuré.\n\nOuvrir l\'app SMS avec le code pré-rempli ?')) {
+      _openSmsVerification(phone, code);
+    }
+  } else {
+    showToast('❌ Erreur : ' + (r.reason || 'inconnue'), 'error');
+  }
+}
+
 function vAuditLog() {
   if (!hasPermission('audit') && !hasPermission('all')) {
     return `
     <div class="page-header"><div class="page-header-row">
       <button class="back-btn" onclick="nav('more')">${IC.left}</button>
-      <div class="page-title">Journal d'audit</div>
+      <div class="page-title">${t('auditLogTitle')}</div>
     </div></div>
-    <div class="container"><div class="card" style="text-align:center;padding:40px 20px">🔒 Accès réservé aux rôles autorisés.</div></div>`;
+    <div class="container"><div class="card" style="text-align:center;padding:40px 20px">${t('auditAccessDenied')}</div></div>`;
   }
 
   const filter = S.auditFilter || 'all';
@@ -10637,25 +11652,26 @@ function vAuditLog() {
     sale: '💰', stock: '📦', member: '👤', auth: '🔐',
     settings: '⚙️', product: '🏷️', client: '👥'
   };
+  const locale = _lang === 'en' ? 'en-US' : 'fr-FR';
 
   return `
   <div class="sub-hero" style="background:linear-gradient(135deg,#1E293B,#0F172A)">
     <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('more')">${IC.left}</button>
-    <div class="sub-hero-title">📋 Journal d'audit</div>
-    <div class="sub-hero-sub">${filtered.length} événement(s) · Traçabilité immuable</div>
+    <div class="sub-hero-title">📋 ${t('auditLogTitle')}</div>
+    <div class="sub-hero-sub">${filtered.length} ${t('auditEventCount')} · ${t('auditLogSub')}</div>
   </div>
   <div class="container">
 
     <!-- Filtres période -->
     <div style="display:flex;gap:6px;margin-bottom:10px;overflow-x:auto">
-      ${[['all','Tout'],['today','24h'],['week','7j'],['month','30j']].map(([v,lbl]) => `
+      ${[['all',t('auditAll')],['today',t('auditToday')],['week',t('auditWeek')],['month',t('auditMonth')]].map(([v,lbl]) => `
         <button class="filter-chip ${period===v?'active':''}" onclick="S.auditPeriod='${v}';render()" style="white-space:nowrap;font-size:12px">${lbl}</button>
       `).join('')}
     </div>
 
     <!-- Filtres catégorie -->
     <div style="display:flex;gap:6px;margin-bottom:14px;overflow-x:auto">
-      ${[['all','📋 Tout'],['sale','💰 Ventes'],['stock','📦 Stock'],['member','👤 Équipe'],['auth','🔐 Auth'],['settings','⚙️ Params']].map(([v,lbl]) => `
+      ${[['all',t('auditCatAll')],['sale',t('auditCatSale')],['stock',t('auditCatStock')],['member',t('auditCatMember')],['auth',t('auditCatAuth')],['settings',t('auditCatSettings')]].map(([v,lbl]) => `
         <button class="filter-chip ${filter===v?'active':''}" onclick="S.auditFilter='${v}';render()" style="white-space:nowrap;font-size:11px">${lbl}</button>
       `).join('')}
     </div>
@@ -10663,8 +11679,8 @@ function vAuditLog() {
     ${filtered.length === 0 ? `
       <div class="card" style="text-align:center;padding:40px 20px">
         <div style="font-size:48px;margin-bottom:10px">📭</div>
-        <div style="font-size:14px;font-weight:700;color:var(--text-1)">Aucun événement</div>
-        <div style="font-size:12px;color:var(--text-3);margin-top:6px">Les actions apparaîtront ici au fil de l'activité.</div>
+        <div style="font-size:14px;font-weight:700;color:var(--text-1)">${t('auditNoEvents')}</div>
+        <div style="font-size:12px;color:var(--text-3);margin-top:6px">${t('auditNoEventsSub')}</div>
       </div>
     ` : `
       <div class="card" style="padding:0;overflow:hidden">
@@ -10672,8 +11688,8 @@ function vAuditLog() {
           const color = catColors[e.category] || '#64748B';
           const icon = catIcons[e.category] || '•';
           const dt = new Date(e.ts);
-          const dateStr = dt.toLocaleDateString('fr-FR', { day:'2-digit', month:'short' });
-          const timeStr = dt.toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' });
+          const dateStr = dt.toLocaleDateString(locale, { day:'2-digit', month:'short' });
+          const timeStr = dt.toLocaleTimeString(locale, { hour:'2-digit', minute:'2-digit' });
           const detailsStr = Object.entries(e.details || {})
             .map(([k, v]) => `<strong>${k}</strong>: ${v}`)
             .join(' · ');
@@ -10683,8 +11699,8 @@ function vAuditLog() {
             <div style="flex:1;min-width:0">
               <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
                 <span style="font-weight:700;font-size:13px;color:var(--text-1)">${e.memberName || 'Admin'}</span>
-                <span style="font-size:10px;padding:1px 6px;background:${color}15;color:${color};border-radius:4px;font-weight:700;text-transform:uppercase">${e.action}</span>
-                <span style="font-size:11px;color:var(--text-3)">${e.category}</span>
+                <span style="font-size:10px;padding:1px 6px;background:${color}15;color:${color};border-radius:4px;font-weight:700;text-transform:uppercase">${_translateAuditAction(e.action)}</span>
+                <span style="font-size:11px;color:var(--text-3)">${_translateAuditCategory(e.category)}</span>
               </div>
               ${detailsStr ? `<div style="font-size:11px;color:var(--text-2);margin-top:2px;word-break:break-word">${detailsStr}</div>` : ''}
               <div style="font-size:10px;color:var(--text-3);margin-top:3px">${dateStr} · ${timeStr}</div>
@@ -10692,27 +11708,55 @@ function vAuditLog() {
           </div>`;
         }).join('')}
       </div>
-      ${filtered.length > 200 ? `<div style="text-align:center;font-size:11px;color:var(--text-3);margin-top:10px">Affichage limité aux 200 événements les plus récents (${filtered.length} au total)</div>` : ''}
+      ${filtered.length > 200 ? `<div style="text-align:center;font-size:11px;color:var(--text-3);margin-top:10px">${t('auditDisplayLimited')} (${filtered.length})</div>` : ''}
       <div style="display:flex;gap:8px;margin-top:14px">
-        <button class="btn btn-ghost" style="flex:1" onclick="exportAuditLogCSV()">📄 Export CSV</button>
-        ${hasPermission('all') ? `<button class="btn" style="flex:1;background:#EF4444;color:#fff" onclick="clearAuditLog()">🗑️ Purger</button>` : ''}
+        <button class="btn btn-ghost" style="flex:1" onclick="exportAuditLogCSV()">${t('auditExportCSV')}</button>
+        ${hasPermission('all') ? `<button class="btn" style="flex:1;background:#EF4444;color:#fff" onclick="clearAuditLog()">${t('auditPurge')}</button>` : ''}
       </div>
     `}
   </div>`;
 }
 
+// Traductions actions/catégories audit
+function _translateAuditAction(action) {
+  if (!action) return '';
+  const FR = { create:'créer', update:'modifier', delete:'supprimer', login:'connexion', logout:'déconnexion',
+               sale:'vente', refund:'remboursement', stock_in:'entrée stock', stock_out:'sortie stock',
+               transfer:'transfert', approve:'approuver', reject:'rejeter', export:'exporter',
+               import:'importer', clear_audit_log:'purge journal', activate:'activer', deactivate:'désactiver' };
+  const EN = { create:'create', update:'update', delete:'delete', login:'login', logout:'logout',
+               sale:'sale', refund:'refund', stock_in:'stock in', stock_out:'stock out',
+               transfer:'transfer', approve:'approve', reject:'reject', export:'export',
+               import:'import', clear_audit_log:'purge log', activate:'activate', deactivate:'deactivate' };
+  const map = _lang === 'en' ? EN : FR;
+  return map[action] || action;
+}
+function _translateAuditCategory(cat) {
+  if (!cat) return '';
+  const FR = { sale:'ventes', stock:'stock', member:'équipe', auth:'auth', settings:'paramètres',
+               product:'produits', client:'clients', plan:'abonnement', promo:'promo' };
+  const EN = { sale:'sales', stock:'stock', member:'team', auth:'auth', settings:'settings',
+               product:'products', client:'clients', plan:'plan', promo:'promo' };
+  const map = _lang === 'en' ? EN : FR;
+  return map[cat] || cat;
+}
+
 function exportAuditLogCSV() {
-  const rows = [['ID', 'Date', 'Heure', 'Membre', 'Rôle', 'Catégorie', 'Action', 'Détails']];
+  const locale = _lang === 'en' ? 'en-US' : 'fr-FR';
+  const headers = _lang === 'en'
+    ? ['ID','Date','Time','Member','Role','Category','Action','Details']
+    : ['ID','Date','Heure','Membre','Rôle','Catégorie','Action','Détails'];
+  const rows = [headers];
   (S.auditLog || []).forEach(e => {
     const dt = new Date(e.ts);
     rows.push([
       e.id,
-      dt.toLocaleDateString('fr-FR'),
-      dt.toLocaleTimeString('fr-FR'),
+      dt.toLocaleDateString(locale),
+      dt.toLocaleTimeString(locale),
       e.memberName || '',
       e.memberRole || '',
-      e.category || '',
-      e.action || '',
+      _translateAuditCategory(e.category) || '',
+      _translateAuditAction(e.action) || '',
       JSON.stringify(e.details || {}).replace(/"/g, '""'),
     ]);
   });
@@ -10721,18 +11765,18 @@ function exportAuditLogCSV() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `stockr_audit_${new Date().toISOString().slice(0, 10)}.csv`;
+  a.download = `baro_audit_${new Date().toISOString().slice(0, 10)}.csv`;
   a.click();
   URL.revokeObjectURL(url);
-  showToast('📄 Journal exporté', 'success');
+  showToast(t('auditExported'), 'success');
 }
 
 function clearAuditLog() {
-  if (!confirm('⚠️ Purger le journal d\'audit ?\n\nCette action est irréversible.\nPensez à exporter d\'abord en CSV.')) return;
+  if (!confirm(t('auditConfirmPurge'))) return;
   S.auditLog = [];
   localStorage.setItem('stockr_audit_log', JSON.stringify([]));
   logAudit('settings', 'clear_audit_log', { cleared: true });
-  showToast('Journal purgé', 'info');
+  showToast(t('auditPurged'), 'info');
   render();
 }
 
@@ -10920,6 +11964,43 @@ function vSecurity() {
               <button onclick="setSecurity('twoFactorMethod','${v}')" style="padding:10px 4px;border-radius:8px;border:2px solid ${s.twoFactorMethod===v?'var(--accent)':'var(--border)'};background:${s.twoFactorMethod===v?'var(--accent-light)':'var(--card-bg)'};font-size:12px;font-weight:700;color:${s.twoFactorMethod===v?'var(--accent)':'var(--text-1)'};cursor:pointer">${lbl}</button>
             `).join('')}
           </div>
+
+          ${s.twoFactorMethod === 'email' ? `
+            <div style="margin-top:14px;padding:12px;background:var(--gray-1);border-radius:10px">
+              <div style="font-size:13px;font-weight:700;color:var(--text-1);margin-bottom:6px">📧 Email de vérification</div>
+              <input class="input" type="email" placeholder="ex: vous@gmail.com" value="${s.twoFactorEmail || S.session?.email || ''}" oninput="setSecurity('twoFactorEmail', this.value)" style="font-size:14px !important">
+              <div style="display:flex;gap:6px;margin-top:8px;align-items:center">
+                <button class="btn btn-ghost" style="flex:1;font-size:12px" onclick="nav('notifications-setup')">⚙️ Configurer EmailJS</button>
+                <button class="btn btn-primary" style="flex:1;font-size:12px" onclick="testVerificationEmail()">🧪 Envoyer test</button>
+              </div>
+              <div style="font-size:11px;color:${localStorage.getItem('stockr_emailjs_public') ? 'var(--success)' : 'var(--text-3)'};margin-top:6px">
+                ${localStorage.getItem('stockr_emailjs_public') ? '🟢 EmailJS configuré — envoi réel activé' : '⚪ EmailJS non configuré — codes affichés localement'}
+              </div>
+            </div>
+          ` : ''}
+
+          ${s.twoFactorMethod === 'sms' ? `
+            <div style="margin-top:14px;padding:12px;background:var(--gray-1);border-radius:10px">
+              <div style="font-size:13px;font-weight:700;color:var(--text-1);margin-bottom:6px">📱 Numéro SMS</div>
+              <input class="input" type="tel" placeholder="+225 07 XX XX XX" value="${s.twoFactorPhone || ''}" oninput="setSecurity('twoFactorPhone', this.value)" style="font-size:14px !important">
+              <div style="display:flex;gap:6px;margin-top:8px">
+                <button class="btn btn-ghost" style="flex:1;font-size:12px" onclick="nav('notifications-setup')">⚙️ Config SMS</button>
+                <button class="btn btn-primary" style="flex:1;font-size:12px" onclick="testVerificationSMS()">🧪 Envoyer test</button>
+              </div>
+              <div style="font-size:11px;color:${localStorage.getItem('stockr_sms_webhook') ? 'var(--success)' : 'var(--text-3)'};margin-top:6px">
+                ${localStorage.getItem('stockr_sms_webhook') ? '🟢 SMS gateway configurée — envoi réel activé' : '⚪ Pas de webhook SMS — codes affichés localement'}
+              </div>
+            </div>
+          ` : ''}
+
+          ${s.twoFactorMethod === 'app' ? `
+            <div style="margin-top:14px;padding:12px;background:var(--gray-1);border-radius:10px">
+              <div style="font-size:13px;font-weight:700;color:var(--text-1);margin-bottom:6px">🔐 App authenticator</div>
+              <div style="font-size:12px;color:var(--text-2);line-height:1.6">
+                Utilisez Google Authenticator, Authy ou Microsoft Authenticator. Le code à 6 chiffres sera demandé à chaque connexion.
+              </div>
+            </div>
+          ` : ''}
         </div>
       ` : ''}
     </div>
@@ -13162,11 +14243,11 @@ function vPromoForm() {
       </div>
       <div class="form-group">
         <label class="form-label">Code promo <span style="color:var(--danger)">*</span></label>
-        <div style="display:flex;gap:6px">
-          <input class="input" id="promo-code" value="${draft.code||''}" placeholder="Ex: NOEL25" style="flex:1;text-transform:uppercase;font-family:monospace;font-weight:700;letter-spacing:1px" oninput="this.dataset.manual='1';this.value=this.value.toUpperCase()">
-          <button class="btn btn-ghost" style="padding:0 12px" onclick="$('promo-code').value=_genPromoCode($('promo-name').value);$('promo-code').dataset.manual=''">${IC.refresh||'🎲'}</button>
+        <div style="display:flex;gap:8px;align-items:stretch">
+          <input class="input" id="promo-code" value="${draft.code||''}" placeholder="Ex: NOEL25" style="flex:1 1 auto;text-transform:uppercase;font-family:monospace;font-weight:700;letter-spacing:1px;font-size:18px !important" oninput="this.dataset.manual='1';this.value=this.value.toUpperCase()">
+          <button type="button" class="btn btn-ghost" style="flex:0 0 56px;width:56px;min-height:48px;padding:0;font-size:20px;display:flex;align-items:center;justify-content:center" title="Générer un code aléatoire" onclick="$('promo-code').value=_genPromoCode($('promo-name').value||'CODE');$('promo-code').dataset.manual=''">🎲</button>
         </div>
-        <div style="font-size:10px;color:var(--text-3);margin-top:2px">Ce code sera saisi par vos clients pour obtenir la réduction</div>
+        <div style="font-size:11px;color:var(--text-3);margin-top:4px">Ce code sera saisi par vos clients pour obtenir la réduction</div>
       </div>
     </div>
 
@@ -14695,6 +15776,65 @@ async function __imgEdShare() {
   }, 'image/png');
 }
 
+// ── IndexedDB pour stocker les vidéos (peuvent dépasser 5MB localStorage) ──
+function _vidDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open('baro-videos', 1);
+    req.onupgradeneeded = () => {
+      const db = req.result;
+      if (!db.objectStoreNames.contains('videos')) {
+        db.createObjectStore('videos', { keyPath: 'id' });
+      }
+    };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+async function _vidSave(blob, meta) {
+  try {
+    const db = await _vidDB();
+    const id = 'vid_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+    const record = { id, blob, type: blob.type || 'video/webm', size: blob.size, name: meta?.name || 'BARO Video', source: meta?.source || 'record', createdAt: Date.now() };
+    await new Promise((res, rej) => {
+      const tx = db.transaction('videos', 'readwrite');
+      tx.objectStore('videos').put(record);
+      tx.oncomplete = res; tx.onerror = () => rej(tx.error);
+    });
+    // Index léger en localStorage
+    const idx = JSON.parse(localStorage.getItem('stockr_vid_index') || '[]');
+    idx.unshift({ id, name: record.name, size: record.size, source: record.source, type: record.type, createdAt: record.createdAt });
+    localStorage.setItem('stockr_vid_index', JSON.stringify(idx.slice(0, 200)));
+    return id;
+  } catch(e) { console.warn('vidSave error', e); return null; }
+}
+async function _vidLoad(id) {
+  try {
+    const db = await _vidDB();
+    return await new Promise((res, rej) => {
+      const tx = db.transaction('videos', 'readonly');
+      const req = tx.objectStore('videos').get(id);
+      req.onsuccess = () => res(req.result);
+      req.onerror = () => rej(req.error);
+    });
+  } catch(e) { return null; }
+}
+async function _vidDelete(id) {
+  try {
+    const db = await _vidDB();
+    await new Promise((res, rej) => {
+      const tx = db.transaction('videos', 'readwrite');
+      tx.objectStore('videos').delete(id);
+      tx.oncomplete = res; tx.onerror = () => rej(tx.error);
+    });
+    const idx = JSON.parse(localStorage.getItem('stockr_vid_index') || '[]');
+    localStorage.setItem('stockr_vid_index', JSON.stringify(idx.filter(v => v.id !== id)));
+    return true;
+  } catch(e) { return false; }
+}
+function _vidList() {
+  try { return JSON.parse(localStorage.getItem('stockr_vid_index') || '[]'); } catch(e) { return []; }
+}
+
 // Éditeur vidéo (utilise MediaRecorder + enregistrement d'écran pour créer clips)
 function openVideoEditor(tpl) {
   const existing = document.getElementById('vid-editor-modal');
@@ -14702,6 +15842,7 @@ function openVideoEditor(tpl) {
   const modal = document.createElement('div');
   modal.id = 'vid-editor-modal';
   modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:10001;display:flex;align-items:center;justify-content:center;padding:12px;backdrop-filter:blur(6px);animation:fadeIn .2s ease';
+  const savedCount = _vidList().length;
   modal.innerHTML = `
     <div style="background:var(--surface);border-radius:16px;max-width:480px;width:100%;max-height:94vh;overflow-y:auto;box-shadow:0 25px 60px rgba(0,0,0,.5);animation:slideUp .25s ease">
       <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
@@ -14716,23 +15857,33 @@ function openVideoEditor(tpl) {
         </div>
         <div style="font-size:12px;color:var(--text-3);line-height:1.6;margin-bottom:14px">
           <b>✨ Studio vidéo BARO</b><br>
-          • Enregistrez votre écran ou caméra pour créer des Reels/Shorts<br>
-          • Importez des vidéos depuis votre galerie<br>
-          • Publication directe vers TikTok, YouTube, Instagram, Facebook
+          • Enregistrez écran/caméra (stockées dans l'app)<br>
+          • Importez depuis galerie ou CapCut<br>
+          • Publication directe TikTok, YouTube, IG, FB, X
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
           <button class="btn" style="background:#DC2626;color:#fff;padding:12px;font-size:12px" onclick="__vidRecordCamera()">🔴 Caméra</button>
           <button class="btn" style="background:#4F46E5;color:#fff;padding:12px;font-size:12px" onclick="__vidRecordScreen()">🖥️ Écran</button>
         </div>
-        <div style="margin-top:8px">
-          <label class="btn btn-ghost" style="width:100%;padding:12px;font-size:12px;cursor:pointer;display:block;text-align:center">
-            📁 Importer une vidéo
-            <input type="file" accept="video/*" style="display:none" onchange="__vidImport(event)">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
+          <label class="btn btn-ghost" style="padding:12px;font-size:12px;cursor:pointer;text-align:center;margin:0">
+            📁 Galerie
+            <input type="file" accept="video/*" style="display:none" onchange="__vidImport(event,'import')">
           </label>
+          <label class="btn" style="background:linear-gradient(135deg,#000,#25F4EE);color:#fff;padding:12px;font-size:12px;cursor:pointer;text-align:center;margin:0">
+            ✨ Importer CapCut
+            <input type="file" accept="video/*" style="display:none" onchange="__vidImport(event,'capcut')">
+          </label>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
+          <button class="btn btn-ghost" style="padding:10px;font-size:12px" onclick="openCapCutFlow()">🚀 Ouvrir CapCut</button>
+          <button class="btn btn-ghost" style="padding:10px;font-size:12px;position:relative" onclick="document.getElementById('vid-editor-modal').remove();nav('video-library')">
+            📚 Mes vidéos${savedCount ? ` <span style="background:var(--accent);color:#fff;border-radius:10px;padding:1px 7px;font-size:10px;margin-left:4px">${savedCount}</span>` : ''}
+          </button>
         </div>
         <div id="vid-preview-wrap" style="margin-top:12px"></div>
         <div style="background:var(--accent-light);border-radius:10px;padding:10px;margin-top:12px;font-size:11px;color:var(--text-2)">
-          💡 Pour un éditeur avancé (transitions, effets, musique), utilisez l'app <a href="https://www.capcut.com/editor" target="_blank" style="color:var(--accent);font-weight:700">CapCut</a> puis importez ici.
+          💡 Toutes les vidéos enregistrées/importées sont stockées dans "Mes vidéos" et publiables à tout moment.
         </div>
       </div>
     </div>`;
@@ -14759,17 +15910,24 @@ function __vidStartRecord(stream, mode) {
   const chunks = [];
   const rec = new MediaRecorder(stream, { mimeType: MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus') ? 'video/webm;codecs=vp9,opus' : 'video/webm' });
   rec.ondataavailable = e => { if (e.data.size) chunks.push(e.data); };
-  rec.onstop = () => {
+  rec.onstop = async () => {
     stream.getTracks().forEach(t => t.stop());
     const blob = new Blob(chunks, { type:'video/webm' });
     window.__lastVidBlob = blob;
+    // Enregistrement automatique dans IndexedDB
+    const id = await _vidSave(blob, { name: `BARO ${mode} ${new Date().toLocaleString('fr-FR')}`, source: mode });
+    window.__lastVidId = id;
     const url = URL.createObjectURL(blob);
+    const sizeKb = Math.round(blob.size / 1024);
     wrap.innerHTML = `
       <video src="${url}" controls style="width:100%;border-radius:10px;background:#000"></video>
+      <div style="font-size:11px;color:var(--text-3);text-align:center;margin-top:6px">✅ Enregistrée automatiquement (${sizeKb} KB) — accessible dans "Mes vidéos"</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
         <button class="btn btn-ghost" onclick="__vidDownload()">💾 Télécharger</button>
-        <button class="btn btn-primary" onclick="__vidShare()">📤 Partager / Publier</button>
+        <button class="btn btn-primary" onclick="__vidShare()">📤 Publier</button>
       </div>`;
+    if (typeof logAudit === 'function') logAudit('settings', 'video_saved', { id, source: mode, size: blob.size });
+    showToast(`🎞️ Vidéo enregistrée (${sizeKb} KB)`, 'success');
   };
   rec.start();
   wrap.innerHTML = `
@@ -14783,20 +15941,25 @@ function __vidStartRecord(stream, mode) {
 
 function __vidStop() { try { window.__vidRec?.stop(); } catch(e){} }
 
-function __vidImport(e) {
+async function __vidImport(e, source) {
   const file = e.target?.files?.[0];
   if (!file) return;
   window.__lastVidBlob = file;
+  // Enregistrement automatique dans IndexedDB
+  const id = await _vidSave(file, { name: file.name || `Import ${Date.now()}`, source: source || 'import' });
+  window.__lastVidId = id;
   const url = URL.createObjectURL(file);
   const wrap = document.getElementById('vid-preview-wrap');
   if (wrap) {
     wrap.innerHTML = `
       <video src="${url}" controls style="width:100%;border-radius:10px;background:#000"></video>
+      <div style="font-size:11px;color:var(--success);text-align:center;margin-top:6px">✅ ${source==='capcut'?'CapCut':'Vidéo'} importée et enregistrée</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
         <button class="btn btn-ghost" onclick="__vidDownload()">💾 Télécharger</button>
-        <button class="btn btn-primary" onclick="__vidShare()">📤 Partager / Publier</button>
+        <button class="btn btn-primary" onclick="__vidShare()">📤 Publier</button>
       </div>`;
   }
+  showToast(`🎞️ Vidéo importée${source==='capcut'?' depuis CapCut':''}`, 'success');
 }
 
 function __vidDownload() {
@@ -14811,16 +15974,217 @@ function __vidDownload() {
 
 async function __vidShare() {
   if (!window.__lastVidBlob) { showToast('Aucune vidéo', 'error'); return; }
-  const file = new File([window.__lastVidBlob], `baro-video-${Date.now()}.webm`, { type:'video/webm' });
+  __openPublishDialog(window.__lastVidBlob, window.__lastVidId);
+}
+
+// ── Dialogue publication multi-plateformes ──
+function __openPublishDialog(blob, vidId) {
+  const existing = document.getElementById('publish-modal');
+  if (existing) existing.remove();
+  const url = URL.createObjectURL(blob);
+  const modal = document.createElement('div');
+  modal.id = 'publish-modal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:10002;display:flex;align-items:center;justify-content:center;padding:12px;backdrop-filter:blur(6px);animation:fadeIn .2s ease';
+  modal.innerHTML = `
+    <div style="background:var(--surface);border-radius:16px;max-width:460px;width:100%;max-height:94vh;overflow-y:auto;box-shadow:0 25px 60px rgba(0,0,0,.5);animation:slideUp .25s ease">
+      <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+        <div style="font-size:16px;font-weight:800;color:var(--text-1)">📤 Publier la vidéo</div>
+        <button style="width:30px;height:30px;border-radius:50%;border:none;background:var(--gray-1);color:var(--text-2);font-size:16px;cursor:pointer" onclick="document.getElementById('publish-modal').remove()">×</button>
+      </div>
+      <div style="padding:14px 18px">
+        <video src="${url}" controls style="width:100%;border-radius:10px;background:#000;max-height:220px;margin-bottom:12px"></video>
+        <label class="form-label">Légende</label>
+        <textarea id="publish-caption" class="input" rows="3" placeholder="Décrivez votre vidéo..." style="font-size:14px !important">${S.business?.name ? `🔥 Nouveau chez ${S.business.name} ! ` : ''}#BARO #PME</textarea>
+
+        <div style="margin-top:14px;font-size:13px;font-weight:700;color:var(--text-1);margin-bottom:8px">🌐 Partager vers</div>
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px">
+          <button class="btn" style="background:linear-gradient(135deg,#833AB4,#E1306C);color:#fff;padding:12px;font-size:12px;font-weight:700" onclick="__publishTo('instagram')">📷 Instagram</button>
+          <button class="btn" style="background:linear-gradient(135deg,#000,#25F4EE);color:#fff;padding:12px;font-size:12px;font-weight:700" onclick="__publishTo('tiktok')">🎵 TikTok</button>
+          <button class="btn" style="background:#FF0000;color:#fff;padding:12px;font-size:12px;font-weight:700" onclick="__publishTo('youtube')">▶️ YouTube</button>
+          <button class="btn" style="background:#1877F2;color:#fff;padding:12px;font-size:12px;font-weight:700" onclick="__publishTo('facebook')">f Facebook</button>
+          <button class="btn" style="background:#000;color:#fff;padding:12px;font-size:12px;font-weight:700" onclick="__publishTo('twitter')">𝕏 X (Twitter)</button>
+          <button class="btn" style="background:#25D366;color:#fff;padding:12px;font-size:12px;font-weight:700" onclick="__publishTo('whatsapp')">💬 WhatsApp</button>
+        </div>
+
+        <button class="btn btn-primary" style="width:100%;margin-top:12px;padding:14px;font-weight:800" onclick="__publishTo('share')">📤 Partager (système)</button>
+        <button class="btn btn-ghost" style="width:100%;margin-top:6px" onclick="__publishTo('download')">💾 Télécharger uniquement</button>
+        <div style="background:var(--accent-light);border-radius:10px;padding:10px;margin-top:10px;font-size:11px;color:var(--text-2);line-height:1.5">
+          💡 Pour IG/TikTok/YouTube/FB : le partage ouvre l'app native avec la vidéo + la légende copiée. Collez-la dans la description.
+        </div>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+  window.__publishBlob = blob;
+  window.__publishVidId = vidId;
+}
+
+async function __publishTo(target) {
+  const caption = document.getElementById('publish-caption')?.value || '';
+  const blob = window.__publishBlob;
+  if (!blob) { showToast('Aucune vidéo', 'error'); return; }
+  const file = new File([blob], `baro-${Date.now()}.webm`, { type: blob.type || 'video/webm' });
+
+  // Copie la légende pour que l'utilisateur puisse la coller
+  if (caption) {
+    try { await navigator.clipboard.writeText(caption); } catch(e){}
+  }
+
+  // Historique publication
+  try {
+    const hist = JSON.parse(localStorage.getItem('stockr_publish_history') || '[]');
+    hist.unshift({ vidId: window.__publishVidId, target, caption, ts: Date.now() });
+    localStorage.setItem('stockr_publish_history', JSON.stringify(hist.slice(0, 200)));
+  } catch(e){}
+  if (typeof logAudit === 'function') logAudit('settings', 'video_published', { target, vidId: window.__publishVidId });
+
+  if (target === 'share') {
+    if (navigator.canShare && navigator.canShare({ files:[file] })) {
+      try {
+        await navigator.share({ files:[file], title:'BARO', text: caption });
+        showToast('✅ Partagé', 'success');
+        document.getElementById('publish-modal')?.remove();
+        return;
+      } catch(e){}
+    }
+    __vidDownload();
+    showToast('📥 Téléchargée — importez dans l\'app de votre choix', 'info');
+    return;
+  }
+
+  if (target === 'download') {
+    __vidDownload();
+    return;
+  }
+
+  // Partage vers plateforme spécifique : tenter navigator.share (système) puis deep link
+  const platformUrls = {
+    instagram: 'instagram://library?LocalIdentifier=',
+    tiktok:    'https://www.tiktok.com/upload?lang=fr',
+    youtube:   'https://studio.youtube.com/channel/UC/videos/upload',
+    facebook:  'https://www.facebook.com/',
+    twitter:   'https://twitter.com/compose/tweet?text=' + encodeURIComponent(caption),
+    whatsapp:  'whatsapp://',
+  };
+
+  // D'abord essayer Web Share avec files (fonctionne sur mobile pour IG/TikTok/WhatsApp)
   if (navigator.canShare && navigator.canShare({ files:[file] })) {
     try {
-      await navigator.share({ files:[file], title:'BARO', text:'Publié via BARO' });
-      showToast('✅ Partagé', 'success');
-    } catch(e){ __vidDownload(); }
-  } else {
-    __vidDownload();
-    showToast('📥 Téléchargée — importez dans TikTok/YouTube/IG', 'info');
+      await navigator.share({ files:[file], title:'BARO', text: caption });
+      showToast('✅ Envoyé vers ' + target + ' (légende copiée)', 'success');
+      document.getElementById('publish-modal')?.remove();
+      return;
+    } catch(e) {
+      if (e.name === 'AbortError') return;
+    }
   }
+
+  // Fallback : télécharge la vidéo + ouvre la plateforme + légende copiée
+  __vidDownload();
+  setTimeout(() => {
+    window.open(platformUrls[target] || 'https://' + target + '.com', '_blank');
+  }, 500);
+  showToast(`📥 Vidéo téléchargée + légende copiée — collez dans ${target}`, 'success');
+}
+
+// ── CapCut round-trip flow ──
+function openCapCutFlow() {
+  const existing = document.getElementById('capcut-modal');
+  if (existing) existing.remove();
+  const modal = document.createElement('div');
+  modal.id = 'capcut-modal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:10003;display:flex;align-items:center;justify-content:center;padding:12px;backdrop-filter:blur(6px);animation:fadeIn .2s ease';
+  modal.innerHTML = `
+    <div style="background:var(--surface);border-radius:16px;max-width:440px;width:100%;max-height:94vh;overflow-y:auto;box-shadow:0 25px 60px rgba(0,0,0,.5);animation:slideUp .25s ease">
+      <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,#000,#25F4EE);color:#fff">
+        <div style="font-size:16px;font-weight:800">✨ Flow CapCut</div>
+        <button style="width:30px;height:30px;border-radius:50%;border:none;background:rgba(255,255,255,.2);color:#fff;font-size:16px;cursor:pointer" onclick="document.getElementById('capcut-modal').remove()">×</button>
+      </div>
+      <div style="padding:16px 18px">
+        <div style="font-size:13px;color:var(--text-2);line-height:1.6;margin-bottom:14px">
+          <strong>Workflow BARO × CapCut :</strong><br>
+          1️⃣ Exportez/téléchargez une vidéo BARO<br>
+          2️⃣ Ouvrez CapCut, ajoutez transitions/effets/musique<br>
+          3️⃣ Exportez en MP4/WebM<br>
+          4️⃣ Re-importez ici pour publier sur les réseaux
+        </div>
+
+        <div style="display:grid;gap:10px">
+          <a href="https://www.capcut.com/editor" target="_blank" class="btn" style="background:linear-gradient(135deg,#000,#25F4EE);color:#fff;padding:14px;font-weight:700;text-decoration:none;text-align:center;display:block">🌐 Ouvrir CapCut Web</a>
+          <a href="capcut://" class="btn btn-ghost" style="padding:14px;text-align:center;text-decoration:none;display:block" onclick="setTimeout(()=>{if(document.hasFocus())window.open('https://www.capcut.com/','_blank')},500)">📱 Ouvrir app CapCut (mobile)</a>
+          <label class="btn btn-primary" style="padding:14px;cursor:pointer;display:block;text-align:center">
+            📁 Ré-importer vidéo CapCut
+            <input type="file" accept="video/*" style="display:none" onchange="__vidImport(event,'capcut');document.getElementById('capcut-modal').remove()">
+          </label>
+          ${window.__lastVidBlob ? `<button class="btn btn-ghost" onclick="__vidDownload()">💾 Télécharger vidéo actuelle (pour CapCut)</button>` : ''}
+        </div>
+
+        <div style="background:var(--accent-light);border-radius:10px;padding:10px;margin-top:14px;font-size:11px;color:var(--text-2);line-height:1.5">
+          💡 Astuce : sur mobile, CapCut s'ouvre automatiquement si installé.
+        </div>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+}
+
+// ── Bibliothèque de vidéos ──
+function vVideoLibrary() {
+  const vids = _vidList();
+  return `
+  <div class="sub-hero" style="background:linear-gradient(135deg,#000,#25F4EE)">
+    <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('social')">${IC.left}</button>
+    <div class="sub-hero-title">📚 Mes vidéos</div>
+    <div class="sub-hero-sub">${vids.length} vidéo(s) enregistrée(s)</div>
+  </div>
+  <div class="container">
+    ${vids.length === 0 ? `
+      <div class="card" style="text-align:center;padding:40px 20px">
+        <div style="font-size:48px;margin-bottom:12px">🎞️</div>
+        <div style="font-size:15px;font-weight:700;color:var(--text-1);margin-bottom:6px">Aucune vidéo enregistrée</div>
+        <div style="font-size:12px;color:var(--text-3);margin-bottom:16px">Créez-en depuis l'éditeur vidéo</div>
+        <button class="btn btn-primary" onclick="openVideoEditor()">🎬 Ouvrir l'éditeur</button>
+      </div>
+    ` : vids.map(v => `
+      <div class="card" style="margin-bottom:10px;padding:12px">
+        <div style="display:flex;gap:12px;align-items:flex-start">
+          <div style="flex:0 0 60px;height:60px;background:linear-gradient(135deg,#000,#1a1a1a);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:24px">
+            ${v.source==='capcut'?'✨':v.source==='camera'?'📹':v.source==='screen'?'🖥️':'🎞️'}
+          </div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:13px;font-weight:700;color:var(--text-1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${v.name}</div>
+            <div style="font-size:11px;color:var(--text-3);margin-top:2px">${new Date(v.createdAt).toLocaleString('fr-FR')} · ${Math.round(v.size/1024)} KB</div>
+            <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
+              <button class="btn btn-ghost" style="padding:6px 10px;font-size:11px" onclick="playVideoFromLibrary('${v.id}')">▶️ Voir</button>
+              <button class="btn btn-primary" style="padding:6px 10px;font-size:11px" onclick="publishVideoFromLibrary('${v.id}')">📤 Publier</button>
+              <button class="btn btn-ghost" style="padding:6px 10px;font-size:11px;color:var(--danger)" onclick="if(confirm('Supprimer cette vidéo ?')){deleteVideoFromLibrary('${v.id}')}">🗑️</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `).join('')}
+  </div>`;
+}
+
+async function playVideoFromLibrary(id) {
+  const rec = await _vidLoad(id);
+  if (!rec) { showToast('Vidéo introuvable', 'error'); return; }
+  const url = URL.createObjectURL(rec.blob);
+  const modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:10010;display:flex;align-items:center;justify-content:center;padding:20px';
+  modal.onclick = () => modal.remove();
+  modal.innerHTML = `<div onclick="event.stopPropagation()" style="max-width:640px;width:100%"><video src="${url}" controls autoplay style="width:100%;border-radius:12px;background:#000"></video><button class="btn btn-primary" style="width:100%;margin-top:10px" onclick="this.parentElement.parentElement.remove()">Fermer</button></div>`;
+  document.body.appendChild(modal);
+}
+async function publishVideoFromLibrary(id) {
+  const rec = await _vidLoad(id);
+  if (!rec) { showToast('Vidéo introuvable', 'error'); return; }
+  window.__lastVidBlob = rec.blob;
+  window.__lastVidId = id;
+  __openPublishDialog(rec.blob, id);
+}
+async function deleteVideoFromLibrary(id) {
+  await _vidDelete(id);
+  showToast('Vidéo supprimée', 'info');
+  render();
 }
 
 // ── SOCIAL MEDIA ─────────────────────────────
@@ -14853,7 +16217,11 @@ function vSocialMedia() {
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
         <button class="btn btn-ghost" style="padding:10px;font-size:12px" onclick="openImageEditor()">✏️ Éditeur image</button>
-        <button class="btn btn-ghost" style="padding:10px;font-size:12px" onclick="openVideoEditor()">🎞️ Éditeur vidéo (CapCut)</button>
+        <button class="btn btn-ghost" style="padding:10px;font-size:12px" onclick="openVideoEditor()">🎞️ Éditeur vidéo</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
+        <button class="btn btn-ghost" style="padding:10px;font-size:12px" onclick="nav('video-library')">📚 Mes vidéos (${_vidList().length})</button>
+        <button class="btn btn-ghost" style="padding:10px;font-size:12px;background:linear-gradient(135deg,rgba(0,0,0,.05),rgba(37,244,238,.12))" onclick="openCapCutFlow()">✨ CapCut</button>
       </div>
     </div>
 
@@ -16050,7 +17418,8 @@ function openIntegrationDashboard(integrationId) {
       title:'YouTube Studio',
       color:'#FF0000',
       items:[
-        { label:'📹 Uploader une vidéo', url:'https://studio.youtube.com/channel/UC/videos/upload' },
+        { label:'📤 Upload direct depuis BARO (API)', action:()=>__openYTUploadModal() },
+        { label:'📹 Uploader via YouTube Studio', url:'https://studio.youtube.com/channel/UC/videos/upload' },
         { label:'📊 Studio (analytics)', url:'https://studio.youtube.com/' },
         { label:'💬 Gérer les commentaires', url:'https://studio.youtube.com/channel/UC/comments' },
         { label:'🎬 Créer une vidéo', action:()=>openVideoEditor(SOCIAL_TEMPLATES.video.find(t=>t.id==='yt-short')) },
@@ -16069,8 +17438,10 @@ function openIntegrationDashboard(integrationId) {
       title:'Shopify',
       color:'#96BF48',
       items:[
-        { label:'🛒 Admin Shopify', url: cfg.value && cfg.value.includes('myshopify') ? cfg.value+'/admin' : 'https://shopify.com/admin' },
-        { label:'🔄 Synchroniser le stock', action:()=>{ syncEcommerceStock('shopify'); } },
+        { label:'🔄 Pousser tous mes articles (API)', action:()=>{ syncEcommerceStock('shopify'); } },
+        { label:'📥 Importer produits Shopify → BARO', action:()=>{ importFromEcommerce('shopify'); } },
+        { label:'✏️ Éditer un produit Shopify', action:()=>{ openEcommerceProductEditor('shopify'); } },
+        { label:'🛒 Admin Shopify (web)', url: cfg.value && cfg.value.includes('myshopify') ? cfg.value+'/admin' : 'https://shopify.com/admin' },
         { label:'📦 Voir les commandes', url: (cfg.value||'https://shopify.com')+'/admin/orders' },
       ]
     },
@@ -16078,8 +17449,10 @@ function openIntegrationDashboard(integrationId) {
       title:'WooCommerce',
       color:'#96588A',
       items:[
-        { label:'🛒 Admin WP', url: (cfg.value||'')+'/wp-admin/' },
-        { label:'🔄 Synchroniser le stock', action:()=>{ syncEcommerceStock('woocommerce'); } },
+        { label:'🔄 Pousser tous mes articles (API)', action:()=>{ syncEcommerceStock('woocommerce'); } },
+        { label:'📥 Importer produits WC → BARO', action:()=>{ importFromEcommerce('woocommerce'); } },
+        { label:'✏️ Éditer un produit WooCommerce', action:()=>{ openEcommerceProductEditor('woocommerce'); } },
+        { label:'🛒 Admin WP (web)', url: (cfg.value||'')+'/wp-admin/' },
         { label:'📦 Voir les commandes', url: (cfg.value||'')+'/wp-admin/edit.php?post_type=shop_order' },
       ]
     },
@@ -16173,19 +17546,410 @@ function __runIntegAction(integrationId, idx) {
   else showToast('Action non disponible', 'info');
 }
 
-// Helper : synchronisation du stock e-commerce (Shopify / WooCommerce)
+// ── Helpers API réels (Shopify/WooCommerce/YouTube) ─────────
+// Appels directs côté client ; si CORS bloque, suggère proxy ou backend.
+
+async function _shopifyApiCall(cfg, method, endpoint, body) {
+  const shop = (cfg.value || '').replace(/^https?:\/\//, '').replace(/\/$/, '');
+  if (!shop || !cfg.key) throw new Error('Shopify non configuré');
+  // Shopify Admin REST requires CORS via App Proxy or X-Shopify-Access-Token header
+  const url = `https://${shop}/admin/api/2024-10/${endpoint}`;
+  const res = await fetch(url, {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Shopify-Access-Token': cfg.key,
+      'Accept': 'application/json',
+    },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  if (!res.ok) throw new Error('Shopify ' + res.status + ' : ' + await res.text());
+  return res.json();
+}
+
+async function _wcApiCall(cfg, method, endpoint, body) {
+  const base = (cfg.value || '').replace(/\/$/, '');
+  // Key format: "ck_xxx:cs_xxx"
+  const [ck, cs] = (cfg.key || '').split(':');
+  if (!base || !ck || !cs) throw new Error('WooCommerce : URL + "consumer_key:consumer_secret" requis');
+  const url = `${base}/wp-json/wc/v3/${endpoint}` + (endpoint.includes('?') ? '&' : '?') +
+    `consumer_key=${encodeURIComponent(ck)}&consumer_secret=${encodeURIComponent(cs)}`;
+  const res = await fetch(url, {
+    method,
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  if (!res.ok) throw new Error('WC ' + res.status + ' : ' + await res.text());
+  return res.json();
+}
+
+// Helper : synchronisation du stock e-commerce (Shopify / WooCommerce) — APPEL API RÉEL
 async function syncEcommerceStock(provider) {
   const cfg = (S.integrationsConfig||[]).find(i => i.id === provider);
   if (!cfg || !cfg.key) { showToast('Clé API manquante', 'error'); return; }
   showToast(`🔄 Sync ${provider} en cours...`, 'info');
   try {
-    // Exemple d'appel (à adapter selon votre backend proxy CORS)
-    const n = (S.articles||[]).length;
-    // En l'absence d'API backend, on trace l'intention
-    if (typeof logActivity === 'function') logActivity('integration', `Sync ${provider} — ${n} articles`);
-    setTimeout(() => showToast(`✅ Sync ${provider} : ${n} articles synchronisés`, 'success'), 800);
+    const articles = S.articles || [];
+    if (articles.length === 0) { showToast('Aucun article à synchroniser', 'info'); return; }
+
+    let created = 0, updated = 0, errors = 0;
+
+    if (provider === 'shopify') {
+      // Lister les produits existants par SKU
+      const existing = await _shopifyApiCall(cfg, 'GET', 'products.json?limit=250').catch(() => ({ products: [] }));
+      const skuMap = {};
+      (existing.products || []).forEach(p => (p.variants || []).forEach(v => { if (v.sku) skuMap[v.sku] = { product: p, variant: v }; }));
+
+      for (const a of articles) {
+        const sku = a.sku || a.barcode || a.id;
+        try {
+          if (skuMap[sku]) {
+            // Update stock via inventory_levels
+            await _shopifyApiCall(cfg, 'PUT', `products/${skuMap[sku].product.id}.json`, {
+              product: { id: skuMap[sku].product.id, variants: [{ id: skuMap[sku].variant.id, price: String(a.price || 0), inventory_quantity: a.quantity || 0 }] }
+            });
+            updated++;
+          } else {
+            // Create product
+            await _shopifyApiCall(cfg, 'POST', 'products.json', {
+              product: {
+                title: a.name,
+                body_html: a.description || '',
+                vendor: S.session?.business || 'BARO',
+                product_type: a.category || 'General',
+                variants: [{ sku, price: String(a.price || 0), inventory_quantity: a.quantity || 0, inventory_management: 'shopify' }]
+              }
+            });
+            created++;
+          }
+        } catch(e) { errors++; console.warn('shopify sync', sku, e); }
+      }
+    } else if (provider === 'woocommerce') {
+      const existing = await _wcApiCall(cfg, 'GET', 'products?per_page=100').catch(() => []);
+      const skuMap = {};
+      (existing || []).forEach(p => { if (p.sku) skuMap[p.sku] = p; });
+
+      for (const a of articles) {
+        const sku = a.sku || a.barcode || String(a.id);
+        try {
+          if (skuMap[sku]) {
+            await _wcApiCall(cfg, 'PUT', `products/${skuMap[sku].id}`, {
+              regular_price: String(a.price || 0),
+              stock_quantity: a.quantity || 0,
+              manage_stock: true,
+            });
+            updated++;
+          } else {
+            await _wcApiCall(cfg, 'POST', 'products', {
+              name: a.name,
+              sku,
+              type: 'simple',
+              regular_price: String(a.price || 0),
+              stock_quantity: a.quantity || 0,
+              manage_stock: true,
+              description: a.description || '',
+              categories: a.category ? [{ name: a.category }] : [],
+            });
+            created++;
+          }
+        } catch(e) { errors++; console.warn('wc sync', sku, e); }
+      }
+    } else {
+      showToast('Sync non supportée pour ' + provider, 'info');
+      return;
+    }
+
+    if (typeof logAudit === 'function') logAudit('settings', 'sync_' + provider, { created, updated, errors });
+    if (typeof logActivity === 'function') logActivity('integration', `Sync ${provider} — ${created} créés, ${updated} mis à jour, ${errors} erreurs`);
+    showToast(`✅ ${provider} : ${created} créés, ${updated} mis à jour${errors?', '+errors+' erreurs':''}`, errors ? 'info' : 'success');
   } catch(e) {
-    showToast(`⚠ Erreur sync ${provider} : ${e.message}`, 'error');
+    console.warn('syncEcommerceStock', e);
+    // Détecte erreur CORS fréquente
+    if (e.message && (e.message.includes('fetch') || e.message.includes('CORS') || e.message.includes('NetworkError'))) {
+      showToast(`⚠ CORS : utilisez une extension CORS ou un proxy pour ${provider}`, 'error');
+    } else {
+      showToast(`⚠ Erreur sync ${provider} : ${e.message}`, 'error');
+    }
+  }
+}
+
+// ── Import produits depuis Shopify/WooCommerce vers BARO ──
+async function importFromEcommerce(provider) {
+  const cfg = (S.integrationsConfig||[]).find(i => i.id === provider);
+  if (!cfg || !cfg.key) { showToast('Clé API manquante', 'error'); return; }
+  if (!confirm(`Importer les produits ${provider} dans BARO ?\n\nCela ajoutera les produits manquants (match par SKU) et mettra à jour les quantités.`)) return;
+  showToast(`🔄 Import ${provider}...`, 'info');
+  try {
+    let remoteProducts = [];
+    if (provider === 'shopify') {
+      const r = await _shopifyApiCall(cfg, 'GET', 'products.json?limit=250');
+      (r.products || []).forEach(p => (p.variants || []).forEach(v => {
+        remoteProducts.push({
+          sku: v.sku || ('shopify_' + p.id + '_' + v.id),
+          name: p.title + (p.variants.length > 1 ? ' — ' + v.title : ''),
+          price: parseFloat(v.price) || 0,
+          quantity: v.inventory_quantity || 0,
+          category: p.product_type || 'Import Shopify',
+          description: (p.body_html || '').replace(/<[^>]+>/g, '').slice(0, 500),
+        });
+      }));
+    } else if (provider === 'woocommerce') {
+      const list = await _wcApiCall(cfg, 'GET', 'products?per_page=100');
+      (list || []).forEach(p => {
+        remoteProducts.push({
+          sku: p.sku || ('wc_' + p.id),
+          name: p.name,
+          price: parseFloat(p.regular_price) || parseFloat(p.price) || 0,
+          quantity: p.stock_quantity || 0,
+          category: p.categories?.[0]?.name || 'Import WC',
+          description: (p.short_description || p.description || '').replace(/<[^>]+>/g, '').slice(0, 500),
+        });
+      });
+    }
+
+    if (!remoteProducts.length) { showToast('Aucun produit trouvé', 'info'); return; }
+
+    let created = 0, updated = 0;
+    const existingSkus = {};
+    (S.articles || []).forEach(a => { if (a.sku) existingSkus[a.sku] = a; });
+
+    remoteProducts.forEach(rp => {
+      if (existingSkus[rp.sku]) {
+        const a = existingSkus[rp.sku];
+        a.price = rp.price;
+        a.quantity = rp.quantity;
+        updated++;
+      } else {
+        S.articles.push({
+          id: 'art_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+          name: rp.name,
+          sku: rp.sku,
+          price: rp.price,
+          quantity: rp.quantity,
+          category: rp.category,
+          description: rp.description,
+          unit: 'piece',
+          alertThreshold: 5,
+          createdAt: new Date().toISOString(),
+        });
+        created++;
+      }
+    });
+
+    try { localStorage.setItem('stockr_articles', JSON.stringify(S.articles)); } catch(e){}
+    if (typeof logAudit === 'function') logAudit('product', 'import_' + provider, { created, updated });
+    showToast(`✅ Import ${provider} : ${created} créés, ${updated} mis à jour`, 'success');
+    render();
+  } catch(e) {
+    console.warn('importFromEcommerce', e);
+    showToast(`⚠ Erreur import : ${e.message}`, 'error');
+  }
+}
+
+// ── Éditeur inline produit e-commerce (Shopify/WC) ──
+async function openEcommerceProductEditor(provider) {
+  const cfg = (S.integrationsConfig||[]).find(i => i.id === provider);
+  if (!cfg || !cfg.key) { showToast('Clé API manquante', 'error'); return; }
+
+  showToast(`🔄 Chargement produits ${provider}...`, 'info');
+  try {
+    let products = [];
+    if (provider === 'shopify') {
+      const r = await _shopifyApiCall(cfg, 'GET', 'products.json?limit=50');
+      products = (r.products || []).map(p => ({
+        id: p.id,
+        variantId: p.variants[0]?.id,
+        title: p.title,
+        price: p.variants[0]?.price || '0',
+        stock: p.variants[0]?.inventory_quantity || 0,
+      }));
+    } else {
+      const list = await _wcApiCall(cfg, 'GET', 'products?per_page=50');
+      products = (list || []).map(p => ({
+        id: p.id,
+        title: p.name,
+        price: p.regular_price || p.price || '0',
+        stock: p.stock_quantity || 0,
+      }));
+    }
+
+    const existing = document.getElementById('ecom-edit-modal');
+    if (existing) existing.remove();
+    const modal = document.createElement('div');
+    modal.id = 'ecom-edit-modal';
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:10005;display:flex;align-items:center;justify-content:center;padding:16px';
+    modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+    const color = provider === 'shopify' ? '#96BF48' : '#96588A';
+    modal.innerHTML = `
+      <div style="background:var(--surface);border-radius:16px;max-width:500px;width:100%;max-height:90vh;overflow-y:auto">
+        <div style="background:${color};padding:14px 18px;color:#fff;display:flex;align-items:center;justify-content:space-between">
+          <div style="font-size:15px;font-weight:800">✏️ Éditer produits ${provider}</div>
+          <button style="width:30px;height:30px;border-radius:50%;border:none;background:rgba(255,255,255,.2);color:#fff;font-size:16px;cursor:pointer" onclick="document.getElementById('ecom-edit-modal').remove()">×</button>
+        </div>
+        <div style="padding:14px 18px">
+          ${products.length === 0 ? '<div style="text-align:center;padding:20px;color:var(--text-3)">Aucun produit</div>' :
+            products.map(p => `
+              <div style="padding:10px;border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:center">
+                <div style="flex:1;min-width:0">
+                  <div style="font-size:13px;font-weight:700;color:var(--text-1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.title}</div>
+                  <div style="display:flex;gap:4px;margin-top:4px">
+                    <input type="number" id="ecom-price-${p.id}" value="${p.price}" style="width:80px;padding:6px;border-radius:6px;border:1px solid var(--border);font-size:12px" placeholder="Prix">
+                    <input type="number" id="ecom-stock-${p.id}" value="${p.stock}" style="width:60px;padding:6px;border-radius:6px;border:1px solid var(--border);font-size:12px" placeholder="Stock">
+                  </div>
+                </div>
+                <button class="btn btn-primary" style="padding:8px 12px;font-size:11px;background:${color};border-color:${color}" onclick="__updateEcomProduct('${provider}', '${p.id}', '${p.variantId || ''}')">💾</button>
+              </div>
+            `).join('')
+          }
+        </div>
+      </div>`;
+    document.body.appendChild(modal);
+  } catch(e) {
+    console.warn('openEcommerceProductEditor', e);
+    showToast('Erreur : ' + e.message, 'error');
+  }
+}
+
+async function __updateEcomProduct(provider, productId, variantId) {
+  const cfg = (S.integrationsConfig||[]).find(i => i.id === provider);
+  const price = document.getElementById(`ecom-price-${productId}`)?.value;
+  const stock = parseInt(document.getElementById(`ecom-stock-${productId}`)?.value || '0');
+  try {
+    if (provider === 'shopify') {
+      await _shopifyApiCall(cfg, 'PUT', `products/${productId}.json`, {
+        product: { id: Number(productId), variants: [{ id: Number(variantId), price: String(price), inventory_quantity: stock }] }
+      });
+    } else {
+      await _wcApiCall(cfg, 'PUT', `products/${productId}`, {
+        regular_price: String(price), stock_quantity: stock, manage_stock: true
+      });
+    }
+    showToast('✅ Produit mis à jour sur ' + provider, 'success');
+    if (typeof logAudit === 'function') logAudit('product', 'ecom_update_' + provider, { productId, price, stock });
+  } catch(e) {
+    showToast('❌ ' + e.message, 'error');
+  }
+}
+
+// Modal sélection vidéo + upload direct YouTube
+function __openYTUploadModal() {
+  const vids = _vidList();
+  if (vids.length === 0) {
+    if (confirm('Aucune vidéo dans votre bibliothèque.\n\nOuvrir l\'éditeur vidéo pour en créer une ?')) {
+      openVideoEditor();
+    }
+    return;
+  }
+  const existing = document.getElementById('yt-upload-modal');
+  if (existing) existing.remove();
+  const modal = document.createElement('div');
+  modal.id = 'yt-upload-modal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:10005;display:flex;align-items:center;justify-content:center;padding:16px';
+  modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+  modal.innerHTML = `
+    <div style="background:var(--surface);border-radius:16px;max-width:440px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 25px 60px rgba(0,0,0,.4)">
+      <div style="background:#FF0000;padding:16px 20px;color:#fff;display:flex;align-items:center;justify-content:space-between">
+        <div style="font-size:16px;font-weight:800">▶️ Upload YouTube (API directe)</div>
+        <button style="width:30px;height:30px;border-radius:50%;border:none;background:rgba(255,255,255,.2);color:#fff;font-size:16px;cursor:pointer" onclick="document.getElementById('yt-upload-modal').remove()">×</button>
+      </div>
+      <div style="padding:16px 20px">
+        <label class="form-label">Sélectionner vidéo</label>
+        <select id="yt-vid-select" class="input" style="font-size:14px !important">
+          ${vids.map(v => `<option value="${v.id}">${v.name} (${Math.round(v.size/1024)} KB)</option>`).join('')}
+        </select>
+        <label class="form-label" style="margin-top:10px">Titre</label>
+        <input id="yt-title" class="input" type="text" placeholder="Titre YouTube" value="BARO — ${S.session?.business || 'Ma Boutique'}" style="font-size:14px !important">
+        <label class="form-label" style="margin-top:10px">Description</label>
+        <textarea id="yt-desc" class="input" rows="3" placeholder="Description..." style="font-size:14px !important">🔥 Publié depuis BARO PWA — gestion de stock & vente en ligne</textarea>
+        <button class="btn btn-primary" style="width:100%;margin-top:14px;background:#FF0000;border-color:#FF0000;padding:14px" onclick="__confirmYTUpload()">🚀 Uploader en privé</button>
+        <div style="background:var(--accent-light);padding:10px;border-radius:10px;margin-top:10px;font-size:11px;color:var(--text-2);line-height:1.5">
+          ℹ️ La vidéo sera uploadée en <strong>privé</strong>. Vous pourrez la publier depuis YouTube Studio.<br>
+          Requiert Google OAuth configuré + scope <code>youtube.upload</code>.
+        </div>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+}
+
+async function __confirmYTUpload() {
+  const id = document.getElementById('yt-vid-select')?.value;
+  const title = document.getElementById('yt-title')?.value;
+  const desc = document.getElementById('yt-desc')?.value;
+  if (!id) return;
+  const rec = await _vidLoad(id);
+  if (!rec) { showToast('Vidéo introuvable', 'error'); return; }
+  document.getElementById('yt-upload-modal')?.remove();
+  showToast('📤 Upload YouTube en cours... (peut prendre 1-5 min)', 'info');
+  try {
+    const result = await uploadVideoToYouTube(rec.blob, title, desc);
+    if (result?.id) {
+      showToast('✅ Uploadée : youtube.com/watch?v=' + result.id, 'success');
+      window.open('https://studio.youtube.com/video/' + result.id + '/edit', '_blank');
+      if (typeof logAudit === 'function') logAudit('settings', 'youtube_upload', { videoId: result.id });
+    } else {
+      showToast('Upload effectué mais réponse inattendue', 'info');
+    }
+  } catch(e) {
+    showToast('❌ Upload échoué : ' + e.message, 'error');
+  }
+}
+
+// ── YouTube Data API v3 — upload réel (nécessite OAuth token) ─
+async function uploadVideoToYouTube(blob, title, description) {
+  // Utilise le Google OAuth déjà configuré pour obtenir un access_token avec scope youtube.upload
+  const clientId = (localStorage.getItem('stockr_google_client_id') || '').trim();
+  if (!clientId) {
+    showToast('Configurez d\'abord Google OAuth (Connexions OAuth)', 'error');
+    return;
+  }
+  try {
+    await _loadGoogleGSI();
+    return await new Promise((resolve, reject) => {
+      const tokenClient = window.google.accounts.oauth2.initTokenClient({
+        client_id: clientId,
+        scope: 'https://www.googleapis.com/auth/youtube.upload',
+        callback: async (tok) => {
+          if (!tok.access_token) { reject(new Error('No token')); return; }
+          try {
+            const metadata = {
+              snippet: { title: title || 'BARO Video', description: description || '', tags: ['BARO', 'PME'], categoryId: '22' },
+              status: { privacyStatus: 'private' }
+            };
+            const boundary = '-------314159265358979323846';
+            const delim = `\r\n--${boundary}\r\n`;
+            const closeDelim = `\r\n--${boundary}--`;
+            const reader = new FileReader();
+            reader.onload = async () => {
+              const b64 = reader.result.split(',')[1];
+              const body = delim +
+                'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
+                JSON.stringify(metadata) +
+                delim +
+                'Content-Type: video/webm\r\n' +
+                'Content-Transfer-Encoding: base64\r\n\r\n' +
+                b64 +
+                closeDelim;
+              const res = await fetch('https://www.googleapis.com/upload/youtube/v3/videos?uploadType=multipart&part=snippet,status', {
+                method: 'POST',
+                headers: {
+                  'Authorization': 'Bearer ' + tok.access_token,
+                  'Content-Type': `multipart/related; boundary=${boundary}`,
+                },
+                body
+              });
+              if (!res.ok) { reject(new Error('YouTube ' + res.status)); return; }
+              const json = await res.json();
+              resolve(json);
+            };
+            reader.readAsDataURL(blob);
+          } catch(e) { reject(e); }
+        },
+      });
+      tokenClient.requestAccessToken({ prompt: 'consent' });
+    });
+  } catch(e) {
+    showToast('Erreur upload YouTube : ' + e.message, 'error');
+    throw e;
   }
 }
 
@@ -18966,6 +20730,19 @@ document.addEventListener('DOMContentLoaded', () => {
   window.__vidImport             = __vidImport;
   window.__vidDownload           = __vidDownload;
   window.__vidShare              = __vidShare;
+  window.__openPublishDialog     = __openPublishDialog;
+  window.__publishTo             = __publishTo;
+  window.openCapCutFlow          = openCapCutFlow;
+  window.vVideoLibrary           = vVideoLibrary;
+  window.playVideoFromLibrary    = playVideoFromLibrary;
+  window.publishVideoFromLibrary = publishVideoFromLibrary;
+  window.deleteVideoFromLibrary  = deleteVideoFromLibrary;
+  window.importFromEcommerce     = importFromEcommerce;
+  window.openEcommerceProductEditor = openEcommerceProductEditor;
+  window.__updateEcomProduct     = __updateEcomProduct;
+  window.uploadVideoToYouTube    = uploadVideoToYouTube;
+  window.__openYTUploadModal     = __openYTUploadModal;
+  window.__confirmYTUpload       = __confirmYTUpload;
   window.connectIntegration      = connectIntegration;
   window.disconnectIntegration   = disconnectIntegration;
   window.saveDeliverySetup       = saveDeliverySetup;
@@ -19054,6 +20831,9 @@ document.addEventListener('DOMContentLoaded', () => {
   window.vTeam              = vTeam;
   window.vAddTeamMember     = vAddTeamMember;
   window.vAuditLog          = vAuditLog;
+  window.vSpectraAISetup    = vSpectraAISetup;
+  window.saveGeminiKey      = saveGeminiKey;
+  window.testGeminiKey      = testGeminiKey;
   window.vAppearance        = vAppearance;
   window.vSecurity          = vSecurity;
   window.v2FAVerify         = v2FAVerify;
@@ -19078,6 +20858,14 @@ document.addEventListener('DOMContentLoaded', () => {
   window.loginBiometric     = loginBiometric;
   window.__showSocialModal  = __showSocialModal;
   window.__submitSocialLogin= __submitSocialLogin;
+  window.vOAuthSetup        = vOAuthSetup;
+  window.saveGoogleClientId = saveGoogleClientId;
+  window.saveAppleServiceId = saveAppleServiceId;
+  window.vNotificationsSetup = vNotificationsSetup;
+  window.saveEmailJSConfig   = saveEmailJSConfig;
+  window.saveSMSConfig       = saveSMSConfig;
+  window.testVerificationEmail = testVerificationEmail;
+  window.testVerificationSMS   = testVerificationSMS;
   window.openMemberSwitcher = openMemberSwitcher;
   window.switchToMember     = switchToMember;
   window.promptMemberPin    = promptMemberPin;
@@ -19086,6 +20874,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // Appliquer le thème AVANT le premier render pour éviter le flash
   if (typeof applyTheme === 'function') applyTheme();
   if (typeof applyAppearance === 'function') applyAppearance();
+
+  // Gérer le retour OAuth (id_token/access_token dans le hash)
+  try { _handleOAuthCallback(); } catch(e) { console.warn('oauth cb', e); }
 
   // Restaurer la session + token si existants
   const saved = getSession();
