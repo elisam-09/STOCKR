@@ -136,7 +136,7 @@ function fmtRecipeQty(qty, unit) {
 // ── API base ──────────────────────────────────
 const API_BASE = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
   ? 'http://localhost:5001'
-  : (window.__BARO_API_URL__ || 'https://baro-production-c175.up.railway.app');
+  : (window.__BARO_API_URL__ || 'https://stockr-production-c175.up.railway.app');
 
 // ── i18n ─────────────────────────────────────
 const LANGS = {
