@@ -2298,13 +2298,20 @@ function render() {
 }
 
 function renderNav() {
-  const tabs = [
-    { id:'pantry',    icon:IC.box,    label:t('stock')    },
-    { id:'products',  icon:IC.tag,    label:t('products') },
-    { id:'home',      icon:IC.home,   label:t('home')     },
-    { id:'sales',     icon:IC.dollar, label:t('sales')    },
-    { id:'financial', icon:IC.bar,    label:t('bilan')    },
-  ];
+  const tabs = S.authProfile === 'reseller'
+    ? [
+        { id:'pantry',    icon:IC.box,    label:t('stock')   },
+        { id:'home',      icon:IC.home,   label:t('home')    },
+        { id:'sales',     icon:IC.dollar, label:t('sales')   },
+        { id:'financial', icon:IC.bar,    label:t('bilan')   },
+      ]
+    : [
+        { id:'pantry',    icon:IC.box,    label:t('stock')    },
+        { id:'products',  icon:IC.tag,    label:t('products') },
+        { id:'home',      icon:IC.home,   label:t('home')     },
+        { id:'sales',     icon:IC.dollar, label:t('sales')    },
+        { id:'financial', icon:IC.bar,    label:t('bilan')    },
+      ];
   return tabs.map(t => `
     <button class="nav-tab ${S.view===t.id?'active':''}" onclick="nav('${t.id}')">
       ${t.icon}
