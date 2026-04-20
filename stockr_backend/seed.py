@@ -1,5 +1,5 @@
 """
-STOCKR — Script de seed
+BARO — Script de seed
 Crée un compte de test et remplit la base avec des données réalistes.
 Usage : python seed.py
 """
@@ -10,8 +10,8 @@ BASE = "http://localhost:5001/api"
 
 # ── Compte ─────────────────────────────────────
 ACCOUNT = {
-    "email":         "demo@stockr.app",
-    "password":      "stockr2026",
+    "email":         "demo@baro.app",
+    "password":      "baro2026",
     "name":          "Élisam",
     "business_name": "Boulangerie Élisam",
 }
@@ -169,7 +169,7 @@ def ok(r, label):
 
 
 def main():
-    print("\n🌱 STOCKR Seed — démarrage\n")
+    print("\n🌱 BARO Seed — démarrage\n")
 
     # ── 1. Register ──
     print("→ Création du compte…")

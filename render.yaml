@@ -1,14 +1,14 @@
-# ── STOCKR — Render Backend Deployment ───────
+# ── BARO — Render Backend Deployment ───────
 # Connecte ce repo GitHub sur render.com → "New Web Service"
 # Root directory : laisser vide (racine du repo)
 
 services:
   - type: web
-    name: stockr-api
+    name: baro-api
     env: python
     region: frankfurt          # le plus proche de l'Afrique de l'Ouest
     plan: free
-    rootDir: stockr_backend
+    rootDir: baro_backend
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 1 --timeout 120
     healthCheckPath: /api/health
