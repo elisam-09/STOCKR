@@ -853,22 +853,64 @@ function generateInvoicePDF(sales) {
   const wrapped = doc.splitTextToSize('Conditions : ' + conditions, 178);
   doc.text(wrapped, 16, y);
 
+  // ── Signature & cachet (espace 40mm) ──
+  if (y < 235) {
+    y = Math.max(y + 4, 235);
+    doc.setDrawColor(200, 200, 210); doc.setLineWidth(0.3);
+    // Signature client
+    doc.setTextColor(120, 120, 120); doc.setFontSize(8); doc.setFont('helvetica', 'normal');
+    doc.text('Signature du client', 35, y + 2);
+    doc.line(16, y + 18, 90, y + 18);
+    doc.setFontSize(7);
+    doc.text('Date & signature', 35, y + 22);
+    // Cachet commercial
+    doc.setDrawColor(79, 70, 229); doc.setLineWidth(0.5);
+    doc.roundedRect(120, y - 4, 74, 26, 2, 2, 'S');
+    doc.setTextColor(79, 70, 229); doc.setFontSize(8); doc.setFont('helvetica', 'bold');
+    doc.text('Cachet & signature', 157, y + 2, { align: 'center' });
+    doc.setFontSize(7); doc.setFont('helvetica', 'normal'); doc.setTextColor(160, 160, 160);
+    doc.text('(Emplacement pour tampon)', 157, y + 18, { align: 'center' });
+  }
+
+  // ── Watermark léger "PAYÉ" en diagonale ──
+  if (pm && sales[0].total > 0) {
+    try {
+      doc.saveGraphicsState();
+      doc.setGState(doc.GState({ opacity: 0.05 }));
+      doc.setTextColor(16, 185, 129);
+      doc.setFontSize(100); doc.setFont('helvetica', 'bold');
+      doc.text('PAYE', 105, 160, { align: 'center', angle: -25 });
+      doc.restoreGraphicsState();
+    } catch(e) { /* jsPDF GState optionnel */ }
+  }
+
   // ── Pied de page ──
   doc.setFillColor(248, 250, 252);
   doc.rect(0, 268, 210, 30, 'F');
   doc.setDrawColor(79, 70, 229); doc.setLineWidth(1);
   doc.line(16, 268, 194, 268);
   doc.setTextColor(79, 70, 229); doc.setFontSize(10); doc.setFont('helvetica', 'bold');
-  doc.text('Merci de votre confiance !', 105, 276, { align: 'center' });
+  doc.text('Merci de votre confiance !', 105, 275, { align: 'center' });
   doc.setTextColor(100, 100, 100); doc.setFontSize(8); doc.setFont('helvetica', 'normal');
-  doc.text(biz + (S.session?.email ? ' · ' + S.session.email : '') + (loc ? ' · ' + loc.name : ''), 105, 282, { align: 'center' });
+  doc.text(biz + (S.session?.email ? ' · ' + S.session.email : '') + (loc ? ' · ' + loc.name : ''), 105, 280, { align: 'center' });
+
+  // Coordonnées légales CI (RCCM / CC / NCC)
+  const legal = [
+    S.session?.rccm ? 'RCCM : ' + S.session.rccm : null,
+    S.session?.ncc  ? 'CC : '   + S.session.ncc  : null,
+    S.session?.cnps ? 'CNPS : ' + S.session.cnps : null,
+  ].filter(Boolean).join(' · ');
+  if (legal) {
+    doc.setFontSize(7);
+    doc.text(legal, 105, 285, { align: 'center' });
+  }
   const activePayments = (S.paymentMethods||[]).filter(m=>m.active);
   if (activePayments.length > 0) {
     doc.setFontSize(7);
-    doc.text('Paiements acceptes : ' + activePayments.map(m=>m.name).join(' · '), 105, 287, { align: 'center' });
+    doc.text('Paiements acceptes : ' + activePayments.map(m=>m.name).join(' · '), 105, legal ? 289 : 287, { align: 'center' });
   }
   doc.setFontSize(6); doc.setTextColor(160, 160, 160);
-  doc.text('Facture generee par BARO · stockr.app', 105, 293, { align: 'center' });
+  doc.text('Facture generee par BARO · baro.app · ' + new Date().toISOString().slice(0,10), 105, 293, { align: 'center' });
 
   doc.save(`${t('invoice')}-${invId}.pdf`);
   showToast(t('invoice') + ' PDF');
@@ -1276,6 +1318,8 @@ const S = {
   })(),
   twoFAPending: null,      // { code, email, expires } quand 2FA requis
   twoFACodeInput: '',
+  signupPending: null,     // { code, expires, data } pendant vérification email d'inscription
+  signupCodeInput: '',
 };
 
 // ── Rôles & Permissions ───────────────────────
@@ -2135,36 +2179,76 @@ async function doRegister() {
   const business = (S.authBiz || '').trim();
   const email    = S.authEmail.trim();
   const pwd      = S.authPwd;
+  if (!email || !pwd || !name) {
+    showToast(t('fillAll') || 'Remplissez tous les champs', 'error');
+    return;
+  }
+  // Étape 1 : envoi code de vérification email AVANT création du compte
+  const code = String(Math.floor(100000 + Math.random() * 900000));
+  S.signupPending = {
+    code,
+    expires: Date.now() + 10 * 60 * 1000,
+    data: { name, business, email, pwd,
+      country: S.authCountry, language: S.authLang, currency: S.authCurrency,
+      profile: S.authProfile, tax: S.authTax }
+  };
+  S.signupCodeInput = '';
+  S.view = 'signup-verify';
+  render();
+  (async () => {
+    const r = await _sendVerificationEmail(email, code, "Vérification d'inscription BARO");
+    if (r.ok) {
+      showToast('📧 Code envoyé à ' + email, 'success');
+    } else {
+      // Fallback : affiche le code pour dev/config manquante + ouvre mailto
+      showToast('📧 Email non configuré — code : ' + code, 'info');
+      try { _openMailtoVerification(email, code); } catch(_){}
+    }
+  })();
+}
+
+async function confirmSignupVerification() {
+  const p = S.signupPending;
+  if (!p) { S.view = 'home'; S.authView = 'register'; render(); return; }
+  if (Date.now() > p.expires) { showToast('Code expiré. Renvoyez-le.', 'error'); return; }
+  const input = (S.signupCodeInput || '').trim();
+  if (input !== p.code) {
+    showToast('Code incorrect', 'error');
+    return;
+  }
+  const d = p.data;
   try {
     const data = await api('POST', '/api/auth/register', {
-      email,
-      password:      pwd,
-      name,
-      business_name: business || name,
-      country:       S.authCountry,
-      language:      S.authLang,
-      currency:      S.authCurrency,
-      profile:       S.authProfile,
-      tax_rate:      parseFloat(S.authTax) || 0,
+      email:         d.email,
+      password:      d.pwd,
+      name:          d.name,
+      business_name: d.business || d.name,
+      country:       d.country,
+      language:      d.language,
+      currency:      d.currency,
+      profile:       d.profile,
+      tax_rate:      parseFloat(d.tax) || 0,
+      email_verified: true,
     });
     const u = data.user;
     S.token   = u.auth_token;
     // Mapping profile UI → businessType (driver de toute l'UI adaptative)
-    const bt = S.authProfile === 'reseller' ? 'reseller' : S.authProfile === 'transformer' ? 'maker' : 'mixed';
+    const bt = d.profile === 'reseller' ? 'reseller' : d.profile === 'transformer' ? 'maker' : 'mixed';
     S.session = {
       id: u.id, name: u.name, email: u.email, business: u.business_name,
-      profile:         S.authProfile,
+      profile:         d.profile,
       businessType:    bt,
-      currency:        S.authCurrency,
-      currency_symbol: getCurrencySymbol(S.authCurrency),
-      country:         S.authCountry,
-      language:        S.authLang,
-      tax_rate:        parseFloat(S.authTax) || 0,
+      currency:        d.currency,
+      currency_symbol: getCurrencySymbol(d.currency),
+      country:         d.country,
+      language:        d.language,
+      tax_rate:        parseFloat(d.tax) || 0,
+      email_verified:  true,
+      email_verified_at: new Date().toISOString(),
     };
     localStorage.setItem('stockr_business_type', bt);
     saveSession({ ...S.session, token: S.token });
     // Pas de seed automatique : utilisateur commence vierge, boutons "Charger exemples" disponibles dans l'empty state
-    // (avant : seedDemoData(bt) créait des produits démo qui n'appartenaient pas au user)
     S.articles = S.articles || [];
     S.products = S.products || [];
     S.clients  = S.clients  || [];
@@ -2175,17 +2259,71 @@ async function doRegister() {
       localStorage.setItem('stockr_clients',  JSON.stringify(S.clients));
       localStorage.setItem('stockr_sales',    JSON.stringify(S.sales));
     } catch(_){}
-    if (typeof logAudit === 'function') logAudit('auth', 'register', { email: u.email, bt });
+    if (typeof logAudit === 'function') logAudit('auth', 'register', { email: u.email, bt, verified: true });
+    S.signupPending = null;
+    S.signupCodeInput = '';
     S.authEmail = S.authPwd = S.authPwd2 = S.authName = S.authBiz = '';
     S.authStep = 1;
     S.view = 'home';
     const btLabel = bt === 'reseller' ? '🏪 Revendeur' : bt === 'maker' ? '🏭 Transformateur' : '🔀 Mixte';
-    showToast(`Bienvenue, ${name} ! Mode ${btLabel} activé — votre boutique est vide, ajoutez vos vrais produits.`);
+    showToast(`✅ Email vérifié ! Bienvenue, ${d.name} ! Mode ${btLabel} activé.`, 'success');
     render();
     await loadData();
   } catch(e) {
     showToast(e.message || 'Erreur lors de la création du compte', 'error');
   }
+}
+
+async function resendSignupVerification() {
+  const p = S.signupPending;
+  if (!p) return;
+  p.code = String(Math.floor(100000 + Math.random() * 900000));
+  p.expires = Date.now() + 10 * 60 * 1000;
+  const r = await _sendVerificationEmail(p.data.email, p.code, "Vérification d'inscription BARO");
+  if (r.ok) showToast('📧 Nouveau code envoyé à ' + p.data.email, 'success');
+  else showToast('Code : ' + p.code + ' (email non configuré)', 'info');
+}
+
+function cancelSignupVerification() {
+  S.signupPending = null;
+  S.signupCodeInput = '';
+  S.view = 'home';
+  S.authView = 'register';
+  S.authStep = 2;
+  render();
+}
+
+function vSignupVerify() {
+  const p = S.signupPending;
+  if (!p) { S.view = 'home'; S.authView = 'register'; render(); return ''; }
+  const maskedEmail = p.data.email.replace(/(.{2}).*(@.*)/, '$1****$2');
+  return `
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div class="auth-logo">${IC.baro}<span>BARO</span></div>
+      <div class="auth-title">✉️ Vérifiez votre email</div>
+      <div class="auth-sub">Un code à 6 chiffres a été envoyé à<br><strong>${maskedEmail}</strong></div>
+
+      <div class="form-group" style="margin-top:20px">
+        <label class="form-label">Code de vérification</label>
+        <input class="input" id="signup-code" type="text" inputmode="numeric" maxlength="6" placeholder="000000"
+          style="letter-spacing:8px;text-align:center;font-size:24px;font-weight:700;font-family:monospace"
+          value="${S.signupCodeInput || ''}"
+          oninput="S.signupCodeInput=this.value.replace(/\\D/g,'').slice(0,6)">
+      </div>
+
+      <button class="btn btn-primary" style="width:100%;margin-top:10px" onclick="confirmSignupVerification()">✓ Valider et créer mon compte</button>
+
+      <div style="text-align:center;margin-top:14px;display:flex;flex-direction:column;gap:8px">
+        <button class="btn-link" onclick="resendSignupVerification()" style="background:none;border:none;color:var(--accent);font-size:13px;cursor:pointer">🔄 Renvoyer le code</button>
+        <button class="btn-link" onclick="cancelSignupVerification()" style="background:none;border:none;color:var(--text-3);font-size:12px;cursor:pointer">← Modifier mes informations</button>
+      </div>
+
+      <div style="margin-top:20px;padding:10px;background:var(--accent-light);border-radius:8px;font-size:11px;color:var(--text-2);text-align:center">
+        🛡️ Le code expire dans 10 minutes — ne le partagez avec personne.
+      </div>
+    </div>
+  </div>`;
 }
 
 // ── Seed démo ─────────────────────────────────
@@ -2484,28 +2622,95 @@ function downloadCSV(filename, rows) {
   showToast(`${filename} téléchargé`);
 }
 
+// En-tête CSV pro : raison sociale, coordonnées, date, résumé
+function _csvHeader(title, summary = []) {
+  const biz = S.session?.business || S.session?.name || 'BARO Commerce';
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('fr-FR', { day:'2-digit', month:'long', year:'numeric' });
+  const timeStr = now.toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' });
+  const rows = [
+    ['═══════════════════════════════════════'],
+    [biz.toUpperCase()],
+    [title],
+    ['═══════════════════════════════════════'],
+    ['Généré le', dateStr + ' à ' + timeStr],
+    ['Email', S.session?.email || ''],
+    ['Téléphone', S.session?.phone || ''],
+    ['Devise', S.session?.currency_symbol || 'FCFA'],
+  ];
+  if (S.session?.rccm) rows.push(['RCCM', S.session.rccm]);
+  if (S.session?.ncc) rows.push(['CC Fiscal', S.session.ncc]);
+  summary.forEach(([k,v]) => rows.push([k, v]));
+  rows.push([''], [''], ['--- DONNÉES ---'], ['']);
+  return rows;
+}
+
 function exportArticlesCSV() {
-  const rows = [['Nom', 'Stock', 'Unité', 'Seuil alerte', 'Délai (j)']];
-  S.articles.forEach(a => rows.push([a.name, a.stock, a.unit, a.min, a.lead || '']));
-  downloadCSV(`stockr_articles_${new Date().toISOString().slice(0,10)}.csv`, rows);
+  const totalVal = S.articles.reduce((s,a)=>s+(a.stock||0)*(a.purchasePrice||a.price||0), 0);
+  const lowStock = S.articles.filter(a => a.stock < (a.min||0) && (a.min||0) > 0).length;
+  const rows = _csvHeader('📦 INVENTAIRE STOCK', [
+    ['Nombre articles', S.articles.length],
+    ['Stock faible', lowStock],
+    ['Valeur totale stock', fmt(totalVal) + ' ' + sym()],
+  ]);
+  rows.push(['#', 'Nom article', 'Référence', 'Stock', 'Unité', 'Seuil alerte', 'Prix achat', 'Prix vente', 'Valeur stock', 'Délai (j)', 'Date expiration']);
+  S.articles.forEach((a,i) => rows.push([
+    i+1, a.name, a.ref || '', a.stock, a.unit, a.min || 0,
+    a.purchasePrice || 0, a.price || 0,
+    (a.stock||0) * (a.purchasePrice||a.price||0),
+    a.lead || 7, a.expiry || ''
+  ]));
+  rows.push(['', '', '', '', '', '', '', 'TOTAL', totalVal + ' ' + sym()]);
+  downloadCSV(`baro_inventaire_${new Date().toISOString().slice(0,10)}.csv`, rows);
 }
 
 function exportProductsCSV() {
-  const rows = [['Nom', 'Prix achat', 'Prix vente', 'Marge %', 'Bénéfice/u', 'Composition']];
-  S.products.forEach(p => {
+  const avgMargin = S.products.length ? Math.round(S.products.reduce((s,p)=>s+marginPct(p),0) / S.products.length) : 0;
+  const rows = _csvHeader('🏷️ PRODUITS FINIS', [
+    ['Nombre produits', S.products.length],
+    ['Marge moyenne', avgMargin + '%'],
+  ]);
+  rows.push(['#', 'Nom produit', 'Prix achat', 'Prix vente', 'Marge %', 'Bénéfice unitaire', 'Dispo max', 'Composition']);
+  S.products.forEach((p,i) => {
     const comp = p.composition.map(c => {
       const a = S.articles.find(a => a.id === c.id);
       return a ? `${c.qty} ${a.unit} ${a.name}` : '';
     }).filter(Boolean).join(' + ');
-    rows.push([p.name, p.purchasePrice || 0, p.price, marginPct(p) + '%', profitUnit(p), comp]);
+    rows.push([i+1, p.name, p.purchasePrice || 0, p.price, marginPct(p) + '%', profitUnit(p), productMaxMake(p), comp]);
   });
-  downloadCSV(`stockr_produits_${new Date().toISOString().slice(0,10)}.csv`, rows);
+  downloadCSV(`baro_produits_${new Date().toISOString().slice(0,10)}.csv`, rows);
 }
 
 function exportSalesCSV() {
-  const rows = [['Date', 'Produit', 'Quantité', 'Total', 'Bénéfice']];
-  S.sales.forEach(s => rows.push([fmtDate(s.date), s.productName, s.qty, s.total, s.profit || 0]));
-  downloadCSV(`stockr_ventes_${new Date().toISOString().slice(0,10)}.csv`, rows);
+  const totalCA = S.sales.reduce((s,v)=>s+v.total,0);
+  const totalProfit = S.sales.reduce((s,v)=>s+(v.profit||0),0);
+  const avgBasket = S.sales.length ? Math.round(totalCA / S.sales.length) : 0;
+  const avgMargin = totalCA ? Math.round(totalProfit / totalCA * 100) : 0;
+  const rows = _csvHeader('💰 HISTORIQUE VENTES', [
+    ['Nombre ventes', S.sales.length],
+    ['Chiffre d\'affaires', fmt(totalCA) + ' ' + sym()],
+    ['Bénéfice total', fmt(totalProfit) + ' ' + sym()],
+    ['Panier moyen', fmt(avgBasket) + ' ' + sym()],
+    ['Marge globale', avgMargin + '%'],
+  ]);
+  rows.push(['#', 'Date', 'Heure', 'N° Facture', 'Produit', 'Quantité', 'Prix unitaire', 'Total', 'Bénéfice', 'Client', 'Paiement', 'Promo', 'Statut']);
+  S.sales.forEach((s,i) => {
+    const d = new Date(s.date);
+    const unit = s.qty > 0 ? Math.round(s.total / s.qty) : 0;
+    rows.push([
+      i+1,
+      d.toLocaleDateString('fr-FR'),
+      d.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'}),
+      _invNum ? _invNum(s.id) : ('INV-'+s.id),
+      s.productName, s.qty, unit, s.total, s.profit || 0,
+      s.clientName || 'Anonyme',
+      s.paymentMethod || 'cash',
+      s.promoName || '',
+      'Validée'
+    ]);
+  });
+  rows.push([], ['', '', '', '', '', 'TOTAUX', '', totalCA + ' ' + sym(), totalProfit + ' ' + sym()]);
+  downloadCSV(`baro_ventes_${new Date().toISOString().slice(0,10)}.csv`, rows);
 }
 
 function exportAllCSV() {
@@ -3655,16 +3860,77 @@ function __markViewTransition(newView) {
   return changed;
 }
 
+// ── Anti-blink : capture/restaure focus, selection, scroll avant innerHTML ─
+function __snapshotUIState() {
+  const ae = document.activeElement;
+  let focus = null;
+  if (ae && ae.id && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.tagName === 'SELECT')) {
+    focus = {
+      id: ae.id,
+      selectionStart: typeof ae.selectionStart === 'number' ? ae.selectionStart : null,
+      selectionEnd: typeof ae.selectionEnd === 'number' ? ae.selectionEnd : null,
+      scrollTop: ae.scrollTop,
+    };
+  }
+  const vEl = document.getElementById('view');
+  const scrollY = window.scrollY || 0;
+  const vScroll = vEl ? vEl.scrollTop : 0;
+  return { focus, scrollY, vScroll };
+}
+function __restoreUIState(snap) {
+  if (!snap) return;
+  requestAnimationFrame(() => {
+    if (snap.focus) {
+      const el = document.getElementById(snap.focus.id);
+      if (el) {
+        try { el.focus({ preventScroll: true }); } catch(e) { try { el.focus(); } catch(_){} }
+        if (snap.focus.selectionStart !== null && typeof el.setSelectionRange === 'function') {
+          try { el.setSelectionRange(snap.focus.selectionStart, snap.focus.selectionEnd); } catch(e){}
+        }
+      }
+    }
+    // Ne PAS restaurer scroll si on change de view
+  });
+}
+
+// ── render() avec débounce RAF + préservation focus ──
+let __renderPending = false;
+let __renderRAF = null;
 function render() {
+  // Batch multiples renders dans la même frame
+  if (__renderPending) return;
+  __renderPending = true;
+  if (__renderRAF) cancelAnimationFrame(__renderRAF);
+  __renderRAF = requestAnimationFrame(() => {
+    __renderPending = false;
+    __renderRAF = null;
+    _doRender();
+  });
+}
+
+function _doRender() {
   const viewEl = $('view');
   const navEl  = $('nav');
+  const snap = __snapshotUIState();
+  const sameView = __lastView === (S.view || 'home') || (!S.session && __lastView === '__auth');
 
   // 2FA en attente → écran vérification
   if (S.twoFAPending && S.view === '2fa-verify') {
     navEl.style.display = 'none';
     __markViewTransition('2fa-verify');
     viewEl.innerHTML = v2FAVerify();
-    viewEl.scrollTop = 0;
+    if (!sameView) viewEl.scrollTop = 0;
+    __restoreUIState(snap);
+    return;
+  }
+
+  // Vérification email d'inscription en attente → écran de saisie du code
+  if (S.signupPending && S.view === 'signup-verify') {
+    navEl.style.display = 'none';
+    __markViewTransition('signup-verify');
+    viewEl.innerHTML = vSignupVerify();
+    if (!sameView) viewEl.scrollTop = 0;
+    __restoreUIState(snap);
     return;
   }
 
@@ -3673,7 +3939,8 @@ function render() {
     navEl.style.display = 'none';
     __markViewTransition('__auth');
     viewEl.innerHTML = vAuth();
-    viewEl.scrollTop = 0;
+    if (!sameView) viewEl.scrollTop = 0;
+    __restoreUIState(snap);
     return;
   }
 
@@ -3730,16 +3997,24 @@ function render() {
     'notifications-setup': vNotificationsSetup,
     'video-library': vVideoLibrary,
   };
-  __markViewTransition(S.view);
+  const viewChanged = __markViewTransition(S.view);
+  const prevScroll = viewEl.scrollTop;
   viewEl.innerHTML = (map[S.view] || vHome)();
-  if (!S.globalSearch) viewEl.scrollTop = 0;
+  // Conserve le scroll si on re-render la MÊME view (évite le "blink" de remontée)
+  if (viewChanged) {
+    if (!S.globalSearch) viewEl.scrollTop = 0;
+  } else {
+    viewEl.scrollTop = prevScroll;
+  }
 
   if (S.view === 'financial') requestAnimationFrame(() => { renderRevenueChart(); renderProfitChart(); });
 
-  // Restore focus on global search after re-render
-  if (S.view === 'home' && S.globalSearch) {
+  // Restore focus (capture précédente)
+  __restoreUIState(snap);
+  // Backup : focus spécifique global search
+  if (S.view === 'home' && S.globalSearch && !snap.focus) {
     const gs = $('global-search');
-    if (gs) { gs.focus(); gs.setSelectionRange(gs.value.length, gs.value.length); }
+    if (gs) { gs.focus({ preventScroll: true }); gs.setSelectionRange(gs.value.length, gs.value.length); }
   }
 
   const hideNav = ['detail','add','add-product','edit-product','pack-form','add-client','client-detail','notifications','catalog','add-supplier','supplier-detail','stock-history','purchase-orders','add-order','pricing','subscription','boutique','boutique-appearance','boutique-domain','boutique-pixels','boutique-code','boutique-seo','boutique-hours','boutique-policies','boutique-faq','marketing','social-media','social-setup','payments-setup','integrations','delivery-setup','whatsapp-setup','sms-setup','ecommerce-setup','sheets-setup','pos-setup','compta-setup','api-settings','spectra','clients','exports','team','add-team-member','audit-log','appearance','security','2fa-verify'].includes(S.view);
@@ -4382,14 +4657,23 @@ function vHome() {
   const __currentMember = (typeof getCurrentMember === 'function') ? getCurrentMember() : null;
   const __currentRoleInfo = __currentMember ? (ROLE_LABELS?.[__currentMember.role] || ROLE_LABELS?.admin) : null;
   const __hasTeam = (S.teamMembers||[]).length > 0;
+  const __businessLogo = localStorage.getItem('stockr_logo') || '';
+  const __bizName = S.session.business || S.session.name || '';
+  const __bizInitials = (typeof initials === 'function') ? initials(__bizName) : (__bizName.charAt(0) || 'B').toUpperCase();
   return `
   <div class="hero anim">
-    <div class="hero-top">
-      <div>
+    <div class="hero-top" style="align-items:flex-start;gap:12px">
+      <div class="home-logo-wrap" onclick="nav('appearance')" title="Modifier le logo" style="cursor:pointer;flex-shrink:0">
+        ${__businessLogo
+          ? `<img src="${__businessLogo}" alt="logo" style="width:48px;height:48px;border-radius:12px;object-fit:cover;border:2px solid rgba(255,255,255,.25);box-shadow:0 4px 10px rgba(0,0,0,.2);background:rgba(255,255,255,.1)">`
+          : `<div style="width:48px;height:48px;border-radius:12px;background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;font-weight:900;box-shadow:0 4px 10px rgba(0,0,0,.2)">${__bizInitials}</div>`
+        }
+      </div>
+      <div style="flex:1;min-width:0">
         <div class="hero-greeting">${t('hello')}, ${(__currentMember?.name || S.session.name).split(' ')[0]}
           ${__currentRoleInfo && __currentMember?.id ? `<span style="font-size:10px;padding:2px 7px;background:rgba(255,255,255,.2);color:#fff;border-radius:5px;margin-left:6px;font-weight:700;vertical-align:middle">${__currentRoleInfo.icon} ${__currentRoleInfo.name}</span>` : ''}
         </div>
-        <div class="hero-name">${S.session.business || S.session.name}</div>
+        <div class="hero-name">${__bizName}</div>
         ${S.locations.length > 0 ? `<div class="hero-location">
           <select class="location-select" onchange="setLocation(this.value?Number(this.value):null)" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);color:#fff;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:600;outline:none;cursor:pointer;-webkit-appearance:none;appearance:none">
             <option value="" style="color:#000">${t('allLocations')}</option>
@@ -7627,6 +7911,797 @@ const SPECTRA_KEYWORDS = {
   'niveasun200':{ type:'Nivea Sun Protect 200ml FPS50', brand:'Nivea', cat:'sante' },
   'goldstandard1kg':{ type:'Protéine Gold Standard 1kg', brand:'Optimum Nutrition', cat:'nutrition' },
   'elastoplastassortiment':{ type:'Pansements Elastoplast Assortiment', brand:'Elastoplast', cat:'sante' },
+
+  // ═══════════════════════════════════════════════════════════════════
+  // ═══ EXPANSION MASSIVE — 1000+ ENTRÉES (ChatGPT/Gemini-like)    ═══
+  // ═══════════════════════════════════════════════════════════════════
+
+  // === SMARTPHONES (modèles + toutes variantes) ===
+  'iphone':{ type:'Apple iPhone', brand:'Apple', cat:'smartphone' },
+  'iphone15promax':{ type:'Apple iPhone 15 Pro Max', brand:'Apple', cat:'smartphone' },
+  'iphone15pro':{ type:'Apple iPhone 15 Pro', brand:'Apple', cat:'smartphone' },
+  'iphone15plus':{ type:'Apple iPhone 15 Plus', brand:'Apple', cat:'smartphone' },
+  'iphone14promax':{ type:'Apple iPhone 14 Pro Max', brand:'Apple', cat:'smartphone' },
+  'iphone14pro':{ type:'Apple iPhone 14 Pro', brand:'Apple', cat:'smartphone' },
+  'iphonese':{ type:'Apple iPhone SE', brand:'Apple', cat:'smartphone' },
+  'iphonex':{ type:'Apple iPhone X', brand:'Apple', cat:'smartphone' },
+  'iphonexs':{ type:'Apple iPhone XS', brand:'Apple', cat:'smartphone' },
+  'iphonexr':{ type:'Apple iPhone XR', brand:'Apple', cat:'smartphone' },
+  'galaxys25':{ type:'Samsung Galaxy S25', brand:'Samsung', cat:'smartphone' },
+  'galaxys24':{ type:'Samsung Galaxy S24', brand:'Samsung', cat:'smartphone' },
+  'galaxys23':{ type:'Samsung Galaxy S23', brand:'Samsung', cat:'smartphone' },
+  'galaxys22':{ type:'Samsung Galaxy S22', brand:'Samsung', cat:'smartphone' },
+  'galaxys21':{ type:'Samsung Galaxy S21', brand:'Samsung', cat:'smartphone' },
+  'galaxya54':{ type:'Samsung Galaxy A54', brand:'Samsung', cat:'smartphone' },
+  'galaxya34':{ type:'Samsung Galaxy A34', brand:'Samsung', cat:'smartphone' },
+  'galaxya24':{ type:'Samsung Galaxy A24', brand:'Samsung', cat:'smartphone' },
+  'galaxya14':{ type:'Samsung Galaxy A14', brand:'Samsung', cat:'smartphone' },
+  'galaxya05':{ type:'Samsung Galaxy A05', brand:'Samsung', cat:'smartphone' },
+  'galaxyzfold':{ type:'Samsung Galaxy Z Fold', brand:'Samsung', cat:'smartphone' },
+  'galaxyzflip':{ type:'Samsung Galaxy Z Flip', brand:'Samsung', cat:'smartphone' },
+  'pixel8pro':{ type:'Google Pixel 8 Pro', brand:'Google', cat:'smartphone' },
+  'pixel9pro':{ type:'Google Pixel 9 Pro', brand:'Google', cat:'smartphone' },
+  'pixelfold':{ type:'Google Pixel Fold', brand:'Google', cat:'smartphone' },
+  'redmi12':{ type:'Xiaomi Redmi 12', brand:'Xiaomi', cat:'smartphone' },
+  'redmi13':{ type:'Xiaomi Redmi 13', brand:'Xiaomi', cat:'smartphone' },
+  'redminote13':{ type:'Xiaomi Redmi Note 13', brand:'Xiaomi', cat:'smartphone' },
+  'redminote12':{ type:'Xiaomi Redmi Note 12', brand:'Xiaomi', cat:'smartphone' },
+  'poco':{ type:'Xiaomi POCO', brand:'Xiaomi', cat:'smartphone' },
+  'xiaomi14':{ type:'Xiaomi 14', brand:'Xiaomi', cat:'smartphone' },
+  'xiaomi15':{ type:'Xiaomi 15', brand:'Xiaomi', cat:'smartphone' },
+  'matepro':{ type:'Huawei Mate Pro', brand:'Huawei', cat:'smartphone' },
+  'matexs':{ type:'Huawei Mate Xs', brand:'Huawei', cat:'smartphone' },
+  'p60pro':{ type:'Huawei P60 Pro', brand:'Huawei', cat:'smartphone' },
+  'p50':{ type:'Huawei P50', brand:'Huawei', cat:'smartphone' },
+  'nova':{ type:'Huawei Nova', brand:'Huawei', cat:'smartphone' },
+  'oppoa':{ type:'Oppo A Series', brand:'Oppo', cat:'smartphone' },
+  'reno':{ type:'Oppo Reno', brand:'Oppo', cat:'smartphone' },
+  'findx':{ type:'Oppo Find X', brand:'Oppo', cat:'smartphone' },
+  'vivov':{ type:'Vivo V Series', brand:'Vivo', cat:'smartphone' },
+  'vivoy':{ type:'Vivo Y Series', brand:'Vivo', cat:'smartphone' },
+  'oneplus':{ type:'OnePlus', brand:'OnePlus', cat:'smartphone' },
+  'nothing':{ type:'Nothing Phone', brand:'Nothing', cat:'smartphone' },
+  'realme':{ type:'Realme', brand:'Realme', cat:'smartphone' },
+  'tecnocamon':{ type:'Tecno Camon', brand:'Tecno', cat:'smartphone' },
+  'tecnospark':{ type:'Tecno Spark', brand:'Tecno', cat:'smartphone' },
+  'tecnopova':{ type:'Tecno Pova', brand:'Tecno', cat:'smartphone' },
+  'tecnophantom':{ type:'Tecno Phantom', brand:'Tecno', cat:'smartphone' },
+  'infinixnote':{ type:'Infinix Note', brand:'Infinix', cat:'smartphone' },
+  'infinixhot':{ type:'Infinix Hot', brand:'Infinix', cat:'smartphone' },
+  'infinixzero':{ type:'Infinix Zero', brand:'Infinix', cat:'smartphone' },
+  'itela':{ type:'Itel A Series', brand:'Itel', cat:'smartphone' },
+  'itelvision':{ type:'Itel Vision', brand:'Itel', cat:'smartphone' },
+
+  // === LAPTOPS (familles complètes) ===
+  'macbook':{ type:'Apple MacBook', brand:'Apple', cat:'laptop' },
+  'macbookpro14':{ type:'Apple MacBook Pro 14"', brand:'Apple', cat:'laptop' },
+  'macbookpro16':{ type:'Apple MacBook Pro 16"', brand:'Apple', cat:'laptop' },
+  'elitebook':{ type:'HP EliteBook', brand:'HP', cat:'laptop' },
+  'elitebook840g11':{ type:'HP EliteBook 840 G11', brand:'HP', cat:'laptop' },
+  'elitebook845':{ type:'HP EliteBook 845', brand:'HP', cat:'laptop' },
+  'pavilion':{ type:'HP Pavilion', brand:'HP', cat:'laptop' },
+  'envy':{ type:'HP Envy', brand:'HP', cat:'laptop' },
+  'omen':{ type:'HP Omen', brand:'HP', cat:'laptop' },
+  'victus':{ type:'HP Victus', brand:'HP', cat:'laptop' },
+  'inspiron':{ type:'Dell Inspiron', brand:'Dell', cat:'laptop' },
+  'alienware':{ type:'Dell Alienware', brand:'Dell', cat:'laptop' },
+  'xps13':{ type:'Dell XPS 13', brand:'Dell', cat:'laptop' },
+  'xps15':{ type:'Dell XPS 15', brand:'Dell', cat:'laptop' },
+  'thinkpad':{ type:'Lenovo ThinkPad', brand:'Lenovo', cat:'laptop' },
+  'thinkpadx1':{ type:'Lenovo ThinkPad X1 Carbon', brand:'Lenovo', cat:'laptop' },
+  'thinkpadt14':{ type:'Lenovo ThinkPad T14', brand:'Lenovo', cat:'laptop' },
+  'ideapad':{ type:'Lenovo IdeaPad', brand:'Lenovo', cat:'laptop' },
+  'tuf':{ type:'ASUS TUF Gaming', brand:'ASUS', cat:'laptop' },
+  'strix':{ type:'ASUS ROG Strix', brand:'ASUS', cat:'laptop' },
+  'swift':{ type:'Acer Swift', brand:'Acer', cat:'laptop' },
+  'aspire':{ type:'Acer Aspire', brand:'Acer', cat:'laptop' },
+  'predator':{ type:'Acer Predator', brand:'Acer', cat:'laptop' },
+  'surfacepro':{ type:'Microsoft Surface Pro', brand:'Microsoft', cat:'laptop' },
+  'surfacelaptop':{ type:'Microsoft Surface Laptop', brand:'Microsoft', cat:'laptop' },
+  'chromebook':{ type:'Chromebook', cat:'laptop' },
+
+  // === PROCESSEURS / COMPOSANTS ===
+  'intel':{ brand:'Intel' },
+  'corei3':{ type:'Intel Core i3', brand:'Intel', cat:'processeur' },
+  'corei5':{ type:'Intel Core i5', brand:'Intel', cat:'processeur' },
+  'corei7':{ type:'Intel Core i7', brand:'Intel', cat:'processeur' },
+  'corei9':{ type:'Intel Core i9', brand:'Intel', cat:'processeur' },
+  'ryzen':{ type:'AMD Ryzen', brand:'AMD', cat:'processeur' },
+  'rtx':{ type:'NVIDIA RTX', brand:'NVIDIA', cat:'carte graphique' },
+  'rtx4090':{ type:'NVIDIA RTX 4090', brand:'NVIDIA', cat:'carte graphique' },
+  'rtx4080':{ type:'NVIDIA RTX 4080', brand:'NVIDIA', cat:'carte graphique' },
+  'geforce':{ type:'NVIDIA GeForce', brand:'NVIDIA', cat:'carte graphique' },
+
+  // === ACCESSOIRES PC ===
+  'chargeur':{ type:'Chargeur', cat:'accessoire' },
+  'charger':{ type:'Chargeur', cat:'accessoire' },
+  'cable':{ type:'Câble', cat:'accessoire' },
+  'cabletype':{ type:'Câble USB-C', cat:'accessoire' },
+  'usb':{ type:'USB', cat:'accessoire' },
+  'hdmi':{ type:'Câble HDMI', cat:'accessoire' },
+  'ethernet':{ type:'Câble Ethernet', cat:'accessoire' },
+  'cleusb':{ type:'Clé USB', cat:'stockage' },
+  'flashdrive':{ type:'Clé USB', cat:'stockage' },
+  'sdcard':{ type:'Carte SD', cat:'stockage' },
+  'microsd':{ type:'Carte MicroSD', cat:'stockage' },
+  'ssd':{ type:'SSD', cat:'stockage' },
+  'nvme':{ type:'SSD NVMe', cat:'stockage' },
+  'hdd':{ type:'Disque Dur HDD', cat:'stockage' },
+  'ram':{ type:'Mémoire RAM', cat:'stockage' },
+  'ddr4':{ type:'RAM DDR4', cat:'stockage' },
+  'ddr5':{ type:'RAM DDR5', cat:'stockage' },
+  'batterie':{ type:'Batterie', cat:'accessoire' },
+  'powerbank':{ type:'Power Bank', cat:'accessoire' },
+  'anker':{ brand:'Anker' },
+  'baseus':{ brand:'Baseus' },
+  'belkin':{ brand:'Belkin' },
+
+  // === AUDIO / HOME CINEMA ===
+  'enceinte':{ type:'Enceinte', cat:'audio' },
+  'speaker':{ type:'Enceinte', cat:'audio' },
+  'casque':{ type:'Casque Audio', cat:'audio' },
+  'headphones':{ type:'Casque Audio', cat:'audio' },
+  'ecouteurs':{ type:'Écouteurs', cat:'audio' },
+  'earbuds':{ type:'Écouteurs', cat:'audio' },
+  'jblflip':{ type:'JBL Flip', brand:'JBL', cat:'audio' },
+  'jblcharge':{ type:'JBL Charge', brand:'JBL', cat:'audio' },
+  'jblxtreme':{ type:'JBL Xtreme', brand:'JBL', cat:'audio' },
+  'jblgo':{ type:'JBL Go', brand:'JBL', cat:'audio' },
+  'sonos':{ brand:'Sonos' },
+  'harmankardon':{ brand:'Harman Kardon' },
+  'beatsstudio':{ type:'Beats Studio', brand:'Beats', cat:'audio' },
+  'beatssolo':{ type:'Beats Solo', brand:'Beats', cat:'audio' },
+  'akg':{ brand:'AKG' },
+  'shure':{ brand:'Shure' },
+
+  // === TV / ÉCRANS ===
+  'tvsamsung':{ type:'TV Samsung', brand:'Samsung', cat:'tv' },
+  'tvlg':{ type:'TV LG', brand:'LG', cat:'tv' },
+  'tvsony':{ type:'TV Sony', brand:'Sony', cat:'tv' },
+  'tvhisense':{ type:'TV Hisense', brand:'Hisense', cat:'tv' },
+  'tvtcl':{ type:'TV TCL', brand:'TCL', cat:'tv' },
+  'oledtv':{ type:'TV OLED', cat:'tv' },
+  'qledtv':{ type:'TV QLED', cat:'tv' },
+  'smarttv':{ type:'Smart TV', cat:'tv' },
+  'television':{ type:'Télévision', cat:'tv' },
+  'tele':{ type:'Télévision', cat:'tv' },
+  'benq':{ brand:'BenQ' },
+  'aoc':{ brand:'AOC' },
+  'acermonitor':{ brand:'Acer' },
+
+  // === ÉLECTROMÉNAGER ===
+  'frigo':{ type:'Réfrigérateur', cat:'electromenager' },
+  'refrigerateur':{ type:'Réfrigérateur', cat:'electromenager' },
+  'fridge':{ type:'Réfrigérateur', cat:'electromenager' },
+  'congelateur':{ type:'Congélateur', cat:'electromenager' },
+  'microondes':{ type:'Four Micro-ondes', cat:'electromenager' },
+  'microwave':{ type:'Four Micro-ondes', cat:'electromenager' },
+  'four':{ type:'Four', cat:'electromenager' },
+  'cuisiniere':{ type:'Cuisinière', cat:'electromenager' },
+  'lavelinge':{ type:'Lave-linge', cat:'electromenager' },
+  'washing':{ type:'Lave-linge', cat:'electromenager' },
+  'lavevaiselle':{ type:'Lave-vaisselle', cat:'electromenager' },
+  'climatiseur':{ type:'Climatiseur', cat:'electromenager' },
+  'clim':{ type:'Climatiseur', cat:'electromenager' },
+  'ventilateur':{ type:'Ventilateur', cat:'electromenager' },
+  'fer':{ type:'Fer à Repasser', cat:'electromenager' },
+  'iron':{ type:'Fer à Repasser', cat:'electromenager' },
+  'bouilloire':{ type:'Bouilloire', cat:'electromenager' },
+  'kettle':{ type:'Bouilloire', cat:'electromenager' },
+  'cafetiere':{ type:'Cafetière', cat:'electromenager' },
+  'blender':{ type:'Blender', cat:'electromenager' },
+  'mixer':{ type:'Mixeur', cat:'electromenager' },
+  'robotcuisine':{ type:'Robot Cuisine', cat:'electromenager' },
+  'aspirateur':{ type:'Aspirateur', cat:'electromenager' },
+  'vacuum':{ type:'Aspirateur', cat:'electromenager' },
+  'grillepain':{ type:'Grille-pain', cat:'electromenager' },
+  'toaster':{ type:'Grille-pain', cat:'electromenager' },
+  'moulinex':{ brand:'Moulinex' },
+  'tefal':{ brand:'Tefal' },
+  'rowenta':{ brand:'Rowenta' },
+  'seb':{ brand:'SEB' },
+  'whirlpool':{ brand:'Whirlpool' },
+  'bosch':{ brand:'Bosch' },
+  'siemens':{ brand:'Siemens' },
+  'miele':{ brand:'Miele' },
+  'beko':{ brand:'Beko' },
+  'brandt':{ brand:'Brandt' },
+  'kenwood':{ brand:'Kenwood' },
+  'kitchenaid':{ brand:'KitchenAid' },
+  'dyson':{ brand:'Dyson' },
+  'nespresso':{ brand:'Nespresso' },
+  'delonghi':{ brand:'De\'Longhi' },
+  'philipsair':{ brand:'Philips' },
+
+  // === BOISSONS (étendu) ===
+  'orangeboisson':{ type:'Jus d\'Orange', cat:'jus' },
+  'pomme jus':{ type:'Jus de Pomme', cat:'jus' },
+  'sirop':{ type:'Sirop', cat:'jus' },
+  'grenadine':{ type:'Sirop Grenadine', cat:'jus' },
+  'menthe':{ type:'Sirop Menthe', cat:'jus' },
+  'ricard':{ type:'Ricard', brand:'Ricard', cat:'alcool' },
+  'pastis':{ type:'Pastis', cat:'alcool' },
+  'whisky':{ type:'Whisky', cat:'alcool' },
+  'jackdaniel':{ type:'Jack Daniel\'s', brand:'Jack Daniel\'s', cat:'alcool' },
+  'jameson':{ type:'Jameson', brand:'Jameson', cat:'alcool' },
+  'chivas':{ type:'Chivas Regal', brand:'Chivas', cat:'alcool' },
+  'ballantine':{ type:'Ballantine\'s', brand:'Ballantine\'s', cat:'alcool' },
+  'johnnie':{ type:'Johnnie Walker', brand:'Johnnie Walker', cat:'alcool' },
+  'grant':{ type:'Grant\'s', brand:'Grant\'s', cat:'alcool' },
+  'vodka':{ type:'Vodka', cat:'alcool' },
+  'absolut':{ type:'Absolut Vodka', brand:'Absolut', cat:'alcool' },
+  'smirnoff':{ type:'Smirnoff', brand:'Smirnoff', cat:'alcool' },
+  'rhum':{ type:'Rhum', cat:'alcool' },
+  'rum':{ type:'Rhum', cat:'alcool' },
+  'bacardi':{ type:'Bacardi', brand:'Bacardi', cat:'alcool' },
+  'captainmorgan':{ type:'Captain Morgan', brand:'Captain Morgan', cat:'alcool' },
+  'gin':{ type:'Gin', cat:'alcool' },
+  'gordons':{ type:'Gordon\'s Gin', brand:'Gordon\'s', cat:'alcool' },
+  'tanqueray':{ type:'Tanqueray', brand:'Tanqueray', cat:'alcool' },
+  'champagne':{ type:'Champagne', cat:'alcool' },
+  'moetchandon':{ type:'Moët & Chandon', brand:'Moët & Chandon', cat:'alcool' },
+  'veuveclicquot':{ type:'Veuve Clicquot', brand:'Veuve Clicquot', cat:'alcool' },
+  'dompergnon':{ type:'Dom Pérignon', brand:'Dom Pérignon', cat:'alcool' },
+  'heineken':{ type:'Bière Heineken', brand:'Heineken', cat:'biere' },
+  'guinness':{ type:'Bière Guinness', brand:'Guinness', cat:'biere' },
+  'corona':{ type:'Bière Corona', brand:'Corona', cat:'biere' },
+  'stella':{ type:'Bière Stella Artois', brand:'Stella Artois', cat:'biere' },
+  'budweiser':{ type:'Budweiser', brand:'Budweiser', cat:'biere' },
+  'carlsberg':{ type:'Bière Carlsberg', brand:'Carlsberg', cat:'biere' },
+  'desperados':{ type:'Desperados', brand:'Desperados', cat:'biere' },
+  'ks':{ type:'Bière Ks', cat:'biere' },
+  'tuxedo':{ type:'Bière Tuxedo', cat:'biere' },
+
+  // === CI BOISSONS ===
+  'bock':{ type:'Bière Bock', cat:'biere' },
+  'mutzig':{ type:'Bière Mutzig', brand:'Mutzig', cat:'biere' },
+  'calypso':{ type:'Jus Calypso', brand:'Calypso', cat:'jus' },
+  'solibraflag':{ type:'Bière Flag', brand:'SOLIBRA', cat:'biere' },
+  'piedoigt':{ type:'Bière Piedoigt', cat:'biere' },
+  'blushwine':{ type:'Vin Blush', cat:'vin' },
+
+  // === ÉPICERIE ÉTENDUE ===
+  'couscous':{ type:'Couscous', cat:'epicerie' },
+  'semoule':{ type:'Semoule', cat:'epicerie' },
+  'lentille':{ type:'Lentilles', cat:'epicerie' },
+  'haricotsec':{ type:'Haricots Secs', cat:'epicerie' },
+  'poisrouge':{ type:'Haricots Rouges', cat:'epicerie' },
+  'poischiche':{ type:'Pois Chiches', cat:'epicerie' },
+  'manioc':{ type:'Farine de Manioc', cat:'epicerie' },
+  'attieke':{ type:'Attiéké', cat:'epicerie' },
+  'foutou':{ type:'Foutou', cat:'epicerie' },
+  'foufou':{ type:'Foufou', cat:'epicerie' },
+  'gari':{ type:'Gari', cat:'epicerie' },
+  'fonio':{ type:'Fonio', cat:'epicerie' },
+  'igname':{ type:'Igname', cat:'legume' },
+  'patate':{ type:'Patate', cat:'legume' },
+  'pommedeterre':{ type:'Pomme de Terre', cat:'legume' },
+  'potato':{ type:'Pomme de Terre', cat:'legume' },
+  'aubergine':{ type:'Aubergine', cat:'legume' },
+  'courgette':{ type:'Courgette', cat:'legume' },
+  'concombre':{ type:'Concombre', cat:'legume' },
+  'poivron':{ type:'Poivron', cat:'legume' },
+  'gombo':{ type:'Gombo', cat:'legume' },
+  'piment':{ type:'Piment', cat:'condiment' },
+  'ail':{ type:'Ail', cat:'condiment' },
+  'gingembrefrais':{ type:'Gingembre Frais', cat:'condiment' },
+  'citron':{ type:'Citron', cat:'fruit' },
+  'lemon':{ type:'Citron', cat:'fruit' },
+  'pasteque':{ type:'Pastèque', cat:'fruit' },
+  'melon':{ type:'Melon', cat:'fruit' },
+  'papaye':{ type:'Papaye', cat:'fruit' },
+  'coco':{ type:'Noix de Coco', cat:'fruit' },
+  'cocowater':{ type:'Eau de Coco', cat:'jus' },
+  'fraise':{ type:'Fraise', cat:'fruit' },
+  'strawberry':{ type:'Fraise', cat:'fruit' },
+  'raisin':{ type:'Raisin', cat:'fruit' },
+  'grape':{ type:'Raisin', cat:'fruit' },
+  'peche':{ type:'Pêche', cat:'fruit' },
+  'abricot':{ type:'Abricot', cat:'fruit' },
+  'cerise':{ type:'Cerise', cat:'fruit' },
+  'kiwi':{ type:'Kiwi', cat:'fruit' },
+  'poire':{ type:'Poire', cat:'fruit' },
+  'pear':{ type:'Poire', cat:'fruit' },
+
+  // === VIANDES / POISSONS ===
+  'viande':{ type:'Viande', cat:'viande' },
+  'boeuf':{ type:'Viande de Bœuf', cat:'viande' },
+  'beef':{ type:'Viande de Bœuf', cat:'viande' },
+  'poulet':{ type:'Poulet', cat:'viande' },
+  'chicken':{ type:'Poulet', cat:'viande' },
+  'mouton':{ type:'Mouton', cat:'viande' },
+  'lamb':{ type:'Mouton', cat:'viande' },
+  'porc':{ type:'Porc', cat:'viande' },
+  'pork':{ type:'Porc', cat:'viande' },
+  'dinde':{ type:'Dinde', cat:'viande' },
+  'turkey':{ type:'Dinde', cat:'viande' },
+  'poisson':{ type:'Poisson', cat:'poisson' },
+  'fish':{ type:'Poisson', cat:'poisson' },
+  'saumon':{ type:'Saumon', cat:'poisson' },
+  'salmon':{ type:'Saumon', cat:'poisson' },
+  'crevette':{ type:'Crevettes', cat:'poisson' },
+  'shrimp':{ type:'Crevettes', cat:'poisson' },
+  'capitaine':{ type:'Capitaine', cat:'poisson' },
+  'bar':{ type:'Bar', cat:'poisson' },
+  'mackerel':{ type:'Maquereau', cat:'poisson' },
+  'oeuf':{ type:'Œufs', cat:'laitier' },
+  'egg':{ type:'Œufs', cat:'laitier' },
+
+  // === PRODUITS LAITIERS (étendu) ===
+  'laitconcentre':{ type:'Lait Concentré', cat:'laitier' },
+  'laitpoudre':{ type:'Lait en Poudre', cat:'laitier' },
+  'nido':{ type:'Lait Nido', brand:'Nido', cat:'laitier' },
+  'peaks':{ type:'Lait Peak', brand:'Peak', cat:'laitier' },
+  'bonnet':{ type:'Lait Bonnet Rouge', brand:'Bonnet Rouge', cat:'laitier' },
+  'camembert':{ type:'Camembert', cat:'laitier' },
+  'brie':{ type:'Brie', cat:'laitier' },
+  'vachequirit':{ type:'La Vache Qui Rit', brand:'La Vache Qui Rit', cat:'laitier' },
+  'kiri':{ type:'Kiri', brand:'Kiri', cat:'laitier' },
+  'babybel':{ type:'Mini Babybel', brand:'Babybel', cat:'laitier' },
+
+  // === HYGIÈNE / BEAUTÉ (massif) ===
+  'rexona':{ brand:'Rexona' },
+  'axe':{ brand:'Axe' },
+  'garnier':{ brand:'Garnier' },
+  'loreal':{ brand:'L\'Oréal' },
+  'maybelline':{ brand:'Maybelline' },
+  'revlon':{ brand:'Revlon' },
+  'mac':{ brand:'MAC Cosmetics' },
+  'chanel':{ brand:'Chanel' },
+  'dior':{ brand:'Dior' },
+  'ysl':{ brand:'Yves Saint Laurent' },
+  'guerlain':{ brand:'Guerlain' },
+  'lancome':{ brand:'Lancôme' },
+  'estee':{ brand:'Estée Lauder' },
+  'clinique':{ brand:'Clinique' },
+  'clarins':{ brand:'Clarins' },
+  'bioderma':{ brand:'Bioderma' },
+  'laroche':{ brand:'La Roche-Posay' },
+  'vichy':{ brand:'Vichy' },
+  'avene':{ brand:'Avène' },
+  'eucerin':{ brand:'Eucerin' },
+  'neutrogena':{ brand:'Neutrogena' },
+  'cetaphil':{ brand:'Cetaphil' },
+  'cerave':{ brand:'CeraVe' },
+  'ordinaire':{ brand:'The Ordinary' },
+  'shampoomega':{ type:'Shampoing', cat:'hygiene' },
+  'aprèsshampoing':{ type:'Après-shampoing', cat:'hygiene' },
+  'conditioner':{ type:'Après-shampoing', cat:'hygiene' },
+  'teinture':{ type:'Teinture Cheveux', cat:'beaute' },
+  'perruque':{ type:'Perruque', cat:'beaute' },
+  'tissage':{ type:'Tissage', cat:'beaute' },
+  'meches':{ type:'Mèches', cat:'beaute' },
+  'activilong':{ brand:'Activilong' },
+  'darkandlovely':{ brand:'Dark and Lovely' },
+  'motions':{ brand:'Motions' },
+  'creamofnature':{ brand:'Cream of Nature' },
+  'rougelevres':{ type:'Rouge à Lèvres', cat:'beaute' },
+  'lipstick':{ type:'Rouge à Lèvres', cat:'beaute' },
+  'mascara':{ type:'Mascara', cat:'beaute' },
+  'fonddeteint':{ type:'Fond de Teint', cat:'beaute' },
+  'vernis':{ type:'Vernis à Ongles', cat:'beaute' },
+  'parfum':{ type:'Parfum', cat:'beaute' },
+  'perfume':{ type:'Parfum', cat:'beaute' },
+  'eaudetoilette':{ type:'Eau de Toilette', cat:'beaute' },
+  'eaudeparfum':{ type:'Eau de Parfum', cat:'beaute' },
+  'cologne':{ type:'Eau de Cologne', cat:'beaute' },
+  'gelcheveux':{ type:'Gel Cheveux', cat:'beaute' },
+  'crememains':{ type:'Crème Mains', cat:'beaute' },
+  'cremecorps':{ type:'Crème Corps', cat:'beaute' },
+  'cremevisage':{ type:'Crème Visage', cat:'beaute' },
+  'lotion':{ type:'Lotion', cat:'beaute' },
+  'gommage':{ type:'Gommage', cat:'beaute' },
+  'masque':{ type:'Masque Beauté', cat:'beaute' },
+
+  // === MÉDICAMENTS / PARAPHARMACIE ===
+  'aspirine':{ type:'Aspirine', cat:'sante' },
+  'ibuprofene':{ type:'Ibuprofène', cat:'sante' },
+  'nurofen':{ type:'Nurofen', brand:'Nurofen', cat:'sante' },
+  'advil':{ type:'Advil', brand:'Advil', cat:'sante' },
+  'efferalgan':{ type:'Efferalgan', brand:'Efferalgan', cat:'sante' },
+  'amoxicilline':{ type:'Amoxicilline', cat:'sante' },
+  'antibiotique':{ type:'Antibiotique', cat:'sante' },
+  'imodium':{ type:'Imodium', brand:'Imodium', cat:'sante' },
+  'smecta':{ type:'Smecta', brand:'Smecta', cat:'sante' },
+  'gaviscon':{ type:'Gaviscon', brand:'Gaviscon', cat:'sante' },
+  'vitaminec':{ type:'Vitamine C', cat:'sante' },
+  'vitamined':{ type:'Vitamine D', cat:'sante' },
+  'centrum':{ brand:'Centrum' },
+  'bepanthen':{ brand:'Bepanthen' },
+  'betadine':{ type:'Bétadine', brand:'Bétadine', cat:'sante' },
+  'alcool':{ type:'Alcool à 90°', cat:'sante' },
+  'coton':{ type:'Coton', cat:'sante' },
+  'pansement':{ type:'Pansements', cat:'sante' },
+  'bandage':{ type:'Bandage', cat:'sante' },
+  'thermometre':{ type:'Thermomètre', cat:'sante' },
+  'tensiometer':{ type:'Tensiomètre', cat:'sante' },
+  'masque anti':{ type:'Masque Anti-covid', cat:'sante' },
+  'maskchirurgical':{ type:'Masque Chirurgical', cat:'sante' },
+  'ffp2':{ type:'Masque FFP2', cat:'sante' },
+  'gelhydro':{ type:'Gel Hydroalcoolique', cat:'sante' },
+  'seringue':{ type:'Seringue', cat:'sante' },
+  'preservatif':{ type:'Préservatif', cat:'sante' },
+  'durex':{ brand:'Durex' },
+
+  // === BÉBÉ (massif) ===
+  'biberon':{ type:'Biberon', cat:'bebe' },
+  'tetine':{ type:'Tétine', cat:'bebe' },
+  'galakto':{ brand:'Galakto' },
+  'nan':{ type:'Lait NAN', brand:'NAN', cat:'bebe' },
+  'guigoz':{ type:'Lait Guigoz', brand:'Guigoz', cat:'bebe' },
+  'blédina':{ brand:'Blédina' },
+  'nestum':{ type:'Nestum', brand:'Nestum', cat:'bebe' },
+  'pot petit':{ type:'Petit Pot Bébé', cat:'bebe' },
+  'compote':{ type:'Compote', cat:'bebe' },
+  'jouet':{ type:'Jouet', cat:'bebe' },
+  'toy':{ type:'Jouet', cat:'bebe' },
+  'peluche':{ type:'Peluche', cat:'bebe' },
+  'poupee':{ type:'Poupée', cat:'bebe' },
+  'lego':{ type:'LEGO', brand:'LEGO', cat:'bebe' },
+  'playmobil':{ type:'Playmobil', brand:'Playmobil', cat:'bebe' },
+
+  // === SPORT ===
+  'ballonfoot':{ type:'Ballon de Football', cat:'sport' },
+  'ballon':{ type:'Ballon', cat:'sport' },
+  'football':{ type:'Ballon de Football', cat:'sport' },
+  'basketball':{ type:'Ballon de Basketball', cat:'sport' },
+  'volleyball':{ type:'Ballon de Volleyball', cat:'sport' },
+  'tennis':{ type:'Raquette Tennis', cat:'sport' },
+  'raquette':{ type:'Raquette', cat:'sport' },
+  'velo':{ type:'Vélo', cat:'sport' },
+  'bicycle':{ type:'Vélo', cat:'sport' },
+  'trottinette':{ type:'Trottinette', cat:'sport' },
+  'skateboard':{ type:'Skateboard', cat:'sport' },
+  'patinsroulettes':{ type:'Patins à Roulettes', cat:'sport' },
+  'haltere':{ type:'Haltère', cat:'sport' },
+  'tapiscourse':{ type:'Tapis de Course', cat:'sport' },
+  'decathlon':{ brand:'Decathlon' },
+  'quechua':{ brand:'Quechua' },
+  'kalenji':{ brand:'Kalenji' },
+  'kipsta':{ brand:'Kipsta' },
+  'sportshirt':{ type:'Maillot Sport', cat:'sport' },
+  'short':{ type:'Short', cat:'mode' },
+  'legging':{ type:'Legging', cat:'mode' },
+  'survetement':{ type:'Survêtement', cat:'mode' },
+  'sweat':{ type:'Sweat', cat:'mode' },
+  'hoodie':{ type:'Sweat à Capuche', cat:'mode' },
+
+  // === MODE ÉTENDUE ===
+  'robefemme':{ type:'Robe', cat:'mode' },
+  'jupe':{ type:'Jupe', cat:'mode' },
+  'skirt':{ type:'Jupe', cat:'mode' },
+  'pantalon':{ type:'Pantalon', cat:'mode' },
+  'pants':{ type:'Pantalon', cat:'mode' },
+  'blouson':{ type:'Blouson', cat:'mode' },
+  'jacket':{ type:'Veste', cat:'mode' },
+  'manteau':{ type:'Manteau', cat:'mode' },
+  'coat':{ type:'Manteau', cat:'mode' },
+  'ceinture':{ type:'Ceinture', cat:'mode' },
+  'belt':{ type:'Ceinture', cat:'mode' },
+  'chaussette':{ type:'Chaussettes', cat:'mode' },
+  'socks':{ type:'Chaussettes', cat:'mode' },
+  'sousvetement':{ type:'Sous-vêtement', cat:'mode' },
+  'underwear':{ type:'Sous-vêtement', cat:'mode' },
+  'soutiengorge':{ type:'Soutien-gorge', cat:'mode' },
+  'bra':{ type:'Soutien-gorge', cat:'mode' },
+  'culotte':{ type:'Culotte', cat:'mode' },
+  'slip':{ type:'Slip', cat:'mode' },
+  'boxer':{ type:'Boxer', cat:'mode' },
+  'pyjama':{ type:'Pyjama', cat:'mode' },
+  'maillotbain':{ type:'Maillot de Bain', cat:'mode' },
+  'sac':{ type:'Sac', cat:'maroquinerie' },
+  'bag':{ type:'Sac', cat:'maroquinerie' },
+  'sacadosma':{ type:'Sac à Main', cat:'maroquinerie' },
+  'sacdos':{ type:'Sac à Dos', cat:'maroquinerie' },
+  'backpack':{ type:'Sac à Dos', cat:'maroquinerie' },
+  'portefeuille':{ type:'Portefeuille', cat:'maroquinerie' },
+  'wallet':{ type:'Portefeuille', cat:'maroquinerie' },
+  'montre':{ type:'Montre', cat:'montre' },
+  'watch':{ type:'Montre', cat:'montre' },
+  'bijou':{ type:'Bijou', cat:'bijouterie' },
+  'bracelet':{ type:'Bracelet', cat:'bijouterie' },
+  'collier':{ type:'Collier', cat:'bijouterie' },
+  'bague':{ type:'Bague', cat:'bijouterie' },
+  'ring':{ type:'Bague', cat:'bijouterie' },
+  'boucleoreille':{ type:'Boucles d\'Oreille', cat:'bijouterie' },
+  'chaussures':{ type:'Chaussures', cat:'chaussures' },
+  'shoes':{ type:'Chaussures', cat:'chaussures' },
+  'basket':{ type:'Baskets', cat:'chaussures' },
+  'sneakers':{ type:'Sneakers', cat:'chaussures' },
+  'sandales':{ type:'Sandales', cat:'chaussures' },
+  'sandals':{ type:'Sandales', cat:'chaussures' },
+  'tongs':{ type:'Tongs', cat:'chaussures' },
+  'mocassin':{ type:'Mocassins', cat:'chaussures' },
+  'botte':{ type:'Bottes', cat:'chaussures' },
+  'boot':{ type:'Bottes', cat:'chaussures' },
+  'converse':{ brand:'Converse' },
+  'vans':{ brand:'Vans' },
+  'timberland':{ brand:'Timberland' },
+  'clarks':{ brand:'Clarks' },
+  'dr martens':{ brand:'Dr. Martens' },
+  'fila':{ brand:'Fila' },
+  'chapeau':{ type:'Chapeau', cat:'mode' },
+  'hat':{ type:'Chapeau', cat:'mode' },
+  'casquette':{ type:'Casquette', cat:'mode' },
+  'cap':{ type:'Casquette', cat:'mode' },
+  'bonnet':{ type:'Bonnet', cat:'mode' },
+  'echarpe':{ type:'Écharpe', cat:'mode' },
+  'scarf':{ type:'Écharpe', cat:'mode' },
+  'foulard':{ type:'Foulard', cat:'mode' },
+  'lunettes':{ type:'Lunettes', cat:'lunettes' },
+  'sunglasses':{ type:'Lunettes de Soleil', cat:'lunettes' },
+
+  // === AUTOMOBILE / MOTO ===
+  'pneu':{ type:'Pneu', cat:'auto' },
+  'tire':{ type:'Pneu', cat:'auto' },
+  'jante':{ type:'Jante', cat:'auto' },
+  'batterievoiture':{ type:'Batterie Voiture', cat:'auto' },
+  'huilemoteur':{ type:'Huile Moteur', cat:'auto' },
+  'filtreair':{ type:'Filtre Air', cat:'auto' },
+  'filtrehuile':{ type:'Filtre Huile', cat:'auto' },
+  'bougie':{ type:'Bougie', cat:'auto' },
+  'casque moto':{ type:'Casque Moto', cat:'auto' },
+  'helmet':{ type:'Casque Moto', cat:'auto' },
+  'michelin':{ brand:'Michelin' },
+  'pirelli':{ brand:'Pirelli' },
+  'bridgestone':{ brand:'Bridgestone' },
+  'goodyear':{ brand:'Goodyear' },
+  'continental':{ brand:'Continental' },
+  'hankook':{ brand:'Hankook' },
+  'toyo':{ brand:'Toyo' },
+  'dunlop':{ brand:'Dunlop' },
+  'castrol':{ brand:'Castrol' },
+  'mobil':{ brand:'Mobil' },
+  'shell':{ brand:'Shell' },
+  'elf':{ brand:'Elf' },
+
+  // === OUTILLAGE ÉTENDU ===
+  'scie':{ type:'Scie', cat:'outillage' },
+  'saw':{ type:'Scie', cat:'outillage' },
+  'visseuse':{ type:'Visseuse', cat:'outillage' },
+  'meuleuse':{ type:'Meuleuse', cat:'outillage' },
+  'ponceuse':{ type:'Ponceuse', cat:'outillage' },
+  'niveau':{ type:'Niveau', cat:'outillage' },
+  'mettre':{ type:'Mètre Ruban', cat:'outillage' },
+  'pince':{ type:'Pince', cat:'outillage' },
+  'cle':{ type:'Clé à Molette', cat:'outillage' },
+  'wrench':{ type:'Clé à Molette', cat:'outillage' },
+  'vis':{ type:'Vis', cat:'outillage' },
+  'screw':{ type:'Vis', cat:'outillage' },
+  'clous':{ type:'Clous', cat:'outillage' },
+  'nails':{ type:'Clous', cat:'outillage' },
+  'ruban adhesif':{ type:'Ruban Adhésif', cat:'outillage' },
+  'colle':{ type:'Colle', cat:'outillage' },
+  'glue':{ type:'Colle', cat:'outillage' },
+  'silicon':{ type:'Silicone', cat:'outillage' },
+  'makita':{ brand:'Makita' },
+  'dewalt':{ brand:'DeWalt' },
+  'milwaukee':{ brand:'Milwaukee' },
+  'ryobi':{ brand:'Ryobi' },
+  'leroy':{ brand:'Leroy Merlin' },
+  'castorama':{ brand:'Castorama' },
+  'black decker':{ brand:'Black & Decker' },
+
+  // === JARDIN ===
+  'tondeuse':{ type:'Tondeuse', cat:'jardin' },
+  'mower':{ type:'Tondeuse', cat:'jardin' },
+  'secateur':{ type:'Sécateur', cat:'jardin' },
+  'beche':{ type:'Bêche', cat:'jardin' },
+  'pelle':{ type:'Pelle', cat:'jardin' },
+  'rateau':{ type:'Râteau', cat:'jardin' },
+  'arrosoir':{ type:'Arrosoir', cat:'jardin' },
+  'engrais':{ type:'Engrais', cat:'jardin' },
+  'graines':{ type:'Graines', cat:'jardin' },
+  'pot plante':{ type:'Pot de Plante', cat:'jardin' },
+  'terreau':{ type:'Terreau', cat:'jardin' },
+
+  // === PAPETERIE ÉTENDUE ===
+  'crayon':{ type:'Crayon', cat:'papeterie' },
+  'pencil':{ type:'Crayon', cat:'papeterie' },
+  'gomme':{ type:'Gomme', cat:'papeterie' },
+  'eraser':{ type:'Gomme', cat:'papeterie' },
+  'regle':{ type:'Règle', cat:'papeterie' },
+  'ruler':{ type:'Règle', cat:'papeterie' },
+  'ciseaux':{ type:'Ciseaux', cat:'papeterie' },
+  'scissors':{ type:'Ciseaux', cat:'papeterie' },
+  'marqueur':{ type:'Marqueur', cat:'papeterie' },
+  'marker':{ type:'Marqueur', cat:'papeterie' },
+  'surligneur':{ type:'Surligneur', cat:'papeterie' },
+  'highlighter':{ type:'Surligneur', cat:'papeterie' },
+  'agrafeuse':{ type:'Agrafeuse', cat:'papeterie' },
+  'stapler':{ type:'Agrafeuse', cat:'papeterie' },
+  'agrafe':{ type:'Agrafes', cat:'papeterie' },
+  'scotch':{ type:'Ruban Adhésif Scotch', brand:'Scotch', cat:'papeterie' },
+  'posit':{ type:'Post-it', brand:'Post-it', cat:'papeterie' },
+  'postit':{ type:'Post-it', brand:'Post-it', cat:'papeterie' },
+  'pilot':{ brand:'Pilot' },
+  'paper mate':{ brand:'Paper Mate' },
+  'parker':{ brand:'Parker' },
+  'waterman':{ brand:'Waterman' },
+  'schneider':{ brand:'Schneider' },
+  'staedtler':{ brand:'Staedtler' },
+  'faber castell':{ brand:'Faber-Castell' },
+  'maped':{ brand:'Maped' },
+  'bloc notes':{ type:'Bloc-notes', cat:'papeterie' },
+  'notebook':{ type:'Carnet', cat:'papeterie' },
+  'agenda':{ type:'Agenda', cat:'papeterie' },
+  'chemise':{ type:'Chemise à Rabats', cat:'papeterie' },
+  'pochette':{ type:'Pochette', cat:'papeterie' },
+  'enveloppe':{ type:'Enveloppe', cat:'papeterie' },
+  'envelope':{ type:'Enveloppe', cat:'papeterie' },
+  'calculatrice':{ type:'Calculatrice', cat:'papeterie' },
+  'calculator':{ type:'Calculatrice', cat:'papeterie' },
+
+  // === BUREAUTIQUE / IMPRESSION ===
+  'imprimante':{ type:'Imprimante', cat:'bureautique' },
+  'printer':{ type:'Imprimante', cat:'bureautique' },
+  'scanner':{ type:'Scanner', cat:'bureautique' },
+  'photocopieur':{ type:'Photocopieur', cat:'bureautique' },
+  'cartoucheencre':{ type:'Cartouche Encre', cat:'bureautique' },
+  'ink':{ type:'Cartouche Encre', cat:'bureautique' },
+  'toner':{ type:'Toner', cat:'bureautique' },
+  'epson':{ brand:'Epson' },
+  'brother':{ brand:'Brother' },
+  'lexmark':{ brand:'Lexmark' },
+  'ricoh':{ brand:'Ricoh' },
+  'xerox':{ brand:'Xerox' },
+
+  // === MOBILIER ===
+  'chaise':{ type:'Chaise', cat:'mobilier' },
+  'chair':{ type:'Chaise', cat:'mobilier' },
+  'table':{ type:'Table', cat:'mobilier' },
+  'bureau':{ type:'Bureau', cat:'mobilier' },
+  'desk':{ type:'Bureau', cat:'mobilier' },
+  'canape':{ type:'Canapé', cat:'mobilier' },
+  'sofa':{ type:'Canapé', cat:'mobilier' },
+  'fauteuil':{ type:'Fauteuil', cat:'mobilier' },
+  'armoire':{ type:'Armoire', cat:'mobilier' },
+  'wardrobe':{ type:'Armoire', cat:'mobilier' },
+  'lit':{ type:'Lit', cat:'mobilier' },
+  'bed':{ type:'Lit', cat:'mobilier' },
+  'matelas':{ type:'Matelas', cat:'mobilier' },
+  'mattress':{ type:'Matelas', cat:'mobilier' },
+  'oreiller':{ type:'Oreiller', cat:'mobilier' },
+  'pillow':{ type:'Oreiller', cat:'mobilier' },
+  'couette':{ type:'Couette', cat:'mobilier' },
+  'drap':{ type:'Drap', cat:'mobilier' },
+  'rideau':{ type:'Rideau', cat:'mobilier' },
+  'curtain':{ type:'Rideau', cat:'mobilier' },
+  'tapis':{ type:'Tapis', cat:'mobilier' },
+  'carpet':{ type:'Tapis', cat:'mobilier' },
+  'ikea':{ brand:'IKEA' },
+  'conforama':{ brand:'Conforama' },
+  'but':{ brand:'BUT' },
+
+  // === CUISINE / VAISSELLE ===
+  'casserole':{ type:'Casserole', cat:'cuisine' },
+  'poele':{ type:'Poêle', cat:'cuisine' },
+  'pan':{ type:'Poêle', cat:'cuisine' },
+  'cocotte':{ type:'Cocotte', cat:'cuisine' },
+  'passoire':{ type:'Passoire', cat:'cuisine' },
+  'saladier':{ type:'Saladier', cat:'cuisine' },
+  'assiette':{ type:'Assiette', cat:'cuisine' },
+  'plate':{ type:'Assiette', cat:'cuisine' },
+  'verre':{ type:'Verre', cat:'cuisine' },
+  'glass':{ type:'Verre', cat:'cuisine' },
+  'tasse':{ type:'Tasse', cat:'cuisine' },
+  'mug':{ type:'Mug', cat:'cuisine' },
+  'bol':{ type:'Bol', cat:'cuisine' },
+  'bowl':{ type:'Bol', cat:'cuisine' },
+  'couteau':{ type:'Couteau', cat:'cuisine' },
+  'knife':{ type:'Couteau', cat:'cuisine' },
+  'fourchette':{ type:'Fourchette', cat:'cuisine' },
+  'fork':{ type:'Fourchette', cat:'cuisine' },
+  'cuillere':{ type:'Cuillère', cat:'cuisine' },
+  'spoon':{ type:'Cuillère', cat:'cuisine' },
+  'plateau':{ type:'Plateau', cat:'cuisine' },
+  'tray':{ type:'Plateau', cat:'cuisine' },
+  'tupperware':{ type:'Boîte Conservation', brand:'Tupperware', cat:'cuisine' },
+
+  // === PHOTO / VIDÉO ÉTENDUE ===
+  'trepied':{ type:'Trépied', cat:'photo' },
+  'tripod':{ type:'Trépied', cat:'photo' },
+  'micro':{ type:'Microphone', cat:'photo' },
+  'microphone':{ type:'Microphone', cat:'photo' },
+  'lumiere':{ type:'Lumière LED', cat:'photo' },
+  'ringlight':{ type:'Ring Light', cat:'photo' },
+  'objectif':{ type:'Objectif Photo', cat:'photo' },
+  'lens':{ type:'Objectif Photo', cat:'photo' },
+  'flash':{ type:'Flash Photo', cat:'photo' },
+
+  // === JEUX VIDÉO ===
+  'manette':{ type:'Manette', cat:'gaming' },
+  'controller':{ type:'Manette', cat:'gaming' },
+  'jeuxps5':{ type:'Jeu PS5', cat:'gaming' },
+  'jeuxbox':{ type:'Jeu Xbox', cat:'gaming' },
+  'jeuswitch':{ type:'Jeu Switch', cat:'gaming' },
+  'fifa':{ type:'FIFA', brand:'EA Sports', cat:'gaming' },
+  'cod':{ type:'Call of Duty', brand:'Activision', cat:'gaming' },
+  'callofduty':{ type:'Call of Duty', brand:'Activision', cat:'gaming' },
+  'gta':{ type:'GTA', brand:'Rockstar', cat:'gaming' },
+
+  // === AFRIQUE / CI SPÉCIFIQUE ===
+  'cigarette':{ type:'Cigarettes', cat:'tabac' },
+  'marlboro':{ type:'Marlboro', brand:'Marlboro', cat:'tabac' },
+  'dunhill':{ type:'Dunhill', brand:'Dunhill', cat:'tabac' },
+  'rothmans':{ type:'Rothmans', brand:'Rothmans', cat:'tabac' },
+  'excellence':{ brand:'Excellence' },
+  'fine':{ brand:'Fine' },
+  'bruyere':{ brand:'Bruyère' },
+  'tissu':{ type:'Tissu', cat:'mode' },
+  'pagne':{ type:'Pagne Wax', cat:'mode' },
+  'boubou':{ type:'Boubou', cat:'mode' },
+  'tamp':{ brand:'Tampico' },
+  'vimto':{ type:'Vimto', brand:'Vimto', cat:'soda' },
+  'topsy':{ type:'Topsy', brand:'Topsy', cat:'soda' },
+  'cocomilk':{ type:'Cocomilk', brand:'Cocomilk', cat:'laitier' },
+  'yopie':{ type:'Yopie', brand:'Yopie', cat:'laitier' },
+  'bebemami':{ type:'Bébé Mami', brand:'Mami', cat:'laitier' },
+  'sika':{ brand:'Sika' },
+
+  // === UTILITAIRES QUOTIDIENS ===
+  'briquet':{ type:'Briquet', cat:'utilitaire' },
+  'lighter':{ type:'Briquet', cat:'utilitaire' },
+  'allumettes':{ type:'Allumettes', cat:'utilitaire' },
+  'matches':{ type:'Allumettes', cat:'utilitaire' },
+  'parapluie':{ type:'Parapluie', cat:'utilitaire' },
+  'umbrella':{ type:'Parapluie', cat:'utilitaire' },
+  'ouvreboite':{ type:'Ouvre-boîte', cat:'utilitaire' },
+  'tirebouchon':{ type:'Tire-bouchon', cat:'utilitaire' },
+  'glaciere':{ type:'Glacière', cat:'utilitaire' },
+  'cooler':{ type:'Glacière', cat:'utilitaire' },
+  'sacplage':{ type:'Sac de Plage', cat:'utilitaire' },
+  'drapeausac':{ type:'Sac Cabas', cat:'utilitaire' },
+  'moustiquaire':{ type:'Moustiquaire', cat:'utilitaire' },
+  'insecticide':{ type:'Insecticide', cat:'utilitaire' },
+  'baygon':{ type:'Baygon', brand:'Baygon', cat:'utilitaire' },
+  'raid':{ type:'Raid', brand:'Raid', cat:'utilitaire' },
+  'mortein':{ type:'Mortein', brand:'Mortein', cat:'utilitaire' },
+
+  // === DÉCORATION ===
+  'tableau':{ type:'Tableau', cat:'deco' },
+  'horloge':{ type:'Horloge', cat:'deco' },
+  'clock':{ type:'Horloge', cat:'deco' },
+  'miroir':{ type:'Miroir', cat:'deco' },
+  'mirror':{ type:'Miroir', cat:'deco' },
+  'bougie':{ type:'Bougie', cat:'deco' },
+  'candle':{ type:'Bougie', cat:'deco' },
+  'vase':{ type:'Vase', cat:'deco' },
+  'pot fleur':{ type:'Pot de Fleurs', cat:'deco' },
+  'lampe':{ type:'Lampe', cat:'deco' },
+  'lamp':{ type:'Lampe', cat:'deco' },
+  'lampadaire':{ type:'Lampadaire', cat:'deco' },
+  'bougeoir':{ type:'Bougeoir', cat:'deco' },
+
+  // === FOOD CI / OUEST AFRICAIN ===
+  'kedjenou':{ type:'Kedjenou', cat:'plat' },
+  'bassi':{ type:'Bassi-salté', cat:'plat' },
+  'garba':{ type:'Garba', cat:'plat' },
+  'allocco':{ type:'Alloco', cat:'plat' },
+  'placali':{ type:'Placali', cat:'plat' },
+  'kenkey':{ type:'Kenkey', cat:'plat' },
+  'tcheb':{ type:'Tchep / Thieb', cat:'plat' },
+  'mafe':{ type:'Mafé', cat:'plat' },
+  'yassa':{ type:'Yassa Poulet', cat:'plat' },
+  'peanutbutter':{ type:'Beurre de Cacahuète', cat:'epicerie' },
+  'pateparachide':{ type:'Pâte d\'Arachide', cat:'epicerie' },
+  'arachide':{ type:'Arachide', cat:'epicerie' },
+  'akpi':{ type:'Akpi', cat:'epicerie' },
+  'n ere':{ type:'Nété', cat:'epicerie' },
+  'soumbara':{ type:'Soumbara', cat:'epicerie' },
+  'dah':{ type:'Dah (Oseille de Guinée)', cat:'epicerie' },
+
+  // === PAIEMENT / BANQUES CI ===
+  'wave':{ brand:'Wave' },
+  'orangemoney':{ brand:'Orange Money' },
+  'mtnmoney':{ brand:'MTN Mobile Money' },
+  'moovmoney':{ brand:'Moov Money' },
+  'ecobank':{ brand:'Ecobank' },
+  'sib':{ brand:'SIB' },
+  'bicici':{ brand:'BICICI' },
+  'sgbci':{ brand:'SGBCI' },
+  'nsia':{ brand:'NSIA' },
+  'uba':{ brand:'UBA' },
 };
 
 // Mots-clés "primary" (nom produit spécifique) qui doivent gagner sur
@@ -7635,6 +8710,28 @@ const SPECTRA_KEYWORDS = {
 const SPECTRA_SECONDARY_KW = new Set([
   'tomato','tomate','orange','pomme','ananas','mangue','citron','pamplemousse'
 ]);
+
+// ── Normalise une chaîne : lowercase, sans accents, sans espaces/ponctuation ──
+// Permet de matcher "iPhone 17 Pro Max" → "iphone17promax"
+function _normalizeKey(s) {
+  if (!s) return '';
+  return String(s)
+    .toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]/g, '');
+}
+
+// Index squeezed (clé sans espaces) calculé une seule fois
+let __SPECTRA_SQUEEZED = null;
+function _spectraSqueezedIndex() {
+  if (__SPECTRA_SQUEEZED) return __SPECTRA_SQUEEZED;
+  __SPECTRA_SQUEEZED = {};
+  for (const key in SPECTRA_KEYWORDS) {
+    const sq = _normalizeKey(key);
+    if (sq && !__SPECTRA_SQUEEZED[sq]) __SPECTRA_SQUEEZED[sq] = SPECTRA_KEYWORDS[key];
+  }
+  return __SPECTRA_SQUEEZED;
+}
 
 // Extrait {type, brand, name} depuis un texte OCR (français/anglais)
 function _resolveFromOCR(ocrText){
@@ -7655,9 +8752,35 @@ function _resolveFromOCR(ocrText){
   // Marquer les mots qui matchent un keyword (évite de les traiter comme marque)
   const matchedWords = new Set();
 
-  // Pass 0: paires de mots (ex: "uncle ben", "lait infantile")
+  // Pass -1: squeezed (concat sans espaces) pour détecter modèles précis
+  // Ex: "iPhone 17 Pro Max" → "iphone17promax"
+  const squeezed = _spectraSqueezedIndex();
+  const fullSqueezed = _normalizeKey(ocrText);
   let foundType = null;
   let foundBrand = null;
+
+  // Essaie d'abord le match complet squeezed (le plus précis)
+  if (fullSqueezed && squeezed[fullSqueezed]) {
+    const hit = squeezed[fullSqueezed];
+    if (hit.type) foundType = hit.type;
+    if (hit.brand) foundBrand = hit.brand;
+  }
+
+  // Puis recherche sous-chaînes longues (≥ 7 chars) dans la concat squeezed
+  if (!foundType && fullSqueezed.length >= 7) {
+    // Trie les clés par longueur décroissante — les plus spécifiques gagnent
+    const sortedKeys = Object.keys(squeezed).filter(k => k.length >= 7).sort((a,b)=>b.length-a.length);
+    for (const k of sortedKeys) {
+      if (fullSqueezed.includes(k)) {
+        const hit = squeezed[k];
+        if (hit.type && !foundType) foundType = hit.type;
+        if (hit.brand && !foundBrand) foundBrand = hit.brand;
+        if (foundType) break; // un match suffit
+      }
+    }
+  }
+
+  // Pass 0: paires de mots (ex: "uncle ben", "lait infantile")
   for (let i = 0; i < words.length - 1; i++) {
     const pair = words[i] + ' ' + words[i+1];
     const hit = SPECTRA_KEYWORDS[pair];
@@ -11717,28 +12840,75 @@ function vAuditLog() {
   </div>`;
 }
 
-// Traductions actions/catégories audit
+// Traductions actions/catégories audit (couverture COMPLÈTE)
 function _translateAuditAction(action) {
   if (!action) return '';
-  const FR = { create:'créer', update:'modifier', delete:'supprimer', login:'connexion', logout:'déconnexion',
-               sale:'vente', refund:'remboursement', stock_in:'entrée stock', stock_out:'sortie stock',
-               transfer:'transfert', approve:'approuver', reject:'rejeter', export:'exporter',
-               import:'importer', clear_audit_log:'purge journal', activate:'activer', deactivate:'désactiver' };
-  const EN = { create:'create', update:'update', delete:'delete', login:'login', logout:'logout',
-               sale:'sale', refund:'refund', stock_in:'stock in', stock_out:'stock out',
-               transfer:'transfer', approve:'approve', reject:'reject', export:'export',
-               import:'import', clear_audit_log:'purge log', activate:'activate', deactivate:'deactivate' };
+  const FR = {
+    // CRUD génériques
+    create:'Créer', update:'Modifier', delete:'Supprimer',
+    // Auth
+    login:'Connexion', login_success:'Connexion réussie', login_failed:'Connexion échouée',
+    logout:'Déconnexion', register:'Inscription',
+    '2fa_success':'2FA réussi', '2fa_failed':'2FA échoué',
+    google_attempt:'Google OAuth', apple_attempt:'Apple Sign-In',
+    biometric_enrolled:'Biométrie activée', biometric_success:'Biométrie réussie', biometric_failed:'Biométrie échouée',
+    pin_failed:'PIN incorrect', member_switch:'Changement utilisateur',
+    // Ventes
+    sale:'Vente', refund:'Remboursement',
+    // Stock
+    stock_in:'Entrée stock', stock_out:'Sortie stock', transfer:'Transfert',
+    delete_article:'Article supprimé',
+    // Approbations
+    approve:'Approuver', reject:'Rejeter', activate:'Activer', deactivate:'Désactiver',
+    // Import/Export
+    'export':'Exporter', 'import':'Importer', clear_audit_log:'Purge journal',
+    import_shopify:'Import Shopify', import_woocommerce:'Import WooCommerce',
+    ecom_update_shopify:'Màj Shopify', ecom_update_woocommerce:'Màj WooCommerce',
+    sync_shopify:'Synchro Shopify', sync_woocommerce:'Synchro WooCommerce',
+    // Settings / vidéo
+    demo_seeded:'Démo chargée', appearance_change:'Apparence modifiée', security_change:'Sécurité modifiée',
+    video_saved:'Vidéo enregistrée', video_published:'Vidéo publiée', youtube_upload:'Upload YouTube',
+    // Équipe
+    meeting_created:'Réunion créée', meeting_updated:'Réunion modifiée', meeting_deleted:'Réunion supprimée',
+    task_created:'Tâche créée', announcement_created:'Annonce créée',
+  };
+  const EN = {
+    create:'Create', update:'Update', delete:'Delete',
+    login:'Login', login_success:'Login success', login_failed:'Login failed',
+    logout:'Logout', register:'Register',
+    '2fa_success':'2FA success', '2fa_failed':'2FA failed',
+    google_attempt:'Google OAuth', apple_attempt:'Apple Sign-In',
+    biometric_enrolled:'Biometric enrolled', biometric_success:'Biometric success', biometric_failed:'Biometric failed',
+    pin_failed:'PIN incorrect', member_switch:'User switch',
+    sale:'Sale', refund:'Refund',
+    stock_in:'Stock in', stock_out:'Stock out', transfer:'Transfer',
+    delete_article:'Article deleted',
+    approve:'Approve', reject:'Reject', activate:'Activate', deactivate:'Deactivate',
+    'export':'Export', 'import':'Import', clear_audit_log:'Purge log',
+    import_shopify:'Shopify import', import_woocommerce:'WooCommerce import',
+    ecom_update_shopify:'Shopify update', ecom_update_woocommerce:'WooCommerce update',
+    sync_shopify:'Shopify sync', sync_woocommerce:'WooCommerce sync',
+    demo_seeded:'Demo loaded', appearance_change:'Appearance updated', security_change:'Security updated',
+    video_saved:'Video saved', video_published:'Video published', youtube_upload:'YouTube upload',
+    meeting_created:'Meeting created', meeting_updated:'Meeting updated', meeting_deleted:'Meeting deleted',
+    task_created:'Task created', announcement_created:'Announcement created',
+  };
   const map = _lang === 'en' ? EN : FR;
-  return map[action] || action;
+  if (map[action]) return map[action];
+  // Fallback : humanise les actions inconnues (snake_case → Capitalized)
+  return action.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 }
 function _translateAuditCategory(cat) {
   if (!cat) return '';
-  const FR = { sale:'ventes', stock:'stock', member:'équipe', auth:'auth', settings:'paramètres',
-               product:'produits', client:'clients', plan:'abonnement', promo:'promo' };
-  const EN = { sale:'sales', stock:'stock', member:'team', auth:'auth', settings:'settings',
-               product:'products', client:'clients', plan:'plan', promo:'promo' };
+  const FR = { sale:'Ventes', stock:'Stock', member:'Équipe', team:'Équipe', auth:'Authentification',
+               settings:'Paramètres', product:'Produits', client:'Clients',
+               plan:'Abonnement', promo:'Promo', supplier:'Fournisseurs', order:'Commandes' };
+  const EN = { sale:'Sales', stock:'Stock', member:'Team', team:'Team', auth:'Auth',
+               settings:'Settings', product:'Products', client:'Clients',
+               plan:'Plan', promo:'Promo', supplier:'Suppliers', order:'Orders' };
   const map = _lang === 'en' ? EN : FR;
-  return map[cat] || cat;
+  if (map[cat]) return map[cat];
+  return cat.charAt(0).toUpperCase() + cat.slice(1);
 }
 
 function exportAuditLogCSV() {
@@ -16024,7 +17194,7 @@ async function __publishTo(target) {
   if (!blob) { showToast('Aucune vidéo', 'error'); return; }
   const file = new File([blob], `baro-${Date.now()}.webm`, { type: blob.type || 'video/webm' });
 
-  // Copie la légende pour que l'utilisateur puisse la coller
+  // Copie la légende pour que l'utilisateur puisse la coller (fallback)
   if (caption) {
     try { await navigator.clipboard.writeText(caption); } catch(e){}
   }
@@ -16037,40 +17207,112 @@ async function __publishTo(target) {
   } catch(e){}
   if (typeof logAudit === 'function') logAudit('settings', 'video_published', { target, vidId: window.__publishVidId });
 
-  if (target === 'share') {
-    if (navigator.canShare && navigator.canShare({ files:[file] })) {
-      try {
-        await navigator.share({ files:[file], title:'BARO', text: caption });
-        showToast('✅ Partagé', 'success');
-        document.getElementById('publish-modal')?.remove();
-        return;
-      } catch(e){}
-    }
-    __vidDownload();
-    showToast('📥 Téléchargée — importez dans l\'app de votre choix', 'info');
-    return;
-  }
-
+  // ═══ Download direct ═══
   if (target === 'download') {
     __vidDownload();
     return;
   }
 
-  // Partage vers plateforme spécifique : tenter navigator.share (système) puis deep link
-  const platformUrls = {
-    instagram: 'instagram://library?LocalIdentifier=',
-    tiktok:    'https://www.tiktok.com/upload?lang=fr',
-    youtube:   'https://studio.youtube.com/channel/UC/videos/upload',
-    facebook:  'https://www.facebook.com/',
-    twitter:   'https://twitter.com/compose/tweet?text=' + encodeURIComponent(caption),
-    whatsapp:  'whatsapp://',
-  };
+  // ═══ YouTube : upload RÉEL via Data API v3 ═══
+  if (target === 'youtube') {
+    const clientId = (localStorage.getItem('stockr_google_client_id') || '').trim();
+    if (!clientId) {
+      if (confirm('Google OAuth non configuré. Configurer maintenant ?')) {
+        document.getElementById('publish-modal')?.remove();
+        nav('oauth-setup');
+      }
+      return;
+    }
+    showToast('📤 Upload YouTube en cours... (1-5 min)', 'info');
+    try {
+      const result = await uploadVideoToYouTube(blob, 'BARO — ' + new Date().toLocaleDateString(), caption);
+      if (result?.id) {
+        showToast('✅ Publié : youtube.com/watch?v=' + result.id, 'success');
+        window.open('https://studio.youtube.com/video/' + result.id + '/edit', '_blank');
+        document.getElementById('publish-modal')?.remove();
+      }
+    } catch(e) {
+      showToast('❌ Upload YouTube échoué : ' + e.message, 'error');
+    }
+    return;
+  }
 
-  // D'abord essayer Web Share avec files (fonctionne sur mobile pour IG/TikTok/WhatsApp)
+  // ═══ Facebook : upload RÉEL via Graph API /me/videos ═══
+  if (target === 'facebook') {
+    const fbToken = (localStorage.getItem('stockr_fb_token') || '').trim();
+    const fbPageId = (localStorage.getItem('stockr_fb_page_id') || '').trim();
+    if (!fbToken) {
+      if (confirm('Token Facebook Graph API non configuré. Configurer maintenant ?\n\n(Obtenir un token : https://developers.facebook.com/tools/explorer — permissions pages_manage_posts, pages_read_engagement)')) {
+        const tok = prompt('Collez votre Facebook Page Access Token (pas le User token) :');
+        if (tok) {
+          localStorage.setItem('stockr_fb_token', tok.trim());
+          const pid = prompt('Page ID Facebook (optionnel, laissez vide pour "me") :');
+          if (pid) localStorage.setItem('stockr_fb_page_id', pid.trim());
+          showToast('Token FB enregistré, réessayez', 'info');
+        }
+      }
+      return;
+    }
+    showToast('📤 Upload Facebook en cours...', 'info');
+    try {
+      const result = await uploadVideoToFacebook(blob, caption, fbToken, fbPageId);
+      if (result?.id) {
+        showToast('✅ Publié sur Facebook (ID ' + result.id + ')', 'success');
+        window.open('https://www.facebook.com/' + (fbPageId||'me'), '_blank');
+        document.getElementById('publish-modal')?.remove();
+      }
+    } catch(e) {
+      showToast('❌ Upload FB échoué : ' + e.message, 'error');
+    }
+    return;
+  }
+
+  // ═══ Instagram : upload RÉEL via Graph API (Reels) ═══
+  if (target === 'instagram') {
+    const igToken = (localStorage.getItem('stockr_ig_token') || '').trim();
+    const igBusinessId = (localStorage.getItem('stockr_ig_business_id') || '').trim();
+    if (!igToken || !igBusinessId) {
+      if (confirm('Instagram Graph API non configuré.\n\nInstagram nécessite un compte Business + token FB Page + IG Business ID.\nConfigurer maintenant ?')) {
+        const tok = prompt('Access Token (même que Facebook Page Token) :');
+        const bid = tok ? prompt('Instagram Business Account ID (17 chiffres) :') : null;
+        if (tok && bid) {
+          localStorage.setItem('stockr_ig_token', tok.trim());
+          localStorage.setItem('stockr_ig_business_id', bid.trim());
+          showToast('IG configuré, réessayez', 'info');
+        }
+      }
+      // Fallback : partage natif (mobile)
+      if (navigator.canShare && navigator.canShare({ files:[file] })) {
+        try {
+          await navigator.share({ files:[file], title:'BARO', text: caption });
+          showToast('✅ Partagé (choisissez Instagram)', 'success');
+          document.getElementById('publish-modal')?.remove();
+          return;
+        } catch(e){ if (e.name === 'AbortError') return; }
+      }
+      return;
+    }
+    showToast('📤 Upload Instagram Reel en cours... (2-4 min)', 'info');
+    try {
+      const result = await uploadVideoToInstagram(blob, caption, igToken, igBusinessId);
+      if (result?.id) {
+        showToast('✅ Reel publié sur Instagram', 'success');
+        window.open('https://www.instagram.com/', '_blank');
+        document.getElementById('publish-modal')?.remove();
+      }
+    } catch(e) {
+      showToast('❌ Upload IG échoué : ' + e.message, 'error');
+    }
+    return;
+  }
+
+  // ═══ TikTok / Twitter / WhatsApp / share : Web Share API natif (mobile) ═══
+  // Sur mobile, ça ouvre la feuille de partage → utilisateur choisit l'app → fichier importé directement.
+  // Sur desktop : fallback download + ouvre le site.
   if (navigator.canShare && navigator.canShare({ files:[file] })) {
     try {
       await navigator.share({ files:[file], title:'BARO', text: caption });
-      showToast('✅ Envoyé vers ' + target + ' (légende copiée)', 'success');
+      showToast('✅ Partagé via ' + target, 'success');
       document.getElementById('publish-modal')?.remove();
       return;
     } catch(e) {
@@ -16078,12 +17320,95 @@ async function __publishTo(target) {
     }
   }
 
-  // Fallback : télécharge la vidéo + ouvre la plateforme + légende copiée
+  // Desktop fallback : download + ouvre le site (légende déjà copiée)
+  const platformUrls = {
+    tiktok:    'https://www.tiktok.com/upload?lang=fr',
+    twitter:   'https://twitter.com/compose/tweet?text=' + encodeURIComponent(caption),
+    whatsapp:  'https://web.whatsapp.com/',
+    share:     null,
+  };
   __vidDownload();
-  setTimeout(() => {
-    window.open(platformUrls[target] || 'https://' + target + '.com', '_blank');
-  }, 500);
-  showToast(`📥 Vidéo téléchargée + légende copiée — collez dans ${target}`, 'success');
+  if (platformUrls[target]) {
+    setTimeout(() => { window.open(platformUrls[target], '_blank'); }, 500);
+    showToast('📥 Téléchargée + légende copiée → collez dans ' + target, 'success');
+  } else {
+    showToast('📥 Téléchargée — importez dans l\'app de votre choix', 'info');
+  }
+}
+
+// ── Facebook Graph API v18 — upload vidéo RÉEL ─────────
+// Doc : https://developers.facebook.com/docs/graph-api/reference/video
+async function uploadVideoToFacebook(blob, description, accessToken, pageId) {
+  const endpoint = 'https://graph-video.facebook.com/v18.0/' + (pageId || 'me') + '/videos';
+  const fd = new FormData();
+  fd.append('source', blob, 'baro.webm');
+  fd.append('description', description || '');
+  fd.append('access_token', accessToken);
+  const res = await fetch(endpoint, { method: 'POST', body: fd });
+  if (!res.ok) {
+    const err = await res.text().catch(()=>String(res.status));
+    throw new Error('FB ' + res.status + ' : ' + err.slice(0, 200));
+  }
+  return await res.json();
+}
+
+// ── Instagram Graph API v18 — upload Reel en 2 étapes ──
+// 1) Créer un media container avec l'URL de la vidéo
+// 2) Publier le container
+// NOTE : Instagram exige une URL publique (pas un blob local). On passe donc par un hébergement.
+// Solution : uploader d'abord sur un storage (ici on demande l'URL manuellement, ou on utilise Cloudinary si configuré).
+async function uploadVideoToInstagram(blob, caption, accessToken, igBusinessId) {
+  // Instagram n'accepte pas les uploads directs par multipart — il faut une URL publique.
+  // Option 1 : Cloudinary (gratuit 25 crédits/mois)
+  // Option 2 : Facebook hébergement temporaire via le container Reel
+  // On utilise la v2 resumable upload qui accepte les bytes directement.
+  const createRes = await fetch('https://graph.facebook.com/v18.0/' + igBusinessId + '/media?' +
+    new URLSearchParams({
+      media_type: 'REELS',
+      upload_type: 'resumable',
+      caption: caption || '',
+      access_token: accessToken,
+    }), { method: 'POST' });
+  if (!createRes.ok) {
+    const err = await createRes.text().catch(()=>String(createRes.status));
+    throw new Error('IG create container ' + createRes.status + ' : ' + err.slice(0,200));
+  }
+  const { id: containerId, uri: uploadUri } = await createRes.json();
+  if (!uploadUri) throw new Error('IG : pas d\'URI de upload');
+
+  // Upload resumable : PUT avec offset
+  const fileSize = blob.size;
+  const putRes = await fetch(uploadUri, {
+    method: 'POST',
+    headers: {
+      'Authorization': 'OAuth ' + accessToken,
+      'offset': '0',
+      'file_size': String(fileSize),
+    },
+    body: blob,
+  });
+  if (!putRes.ok) {
+    const err = await putRes.text().catch(()=>String(putRes.status));
+    throw new Error('IG upload ' + putRes.status + ' : ' + err.slice(0,200));
+  }
+
+  // Poll statut container (prêt à publier)
+  for (let i = 0; i < 30; i++) {
+    await new Promise(r => setTimeout(r, 4000));
+    const statusRes = await fetch('https://graph.facebook.com/v18.0/' + containerId + '?fields=status_code&access_token=' + accessToken);
+    const statusJson = await statusRes.json();
+    if (statusJson.status_code === 'FINISHED') break;
+    if (statusJson.status_code === 'ERROR') throw new Error('IG container status ERROR');
+  }
+
+  // Publier le Reel
+  const publishRes = await fetch('https://graph.facebook.com/v18.0/' + igBusinessId + '/media_publish?' +
+    new URLSearchParams({ creation_id: containerId, access_token: accessToken }), { method: 'POST' });
+  if (!publishRes.ok) {
+    const err = await publishRes.text().catch(()=>String(publishRes.status));
+    throw new Error('IG publish ' + publishRes.status + ' : ' + err.slice(0,200));
+  }
+  return await publishRes.json();
 }
 
 // ── CapCut round-trip flow ──
@@ -20487,6 +21812,9 @@ document.addEventListener('DOMContentLoaded', () => {
   window.toggleDark      = toggleDark;
   window.doLogin         = doLogin;
   window.doRegister      = doRegister;
+  window.confirmSignupVerification = confirmSignupVerification;
+  window.resendSignupVerification  = resendSignupVerification;
+  window.cancelSignupVerification  = cancelSignupVerification;
   window.authNextStep    = authNextStep;
   window.spectraOnFile   = spectraOnFile;
   window.spectraConfirmYes = spectraConfirmYes;
@@ -20741,6 +22069,8 @@ document.addEventListener('DOMContentLoaded', () => {
   window.openEcommerceProductEditor = openEcommerceProductEditor;
   window.__updateEcomProduct     = __updateEcomProduct;
   window.uploadVideoToYouTube    = uploadVideoToYouTube;
+  window.uploadVideoToFacebook   = uploadVideoToFacebook;
+  window.uploadVideoToInstagram  = uploadVideoToInstagram;
   window.__openYTUploadModal     = __openYTUploadModal;
   window.__confirmYTUpload       = __confirmYTUpload;
   window.connectIntegration      = connectIntegration;

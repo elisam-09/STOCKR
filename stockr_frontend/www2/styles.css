@@ -2711,14 +2711,21 @@ body.dark .card:hover { border-color: var(--border); }
 .boutique-tool-card {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 14px;
-  padding: 12px;
+  padding: 14px 12px;
   cursor: pointer;
   text-align: left;
   width: 100%;
+  min-height: 72px;
+  box-sizing: border-box;
+  font-family: inherit;
+  color: inherit;
+  margin: 0;
+  appearance: none;
+  -webkit-appearance: none;
   transition: transform .15s, box-shadow .15s, border-color .15s;
 }
 .boutique-tool-card:hover {
@@ -2727,21 +2734,38 @@ body.dark .card:hover { border-color: var(--border); }
   border-color: var(--accent);
 }
 .btc-ico {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
+  width: 42px;
+  height: 42px;
+  border-radius: 11px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 18px;
+  font-weight: 700;
   flex-shrink: 0;
+  line-height: 1;
 }
-.btc-txt { flex: 1; min-width: 0; }
-.btc-title { font-weight: 700; font-size: 13px; color: var(--text-1); }
+.btc-txt {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+}
+.btc-title {
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--text-1);
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .btc-sub {
   font-size: 11px;
   color: var(--text-3);
-  margin-top: 2px;
+  line-height: 1.3;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
