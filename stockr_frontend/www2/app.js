@@ -1345,7 +1345,7 @@ async function api(method, path, body) {
 
 // ── Mapping API → state ───────────────────────
 function articleFromAPI(a) {
-  return { id: a.id, name: a.name, stock: a.quantity, unit: a.unit, min: a.alert_threshold || 0, lead: a.lead_time_days };
+  return { id: a.id, name: a.name, stock: a.quantity, unit: a.unit, min: a.alert_threshold || 0, lead: a.lead_time_days, price: a.price || 0, sellPrice: a.sell_price || 0 };
 }
 function productFromAPI(p) {
   return {
@@ -1701,6 +1701,33 @@ function recordSale() {
   const sel   = $('sale-product');
   const qtyEl = $('sale-qty');
   if (!sel || !sel.value) { showToast(t('chooseProduct'), 'error'); return; }
+
+  // ── Mode revendeur : vente directe depuis le stock ──
+  if (S.authProfile === 'reseller' && sel.value.startsWith('art_')) {
+    const artId = parseInt(sel.value.replace('art_', ''));
+    const art = S.articles.find(a => a.id === artId);
+    if (!art) return;
+    const qty = Math.max(1, parseFloat(qtyEl.value) || 1);
+    if (art.stock < qty) { showToast(`Stock insuffisant : ${art.name}`, 'error'); return; }
+    art.stock = Math.round((art.stock - qty) * 1000) / 1000;
+    const salePrice = art.sellPrice || art.price || 0;
+    const costPrice = art.price || 0;
+    const saleTotal = salePrice * qty;
+    const profit    = (salePrice - costPrice) * qty;
+    const pmSel = $('sale-payment');
+    const payMethod = pmSel ? pmSel.value : 'cash';
+    const clientSel = $('sale-client');
+    const clientId  = clientSel ? parseInt(clientSel.value) || null : null;
+    const client    = clientId ? S.clients.find(c => c.id === clientId) : null;
+    S.sales.unshift({ id: Date.now(), productId: art.id, productName: art.name, qty, total: saleTotal, profit, date: new Date().toISOString(), paymentMethod: payMethod, clientId, clientName: client?.name || null });
+    localStorage.setItem('baro_articles', JSON.stringify(S.articles));
+    logActivity('sale', `${art.name} x${qty} — ${fmt(saleTotal)} ${sym()}`);
+    showToast(`${t('saleConfirmed')} — ${fmt(saleTotal)} ${sym()}`);
+    render();
+    return;
+  }
+
+  // ── Mode transformateur : vente de produits composés ──
   const product = S.products.find(p => p.id === parseInt(sel.value));
   if (!product) return;
   const qty = Math.max(1, parseInt(qtyEl.value) || 1);
@@ -1761,16 +1788,18 @@ async function saveArticle() {
       lead_time_days:  parseInt(f.lead) || 7,
       ref:             f.ref || null,
       price:           parseFloat(f.price) || 0,
+      sell_price:      parseFloat(f.sellPrice) || 0,
     });
     const newArt = articleFromAPI(data);
     newArt.ref = f.ref || '';
     newArt.price = parseFloat(f.price) || 0;
+    newArt.sellPrice = parseFloat(f.sellPrice) || 0;
     newArt.expiry = f.expiry || '';
     S.articles.push(newArt);
     localStorage.setItem('baro_articles', JSON.stringify(S.articles));
     logActivity('new_article', f.name.trim());
     showToast(`"${f.name}" ${t('added') || 'ajouté'}`);
-    S.form = { name:'', stock:0, min:0, unit:'', lead:7, ref:'', price:0, expiry:'' };
+    S.form = { name:'', stock:0, min:0, unit:'', lead:7, ref:'', price:0, sellPrice:0, expiry:'' };
     nav('pantry');
   } catch(e) {
     showToast(e.message, 'error');
@@ -1970,9 +1999,25 @@ function addToCart() {
   const sel   = $('sale-product');
   const qtyEl = $('sale-qty');
   if (!sel?.value) { showToast(t('chooseProduct'), 'error'); return; }
+  const qty = Math.max(1, parseFloat(qtyEl?.value) || 1);
+
+  // Mode revendeur : article direct
+  if (S.authProfile === 'reseller' && sel.value.startsWith('art_')) {
+    const artId = parseInt(sel.value.replace('art_', ''));
+    const art = S.articles.find(a => a.id === artId);
+    if (!art) return;
+    const salePrice = art.sellPrice || art.price || 0;
+    const existing = S.cart.find(c => c.productId === art.id && c._reseller);
+    if (existing) { existing.qty += qty; }
+    else { S.cart.push({ productId:art.id, productName:art.name, qty, unitPrice:salePrice, unitCost:art.price, _reseller:true, _artId:art.id }); }
+    showToast(`${art.name} ajouté au panier`);
+    render();
+    return;
+  }
+
+  // Mode transformateur : produit composé
   const product = S.products.find(p => p.id === parseInt(sel.value));
   if (!product) return;
-  const qty = Math.max(1, parseInt(qtyEl?.value) || 1);
   const existing = S.cart.find(c => c.productId === product.id);
   if (existing) { existing.qty += qty; }
   else { S.cart.push({ productId:product.id, productName:product.name, qty, unitPrice:product.price, unitCost:product.purchasePrice }); }
@@ -1995,6 +2040,17 @@ async function confirmCart() {
   try {
     let total = 0, count = 0, newSales = [];
     for (const item of S.cart) {
+      // ── Mode revendeur : déstockage article direct ──
+      if (item._reseller) {
+        const art = S.articles.find(a => a.id === item._artId);
+        if (art) art.stock = Math.round((art.stock - item.qty) * 1000) / 1000;
+        const lineTotal  = item.unitPrice * item.qty;
+        const lineProfit = (item.unitPrice - (item.unitCost || 0)) * item.qty;
+        total += lineTotal; count += item.qty;
+        const newSale = { id: Date.now() + Math.random(), productId: item._artId, productName: item.productName, qty: item.qty, total: lineTotal, profit: lineProfit, date: new Date().toISOString(), clientId, clientName: client?.name || null, paymentMethod: payMethod };
+        S.sales.unshift(newSale); newSales.push(newSale);
+        continue;
+      }
       const data = await api('POST', '/api/sales/', { product_id: item.productId, quantity: item.qty, client_id: clientId, client_name: client?.name || null });
       const product = S.products.find(p => p.id === item.productId);
       let lineTotal = (product?.price || 0) * item.qty;
@@ -2892,10 +2948,13 @@ function vSales() {
     <div class="card" style="margin-bottom:14px">
       <div class="card-title">${t('newSale')}</div>
       <div class="form-group">
-        <label class="form-label">${t('product')}</label>
+        <label class="form-label">${S.authProfile === 'reseller' ? t('articleName') : t('product')}</label>
         <select class="input" id="sale-product">
           <option value="">${t('select')}</option>
-          ${avail.map(p=>{const pr=_getActivePromo(p.id);return `<option value="${p.id}">${p.name} — ${pr?fmt(Math.round(p.price*(100-pr.discount)/100))+' (-'+pr.discount+'%)':fmt(p.price)} ${sym()} (${productMaxMake(p)} fab.)${pr?' PROMO':''}</option>`;}).join('')}
+          ${S.authProfile === 'reseller'
+            ? S.articles.filter(a => a.stock > 0).map(a => `<option value="art_${a.id}">${a.name} — ${fmt(a.sellPrice || a.price || 0)} ${sym()} (${a.stock} ${a.unit} en stock)</option>`).join('')
+            : avail.map(p=>{const pr=_getActivePromo(p.id);return `<option value="${p.id}">${p.name} — ${pr?fmt(Math.round(p.price*(100-pr.discount)/100))+' (-'+pr.discount+'%)':fmt(p.price)} ${sym()} (${productMaxMake(p)} fab.)${pr?' PROMO':''}</option>`;}).join('')
+          }
         </select>
       </div>
       <div class="form-group">
@@ -3786,6 +3845,11 @@ function vAdd() {
           <input class="input" type="number" placeholder="0" step="10" value="${f.price||0}" oninput="S.form.price=this.value">
         </div>
       </div>
+      ${S.authProfile === 'reseller' ? `
+      <div class="form-group">
+        <label class="form-label">${t('sellingPrice')} (${sym()})</label>
+        <input class="input" type="number" placeholder="0" step="10" value="${f.sellPrice||0}" oninput="S.form.sellPrice=this.value">
+      </div>` : ''}
       <div class="form-group">
         <label class="form-label">${t('expiryDate')}</label>
         <input class="input" type="date" value="${f.expiry||''}" oninput="S.form.expiry=this.value">
