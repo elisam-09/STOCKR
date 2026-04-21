@@ -22228,45 +22228,19 @@ async function installPWA() {
 }
 
 if ('serviceWorker' in navigator) {
-  // Reload auto dès qu'un nouveau SW prend le contrôle — MAIS seulement si un controller
-  // existait déjà (= vraie transition de version, pas première install).
-  const __swHadControllerAtBoot = !!navigator.serviceWorker.controller;
-  let __swReloading = false;
-  navigator.serviceWorker.addEventListener('controllerchange', () => {
-    if (!__swHadControllerAtBoot) return; // première install — pas de reload
-    if (__swReloading) return;
-    __swReloading = true;
-    window.location.reload();
-  });
-
+  // Enregistrement simple, sans auto-reload agressif ni polling 60s.
+  // Le SW utilise skipWaiting() + clients.claim() pour activer la nouvelle version
+  // au prochain chargement de page — c'est suffisant et évite les loops de reload.
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js')
-      .then(reg => {
-        // Vérifie les mises à jour à chaque ouverture + toutes les 60s
-        try { reg.update(); } catch(_){}
-        setInterval(() => { try { reg.update(); } catch(_){} }, 60 * 1000);
-
-        reg.addEventListener('updatefound', () => {
-          const newSW = reg.installing;
-          if (!newSW) return;
-          newSW.addEventListener('statechange', () => {
-            if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
-              // Nouvelle version prête — on force l'activation immédiate
-              try { newSW.postMessage('skipWaiting'); } catch(_){}
-              try { showToast('🔄 Mise à jour — rechargement…', 'info'); } catch(_){}
-            }
-          });
-        });
-      })
-      .catch(() => {}); // silencieux si localhost sans HTTPS
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
   });
 }
 
 // ── Init ──────────────────────────────────────
-// IIFE synchrone : le script est en fin de <body>, le DOM est déjà parsé.
-// Ne PAS utiliser DOMContentLoaded — si l'event est déjà émis, le callback ne tourne jamais
-// et tous les onclick inline échouent silencieusement (bug "les boutons ne font rien").
-(function __baroInit() {
+// Pattern robuste : si le DOM est déjà parsé (readyState != 'loading'), on démarre
+// immédiatement ; sinon on attend DOMContentLoaded. Couvre TOUS les cas de chargement
+// (script en fin de body, script defer, script async, SW cache hit, etc.)
+function __baroInit() {
   // Exposer au global pour les onclick inline
   window.S             = S;
   window.nav           = nav;
@@ -22717,7 +22691,17 @@ if ('serviceWorker' in navigator) {
   } else {
     render(); // Affiche l'écran auth
   }
-})();
+}
+
+// Lance __baroInit dès que possible, de façon FIABLE :
+//  - si le DOM est déjà prêt (script en fin de body + defer/sync), on démarre tout de suite
+//  - sinon on attend l'event DOMContentLoaded
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', __baroInit, { once: true });
+} else {
+  // DOM déjà parsé — on appelle directement (async microtask pour laisser finir le parse JS)
+  Promise.resolve().then(__baroInit);
+}
 
 // ── Boot reminders & auto-scheduler ─────────────
 function checkDueScheduledPosts() {
