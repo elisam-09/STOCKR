@@ -2,7 +2,7 @@
 // Stratégie : Cache-first pour assets statiques,
 //             Network-first pour l'API
 
-const CACHE_NAME = 'baro-v27-no-oauth-no-email-verify';
+const CACHE_NAME = 'baro-v28-boutique-ui-nav-fix';
 const STATIC_ASSETS = [
   '/',
   '/index.html',

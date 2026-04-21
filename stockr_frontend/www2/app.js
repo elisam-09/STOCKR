@@ -4014,7 +4014,29 @@ function showReceiptBanner(sales, total) {
 // ── Navigate ──────────────────────────────────
 function nav(view, extra={}) {
   Object.assign(S, extra);
+  const prev = S.view;
   S.view = view;
+  // Clear ephemeral sub-states that should not persist across navigation
+  if (view === 'home' || view !== prev) {
+    S.detailId = null;
+    S.editingId = null;
+    S.editingProductId = null;
+    S.clientDetailId = null;
+    S.supplierDetailId = null;
+  }
+  // Force-flush any pending RAF render so the click is always felt immediately
+  if (window.__renderRAF) {
+    try { cancelAnimationFrame(window.__renderRAF); } catch(_){}
+    window.__renderRAF = null;
+  }
+  __renderRAF = null;
+  __renderPending = false;
+  // Toujours scroller en haut du contenu et de la fenêtre pour un feedback visible
+  try {
+    const vEl = document.getElementById('view');
+    if (vEl) vEl.scrollTop = 0;
+    if (typeof window !== 'undefined' && window.scrollTo) window.scrollTo({ top: 0, behavior: 'auto' });
+  } catch(_){}
   render();
 }
 
@@ -14005,15 +14027,20 @@ function vBoutique() {
       <div style="font-size:14px;font-weight:600">${bc.announcement}</div>
     </div>` : ''}
 
-    <div class="card" style="margin-bottom:10px;border:2px dashed var(--accent)">
-      <div class="card-title">${IC.globe} Génération du site</div>
-      <div style="font-size:12px;color:var(--text-3);margin-bottom:10px">Générez votre site en un clic — toutes vos promos, bannières, avis seront inclus</div>
-      <div style="display:flex;gap:6px">
-        <button class="btn btn-primary" style="flex:1" onclick="generateBoutiqueSite()">${IC.check} Générer HTML</button>
-        <button class="btn btn-ghost" style="flex:1" onclick="previewBoutiqueSite()">${IC.globe} Aperçu</button>
+    <div class="boutique-generate-card">
+      <div class="bgen-header">
+        <div class="bgen-ico">${IC.globe}</div>
+        <div class="bgen-head-txt">
+          <div class="bgen-title">Génération du site</div>
+          <div class="bgen-sub">Générez votre site en un clic — toutes vos promos, bannières et avis seront inclus</div>
+        </div>
+      </div>
+      <div class="bgen-actions">
+        <button class="btn btn-primary bgen-btn-primary" onclick="generateBoutiqueSite()">${IC.check} Générer HTML</button>
+        <button class="btn btn-ghost bgen-btn-ghost" onclick="previewBoutiqueSite()">${IC.globe} Aperçu</button>
       </div>
       ${bc.siteGenerated ? `
-      <div style="margin-top:10px;padding:8px 12px;background:var(--success-light,#D1FAE5);border-radius:8px;font-size:12px;color:var(--success);font-weight:600;display:flex;align-items:center;gap:6px">
+      <div class="bgen-status">
         ${IC.check} Site généré le ${new Date(bc.siteGeneratedDate).toLocaleDateString('fr')}
       </div>` : ''}
     </div>
