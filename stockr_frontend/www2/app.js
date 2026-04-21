@@ -3331,6 +3331,34 @@ function updateMarginPreview() {
   }
 }
 
+// Mise à jour LIVE de la marge dans le form article revendeur, SANS render()
+// → l'input garde son focus et le curseur reste à sa place pendant que l'user tape.
+function updateArticleMarginPreview() {
+  const box = document.getElementById('art-marge-preview');
+  if (!box) return;
+  const ha = parseFloat(S.form?.purchasePrice) || 0;
+  const pv = parseFloat(S.form?.price) || 0;
+  if (ha > 0 && pv > 0) {
+    const margeFcfa = pv - ha;
+    const margePct  = pv > 0 ? Math.round(((pv - ha) / pv) * 100) : 0;
+    const fcfaColor = margeFcfa >= 0 ? 'var(--success)' : 'var(--danger)';
+    const pctColor  = margePct >= 30 ? 'var(--success)' : margePct >= 15 ? 'var(--warning)' : 'var(--danger)';
+    box.innerHTML = `<div style="padding:10px;background:var(--bg);border-radius:var(--r-sm);display:flex;justify-content:space-between;align-items:center;gap:8px">
+      <div>
+        <div style="font-size:10px;color:var(--text-3)">MARGE PAR UNITÉ</div>
+        <div id="art-marge-fcfa" style="font-size:16px;font-weight:800;color:${fcfaColor}">${fmt(margeFcfa)} ${sym()}</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:10px;color:var(--text-3)">MARGE %</div>
+        <div id="art-marge-pct" style="font-size:16px;font-weight:800;color:${pctColor}">${margePct}%</div>
+      </div>
+    </div>`;
+  } else {
+    box.innerHTML = '<div style="font-size:11px;color:var(--text-3)">Renseignez les deux prix pour voir la marge</div>';
+  }
+}
+if (typeof window !== 'undefined') window.updateArticleMarginPreview = updateArticleMarginPreview;
+
 function toggleCart() {
   S.cartOpen = !S.cartOpen;
   render();
@@ -4016,6 +4044,8 @@ function showReceiptBanner(sales, total) {
 
 // ── Navigate ──────────────────────────────────
 function nav(view, extra={}) {
+  // Pose un timestamp pour que le filet de sécurité global sache qu'on a bien été appelé
+  try { window.__navLastCallAt = Date.now(); } catch(_){}
   try { Object.assign(S, extra); } catch(_){}
   S.view = view;
   try {
@@ -4027,6 +4057,37 @@ function nav(view, extra={}) {
 // Expose immédiatement pour que les onclick inline fonctionnent dès le premier clic,
 // même avant DOMContentLoaded.
 if (typeof window !== 'undefined') window.nav = nav;
+
+// ── Filet de sécurité GLOBAL : click delegation ───────────────────
+// Parfois un onclick inline peut échouer silencieusement (script async qui n'a pas
+// fini de parser, erreur dans une autre fonction qui casse la pile, etc.). On met
+// un listener de délégation sur document qui ré-exécute l'action nav('xxx') en
+// dernier recours, pour que les boutons Accueil / Retour / nav bar fonctionnent
+// TOUJOURS, quel que soit l'état de l'app.
+if (typeof document !== 'undefined') {
+  document.addEventListener('click', function(ev) {
+    const el = ev.target.closest && ev.target.closest('[onclick]');
+    if (!el) return;
+    const code = el.getAttribute('onclick') || '';
+    // Détection d'un nav('xxx') ou nav("xxx") dans l'onclick
+    const m = code.match(/\bnav\(\s*['"]([a-zA-Z0-9_-]+)['"]/);
+    if (!m) return;
+    // Si on est arrivés ici, le click s'est propagé SANS que nav() ait été appelé :
+    // l'onclick inline a échoué. On exécute en secours.
+    // NB : le navigateur exécute d'abord l'onclick inline ; si celui-ci a réussi,
+    // un flag __navCalled est posé par nav() — on l'utilise pour ne pas re-render.
+    try {
+      if (typeof window.nav === 'function') {
+        // Petit défer pour laisser l'onclick inline tenter d'abord
+        setTimeout(() => {
+          if (!window.__navLastCallAt || (Date.now() - window.__navLastCallAt) > 100) {
+            window.nav(m[1]);
+          }
+        }, 0);
+      }
+    } catch(e) { console.warn('[BARO] nav-safety', e); }
+  }, false);
+}
 
 // ── Render ────────────────────────────────────
 let __lastView = null;
@@ -4177,7 +4238,18 @@ function _doRender() {
   };
   const viewChanged = __markViewTransition(S.view);
   const prevScroll = viewEl.scrollTop;
-  viewEl.innerHTML = (map[S.view] || vHome)();
+  try {
+    viewEl.innerHTML = (map[S.view] || vHome)();
+  } catch(e) {
+    console.error('[BARO] Crash dans la vue "' + S.view + '":', e);
+    S.view = 'home';
+    try {
+      viewEl.innerHTML = vHome();
+    } catch(e2) {
+      console.error('[BARO] vHome a aussi crashé:', e2);
+      viewEl.innerHTML = '<div class="container" style="padding:40px;text-align:center;color:var(--text-3)"><div style="font-size:48px;margin-bottom:12px">⚠️</div><div style="font-size:16px;font-weight:700;margin-bottom:8px">Erreur d\'affichage</div><div style="font-size:13px">Actualise la page ou reconnecte-toi.</div><button class="btn btn-primary" style="margin-top:16px" onclick="location.reload()">🔄 Recharger</button></div>';
+    }
+  }
   // Conserve le scroll si on re-render la MÊME view (évite le "blink" de remontée)
   if (viewChanged) {
     if (!S.globalSearch) viewEl.scrollTop = 0;
@@ -4903,7 +4975,7 @@ function vHome() {
         }
       </div>
       <div style="flex:1;min-width:0">
-        <div class="hero-greeting">${t('hello')}, ${(__currentMember?.name || S.session.name).split(' ')[0]}
+        <div class="hero-greeting">${t('hello')}, ${((__currentMember?.name || S.session?.name || '').split(' ')[0])}
           ${__currentRoleInfo && __currentMember?.id ? `<span style="font-size:10px;padding:2px 7px;background:rgba(255,255,255,.2);color:#fff;border-radius:5px;margin-left:6px;font-weight:700;vertical-align:middle">${__currentRoleInfo.icon} ${__currentRoleInfo.name}</span>` : ''}
         </div>
         <div class="hero-name">${__bizName}</div>
@@ -6636,25 +6708,27 @@ function vAdd() {
         <div class="input-row" style="margin-bottom:0">
           <div>
             <label class="form-label" style="font-size:11px">Prix d'achat (${sym()}) *</label>
-            <input class="input" type="number" placeholder="0" step="100" value="${f.purchasePrice||0}" oninput="S.form.purchasePrice=this.value;render()">
+            <input class="input" id="art-ha-input" type="number" placeholder="0" step="100" value="${f.purchasePrice||0}" oninput="S.form.purchasePrice=this.value;updateArticleMarginPreview()">
           </div>
           <div>
             <label class="form-label" style="font-size:11px">Prix de vente (${sym()}) *</label>
-            <input class="input" type="number" placeholder="0" step="100" value="${f.price||0}" oninput="S.form.price=this.value;render()">
+            <input class="input" id="art-pv-input" type="number" placeholder="0" step="100" value="${f.price||0}" oninput="S.form.price=this.value;updateArticleMarginPreview()">
           </div>
         </div>
-        ${ha > 0 && pv > 0 ? `
-        <div style="margin-top:10px;padding:10px;background:var(--bg);border-radius:var(--r-sm);display:flex;justify-content:space-between;align-items:center;gap:8px">
-          <div>
-            <div style="font-size:10px;color:var(--text-3)">MARGE PAR UNITÉ</div>
-            <div style="font-size:16px;font-weight:800;color:${margeFcfa>=0?'var(--success)':'var(--danger)'}">${fmt(margeFcfa)} ${sym()}</div>
-          </div>
-          <div style="text-align:right">
-            <div style="font-size:10px;color:var(--text-3)">MARGE %</div>
-            <div style="font-size:16px;font-weight:800;color:${margePct>=30?'var(--success)':margePct>=15?'var(--warning)':'var(--danger)'}">${margePct}%</div>
-          </div>
-        </div>` : `
-        <div style="margin-top:10px;font-size:11px;color:var(--text-3)">Renseignez les deux prix pour voir la marge</div>`}
+        <div id="art-marge-preview" style="margin-top:10px">${
+          ha > 0 && pv > 0
+            ? `<div style="padding:10px;background:var(--bg);border-radius:var(--r-sm);display:flex;justify-content:space-between;align-items:center;gap:8px">
+                <div>
+                  <div style="font-size:10px;color:var(--text-3)">MARGE PAR UNITÉ</div>
+                  <div id="art-marge-fcfa" style="font-size:16px;font-weight:800;color:${margeFcfa>=0?'var(--success)':'var(--danger)'}">${fmt(margeFcfa)} ${sym()}</div>
+                </div>
+                <div style="text-align:right">
+                  <div style="font-size:10px;color:var(--text-3)">MARGE %</div>
+                  <div id="art-marge-pct" style="font-size:16px;font-weight:800;color:${margePct>=30?'var(--success)':margePct>=15?'var(--warning)':'var(--danger)'}">${margePct}%</div>
+                </div>
+              </div>`
+            : `<div style="font-size:11px;color:var(--text-3)">Renseignez les deux prix pour voir la marge</div>`
+        }</div>
       </div>` : `
       <div class="input-row form-group">
         <div>
@@ -11530,28 +11604,38 @@ function getLocationSalesTotal(locId) {
 function uploadLogo() {
   const input = document.createElement('input');
   input.type = 'file'; input.accept = 'image/*';
+  // Attacher à document pour qu'iOS Safari accepte le click() programmatique
+  input.style.display = 'none';
+  document.body.appendChild(input);
+  const cleanup = () => { try { input.remove(); } catch(_){} };
   input.onchange = () => {
-    const file = input.files[0]; if (!file) return;
+    const file = input.files && input.files[0];
+    if (!file) { cleanup(); return; }
     const reader = new FileReader();
     reader.onload = (e) => {
-      // Resize to 200x200 max
       const img = new Image();
       img.onload = () => {
-        const canvas = document.createElement('canvas');
-        const size = Math.min(img.width, img.height, 200);
-        canvas.width = size; canvas.height = size;
-        const ctx = canvas.getContext('2d');
-        const sx = (img.width - size) / 2, sy = (img.height - size) / 2;
-        ctx.drawImage(img, sx, sy, size, size, 0, 0, size, size);
-        const data = canvas.toDataURL('image/jpeg', 0.8);
-        localStorage.setItem('baro_logo', data);
-        showToast(t('businessLogo') + ' OK');
-        render();
+        try {
+          const canvas = document.createElement('canvas');
+          const size = Math.min(img.width, img.height, 200);
+          canvas.width = size; canvas.height = size;
+          const ctx = canvas.getContext('2d');
+          const sx = (img.width - size) / 2, sy = (img.height - size) / 2;
+          ctx.drawImage(img, sx, sy, size, size, 0, 0, size, size);
+          const data = canvas.toDataURL('image/jpeg', 0.8);
+          localStorage.setItem('baro_logo', data);
+          showToast(t('businessLogo') + ' OK');
+        } catch(err) { console.error('uploadLogo resize', err); showToast('Erreur image', 'error'); }
+        finally { cleanup(); render(); }
       };
+      img.onerror = () => { cleanup(); showToast('Image invalide', 'error'); };
       img.src = e.target.result;
     };
+    reader.onerror = () => { cleanup(); showToast('Lecture fichier échouée', 'error'); };
     reader.readAsDataURL(file);
   };
+  // Si l'utilisateur annule la boîte de dialogue, on nettoie quand même après un délai
+  setTimeout(() => { if (!input.files || !input.files.length) cleanup(); }, 60000);
   input.click();
 }
 

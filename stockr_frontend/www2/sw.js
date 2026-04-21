@@ -2,7 +2,7 @@
 // Stratégie : Cache-first pour assets statiques,
 //             Network-first pour l'API
 
-const CACHE_NAME = 'baro-v31-sova-restored';
+const CACHE_NAME = 'baro-v32-buttons-inputs-fix';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
