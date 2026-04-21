@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from stockr_backend.spectra.spectra_core import SpectraVisionEngine
+from baro_backend.spectra.spectra_core import SpectraVisionEngine
 import cv2
 import numpy as np
 import base64

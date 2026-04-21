@@ -3,7 +3,7 @@ from spectra_core import SpectraVisionEngine
 
 def run_spectra_audit_system():
     print("=====================================================")
-    print("   STOCKR - MODULE D'AUDIT IA SPECTRA (V2.0 PRO)     ")
+    print("   BARO - MODULE D'AUDIT IA SPECTRA (V2.0 PRO)     ")
     print("=====================================================")
     
     # Instanciation du moteur avec une confiance stricte
@@ -33,7 +33,7 @@ def run_spectra_audit_system():
         processed_frame = spectra.process_frame(frame)
         
         # Affichage du flux sécurisé
-        cv2.imshow("Stockr - Spectra Vision AI", processed_frame)
+        cv2.imshow("Baro - Spectra Vision AI", processed_frame)
         
         # Écoute des commandes clavier
         key = cv2.waitKey(1) & 0xFF

@@ -10,7 +10,7 @@ from app import create_app
 from models import db, Sale, Product, Article, User
 from datetime import datetime, timedelta
 
-DEMO_EMAIL = "demo@stockr.app"
+DEMO_EMAIL = "demo@baro.app"
 
 SALES_HISTORY = [
     # (nom_produit, quantité, il_y_a_N_jours)
@@ -100,7 +100,7 @@ with app.app_context():
 ✅ Seed complet !
 
 Email    : {DEMO_EMAIL}
-Password : stockr2026
+Password : baro2026
 Ventes   : {ok}
 Articles : {len(FINAL_STOCKS)} mis à jour
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

@@ -78,8 +78,8 @@ const IC = {
 };
 
 // ── Auth store (localStorage) ──────────────────
-const AUTH_KEY  = 'stockr_session';
-const USERS_KEY = 'stockr_users';
+const AUTH_KEY  = 'baro_session';
+const USERS_KEY = 'baro_users';
 
 function getUsers() {
   try { return JSON.parse(localStorage.getItem(USERS_KEY)) || []; } catch { return []; }
@@ -129,7 +129,7 @@ function fmtQty(n) {
 // ── API base ──────────────────────────────────
 const API_BASE = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
   ? 'http://localhost:5001'
-  : (window.__STOCKR_API_URL__ || 'https://stockr-api.onrender.com');
+  : (window.__BARO_API_URL__ || window.__STOCKR_API_URL__ || 'https://stockr-production-c175.up.railway.app');
 
 // ── i18n ─────────────────────────────────────
 const LANGS = {
@@ -622,10 +622,10 @@ const LANGS = {
     version:'Version',
   }
 };
-let _lang = localStorage.getItem('stockr_lang') || 'fr';
+let _lang = localStorage.getItem('baro_lang') || 'fr';
 function t(k) { return (LANGS[_lang] || LANGS.fr)[k] || (LANGS.fr)[k] || k; }
 function sym() { return S.session?.currency_symbol || 'FCFA'; }
-function setLang(l) { _lang = l; localStorage.setItem('stockr_lang', l); render(); }
+function setLang(l) { _lang = l; localStorage.setItem('baro_lang', l); render(); }
 
 // ── Facture & WhatsApp ────────────────────────
 function _invNum(id) { return 'INV-' + String(id).slice(-6).toUpperCase(); }
@@ -644,7 +644,7 @@ function generateInvoicePDF(sales) {
   const time  = dateObj.toLocaleTimeString(locale, { hour:'2-digit', minute:'2-digit' });
   const clientName = sales[0]?.clientName || null;
   const client = sales[0]?.clientId ? S.clients.find(c => c.id === sales[0].clientId) : null;
-  const logoData = localStorage.getItem('stockr_logo') || null;
+  const logoData = localStorage.getItem('baro_logo') || null;
   const loc = S.currentLocation ? S.locations.find(l => l.id === S.currentLocation) : null;
   const tier = client && S.loyaltyConfig?.enabled ? _getClientTier(client) : null;
 
@@ -793,17 +793,18 @@ function generateInvoicePDF(sales) {
   }
 
   // Total final
-  y += 2;
-  doc.setFillColor(79, 70, 229);
-  doc.roundedRect(110, y - 1, 84, 12, 2, 2, 'F');
-  doc.setTextColor(255, 255, 255); doc.setFontSize(12); doc.setFont('helvetica', 'bold');
-  doc.text('TOTAL A PAYER', 140, y + 7, { align: 'right' });
-  doc.setFontSize(13);
-  doc.text(fmt(grandTotal) + ' ' + sym, 192, y + 7, { align: 'right' });
-  // Side stats
+  y += 4;
+  // Side stats (left)
   doc.setTextColor(100, 100, 100); doc.setFontSize(8); doc.setFont('helvetica', 'normal');
-  doc.text(sales.length + ' article' + (sales.length>1?'s':''), 20, y + 4);
-  doc.text(sales.reduce((s,v) => s + v.qty, 0) + ' unites', 20, y + 9);
+  doc.text(sales.length + ' article' + (sales.length>1?'s':''), 16, y + 5);
+  doc.text(sales.reduce((s,v) => s + v.qty, 0) + ' unite(s) vendue(s)', 16, y + 11);
+  // Total box (right)
+  doc.setFillColor(79, 70, 229);
+  doc.roundedRect(108, y - 2, 86, 16, 2, 2, 'F');
+  doc.setTextColor(255, 255, 255); doc.setFontSize(8); doc.setFont('helvetica', 'normal');
+  doc.text('TOTAL A PAYER', 113, y + 4);
+  doc.setFontSize(14); doc.setFont('helvetica', 'bold');
+  doc.text(fmtPDF(grandTotal) + ' ' + sym, 192, y + 11, { align: 'right' });
 
   // ── Loyalty points earned block ──
   y += 18;
@@ -835,7 +836,7 @@ function generateInvoicePDF(sales) {
 
   // ── Tracking link + boutique URL ──
   const bc = S.boutiqueConfig || {};
-  const boutiqueUrl = (bc.customDomainVerified && bc.customDomain) ? ('https://' + bc.customDomain) : (bc.domain ? ('https://' + bc.domain + '.stockr.shop') : null);
+  const boutiqueUrl = (bc.customDomainVerified && bc.customDomain) ? ('https://' + bc.customDomain) : (bc.domain ? ('https://' + bc.domain + '.baro.shop') : null);
   if (boutiqueUrl) {
     doc.setFillColor(238, 242, 255);
     doc.roundedRect(16, y, 178, 12, 2, 2, 'F');
@@ -1181,29 +1182,31 @@ const S = {
   selectedClientId: null,
   clientSearch:  '',
   saleClientFilter: null,
+  saleNewClient: false,
   globalSearch:  '',
   predictions:   [],
   // Locations
-  locations:        JSON.parse(localStorage.getItem('stockr_locations') || '[]'),
-  currentLocation:  localStorage.getItem('stockr_current_location') || null,
+  locations:        JSON.parse(localStorage.getItem('baro_locations') || '[]'),
+  currentLocation:  localStorage.getItem('baro_current_location') || null,
   locationAdd:      false,
   // Catalog
   catalogView:      'select', // 'select' | 'preview'
   catalogSelected:  [],
   // Suppliers
-  suppliers:        JSON.parse(localStorage.getItem('stockr_suppliers') || '[]'),
+  suppliers:        JSON.parse(localStorage.getItem('baro_suppliers') || '[]'),
   selectedSupplierId: null,
   // Stock movements
-  stockMovements:   JSON.parse(localStorage.getItem('stockr_movements') || '[]'),
+  stockMovements:   JSON.parse(localStorage.getItem('baro_movements') || '[]'),
   // Purchase orders
-  purchaseOrders:   JSON.parse(localStorage.getItem('stockr_orders') || '[]'),
+  purchaseOrders:   JSON.parse(localStorage.getItem('baro_orders') || '[]'),
   // Subscription
-  subscription: JSON.parse(localStorage.getItem('stockr_subscription') || '{"plan":"free","activated":null,"billing":"monthly"}'),
+  subscription: JSON.parse(localStorage.getItem('baro_subscription') || '{"plan":"free","activated":null,"billing":"monthly"}'),
   // Activity feed
-  activities: JSON.parse(localStorage.getItem('stockr_activities') || '[]'),
+  activities: JSON.parse(localStorage.getItem('baro_activities') || '[]'),
   // Boutique state
   boutiqueConfig: (() => {
-    const bc = JSON.parse(localStorage.getItem('stockr_boutique') || '{"name":"","description":"","theme":"modern","published":false,"products":[],"deliveryFees":0,"deliveryZones":[],"visits":0}');
+    const raw = localStorage.getItem('baro_boutique') || localStorage.getItem('stockr_boutique') || '{"name":"","description":"","theme":"modern","published":false,"products":[],"deliveryFees":0,"deliveryZones":[],"visits":0}';
+    const bc = JSON.parse(raw);
     // SEO
     if (bc.seoTitle === undefined) bc.seoTitle = '';
     if (bc.seoDescription === undefined) bc.seoDescription = '';
@@ -1238,12 +1241,12 @@ const S = {
     if (bc.publicUrl === undefined) bc.publicUrl = '';
     return bc;
   })(),
-  boutiqueOrders: JSON.parse(localStorage.getItem('stockr_boutique_orders') || '[]'),
+  boutiqueOrders: JSON.parse(localStorage.getItem('baro_boutique_orders') || localStorage.getItem('stockr_boutique_orders') || '[]'),
   // Marketing state
-  promotions: JSON.parse(localStorage.getItem('stockr_promotions') || '[]'),
-  campaigns: JSON.parse(localStorage.getItem('stockr_campaigns') || '[]'),
+  promotions: JSON.parse(localStorage.getItem('baro_promotions') || '[]'),
+  campaigns: JSON.parse(localStorage.getItem('baro_campaigns') || '[]'),
   loyaltyConfig: (() => {
-    const raw = JSON.parse(localStorage.getItem('stockr_loyalty') || '{"enabled":false,"pointsPerFcfa":1,"rewards":[]}');
+    const raw = JSON.parse(localStorage.getItem('baro_loyalty') || '{"enabled":false,"pointsPerFcfa":1,"rewards":[]}');
     if (!raw.tiers) {
       raw.tiers = [
         { id:'bronze',   name:'Bronze',   min:0,    color:'#CD7F32', gradient:'linear-gradient(135deg,#CD7F32,#8B4513)', icon:'🥉', perk:'Points x1',   multiplier:1 },
@@ -1255,22 +1258,22 @@ const S = {
     if (raw.tierMode === undefined) raw.tierMode = 'spent'; // 'spent' | 'points'
     return raw;
   })(),
-  banners: JSON.parse(localStorage.getItem('stockr_banners') || '[]'),
-  popups: JSON.parse(localStorage.getItem('stockr_popups') || '[]'),
-  reviews: JSON.parse(localStorage.getItem('stockr_reviews') || '[]'),
-  trackingLinks: JSON.parse(localStorage.getItem('stockr_tracking') || '[]'),
+  banners: JSON.parse(localStorage.getItem('baro_banners') || '[]'),
+  popups: JSON.parse(localStorage.getItem('baro_popups') || '[]'),
+  reviews: JSON.parse(localStorage.getItem('baro_reviews') || '[]'),
+  trackingLinks: JSON.parse(localStorage.getItem('baro_tracking') || '[]'),
   // Social media state
-  socialAccounts: JSON.parse(localStorage.getItem('stockr_social') || '[]'),
-  scheduledPosts: JSON.parse(localStorage.getItem('stockr_posts') || '[]'),
+  socialAccounts: JSON.parse(localStorage.getItem('baro_social') || '[]'),
+  scheduledPosts: JSON.parse(localStorage.getItem('baro_posts') || '[]'),
   // Payment methods state
-  paymentMethods: JSON.parse(localStorage.getItem('stockr_payments') || '[]'),
-  paymentHistory: JSON.parse(localStorage.getItem('stockr_payment_history') || '[]'),
+  paymentMethods: JSON.parse(localStorage.getItem('baro_payments') || '[]'),
+  paymentHistory: JSON.parse(localStorage.getItem('baro_payment_history') || '[]'),
   // Integrations state
-  integrationsConfig: JSON.parse(localStorage.getItem('stockr_integrations') || '[]'),
+  integrationsConfig: JSON.parse(localStorage.getItem('baro_integrations') || '[]'),
   // API & webhooks state
-  apiConfig: JSON.parse(localStorage.getItem('stockr_api') || '{"token":null,"createdAt":null,"webhooks":[]}'),
+  apiConfig: JSON.parse(localStorage.getItem('baro_api') || '{"token":null,"createdAt":null,"webhooks":[]}'),
   // Spectra enhanced state
-  spectraScanHistory: JSON.parse(localStorage.getItem('stockr_spectra_history') || '[]'),
+  spectraScanHistory: JSON.parse(localStorage.getItem('baro_spectra_history') || '[]'),
   spectraMode: 'photo', // 'photo' | 'barcode' | 'continuous' | 'yolo'
   form: { name: '', stock: 0, min: 0, unit: '', lead: 7, ref: '', price: 0, purchasePrice: 0, expiry: '', perishable: false, category: '', image: '', ean: '' },
   spectra: {
@@ -1394,13 +1397,13 @@ function logAudit(category, action, details = {}) {
 // ── Mode local (localStorage) ─────────────────
 let USE_LOCAL = false; // basculé automatiquement si l'API n'est pas joignable
 
-const LS_USERS   = 'stockr_users_v2';
-const LS_SESSION = 'stockr_session';
+const LS_USERS   = 'baro_users_v2';
+const LS_SESSION = 'baro_session';
 
 function _lsUsers()         { try { return JSON.parse(localStorage.getItem(LS_USERS)) || []; } catch { return []; } }
 function _lsSave(users)     { localStorage.setItem(LS_USERS, JSON.stringify(users)); }
-function _lsData(uid)       { try { return JSON.parse(localStorage.getItem('stockr_data_' + uid)) || { articles:[], products:[], sales:[] }; } catch { return { articles:[], products:[], sales:[] }; } }
-function _lsSaveData(uid,d) { localStorage.setItem('stockr_data_' + uid, JSON.stringify(d)); }
+function _lsData(uid)       { try { return JSON.parse(localStorage.getItem('baro_data_' + uid)) || { articles:[], products:[], sales:[] }; } catch { return { articles:[], products:[], sales:[] }; } }
+function _lsSaveData(uid,d) { localStorage.setItem('baro_data_' + uid, JSON.stringify(d)); }
 function _uid()             { return S.session?.id; }
 
 function _localApi(method, path, body) {
@@ -1564,6 +1567,7 @@ function articleFromAPI(a) {
     ref: a.ref || '',
     price: a.price || 0,
     purchasePrice: a.purchase_price || 0,
+    sellPrice: a.sell_price || 0,
     category: a.category || '',
     perishable: !!a.perishable,
     expiry: a.expiry || '',
@@ -1719,7 +1723,7 @@ function logActivity(type, detail, extra = {}) {
   const act = { id: Date.now(), type, detail, date: new Date().toISOString(), ...extra };
   S.activities.unshift(act);
   if (S.activities.length > 100) S.activities = S.activities.slice(0, 100);
-  localStorage.setItem('stockr_activities', JSON.stringify(S.activities));
+  localStorage.setItem('baro_activities', JSON.stringify(S.activities));
 }
 function fmtTimeAgo(iso) {
   const diff = Date.now() - new Date(iso).getTime();
@@ -1931,7 +1935,7 @@ function _doActivatePlan(planKey, opts = {}) {
     trialEnd: trial ? new Date(Date.now() + 14 * 86400000).toISOString() : null,
     paid: paid,
   };
-  localStorage.setItem('stockr_subscription', JSON.stringify(S.subscription));
+  localStorage.setItem('baro_subscription', JSON.stringify(S.subscription));
   logActivity('plan', t('planActivated') + ' ' + planKey.toUpperCase() + (paid?' (payé)':trial?' (essai 14j)':''));
   showToast(paid ? `✅ ${planKey.toUpperCase()} activé — paiement reçu` : planKey === 'free' ? t('planActivated') : `🎁 Essai 14 jours activé — ${planKey.toUpperCase()}`, 'success');
   render();
@@ -1939,13 +1943,13 @@ function _doActivatePlan(planKey, opts = {}) {
 function cancelPlan() {
   if (!confirm(t('confirmCancel') + ' ?')) return;
   S.subscription = { plan: 'free', activated: null, billing: 'monthly' };
-  localStorage.setItem('stockr_subscription', JSON.stringify(S.subscription));
+  localStorage.setItem('baro_subscription', JSON.stringify(S.subscription));
   showToast(t('planFree'));
   render();
 }
 function setBilling(cycle) {
   S.subscription.billing = cycle;
-  localStorage.setItem('stockr_subscription', JSON.stringify(S.subscription));
+  localStorage.setItem('baro_subscription', JSON.stringify(S.subscription));
   render();
 }
 function getPlanLimits(plan) {
@@ -2614,10 +2618,56 @@ async function deleteArticle(id) {
   }
 }
 
+function _resolveClientForSale() {
+  if (S.saleNewClient) {
+    const nameEl  = $('sale-new-client-name');
+    const phoneEl = $('sale-new-client-phone');
+    const name  = nameEl?.value?.trim();
+    const phone = phoneEl?.value?.trim() || '';
+    if (!name) return { clientId: null, clientName: null };
+    const existing = S.clients.find(c => c.name.toLowerCase() === name.toLowerCase());
+    if (existing) return { clientId: existing.id, clientName: existing.name };
+    const newClient = { id: Date.now(), name, phone, email: '', address: '', loyaltyPoints: 0, createdAt: new Date().toISOString() };
+    S.clients.push(newClient);
+    localStorage.setItem('baro_clients', JSON.stringify(S.clients));
+    S.saleNewClient = false;
+    return { clientId: newClient.id, clientName: newClient.name };
+  }
+  const sel = $('sale-client');
+  const clientId = sel ? parseInt(sel.value) || null : null;
+  const client   = clientId ? S.clients.find(c => c.id === clientId) : null;
+  return { clientId, clientName: client?.name || null };
+}
+
 function recordSale() {
   const sel   = $('sale-product');
   const qtyEl = $('sale-qty');
   if (!sel || !sel.value) { showToast(t('chooseProduct'), 'error'); return; }
+
+  // ── Mode revendeur : vente directe depuis le stock ──
+  if (S.authProfile === 'reseller' && sel.value.startsWith('art_')) {
+    const artId = parseInt(sel.value.replace('art_', ''));
+    const art = S.articles.find(a => a.id === artId);
+    if (!art) return;
+    const qty = Math.max(1, parseFloat(qtyEl.value) || 1);
+    if (art.stock < qty) { showToast(`Stock insuffisant : ${art.name}`, 'error'); return; }
+    art.stock = Math.round((art.stock - qty) * 1000) / 1000;
+    const salePrice = art.sellPrice || art.price || 0;
+    const costPrice = art.price || 0;
+    const saleTotal = salePrice * qty;
+    const profit    = (salePrice - costPrice) * qty;
+    const pmSel = $('sale-payment');
+    const payMethod = pmSel ? pmSel.value : 'cash';
+    const { clientId, clientName } = _resolveClientForSale();
+    S.sales.unshift({ id: Date.now(), productId: art.id, productName: art.name, qty, total: saleTotal, profit, date: new Date().toISOString(), paymentMethod: payMethod, clientId, clientName });
+    localStorage.setItem('baro_articles', JSON.stringify(S.articles));
+    logActivity('sale', `${art.name} x${qty} — ${fmt(saleTotal)} ${sym()}`);
+    showToast(`${t('saleConfirmed')} — ${fmt(saleTotal)} ${sym()}`);
+    render();
+    return;
+  }
+
+  // ── Mode transformateur : vente de produits composés ──
   const product = S.products.find(p => p.id === parseInt(sel.value));
   if (!product) return;
   const qty = Math.max(1, parseInt(qtyEl.value) || 1);
@@ -2636,15 +2686,13 @@ function recordSale() {
   const saleCost = (product.purchasePrice || 0) * qty;
   const pmSel = $('sale-payment');
   const payMethod = pmSel ? pmSel.value : 'cash';
-  const clientSel = $('sale-client');
-  const clientId = clientSel ? parseInt(clientSel.value) || null : null;
-  const client = clientId ? S.clients.find(c => c.id === clientId) : null;
+  const { clientId, clientName } = _resolveClientForSale();
   const PMLABELS = {cash:'Especes',wave:'Wave',orange:'Orange Money',moov:'Moov Money',mtn:'MTN MoMo'};
   // Apply promo
   const promo = _getActivePromo(product.id);
   let promoName = null, promoDiscount = 0;
   if (promo) { promoDiscount = promo.discount; promoName = promo.name; saleTotal = Math.round(saleTotal * (100 - promoDiscount) / 100); }
-  const __sale = { id: Date.now(), productId: product.id, productName: product.name, qty, total: saleTotal, profit: saleTotal - saleCost, date: new Date().toISOString(), paymentMethod: payMethod, clientId, clientName: client?.name || null, promoName, promoDiscount };
+  const __sale = { id: Date.now(), productId: product.id, productName: product.name, qty, total: saleTotal, profit: saleTotal - saleCost, date: new Date().toISOString(), paymentMethod: payMethod, clientId, clientName: client?.name || clientName || null, promoName, promoDiscount };
   S.sales.unshift(__sale);
   // Hooks intégrations temps réel
   try { if (typeof sheetsAutoAppendSale === 'function') sheetsAutoAppendSale(__sale); } catch(_){}
@@ -2659,7 +2707,7 @@ function recordSale() {
       const mult = tier?.multiplier || 1;
       const pts = Math.floor(saleTotal * (S.loyaltyConfig.pointsPerFcfa || 1) * mult);
       cl.loyaltyPoints = (cl.loyaltyPoints || 0) + pts;
-      localStorage.setItem('stockr_clients', JSON.stringify(S.clients));
+      localStorage.setItem('baro_clients', JSON.stringify(S.clients));
       // Check tier upgrade
       const newTier = _getClientTier(cl);
       if (newTier && tier && newTier.id !== tier.id && newTier.min > tier.min) {
@@ -2699,26 +2747,28 @@ async function saveArticle() {
       ref:             f.ref || null,
       price:           price,
       purchase_price:  purchasePrice,
+      sell_price:      parseFloat(f.sellPrice) || 0,
       category:        f.category || '',
     });
     const newArt = articleFromAPI(data);
     newArt.ref = f.ref || '';
     newArt.price = price;
     newArt.purchasePrice = purchasePrice;
+    newArt.sellPrice = parseFloat(f.sellPrice) || 0;
     newArt.category = f.category || '';
     newArt.perishable = !!f.perishable;
-    newArt.expiry = (f.perishable ? f.expiry : '') || '';
+    newArt.expiry = (f.perishable ? f.expiry : '') || f.expiry || '';
     newArt.image = f.image || '';
     newArt.ean = (f.ean || '').trim();
     newArt.barcode = newArt.ean;
     S.articles.push(newArt);
-    localStorage.setItem('stockr_articles', JSON.stringify(S.articles));
+    localStorage.setItem('baro_articles', JSON.stringify(S.articles));
     logActivity('new_article', f.name.trim());
     const msg = bt === 'reseller'
       ? `✅ "${f.name}" ajouté${purchasePrice > 0 && price > 0 ? ` — marge ${Math.round(((price - purchasePrice) / price) * 100)}%` : ''}`
       : `"${f.name}" ${t('added') || 'ajouté'}`;
     showToast(msg);
-    S.form = { name:'', stock:0, min:0, unit:'', lead:7, ref:'', price:0, purchasePrice:0, expiry:'', perishable:false, category:'', image:'', ean:'' };
+    S.form = { name:'', stock:0, min:0, unit:'', lead:7, ref:'', price:0, purchasePrice:0, sellPrice:0, expiry:'', perishable:false, category:'', image:'', ean:'' };
     nav('pantry');
   } catch(e) {
     showToast(e.message, 'error');
@@ -3407,7 +3457,7 @@ function addToCart() {
   const qtyEl = $('sale-qty');
   if (!sel?.value) { showToast(t('chooseProduct'), 'error'); return; }
   const val = String(sel.value);
-  // Handle both prefixed (prod_X / art_X) and raw product id
+  // Handle both prefixed (prod_X / art_X / pack_X) and raw product id — gère aussi le mode revendeur
   let item = null;
   const sellable = bt_sellableItems();
   item = sellable.find(it => it.id === val) || sellable.find(it => String(it.productId||'') === val);
@@ -3417,7 +3467,7 @@ function addToCart() {
     if (product) item = { id:'prod_'+product.id, productId:product.id, name:product.name, price:product.price, purchasePrice:product.purchasePrice||0, kind:'product' };
   }
   if (!item) return;
-  const qty = Math.max(1, parseInt(qtyEl?.value) || 1);
+  const qty = Math.max(1, parseFloat(qtyEl?.value) || 1);
   const existing = S.cart.find(c => c.cartId === item.id);
   if (existing) { existing.qty += qty; }
   else {
@@ -3576,14 +3626,25 @@ async function confirmMultiSale() {
 
 async function confirmCart() {
   if (!S.cart.length) { showToast(t('emptyCartMsg'), 'error'); return; }
-  const clientSel = $('sale-client');
-  const clientId = clientSel ? parseInt(clientSel.value) || null : null;
+  const { clientId, clientName: resolvedClientName } = _resolveClientForSale();
   const client = clientId ? S.clients.find(c => c.id === clientId) : null;
   const pmSel = $('sale-payment');
   const payMethod = pmSel ? pmSel.value : 'cash';
   try {
+    const cartId = 'cart_' + Date.now();
     let total = 0, count = 0, newSales = [];
     for (const item of S.cart) {
+      // ── Mode revendeur : déstockage article direct ──
+      if (item._reseller) {
+        const art = S.articles.find(a => a.id === item._artId);
+        if (art) art.stock = Math.round((art.stock - item.qty) * 1000) / 1000;
+        const lineTotal  = item.unitPrice * item.qty;
+        const lineProfit = (item.unitPrice - (item.unitCost || 0)) * item.qty;
+        total += lineTotal; count += item.qty;
+        const newSale = { id: Date.now() + Math.random(), cartId, productId: item._artId, productName: item.productName, qty: item.qty, total: lineTotal, profit: lineProfit, date: new Date().toISOString(), clientId, clientName: resolvedClientName || client?.name || null, paymentMethod: payMethod };
+        S.sales.unshift(newSale); newSales.push(newSale);
+        continue;
+      }
       const data = await api('POST', '/api/sales/', { product_id: item.productId, quantity: item.qty, client_id: clientId, client_name: client?.name || null });
       const product = S.products.find(p => p.id === item.productId);
       let lineTotal = (product?.price || 0) * item.qty;
@@ -3600,7 +3661,7 @@ async function confirmCart() {
       }
       total += lineTotal;
       count += item.qty;
-      const newSale = { id: data.sale.id, productId: data.sale.product_id, productName: data.sale.product_name, qty: data.sale.quantity, total: lineTotal, profit: lineProfit, date: data.sale.timestamp, clientId, clientName: client?.name || null, paymentMethod: payMethod, promoName, promoDiscount };
+      const newSale = { id: data.sale.id, cartId, productId: data.sale.product_id, productName: data.sale.product_name, qty: data.sale.quantity, total: lineTotal, profit: lineProfit, date: data.sale.timestamp, clientId, clientName: resolvedClientName || client?.name || null, paymentMethod: payMethod, promoName, promoDiscount };
       S.sales.unshift(newSale);
       newSales.push(newSale);
     }
@@ -3612,7 +3673,7 @@ async function confirmCart() {
         const mult = tier?.multiplier || 1;
         const pts = Math.floor(total * (S.loyaltyConfig.pointsPerFcfa || 1) * mult);
         cl.loyaltyPoints = (cl.loyaltyPoints || 0) + pts;
-        localStorage.setItem('stockr_clients', JSON.stringify(S.clients));
+        localStorage.setItem('baro_clients', JSON.stringify(S.clients));
         const newTier = _getClientTier(cl);
         if (newTier && tier && newTier.id !== tier.id && newTier.min > tier.min) {
           showToast(`🎉 ${cl.name} a atteint le palier ${newTier.name} ${newTier.icon||''} !`, 'success');
@@ -3622,7 +3683,7 @@ async function confirmCart() {
     // Payment history
     if (payMethod !== 'cash') {
       S.paymentHistory.unshift({ id:Date.now(), provider:payMethod, amount:total, clientName:client?.name||'Client', date:new Date().toISOString() });
-      localStorage.setItem('stockr_payment_history', JSON.stringify(S.paymentHistory));
+      localStorage.setItem('baro_payment_history', JSON.stringify(S.paymentHistory));
     }
     S.cart = [];
     showToast(`${count} ${t('unitsSold')} — ${fmt(total)} ${sym()}`);
@@ -3842,10 +3903,10 @@ function changeCurrency(code) {
   S.session.currency = code;
   S.session.currency_symbol = getCurrencySymbol(code);
   // Save to localStorage
-  const saved = JSON.parse(localStorage.getItem('stockr_session') || '{}');
+  const saved = JSON.parse(localStorage.getItem('baro_session') || '{}');
   saved.currency = code;
   saved.currency_symbol = S.session.currency_symbol;
-  localStorage.setItem('stockr_session', JSON.stringify(saved));
+  localStorage.setItem('baro_session', JSON.stringify(saved));
   showToast(t('infoUpdated'));
   render();
 }
@@ -3853,9 +3914,9 @@ function changeCurrency(code) {
 function changeTaxRate(val) {
   if (!S.session) return;
   S.session.tax_rate = parseFloat(val) || 0;
-  const saved = JSON.parse(localStorage.getItem('stockr_session') || '{}');
+  const saved = JSON.parse(localStorage.getItem('baro_session') || '{}');
   saved.tax_rate = S.session.tax_rate;
-  localStorage.setItem('stockr_session', JSON.stringify(saved));
+  localStorage.setItem('baro_session', JSON.stringify(saved));
   showToast(t('infoUpdated'));
 }
 
@@ -4213,7 +4274,7 @@ function vAuth() {
   return `
   <div class="auth-wrap">
     <div class="auth-card">
-      <div class="auth-logo">${IC.baro}<span>BARO</span></div>
+      <div class="auth-logo">${IC.baro || IC.box}<span>BARO</span></div>
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
         <button onclick="setLang('fr')" style="padding:4px 10px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid ${_lang==='fr'?'var(--accent)':'var(--border)'};background:${_lang==='fr'?'var(--accent-light)':'transparent'};color:${_lang==='fr'?'var(--accent)':'var(--text-3)'}">FR</button>
         <button onclick="setLang('en')" style="padding:4px 10px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid ${_lang==='en'?'var(--accent)':'var(--border)'};background:${_lang==='en'?'var(--accent-light)':'transparent'};color:${_lang==='en'?'var(--accent)':'var(--text-3)'}">EN</button>
@@ -5857,14 +5918,21 @@ function vSales() {
         <label class="form-label">${t('quantity')}</label>
         <input type="number" class="input" id="sale-qty" value="1" min="1">
       </div>
-      ${S.clients.length > 0 ? `
       <div class="form-group">
-        <label class="form-label">${t('clients')}</label>
+        <label class="form-label">${t('clients')} <span style="color:var(--text-3);font-weight:400">(optionnel)</span></label>
+        <div style="display:flex;gap:6px;margin-bottom:8px">
+          <button type="button" class="chip ${!S.saleNewClient?'active':''}" onclick="S.saleNewClient=false;render()">Existant</button>
+          <button type="button" class="chip ${S.saleNewClient?'active':''}" onclick="S.saleNewClient=true;render()">+ Nouveau client</button>
+        </div>
+        ${S.saleNewClient ? `
+        <input class="input" type="text" id="sale-new-client-name" placeholder="Nom du client" style="margin-bottom:6px">
+        <input class="input" type="tel" id="sale-new-client-phone" placeholder="Téléphone (optionnel)">
+        ` : `
         <select class="input" id="sale-client">
-          <option value="">${t('selectClient')}</option>
+          <option value="">— Aucun client —</option>
           ${S.clients.map(c=>`<option value="${c.id}">${c.name}${c.phone?' · '+c.phone:''}</option>`).join('')}
-        </select>
-      </div>` : ''}
+        </select>`}
+      </div>
       <div class="form-group">
         <label class="form-label">Mode de paiement</label>
         <select class="input" id="sale-payment">
@@ -5992,25 +6060,67 @@ function vSales() {
       <div class="empty-title">${t('noSales')}</div>
       <div class="empty-text">${t('noSalesSub')}</div>
     </div>`;
-      return filtered.map(s=>{
-      const sid = 'sale_' + s.id;
-      window[sid] = s;
-      return `
+      // ── Grouper les paniers (même cartId) ──
+      const groups = [];
+      const seen = new Set();
+      for (const s of filtered) {
+        if (s.cartId) {
+          if (seen.has(s.cartId)) continue;
+          seen.add(s.cartId);
+          const items = filtered.filter(x => x.cartId === s.cartId);
+          groups.push({ isCart: true, items, cartId: s.cartId, date: s.date, clientId: s.clientId, clientName: s.clientName, paymentMethod: s.paymentMethod, total: items.reduce((a,x)=>a+x.total,0), profit: items.reduce((a,x)=>a+(x.profit||0),0) });
+        } else {
+          groups.push({ isCart: false, ...s });
+        }
+      }
+      const pmColor = m => m==='wave'?'#1DC3FF':m==='orange'?'#FF6600':m==='moov'?'#00A651':m==='mtn'?'#FFCC00':'var(--accent)';
+      const pmLabel = m => m==='wave'?'Wave':m==='orange'?'OM':m==='moov'?'Moov':m==='mtn'?'MTN':m;
+      const pmBadge = m => m&&m!=='cash' ? ` <span style="font-size:10px;padding:1px 6px;border-radius:4px;background:${pmColor(m)}20;color:${pmColor(m)};font-weight:600">${pmLabel(m)}</span>` : '';
+      return groups.map(g => {
+        if (g.isCart) {
+          const gid = 'cart_grp_' + g.cartId;
+          window[gid] = g.items;
+          return `
+    <div class="sale-item" style="flex-direction:column;align-items:stretch;gap:6px">
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="sale-dot" style="${g.paymentMethod&&g.paymentMethod!=='cash'?'background:'+pmColor(g.paymentMethod):''}"></div>
+        <div class="sale-info" style="flex:1">
+          <div class="sale-prod">Panier · ${g.items.length} articles${pmBadge(g.paymentMethod)}</div>
+          <div class="sale-date">${fmtDate(g.date)}${g.clientName ? ` · <span style="color:var(--accent)">${g.clientName}</span>` : ''}</div>
+        </div>
+        <div class="sale-right">
+          <div class="sale-total">${fmt(g.total)} ${S.session?.currency_symbol||'FCFA'}</div>
+          ${g.profit ? `<div class="sale-qty"><span style="color:var(--success)">+${fmt(g.profit)}</span></div>` : ''}
+        </div>
+        <div class="sale-actions">
+          <button class="sale-act-btn" title="Facture PDF" onclick="generateInvoicePDF(window['${gid}'][0],window['${gid}'])">${IC.pdf}</button>
+          <button class="sale-act-btn sale-act-wa" title="WhatsApp" onclick="shareViaWhatsApp(window['${gid}'][0],window['${gid}'])">${IC.whatsapp}</button>
+        </div>
+      </div>
+      <div style="padding-left:22px;display:flex;flex-direction:column;gap:2px">
+        ${g.items.map(x=>`<div style="font-size:12px;color:var(--text-2);display:flex;justify-content:space-between"><span>${x.productName} ×${x.qty}</span><span>${fmt(x.total)} ${S.session?.currency_symbol||'FCFA'}</span></div>`).join('')}
+      </div>
+    </div>`;
+        }
+        const sid = 'sale_' + g.id;
+        window[sid] = g;
+        return `
     <div class="sale-item">
-      <div class="sale-dot" style="${s.paymentMethod&&s.paymentMethod!=='cash'?'background:'+(s.paymentMethod==='wave'?'#1DC3FF':s.paymentMethod==='orange'?'#FF6600':s.paymentMethod==='moov'?'#00A651':s.paymentMethod==='mtn'?'#FFCC00':'var(--accent)'):''}"></div>
+      <div class="sale-dot" style="${g.paymentMethod&&g.paymentMethod!=='cash'?'background:'+pmColor(g.paymentMethod):''}"></div>
       <div class="sale-info">
-        <div class="sale-prod">${s.productName}${s.paymentMethod&&s.paymentMethod!=='cash'?` <span style="font-size:10px;padding:1px 6px;border-radius:4px;background:${s.paymentMethod==='wave'?'#1DC3FF':s.paymentMethod==='orange'?'#FF6600':s.paymentMethod==='moov'?'#00A651':s.paymentMethod==='mtn'?'#FFCC00':'#ccc'}20;color:${s.paymentMethod==='wave'?'#1DC3FF':s.paymentMethod==='orange'?'#FF6600':s.paymentMethod==='moov'?'#00A651':s.paymentMethod==='mtn'?'#b39700':'var(--text-2)'};font-weight:600">${s.paymentMethod==='wave'?'Wave':s.paymentMethod==='orange'?'OM':s.paymentMethod==='moov'?'Moov':s.paymentMethod==='mtn'?'MTN':s.paymentMethod}</span>`:''}</div>
-        <div class="sale-date">${fmtDate(s.date)}${s.clientName ? ` · <span style="color:var(--accent)">${s.clientName}</span>` : ''}</div>
+        <div class="sale-prod">${g.productName}${pmBadge(g.paymentMethod)}</div>
+        <div class="sale-date">${fmtDate(g.date)}${g.clientName ? ` · <span style="color:var(--accent)">${g.clientName}</span>` : ''}</div>
       </div>
       <div class="sale-right">
-        <div class="sale-total">${fmt(s.total)} ${S.session?.currency_symbol||'FCFA'}</div>
-        <div class="sale-qty">x${s.qty}${s.profit ? ` · <span style="color:var(--success)">+${fmt(s.profit)}</span>` : ''}</div>
+        <div class="sale-total">${fmt(g.total)} ${S.session?.currency_symbol||'FCFA'}</div>
+        <div class="sale-qty">x${g.qty}${g.profit ? ` · <span style="color:var(--success)">+${fmt(g.profit)}</span>` : ''}</div>
       </div>
       <div class="sale-actions">
         <button class="sale-act-btn" title="Facture PDF" onclick="generateInvoicePDF(window['${sid}'])">${IC.pdf}</button>
         <button class="sale-act-btn sale-act-wa" title="WhatsApp" onclick="shareViaWhatsApp(window['${sid}'])">${IC.whatsapp}</button>
       </div>
-    </div>`;}).join('');
+    </div>`;
+      }).join('');
     })()}
   </div>`;
 }
@@ -6364,7 +6474,7 @@ function updateArticleField(id, field, value) {
   const art = S.articles.find(a => a.id === id);
   if (!art) return;
   art[field] = value;
-  localStorage.setItem('stockr_articles', JSON.stringify(S.articles));
+  localStorage.setItem('baro_articles', JSON.stringify(S.articles));
   showToast(t('infoUpdated'));
 }
 
@@ -6492,6 +6602,12 @@ function vAdd() {
           <input class="input" type="number" placeholder="0" step="10" value="${f.price||0}" oninput="S.form.price=this.value">
         </div>
       </div>`}
+
+      ${isReseller ? `
+      <div class="form-group">
+        <label class="form-label">${t('sellingPrice')||'Prix de vente'} (${sym()})</label>
+        <input class="input" type="number" placeholder="0" step="10" value="${f.sellPrice||0}" oninput="S.form.sellPrice=this.value">
+      </div>` : ''}
 
       <!-- Péremption : toggle plutôt qu'auto-visible pour revendeur -->
       ${isReseller ? `
@@ -10374,7 +10490,7 @@ async function spectraConfirmReception() {
         else art.stock = (art.stock || 0) + it.quantity;
       }
     });
-    localStorage.setItem('stockr_articles', JSON.stringify(S.articles));
+    localStorage.setItem('baro_articles', JSON.stringify(S.articles));
     S.spectra.results = items.map(it => ({ name: it.matched_name || it.detected_name, new_qty: it.quantity, unit: it.matched_unit || 'pce' }));
     S.spectra.step = 'done';
     showToast(t('spectraReceptionDone'), 'success');
@@ -10394,7 +10510,7 @@ function spectraAdjustStock() {
       adjusted++;
     }
   });
-  localStorage.setItem('stockr_articles', JSON.stringify(S.articles));
+  localStorage.setItem('baro_articles', JSON.stringify(S.articles));
   showToast(`${t('spectraAdjust')}: ${adjusted} ${t('articles').toLowerCase()}`, 'success');
   spectraReset();
   nav('pantry');
@@ -10423,9 +10539,9 @@ function spectraSignalLoss() {
   const date = new Date().toLocaleString();
   const report = `${t('spectraSignalLoss')} — ${date}\n${t('spectraGap')}: ${totalLoss} ${t('spectraGapMsg')}\n\n${msg}`;
   // Save to localStorage as loss report
-  const reports = JSON.parse(localStorage.getItem('stockr_loss_reports') || '[]');
+  const reports = JSON.parse(localStorage.getItem('baro_loss_reports') || '[]');
   reports.unshift({ date, items: losses, total: totalLoss });
-  localStorage.setItem('stockr_loss_reports', JSON.stringify(reports.slice(0, 50)));
+  localStorage.setItem('baro_loss_reports', JSON.stringify(reports.slice(0, 50)));
   showToast(`${t('spectraSignalLoss')}: ${totalLoss} ${t('articles').toLowerCase()}`, 'error');
   // Try to share the report
   if (navigator.share) {
@@ -10549,7 +10665,7 @@ function saveOrder() {
     date: new Date().toISOString(),
   };
   S.purchaseOrders.unshift(order);
-  localStorage.setItem('stockr_orders', JSON.stringify(S.purchaseOrders));
+  localStorage.setItem('baro_orders', JSON.stringify(S.purchaseOrders));
   showToast(t('newOrder') + ' OK');
   nav('purchase-orders');
 }
@@ -10564,10 +10680,10 @@ function receiveOrder(id) {
   if (art) {
     if (art.qty !== undefined) art.qty += order.qty;
     else art.stock = (art.stock || 0) + order.qty;
-    localStorage.setItem('stockr_articles', JSON.stringify(S.articles));
+    localStorage.setItem('baro_articles', JSON.stringify(S.articles));
     logMovement(art.name, 'entry', order.qty, t('purchaseOrders') + ': ' + (order.supplierName || ''));
   }
-  localStorage.setItem('stockr_orders', JSON.stringify(S.purchaseOrders));
+  localStorage.setItem('baro_orders', JSON.stringify(S.purchaseOrders));
   showToast(t('orderReceived') + ': +' + order.qty + ' ' + order.articleName, 'success');
   render();
 }
@@ -10575,7 +10691,7 @@ function receiveOrder(id) {
 function cancelOrder(id) {
   const order = S.purchaseOrders.find(o => o.id === id);
   if (order) { order.status = 'cancelled'; }
-  localStorage.setItem('stockr_orders', JSON.stringify(S.purchaseOrders));
+  localStorage.setItem('baro_orders', JSON.stringify(S.purchaseOrders));
   render();
 }
 
@@ -10829,14 +10945,14 @@ function saveSupplier() {
     created: new Date().toISOString(),
   };
   S.suppliers.push(sup);
-  localStorage.setItem('stockr_suppliers', JSON.stringify(S.suppliers));
+  localStorage.setItem('baro_suppliers', JSON.stringify(S.suppliers));
   showToast(t('addSupplier') + ' OK');
   nav('suppliers');
 }
 
 function deleteSupplier(id) {
   S.suppliers = S.suppliers.filter(s => s.id !== id);
-  localStorage.setItem('stockr_suppliers', JSON.stringify(S.suppliers));
+  localStorage.setItem('baro_suppliers', JSON.stringify(S.suppliers));
   nav('suppliers');
 }
 
@@ -10852,7 +10968,7 @@ function logMovement(articleName, type, qty, note) {
   };
   S.stockMovements.unshift(mv);
   if (S.stockMovements.length > 500) S.stockMovements = S.stockMovements.slice(0, 500);
-  localStorage.setItem('stockr_movements', JSON.stringify(S.stockMovements));
+  localStorage.setItem('baro_movements', JSON.stringify(S.stockMovements));
 }
 
 // ── STOCK TRANSFER BETWEEN LOCATIONS ────────
@@ -11204,7 +11320,7 @@ function quickSaleProduct(productId) {
         logMovement(art.name, 'exit', comp.qty || 1, t('quickSale') + ': ' + prod.name);
       }
     });
-    localStorage.setItem('stockr_articles', JSON.stringify(S.articles));
+    localStorage.setItem('baro_articles', JSON.stringify(S.articles));
   }
 
   // Loyalty points
@@ -11213,7 +11329,7 @@ function quickSaleProduct(productId) {
   }
 
   S.sales.unshift(sale);
-  localStorage.setItem('stockr_sales', JSON.stringify(S.sales));
+  localStorage.setItem('baro_sales', JSON.stringify(S.sales));
   logActivity('sale', `${prod.name} x1 — ${fmt(prod.price)} ${sym}`);
   showToast(`${t('saleConfirmed')}: ${prod.name} — ${fmt(prod.price)} ${sym}`, 'success');
   render();
@@ -11221,25 +11337,25 @@ function quickSaleProduct(productId) {
 
 // ── IMPROVED CSV EXPORT ─────────────────────
 function exportFullCSV(type) {
-  let csv = '', filename = 'stockr-export.csv';
+  let csv = '', filename = 'baro-export.csv';
   const sep = ',';
   const sym = S.session?.currency_symbol || 'FCFA';
 
   if (type === 'articles') {
-    filename = 'stockr-articles.csv';
+    filename = 'baro-articles.csv';
     csv = 'Nom,Stock,Unité,Seuil alerte,Prix,' + sym + ',Coût,' + sym + '\n';
     S.articles.forEach(a => {
       const stk = a.qty !== undefined ? a.qty : a.stock;
       csv += `"${a.name}",${stk},"${a.unit||''}",${a.minQty||a.min||0},${a.price||0},${a.cost||0}\n`;
     });
   } else if (type === 'sales') {
-    filename = 'stockr-ventes.csv';
+    filename = 'baro-ventes.csv';
     csv = 'Date,Produit,Quantité,Total ' + sym + ',Bénéfice ' + sym + ',Client,Paiement\n';
     S.sales.forEach(s => {
       csv += `"${new Date(s.date).toLocaleString()}","${s.productName}",${s.qty},${s.total},${s.profit||0},"${s.clientName||''}","${s.method||''}"\n`;
     });
   } else if (type === 'clients') {
-    filename = 'stockr-clients.csv';
+    filename = 'baro-clients.csv';
     csv = 'Nom,Téléphone,Email,Notes,Nb achats,Total dépensé ' + sym + '\n';
     S.clients.forEach(c => {
       const sales = S.sales.filter(s => s.clientId && String(s.clientId) === String(c.id));
@@ -11247,13 +11363,13 @@ function exportFullCSV(type) {
       csv += `"${c.name}","${c.phone||''}","${c.email||''}","${(c.notes||'').replace(/"/g,'""')}",${sales.length},${spent}\n`;
     });
   } else if (type === 'suppliers') {
-    filename = 'stockr-fournisseurs.csv';
+    filename = 'baro-fournisseurs.csv';
     csv = 'Nom,Téléphone,Email,Notes\n';
     S.suppliers.forEach(s => {
       csv += `"${s.name}","${s.phone||''}","${s.email||''}","${(s.notes||'').replace(/"/g,'""')}"\n`;
     });
   } else if (type === 'movements') {
-    filename = 'stockr-mouvements.csv';
+    filename = 'baro-mouvements.csv';
     csv = 'Date,Article,Type,Quantité,Note\n';
     S.stockMovements.forEach(m => {
       csv += `"${new Date(m.date).toLocaleString()}","${m.article}","${m.type}",${m.qty},"${m.note||''}"\n`;
@@ -11291,7 +11407,7 @@ function addLocation() {
     createdAt: new Date().toISOString()
   };
   S.locations.push(loc);
-  localStorage.setItem('stockr_locations', JSON.stringify(S.locations));
+  localStorage.setItem('baro_locations', JSON.stringify(S.locations));
   S.locationAdd = false;
   logActivity('location', `Nouvel emplacement: ${name}`);
   showToast(`Emplacement "${name}" ajouté`);
@@ -11302,21 +11418,21 @@ function removeLocation(id) {
   const loc = S.locations.find(l => l.id === id);
   if (!confirm(`Supprimer l'emplacement "${loc?.name}" ? Les articles de cet emplacement ne seront plus filtrés.`)) return;
   S.locations = S.locations.filter(l => l.id !== id);
-  localStorage.setItem('stockr_locations', JSON.stringify(S.locations));
+  localStorage.setItem('baro_locations', JSON.stringify(S.locations));
   // Un-assign articles from this location
   S.articles.forEach(a => { if (a.locationId === id) a.locationId = null; });
-  localStorage.setItem('stockr_articles', JSON.stringify(S.articles));
+  localStorage.setItem('baro_articles', JSON.stringify(S.articles));
   if (S.currentLocation === id) {
     S.currentLocation = null;
-    localStorage.removeItem('stockr_current_location');
+    localStorage.removeItem('baro_current_location');
   }
   render();
 }
 
 function setLocation(id) {
   S.currentLocation = id || null;
-  if (id) localStorage.setItem('stockr_current_location', String(id));
-  else localStorage.removeItem('stockr_current_location');
+  if (id) localStorage.setItem('baro_current_location', String(id));
+  else localStorage.removeItem('baro_current_location');
   render();
 }
 
@@ -11324,7 +11440,7 @@ function setArticleLocation(articleId, locationId) {
   const art = S.articles.find(a => a.id === articleId);
   if (!art) return;
   art.locationId = locationId || null;
-  localStorage.setItem('stockr_articles', JSON.stringify(S.articles));
+  localStorage.setItem('baro_articles', JSON.stringify(S.articles));
   showToast(`Emplacement mis à jour`);
 }
 
@@ -11364,7 +11480,7 @@ function uploadLogo() {
         const sx = (img.width - size) / 2, sy = (img.height - size) / 2;
         ctx.drawImage(img, sx, sy, size, size, 0, 0, size, size);
         const data = canvas.toDataURL('image/jpeg', 0.8);
-        localStorage.setItem('stockr_logo', data);
+        localStorage.setItem('baro_logo', data);
         showToast(t('businessLogo') + ' OK');
         render();
       };
@@ -11376,7 +11492,7 @@ function uploadLogo() {
 }
 
 function removeLogo() {
-  localStorage.removeItem('stockr_logo');
+  localStorage.removeItem('baro_logo');
   render();
 }
 
@@ -11459,7 +11575,7 @@ function generateCatalogImage() {
   const sym = S.session?.currency_symbol || 'FCFA';
   const biz = S.session?.business || S.session?.name || 'Mon Commerce';
   const selected = S.products.filter(p => S.catalogSelected.includes(p.id));
-  const logo = localStorage.getItem('stockr_logo');
+  const logo = localStorage.getItem('baro_logo');
 
   const W = 1080, rowH = 64, headerH = logo ? 200 : 160;
   const H = headerH + selected.length * rowH + 100;
@@ -11562,7 +11678,7 @@ async function shareCatalogWhatsApp() {
   try {
     const canvas = await generateCatalogImage();
     const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
-    const file = new File([blob], 'catalogue-stockr.png', { type: 'image/png' });
+    const file = new File([blob], 'catalogue-baro.png', { type: 'image/png' });
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
       await navigator.share({
         title: biz + ' — ' + t('catalog'),
@@ -11581,7 +11697,7 @@ async function shareCatalogWhatsApp() {
 
 function generateFOMOImage(name, stock) {
   const biz = S.session?.business || S.session?.name || 'Mon Commerce';
-  const logo = localStorage.getItem('stockr_logo');
+  const logo = localStorage.getItem('baro_logo');
 
   const W = 1080, H = 1080;
   const canvas = document.createElement('canvas');
@@ -11677,7 +11793,7 @@ async function shareFOMO(name, stock) {
   try {
     const canvas = await generateFOMOImage(name, stock);
     const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
-    const file = new File([blob], 'fomo-stockr.png', { type: 'image/png' });
+    const file = new File([blob], 'fomo-baro.png', { type: 'image/png' });
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
       await navigator.share({
         title: t('catalogLastPieces') + ' — ' + name,
@@ -11864,12 +11980,12 @@ function vSettings() {
       <div class="settings-row-block">
         <div class="settings-row" style="cursor:default">
           <div class="settings-row-inner">
-            ${localStorage.getItem('stockr_logo') ? `<img src="${localStorage.getItem('stockr_logo')}" style="width:32px;height:32px;border-radius:8px;object-fit:cover;margin-right:8px">` : `<span class="settings-row-ico">${IC.camera}</span>`}
-            <div class="settings-row-lbl">${localStorage.getItem('stockr_logo') ? (S.session?.business || 'Logo') : t('uploadLogo')}</div>
+            ${localStorage.getItem('baro_logo') ? `<img src="${localStorage.getItem('baro_logo')}" style="width:32px;height:32px;border-radius:8px;object-fit:cover;margin-right:8px">` : `<span class="settings-row-ico">${IC.camera}</span>`}
+            <div class="settings-row-lbl">${localStorage.getItem('baro_logo') ? (S.session?.business || 'Logo') : t('uploadLogo')}</div>
           </div>
           <div style="display:flex;gap:6px">
-            <button class="btn btn-ghost" style="padding:6px 12px;font-size:12px" onclick="uploadLogo()">${localStorage.getItem('stockr_logo') ? t('modify') : t('uploadLogo')}</button>
-            ${localStorage.getItem('stockr_logo') ? `<button class="btn btn-ghost" style="padding:6px 8px;font-size:12px;color:var(--danger)" onclick="removeLogo()">✕</button>` : ''}
+            <button class="btn btn-ghost" style="padding:6px 12px;font-size:12px" onclick="uploadLogo()">${localStorage.getItem('baro_logo') ? t('modify') : t('uploadLogo')}</button>
+            ${localStorage.getItem('baro_logo') ? `<button class="btn btn-ghost" style="padding:6px 8px;font-size:12px;color:var(--danger)" onclick="removeLogo()">✕</button>` : ''}
           </div>
         </div>
       </div>
@@ -13883,7 +13999,7 @@ function vBoutique() {
       <div class="form-group">
         <label class="form-label">Logo de la boutique</label>
         <div style="display:flex;align-items:center;gap:10px">
-          ${localStorage.getItem('stockr_logo') ? `<img src="${localStorage.getItem('stockr_logo')}" style="width:48px;height:48px;border-radius:10px;object-fit:cover">` : `<div style="width:48px;height:48px;border-radius:10px;background:var(--gray-1);display:flex;align-items:center;justify-content:center;color:var(--text-3)">${IC.camera}</div>`}
+          ${localStorage.getItem('baro_logo') ? `<img src="${localStorage.getItem('baro_logo')}" style="width:48px;height:48px;border-radius:10px;object-fit:cover">` : `<div style="width:48px;height:48px;border-radius:10px;background:var(--gray-1);display:flex;align-items:center;justify-content:center;color:var(--text-3)">${IC.camera}</div>`}
           <div>
             <div style="font-size:11px;color:var(--text-3)">Utilisé dans le site et les factures</div>
             <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px;margin-top:4px" onclick="uploadLogo()">Changer le logo</button>
@@ -13913,7 +14029,7 @@ function vBoutique() {
         <div class="btc-ico" style="background:#05966910;color:#059669">🌐</div>
         <div class="btc-txt">
           <div class="btc-title">Domaine</div>
-          <div class="btc-sub">${bc.customDomain || bc.domain ? (bc.customDomain||bc.domain+'.stockr.shop') : 'Configurer URL'}</div>
+          <div class="btc-sub">${bc.customDomain || bc.domain ? (bc.customDomain||bc.domain+'.baro.shop') : 'Configurer URL'}</div>
         </div>
       </button>
       <button class="boutique-tool-card" onclick="nav('boutique-seo')">
@@ -14100,13 +14216,13 @@ function vBoutique() {
 
 function toggleBoutiquePublish(val) {
   S.boutiqueConfig.published = val;
-  localStorage.setItem('stockr_boutique', JSON.stringify(S.boutiqueConfig));
+  localStorage.setItem('baro_boutique', JSON.stringify(S.boutiqueConfig));
   showToast(val ? 'Boutique publiée !' : 'Boutique en brouillon');
   render();
 }
 function updateBoutiqueConfig(key, val) {
   S.boutiqueConfig[key] = val;
-  localStorage.setItem('stockr_boutique', JSON.stringify(S.boutiqueConfig));
+  localStorage.setItem('baro_boutique', JSON.stringify(S.boutiqueConfig));
 }
 function generateBoutiqueSite() {
   const bc = S.boutiqueConfig;
@@ -14123,7 +14239,7 @@ function generateBoutiqueSite() {
   const waLink = waNum ? `https://wa.me/${waNum}` : 'https://wa.me/';
   const payments = (S.paymentMethods||[]).filter(m => m.active);
   const payHTML = payments.length > 0 ? payments.map(m => `<span class="pay-badge">${m.name}</span>`).join('') : '<span class="pay-badge">Espèces</span>';
-  const logo = localStorage.getItem('stockr_logo');
+  const logo = localStorage.getItem('baro_logo');
   // ── Configuration avancée (apparence / pixels / code / toggles) ──
   const px  = bc.pixels     || {};
   const cc  = bc.customCode || {};
@@ -14143,7 +14259,7 @@ function generateBoutiqueSite() {
   const showStockCount  = bc.showStockCount  !== false;
   const showCategories  = bc.showCategories  !== false;
   // URL publique (domaine personnalisé si vérifié)
-  const publicUrl = (bc.customDomainVerified && bc.customDomain) ? `https://${bc.customDomain}` : `https://${bc.domain}.stockr.shop`;
+  const publicUrl = (bc.customDomainVerified && bc.customDomain) ? `https://${bc.customDomain}` : `https://${bc.domain}.baro.shop`;
 
   // ── Snippets pixels ──
   const fbPixelHead = (px.facebookPixel_enabled && px.facebookPixel) ? `
@@ -14201,7 +14317,7 @@ function generateBoutiqueSite() {
   <script>
   (function(){
     var trig='${activePopup.trigger}', val=${activePopup.triggerValue||5}, once=${activePopup.showOnce!==false};
-    var key='stockr_popup_${activePopup.id}';
+    var key='baro_popup_${activePopup.id}';
     if(once && localStorage.getItem(key))return;
     function show(){document.getElementById('popup-overlay').style.display='flex';if(once)localStorage.setItem(key,'1');}
     window.closePopup=function(){document.getElementById('popup-overlay').style.display='none';};
@@ -14360,7 +14476,7 @@ ${cc.js ? `<script>${cc.js}<\/script>` : ''}
   document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
   bc.siteGenerated = true;
   bc.siteGeneratedDate = new Date().toISOString();
-  localStorage.setItem('stockr_boutique', JSON.stringify(bc));
+  localStorage.setItem('baro_boutique', JSON.stringify(bc));
   logActivity('boutique', `Site genere : ${publicUrl}`);
   showToast('Site telecharge ! Hebergez-le sur votre domaine.');
   render();
@@ -14513,18 +14629,18 @@ function vBoutiqueDomain() {
   <div class="container">
     <div class="card" style="margin-bottom:10px">
       <div class="card-title">🔗 URL BARO (gratuite)</div>
-      <div style="font-size:11px;color:var(--text-3);margin-bottom:8px">Votre boutique est accessible gratuitement sur stockr.shop</div>
+      <div style="font-size:11px;color:var(--text-3);margin-bottom:8px">Votre boutique est accessible gratuitement sur baro.shop</div>
       <div class="form-group">
         <label class="form-label">Nom de sous-domaine</label>
         <div style="display:flex;gap:6px;align-items:center">
           <input class="input" value="${bc.domain||''}" placeholder="maboutique" oninput="updateBoutiqueConfig('domain',this.value.toLowerCase().replace(/[^a-z0-9-]/g,''))" style="flex:1">
-          <span style="font-size:13px;color:var(--text-3);font-weight:600">.stockr.shop</span>
+          <span style="font-size:13px;color:var(--text-3);font-weight:600">.baro.shop</span>
         </div>
       </div>
       ${bc.domain ? `
       <div style="background:var(--gray-1);padding:10px;border-radius:8px;font-family:monospace;font-size:13px;display:flex;align-items:center;justify-content:space-between">
-        <span>https://${bc.domain}.stockr.shop</span>
-        <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" onclick="navigator.clipboard.writeText('https://${bc.domain}.stockr.shop');showToast('Lien copié !')">${IC.check} Copier</button>
+        <span>https://${bc.domain}.baro.shop</span>
+        <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" onclick="navigator.clipboard.writeText('https://${bc.domain}.baro.shop');showToast('Lien copié !')">${IC.check} Copier</button>
       </div>` : ''}
     </div>
 
@@ -14668,11 +14784,11 @@ function updatePixelConfig(key, val) {
   const bc = S.boutiqueConfig;
   bc.pixels = bc.pixels || {};
   bc.pixels[key] = val;
-  localStorage.setItem('stockr_boutique', JSON.stringify(bc));
+  localStorage.setItem('baro_boutique', JSON.stringify(bc));
 }
 function savePixelConfig() {
   const bc = S.boutiqueConfig;
-  localStorage.setItem('stockr_boutique', JSON.stringify(bc));
+  localStorage.setItem('baro_boutique', JSON.stringify(bc));
   const px = bc.pixels || {};
   const count = Object.keys(px).filter(k => !k.endsWith('_enabled') && px[k] && px[k+'_enabled']).length;
   logActivity('boutique', `Pixels mis à jour (${count} actif(s))`);
@@ -14681,7 +14797,7 @@ function savePixelConfig() {
 function resetPixelConfig() {
   if (!confirm('Réinitialiser tous les pixels ? Cette action est irréversible.')) return;
   S.boutiqueConfig.pixels = {};
-  localStorage.setItem('stockr_boutique', JSON.stringify(S.boutiqueConfig));
+  localStorage.setItem('baro_boutique', JSON.stringify(S.boutiqueConfig));
   showToast('Pixels réinitialisés');
   render();
 }
@@ -14768,7 +14884,7 @@ function updateCustomCode(tab, val) {
   const bc = S.boutiqueConfig;
   bc.customCode = bc.customCode || {};
   bc.customCode[tab] = val;
-  localStorage.setItem('stockr_boutique', JSON.stringify(bc));
+  localStorage.setItem('baro_boutique', JSON.stringify(bc));
 }
 function loadCodeSample(tab) {
   const sample = _codeSamples()[tab] || '';
@@ -15169,7 +15285,7 @@ function previewBoutiqueSite() {
   const tc = bc.themeColor || '#4F46E5';
   const payments = (S.paymentMethods||[]).filter(m => m.active);
   const payText = payments.length > 0 ? payments.map(m => `<span style="background:${tc}15;color:${tc};padding:5px 12px;border-radius:8px;font-size:12px;font-weight:600">${m.name}</span>`).join(' ') : '<span style="color:#888">Espèces</span>';
-  const logo = localStorage.getItem('stockr_logo');
+  const logo = localStorage.getItem('baro_logo');
   preview.document.write(`<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Aperçu — ${bc.name||'Boutique'}</title>
 <style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:system-ui,-apple-system,sans-serif;background:#f5f5f7;-webkit-font-smoothing:antialiased}
 .h{background:linear-gradient(135deg,${tc},${tc}cc);color:#fff;padding:44px 20px 32px;text-align:center;position:relative;overflow:hidden}
@@ -15191,7 +15307,7 @@ function previewBoutiqueSite() {
 <div class="c">
 ${shopProds.map(p=>{const promo=_getActivePromo(p.id);const pp=promo?Math.round(p.price*(1-promo.discount/100)):null;return `<div class="p"><div class="pt"><div class="pi">${p.name.charAt(0)}</div><div><div class="n">${p.name}</div>${promo?'<div style="color:#ef4444;font-size:11px;font-weight:700;margin-top:2px">-'+promo.discount+'% '+promo.name+'</div>':''}</div></div><div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding-top:12px;border-top:1px solid #f0f0f0"><div class="pr">${promo?'<span style="text-decoration:line-through;color:#aaa;font-size:13px;margin-right:6px">'+fmt(p.price)+'</span>'+fmt(pp):fmt(p.price)} ${sym()}</div><button class="b">Commander</button></div></div>`;}).join('')}
 <div class="pay"><div class="pay-t">Paiements acceptés</div><div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center">${payText}</div></div>
-</div><div class="f">Aperçu BARO — ${bc.domain||'boutique'}.stockr.shop</div></body></html>`);
+</div><div class="f">Aperçu BARO — ${bc.domain||'boutique'}.baro.shop</div></body></html>`);
   preview.document.close();
 }
 function toggleBoutiqueProduct(id) {
@@ -15199,7 +15315,7 @@ function toggleBoutiqueProduct(id) {
   const idx = S.boutiqueConfig.products.indexOf(id);
   if (idx >= 0) S.boutiqueConfig.products.splice(idx, 1);
   else S.boutiqueConfig.products.push(id);
-  localStorage.setItem('stockr_boutique', JSON.stringify(S.boutiqueConfig));
+  localStorage.setItem('baro_boutique', JSON.stringify(S.boutiqueConfig));
   render();
 }
 function toggleBoutiqueArticle(id) {
@@ -15242,7 +15358,7 @@ function toggleDeliveryZone(zone) {
   const idx = S.boutiqueConfig.deliveryZones.indexOf(zone);
   if (idx >= 0) S.boutiqueConfig.deliveryZones.splice(idx, 1);
   else S.boutiqueConfig.deliveryZones.push(zone);
-  localStorage.setItem('stockr_boutique', JSON.stringify(S.boutiqueConfig));
+  localStorage.setItem('baro_boutique', JSON.stringify(S.boutiqueConfig));
   render();
 }
 function _getAllVitrineItems() {
@@ -15294,7 +15410,7 @@ function addBoutiqueOrder() {
     total, date: new Date().toISOString()
   };
   S.boutiqueOrders.unshift(order);
-  localStorage.setItem('stockr_boutique_orders', JSON.stringify(S.boutiqueOrders));
+  localStorage.setItem('baro_boutique_orders', JSON.stringify(S.boutiqueOrders));
   logActivity('order', `Commande de ${clientName} — ${fmt(total)} ${sym()}`);
   showToast('Commande ajoutee !');
   render();
@@ -15304,7 +15420,7 @@ function updateOrderStatus(id, status) {
   if (!order) return;
   order.status = status;
   order.updatedAt = new Date().toISOString();
-  localStorage.setItem('stockr_boutique_orders', JSON.stringify(S.boutiqueOrders));
+  localStorage.setItem('baro_boutique_orders', JSON.stringify(S.boutiqueOrders));
   // If confirmed, record as sale
   if (status === 'confirmed') {
     for (const item of (order.items||[])) {
@@ -15946,7 +16062,7 @@ function savePromotion() {
     logActivity('promo', `${name} créée — code ${code}`);
     showToast(`Réduction créée : ${code}`);
   }
-  localStorage.setItem('stockr_promotions', JSON.stringify(S.promotions));
+  localStorage.setItem('baro_promotions', JSON.stringify(S.promotions));
   S.editingPromoId = null;
   S.view = 'marketing';
   render();
@@ -16035,7 +16151,7 @@ function togglePromoActive(id) {
   const p = S.promotions.find(x => x.id === id);
   if (!p) return;
   p.active = !p.active;
-  localStorage.setItem('stockr_promotions', JSON.stringify(S.promotions));
+  localStorage.setItem('baro_promotions', JSON.stringify(S.promotions));
   showToast(p.active ? 'Réduction activée' : 'Réduction désactivée');
   render();
 }
@@ -16043,7 +16159,7 @@ function togglePromoActive(id) {
 function deletePromotion(id) {
   if (!confirm('Supprimer définitivement cette réduction ?')) return;
   S.promotions = S.promotions.filter(x => x.id !== id);
-  localStorage.setItem('stockr_promotions', JSON.stringify(S.promotions));
+  localStorage.setItem('baro_promotions', JSON.stringify(S.promotions));
   showToast('Réduction supprimée');
   if (S.view === 'promo-detail') S.view = 'marketing';
   S.viewingPromoId = null;
@@ -16093,7 +16209,7 @@ function _recordPromoUsage(promoId, clientId) {
     p.usageByClient = p.usageByClient || {};
     p.usageByClient[clientId] = (p.usageByClient[clientId]||0) + 1;
   }
-  localStorage.setItem('stockr_promotions', JSON.stringify(S.promotions));
+  localStorage.setItem('baro_promotions', JSON.stringify(S.promotions));
 }
 
 // Promo auto-applicable sur un produit (sans code, pour affichage vitrine)
@@ -16136,7 +16252,7 @@ function copyPromoLink(id) {
   const p = S.promotions.find(x => x.id === id);
   if (!p) return;
   const domain = S.boutiqueConfig?.domain || 'maboutique';
-  const link = `https://${domain}.stockr.shop/?promo=${p.code}`;
+  const link = `https://${domain}.baro.shop/?promo=${p.code}`;
   navigator.clipboard?.writeText(link).then(() => showToast('Lien copié !'));
 }
 
@@ -16285,7 +16401,7 @@ function saveBanner() {
     logActivity('banner', `Bannière créée : ${text.slice(0,40)}`);
     showToast('Bannière créée');
   }
-  localStorage.setItem('stockr_banners', JSON.stringify(S.banners));
+  localStorage.setItem('baro_banners', JSON.stringify(S.banners));
   S.editingBannerId = null;
   S.view = 'marketing';
   S.marketingTab = 'banners';
@@ -16295,14 +16411,14 @@ function toggleBannerActive(id) {
   const b = S.banners.find(x => x.id === id);
   if (!b) return;
   b.active = !b.active;
-  localStorage.setItem('stockr_banners', JSON.stringify(S.banners));
+  localStorage.setItem('baro_banners', JSON.stringify(S.banners));
   showToast(b.active ? 'Bannière activée' : 'Bannière désactivée');
   render();
 }
 function deleteBanner(id) {
   if (!confirm('Supprimer cette bannière ?')) return;
   S.banners = S.banners.filter(x => x.id !== id);
-  localStorage.setItem('stockr_banners', JSON.stringify(S.banners));
+  localStorage.setItem('baro_banners', JSON.stringify(S.banners));
   showToast('Bannière supprimée');
   if (S.view === 'banner-form') { S.view='marketing'; S.marketingTab='banners'; S.editingBannerId=null; }
   render();
@@ -16468,7 +16584,7 @@ function savePopup() {
     logActivity('popup', `Popup créé : ${title.slice(0,40)}`);
     showToast('Popup créé');
   }
-  localStorage.setItem('stockr_popups', JSON.stringify(S.popups));
+  localStorage.setItem('baro_popups', JSON.stringify(S.popups));
   S.editingPopupId = null;
   S.view = 'marketing';
   S.marketingTab = 'popups';
@@ -16478,14 +16594,14 @@ function togglePopupActive(id) {
   const p = S.popups.find(x => x.id === id);
   if (!p) return;
   p.active = !p.active;
-  localStorage.setItem('stockr_popups', JSON.stringify(S.popups));
+  localStorage.setItem('baro_popups', JSON.stringify(S.popups));
   showToast(p.active ? 'Popup activé' : 'Popup désactivé');
   render();
 }
 function deletePopup(id) {
   if (!confirm('Supprimer ce popup ?')) return;
   S.popups = S.popups.filter(x => x.id !== id);
-  localStorage.setItem('stockr_popups', JSON.stringify(S.popups));
+  localStorage.setItem('baro_popups', JSON.stringify(S.popups));
   showToast('Popup supprimé');
   if (S.view === 'popup-form') { S.view='marketing'; S.marketingTab='popups'; S.editingPopupId=null; }
   render();
@@ -16576,7 +16692,7 @@ function saveReview() {
     logActivity('review', `Avis ${draft.rating}★ par ${clientName}`);
     showToast('Avis ajouté');
   }
-  localStorage.setItem('stockr_reviews', JSON.stringify(S.reviews));
+  localStorage.setItem('baro_reviews', JSON.stringify(S.reviews));
   S.editingReviewId = null;
   S.view = 'marketing';
   S.marketingTab = 'reviews';
@@ -16586,27 +16702,27 @@ function approveReview(id) {
   const r = S.reviews.find(x => x.id === id);
   if (!r) return;
   r.approved = true;
-  localStorage.setItem('stockr_reviews', JSON.stringify(S.reviews));
+  localStorage.setItem('baro_reviews', JSON.stringify(S.reviews));
   showToast('Avis publié');
   render();
 }
 function deleteReview(id) {
   if (!confirm('Supprimer cet avis ?')) return;
   S.reviews = S.reviews.filter(x => x.id !== id);
-  localStorage.setItem('stockr_reviews', JSON.stringify(S.reviews));
+  localStorage.setItem('baro_reviews', JSON.stringify(S.reviews));
   showToast('Avis supprimé');
   if (S.view === 'review-form') { S.view='marketing'; S.marketingTab='reviews'; S.editingReviewId=null; }
   render();
 }
 function copyReviewLink() {
   const domain = S.boutiqueConfig?.domain || 'maboutique';
-  const link = `https://${domain}.stockr.shop/avis`;
+  const link = `https://${domain}.baro.shop/avis`;
   navigator.clipboard?.writeText(link).then(() => showToast('Lien copié — partagez à vos clients'));
 }
 function shareReviewLink() {
   const biz = S.session?.business || 'notre boutique';
   const domain = S.boutiqueConfig?.domain || 'maboutique';
-  const msg = encodeURIComponent(`Bonjour ! Merci d'avoir choisi ${biz} 🙏\n\nVotre avis compte énormément pour nous. Pouvez-vous nous laisser un petit témoignage ici :\n\nhttps://${domain}.stockr.shop/avis\n\nMerci infiniment !`);
+  const msg = encodeURIComponent(`Bonjour ! Merci d'avoir choisi ${biz} 🙏\n\nVotre avis compte énormément pour nous. Pouvez-vous nous laisser un petit témoignage ici :\n\nhttps://${domain}.baro.shop/avis\n\nMerci infiniment !`);
   window.open(`https://wa.me/?text=${msg}`, '_blank');
 }
 
@@ -16627,7 +16743,7 @@ function vTrackingForm() {
   const isEdit = !!S.editingTrackingId;
   const t = isEdit ? S.trackingLinks.find(x => x.id === S.editingTrackingId) : null;
   const domain = S.boutiqueConfig?.domain || 'maboutique';
-  const draft = t || { name:'', destUrl:`https://${domain}.stockr.shop/`, source:'facebook', medium:'social', campaign:'', clicks:0, active:true };
+  const draft = t || { name:'', destUrl:`https://${domain}.baro.shop/`, source:'facebook', medium:'social', campaign:'', clicks:0, active:true };
   return `
   <div class="sub-hero">
     <div class="page-header-row" style="margin-bottom:10px">
@@ -16647,7 +16763,7 @@ function vTrackingForm() {
       </div>
       <div class="form-group">
         <label class="form-label">URL de destination <span style="color:var(--danger)">*</span></label>
-        <input class="input" id="tk-dest" value="${draft.destUrl||''}" placeholder="https://maboutique.stockr.shop/">
+        <input class="input" id="tk-dest" value="${draft.destUrl||''}" placeholder="https://maboutique.baro.shop/">
       </div>
     </div>
     <div class="card" style="margin-bottom:10px">
@@ -16692,7 +16808,7 @@ function saveTrackingLink() {
     S.trackingLinks.push({ id: Date.now(), ...draft, clicks: 0, active: true, createdAt: new Date().toISOString() });
     showToast('Lien tracé créé');
   }
-  localStorage.setItem('stockr_tracking', JSON.stringify(S.trackingLinks));
+  localStorage.setItem('baro_tracking', JSON.stringify(S.trackingLinks));
   S.editingTrackingId = null;
   S.view = 'marketing';
   S.marketingTab = 'tracking';
@@ -16701,7 +16817,7 @@ function saveTrackingLink() {
 function deleteTrackingLink(id) {
   if (!confirm('Supprimer ce lien ?')) return;
   S.trackingLinks = S.trackingLinks.filter(x => x.id !== id);
-  localStorage.setItem('stockr_tracking', JSON.stringify(S.trackingLinks));
+  localStorage.setItem('baro_tracking', JSON.stringify(S.trackingLinks));
   showToast('Lien supprimé');
   if (S.view === 'tracking-form') { S.view='marketing'; S.marketingTab='tracking'; S.editingTrackingId=null; }
   render();
@@ -16722,7 +16838,7 @@ function copyTrackingLink(id) {
   const url = _buildTrackingUrl(tk);
   navigator.clipboard?.writeText(url).then(() => showToast('Lien copié !'));
   tk.clicks = (tk.clicks||0) + 0; // on ne compte que les vrais clics
-  localStorage.setItem('stockr_tracking', JSON.stringify(S.trackingLinks));
+  localStorage.setItem('baro_tracking', JSON.stringify(S.trackingLinks));
 }
 function shareTrackingLink(id) {
   const tk = S.trackingLinks.find(x => x.id === id);
@@ -16747,7 +16863,7 @@ function addCampaign() {
   const recipients = type === 'email' ? clientsWithEmail.length : type === 'sms' || type === 'whatsapp' ? clientsWithPhone.length : S.clients.length;
   const campaign = { id:Date.now(), name, type, message, recipients, sent:false, date:new Date().toISOString(), sentCount:0 };
   S.campaigns.push(campaign);
-  localStorage.setItem('stockr_campaigns', JSON.stringify(S.campaigns));
+  localStorage.setItem('baro_campaigns', JSON.stringify(S.campaigns));
   logActivity('campaign', `Campagne "${name}" (${type}) - ${recipients} destinataires`);
   showToast(`Campagne "${name}" créée — ${recipients} destinataires`);
   render();
@@ -16777,7 +16893,7 @@ function sendCampaign(id) {
     c.sent = true;
     c.sentDate = new Date().toISOString();
     c.sentCount = clientsWithPhone.length;
-    localStorage.setItem('stockr_campaigns', JSON.stringify(S.campaigns));
+    localStorage.setItem('baro_campaigns', JSON.stringify(S.campaigns));
     render();
   } else if (c.type === 'sms') {
     const clientsWithPhone = S.clients.filter(cl => cl.phone);
@@ -16786,7 +16902,7 @@ function sendCampaign(id) {
     c.sent = true;
     c.sentDate = new Date().toISOString();
     c.sentCount = clientsWithPhone.length;
-    localStorage.setItem('stockr_campaigns', JSON.stringify(S.campaigns));
+    localStorage.setItem('baro_campaigns', JSON.stringify(S.campaigns));
     showToast(`SMS prêt — ${clientsWithPhone.length} destinataires`);
     render();
   } else if (c.type === 'email') {
@@ -16798,14 +16914,14 @@ function sendCampaign(id) {
     c.sent = true;
     c.sentDate = new Date().toISOString();
     c.sentCount = clientsWithEmail.length;
-    localStorage.setItem('stockr_campaigns', JSON.stringify(S.campaigns));
+    localStorage.setItem('baro_campaigns', JSON.stringify(S.campaigns));
     showToast(`Email prêt — ${clientsWithEmail.length} destinataires`);
     render();
   }
 }
 function deleteCampaign(id) {
   S.campaigns = S.campaigns.filter(c => c.id !== id);
-  localStorage.setItem('stockr_campaigns', JSON.stringify(S.campaigns));
+  localStorage.setItem('baro_campaigns', JSON.stringify(S.campaigns));
   showToast('Campagne supprimee');
   render();
 }
@@ -16824,7 +16940,7 @@ function toggleLoyalty() {
   } else {
     S.loyaltyConfig.enabled = false;
   }
-  localStorage.setItem('stockr_loyalty', JSON.stringify(S.loyaltyConfig));
+  localStorage.setItem('baro_loyalty', JSON.stringify(S.loyaltyConfig));
   showToast(S.loyaltyConfig.enabled ? 'Fidelite activee !' : 'Fidelite desactivee');
   render();
 }
@@ -16837,7 +16953,7 @@ function addLoyaltyReward() {
   if (!S.loyaltyConfig.rewards) S.loyaltyConfig.rewards = [];
   S.loyaltyConfig.rewards.push({ name, points: pts, description, icon });
   S.loyaltyConfig.rewards.sort((a,b) => a.points - b.points);
-  localStorage.setItem('stockr_loyalty', JSON.stringify(S.loyaltyConfig));
+  localStorage.setItem('baro_loyalty', JSON.stringify(S.loyaltyConfig));
   showToast('Recompense ajoutee');
   render();
 }
@@ -16851,7 +16967,7 @@ function editLoyaltyReward(idx) {
   const icon = prompt('Emoji :', r.icon || '🎁') || '🎁';
   S.loyaltyConfig.rewards[idx] = { ...r, name: name || r.name, points: pts, description, icon };
   S.loyaltyConfig.rewards.sort((a,b) => a.points - b.points);
-  localStorage.setItem('stockr_loyalty', JSON.stringify(S.loyaltyConfig));
+  localStorage.setItem('baro_loyalty', JSON.stringify(S.loyaltyConfig));
   showToast('Recompense mise a jour');
   render();
 }
@@ -16860,7 +16976,7 @@ function deleteLoyaltyReward(idx) {
   if (!r) return;
   if (!confirm(`Supprimer la recompense "${r.name}" ?`)) return;
   S.loyaltyConfig.rewards.splice(idx, 1);
-  localStorage.setItem('stockr_loyalty', JSON.stringify(S.loyaltyConfig));
+  localStorage.setItem('baro_loyalty', JSON.stringify(S.loyaltyConfig));
   showToast('Recompense supprimee');
   render();
 }
@@ -16869,7 +16985,7 @@ function editLoyaltyRate() {
   const rate = parseFloat(prompt('Combien de points par 1 ' + sym() + ' depense ?\n(ex: 1 = 1 pt par FCFA, 0.01 = 1 pt par 100 FCFA)', String(S.loyaltyConfig.pointsPerFcfa || 1)));
   if (!rate || rate <= 0) return;
   S.loyaltyConfig.pointsPerFcfa = rate;
-  localStorage.setItem('stockr_loyalty', JSON.stringify(S.loyaltyConfig));
+  localStorage.setItem('baro_loyalty', JSON.stringify(S.loyaltyConfig));
   showToast('Taux mis a jour');
   render();
 }
@@ -16878,7 +16994,7 @@ function toggleLoyaltyTierMode() {
   const next = current === 'spent' ? 'points' : 'spent';
   if (!confirm(`Basculer en mode "${next === 'points' ? 'Par points accumules' : 'Par montant depense cumule'}" ?`)) return;
   S.loyaltyConfig.tierMode = next;
-  localStorage.setItem('stockr_loyalty', JSON.stringify(S.loyaltyConfig));
+  localStorage.setItem('baro_loyalty', JSON.stringify(S.loyaltyConfig));
   showToast('Mode paliers : ' + (next === 'points' ? 'Par points' : 'Par depenses'));
   render();
 }
@@ -16894,7 +17010,7 @@ function addLoyaltyTier() {
   const id = 'tier_' + Date.now();
   S.loyaltyConfig.tiers.push({ id, name, min, perk, icon, color, gradient:`linear-gradient(135deg,${color},${color}99)`, multiplier: 1 });
   S.loyaltyConfig.tiers.sort((a,b) => a.min - b.min);
-  localStorage.setItem('stockr_loyalty', JSON.stringify(S.loyaltyConfig));
+  localStorage.setItem('baro_loyalty', JSON.stringify(S.loyaltyConfig));
   showToast('Palier ajoute');
   render();
 }
@@ -16914,7 +17030,7 @@ function editLoyaltyTier(idx) {
   if (realIdx >= 0) {
     S.loyaltyConfig.tiers[realIdx] = { ...t, name: name || t.name, min, perk, icon, color, gradient:`linear-gradient(135deg,${color},${color}99)`, multiplier };
     S.loyaltyConfig.tiers.sort((a,b) => a.min - b.min);
-    localStorage.setItem('stockr_loyalty', JSON.stringify(S.loyaltyConfig));
+    localStorage.setItem('baro_loyalty', JSON.stringify(S.loyaltyConfig));
     showToast('Palier mis a jour');
     render();
   }
@@ -16926,7 +17042,7 @@ function deleteLoyaltyTier(idx) {
   if ((S.loyaltyConfig.tiers || []).length <= 1) { showToast('Conservez au moins 1 palier', 'error'); return; }
   if (!confirm(`Supprimer le palier "${t.name}" ?`)) return;
   S.loyaltyConfig.tiers = S.loyaltyConfig.tiers.filter(x => x.id !== t.id);
-  localStorage.setItem('stockr_loyalty', JSON.stringify(S.loyaltyConfig));
+  localStorage.setItem('baro_loyalty', JSON.stringify(S.loyaltyConfig));
   showToast('Palier supprime');
   render();
 }
@@ -16980,7 +17096,7 @@ function exportLoyaltyReport() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `stockr_fidelite_${new Date().toISOString().slice(0,10)}.csv`;
+  a.download = `baro_fidelite_${new Date().toISOString().slice(0,10)}.csv`;
   a.click();
   URL.revokeObjectURL(url);
   showToast('Rapport fidelite exporte');
@@ -16997,7 +17113,7 @@ function redeemLoyaltyReward(clientId, rewardIndex) {
   client.loyaltyPoints -= reward.points;
   if (!client.redeemedRewards) client.redeemedRewards = [];
   client.redeemedRewards.push({ name:reward.name, date:new Date().toISOString(), points:reward.points });
-  localStorage.setItem('stockr_clients', JSON.stringify(S.clients));
+  localStorage.setItem('baro_clients', JSON.stringify(S.clients));
   logActivity('loyalty', `${client.name} a utilise ${reward.points} pts pour "${reward.name}"`);
   showToast(`${client.name} a echange ${reward.points} pts pour "${reward.name}" !`);
   render();
@@ -17095,7 +17211,7 @@ function __saveScheduledPost() {
       status: 'scheduled', date: new Date().toISOString()
     });
   });
-  localStorage.setItem('stockr_posts', JSON.stringify(S.scheduledPosts));
+  localStorage.setItem('baro_posts', JSON.stringify(S.scheduledPosts));
   document.getElementById('sched-modal')?.remove();
   showToast(`📅 ${channels.length} publication(s) programmée(s) pour le ${dateStr} à ${time}`, 'success');
   render();
@@ -17112,14 +17228,14 @@ async function publishScheduledPost(id) {
   post.status = result.ok ? 'published' : 'failed';
   post.publishedDate = new Date().toISOString();
   post.mode = result.mode;
-  localStorage.setItem('stockr_posts', JSON.stringify(S.scheduledPosts));
-  _logSocialPost(post.channel, post.productName, result);
+  localStorage.setItem('baro_posts', JSON.stringify(S.scheduledPosts));
+  if (typeof _logSocialPost === 'function') _logSocialPost(post.channel, post.productName, result);
   showToast(result.ok ? `✓ Publié (${result.mode})` : `⚠ Échec — fallback partagé`, result.ok?'success':'warn');
   render();
 }
 function deleteScheduledPost(id) {
   S.scheduledPosts = S.scheduledPosts.filter(p => p.id !== id);
-  localStorage.setItem('stockr_posts', JSON.stringify(S.scheduledPosts));
+  localStorage.setItem('baro_posts', JSON.stringify(S.scheduledPosts));
   showToast('Publication supprimee');
   render();
 }
@@ -18075,7 +18191,7 @@ function toggleSocialAccount(platformId, platformName) {
   if (existing?.connected) {
     if (!confirm(`Déconnecter ${platformName} ?`)) return;
     S.socialAccounts = S.socialAccounts.filter(a => a.platform !== platformId);
-    localStorage.setItem('stockr_social', JSON.stringify(S.socialAccounts));
+    localStorage.setItem('baro_social', JSON.stringify(S.socialAccounts));
     showToast(`${platformName} déconnecté`);
     render();
     return;
@@ -18102,8 +18218,8 @@ async function postProductSocial(channel) {
     publishedDate:new Date().toISOString(),
     mode: result.mode, caption: text.substring(0, 140)
   });
-  localStorage.setItem('stockr_posts', JSON.stringify(S.scheduledPosts));
-  _logSocialPost(channel, product.name, result);
+  localStorage.setItem('baro_posts', JSON.stringify(S.scheduledPosts));
+  if (typeof _logSocialPost === 'function') _logSocialPost(channel, product.name, result);
   if (result.ok) showToast(`✓ Publié sur ${channel} (API directe)`, 'success');
   render();
 }
@@ -18441,7 +18557,7 @@ async function postAllNetworks() {
       S.scheduledPosts.push({ id:Date.now()+Math.random(), productId:product.id, productName:product.name, channel:ch, status:result.ok?'published':'failed', date:new Date().toISOString(), publishedDate:new Date().toISOString(), mode:result.mode, caption:text.substring(0,140) });
     } catch(e) { ko++; }
   }
-  localStorage.setItem('stockr_posts', JSON.stringify(S.scheduledPosts));
+  localStorage.setItem('baro_posts', JSON.stringify(S.scheduledPosts));
   showToast(`Cross-post : ${ok} OK / ${ko} échec`, ko?'warn':'success');
   render();
 }
@@ -18601,7 +18717,7 @@ function __savePaymentSetup(providerId, providerName) {
   if (!S.paymentMethods) S.paymentMethods = [];
   if (existing >= 0) S.paymentMethods[existing] = method;
   else S.paymentMethods.push(method);
-  localStorage.setItem('stockr_payments', JSON.stringify(S.paymentMethods));
+  localStorage.setItem('baro_payments', JSON.stringify(S.paymentMethods));
   if (typeof logActivity === 'function') logActivity('payment', `${providerName} configuré`);
   document.getElementById('pay-setup-modal')?.remove();
   showToast(`✅ ${providerName} activé — prêt à encaisser`, 'success');
@@ -18734,7 +18850,7 @@ async function payWithProvider(providerId, amount, description){
 }
 function disconnectPayment(providerId) {
   S.paymentMethods = S.paymentMethods.filter(m => m.provider !== providerId);
-  localStorage.setItem('stockr_payments', JSON.stringify(S.paymentMethods));
+  localStorage.setItem('baro_payments', JSON.stringify(S.paymentMethods));
   showToast('Moyen de paiement retire');
   render();
 }
@@ -18846,7 +18962,7 @@ function vApiSettings() {
       </div>
       <div style="background:var(--gray-1);padding:10px;border-radius:8px;font-family:monospace;font-size:11px;word-break:break-all;line-height:1.5">
         <div style="color:var(--accent);font-weight:700;margin-bottom:4px">POST</div>
-        https://api.stockr.app/v1/webhooks/in/${api.token ? api.token.slice(0,12)+'...' : '&lt;VOTRE_TOKEN&gt;'}
+        https://api.baro.app/v1/webhooks/in/${api.token ? api.token.slice(0,12)+'...' : '&lt;VOTRE_TOKEN&gt;'}
       </div>
       <button class="btn btn-ghost" style="margin-top:8px;width:100%;font-size:11px" onclick="copyIncomingEndpoint()">📋 Copier l'endpoint</button>
     </div>
@@ -18879,7 +18995,7 @@ function generateApiToken() {
   for (let i = 0; i < 40; i++) t += chars[Math.floor(Math.random() * chars.length)];
   S.apiConfig.token = t;
   S.apiConfig.createdAt = new Date().toISOString();
-  localStorage.setItem('stockr_api', JSON.stringify(S.apiConfig));
+  localStorage.setItem('baro_api', JSON.stringify(S.apiConfig));
   logActivity('api', 'Token API généré');
   showToast('Token généré ✓');
   render();
@@ -18889,7 +19005,7 @@ function revokeApiToken() {
   if (!confirm('Révoquer le token ? Toutes les intégrations actives cesseront de fonctionner.')) return;
   S.apiConfig.token = null;
   S.apiConfig.createdAt = null;
-  localStorage.setItem('stockr_api', JSON.stringify(S.apiConfig));
+  localStorage.setItem('baro_api', JSON.stringify(S.apiConfig));
   logActivity('api', 'Token API révoqué');
   showToast('Token révoqué');
   render();
@@ -18903,7 +19019,7 @@ function copyApiToken() {
 
 function copyIncomingEndpoint() {
   const tok = (S.apiConfig && S.apiConfig.token) || 'VOTRE_TOKEN';
-  navigator.clipboard.writeText(`https://api.stockr.app/v1/webhooks/in/${tok}`);
+  navigator.clipboard.writeText(`https://api.baro.app/v1/webhooks/in/${tok}`);
   showToast('Endpoint copié ✓');
 }
 
@@ -18925,7 +19041,7 @@ function addWebhook() {
   if (!S.apiConfig) S.apiConfig = { token:null, createdAt:null, webhooks:[] };
   S.apiConfig.webhooks = S.apiConfig.webhooks || [];
   S.apiConfig.webhooks.push(w);
-  localStorage.setItem('stockr_api', JSON.stringify(S.apiConfig));
+  localStorage.setItem('baro_api', JSON.stringify(S.apiConfig));
   logActivity('api', `Webhook créé : ${name}`);
   showToast('Webhook créé ✓');
   render();
@@ -18942,7 +19058,7 @@ function editWebhook(id) {
   w.name = name;
   w.url = url;
   w.events = (events || '').split(',').map(s => s.trim()).filter(Boolean);
-  localStorage.setItem('stockr_api', JSON.stringify(S.apiConfig));
+  localStorage.setItem('baro_api', JSON.stringify(S.apiConfig));
   showToast('Webhook modifié ✓');
   render();
 }
@@ -18952,7 +19068,7 @@ function deleteWebhook(id) {
   if (!w) return;
   if (!confirm(`Supprimer le webhook "${w.name}" ?`)) return;
   S.apiConfig.webhooks = (S.apiConfig.webhooks || []).filter(w => w.id !== id);
-  localStorage.setItem('stockr_api', JSON.stringify(S.apiConfig));
+  localStorage.setItem('baro_api', JSON.stringify(S.apiConfig));
   showToast('Webhook supprimé');
   render();
 }
@@ -18963,12 +19079,12 @@ function testWebhook(id) {
   showToast(`Envoi d'un test à ${w.name}...`);
   fetch(w.url, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'X-STOCKR-Event': 'test.ping', 'X-STOCKR-Signature': w.secret },
+    headers: { 'Content-Type': 'application/json', 'X-BARO-Event': 'test.ping', 'X-BARO-Signature': w.secret },
     body: JSON.stringify({ event:'test.ping', timestamp: Date.now(), webhook: w.id, data: { hello:'from BARO' } }),
     mode: 'no-cors',
   }).then(() => {
     w.lastCall = new Date().toISOString();
-    localStorage.setItem('stockr_api', JSON.stringify(S.apiConfig));
+    localStorage.setItem('baro_api', JSON.stringify(S.apiConfig));
     showToast('Test envoyé ✓');
   }).catch(() => showToast('Échec — vérifiez l\'URL / CORS', 'error'));
 }
@@ -18984,7 +19100,7 @@ function toggleWebhookActive(id) {
   const w = (S.apiConfig.webhooks || []).find(w => w.id === id);
   if (!w) return;
   w.active = !w.active;
-  localStorage.setItem('stockr_api', JSON.stringify(S.apiConfig));
+  localStorage.setItem('baro_api', JSON.stringify(S.apiConfig));
   showToast(w.active?'Webhook activé':'Webhook désactivé');
   render();
 }
@@ -18995,7 +19111,7 @@ function toggleWebhookEvent(id, evt) {
   w.events = w.events || [];
   const i = w.events.indexOf(evt);
   if (i >= 0) w.events.splice(i, 1); else w.events.push(evt);
-  localStorage.setItem('stockr_api', JSON.stringify(S.apiConfig));
+  localStorage.setItem('baro_api', JSON.stringify(S.apiConfig));
   render();
 }
 
@@ -19802,7 +19918,7 @@ function _saveIntegration(id, name, displayValue, secretKey) {
   const entry = { id, name, connected:true, value:displayValue, key:secretKey||null, date:new Date().toISOString() };
   if (existing >= 0) S.integrationsConfig[existing] = entry;
   else S.integrationsConfig.push(entry);
-  localStorage.setItem('stockr_integrations', JSON.stringify(S.integrationsConfig));
+  localStorage.setItem('baro_integrations', JSON.stringify(S.integrationsConfig));
   logActivity('integration', `${name} connecte`);
   showToast(`${name} connecte avec succes !`);
   render();
@@ -19811,7 +19927,7 @@ function _saveIntegration(id, name, displayValue, secretKey) {
 function disconnectIntegration(id, name) {
   if (!confirm(`Deconnecter ${name} ?`)) return;
   S.integrationsConfig = S.integrationsConfig.filter(i => i.id !== id);
-  localStorage.setItem('stockr_integrations', JSON.stringify(S.integrationsConfig));
+  localStorage.setItem('baro_integrations', JSON.stringify(S.integrationsConfig));
   showToast(`${name} deconnecte`);
   render();
 }
@@ -20050,7 +20166,7 @@ function _exportComptable() {
   const blob = new Blob([lines.join('\n')], {type:'text/csv;charset=utf-8'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url; a.download = `stockr_comptabilite_${new Date().toISOString().slice(0,10)}.csv`;
+  a.href = url; a.download = `baro_comptabilite_${new Date().toISOString().slice(0,10)}.csv`;
   document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
   showToast('Export comptable OHADA telecharge');
 }
@@ -20178,7 +20294,7 @@ function exportToGoogleSheets() {
   S.sales.forEach(s => {
     parts.push([s.date.slice(0,10), _csvEscape(s.productName), s.qty, s.total, s.profit||0, _csvEscape(s.clientName||''), _csvEscape(s.paymentMethod||'')].join(','));
   });
-  _downloadFile(parts.join('\n'), `stockr_google_sheets_${new Date().toISOString().slice(0,10)}.csv`);
+  _downloadFile(parts.join('\n'), `baro_google_sheets_${new Date().toISOString().slice(0,10)}.csv`);
   if (confirm('Export terminé ! Ouvrir Google Sheets maintenant pour importer le fichier ?')) {
     window.open('https://sheets.google.com/', '_blank');
   }
@@ -21821,7 +21937,7 @@ function importProductsFromCSV() {
         S.products.push({ id:Date.now()+i, name, price, purchasePrice:Math.round(price*0.7), composition:[] });
         count++;
       }
-      localStorage.setItem('stockr_products', JSON.stringify(S.products));
+      localStorage.setItem('baro_products', JSON.stringify(S.products));
       showToast(`${count} produits importés !`);
       render();
     };
@@ -21943,7 +22059,7 @@ function vSpectraEnhanced() {
       S.spectra._saved = true;
       S.spectraScanHistory.unshift({ id:Date.now(), mode:S.spectraMode, count:S.spectra.results.length, date:new Date().toISOString() });
       if (S.spectraScanHistory.length > 50) S.spectraScanHistory = S.spectraScanHistory.slice(0,50);
-      localStorage.setItem('stockr_spectra_history', JSON.stringify(S.spectraScanHistory));
+      localStorage.setItem('baro_spectra_history', JSON.stringify(S.spectraScanHistory));
     }
     return `
     <div class="sub-hero" style="background:linear-gradient(135deg,#064e3b,#059669)">
@@ -22141,7 +22257,7 @@ function markOrderShipped(orderId) {
   if (!order) return;
   order.status = 'shipped';
   order.shippedDate = new Date().toISOString();
-  localStorage.setItem('stockr_orders', JSON.stringify(S.purchaseOrders));
+  localStorage.setItem('baro_orders', JSON.stringify(S.purchaseOrders));
   logActivity('order', `Commande expédiée: ${order.articleName}`);
   showToast('Commande expédiée');
   render();

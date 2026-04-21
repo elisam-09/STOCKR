@@ -10,7 +10,7 @@ from collections import deque
 
 class SpectraVisionEngine:
     """
-    Spectra Vision Engine V2.0 - Core AI Module pour Stockr.
+    Spectra Vision Engine V2.0 - Core AI Module pour Baro.
     Architecture orientée objet avancée incluant : 
     - Inférence YOLOv8 temps réel
     - Système d'alertes de seuils critiques
@@ -29,9 +29,9 @@ class SpectraVisionEngine:
         self.model = YOLO('yolov8n.pt') 
         self.confidence_threshold = confidence_threshold
         
-        # --- CONFIGURATION MÉTIER STOCKR ---
+        # --- CONFIGURATION MÉTIER BARO ---
         # Dictionnaire de traduction : IA générique -> Base de données
-        self.stockr_mapping = {
+        self.baro_mapping = {
             'bottle': 'Bouteille (Boisson/Huile)',
             'cup': 'Gobelet / Tasse',
             'apple': 'Pomme',
@@ -192,23 +192,23 @@ class SpectraVisionEngine:
                 class_name_en = self.model.names[class_id]
                 
                 # Mapping métier
-                stockr_name = self.stockr_mapping.get(class_name_en, class_name_en)
+                baro_name = self.baro_mapping.get(class_name_en, class_name_en)
                 
                 # Comptage brut
-                if stockr_name in raw_inventory:
-                    raw_inventory[stockr_name]['count'] += 1
-                    old_conf = raw_inventory[stockr_name]['avg_conf']
-                    new_count = raw_inventory[stockr_name]['count']
-                    raw_inventory[stockr_name]['avg_conf'] = ((old_conf * (new_count - 1)) + conf) / new_count
+                if baro_name in raw_inventory:
+                    raw_inventory[baro_name]['count'] += 1
+                    old_conf = raw_inventory[baro_name]['avg_conf']
+                    new_count = raw_inventory[baro_name]['count']
+                    raw_inventory[baro_name]['avg_conf'] = ((old_conf * (new_count - 1)) + conf) / new_count
                 else:
-                    raw_inventory[stockr_name] = {'count': 1, 'avg_conf': conf}
+                    raw_inventory[baro_name] = {'count': 1, 'avg_conf': conf}
                 
                 # --- Rendu visuel ciblé (Bounding Boxes) ---
                 x1, y1, x2, y2 = map(int, box.xyxy[0])
                 
                 # Détermine la couleur de la boîte selon l'historique
                 box_color = (0, 255, 150) # Vert d'eau par défaut
-                if stockr_name in self.current_inventory and self.current_inventory[stockr_name]['status'] == 'ALERT_LOW_STOCK':
+                if baro_name in self.current_inventory and self.current_inventory[baro_name]['status'] == 'ALERT_LOW_STOCK':
                     box_color = (0, 0, 255) # Rouge
                     
                 # Dessin du cadre
@@ -216,9 +216,9 @@ class SpectraVisionEngine:
                 
                 # Étiquette au-dessus de l'objet
                 label_bg_y = max(20, y1 - 10)
-                (label_w, label_h), _ = cv2.getTextSize(stockr_name, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
+                (label_w, label_h), _ = cv2.getTextSize(baro_name, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
                 cv2.rectangle(frame, (x1, label_bg_y - label_h - 5), (x1 + label_w, label_bg_y + 5), box_color, -1)
-                cv2.putText(frame, stockr_name, (x1, label_bg_y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)
+                cv2.putText(frame, baro_name, (x1, label_bg_y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)
 
         # Lissage des données pour stabiliser l'affichage
         self.current_inventory = self._smooth_inventory(raw_inventory)

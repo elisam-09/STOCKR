@@ -2,7 +2,7 @@
 // Stratégie : Cache-first pour assets statiques,
 //             Network-first pour l'API
 
-const CACHE_NAME = 'baro-v25-ventes-boutique-biometric-2fa';
+const CACHE_NAME = 'baro-v26-merge-reseller-nav-boutique';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
