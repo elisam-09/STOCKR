@@ -1786,22 +1786,141 @@ async function __planPayNow(planKey, amount) {
   // Chercher une méthode de paiement active
   const active = (S.paymentMethods||[]).filter(m => m.active);
   if (active.length === 0) {
-    if (confirm('Aucun moyen de paiement configuré. Configurer maintenant ?')) {
-      nav('payment-setup');
-    }
+    // Pas de moyen configuré → ouvrir directement le choix des providers populaires
+    __planShowPaymentPicker(planKey, amount);
     return;
   }
-  // Utiliser la 1ère méthode active (ou proposer un menu si >1)
-  let provider = active[0].provider;
-  if (active.length > 1) {
-    const choice = prompt('Quel moyen de paiement ?\n' + active.map((m,i)=>`${i+1}. ${m.name}`).join('\n'), '1');
-    const idx = parseInt(choice) - 1;
-    if (idx >= 0 && idx < active.length) provider = active[idx].provider;
+  // 1 seule méthode → l'utiliser directement
+  if (active.length === 1) {
+    await __planProcessPayment(active[0].provider, planKey, amount);
+    return;
   }
-  const res = await payWithProvider(provider, amount, `Plan ${planKey.toUpperCase()} ${S.subscription.billing||'monthly'}`);
-  if (res.success) {
-    _doActivatePlan(planKey, { trial: false, paid: true });
+  // Plusieurs méthodes → afficher un choix visuel
+  __planShowMethodPicker(planKey, amount, active);
+}
+
+// Sélecteur visuel des moyens de paiement configurés
+function __planShowMethodPicker(planKey, amount, active) {
+  const LBL = { wave:'Wave', orange:'Orange Money', moov:'Moov Money', mtn:'MTN Mobile Money', paypal:'PayPal', gpay:'Google Pay', applepay:'Apple Pay', card:'Carte bancaire' };
+  const ICON = { wave:'🌊', orange:'🟠', moov:'🔵', mtn:'🟡', paypal:'🅿️', gpay:'G', applepay:'🍎', card:'💳' };
+  const modal = document.createElement('div');
+  modal.id = '__planMethodModal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px';
+  modal.innerHTML = `
+    <div style="background:var(--surface);border-radius:20px;padding:20px;max-width:400px;width:100%">
+      <div style="font-size:18px;font-weight:900;text-align:center;margin-bottom:14px">Choisir un mode de paiement</div>
+      <div style="font-size:13px;color:var(--text-3);text-align:center;margin-bottom:16px">${fmt(amount)} ${sym()} · Plan ${planKey.toUpperCase()}</div>
+      ${active.map(m => `
+        <button class="btn btn-ghost" style="width:100%;padding:14px;margin-bottom:8px;border:2px solid var(--border);font-weight:700;display:flex;align-items:center;gap:12px;justify-content:flex-start;font-size:14px" onclick="document.getElementById('__planMethodModal').remove();__planProcessPayment('${m.provider}', '${planKey}', ${amount})">
+          <span style="font-size:22px">${ICON[m.provider]||'💰'}</span>
+          <span style="flex:1;text-align:left">${LBL[m.provider]||m.name}</span>
+          ${m.phone ? `<span style="font-size:11px;color:var(--text-3)">${m.phone}</span>` : ''}
+        </button>
+      `).join('')}
+      <button class="btn btn-ghost" style="width:100%;padding:10px;font-size:13px;color:var(--text-3);margin-top:4px" onclick="document.getElementById('__planMethodModal').remove()">Annuler</button>
+    </div>
+  `;
+  document.body.appendChild(modal);
+}
+
+// Sélecteur de provider quand aucun n'est configuré (démarre avec des defaults)
+function __planShowPaymentPicker(planKey, amount) {
+  const providers = [
+    { id:'wave',   name:'Wave',          icon:'🌊', note:'Paiement instantané CI/SN' },
+    { id:'orange', name:'Orange Money',  icon:'🟠', note:'USSD *144*4*6*...' },
+    { id:'moov',   name:'Moov Money',    icon:'🔵', note:'USSD *155*...' },
+    { id:'mtn',    name:'MTN Mobile Money', icon:'🟡', note:'USSD *133*1*...' },
+    { id:'paypal', name:'PayPal',        icon:'🅿️', note:'International' },
+  ];
+  const modal = document.createElement('div');
+  modal.id = '__planPickerModal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px';
+  modal.innerHTML = `
+    <div style="background:var(--surface);border-radius:20px;padding:20px;max-width:400px;width:100%;max-height:90vh;overflow-y:auto">
+      <div style="font-size:18px;font-weight:900;text-align:center;margin-bottom:6px">Paiement Plan ${planKey.toUpperCase()}</div>
+      <div style="font-size:20px;color:var(--accent);text-align:center;margin-bottom:14px;font-weight:800">${fmt(amount)} ${sym()}</div>
+      <div style="font-size:12px;color:var(--text-3);text-align:center;margin-bottom:14px">Choisissez un moyen de paiement et entrez votre numéro</div>
+      ${providers.map(p => `
+        <button class="btn btn-ghost" style="width:100%;padding:12px;margin-bottom:8px;border:2px solid var(--border);font-weight:700;display:flex;align-items:center;gap:12px;justify-content:flex-start" onclick="document.getElementById('__planPickerModal').remove();__planQuickPay('${p.id}','${planKey}',${amount})">
+          <span style="font-size:22px">${p.icon}</span>
+          <div style="flex:1;text-align:left">
+            <div style="font-size:14px">${p.name}</div>
+            <div style="font-size:10px;color:var(--text-3);font-weight:500">${p.note}</div>
+          </div>
+        </button>
+      `).join('')}
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button class="btn btn-ghost" style="flex:1;padding:10px;font-size:12px" onclick="document.getElementById('__planPickerModal').remove();nav('payments-setup')">⚙️ Configurer</button>
+        <button class="btn btn-ghost" style="flex:1;padding:10px;font-size:12px;color:var(--text-3)" onclick="document.getElementById('__planPickerModal').remove()">Annuler</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+}
+
+// Demande le numéro puis initie le paiement
+function __planQuickPay(providerId, planKey, amount) {
+  const phone = prompt(`Votre numéro ${providerId === 'paypal' ? 'email PayPal' : 'Mobile Money'} :`, '');
+  if (!phone) return;
+  // Enregistre la méthode (pour prochains paiements)
+  S.paymentMethods = S.paymentMethods || [];
+  const existing = S.paymentMethods.find(m => m.provider === providerId);
+  if (existing) {
+    existing.phone = phone;
+    existing.email = phone;
+    existing.active = true;
+  } else {
+    const LBL = { wave:'Wave', orange:'Orange Money', moov:'Moov Money', mtn:'MTN Mobile Money', paypal:'PayPal' };
+    S.paymentMethods.push({
+      provider: providerId, name: LBL[providerId]||providerId,
+      phone: phone, email: phone, active: true,
+      configuredAt: new Date().toISOString(),
+    });
   }
+  localStorage.setItem('stockr_payments', JSON.stringify(S.paymentMethods));
+  __planProcessPayment(providerId, planKey, amount);
+}
+
+// Traite un paiement et demande confirmation avant d'activer le plan
+async function __planProcessPayment(providerId, planKey, amount) {
+  const description = `BARO Plan ${planKey.toUpperCase()} — ${S.subscription.billing||'monthly'}`;
+  const res = await payWithProvider(providerId, amount, description);
+  if (!res.success) return;
+
+  // Pour mobile money / PayPal : confirmation manuelle requise
+  if (res.pending || ['wave','orange','moov','mtn','paypal'].includes(providerId)) {
+    setTimeout(() => __planShowConfirmModal(planKey, amount, providerId), 1200);
+    return;
+  }
+  // Pour PaymentRequest W3C (gpay/applepay/card) : activation immédiate
+  _doActivatePlan(planKey, { trial: false, paid: true });
+}
+
+// Modal de confirmation post-paiement (mobile money / PayPal)
+function __planShowConfirmModal(planKey, amount, providerId) {
+  const LBL = { wave:'Wave', orange:'Orange Money', moov:'Moov Money', mtn:'MTN Mobile Money', paypal:'PayPal' };
+  const modal = document.createElement('div');
+  modal.id = '__planConfirmPayModal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px';
+  modal.innerHTML = `
+    <div style="background:var(--surface);border-radius:20px;padding:24px;max-width:420px;width:100%">
+      <div style="text-align:center;margin-bottom:18px">
+        <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#10B981,#059669);display:inline-flex;align-items:center;justify-content:center;font-size:32px;margin-bottom:10px">💳</div>
+        <div style="font-size:18px;font-weight:900">Avez-vous complété le paiement ?</div>
+        <div style="font-size:13px;color:var(--text-3);margin-top:6px">${LBL[providerId]||providerId} · ${fmt(amount)} ${sym()}</div>
+      </div>
+      <div style="background:var(--bg);border-radius:10px;padding:12px;margin-bottom:14px;font-size:12px;color:var(--text-2);line-height:1.5">
+        <strong>⚠️ Important :</strong> Ne cliquez sur "Oui" que si le paiement a bien été débité sur votre ${providerId === 'paypal' ? 'PayPal' : 'Mobile Money'}. Vous recevrez un SMS de confirmation.
+      </div>
+      <button class="btn btn-primary" style="width:100%;padding:14px;font-size:15px;font-weight:800;margin-bottom:8px" onclick="document.getElementById('__planConfirmPayModal').remove();_doActivatePlan('${planKey}', { trial:false, paid:true });logActivity('payment','Plan ${planKey} payé via ${providerId} — ${amount} FCFA')">
+        ✅ Oui, paiement effectué
+      </button>
+      <button class="btn btn-ghost" style="width:100%;padding:12px;font-size:13px;color:var(--danger);border:1px solid var(--danger)" onclick="document.getElementById('__planConfirmPayModal').remove();showToast('Paiement annulé — réessayez','info')">
+        ❌ Non, paiement échoué
+      </button>
+    </div>
+  `;
+  document.body.appendChild(modal);
 }
 function _doActivatePlan(planKey, opts = {}) {
   const { trial = (planKey !== 'free'), paid = false } = opts;
@@ -1956,19 +2075,36 @@ function v2FAVerify() {
   const p = S.twoFAPending;
   if (!p) { S.view = 'home'; render(); return ''; }
   const maskedEmail = p.email.replace(/(.{2}).*(@.*)/, '$1****$2');
+  const method = p.method || 'email';
+  const methodLbl = method === 'sms' ? '📱 SMS' : method === 'app' ? '🔐 App' : '📧 Email';
+  // Affiche le code en clair si email/SMS non configuré (fallback dev/demo)
+  const emailConfigured = !!localStorage.getItem('stockr_emailjs_public');
+  const smsConfigured   = !!localStorage.getItem('stockr_sms_webhook');
+  const showFallbackCode = (method === 'email' && !emailConfigured) || (method === 'sms' && !smsConfigured) || method === 'app';
   return `
   <div class="auth-wrap">
     <div class="auth-card">
       <div class="auth-logo">${IC.baro}<span>BARO</span></div>
       <div class="auth-title">🔐 Vérification</div>
-      <div class="auth-sub">Code envoyé à ${maskedEmail}</div>
+      <div class="auth-sub">${methodLbl} · ${method==='sms'?('SMS envoyé à '+(S.security?.twoFactorPhone||'')):'Code envoyé à '+maskedEmail}</div>
+
+      ${showFallbackCode ? `
+      <div style="margin-top:16px;padding:14px;background:linear-gradient(135deg,#FEF3C7,#FDE68A);border-radius:12px;border:2px solid #F59E0B">
+        <div style="font-size:11px;color:#92400E;font-weight:700;margin-bottom:6px;text-align:center">⚠️ ${emailConfigured||smsConfigured?'':'Envoi automatique non configuré'} — Votre code :</div>
+        <div style="font-size:28px;font-weight:900;letter-spacing:6px;text-align:center;font-family:monospace;color:#78350F;user-select:all;cursor:copy" onclick="navigator.clipboard.writeText('${p.code}').then(()=>showToast('Code copié','success'))">${p.code}</div>
+        <div style="display:flex;gap:6px;margin-top:8px">
+          ${method==='email' ? `<button class="btn btn-ghost" style="flex:1;font-size:11px;padding:6px" onclick="_openMailtoVerification('${p.email}','${p.code}')">📧 Ouvrir email</button>` : ''}
+          ${method==='sms' && S.security?.twoFactorPhone ? `<button class="btn btn-ghost" style="flex:1;font-size:11px;padding:6px" onclick="_openSmsVerification('${S.security.twoFactorPhone}','${p.code}')">📱 Ouvrir SMS</button>` : ''}
+          <button class="btn btn-primary" style="flex:1;font-size:11px;padding:6px" onclick="S.twoFACodeInput='${p.code}';render()">⚡ Auto-remplir</button>
+        </div>
+      </div>` : ''}
 
       <div class="form-group" style="margin-top:20px">
         <label class="form-label">Code à 6 chiffres</label>
         <input class="input" id="tfa-code" type="text" inputmode="numeric" maxlength="6" placeholder="000000"
           style="letter-spacing:8px;text-align:center;font-size:24px;font-weight:700;font-family:monospace"
           value="${S.twoFACodeInput || ''}"
-          oninput="S.twoFACodeInput=this.value.replace(/\\D/g,'').slice(0,6)">
+          oninput="S.twoFACodeInput=this.value.replace(/\\D/g,'').slice(0,6);if(this.value.length===6)verify2FA()">
       </div>
 
       <button class="btn btn-primary" style="width:100%;margin-top:10px" onclick="verify2FA()">Vérifier</button>
@@ -2297,6 +2433,9 @@ function vSignupVerify() {
   const p = S.signupPending;
   if (!p) { S.view = 'home'; S.authView = 'register'; render(); return ''; }
   const maskedEmail = p.data.email.replace(/(.{2}).*(@.*)/, '$1****$2');
+  // Fallback : affiche le code en clair si EmailJS non configuré
+  const emailConfigured = !!localStorage.getItem('stockr_emailjs_public');
+  const showFallbackCode = !emailConfigured && p.code;
   return `
   <div class="auth-wrap">
     <div class="auth-card">
@@ -2304,12 +2443,23 @@ function vSignupVerify() {
       <div class="auth-title">✉️ Vérifiez votre email</div>
       <div class="auth-sub">Un code à 6 chiffres a été envoyé à<br><strong>${maskedEmail}</strong></div>
 
+      ${showFallbackCode ? `
+      <div style="margin-top:16px;padding:14px;background:linear-gradient(135deg,#FEF3C7,#FDE68A);border-radius:12px;border:2px solid #F59E0B">
+        <div style="font-size:11px;color:#92400E;font-weight:700;margin-bottom:6px;text-align:center">⚠️ Email automatique non configuré — Votre code :</div>
+        <div style="font-size:28px;font-weight:900;letter-spacing:6px;text-align:center;font-family:monospace;color:#78350F;user-select:all;cursor:copy" onclick="navigator.clipboard.writeText('${p.code}').then(()=>showToast('Code copié','success'))">${p.code}</div>
+        <div style="display:flex;gap:6px;margin-top:8px">
+          <button class="btn btn-ghost" style="flex:1;font-size:11px;padding:6px" onclick="_openMailtoVerification('${p.data.email}','${p.code}')">📧 Ouvrir mon email</button>
+          <button class="btn btn-primary" style="flex:1;font-size:11px;padding:6px" onclick="S.signupCodeInput='${p.code}';render()">⚡ Auto-remplir</button>
+        </div>
+        <div style="font-size:10px;color:#78350F;margin-top:6px;text-align:center">Configurez EmailJS dans Paramètres pour l'envoi automatique</div>
+      </div>` : ''}
+
       <div class="form-group" style="margin-top:20px">
         <label class="form-label">Code de vérification</label>
         <input class="input" id="signup-code" type="text" inputmode="numeric" maxlength="6" placeholder="000000"
           style="letter-spacing:8px;text-align:center;font-size:24px;font-weight:700;font-family:monospace"
           value="${S.signupCodeInput || ''}"
-          oninput="S.signupCodeInput=this.value.replace(/\\D/g,'').slice(0,6)">
+          oninput="S.signupCodeInput=this.value.replace(/\\D/g,'').slice(0,6);if(this.value.length===6)confirmSignupVerification()">
       </div>
 
       <button class="btn btn-primary" style="width:100%;margin-top:10px" onclick="confirmSignupVerification()">✓ Valider et créer mon compte</button>
@@ -3773,6 +3923,11 @@ function persistPacks() { localStorage.setItem('stockr_packs', JSON.stringify(S.
 // Pour un revendeur, les ventes se font directement sur les articles
 function bt_sellableItems() {
   const t = getBusinessType();
+  const bc = S.boutiqueConfig || {};
+  const boutiqueArticleIds = new Set(bc.articles || []);
+  const boutiqueProductIds = new Set(bc.products || []);
+  const boutiquePackIds    = new Set(bc.packs    || []);
+
   // Packs (uniquement si produits visibles - un pack est fait de produits)
   const packs = (bt_showProducts() && Array.isArray(S.packs)) ? S.packs
     .filter(pk => pk.active !== false && pk.items?.length)
@@ -3780,6 +3935,7 @@ function bt_sellableItems() {
       id: 'pack_' + pk.id, packId: pk.id, name: '📦 ' + pk.name,
       price: packFinalPrice(pk), purchasePrice: packCostPrice(pk),
       stock: packMaxAvailable(pk), unit: 'pack', kind: 'pack',
+      inBoutique: boutiquePackIds.has(pk.id),
     })) : [];
 
   if (t === 'reseller') {
@@ -3793,12 +3949,21 @@ function bt_sellableItems() {
       stock: a.stock,
       unit: a.unit,
       kind: 'article',
+      inBoutique: boutiqueArticleIds.has(a.id),
     }));
   }
   // maker / mixed : produits classiques (+ articles si mixte) + packs
-  const prods = S.products.map(p => ({ id:'prod_'+p.id, productId:p.id, name:p.name, price:p.price, purchasePrice:p.purchasePrice||0, stock:productMaxMake(p), unit:'u', kind:'product' }));
+  const prods = S.products.map(p => ({
+    id:'prod_'+p.id, productId:p.id, name:p.name, price:p.price,
+    purchasePrice:p.purchasePrice||0, stock:productMaxMake(p), unit:'u', kind:'product',
+    inBoutique: boutiqueProductIds.has(p.id),
+  }));
   if (t === 'mixed') {
-    const arts = S.articles.filter(a => (a.price||0) > 0 && (a.stock||0) > 0).map(a => ({ id:'art_'+a.id, articleId:a.id, name:a.name+' (stock direct)', price:a.price, purchasePrice:a.purchasePrice||0, stock:a.stock, unit:a.unit, kind:'article' }));
+    const arts = S.articles.filter(a => (a.price||0) > 0 && (a.stock||0) > 0).map(a => ({
+      id:'art_'+a.id, articleId:a.id, name:a.name+' (stock direct)', price:a.price,
+      purchasePrice:a.purchasePrice||0, stock:a.stock, unit:a.unit, kind:'article',
+      inBoutique: boutiqueArticleIds.has(a.id),
+    }));
     return [...packs, ...prods, ...arts];
   }
   return [...packs, ...prods];
@@ -4262,23 +4427,16 @@ async function loginGoogle() {
   if (typeof logAudit === 'function') logAudit('auth', 'google_attempt', {});
   const clientId = (localStorage.getItem('stockr_google_client_id') || '').trim();
 
-  // Pas de Client ID configuré → redirection réelle vers accounts.google.com via OAuth 2.0 authorize endpoint
-  // Utilise un client ID public BARO si disponible, sinon propose la configuration
+  // Pas de Client ID configuré → ouverture directe de accounts.google.com (page de choix de compte)
+  // + modal de saisie manuelle avec auto-détection de l'email Google depuis le presse-papiers
   if (!clientId) {
-    // Fallback : redirection OAuth avec prompt de configuration
-    const proceed = confirm(
-      '🔐 Connexion Google réelle\n\n' +
-      'Pour se connecter via Google, vous devez configurer un Google OAuth Client ID :\n\n' +
-      '1. Cliquez OK pour ouvrir la page de configuration\n' +
-      '2. Créez un Client ID gratuit sur console.cloud.google.com\n' +
-      '3. Revenez vous connecter avec Google\n\n' +
-      'Annulez pour utiliser la connexion simplifiée.'
-    );
-    if (proceed) {
-      nav('oauth-setup');
-      return;
-    }
-    __showSocialModal('google');
+    // Ouvre le vrai accounts.google.com dans un nouvel onglet pour se connecter
+    try {
+      window.open('https://accounts.google.com/ServiceLogin?continue=' + encodeURIComponent(window.location.href), '_blank', 'noopener');
+    } catch(_){}
+    showToast('🔐 Connectez-vous à Google dans l\'onglet ouvert, puis revenez ici.', 'info');
+    // Affiche la modale BARO pour saisie de l'email Google une fois connecté
+    setTimeout(() => __showSocialModal('google'), 600);
     return;
   }
 
@@ -4340,19 +4498,12 @@ async function loginApple() {
   const serviceId = (localStorage.getItem('stockr_apple_service_id') || '').trim();
 
   if (!serviceId) {
-    const proceed = confirm(
-      '🍎 Connexion Apple réelle\n\n' +
-      'Pour se connecter via Apple, vous devez configurer un Apple Service ID :\n\n' +
-      '1. Cliquez OK pour ouvrir la configuration\n' +
-      '2. Créez un Service ID sur developer.apple.com\n' +
-      '3. Revenez vous connecter avec Apple\n\n' +
-      'Annulez pour utiliser la connexion simplifiée.'
-    );
-    if (proceed) {
-      nav('oauth-setup');
-      return;
-    }
-    __showSocialModal('apple');
+    // Ouvre le vrai appleid.apple.com pour connexion
+    try {
+      window.open('https://appleid.apple.com/sign-in', '_blank', 'noopener');
+    } catch(_){}
+    showToast("🔐 Connectez-vous à Apple dans l'onglet ouvert, puis revenez ici.", 'info');
+    setTimeout(() => __showSocialModal('apple'), 600);
     return;
   }
 
@@ -4458,6 +4609,89 @@ function _handleOAuthCallback() {
   return true;
 }
 
+// Convertit une base64url string en ArrayBuffer (nécessaire pour WebAuthn)
+function _b64uToBuf(b64u) {
+  const pad = '='.repeat((4 - (b64u.length % 4)) % 4);
+  const b64 = (b64u + pad).replace(/-/g, '+').replace(/_/g, '/');
+  const bin = atob(b64);
+  const buf = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) buf[i] = bin.charCodeAt(i);
+  return buf.buffer;
+}
+// Convertit ArrayBuffer → base64url pour storage
+function _bufToB64u(buf) {
+  const bin = String.fromCharCode(...new Uint8Array(buf));
+  return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+}
+
+// Vérifie si un authenticator biométrique est disponible (TouchID/FaceID/Windows Hello/Android)
+async function isBiometricAvailable() {
+  if (!window.PublicKeyCredential) return false;
+  try {
+    if (typeof PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable === 'function') {
+      return await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+    }
+  } catch(_){}
+  return false;
+}
+
+// Enrôle la biométrie (appelé depuis Paramètres → Sécurité)
+async function enrollBiometric() {
+  if (!window.PublicKeyCredential) {
+    showToast('WebAuthn non disponible sur cet appareil', 'error');
+    return false;
+  }
+  const avail = await isBiometricAvailable();
+  if (!avail) {
+    showToast('Aucun capteur biométrique détecté (TouchID / FaceID / empreinte)', 'error');
+    return false;
+  }
+  const savedSession = getSession();
+  if (!savedSession) {
+    showToast('Connectez-vous d\'abord puis activez la biométrie', 'info');
+    return false;
+  }
+  try {
+    const userEmail = savedSession.user?.email || savedSession.email || 'user';
+    const userName  = savedSession.user?.name  || savedSession.name  || 'BARO User';
+    const cred = await navigator.credentials.create({
+      publicKey: {
+        challenge: crypto.getRandomValues(new Uint8Array(32)),
+        rp: { name: 'BARO', id: window.location.hostname },
+        user: {
+          id: new TextEncoder().encode(userEmail),
+          name: userEmail,
+          displayName: userName,
+        },
+        pubKeyCredParams: [{ alg: -7, type: 'public-key' }, { alg: -257, type: 'public-key' }],
+        authenticatorSelection: {
+          authenticatorAttachment: 'platform',
+          userVerification: 'required',
+          residentKey: 'preferred',
+        },
+        timeout: 60000,
+        attestation: 'none',
+      }
+    });
+    if (cred && cred.id) {
+      // Stocke l'ID (base64url) + rawId en base64url pour allowCredentials
+      localStorage.setItem('stockr_webauthn_cred', cred.id);
+      localStorage.setItem('stockr_webauthn_rawid', _bufToB64u(cred.rawId));
+      showToast('✅ Biométrie enrôlée avec succès', 'success');
+      logAudit('auth', 'biometric_enrolled', { device: navigator.userAgent.split(' ').slice(-1)[0] });
+      return true;
+    }
+    return false;
+  } catch(e) {
+    logAudit('auth', 'biometric_failed', { error: e.message, stage: 'enroll' });
+    const msg = e.name === 'NotAllowedError' ? 'Enrôlement annulé' :
+                e.name === 'SecurityError' ? 'HTTPS requis pour la biométrie' :
+                `Erreur biométrie : ${e.message}`;
+    showToast(msg, 'error');
+    return false;
+  }
+}
+
 async function loginBiometric() {
   if (!window.PublicKeyCredential) {
     showToast('WebAuthn non disponible sur cet appareil', 'error');
@@ -4465,44 +4699,35 @@ async function loginBiometric() {
   }
   try {
     const savedCredId = localStorage.getItem('stockr_webauthn_cred');
+    const savedRawId  = localStorage.getItem('stockr_webauthn_rawid');
     const savedSession = getSession();
 
-    // Si pas encore enrôlé : enrôlement rapide (démo)
+    // Si pas encore enrôlé : déléguer à enrollBiometric()
     if (!savedCredId) {
       if (!savedSession) {
         showToast('Connectez-vous d\'abord (email/mot de passe), puis activez la biométrie dans Paramètres > Sécurité', 'info');
         return;
       }
-      // Enrôle sur place si session existe
-      const cred = await navigator.credentials.create({
-        publicKey: {
-          challenge: crypto.getRandomValues(new Uint8Array(32)),
-          rp: { name: 'BARO', id: window.location.hostname },
-          user: {
-            id: new TextEncoder().encode(savedSession.user.email || 'user'),
-            name: savedSession.user.email || 'user',
-            displayName: savedSession.user.name || 'BARO',
-          },
-          pubKeyCredParams: [{ alg: -7, type: 'public-key' }, { alg: -257, type: 'public-key' }],
-          authenticatorSelection: { userVerification: 'required' },
-          timeout: 60000,
-        }
-      });
-      if (cred && cred.id) {
-        localStorage.setItem('stockr_webauthn_cred', cred.id);
-        showToast('✅ Biométrie enrôlée', 'success');
-        logAudit('auth', 'biometric_enrolled', {});
-      }
+      await enrollBiometric();
       return;
     }
 
-    // Vérification
+    // Vérification : passer allowCredentials pour restreindre au credential enrôlé
     const publicKey = {
       challenge: crypto.getRandomValues(new Uint8Array(32)),
       rpId: window.location.hostname,
       timeout: 60000,
       userVerification: 'required',
     };
+    if (savedRawId) {
+      try {
+        publicKey.allowCredentials = [{
+          type: 'public-key',
+          id: _b64uToBuf(savedRawId),
+          transports: ['internal'],
+        }];
+      } catch(_){}
+    }
     await navigator.credentials.get({ publicKey });
     logAudit('auth', 'biometric_success', {});
     showToast('✅ Biométrie validée', 'success');
@@ -4516,8 +4741,12 @@ async function loginBiometric() {
       showToast('Session absente — connectez-vous', 'warning');
     }
   } catch(e) {
-    logAudit('auth', 'biometric_failed', { error: e.message });
-    showToast('Authentification biométrique annulée', 'error');
+    logAudit('auth', 'biometric_failed', { error: e.message, stage: 'verify' });
+    const msg = e.name === 'NotAllowedError' ? 'Authentification biométrique annulée' :
+                e.name === 'InvalidStateError' ? 'Cet appareil n\'est pas enrôlé — réenrôlez' :
+                e.name === 'SecurityError' ? 'HTTPS requis pour la biométrie' :
+                `Erreur : ${e.message || 'Authentification échouée'}`;
+    showToast(msg, 'error');
   }
 }
 
@@ -5576,7 +5805,11 @@ function vSales() {
   const today   = new Date().toDateString();
   const todayCA = S.sales.filter(s=>new Date(s.date).toDateString()===today).reduce((s,v)=>s+v.total,0);
   const bt = getBusinessType();
-  const sellable = bt_sellableItems().filter(it => (it.stock||0) > 0);
+  const allSellable = bt_sellableItems().filter(it => (it.stock||0) > 0);
+  // Filtre Boutique : si activé, on ne garde que les items marqués inBoutique
+  const boutiqueFilter = !!S.saleBoutiqueFilter;
+  const sellable = boutiqueFilter ? allSellable.filter(it => it.inBoutique) : allSellable;
+  const boutiqueCount = allSellable.filter(it => it.inBoutique).length;
   const mode = S.saleMode || 'simple'; // 'simple' | 'multi'
   if (!S.multiCart) S.multiCart = {}; // { [itemId]: qty }
   const multiQ = S.multiSearch || '';
@@ -5597,9 +5830,15 @@ function vSales() {
       <button class="filter-chip ${mode==='multi'?'active':''}" onclick="setSaleMode('multi')">🛒 Panier multi-produits</button>
     </div>
 
+    ${boutiqueCount > 0 ? `
+    <div class="filter-row" style="margin-bottom:10px">
+      <button class="filter-chip ${!boutiqueFilter?'active':''}" onclick="S.saleBoutiqueFilter=false;render()">📦 Tous les articles (${allSellable.length})</button>
+      <button class="filter-chip ${boutiqueFilter?'active':''}" onclick="S.saleBoutiqueFilter=true;render()">🏪 Stocks boutique (${boutiqueCount})</button>
+    </div>` : ''}
+
     ${mode === 'simple' ? `
     <div class="card" style="margin-bottom:14px">
-      <div class="card-title">${t('newSale')}</div>
+      <div class="card-title">${t('newSale')}${boutiqueFilter?' <span style="font-size:11px;color:var(--accent);font-weight:700">· Stocks boutique uniquement</span>':''}</div>
       <div class="form-group">
         <label class="form-label">${bt==='reseller'?'Article à vendre':t('product')}</label>
         <select class="input" id="sale-product">
@@ -5608,9 +5847,11 @@ function vSales() {
             const p = it.kind === 'product' ? S.products.find(pp => pp.id === it.productId) : null;
             const pr = p ? _getActivePromo(p.id) : null;
             const priceShown = pr ? fmt(Math.round(it.price * (100 - pr.discount) / 100)) + ' (-' + pr.discount + '%)' : fmt(it.price);
-            return `<option value="${it.id}">${it.name} — ${priceShown} ${sym()} (${it.stock} ${it.unit})${pr?' PROMO':''}</option>`;
+            const boutiqueTag = it.inBoutique ? ' 🏪' : '';
+            return `<option value="${it.id}">${it.name}${boutiqueTag} — ${priceShown} ${sym()} (${it.stock} ${it.unit})${pr?' PROMO':''}</option>`;
           }).join('')}
         </select>
+        ${sellable.length === 0 && boutiqueFilter ? `<div style="font-size:11px;color:var(--text-3);margin-top:4px">Aucun article en boutique. <a onclick="nav('boutique')" style="color:var(--accent);cursor:pointer;font-weight:700">Ajouter des articles à ma boutique →</a></div>` : ''}
       </div>
       <div class="form-group">
         <label class="form-label">${t('quantity')}</label>
@@ -5677,7 +5918,7 @@ function vSales() {
             <label style="flex:1;cursor:pointer;display:flex;align-items:center;gap:10px">
               <input type="checkbox" ${inCart>0?'checked':''} onchange="toggleMultiCart('${it.id}')" style="width:18px;height:18px;accent-color:var(--accent)">
               <div style="flex:1">
-                <div style="font-size:13px;font-weight:700">${it.name}</div>
+                <div style="font-size:13px;font-weight:700">${it.name}${it.inBoutique?' <span style="font-size:10px;color:var(--accent);font-weight:800;padding:1px 5px;background:var(--accent-light);border-radius:4px">🏪 BOUTIQUE</span>':''}</div>
                 <div style="font-size:11px;color:var(--text-3)">${fmt(it.price)} ${sym()} · Stock: ${it.stock} ${it.unit}${it.kind==='article'?' <span style="color:var(--accent)">•article</span>':''}</div>
               </div>
             </label>
@@ -7013,6 +7254,14 @@ function vSpectra() {
       <button class="spectra-demo-btn" style="background:linear-gradient(135deg,#4285F4,#7C3AED);color:#fff;border:none;margin-top:10px;width:100%;font-weight:800" onclick="nav('spectra-ai-setup')">
         ✨ &nbsp; ${localStorage.getItem('stockr_gemini_key') ? 'Spectra AI activé — Configurer' : 'Activer Spectra AI (IA précise)'}
       </button>
+      ${!localStorage.getItem('stockr_gemini_key') ? `
+      <div style="margin-top:8px;padding:10px 12px;background:linear-gradient(135deg,rgba(66,133,244,.08),rgba(124,58,237,.08));border:1px dashed rgba(124,58,237,.35);border-radius:10px;font-size:11px;line-height:1.5;color:var(--text-2)">
+        <div style="font-weight:700;color:#7C3AED;margin-bottom:4px">💡 Pour une reconnaissance précise (iPhone, MacBook, Nescafé...)</div>
+        <div>1. Ouvrez <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:#4285F4;font-weight:600;text-decoration:underline">aistudio.google.com/apikey</a> (gratuit)</div>
+        <div>2. Cliquez "Create API Key"</div>
+        <div>3. Collez-la dans Spectra AI ci-dessus</div>
+        <div style="margin-top:4px;font-style:italic;color:var(--text-3)">Sans clé : Spectra lit uniquement les textes/marques visibles sur l'emballage.</div>
+      </div>` : ''}
     </div>
 
     <input id="spectra-file" type="file" accept="image/*" capture="environment"
@@ -9068,21 +9317,30 @@ async function _spectraGeminiVision(imgOrCanvas) {
     const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
     const base64 = dataUrl.split(',')[1];
 
-    const prompt = `You are Spectra, a product recognition AI for retail inventory management.
-Analyze this image and identify ALL visible commercial products with maximum precision.
+    const prompt = `You are Spectra, an elite product recognition AI for African retail SMBs (BARO app).
+Analyze this image like Google Lens / Gemini Vision and identify EVERY commercial product.
 
-For EACH product detected, provide:
-1. exact_name: The precise commercial name (e.g., "Apple iPhone 17 Pro Max Titane Clair", "Nescafé Classic 200g", "Samsung Galaxy S26 Ultra Titane Noir")
-2. brand: The brand name
-3. category: One of [electronics, smartphone, laptop, tablet, watch, audio, photo, drink, food, hygiene, household, beauty, clothing, shoes, bag, tool, stationery, health, toy, auto, other]
-4. quantity: How many visible (count)
-5. bbox: Bounding box [x, y, width, height] as percentages 0-100 of image dimensions
+CRITICAL RULES:
+- Use PRECISE commercial names, brand + model + variant + size/capacity.
+- Smartphones: "Apple iPhone 17 Pro Max Titane Clair", "Samsung Galaxy S26 Ultra", "Google Pixel 9 Pro".
+- Laptops: "HP EliteBook 840 G11", "Apple MacBook Air M4 13.6", "Dell XPS 15".
+- Food/Drink: "Nescafé Classic 200g bocal", "Coca-Cola Canette 33cl", "Huile Dinor 1L", "Riz Maman 5kg".
+- Hygiene: "Colgate Total 75ml", "Omo Matic 2kg", "Pampers Size 4 (62 unités)", "Savon Fanico".
+- Electronics accessories: "Clé USB SanDisk Extreme Pro 128Go".
+- Clothing/shoes: "Nike Air Force 1 Low Blanches", "Levi's 501 Original", "Maillot CI FIF".
+- NEVER say "Télécommande" for smartphones. A rectangular device with a screen or camera module = smartphone.
+- Handle local African brands: Fanico, Candia, Kirène, Awa, SOSUCO, Maggi Star, Uncle Sam, Nescafé.
+
+For EACH product detected, return:
+1. exact_name: full precise name incl. brand, model, variant, capacity
+2. brand: brand only
+3. category: one of [smartphone, laptop, tablet, watch, audio, photo, tv, appliance, gaming, drink, food, hygiene, household, beauty, clothing, shoes, bag, tool, stationery, health, toy, auto, other]
+4. quantity: integer count visible
+5. bbox: [x, y, width, height] as % 0-100 of full image
 6. confidence: 0-100
 
-Return STRICTLY valid JSON array, no other text:
-[{"exact_name":"...","brand":"...","category":"...","quantity":1,"bbox":[x,y,w,h],"confidence":85}]
-
-Be precise with model numbers and specifications (M4, 13", Pro Max, 500g, etc.). Focus on RETAIL products.`;
+Return STRICTLY a valid JSON array only, no markdown, no comments:
+[{"exact_name":"...","brand":"...","category":"smartphone","quantity":1,"bbox":[5,10,40,80],"confidence":92}]`;
 
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`, {
       method: 'POST',
@@ -9133,6 +9391,93 @@ Be precise with model numbers and specifications (M4, 13", Pro Max, 500g, etc.).
   }
 }
 
+// ── Full-image OCR + dictionary match (fonctionne sans clé API) ──
+// Idéal pour produits dont le nom/marque est visible sur l'emballage :
+// iPhone (coque arrière), Nescafé, Coca-Cola, Levi's, Omo, etc.
+async function _spectraFullImageOCR(img){
+  try {
+    const worker = await loadOCR();
+    const w = img.naturalWidth || img.videoWidth || img.width;
+    const h = img.naturalHeight || img.videoHeight || img.height;
+    if (!w || !h) return null;
+    // Upscale pour meilleure lecture, max 2400px sur le plus grand côté
+    const scale = Math.min(2, 2400 / Math.max(w, h));
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.round(w * scale);
+    canvas.height = Math.round(h * scale);
+    const ctx = canvas.getContext('2d');
+    ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    // Légère amélioration contraste
+    try {
+      const d = ctx.getImageData(0,0,canvas.width,canvas.height);
+      const arr = d.data;
+      for (let i=0;i<arr.length;i+=4){
+        const y = arr[i]*0.299 + arr[i+1]*0.587 + arr[i+2]*0.114;
+        const v = Math.max(0, Math.min(255, Math.round((y - 50) * 1.5)));
+        arr[i]=arr[i+1]=arr[i+2]=v;
+      }
+      ctx.putImageData(d,0,0);
+    } catch(_){}
+    const { data: { text, confidence } } = await worker.recognize(canvas);
+    const ocrText = (text || '').trim();
+    if (!ocrText || ocrText.length < 2) return null;
+    const resolved = _resolveFromOCR(ocrText);
+    if (!resolved || !resolved.name) return null;
+    return {
+      detected_name: resolved.name,
+      matched_name: resolved.name,
+      matched_unit: 'pce',
+      quantity: 1,
+      confidence: Math.max(60, Math.round(confidence || 75)),
+      boxes: [[0, 0, w, h]],
+      coco_class: resolved.type ? 'product' : 'object',
+      ocr_text: ocrText.slice(0, 200),
+      ocr_confidence: Math.round(confidence || 0),
+      resolved_type: resolved.type,
+      resolved_brand: resolved.brand,
+      source: 'full_ocr',
+      from_keyword: true,
+    };
+  } catch(e) {
+    return null;
+  }
+}
+
+// ── Nettoyage COCO : évite "Télécommande" pour des rectangles ressemblant à des téléphones ──
+// La classe COCO 'remote' classifie souvent iPhone/Samsung. Règle :
+// - Aspect ratio > 1.6 (grand côté/petit côté) → plus probablement téléphone
+// - Si OCR mentionne marque tech → téléphone garanti
+function _sanitizeCocoDetection(d){
+  try {
+    if (!d) return d;
+    const cls = (d.coco_class || '').toLowerCase();
+    const ocr = (d.ocr_text || '').toLowerCase();
+    const TECH_BRANDS = /\b(apple|iphone|samsung|galaxy|pixel|google|xiaomi|redmi|oppo|vivo|oneplus|nothing|realme|tecno|infinix|itel|huawei|honor|nokia|sony|lg)\b/i;
+    const isTechOCR = TECH_BRANDS.test(ocr);
+    // "remote" : si objet a un ratio téléphone (2:1) ou marque tech → rebaptise "Téléphone"
+    if (cls === 'remote') {
+      const box = d.boxes && d.boxes[0];
+      let isPhoneShape = false;
+      if (box) {
+        const [, , bw, bh] = box;
+        if (bw && bh) {
+          const r = Math.max(bw, bh) / Math.min(bw, bh);
+          if (r >= 1.6 && r <= 2.5) isPhoneShape = true;
+        }
+      }
+      if (isTechOCR || isPhoneShape) {
+        d.detected_name = d.detected_name && d.detected_name !== 'Télécommande'
+          ? d.detected_name
+          : (isTechOCR ? 'Téléphone' : 'Téléphone (forme détectée)');
+        if (d.matched_name === 'Télécommande') d.matched_name = d.detected_name;
+        d.coco_class = 'cell phone';
+      }
+    }
+  } catch(_){}
+  return d;
+}
+
 // ── Détection à partir d'une image HTMLImageElement (avec OCR) ──
 async function spectraDetectFromImage(img, opts){
   // PRIORITÉ 1 : Gemini Vision IA si clé API disponible (reconnaissance précise)
@@ -9142,10 +9487,22 @@ async function spectraDetectFromImage(img, opts){
     return aiResults;
   }
 
+  // PRIORITÉ 2 : Full-image OCR + SPECTRA_KEYWORDS match (pas de clé requise)
+  // Attrape les produits avec marque/nom visible (iPhone, Nescafé, Coca, Fanico, etc.)
+  try {
+    const fullOcrHit = await _spectraFullImageOCR(img);
+    if (fullOcrHit) {
+      showToast(`📖 Spectra : "${fullOcrHit.matched_name}" reconnu`, 'success');
+      return [fullOcrHit];
+    }
+  } catch(e){}
+
   const model = await loadCocoSSD();
   const predictions = await model.detect(img, 20);
   const filtered = predictions.filter(p => (p.score || 0) >= 0.4);
-  if (opts && opts.fast) return _groupPredictionsByClass(filtered);
+  if (opts && opts.fast) {
+    return _groupPredictionsByClass(filtered).map(_sanitizeCocoDetection);
+  }
   // Mode précision maximale : OCR + mémoire + détection dommages
   let detections;
   try {
@@ -9153,6 +9510,8 @@ async function spectraDetectFromImage(img, opts){
   } catch(e) {
     detections = _groupPredictionsByClass(filtered);
   }
+  // Nettoyer les faux positifs "Télécommande" pour des téléphones
+  detections = detections.map(_sanitizeCocoDetection);
   // Ajouter analyse qualité/dommages pour chaque détection
   try {
     for (const d of detections) {
@@ -12814,7 +13173,7 @@ function vAuditLog() {
           const dateStr = dt.toLocaleDateString(locale, { day:'2-digit', month:'short' });
           const timeStr = dt.toLocaleTimeString(locale, { hour:'2-digit', minute:'2-digit' });
           const detailsStr = Object.entries(e.details || {})
-            .map(([k, v]) => `<strong>${k}</strong>: ${v}`)
+            .map(([k, v]) => `<strong>${_translateAuditDetailKey(k)}</strong>: ${v}`)
             .join(' · ');
           return `
           <div style="display:flex;gap:10px;padding:12px 14px;border-bottom:1px solid var(--border)">
@@ -12902,13 +13261,35 @@ function _translateAuditCategory(cat) {
   if (!cat) return '';
   const FR = { sale:'Ventes', stock:'Stock', member:'Équipe', team:'Équipe', auth:'Authentification',
                settings:'Paramètres', product:'Produits', client:'Clients',
-               plan:'Abonnement', promo:'Promo', supplier:'Fournisseurs', order:'Commandes' };
+               plan:'Abonnement', promo:'Promo', supplier:'Fournisseurs', order:'Commandes',
+               integration:'Intégration', marketing:'Marketing', boutique:'Boutique' };
   const EN = { sale:'Sales', stock:'Stock', member:'Team', team:'Team', auth:'Auth',
                settings:'Settings', product:'Products', client:'Clients',
-               plan:'Plan', promo:'Promo', supplier:'Suppliers', order:'Orders' };
+               plan:'Plan', promo:'Promo', supplier:'Suppliers', order:'Orders',
+               integration:'Integration', marketing:'Marketing', boutique:'Shop' };
   const map = _lang === 'en' ? EN : FR;
   if (map[cat]) return map[cat];
   return cat.charAt(0).toUpperCase() + cat.slice(1);
+}
+
+// Traduit les clés de details (email, bt, amount, etc.) dans la langue sélectionnée
+function _translateAuditDetailKey(key) {
+  if (!key) return '';
+  const FR = {
+    email:'Email', phone:'Téléphone', bt:'Profil', businessType:'Profil', verified:'Vérifié',
+    amount:'Montant', total:'Total', client:'Client', method:'Mode', product:'Produit', qty:'Qté',
+    name:'Nom', before:'Avant', after:'Après', reason:'Raison', role:'Rôle',
+    target:'Cible', vidId:'ID Vidéo', count:'Nombre', ref:'Ref', status:'Statut',
+  };
+  const EN = {
+    email:'Email', phone:'Phone', bt:'Profile', businessType:'Profile', verified:'Verified',
+    amount:'Amount', total:'Total', client:'Client', method:'Method', product:'Product', qty:'Qty',
+    name:'Name', before:'Before', after:'After', reason:'Reason', role:'Role',
+    target:'Target', vidId:'Video ID', count:'Count', ref:'Ref', status:'Status',
+  };
+  const map = _lang === 'en' ? EN : FR;
+  if (map[key]) return map[key];
+  return key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 }
 
 function exportAuditLogCSV() {
@@ -13178,12 +13559,14 @@ function vSecurity() {
     <!-- Biométrie -->
     <div class="card" style="margin-bottom:12px">
       <div class="card-title">👆 Biométrie</div>
-      <div style="font-size:12px;color:var(--text-3);margin-bottom:10px">Empreinte digitale ou reconnaissance faciale.</div>
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:10px">Empreinte digitale, reconnaissance faciale (TouchID / FaceID / Windows Hello).</div>
       <label style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 0;cursor:pointer">
         <span style="font-size:13px;color:var(--text-1);font-weight:600">Activer la biométrie</span>
         <input type="checkbox" ${s.biometricEnabled ? 'checked' : ''} onchange="setSecurity('biometricEnabled',this.checked)" style="transform:scale(1.5)">
       </label>
       ${!window.PublicKeyCredential ? `<div style="font-size:11px;color:#F59E0B;margin-top:6px">⚠ WebAuthn non supporté sur cet appareil.</div>` : ''}
+      ${s.biometricEnabled && localStorage.getItem('stockr_webauthn_cred') ? `<div style="font-size:11px;color:#10B981;margin-top:6px">✅ Capteur biométrique enrôlé — vous pouvez vous connecter par biométrie</div>` : ''}
+      ${window.PublicKeyCredential && window.location.protocol !== 'https:' && window.location.hostname !== 'localhost' ? `<div style="font-size:11px;color:#F59E0B;margin-top:6px">⚠ HTTPS requis : la biométrie ne fonctionne qu'en HTTPS</div>` : ''}
     </div>
 
     <!-- Timeout session -->
@@ -13221,7 +13604,21 @@ function vSecurity() {
   </div>`;
 }
 
-function setSecurity(key, value) {
+async function setSecurity(key, value) {
+  // Biométrie : enrôler immédiatement quand activée
+  if (key === 'biometricEnabled' && value === true) {
+    const ok = await enrollBiometric();
+    if (!ok) {
+      // L'enrôlement a échoué → ne pas cocher le flag
+      render();
+      return;
+    }
+  }
+  // Biométrie désactivée : supprimer les credentials stockés
+  if (key === 'biometricEnabled' && value === false) {
+    localStorage.removeItem('stockr_webauthn_cred');
+    localStorage.removeItem('stockr_webauthn_rawid');
+  }
   S.security[key] = value;
   try { localStorage.setItem('stockr_security', JSON.stringify(S.security)); } catch(_){}
   logAudit('settings', 'security_change', { [key]: String(value) });
@@ -17308,7 +17705,7 @@ async function __publishTo(target) {
 
   // ═══ TikTok / Twitter / WhatsApp / share : Web Share API natif (mobile) ═══
   // Sur mobile, ça ouvre la feuille de partage → utilisateur choisit l'app → fichier importé directement.
-  // Sur desktop : fallback download + ouvre le site.
+  // Sur desktop : download + ouvre le VRAI compte connecté (upload.tiktok.com, x.com/compose, web.whatsapp.com)
   if (navigator.canShare && navigator.canShare({ files:[file] })) {
     try {
       await navigator.share({ files:[file], title:'BARO', text: caption });
@@ -17320,17 +17717,25 @@ async function __publishTo(target) {
     }
   }
 
-  // Desktop fallback : download + ouvre le site (légende déjà copiée)
+  // Desktop : télécharge + ouvre la VRAIE page du compte (login requis sur la plateforme)
   const platformUrls = {
-    tiktok:    'https://www.tiktok.com/upload?lang=fr',
-    twitter:   'https://twitter.com/compose/tweet?text=' + encodeURIComponent(caption),
-    whatsapp:  'https://web.whatsapp.com/',
+    tiktok:    'https://www.tiktok.com/upload?lang=fr',      // page d'upload officielle (login requis)
+    twitter:   'https://x.com/compose/post',                  // compose un post sur X
+    whatsapp:  'https://web.whatsapp.com/',                   // WhatsApp Web (login via QR)
     share:     null,
   };
   __vidDownload();
   if (platformUrls[target]) {
-    setTimeout(() => { window.open(platformUrls[target], '_blank'); }, 500);
-    showToast('📥 Téléchargée + légende copiée → collez dans ' + target, 'success');
+    // Délai court pour laisser le téléchargement démarrer, puis ouvrir l'onglet
+    setTimeout(() => {
+      try { window.open(platformUrls[target], '_blank', 'noopener'); } catch(_){}
+    }, 500);
+    const tips = {
+      tiktok: 'TikTok : glissez la vidéo téléchargée → collez la légende (déjà dans le presse-papiers)',
+      twitter: 'X : cliquez "Médias" → sélectionnez la vidéo téléchargée → la légende est déjà copiée',
+      whatsapp: 'WhatsApp : pièce jointe → choisissez la vidéo téléchargée → collez la légende',
+    };
+    showToast('📥 Téléchargée + ' + (tips[target] || 'importez manuellement'), 'success');
   } else {
     showToast('📥 Téléchargée — importez dans l\'app de votre choix', 'info');
   }
@@ -18785,8 +19190,12 @@ function openIntegrationDashboard(integrationId) {
       title:'Jumia Seller',
       color:'#F68B1E',
       items:[
+        { label:'📤 Exporter catalogue → CSV Jumia', action:()=>exportToJumia() },
+        { label:'🔄 Sync & export produits', action:()=>{ S.ecommerceSetupProvider='jumia'; nav('ecommerce-setup'); } },
         { label:'📊 Vendor Center', url:'https://vendorcenter.jumia.com/' },
-        { label:'📦 Mes commandes', url:'https://vendorcenter.jumia.com/orders' },
+        { label:'📦 Mes commandes Jumia', url:'https://vendorcenter.jumia.com/orders' },
+        { label:'💰 Paiements Jumia', url:'https://vendorcenter.jumia.com/payments' },
+        { label:'📈 Statistiques ventes', url:'https://vendorcenter.jumia.com/performance' },
       ]
     },
     'google-sheets': {
@@ -19238,7 +19647,7 @@ async function uploadVideoToYouTube(blob, title, description) {
           try {
             const metadata = {
               snippet: { title: title || 'BARO Video', description: description || '', tags: ['BARO', 'PME'], categoryId: '22' },
-              status: { privacyStatus: 'private' }
+              status: { privacyStatus: 'unlisted' }  // Non répertorié : accessible via lien, modifiable dans Studio
             };
             const boundary = '-------314159265358979323846';
             const delim = `\r\n--${boundary}\r\n`;
@@ -22186,6 +22595,20 @@ document.addEventListener('DOMContentLoaded', () => {
   window.loginGoogle        = loginGoogle;
   window.loginApple         = loginApple;
   window.loginBiometric     = loginBiometric;
+  window.enrollBiometric    = enrollBiometric;
+  window.isBiometricAvailable = isBiometricAvailable;
+  window.__planPayNow       = __planPayNow;
+  window.__planStartTrial   = __planStartTrial;
+  window.__planConfirmClose = __planConfirmClose;
+  window.__planProcessPayment = __planProcessPayment;
+  window.__planShowPaymentPicker = __planShowPaymentPicker;
+  window.__planQuickPay     = __planQuickPay;
+  window.__planShowMethodPicker = __planShowMethodPicker;
+  window.__planShowConfirmModal = __planShowConfirmModal;
+  window._openMailtoVerification = _openMailtoVerification;
+  window._openSmsVerification    = _openSmsVerification;
+  window._doActivatePlan    = _doActivatePlan;
+  window.logActivity        = logActivity;
   window.__showSocialModal  = __showSocialModal;
   window.__submitSocialLogin= __submitSocialLogin;
   window.vOAuthSetup        = vOAuthSetup;
