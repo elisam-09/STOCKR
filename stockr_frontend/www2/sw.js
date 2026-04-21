@@ -2,7 +2,7 @@
 // Stratégie : Cache-first pour assets statiques,
 //             Network-first pour l'API
 
-const CACHE_NAME = 'baro-v34-sova-premium-design';
+const CACHE_NAME = 'baro-v35-spectra-premium-iphone-fix';
 const STATIC_ASSETS = [
   '/',
   '/index.html',

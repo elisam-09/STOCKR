@@ -9731,35 +9731,79 @@ async function _spectraFullImageOCR(img){
   }
 }
 
-// ── Nettoyage COCO : évite "Télécommande" pour des rectangles ressemblant à des téléphones ──
-// La classe COCO 'remote' classifie souvent iPhone/Samsung. Règle :
-// - Aspect ratio > 1.6 (grand côté/petit côté) → plus probablement téléphone
-// - Si OCR mentionne marque tech → téléphone garanti
+// ── Nettoyage COCO : corrige les faux positifs classiques du modèle ─────────
+// COCO-SSD n'a que 80 classes très générales → beaucoup d'ambiguïtés sur du stock PME.
+// Faux positifs connus et traités ici :
+//  • 'remote' → 95% du temps = smartphone (les vraies télécommandes TV sont rares en stock)
+//  • 'book'   → souvent emballage carton / sachet plat
+//  • 'tie'    → souvent écharpe / étoffe longue
+// Stratégie : si OCR lit une marque tech OU si le ratio correspond, rebaptise.
+const TECH_BRANDS_RX = /\b(apple|iphone|ipad|macbook|samsung|galaxy|note|pixel|google|xiaomi|redmi|poco|oppo|reno|vivo|oneplus|nothing|realme|tecno|camon|spark|pova|phantom|infinix|hot|smart|note|itel|huawei|mate|nova|honor|magic|nokia|sony|xperia|lg|motorola|moto|asus|rog|zenfone|zte|meizu|alcatel|blackview|doogee|ulefone|wiko|lenovo|gionee)\b/i;
+const REMOTE_BRANDS_RX = /\b(samsung\s*tv|sony\s*tv|lg\s*tv|tcl|philips\s*tv|panasonic|bravia|vu|mi\s*tv|xiaomi\s*tv|chromecast|firetv|apple\s*tv|roku|bose|shield|nvidia)\b/i;
+const REMOTE_KEYWORDS_RX = /\b(remote|télécommande|telecommande|zapper|controller|air\s*mouse|media\s*center)\b/i;
+
 function _sanitizeCocoDetection(d){
   try {
     if (!d) return d;
     const cls = (d.coco_class || '').toLowerCase();
     const ocr = (d.ocr_text || '').toLowerCase();
-    const TECH_BRANDS = /\b(apple|iphone|samsung|galaxy|pixel|google|xiaomi|redmi|oppo|vivo|oneplus|nothing|realme|tecno|infinix|itel|huawei|honor|nokia|sony|lg)\b/i;
-    const isTechOCR = TECH_BRANDS.test(ocr);
-    // "remote" : si objet a un ratio téléphone (2:1) ou marque tech → rebaptise "Téléphone"
+    const box = d.boxes && d.boxes[0];
+    let bw = 0, bh = 0, ratio = 0;
+    if (box) {
+      bw = box[2] || 0; bh = box[3] || 0;
+      if (bw > 0 && bh > 0) ratio = Math.max(bw, bh) / Math.min(bw, bh);
+    }
+
+    // ── Règle 1 : 'remote' COCO = presque toujours un smartphone ──
+    // Les vraies télécommandes sont rares en stock PME. On inverse la logique :
+    // par défaut "remote" devient "Téléphone", SAUF si preuve explicite de télécommande.
     if (cls === 'remote') {
-      const box = d.boxes && d.boxes[0];
-      let isPhoneShape = false;
-      if (box) {
-        const [, , bw, bh] = box;
-        if (bw && bh) {
-          const r = Math.max(bw, bh) / Math.min(bw, bh);
-          if (r >= 1.6 && r <= 2.5) isPhoneShape = true;
+      const isTechOCR       = TECH_BRANDS_RX.test(ocr);
+      const isRemoteOCR     = REMOTE_KEYWORDS_RX.test(ocr);
+      const isRemoteBrand   = REMOTE_BRANDS_RX.test(ocr);
+      // ratio phone moderne : iPhone 15 Pro Max ≈ 2.16, iPhone 13 ≈ 2.17, Galaxy S24 ≈ 2.22
+      const isPhoneShape    = ratio >= 1.5 && ratio <= 2.5;
+      // ratio télécommande classique : très allongée (3:1+) ou presque carrée
+      const isRemoteShape   = ratio > 3.0 || (ratio > 0 && ratio < 1.3);
+
+      // Garde "Télécommande" SEULEMENT si preuve forte
+      const keepRemote = isRemoteOCR || isRemoteBrand || isRemoteShape;
+      if (!keepRemote) {
+        const labelBase = isTechOCR ? 'Smartphone' : 'Téléphone';
+        // Si OCR capte une marque, enrichis le nom : "iPhone", "Samsung Galaxy"…
+        let refined = labelBase;
+        if (isTechOCR) {
+          const m = ocr.match(TECH_BRANDS_RX);
+          if (m && m[0]) refined = m[0].charAt(0).toUpperCase() + m[0].slice(1).toLowerCase();
         }
-      }
-      if (isTechOCR || isPhoneShape) {
-        d.detected_name = d.detected_name && d.detected_name !== 'Télécommande'
-          ? d.detected_name
-          : (isTechOCR ? 'Téléphone' : 'Téléphone (forme détectée)');
-        if (d.matched_name === 'Télécommande') d.matched_name = d.detected_name;
+        if (!d.detected_name || d.detected_name === 'Télécommande') d.detected_name = refined;
+        if (d.matched_name === 'Télécommande') d.matched_name = refined;
         d.coco_class = 'cell phone';
+        d._sanitized_from = 'remote';
       }
+    }
+
+    // ── Règle 2 : 'book' sur un objet carré → probablement une boîte/carton ──
+    if (cls === 'book' && ratio > 0 && ratio < 1.3) {
+      // Livre classique a un ratio ≈ 1.4-1.6. Carré = plus probable boîte/emballage.
+      if (!ocr || (!/book|livre|cahier|magazine/.test(ocr))) {
+        if (d.detected_name === 'Livre') d.detected_name = 'Boîte / Emballage';
+        if (d.matched_name === 'Livre') d.matched_name = d.detected_name;
+        d._sanitized_from = 'book';
+      }
+    }
+
+    // ── Règle 3 : 'cell phone' sans OCR tech + ratio carré → peut-être powerbank/accessoire ──
+    // (ne change pas, juste on baisse la confidence quand ambigu)
+    if (cls === 'cell phone' && ratio > 0 && ratio < 1.3 && !TECH_BRANDS_RX.test(ocr)) {
+      if (typeof d.confidence === 'number') d.confidence = Math.max(40, d.confidence - 15);
+      d._ambiguous = true;
+    }
+
+    // ── Règle 4 : confidence floor pour les détections sanitized ──
+    if (d._sanitized_from && typeof d.confidence === 'number') {
+      // On vient de corriger → confidence un peu plus basse pour signaler incertitude
+      d.confidence = Math.max(50, Math.min(d.confidence, 85));
     }
   } catch(_){}
   return d;
@@ -22134,11 +22178,11 @@ function vSpectraEnhanced() {
 
   if (S.spectra.step === 'loading') {
     return `
-    <div class="sub-hero"><div class="page-header-row"><button class="back-btn-dark" onclick="spectraReset();nav('more')">${IC.left}</button><div style="flex:1"><div class="sub-hero-title">Spectra AI</div><div class="sub-hero-sub">${t('spectraAnalyzing')}</div></div></div></div>
+    <div class="sub-hero spectra-hero-grad"><div class="page-header-row"><button class="back-btn-dark" onclick="spectraReset();nav('more')">${IC.left}</button><div style="flex:1"><div class="sub-hero-title">Spectra AI</div><div class="sub-hero-sub">${t('spectraAnalyzing')}</div></div></div></div>
     <div class="container" style="text-align:center;padding:60px 24px">
-      <div style="width:80px;height:80px;border-radius:50%;background:var(--accent-light);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;animation:pulse 1.5s infinite">${IC.camera}</div>
-      <div style="font-size:16px;font-weight:700">${t('spectraAnalyzing')}</div>
-      <div style="font-size:13px;color:var(--text-3);margin-top:6px">${S.spectraMode==='yolo'?'Détection YOLO — comptage automatique…':S.spectraMode==='barcode'?'Recherche codes-barres…':'Analyse en cours…'}</div>
+      <div class="spectra-loading-ring">${IC.camera}</div>
+      <div style="font-size:16px;font-weight:800;letter-spacing:.3px">${t('spectraAnalyzing')}</div>
+      <div style="font-size:13px;color:var(--text-3);margin-top:6px;font-weight:500">${S.spectraMode==='yolo'?'Détection YOLO — comptage automatique…':S.spectraMode==='barcode'?'Recherche codes-barres…':'Analyse IA en cours…'}</div>
     </div>`;
   }
 
@@ -22146,11 +22190,13 @@ function vSpectraEnhanced() {
   if (S.spectra.step === 'continuous') {
     const camCount = (_spectraCameras && _spectraCameras.length) || 0;
     return `
-    <div class="sub-hero"><div class="page-header-row"><button class="back-btn-dark" onclick="spectraReset();nav('more')">${IC.left}</button><div style="flex:1"><div class="sub-hero-title">Scan temps réel IA</div><div class="sub-hero-sub">COCO-SSD + OCR + mémoire produit</div></div>${camCount>1?`<button class="fab" style="background:var(--card);border:1px solid var(--border)" onclick="spectraSwitchCamera()" title="Changer de caméra">🔄</button>`:''}</div></div>
+    <div class="sub-hero spectra-hero-grad"><div class="page-header-row"><button class="back-btn-dark" onclick="spectraReset();nav('more')">${IC.left}</button><div style="flex:1"><div class="sub-hero-title">Scan temps réel IA</div><div class="sub-hero-sub">COCO-SSD + OCR + mémoire produit</div></div>${camCount>1?`<button class="fab" style="background:var(--card);border:1px solid var(--border)" onclick="spectraSwitchCamera()" title="Changer de caméra">🔄</button>`:''}</div></div>
     <div class="container" style="padding:12px">
-      <div style="position:relative;width:100%;max-width:520px;margin:0 auto;background:#000;border-radius:16px;overflow:hidden;aspect-ratio:4/3">
-        <video id="spectra-video" playsinline muted autoplay style="width:100%;height:100%;display:block;object-fit:cover"></video>
-        <canvas id="spectra-canvas" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none"></canvas>
+      <div class="spectra-scan-frame">
+        <video id="spectra-video" playsinline muted autoplay style="object-fit:cover"></video>
+        <canvas id="spectra-canvas"></canvas>
+        <span class="corner tl"></span><span class="corner tr"></span>
+        <span class="corner bl"></span><span class="corner br"></span>
       </div>
       <div id="spectra-overlay" style="margin-top:14px;padding:14px;background:var(--card);border-radius:12px;border:1px solid var(--border);font-size:13px;min-height:60px">
         <div style="opacity:.6">Chargement IA…</div>
@@ -22169,13 +22215,13 @@ function vSpectraEnhanced() {
   if (S.spectra.step === 'barcode') {
     const camCount = (_spectraCameras && _spectraCameras.length) || 0;
     return `
-    <div class="sub-hero"><div class="page-header-row"><button class="back-btn-dark" onclick="spectraReset();nav('more')">${IC.left}</button><div style="flex:1"><div class="sub-hero-title">Scan code-barres</div><div class="sub-hero-sub">EAN-13 / UPC / QR / Code 128</div></div>${camCount>1?`<button class="fab" style="background:var(--card);border:1px solid var(--border)" onclick="spectraSwitchCamera()" title="Changer de caméra">🔄</button>`:''}</div></div>
+    <div class="sub-hero spectra-hero-grad"><div class="page-header-row"><button class="back-btn-dark" onclick="spectraReset();nav('more')">${IC.left}</button><div style="flex:1"><div class="sub-hero-title">Scan code-barres</div><div class="sub-hero-sub">EAN-13 / UPC / QR / Code 128</div></div>${camCount>1?`<button class="fab" style="background:var(--card);border:1px solid var(--border)" onclick="spectraSwitchCamera()" title="Changer de caméra">🔄</button>`:''}</div></div>
     <div class="container" style="padding:12px">
-      <div style="position:relative;width:100%;max-width:520px;margin:0 auto;background:#000;border-radius:16px;overflow:hidden;aspect-ratio:4/3">
-        <video id="spectra-video" playsinline muted autoplay style="width:100%;height:100%;display:block;object-fit:cover"></video>
-        <div style="position:absolute;inset:20% 15%;border:3px solid var(--accent);border-radius:12px;box-shadow:0 0 0 9999px rgba(0,0,0,.4);pointer-events:none">
-          <div style="position:absolute;top:50%;left:0;right:0;height:2px;background:var(--accent);animation:pulse 1.5s infinite"></div>
-        </div>
+      <div class="spectra-scan-frame">
+        <video id="spectra-video" playsinline muted autoplay style="object-fit:cover"></video>
+        <div style="position:absolute;inset:20% 15%;border:3px solid #a78bfa;border-radius:12px;box-shadow:0 0 0 9999px rgba(0,0,0,.45),0 0 24px rgba(167,139,250,.5);pointer-events:none"></div>
+        <span class="corner tl"></span><span class="corner tr"></span>
+        <span class="corner bl"></span><span class="corner br"></span>
       </div>
       <div style="margin-top:14px;padding:14px;background:var(--card);border-radius:12px;border:1px solid var(--border);font-size:13px;text-align:center">
         Détection en cours… Approchez le code-barres
@@ -22194,11 +22240,11 @@ function vSpectraEnhanced() {
     return `
     <div class="sub-hero"><div class="page-header-row"><button class="back-btn-dark" onclick="spectraReset();nav('more')">${IC.left}</button><div style="flex:1"><div class="sub-hero-title">${t('spectraDetected')}</div><div class="sub-hero-sub">${S.spectra.current+1}/${S.spectra.queue.length} articles détectés</div></div></div></div>
     <div class="container">
-      <div class="spectra-count-result" style="margin-bottom:14px;border-color:var(--accent)">
+      <div class="spectra-count-result" style="margin-bottom:14px">
         <div class="spectra-count-num">${item.quantity}</div>
         <div class="spectra-count-info">
-          <div class="spectra-count-name">${item.detected_name||item.matched_name}</div>
-          <div class="spectra-count-detail">Quantité détectée: ${item.quantity} · Précision: ${item.confidence}%${item.from_memory?' · 🧠 Mémoire':''}</div>
+          <div class="spectra-count-name">${item.detected_name||item.matched_name}${(item._sanitized_from||item._ambiguous)?`<span class="spectra-ambig-badge" title="IA incertaine — vérifie le nom">⚠ À vérifier</span>`:''}</div>
+          <div class="spectra-count-detail">Quantité détectée: ${item.quantity} · Précision: ${item.confidence}%${item.from_memory?' · 🧠 Mémoire':''}${item._sanitized_from==='remote'?' · corrigé téléphone':''}</div>
         </div>
       </div>
       ${S.spectra.naming ? `
@@ -22255,20 +22301,20 @@ function vSpectraEnhanced() {
   }
 
   return `
-  <div class="sub-hero">
+  <div class="sub-hero spectra-hero-grad">
     <div class="page-header-row" style="margin-bottom:14px">
       <button class="back-btn-dark" onclick="nav('more')">${IC.left}</button>
-      <div style="flex:1"><div class="sub-hero-title">Spectra AI</div><div class="sub-hero-sub">Scanner, détecter, compter automatiquement</div></div>
+      <div style="flex:1"><div class="sub-hero-title">✨ Spectra AI</div><div class="sub-hero-sub">Scanner, détecter, compter automatiquement</div></div>
     </div>
   </div>
   <div class="container">
-    <div class="section-hd"><span class="section-lbl">Mode de scan</span></div>
+    <div class="section-hd"><span class="section-lbl" style="color:#7c3aed;font-weight:800;letter-spacing:.5px">✦ MODE DE SCAN</span></div>
     <div class="spectra-mode-grid">
       ${modes.map(m => `
       <div class="spectra-mode-btn ${S.spectraMode===m.id?'active':''}" onclick="S.spectraMode='${m.id}';render()">
         <div class="spectra-mode-ico">${m.icon}</div>
         <div class="spectra-mode-lbl">${m.label}</div>
-        <div style="font-size:10px;color:var(--text-3);margin-top:2px">${m.desc}</div>
+        <div style="font-size:10px;color:var(--text-3);margin-top:3px;font-weight:500">${m.desc}</div>
       </div>`).join('')}
     </div>
 
