@@ -2,7 +2,7 @@
 // Stratégie : Cache-first pour assets statiques,
 //             Network-first pour l'API
 
-const CACHE_NAME = 'baro-v28-boutique-ui-nav-fix';
+const CACHE_NAME = 'baro-v29-nav-iife-sw-autoreload';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -69,6 +69,28 @@ self.addEventListener('fetch', event => {
           { status: 503, headers: { 'Content-Type': 'application/json' } }
         )
       )
+    );
+    return;
+  }
+
+  // HTML navigations (index.html, /) → network-first pour garantir la dernière version
+  // (sinon le browser cache peut servir un index.html qui référence d'anciens ?v=)
+  const isHTMLNav = event.request.mode === 'navigate' ||
+                    (event.request.destination === 'document') ||
+                    url.pathname === '/' ||
+                    url.pathname.endsWith('/') ||
+                    url.pathname.endsWith('index.html');
+  if (isHTMLNav) {
+    event.respondWith(
+      fetch(event.request)
+        .then(res => {
+          if (res.ok) {
+            const clone = res.clone();
+            caches.open(CACHE_NAME).then(c => c.put(event.request, clone));
+          }
+          return res;
+        })
+        .catch(() => caches.match(event.request).then(r => r || caches.match('/index.html')))
     );
     return;
   }

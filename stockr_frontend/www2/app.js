@@ -4013,32 +4013,17 @@ function showReceiptBanner(sales, total) {
 
 // ── Navigate ──────────────────────────────────
 function nav(view, extra={}) {
-  Object.assign(S, extra);
-  const prev = S.view;
+  try { Object.assign(S, extra); } catch(_){}
   S.view = view;
-  // Clear ephemeral sub-states that should not persist across navigation
-  if (view === 'home' || view !== prev) {
-    S.detailId = null;
-    S.editingId = null;
-    S.editingProductId = null;
-    S.clientDetailId = null;
-    S.supplierDetailId = null;
-  }
-  // Force-flush any pending RAF render so the click is always felt immediately
-  if (window.__renderRAF) {
-    try { cancelAnimationFrame(window.__renderRAF); } catch(_){}
-    window.__renderRAF = null;
-  }
-  __renderRAF = null;
-  __renderPending = false;
-  // Toujours scroller en haut du contenu et de la fenêtre pour un feedback visible
   try {
     const vEl = document.getElementById('view');
     if (vEl) vEl.scrollTop = 0;
-    if (typeof window !== 'undefined' && window.scrollTo) window.scrollTo({ top: 0, behavior: 'auto' });
   } catch(_){}
   render();
 }
+// Expose immédiatement pour que les onclick inline fonctionnent dès le premier clic,
+// même avant DOMContentLoaded.
+if (typeof window !== 'undefined') window.nav = nav;
 
 // ── Render ────────────────────────────────────
 let __lastView = null;
@@ -22243,14 +22228,32 @@ async function installPWA() {
 }
 
 if ('serviceWorker' in navigator) {
+  // Reload auto dès qu'un nouveau SW prend le contrôle — MAIS seulement si un controller
+  // existait déjà (= vraie transition de version, pas première install).
+  const __swHadControllerAtBoot = !!navigator.serviceWorker.controller;
+  let __swReloading = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!__swHadControllerAtBoot) return; // première install — pas de reload
+    if (__swReloading) return;
+    __swReloading = true;
+    window.location.reload();
+  });
+
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./sw.js')
       .then(reg => {
+        // Vérifie les mises à jour à chaque ouverture + toutes les 60s
+        try { reg.update(); } catch(_){}
+        setInterval(() => { try { reg.update(); } catch(_){} }, 60 * 1000);
+
         reg.addEventListener('updatefound', () => {
           const newSW = reg.installing;
+          if (!newSW) return;
           newSW.addEventListener('statechange', () => {
             if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
-              showToast(t('updateAvailable'));
+              // Nouvelle version prête — on force l'activation immédiate
+              try { newSW.postMessage('skipWaiting'); } catch(_){}
+              try { showToast('🔄 Mise à jour — rechargement…', 'info'); } catch(_){}
             }
           });
         });
@@ -22260,7 +22263,10 @@ if ('serviceWorker' in navigator) {
 }
 
 // ── Init ──────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
+// IIFE synchrone : le script est en fin de <body>, le DOM est déjà parsé.
+// Ne PAS utiliser DOMContentLoaded — si l'event est déjà émis, le callback ne tourne jamais
+// et tous les onclick inline échouent silencieusement (bug "les boutons ne font rien").
+(function __baroInit() {
   // Exposer au global pour les onclick inline
   window.S             = S;
   window.nav           = nav;
@@ -22711,7 +22717,7 @@ document.addEventListener('DOMContentLoaded', () => {
   } else {
     render(); // Affiche l'écran auth
   }
-});
+})();
 
 // ── Boot reminders & auto-scheduler ─────────────
 function checkDueScheduledPosts() {
