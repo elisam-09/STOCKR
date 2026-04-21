@@ -2,7 +2,7 @@
 // Stratégie : Cache-first pour assets statiques,
 //             Network-first pour l'API
 
-const CACHE_NAME = 'baro-v33-agent-cards-error-diag';
+const CACHE_NAME = 'baro-v34-sova-premium-design';
 const STATIC_ASSETS = [
   '/',
   '/index.html',

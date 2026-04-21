@@ -4920,12 +4920,18 @@ function vAuthStep2() {
 // ── HOME ──────────────────────────────────────
 function vHome() {
   // Defaults défensifs — aucun champ de S ne doit pouvoir crasher vHome
-  if (!Array.isArray(S.articles))  S.articles  = [];
-  if (!Array.isArray(S.products))  S.products  = [];
-  if (!Array.isArray(S.sales))     S.sales     = [];
-  if (!Array.isArray(S.clients))   S.clients   = [];
-  if (!Array.isArray(S.locations)) S.locations = [];
-  if (!Array.isArray(S.teamMembers)) S.teamMembers = [];
+  if (!Array.isArray(S.articles))     S.articles     = [];
+  if (!Array.isArray(S.products))     S.products     = [];
+  if (!Array.isArray(S.sales))        S.sales        = [];
+  if (!Array.isArray(S.clients))      S.clients      = [];
+  if (!Array.isArray(S.locations))    S.locations    = [];
+  if (!Array.isArray(S.teamMembers))  S.teamMembers  = [];
+  if (!Array.isArray(S.predictions))  S.predictions  = [];
+  if (!Array.isArray(S.notifications))S.notifications= [];
+  if (!Array.isArray(S.suppliers))    S.suppliers    = [];
+  if (!Array.isArray(S.orders))       S.orders       = [];
+  if (!Array.isArray(S.movements))    S.movements    = [];
+  if (!Array.isArray(S.invoices))     S.invoices     = [];
   if (typeof S.globalSearch !== 'string') S.globalSearch = '';
 
   const bt = (typeof getBusinessType === 'function') ? getBusinessType() : 'maker';
