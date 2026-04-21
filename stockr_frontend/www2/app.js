@@ -313,15 +313,15 @@ const LANGS = {
     // Audit log
     auditLogTitle:'Journal d\'audit', auditLogSub:'Traçabilité immuable',
     auditAll:'Tout', auditToday:'24h', auditWeek:'7j', auditMonth:'30j',
-    auditCatAll:'📋 Tout', auditCatSale:'💰 Ventes', auditCatStock:'📦 Stock',
-    auditCatMember:'👤 Équipe', auditCatAuth:'🔐 Auth', auditCatSettings:'⚙️ Params',
-    auditCatProduct:'🏷️ Produits', auditCatClient:'👥 Clients',
+    auditCatAll:'Tout', auditCatSale:'Ventes', auditCatStock:'Stock',
+    auditCatMember:'Équipe', auditCatAuth:'Auth', auditCatSettings:'Params',
+    auditCatProduct:'Produits', auditCatClient:'Clients',
     auditNoEvents:'Aucun événement', auditNoEventsSub:'Les actions apparaîtront ici au fil de l\'activité.',
-    auditExportCSV:'📄 Export CSV', auditPurge:'🗑️ Purger',
-    auditAccessDenied:'🔒 Accès réservé aux rôles autorisés.',
+    auditExportCSV:'Export CSV', auditPurge:'Purger',
+    auditAccessDenied:'Accès réservé aux rôles autorisés.',
     auditEventCount:'événement(s)', auditDisplayLimited:'Affichage limité aux 200 événements les plus récents',
-    auditConfirmPurge:'⚠️ Purger le journal d\'audit ?\n\nCette action est irréversible.\nPensez à exporter d\'abord en CSV.',
-    auditPurged:'Journal purgé', auditExported:'📄 Journal exporté',
+    auditConfirmPurge:'Purger le journal d\'audit ?\n\nCette action est irréversible.\nPensez à exporter d\'abord en CSV.',
+    auditPurged:'Journal purgé', auditExported:'Journal exporté',
     // Advanced metrics
     stockTurnover:'Rotation stock', salesVelocity:'Vélocité ventes',
     avgDailySales:'Ventes/jour moy.', bestDay:'Meilleur jour',
@@ -549,15 +549,15 @@ const LANGS = {
     // Audit log
     auditLogTitle:'Audit log', auditLogSub:'Immutable traceability',
     auditAll:'All', auditToday:'24h', auditWeek:'7d', auditMonth:'30d',
-    auditCatAll:'📋 All', auditCatSale:'💰 Sales', auditCatStock:'📦 Stock',
-    auditCatMember:'👤 Team', auditCatAuth:'🔐 Auth', auditCatSettings:'⚙️ Settings',
-    auditCatProduct:'🏷️ Products', auditCatClient:'👥 Clients',
+    auditCatAll:'All', auditCatSale:'Sales', auditCatStock:'Stock',
+    auditCatMember:'Team', auditCatAuth:'Auth', auditCatSettings:'Settings',
+    auditCatProduct:'Products', auditCatClient:'Clients',
     auditNoEvents:'No events yet', auditNoEventsSub:'Actions will appear here as activity happens.',
-    auditExportCSV:'📄 Export CSV', auditPurge:'🗑️ Purge',
-    auditAccessDenied:'🔒 Access restricted to authorized roles.',
+    auditExportCSV:'Export CSV', auditPurge:'Purge',
+    auditAccessDenied:'Access restricted to authorized roles.',
     auditEventCount:'event(s)', auditDisplayLimited:'Display limited to 200 most recent events',
-    auditConfirmPurge:'⚠️ Purge the audit log?\n\nThis action is irreversible.\nExport as CSV first.',
-    auditPurged:'Log purged', auditExported:'📄 Log exported',
+    auditConfirmPurge:'Purge the audit log?\n\nThis action is irreversible.\nExport as CSV first.',
+    auditPurged:'Log purged', auditExported:'Log exported',
     // Advanced metrics
     stockTurnover:'Stock turnover', salesVelocity:'Sales velocity',
     avgDailySales:'Avg daily sales', bestDay:'Best day',
@@ -632,7 +632,7 @@ function _invNum(id) { return 'INV-' + String(id).slice(-6).toUpperCase(); }
 
 function generateInvoicePDF(sales) {
   if (!Array.isArray(sales)) sales = [sales];
-  if (typeof window.jspdf === 'undefined') { showToast(t('pdfOffline'), 'error'); return; }
+ if (typeof window.jspdf === 'undefined') { showToast(t('pdfOffline'), 'error'); return; }
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ unit: 'mm', format: 'a4' });
   const sym  = S.session?.currency_symbol || 'FCFA';
@@ -914,7 +914,7 @@ function generateInvoicePDF(sales) {
   doc.text('Facture generee par BARO · baro.app · ' + new Date().toISOString().slice(0,10), 105, 293, { align: 'center' });
 
   doc.save(`${t('invoice')}-${invId}.pdf`);
-  showToast(t('invoice') + ' PDF');
+ showToast(t('invoice') + ' PDF');
 }
 
 function shareViaWhatsApp(sales) {
@@ -926,7 +926,7 @@ function shareViaWhatsApp(sales) {
   const invId = _invNum(sales[0].id);
   const total = sales.reduce((s, v) => s + v.total, 0);
   const taxRate = parseFloat(S.session?.tax_rate) || 0;
-  const pmLabels = {cash:'💵 Espèces',wave:'🌊 Wave',orange:'🟠 Orange Money',moov:'🔵 Moov Money',mtn:'🟡 MTN MoMo',paypal:'💳 PayPal',visa:'💳 Carte bancaire'};
+  const pmLabels = {cash:'Espèces',wave:'Wave',orange:'Orange Money',moov:'Moov Money',mtn:'MTN MoMo',paypal:'PayPal',visa:'Carte bancaire'};
   const pm = sales[0]?.paymentMethod || 'cash';
   const clientName = sales[0]?.clientName;
   const client = clientName ? S.clients.find(c => c.name === clientName || String(c.id) === String(sales[0]?.clientId)) : null;
@@ -1655,7 +1655,7 @@ async function loadData() {
     // Offline / API indisponible → on a déjà pré-hydraté, on notifie juste
     const hadLocal = local.articles.length || local.products.length || local.sales.length || local.clients.length;
     if (hadLocal) {
-      showToast('📡 Mode hors-ligne', 'info');
+      showToast('Mode hors-ligne', 'info');
     } else {
       showToast(t('errLoad'), 'error');
       render();
@@ -1806,7 +1806,7 @@ async function __planPayNow(planKey, amount) {
 // Sélecteur visuel des moyens de paiement configurés
 function __planShowMethodPicker(planKey, amount, active) {
   const LBL = { wave:'Wave', orange:'Orange Money', moov:'Moov Money', mtn:'MTN Mobile Money', paypal:'PayPal', gpay:'Google Pay', applepay:'Apple Pay', card:'Carte bancaire' };
-  const ICON = { wave:'🌊', orange:'🟠', moov:'🔵', mtn:'🟡', paypal:'🅿️', gpay:'G', applepay:'🍎', card:'💳' };
+  const ICON = { wave:'W', orange:'OM', moov:'MV', mtn:'MTN', paypal:'PP', gpay:'G', applepay:'', card:'CB' };
   const modal = document.createElement('div');
   modal.id = '__planMethodModal';
   modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px';
@@ -1816,7 +1816,7 @@ function __planShowMethodPicker(planKey, amount, active) {
       <div style="font-size:13px;color:var(--text-3);text-align:center;margin-bottom:16px">${fmt(amount)} ${sym()} · Plan ${planKey.toUpperCase()}</div>
       ${active.map(m => `
         <button class="btn btn-ghost" style="width:100%;padding:14px;margin-bottom:8px;border:2px solid var(--border);font-weight:700;display:flex;align-items:center;gap:12px;justify-content:flex-start;font-size:14px" onclick="document.getElementById('__planMethodModal').remove();__planProcessPayment('${m.provider}', '${planKey}', ${amount})">
-          <span style="font-size:22px">${ICON[m.provider]||'💰'}</span>
+          <span style="font-size:13px;font-weight:800;color:var(--accent);min-width:28px">${ICON[m.provider]||''}</span>
           <span style="flex:1;text-align:left">${LBL[m.provider]||m.name}</span>
           ${m.phone ? `<span style="font-size:11px;color:var(--text-3)">${m.phone}</span>` : ''}
         </button>
@@ -3874,7 +3874,7 @@ function toggleDark() {
   }
   // Persist preference
   localStorage.setItem('stockr_dark_mode', S.darkMode ? '1' : '0');
-  showToast(S.darkMode ? '🌙 Mode sombre activé' : '☀️ Mode clair activé', 'success');
+  showToast(S.darkMode ? 'Mode sombre activé' : 'Mode clair activé', 'success');
   render();
 }
 
@@ -4225,7 +4225,13 @@ function _doRender() {
   };
   const viewChanged = __markViewTransition(S.view);
   const prevScroll = viewEl.scrollTop;
-  viewEl.innerHTML = (map[S.view] || vHome)();
+  try {
+    viewEl.innerHTML = (map[S.view] || vHome)();
+  } catch(e) {
+    console.error('[BARO] View crash in "' + S.view + '":', e);
+    S.view = 'home';
+    try { viewEl.innerHTML = vHome(); } catch(e2) { viewEl.innerHTML = '<div class="container" style="padding:40px;text-align:center;color:var(--text-3)">Erreur de chargement — tirez pour rafraîchir</div>'; }
+  }
   // Conserve le scroll si on re-render la MÊME view (évite le "blink" de remontée)
   if (viewChanged) {
     if (!S.globalSearch) viewEl.scrollTop = 0;
@@ -4960,7 +4966,7 @@ function vHome() {
         }
       </div>
       <div style="flex:1;min-width:0">
-        <div class="hero-greeting">${t('hello')}, ${(__currentMember?.name || S.session.name).split(' ')[0]}
+        <div class="hero-greeting">${t('hello')}, ${((__currentMember?.name || S.session?.name || '').split(' ')[0])}
           ${__currentRoleInfo && __currentMember?.id ? `<span style="font-size:10px;padding:2px 7px;background:rgba(255,255,255,.2);color:#fff;border-radius:5px;margin-left:6px;font-weight:700;vertical-align:middle">${__currentRoleInfo.icon} ${__currentRoleInfo.name}</span>` : ''}
         </div>
         <div class="hero-name">${__bizName}</div>
