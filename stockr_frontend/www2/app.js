@@ -4242,12 +4242,30 @@ function _doRender() {
     viewEl.innerHTML = (map[S.view] || vHome)();
   } catch(e) {
     console.error('[BARO] Crash dans la vue "' + S.view + '":', e);
+    const __viewErr = String(e && e.message || e);
     S.view = 'home';
     try {
       viewEl.innerHTML = vHome();
     } catch(e2) {
       console.error('[BARO] vHome a aussi crashé:', e2);
-      viewEl.innerHTML = '<div class="container" style="padding:40px;text-align:center;color:var(--text-3)"><div style="font-size:48px;margin-bottom:12px">⚠️</div><div style="font-size:16px;font-weight:700;margin-bottom:8px">Erreur d\'affichage</div><div style="font-size:13px">Actualise la page ou reconnecte-toi.</div><button class="btn btn-primary" style="margin-top:16px" onclick="location.reload()">🔄 Recharger</button></div>';
+      const __homeErr = String(e2 && e2.message || e2);
+      const __stack = (e2 && e2.stack) ? String(e2.stack).split('\n').slice(0,3).join(' | ') : '';
+      viewEl.innerHTML = `
+        <div class="container" style="padding:32px 20px;text-align:center;color:var(--text)">
+          <div style="font-size:56px;margin-bottom:14px">⚠️</div>
+          <div style="font-size:18px;font-weight:800;margin-bottom:10px">Erreur d'affichage</div>
+          <div style="font-size:13px;color:var(--text-3);margin-bottom:14px;line-height:1.5">La page n'a pas pu s'afficher.<br>Réessaie ou réinitialise la session locale.</div>
+          <details style="text-align:left;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin:0 auto 16px;max-width:440px;font-size:11px;color:var(--text-3)">
+            <summary style="cursor:pointer;font-weight:700;color:var(--text);margin-bottom:6px">Détails techniques</summary>
+            <div style="margin-top:8px"><b>Vue :</b> ${String(__viewErr).replace(/[<>&]/g,'')}</div>
+            <div style="margin-top:4px"><b>Home :</b> ${String(__homeErr).replace(/[<>&]/g,'')}</div>
+            ${__stack ? `<div style="margin-top:4px;font-family:monospace;font-size:10px;opacity:.7">${__stack.replace(/[<>&]/g,'')}</div>` : ''}
+          </details>
+          <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+            <button class="btn btn-primary" onclick="location.reload()">🔄 Recharger</button>
+            <button class="btn btn-secondary" onclick="if(confirm('Réinitialiser la session locale ? (Tes données restent sauvegardées)')){localStorage.removeItem('baro_session');localStorage.removeItem('stockr_session');location.reload();}">🔐 Reset session</button>
+          </div>
+        </div>`;
     }
   }
   // Conserve le scroll si on re-render la MÊME view (évite le "blink" de remontée)
@@ -4901,17 +4919,26 @@ function vAuthStep2() {
 
 // ── HOME ──────────────────────────────────────
 function vHome() {
+  // Defaults défensifs — aucun champ de S ne doit pouvoir crasher vHome
+  if (!Array.isArray(S.articles))  S.articles  = [];
+  if (!Array.isArray(S.products))  S.products  = [];
+  if (!Array.isArray(S.sales))     S.sales     = [];
+  if (!Array.isArray(S.clients))   S.clients   = [];
+  if (!Array.isArray(S.locations)) S.locations = [];
+  if (!Array.isArray(S.teamMembers)) S.teamMembers = [];
+  if (typeof S.globalSearch !== 'string') S.globalSearch = '';
+
   const bt = (typeof getBusinessType === 'function') ? getBusinessType() : 'maker';
   const isReseller = bt === 'reseller';
-  const low     = S.articles.filter(a => a.stock < a.min && a.min > 0);
-  const totalCA = S.sales.reduce((s,v) => s+v.total, 0);
-  const totalProfit = S.sales.reduce((s,v) => s+(v.profit||0), 0);
+  const low     = S.articles.filter(a => a && a.stock < a.min && a.min > 0);
+  const totalCA = S.sales.reduce((s,v) => s+(v?.total||0), 0);
+  const totalProfit = S.sales.reduce((s,v) => s+(v?.profit||0), 0);
   const avgMargin = totalCA > 0 ? Math.round((totalProfit / totalCA) * 100) : 0;
-  const stockVal = S.articles.reduce((s,a) => s+a.stock*(a.price||0), 0);
+  const stockVal = S.articles.reduce((s,a) => s+(a?.stock||0)*(a?.price||0), 0);
   const today   = new Date().toDateString();
-  const todaySales = S.sales.filter(s => new Date(s.date).toDateString()===today);
-  const todayCA = todaySales.reduce((s,v)=>s+v.total,0);
-  const todayProfit = todaySales.reduce((s,v)=>s+(v.profit||0),0);
+  const todaySales = S.sales.filter(s => s && new Date(s.date).toDateString()===today);
+  const todayCA = todaySales.reduce((s,v)=>s+(v?.total||0),0);
+  const todayProfit = todaySales.reduce((s,v)=>s+(v?.profit||0),0);
 
   // Top products by revenue
   const prodStats = {};
@@ -4962,8 +4989,8 @@ function vHome() {
   const __currentMember = (typeof getCurrentMember === 'function') ? getCurrentMember() : null;
   const __currentRoleInfo = __currentMember ? (ROLE_LABELS?.[__currentMember.role] || ROLE_LABELS?.admin) : null;
   const __hasTeam = (S.teamMembers||[]).length > 0;
-  const __businessLogo = localStorage.getItem('stockr_logo') || '';
-  const __bizName = S.session.business || S.session.name || '';
+  const __businessLogo = localStorage.getItem('baro_logo') || localStorage.getItem('stockr_logo') || '';
+  const __bizName = (S.session?.business) || (S.session?.name) || '';
   const __bizInitials = (typeof initials === 'function') ? initials(__bizName) : (__bizName.charAt(0) || 'B').toUpperCase();
   return `
   <div class="hero anim">

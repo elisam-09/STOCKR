@@ -1640,6 +1640,114 @@ body.dark .card:hover { border-color: var(--border); }
 [data-theme="dark"] .loc-card { background: var(--gray-8); border-color: var(--gray-7); }
 [data-theme="dark"] .loc-active { background: rgba(79,70,229,.15); border-color: var(--accent); }
 
+/* ── AGENT CARDS (SOVA / SPECTRA) ─────────────── */
+.agent-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 14px;
+  margin-bottom: 10px;
+  background: var(--card);
+  border: 1.5px solid var(--border);
+  border-radius: 16px;
+  cursor: pointer;
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  overflow: hidden;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.agent-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent 55%, rgba(255,255,255,.04));
+  pointer-events: none;
+}
+.agent-card:active { transform: scale(.985); }
+.agent-card:hover  { box-shadow: 0 6px 20px rgba(0,0,0,.08); }
+
+/* Variant SOVA : gold/bronze subtil */
+.agent-sova {
+  border-color: rgba(201,169,110,.35);
+  background: linear-gradient(135deg, rgba(201,169,110,.07), rgba(184,147,90,.03) 60%, var(--card));
+}
+.agent-sova:hover { border-color: #c9a96e; box-shadow: 0 8px 24px rgba(201,169,110,.18); }
+
+/* Variant Spectra : violet électrique */
+.agent-spectra {
+  border-color: rgba(167,139,250,.35);
+  background: linear-gradient(135deg, rgba(124,58,237,.08), rgba(79,70,229,.03) 60%, var(--card));
+}
+.agent-spectra:hover { border-color: #a78bfa; box-shadow: 0 8px 24px rgba(124,58,237,.18); }
+
+/* Badge icône */
+.agent-icon {
+  width: 46px; height: 46px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(0,0,0,.12);
+  position: relative;
+  z-index: 1;
+}
+.agent-icon svg { width: 22px; height: 22px; }
+.agent-icon-sova {
+  background: linear-gradient(135deg, #d4b27a 0%, #c9a96e 50%, #a07e45 100%);
+  box-shadow: 0 4px 14px rgba(201,169,110,.35);
+}
+.agent-icon-spectra {
+  background: linear-gradient(135deg, #a78bfa 0%, #7c3aed 55%, #4f46e5 100%);
+  box-shadow: 0 4px 14px rgba(124,58,237,.35);
+}
+
+/* Bloc texte */
+.agent-info { flex: 1; min-width: 0; position: relative; z-index: 1; }
+.agent-name {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: .3px;
+  margin-bottom: 2px;
+  line-height: 1.15;
+}
+.agent-name-sova    { color: #b8935a; }
+.agent-name-spectra { color: #7c3aed; }
+.agent-sub {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-3);
+  line-height: 1.35;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Flèche */
+.agent-arrow {
+  flex-shrink: 0;
+  opacity: .7;
+  transition: transform .18s ease, opacity .18s ease;
+  position: relative;
+  z-index: 1;
+}
+.agent-card:hover .agent-arrow { opacity: 1; transform: translateX(3px); }
+
+/* Dark theme */
+[data-theme="dark"] .agent-card { background: var(--gray-8); border-color: var(--gray-7); }
+[data-theme="dark"] .agent-sova {
+  background: linear-gradient(135deg, rgba(201,169,110,.10), rgba(184,147,90,.04) 60%, var(--gray-8));
+  border-color: rgba(201,169,110,.28);
+}
+[data-theme="dark"] .agent-spectra {
+  background: linear-gradient(135deg, rgba(124,58,237,.14), rgba(79,70,229,.05) 60%, var(--gray-8));
+  border-color: rgba(167,139,250,.30);
+}
+[data-theme="dark"] .agent-name-sova    { color: #d4b27a; }
+[data-theme="dark"] .agent-name-spectra { color: #a78bfa; }
+
 /* ── QUICK ACTIONS BAR ────────────────────────── */
 .quick-actions-bar {
   display: flex;
