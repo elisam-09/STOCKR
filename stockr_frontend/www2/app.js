@@ -5,6 +5,7 @@
 
 // ── SVG Icons ─────────────────────────────────
 const IC = {
+  sova: `<svg width="22" height="22" viewBox="0 0 466 466" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M139.8,45c4.143,0,7.5-3.357,7.5-7.5s-3.357-7.5-7.5-7.5c-12.253,0-23.152,5.907-30,15.023C102.953,35.907,92.053,30,79.8,30c-4.143,0-7.5,3.357-7.5,7.5s3.357,7.5,7.5,7.5c12.406,0,22.5,10.094,22.5,22.5c0,4.143,3.357,7.5,7.5,7.5s7.5-3.357,7.5-7.5C117.3,55.094,127.394,45,139.8,45z"/><path d="M422.411,424.297L200.338,96.142c-5.44-8.039-13.984-14.288-24.005-17.705c0.642-12.645,0.967-26.383,0.967-40.937v-30c0-4.143-3.357-7.5-7.5-7.5h-120c-4.143,0-7.5,3.357-7.5,7.5v30c0,57.634,5.026,100.198,15.819,133.955c11.204,35.041,28.415,59.516,45.405,80.706c3.173,5.901,6.513,11.827,9.749,17.563c18.762,33.257,38.02,67.4,45.635,128.945c0.011,0.503,0.07,0.993,0.176,1.467c1.819,15.173,2.938,31.993,3.171,50.864h-52.454c-4.143,0-7.5,3.357-7.5,7.5s3.357,7.5,7.5,7.5h60h60c4.143,0,7.5-3.357,7.5-7.5c0-19.311-2.089-36.706-5.754-52.5h20.321c4.143,0,7.5-3.357,7.5-7.5v-65.549c0-4.143-3.357-7.5-7.5-7.5c-4.143,0-7.5,3.357-7.5,7.5V391h-16.913c-16.582-52.774-51.15-86.389-80.492-114.912c-11.674-11.348-22.7-22.066-31.316-32.786c-0.024-0.03-0.048-0.06-0.072-0.09c-0.005-0.006-0.01-0.013-0.016-0.02C76.087,194.048,57.299,150.686,57.299,37.5V15h105v22.5c0,16.614-0.43,32.124-1.277,46.099c-0.225,3.711,2.303,7.027,5.941,7.793c8.797,1.853,16.63,6.771,20.952,13.157l133.232,196.875c-6.405,0.715-12.873,1.077-19.335,1.077c-94.841,0-172-77.159-172-172c0-4.143-3.357-7.5-7.5-7.5s-7.5,3.357-7.5,7.5c0,103.112,83.888,187,187,187c9.625,0,19.265-0.744,28.726-2.201l79.451,117.404c2.321,3.432,6.984,4.331,10.414,2.008C423.834,432.39,424.733,427.727,422.411,424.297z"/></svg>`,
   // ── Logo BARO — hexagone + B stylisé (remplace l'ancien logo S) ──
   baro:     `<svg width="28" height="28" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"><polygon points="24,4 42,14 42,34 24,44 6,34 6,14" fill="none"/><g fill="currentColor" stroke="none"><rect x="15" y="14" width="5" height="20" rx="1"/><path d="M20 14 h7 a6 6 0 0 1 6 6 v0 a6 6 0 0 1 -6 6 h-7 z"/><path d="M20 26 h8 a6 6 0 0 1 6 6 v0 a6 6 0 0 1 -6 6 h-8 z"/></g></svg>`,
   baroLg:   `<svg width="56" height="56" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><polygon points="24,4 42,14 42,34 24,44 6,34 6,14" fill="none"/><g fill="currentColor" stroke="none"><rect x="15" y="14" width="5" height="20" rx="1"/><path d="M20 14 h7 a6 6 0 0 1 6 6 v0 a6 6 0 0 1 -6 6 h-7 z"/><path d="M20 26 h8 a6 6 0 0 1 6 6 v0 a6 6 0 0 1 -6 6 h-8 z"/></g></svg>`,
@@ -1185,6 +1186,8 @@ const S = {
   saleNewClient: false,
   globalSearch:  '',
   predictions:   [],
+  sovaTab: 'overview',
+  sovaArticle: null,
   // Locations
   locations:        JSON.parse(localStorage.getItem('baro_locations') || '[]'),
   currentLocation:  localStorage.getItem('baro_current_location') || null,
@@ -4128,7 +4131,7 @@ function _doRender() {
     sales: vSales, financial: vFinancial,
     detail: vDetail, add: vAdd, 'add-product': vAddProduct,
     'edit-product': vEditProduct, settings: vSettings,
-    spectra: vSpectraEnhanced, clients: vClients, 'add-client': vAddClient,
+    sova: vSova, spectra: vSpectraEnhanced, clients: vClients, 'add-client': vAddClient,
     'client-detail': vClientDetail, notifications: vNotifications,
     catalog: vCatalog, suppliers: vSuppliers,
     'add-supplier': vAddSupplier, 'supplier-detail': vSupplierDetail,
@@ -4944,6 +4947,23 @@ function vHome() {
     </div>
     ${_showSearch ? _searchHTML : ''}
     ${!_showSearch ? `
+    <div class="section-hd" style="margin-top:4px"><div class="section-lbl" style="font-size:12px;letter-spacing:.5px;color:var(--text-3);font-weight:700">✦ TES AGENTS IA</div></div>
+    <div class="agent-card agent-sova" onclick="nav('sova')">
+      <div class="agent-icon agent-icon-sova">${IC.sova}</div>
+      <div class="agent-info">
+        <div class="agent-name agent-name-sova">SOVA</div>
+        <div class="agent-sub">Intelligence de stock · prévisions & alertes</div>
+      </div>
+      <svg class="agent-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c9a96e" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>
+    <div class="agent-card agent-spectra" onclick="nav('spectra')">
+      <div class="agent-icon agent-icon-spectra">${IC.camera}</div>
+      <div class="agent-info">
+        <div class="agent-name agent-name-spectra">Spectra</div>
+        <div class="agent-sub">Scanner IA · audit automatique du stock</div>
+      </div>
+      <svg class="agent-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>
     <div class="quick-actions-bar">
       <button class="qa-btn qa-spectra" onclick="nav('spectra')">
         <div class="qa-ico">${IC.camera}</div>
@@ -6200,6 +6220,110 @@ function vFinancial() {
         <button class="btn btn-ghost" onclick="nav('exports')" style="padding:10px;font-size:12px;grid-column:1/-1">⚙️ Tous les exports (Stock, Clients, Packs...)</button>
       </div>
     </div>
+  </div>`;
+}
+
+// ── SOVA ─────────────────────────────────────
+function sovaData() {
+  const d = S.predictions;
+  if (!d) return { preds: [], score: 50, isNew: false };
+  if (Array.isArray(d)) return { preds: d, score: 50, isNew: false };
+  return { preds: d.predictions||[], score: d.score||50, isNew: true, introKey: d.intro_key, revRisk: d.revenue_at_risk||0, revRiskList: d.revenue_at_risk_articles||[], producible: d.producible||[], blocked: d.blocked||[], tomorrow: d.tomorrow||null };
+}
+
+const SOVA_INTROS = {
+  excellent: [n=>`Tout se porte à merveille, ${n} !`, n=>`${n}, ton stock respire.`, n=>`Beau travail, ${n} — rien à signaler.`, n=>`Tout roule. SOVA veille.`, n=>`${n}, tes étagères sont heureuses.`],
+  good: [n=>`${n}, ça tient bien. Quelques détails à surveiller.`, n=>`Bonne santé globale, ${n}.`, n=>`Presque parfait, ${n} — juste quelques nuages.`, n=>`${n}, tes stocks sont stables.`, n=>`Tout va bien, ${n}. SOVA reste aux aguets.`],
+  warning_one: [n=>`${n}, un article mérite ton attention.`, n=>`Attention, ${n} — SOVA a repéré quelque chose.`, n=>`${n}, un signal faible à ne pas ignorer.`, n=>`Presque tout va bien, ${n}. Mais il y a un "mais".`, n=>`${n}, un article te glisse entre les doigts.`],
+  warning_multi: [n=>`${n}, quelques articles réclament ta vigilance.`, n=>`SOVA a des choses à te dire, ${n}.`, n=>`${n}, le tableau est bon — mais pas tout à fait.`, n=>`Quelques signaux, ${n}.`, n=>`${n}, SOVA a repéré plusieurs points à surveiller.`],
+  critical_one: [n=>`${n}, agis vite — une rupture approche.`, n=>`SOVA sonne l'alarme, ${n}.`, n=>`${n}, il faut commander. Maintenant.`, n=>`Un article risque de te faire faux bond, ${n}.`, n=>`${n}, SOVA a vu ce que tu n'as pas encore vu.`],
+  critical_multi: [n=>`${n}, plusieurs ruptures sont imminentes.`, n=>`Alerte rouge, ${n}. SOVA a besoin que tu agisses.`, n=>`${n}, le stock souffre. SOVA est là.`, n=>`Plusieurs articles critiques, ${n}.`, n=>`${n}, SOVA a les yeux grands ouverts.`],
+  neutral: [n=>`${n}, SOVA analyse tes données.`, n=>`Bonjour ${n} — SOVA apprend tes habitudes.`, n=>`${n}, enregistre des ventes pour que SOVA s'affûte.`, n=>`Pas encore assez de données, ${n}. SOVA observe.`, n=>`${n}, SOVA prend ses marques.`],
+};
+function sovaIntro(key, name) { const arr = SOVA_INTROS[key]||SOVA_INTROS.neutral; return arr[new Date().getDate()%arr.length](name||'toi'); }
+
+function sovaChartCoverage(preds) {
+  const items = preds.filter(p=>p.daily_demand>0.01&&p.days_remaining!==null).sort((a,b)=>(a.days_remaining||99)-(b.days_remaining||99)).slice(0,12);
+  if (!items.length) return '';
+  const maxDays=30;
+  return `<div class="sova-chart-card"><div class="sova-chart-title">Couverture de stock · jours restants</div><div class="sova-coverage-list">${items.map((p,i)=>{const days=Math.min(p.days_remaining||0,maxDays);const pct=Math.max(2,(days/maxDays)*100);const fill=days<3?'#fca5a5':days<7?'#fde68a':'#a7f3d0';const bord=days<3?'#ef4444':days<7?'#f59e0b':'#10b981';return `<div class="sova-cov-row" style="animation-delay:${i*0.05}s"><div class="sova-cov-name">${p.article_name}</div><div class="sova-cov-track"><div class="sova-cov-bar" style="width:${pct}%;background:${fill};border-right:2px solid ${bord}"></div></div><div class="sova-cov-days" style="color:${bord}">${days<maxDays?(p.days_remaining||0).toFixed(1)+'j':'30j+'}</div></div>`;}).join('')}</div></div>`;
+}
+
+function sovaChartForecast(sel) {
+  if(!sel||sel.daily_demand<=0.01) return '';
+  const W=260,H=90,DAYS=14,maxY=Math.max(sel.current_stock*1.15,sel.reorder_point*1.5,0.1);
+  const pts=[];for(let d=0;d<=DAYS;d++){pts.push(`${(d/DAYS)*W},${H-(Math.max(0,sel.current_stock-sel.daily_demand*d)/maxY)*H}`);}
+  const rpY=H-(sel.reorder_point/maxY)*H,rDay=Math.min(sel.days_remaining||DAYS,DAYS),rX=(rDay/DAYS)*W;
+  return `<div class="sova-forecast-wrap"><div class="sova-forecast-title">Projection 14 jours</div><svg class="sova-forecast-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" width="100%" height="80">${sel.reorder_point>0&&rpY>0&&rpY<H?`<line x1="0" y1="${rpY.toFixed(1)}" x2="${W}" y2="${rpY.toFixed(1)}" stroke="#f59e0b" stroke-width="1.2" stroke-dasharray="5,3"/>`:''}${rDay<DAYS?`<line x1="${rX.toFixed(1)}" y1="0" x2="${rX.toFixed(1)}" y2="${H}" stroke="#ef4444" stroke-width="1.2" stroke-dasharray="3,2"/>`:''}` +
+  `<polygon points="0,${H} ${pts.join(' ')} ${((Math.min(rDay,DAYS)/DAYS)*W).toFixed(1)},${H}" fill="rgba(138,103,41,0.09)"/><polyline points="${pts.join(' ')}" fill="none" stroke="#8A6729" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`;
+}
+
+function vSova() {
+  const d=S.predictions,isNew=d&&!Array.isArray(d);
+  const score=isNew?(d.score??50):50,introKey=isNew?(d.intro_key||'neutral'):'neutral';
+  const revRisk=isNew?(d.revenue_at_risk||0):0,revRiskList=isNew?(d.revenue_at_risk_articles||[]):[];
+  const producible=isNew?(d.producible||[]):[];const blocked=isNew?(d.blocked||[]):[];const tomorrow=isNew?(d.tomorrow||null):null;
+  const preds=isNew?(d.predictions||[]):(Array.isArray(d)?d:[]);
+  const name=S.session?.name?.split(' ')[0]||'';
+  const introText=sovaIntro(introKey,name);
+  const scoreColor=score>=80?'#22c55e':score>=60?'#f59e0b':'#ef4444';
+  const scoreLabel=score>=80?'Excellent':score>=60?'Attention':'Critique';
+  const alertPreds=preds.filter(p=>p.status==='critical'||p.status==='warning');
+  const criticalPreds=preds.filter(p=>p.status==='critical');
+  const warningPreds=preds.filter(p=>p.status==='warning');
+  const tabs=[{id:'overview',label:'Aperçu'},{id:'alerts',label:`Alertes${alertPreds.length>0?' · '+alertPreds.length:''}`},{id:'tomorrow',label:'Demain'},{id:'articles',label:'Articles'}];
+  const R=40,C=2*Math.PI*R,dash=(score/100)*C;
+
+  function tabOverview() {
+    return `<div class="sova-score-card">
+      <div class="sova-score-ring-wrap">
+        <svg width="100" height="100" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="${R}" fill="none" stroke="#e8e4d9" stroke-width="8"/>
+          <circle cx="50" cy="50" r="${R}" fill="none" stroke="${scoreColor}" stroke-width="8" stroke-dasharray="${dash.toFixed(1)} ${C.toFixed(1)}" stroke-dashoffset="${(C/4).toFixed(1)}" stroke-linecap="round"/>
+        </svg>
+        <div class="sova-score-inner"><div class="sova-score-num" style="color:${scoreColor}">${score}</div><div class="sova-score-sub">/100</div></div>
+      </div>
+      <div class="sova-score-right">
+        <div class="sova-score-label" style="color:${scoreColor}">${scoreLabel}</div>
+        <div class="sova-intro-text">${introText}</div>
+        ${criticalPreds.length>0?`<div class="sova-score-detail sova-critical-dot">${criticalPreds.length} rupture${criticalPreds.length>1?'s':''} imminente${criticalPreds.length>1?'s':''}</div>`:''}
+        ${warningPreds.length>0?`<div class="sova-score-detail sova-warning-dot">${warningPreds.length} article${warningPreds.length>1?'s':''} à surveiller</div>`:''}
+      </div>
+    </div>
+    ${preds.length>0?sovaChartCoverage(preds):`<div class="sova-empty"><div class="sova-empty-title">SOVA observe</div><div class="sova-empty-sub">Enregistre des ventes pour que SOVA commence à prédire.</div></div>`}`;
+  }
+
+  function tabAlerts() {
+    if(alertPreds.length===0) return `<div class="sova-empty"><div class="sova-empty-title">Pas d'alerte</div><div class="sova-empty-sub">Tout est bien approvisionné. SOVA veille.</div></div>`;
+    return alertPreds.map((p,i)=>{const isCrit=p.status==='critical';const probColor=p.rupture_probability>=70?'#ef4444':p.rupture_probability>=40?'#f59e0b':'#22c55e';return `<div class="sova-alert-card ${isCrit?'sova-alert-critical':'sova-alert-warning'}" style="animation-delay:${i*0.05}s"><div class="sova-alert-top"><div><div class="sova-alert-name">${p.article_name}</div><div class="sova-alert-msg">${p.action?`${p.action.verb} — ${p.action.quantity} ${p.action.unit} avant le ${p.action.before}`:p.message||''}</div></div><div class="sova-alert-risk" style="color:${probColor}">${p.rupture_probability?.toFixed(0)||'—'}%</div></div><div class="sova-alert-stats"><div class="sova-alert-stat"><div class="sova-alert-stat-label">Stock</div><div class="sova-alert-stat-val">${p.current_stock} ${p.unit}</div></div>${p.days_remaining!=null?`<div class="sova-alert-stat"><div class="sova-alert-stat-label">Jours restants</div><div class="sova-alert-stat-val">${p.days_remaining}j</div></div>`:''}<div class="sova-alert-stat"><div class="sova-alert-stat-label">À commander</div><div class="sova-alert-stat-val">${p.order_quantity} ${p.unit}</div></div></div><div class="sova-conf-bar"><div class="sova-conf-fill" style="width:${p.confidence}%"></div></div></div>`;}).join('');
+  }
+
+  function tabTomorrow() {
+    if(!tomorrow||!tomorrow.plan||tomorrow.plan.length===0) return `<div class="sova-empty"><div class="sova-empty-title">Pas encore assez de données</div><div class="sova-empty-sub">SOVA a besoin de quelques jours de ventes pour planifier.</div></div>`;
+    return `<div class="sova-tomorrow-header"><div class="sova-tomorrow-day">${tomorrow.weekday}</div><div class="sova-tomorrow-sub">Plan de production suggéré</div></div>${tomorrow.plan.map((item,i)=>`<div class="sova-plan-card" style="animation-delay:${i*0.06}s"><div class="sova-plan-top"><div class="sova-plan-name">${item.product_name}</div><div class="sova-plan-qty">${item.expected_qty} unités</div></div><div class="sova-plan-ingredients">${(item.ingredients||[]).map(ing=>`<div class="sova-plan-ing ${ing.sufficient?'':'sova-ing-warn'}"><span class="sova-ing-name">${ing.article_name}</span><span class="sova-ing-need">${ing.needed.toFixed(2)} ${ing.unit}</span><span class="sova-ing-avail">${ing.sufficient?'✓':'!'} ${ing.available.toFixed(2)} dispo</span></div>`).join('')}</div></div>`).join('')}`;
+  }
+
+  function tabArticles() {
+    const filtered=preds.filter(p=>p.status!=='no_data');
+    if(filtered.length===0) return `<div class="sova-empty"><div class="sova-empty-title">Pas encore de données</div><div class="sova-empty-sub">Enregistre tes premières ventes pour voir les analyses.</div></div>`;
+    const sel=S.sovaArticle?filtered.find(p=>p.article_id===S.sovaArticle)||filtered[0]:filtered[0];
+    return `<div class="sova-art-selector">${filtered.map(p=>`<button class="sova-art-chip ${sel&&sel.article_id===p.article_id?'active':''}" onclick="S.sovaArticle=${p.article_id};render()"><span class="sova-art-dot sova-dot-${p.status}"></span>${p.article_name}</button>`).join('')}</div>${sel?`<div class="sova-detail-card"><div class="sova-detail-name">${sel.article_name}</div><div class="sova-detail-grid"><div class="sova-detail-kpi"><div class="sova-detail-kpi-val">${sel.current_stock} <span style="font-size:14px">${sel.unit}</span></div><div class="sova-detail-kpi-label">En stock</div></div><div class="sova-detail-kpi"><div class="sova-detail-kpi-val">${sel.daily_demand>0.01?sel.daily_demand?.toFixed(2):'—'}</div><div class="sova-detail-kpi-label">Demande/j</div></div><div class="sova-detail-kpi"><div class="sova-detail-kpi-val" style="color:${sel.trend_pct>0?'#22c55e':sel.trend_pct<0?'#ef4444':'#9ca3af'}">${sel.daily_demand>0.01&&sel.trend_pct!==0?(sel.trend_pct>=0?'+':'')+sel.trend_pct+'%':'—'}</div><div class="sova-detail-kpi-label">Tendance</div></div><div class="sova-detail-kpi"><div class="sova-detail-kpi-val">${sel.days_remaining!==null&&sel.daily_demand>0.01?sel.days_remaining+'j':'∞'}</div><div class="sova-detail-kpi-label">Jours restants</div></div></div>${sovaChartForecast(sel)}${sel.action?`<div class="sova-action-banner sova-action-${sel.action.urgency}"><div class="sova-action-verb">${sel.action.verb}</div><div class="sova-action-detail">${sel.action.quantity} ${sel.action.unit} · avant le ${sel.action.before}</div></div>`:''}</div>`:''}`;
+  }
+
+  const tabContent=S.sovaTab==='overview'?tabOverview():S.sovaTab==='alerts'?tabAlerts():S.sovaTab==='tomorrow'?tabTomorrow():tabArticles();
+  const OWL=`<svg width="44" height="44" viewBox="0 0 466 466" fill="#8A6729" xmlns="http://www.w3.org/2000/svg"><path d="M139.8,45c4.143,0,7.5-3.357,7.5-7.5s-3.357-7.5-7.5-7.5c-12.253,0-23.152,5.907-30,15.023C102.953,35.907,92.053,30,79.8,30c-4.143,0-7.5,3.357-7.5,7.5s3.357,7.5,7.5,7.5c12.406,0,22.5,10.094,22.5,22.5c0,4.143,3.357,7.5,7.5,7.5s7.5-3.357,7.5-7.5C117.3,55.094,127.394,45,139.8,45z"/><path d="M422.411,424.297L200.338,96.142c-5.44-8.039-13.984-14.288-24.005-17.705c0.642-12.645,0.967-26.383,0.967-40.937v-30c0-4.143-3.357-7.5-7.5-7.5h-120c-4.143,0-7.5,3.357-7.5,7.5v30c0,57.634,5.026,100.198,15.819,133.955c11.204,35.041,28.415,59.516,45.405,80.706c3.173,5.901,6.513,11.827,9.749,17.563c18.762,33.257,38.02,67.4,45.635,128.945c0.011,0.503,0.07,0.993,0.176,1.467c1.819,15.173,2.938,31.993,3.171,50.864h-52.454c-4.143,0-7.5,3.357-7.5,7.5s3.357,7.5,7.5,7.5h60h60c4.143,0,7.5-3.357,7.5-7.5c0-19.311-2.089-36.706-5.754-52.5h20.321c4.143,0,7.5-3.357,7.5-7.5v-65.549c0-4.143-3.357-7.5-7.5-7.5c-4.143,0-7.5,3.357-7.5,7.5V391h-16.913c-16.582-52.774-51.15-86.389-80.492-114.912c-11.674-11.348-22.7-22.066-31.316-32.786C76.087,194.048,57.299,150.686,57.299,37.5V15h105v22.5c0,16.614-0.43,32.124-1.277,46.099c-0.225,3.711,2.303,7.027,5.941,7.793c8.797,1.853,16.63,6.771,20.952,13.157l133.232,196.875c-6.405,0.715-12.873,1.077-19.335,1.077c-94.841,0-172-77.159-172-172c0-4.143-3.357-7.5-7.5-7.5s-7.5,3.357-7.5,7.5c0,103.112,83.888,187,187,187c9.625,0,19.265-0.744,28.726-2.201l79.451,117.404c2.321,3.432,6.984,4.331,10.414,2.008C423.834,432.39,424.733,427.727,422.411,424.297z"/></svg>`;
+  return `<div class="sova-wrap">
+    <div class="sova-header">
+      <div class="sova-header-top">
+        <div class="sova-header-nav">
+          <button class="sova-back-btn" onclick="nav('home')">${IC.left}</button>
+          <div class="sova-brand"><span class="sova-owl">${OWL}</span><span class="sova-brand-name">SOVA</span></div>
+        </div>
+        <div class="sova-tagline">Intelligence de stock</div>
+      </div>
+      <div class="sova-tabs">${tabs.map(tab=>`<button class="sova-tab ${S.sovaTab===tab.id?'active':''}" onclick="S.sovaTab='${tab.id}';render()">${tab.label}</button>`).join('')}</div>
+    </div>
+    <div class="sova-content container">${tabContent}</div>
   </div>`;
 }
 
