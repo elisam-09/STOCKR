@@ -2323,66 +2323,34 @@ async function doRegister() {
     showToast(t('fillAll') || 'Remplissez tous les champs', 'error');
     return;
   }
-  // Étape 1 : envoi code de vérification email AVANT création du compte
-  const code = String(Math.floor(100000 + Math.random() * 900000));
-  S.signupPending = {
-    code,
-    expires: Date.now() + 10 * 60 * 1000,
-    data: { name, business, email, pwd,
-      country: S.authCountry, language: S.authLang, currency: S.authCurrency,
-      profile: S.authProfile, tax: S.authTax }
-  };
-  S.signupCodeInput = '';
-  S.view = 'signup-verify';
-  render();
-  (async () => {
-    const r = await _sendVerificationEmail(email, code, "Vérification d'inscription BARO");
-    if (r.ok) {
-      showToast('📧 Code envoyé à ' + email, 'success');
-    } else {
-      // Fallback : affiche le code pour dev/config manquante + ouvre mailto
-      showToast('📧 Email non configuré — code : ' + code, 'info');
-      try { _openMailtoVerification(email, code); } catch(_){}
-    }
-  })();
-}
-
-async function confirmSignupVerification() {
-  const p = S.signupPending;
-  if (!p) { S.view = 'home'; S.authView = 'register'; render(); return; }
-  if (Date.now() > p.expires) { showToast('Code expiré. Renvoyez-le.', 'error'); return; }
-  const input = (S.signupCodeInput || '').trim();
-  if (input !== p.code) {
-    showToast('Code incorrect', 'error');
-    return;
-  }
-  const d = p.data;
+  // Création directe du compte — pas d'étape de vérification email.
+  // L'email est un simple identifiant (comme un username) ; validation format uniquement.
   try {
     const data = await api('POST', '/api/auth/register', {
-      email:         d.email,
-      password:      d.pwd,
-      name:          d.name,
-      business_name: d.business || d.name,
-      country:       d.country,
-      language:      d.language,
-      currency:      d.currency,
-      profile:       d.profile,
-      tax_rate:      parseFloat(d.tax) || 0,
+      email,
+      password:      pwd,
+      name,
+      business_name: business || name,
+      country:       S.authCountry,
+      language:      S.authLang,
+      currency:      S.authCurrency,
+      profile:       S.authProfile,
+      tax_rate:      parseFloat(S.authTax) || 0,
       email_verified: true,
     });
     const u = data.user;
-    S.token   = u.auth_token;
+    S.token = u.auth_token;
     // Mapping profile UI → businessType (driver de toute l'UI adaptative)
-    const bt = d.profile === 'reseller' ? 'reseller' : d.profile === 'transformer' ? 'maker' : 'mixed';
+    const bt = S.authProfile === 'reseller' ? 'reseller' : S.authProfile === 'transformer' ? 'maker' : 'mixed';
     S.session = {
       id: u.id, name: u.name, email: u.email, business: u.business_name,
-      profile:         d.profile,
+      profile:         S.authProfile,
       businessType:    bt,
-      currency:        d.currency,
-      currency_symbol: getCurrencySymbol(d.currency),
-      country:         d.country,
-      language:        d.language,
-      tax_rate:        parseFloat(d.tax) || 0,
+      currency:        S.authCurrency,
+      currency_symbol: getCurrencySymbol(S.authCurrency),
+      country:         S.authCountry,
+      language:        S.authLang,
+      tax_rate:        parseFloat(S.authTax) || 0,
       email_verified:  true,
       email_verified_at: new Date().toISOString(),
     };
@@ -2400,13 +2368,11 @@ async function confirmSignupVerification() {
       localStorage.setItem('stockr_sales',    JSON.stringify(S.sales));
     } catch(_){}
     if (typeof logAudit === 'function') logAudit('auth', 'register', { email: u.email, bt, verified: true });
-    S.signupPending = null;
-    S.signupCodeInput = '';
     S.authEmail = S.authPwd = S.authPwd2 = S.authName = S.authBiz = '';
     S.authStep = 1;
     S.view = 'home';
     const btLabel = bt === 'reseller' ? '🏪 Revendeur' : bt === 'maker' ? '🏭 Transformateur' : '🔀 Mixte';
-    showToast(`✅ Email vérifié ! Bienvenue, ${d.name} ! Mode ${btLabel} activé.`, 'success');
+    showToast(`✅ Bienvenue, ${name} ! Mode ${btLabel} activé.`, 'success');
     render();
     await loadData();
   } catch(e) {
@@ -2414,24 +2380,10 @@ async function confirmSignupVerification() {
   }
 }
 
-async function resendSignupVerification() {
-  const p = S.signupPending;
-  if (!p) return;
-  p.code = String(Math.floor(100000 + Math.random() * 900000));
-  p.expires = Date.now() + 10 * 60 * 1000;
-  const r = await _sendVerificationEmail(p.data.email, p.code, "Vérification d'inscription BARO");
-  if (r.ok) showToast('📧 Nouveau code envoyé à ' + p.data.email, 'success');
-  else showToast('Code : ' + p.code + ' (email non configuré)', 'info');
-}
-
-function cancelSignupVerification() {
-  S.signupPending = null;
-  S.signupCodeInput = '';
-  S.view = 'home';
-  S.authView = 'register';
-  S.authStep = 2;
-  render();
-}
+// Stubs pour compat avec anciens onclick localStorage/templates — ne doivent plus être appelés
+async function confirmSignupVerification() { S.signupPending = null; S.view = 'home'; S.authView = 'register'; render(); }
+async function resendSignupVerification()  { /* no-op : vérification email supprimée */ }
+function   cancelSignupVerification()      { S.signupPending = null; S.view = 'home'; S.authView = 'register'; S.authStep = 2; render(); }
 
 function vSignupVerify() {
   const p = S.signupPending;
@@ -4150,16 +4102,6 @@ function _doRender() {
     return;
   }
 
-  // Vérification email d'inscription en attente → écran de saisie du code
-  if (S.signupPending && S.view === 'signup-verify') {
-    navEl.style.display = 'none';
-    __markViewTransition('signup-verify');
-    viewEl.innerHTML = vSignupVerify();
-    if (!sameView) viewEl.scrollTop = 0;
-    __restoreUIState(snap);
-    return;
-  }
-
   // Pas de session → écran auth
   if (!S.session) {
     navEl.style.display = 'none';
@@ -4315,7 +4257,7 @@ function vAuth() {
         ${isLogin ? t('loginBtn') : t('next') + ' →'}
       </button>
 
-      ${isLogin ? `
+      ${isLogin && window.PublicKeyCredential ? `
       <!-- Separator -->
       <div style="display:flex;align-items:center;gap:10px;margin:18px 0 12px">
         <div style="flex:1;height:1px;background:var(--border)"></div>
@@ -4323,22 +4265,13 @@ function vAuth() {
         <div style="flex:1;height:1px;background:var(--border)"></div>
       </div>
 
-      <!-- Social login -->
-      <div style="display:flex;flex-direction:column;gap:8px">
-        <button class="btn" onclick="loginGoogle()" style="background:#fff;color:#3c4043;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;gap:10px;font-weight:600;padding:12px">
-          <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/><path fill="#FF3D00" d="m6.306 14.691 6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/><path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0 1 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/><path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/></svg>
-          Continuer avec Google
-        </button>
-        <button class="btn" onclick="loginApple()" style="background:#000;color:#fff;display:flex;align-items:center;justify-content:center;gap:10px;font-weight:600;padding:12px">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>
-          Continuer avec Apple
-        </button>
-        ${window.PublicKeyCredential ? `
-        <button class="btn" onclick="loginBiometric()" style="background:var(--card-bg);color:var(--accent);border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;gap:10px;font-weight:700;padding:12px">
-          <span style="font-size:18px">👆</span>
-          Connexion biométrique
-        </button>` : ''}
-      </div>
+      <!-- Connexion biométrique (WebAuthn natif navigateur — 100% fonctionnel) -->
+      <button class="btn" onclick="loginBiometric()" style="background:var(--card-bg);color:var(--accent);border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;gap:10px;font-weight:700;padding:12px;width:100%">
+        <span style="font-size:18px">👆</span>
+        Connexion biométrique
+      </button>
+      ` : ''}
+      ${isLogin ? `
       <div style="margin-top:12px;text-align:center;display:flex;align-items:center;justify-content:center;gap:6px;font-size:10px;color:var(--text-3)">
         <span>🔒</span><span>Connexion sécurisée SSL</span>
       </div>
@@ -12115,16 +12048,6 @@ function vSettings() {
             <div>
               <div class="settings-row-lbl">Sécurité</div>
               <div class="settings-row-sub">2FA · Biométrie · Sessions</div>
-            </div>
-          </div>
-          ${IC.chevron}
-        </div>
-        <div class="settings-row" onclick="nav('oauth-setup')">
-          <div class="settings-row-inner">
-            <span class="settings-row-ico" style="color:#4285F4">🔗</span>
-            <div>
-              <div class="settings-row-lbl">Connexions OAuth</div>
-              <div class="settings-row-sub">${localStorage.getItem('stockr_google_client_id')?'🟢':'⚪'} Google · ${localStorage.getItem('stockr_apple_service_id')?'🟢':'⚪'} Apple</div>
             </div>
           </div>
           ${IC.chevron}
