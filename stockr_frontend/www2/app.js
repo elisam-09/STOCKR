@@ -2326,66 +2326,34 @@ async function doRegister() {
     showToast(t('fillAll') || 'Remplissez tous les champs', 'error');
     return;
   }
-  // Étape 1 : envoi code de vérification email AVANT création du compte
-  const code = String(Math.floor(100000 + Math.random() * 900000));
-  S.signupPending = {
-    code,
-    expires: Date.now() + 10 * 60 * 1000,
-    data: { name, business, email, pwd,
-      country: S.authCountry, language: S.authLang, currency: S.authCurrency,
-      profile: S.authProfile, tax: S.authTax }
-  };
-  S.signupCodeInput = '';
-  S.view = 'signup-verify';
-  render();
-  (async () => {
-    const r = await _sendVerificationEmail(email, code, "Vérification d'inscription BARO");
-    if (r.ok) {
-      showToast('📧 Code envoyé à ' + email, 'success');
-    } else {
-      // Fallback : affiche le code pour dev/config manquante + ouvre mailto
-      showToast('📧 Email non configuré — code : ' + code, 'info');
-      try { _openMailtoVerification(email, code); } catch(_){}
-    }
-  })();
-}
-
-async function confirmSignupVerification() {
-  const p = S.signupPending;
-  if (!p) { S.view = 'home'; S.authView = 'register'; render(); return; }
-  if (Date.now() > p.expires) { showToast('Code expiré. Renvoyez-le.', 'error'); return; }
-  const input = (S.signupCodeInput || '').trim();
-  if (input !== p.code) {
-    showToast('Code incorrect', 'error');
-    return;
-  }
-  const d = p.data;
+  // Création directe du compte — pas d'étape de vérification email.
+  // L'email est un simple identifiant (comme un username) ; validation format uniquement.
   try {
     const data = await api('POST', '/api/auth/register', {
-      email:         d.email,
-      password:      d.pwd,
-      name:          d.name,
-      business_name: d.business || d.name,
-      country:       d.country,
-      language:      d.language,
-      currency:      d.currency,
-      profile:       d.profile,
-      tax_rate:      parseFloat(d.tax) || 0,
+      email,
+      password:      pwd,
+      name,
+      business_name: business || name,
+      country:       S.authCountry,
+      language:      S.authLang,
+      currency:      S.authCurrency,
+      profile:       S.authProfile,
+      tax_rate:      parseFloat(S.authTax) || 0,
       email_verified: true,
     });
     const u = data.user;
-    S.token   = u.auth_token;
+    S.token = u.auth_token;
     // Mapping profile UI → businessType (driver de toute l'UI adaptative)
-    const bt = d.profile === 'reseller' ? 'reseller' : d.profile === 'transformer' ? 'maker' : 'mixed';
+    const bt = S.authProfile === 'reseller' ? 'reseller' : S.authProfile === 'transformer' ? 'maker' : 'mixed';
     S.session = {
       id: u.id, name: u.name, email: u.email, business: u.business_name,
-      profile:         d.profile,
+      profile:         S.authProfile,
       businessType:    bt,
-      currency:        d.currency,
-      currency_symbol: getCurrencySymbol(d.currency),
-      country:         d.country,
-      language:        d.language,
-      tax_rate:        parseFloat(d.tax) || 0,
+      currency:        S.authCurrency,
+      currency_symbol: getCurrencySymbol(S.authCurrency),
+      country:         S.authCountry,
+      language:        S.authLang,
+      tax_rate:        parseFloat(S.authTax) || 0,
       email_verified:  true,
       email_verified_at: new Date().toISOString(),
     };
@@ -2403,13 +2371,11 @@ async function confirmSignupVerification() {
       localStorage.setItem('stockr_sales',    JSON.stringify(S.sales));
     } catch(_){}
     if (typeof logAudit === 'function') logAudit('auth', 'register', { email: u.email, bt, verified: true });
-    S.signupPending = null;
-    S.signupCodeInput = '';
     S.authEmail = S.authPwd = S.authPwd2 = S.authName = S.authBiz = '';
     S.authStep = 1;
     S.view = 'home';
     const btLabel = bt === 'reseller' ? '🏪 Revendeur' : bt === 'maker' ? '🏭 Transformateur' : '🔀 Mixte';
-    showToast(`✅ Email vérifié ! Bienvenue, ${d.name} ! Mode ${btLabel} activé.`, 'success');
+    showToast(`✅ Bienvenue, ${name} ! Mode ${btLabel} activé.`, 'success');
     render();
     await loadData();
   } catch(e) {
@@ -2417,24 +2383,10 @@ async function confirmSignupVerification() {
   }
 }
 
-async function resendSignupVerification() {
-  const p = S.signupPending;
-  if (!p) return;
-  p.code = String(Math.floor(100000 + Math.random() * 900000));
-  p.expires = Date.now() + 10 * 60 * 1000;
-  const r = await _sendVerificationEmail(p.data.email, p.code, "Vérification d'inscription BARO");
-  if (r.ok) showToast('📧 Nouveau code envoyé à ' + p.data.email, 'success');
-  else showToast('Code : ' + p.code + ' (email non configuré)', 'info');
-}
-
-function cancelSignupVerification() {
-  S.signupPending = null;
-  S.signupCodeInput = '';
-  S.view = 'home';
-  S.authView = 'register';
-  S.authStep = 2;
-  render();
-}
+// Stubs pour compat avec anciens onclick localStorage/templates — ne doivent plus être appelés
+async function confirmSignupVerification() { S.signupPending = null; S.view = 'home'; S.authView = 'register'; render(); }
+async function resendSignupVerification()  { /* no-op : vérification email supprimée */ }
+function   cancelSignupVerification()      { S.signupPending = null; S.view = 'home'; S.authView = 'register'; S.authStep = 2; render(); }
 
 function vSignupVerify() {
   const p = S.signupPending;
@@ -3379,6 +3331,34 @@ function updateMarginPreview() {
   }
 }
 
+// Mise à jour LIVE de la marge dans le form article revendeur, SANS render()
+// → l'input garde son focus et le curseur reste à sa place pendant que l'user tape.
+function updateArticleMarginPreview() {
+  const box = document.getElementById('art-marge-preview');
+  if (!box) return;
+  const ha = parseFloat(S.form?.purchasePrice) || 0;
+  const pv = parseFloat(S.form?.price) || 0;
+  if (ha > 0 && pv > 0) {
+    const margeFcfa = pv - ha;
+    const margePct  = pv > 0 ? Math.round(((pv - ha) / pv) * 100) : 0;
+    const fcfaColor = margeFcfa >= 0 ? 'var(--success)' : 'var(--danger)';
+    const pctColor  = margePct >= 30 ? 'var(--success)' : margePct >= 15 ? 'var(--warning)' : 'var(--danger)';
+    box.innerHTML = `<div style="padding:10px;background:var(--bg);border-radius:var(--r-sm);display:flex;justify-content:space-between;align-items:center;gap:8px">
+      <div>
+        <div style="font-size:10px;color:var(--text-3)">MARGE PAR UNITÉ</div>
+        <div id="art-marge-fcfa" style="font-size:16px;font-weight:800;color:${fcfaColor}">${fmt(margeFcfa)} ${sym()}</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:10px;color:var(--text-3)">MARGE %</div>
+        <div id="art-marge-pct" style="font-size:16px;font-weight:800;color:${pctColor}">${margePct}%</div>
+      </div>
+    </div>`;
+  } else {
+    box.innerHTML = '<div style="font-size:11px;color:var(--text-3)">Renseignez les deux prix pour voir la marge</div>';
+  }
+}
+if (typeof window !== 'undefined') window.updateArticleMarginPreview = updateArticleMarginPreview;
+
 function toggleCart() {
   S.cartOpen = !S.cartOpen;
   render();
@@ -4064,9 +4044,49 @@ function showReceiptBanner(sales, total) {
 
 // ── Navigate ──────────────────────────────────
 function nav(view, extra={}) {
-  Object.assign(S, extra);
+  // Pose un timestamp pour que le filet de sécurité global sache qu'on a bien été appelé
+  try { window.__navLastCallAt = Date.now(); } catch(_){}
+  try { Object.assign(S, extra); } catch(_){}
   S.view = view;
+  try {
+    const vEl = document.getElementById('view');
+    if (vEl) vEl.scrollTop = 0;
+  } catch(_){}
   render();
+}
+// Expose immédiatement pour que les onclick inline fonctionnent dès le premier clic,
+// même avant DOMContentLoaded.
+if (typeof window !== 'undefined') window.nav = nav;
+
+// ── Filet de sécurité GLOBAL : click delegation ───────────────────
+// Parfois un onclick inline peut échouer silencieusement (script async qui n'a pas
+// fini de parser, erreur dans une autre fonction qui casse la pile, etc.). On met
+// un listener de délégation sur document qui ré-exécute l'action nav('xxx') en
+// dernier recours, pour que les boutons Accueil / Retour / nav bar fonctionnent
+// TOUJOURS, quel que soit l'état de l'app.
+if (typeof document !== 'undefined') {
+  document.addEventListener('click', function(ev) {
+    const el = ev.target.closest && ev.target.closest('[onclick]');
+    if (!el) return;
+    const code = el.getAttribute('onclick') || '';
+    // Détection d'un nav('xxx') ou nav("xxx") dans l'onclick
+    const m = code.match(/\bnav\(\s*['"]([a-zA-Z0-9_-]+)['"]/);
+    if (!m) return;
+    // Si on est arrivés ici, le click s'est propagé SANS que nav() ait été appelé :
+    // l'onclick inline a échoué. On exécute en secours.
+    // NB : le navigateur exécute d'abord l'onclick inline ; si celui-ci a réussi,
+    // un flag __navCalled est posé par nav() — on l'utilise pour ne pas re-render.
+    try {
+      if (typeof window.nav === 'function') {
+        // Petit défer pour laisser l'onclick inline tenter d'abord
+        setTimeout(() => {
+          if (!window.__navLastCallAt || (Date.now() - window.__navLastCallAt) > 100) {
+            window.nav(m[1]);
+          }
+        }, 0);
+      }
+    } catch(e) { console.warn('[BARO] nav-safety', e); }
+  }, false);
 }
 
 // ── Render ────────────────────────────────────
@@ -4153,16 +4173,6 @@ function _doRender() {
     return;
   }
 
-  // Vérification email d'inscription en attente → écran de saisie du code
-  if (S.signupPending && S.view === 'signup-verify') {
-    navEl.style.display = 'none';
-    __markViewTransition('signup-verify');
-    viewEl.innerHTML = vSignupVerify();
-    if (!sameView) viewEl.scrollTop = 0;
-    __restoreUIState(snap);
-    return;
-  }
-
   // Pas de session → écran auth
   if (!S.session) {
     navEl.style.display = 'none';
@@ -4231,9 +4241,31 @@ function _doRender() {
   try {
     viewEl.innerHTML = (map[S.view] || vHome)();
   } catch(e) {
-    console.error('[BARO] View crash in "' + S.view + '":', e);
+    console.error('[BARO] Crash dans la vue "' + S.view + '":', e);
+    const __viewErr = String(e && e.message || e);
     S.view = 'home';
-    try { viewEl.innerHTML = vHome(); } catch(e2) { viewEl.innerHTML = '<div class="container" style="padding:40px;text-align:center;color:var(--text-3)">Erreur de chargement — tirez pour rafraîchir</div>'; }
+    try {
+      viewEl.innerHTML = vHome();
+    } catch(e2) {
+      console.error('[BARO] vHome a aussi crashé:', e2);
+      const __homeErr = String(e2 && e2.message || e2);
+      const __stack = (e2 && e2.stack) ? String(e2.stack).split('\n').slice(0,3).join(' | ') : '';
+      viewEl.innerHTML = `
+        <div class="container" style="padding:32px 20px;text-align:center;color:var(--text)">
+          <div style="font-size:18px;font-weight:800;margin-bottom:10px">Erreur d'affichage</div>
+          <div style="font-size:13px;color:var(--text-3);margin-bottom:14px;line-height:1.5">La page n'a pas pu s'afficher.<br>Réessaie ou réinitialise la session locale.</div>
+          <details style="text-align:left;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin:0 auto 16px;max-width:440px;font-size:11px;color:var(--text-3)">
+            <summary style="cursor:pointer;font-weight:700;color:var(--text);margin-bottom:6px">Détails techniques</summary>
+            <div style="margin-top:8px"><b>Vue :</b> ${String(__viewErr).replace(/[<>&]/g,'')}</div>
+            <div style="margin-top:4px"><b>Home :</b> ${String(__homeErr).replace(/[<>&]/g,'')}</div>
+            ${__stack ? `<div style="margin-top:4px;font-family:monospace;font-size:10px;opacity:.7">${__stack.replace(/[<>&]/g,'')}</div>` : ''}
+          </details>
+          <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+            <button class="btn btn-primary" onclick="location.reload()">Recharger</button>
+            <button class="btn btn-secondary" onclick="if(confirm('Réinitialiser la session locale ?')){localStorage.removeItem('baro_session');localStorage.removeItem('stockr_session');location.reload();}">Reset session</button>
+          </div>
+        </div>`;
+    }
   }
   // Conserve le scroll si on re-render la MÊME view (évite le "blink" de remontée)
   if (viewChanged) {
@@ -4324,7 +4356,7 @@ function vAuth() {
         ${isLogin ? t('loginBtn') : t('next') + ' →'}
       </button>
 
-      ${isLogin ? `
+      ${isLogin && window.PublicKeyCredential ? `
       <!-- Separator -->
       <div style="display:flex;align-items:center;gap:10px;margin:18px 0 12px">
         <div style="flex:1;height:1px;background:var(--border)"></div>
@@ -4332,22 +4364,13 @@ function vAuth() {
         <div style="flex:1;height:1px;background:var(--border)"></div>
       </div>
 
-      <!-- Social login -->
-      <div style="display:flex;flex-direction:column;gap:8px">
-        <button class="btn" onclick="loginGoogle()" style="background:#fff;color:#3c4043;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;gap:10px;font-weight:600;padding:12px">
-          <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/><path fill="#FF3D00" d="m6.306 14.691 6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/><path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0 1 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/><path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/></svg>
-          Continuer avec Google
-        </button>
-        <button class="btn" onclick="loginApple()" style="background:#000;color:#fff;display:flex;align-items:center;justify-content:center;gap:10px;font-weight:600;padding:12px">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>
-          Continuer avec Apple
-        </button>
-        ${window.PublicKeyCredential ? `
-        <button class="btn" onclick="loginBiometric()" style="background:var(--card-bg);color:var(--accent);border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;gap:10px;font-weight:700;padding:12px">
-          <span style="font-size:18px">👆</span>
-          Connexion biométrique
-        </button>` : ''}
-      </div>
+      <!-- Connexion biométrique (WebAuthn natif navigateur — 100% fonctionnel) -->
+      <button class="btn" onclick="loginBiometric()" style="background:var(--card-bg);color:var(--accent);border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;gap:10px;font-weight:700;padding:12px;width:100%">
+        <span style="font-size:18px">👆</span>
+        Connexion biométrique
+      </button>
+      ` : ''}
+      ${isLogin ? `
       <div style="margin-top:12px;text-align:center;display:flex;align-items:center;justify-content:center;gap:6px;font-size:10px;color:var(--text-3)">
         <span>🔒</span><span>Connexion sécurisée SSL</span>
       </div>
@@ -4895,17 +4918,32 @@ function vAuthStep2() {
 
 // ── HOME ──────────────────────────────────────
 function vHome() {
+  // Defaults défensifs — aucun champ de S ne doit pouvoir crasher vHome
+  if (!Array.isArray(S.articles))     S.articles     = [];
+  if (!Array.isArray(S.products))     S.products     = [];
+  if (!Array.isArray(S.sales))        S.sales        = [];
+  if (!Array.isArray(S.clients))      S.clients      = [];
+  if (!Array.isArray(S.locations))    S.locations    = [];
+  if (!Array.isArray(S.teamMembers))  S.teamMembers  = [];
+  if (!Array.isArray(S.predictions))  S.predictions  = [];
+  if (!Array.isArray(S.notifications))S.notifications= [];
+  if (!Array.isArray(S.suppliers))    S.suppliers    = [];
+  if (!Array.isArray(S.orders))       S.orders       = [];
+  if (!Array.isArray(S.movements))    S.movements    = [];
+  if (!Array.isArray(S.invoices))     S.invoices     = [];
+  if (typeof S.globalSearch !== 'string') S.globalSearch = '';
+
   const bt = (typeof getBusinessType === 'function') ? getBusinessType() : 'maker';
   const isReseller = bt === 'reseller';
-  const low     = S.articles.filter(a => a.stock < a.min && a.min > 0);
-  const totalCA = S.sales.reduce((s,v) => s+v.total, 0);
-  const totalProfit = S.sales.reduce((s,v) => s+(v.profit||0), 0);
+  const low     = S.articles.filter(a => a && a.stock < a.min && a.min > 0);
+  const totalCA = S.sales.reduce((s,v) => s+(v?.total||0), 0);
+  const totalProfit = S.sales.reduce((s,v) => s+(v?.profit||0), 0);
   const avgMargin = totalCA > 0 ? Math.round((totalProfit / totalCA) * 100) : 0;
-  const stockVal = S.articles.reduce((s,a) => s+a.stock*(a.price||0), 0);
+  const stockVal = S.articles.reduce((s,a) => s+(a?.stock||0)*(a?.price||0), 0);
   const today   = new Date().toDateString();
-  const todaySales = S.sales.filter(s => new Date(s.date).toDateString()===today);
-  const todayCA = todaySales.reduce((s,v)=>s+v.total,0);
-  const todayProfit = todaySales.reduce((s,v)=>s+(v.profit||0),0);
+  const todaySales = S.sales.filter(s => s && new Date(s.date).toDateString()===today);
+  const todayCA = todaySales.reduce((s,v)=>s+(v?.total||0),0);
+  const todayProfit = todaySales.reduce((s,v)=>s+(v?.profit||0),0);
 
   // Top products by revenue
   const prodStats = {};
@@ -4956,8 +4994,8 @@ function vHome() {
   const __currentMember = (typeof getCurrentMember === 'function') ? getCurrentMember() : null;
   const __currentRoleInfo = __currentMember ? (ROLE_LABELS?.[__currentMember.role] || ROLE_LABELS?.admin) : null;
   const __hasTeam = (S.teamMembers||[]).length > 0;
-  const __businessLogo = localStorage.getItem('stockr_logo') || '';
-  const __bizName = S.session.business || S.session.name || '';
+  const __businessLogo = localStorage.getItem('baro_logo') || localStorage.getItem('stockr_logo') || '';
+  const __bizName = (S.session?.business) || (S.session?.name) || '';
   const __bizInitials = (typeof initials === 'function') ? initials(__bizName) : (__bizName.charAt(0) || 'B').toUpperCase();
   return `
   <div class="hero anim">
@@ -6702,25 +6740,27 @@ function vAdd() {
         <div class="input-row" style="margin-bottom:0">
           <div>
             <label class="form-label" style="font-size:11px">Prix d'achat (${sym()}) *</label>
-            <input class="input" type="number" placeholder="0" step="100" value="${f.purchasePrice||0}" oninput="S.form.purchasePrice=this.value;render()">
+            <input class="input" id="art-ha-input" type="number" placeholder="0" step="100" value="${f.purchasePrice||0}" oninput="S.form.purchasePrice=this.value;updateArticleMarginPreview()">
           </div>
           <div>
             <label class="form-label" style="font-size:11px">Prix de vente (${sym()}) *</label>
-            <input class="input" type="number" placeholder="0" step="100" value="${f.price||0}" oninput="S.form.price=this.value;render()">
+            <input class="input" id="art-pv-input" type="number" placeholder="0" step="100" value="${f.price||0}" oninput="S.form.price=this.value;updateArticleMarginPreview()">
           </div>
         </div>
-        ${ha > 0 && pv > 0 ? `
-        <div style="margin-top:10px;padding:10px;background:var(--bg);border-radius:var(--r-sm);display:flex;justify-content:space-between;align-items:center;gap:8px">
-          <div>
-            <div style="font-size:10px;color:var(--text-3)">MARGE PAR UNITÉ</div>
-            <div style="font-size:16px;font-weight:800;color:${margeFcfa>=0?'var(--success)':'var(--danger)'}">${fmt(margeFcfa)} ${sym()}</div>
-          </div>
-          <div style="text-align:right">
-            <div style="font-size:10px;color:var(--text-3)">MARGE %</div>
-            <div style="font-size:16px;font-weight:800;color:${margePct>=30?'var(--success)':margePct>=15?'var(--warning)':'var(--danger)'}">${margePct}%</div>
-          </div>
-        </div>` : `
-        <div style="margin-top:10px;font-size:11px;color:var(--text-3)">Renseignez les deux prix pour voir la marge</div>`}
+        <div id="art-marge-preview" style="margin-top:10px">${
+          ha > 0 && pv > 0
+            ? `<div style="padding:10px;background:var(--bg);border-radius:var(--r-sm);display:flex;justify-content:space-between;align-items:center;gap:8px">
+                <div>
+                  <div style="font-size:10px;color:var(--text-3)">MARGE PAR UNITÉ</div>
+                  <div id="art-marge-fcfa" style="font-size:16px;font-weight:800;color:${margeFcfa>=0?'var(--success)':'var(--danger)'}">${fmt(margeFcfa)} ${sym()}</div>
+                </div>
+                <div style="text-align:right">
+                  <div style="font-size:10px;color:var(--text-3)">MARGE %</div>
+                  <div id="art-marge-pct" style="font-size:16px;font-weight:800;color:${margePct>=30?'var(--success)':margePct>=15?'var(--warning)':'var(--danger)'}">${margePct}%</div>
+                </div>
+              </div>`
+            : `<div style="font-size:11px;color:var(--text-3)">Renseignez les deux prix pour voir la marge</div>`
+        }</div>
       </div>` : `
       <div class="input-row form-group">
         <div>
@@ -9690,35 +9730,79 @@ async function _spectraFullImageOCR(img){
   }
 }
 
-// ── Nettoyage COCO : évite "Télécommande" pour des rectangles ressemblant à des téléphones ──
-// La classe COCO 'remote' classifie souvent iPhone/Samsung. Règle :
-// - Aspect ratio > 1.6 (grand côté/petit côté) → plus probablement téléphone
-// - Si OCR mentionne marque tech → téléphone garanti
+// ── Nettoyage COCO : corrige les faux positifs classiques du modèle ─────────
+// COCO-SSD n'a que 80 classes très générales → beaucoup d'ambiguïtés sur du stock PME.
+// Faux positifs connus et traités ici :
+//  • 'remote' → 95% du temps = smartphone (les vraies télécommandes TV sont rares en stock)
+//  • 'book'   → souvent emballage carton / sachet plat
+//  • 'tie'    → souvent écharpe / étoffe longue
+// Stratégie : si OCR lit une marque tech OU si le ratio correspond, rebaptise.
+const TECH_BRANDS_RX = /\b(apple|iphone|ipad|macbook|samsung|galaxy|note|pixel|google|xiaomi|redmi|poco|oppo|reno|vivo|oneplus|nothing|realme|tecno|camon|spark|pova|phantom|infinix|hot|smart|note|itel|huawei|mate|nova|honor|magic|nokia|sony|xperia|lg|motorola|moto|asus|rog|zenfone|zte|meizu|alcatel|blackview|doogee|ulefone|wiko|lenovo|gionee)\b/i;
+const REMOTE_BRANDS_RX = /\b(samsung\s*tv|sony\s*tv|lg\s*tv|tcl|philips\s*tv|panasonic|bravia|vu|mi\s*tv|xiaomi\s*tv|chromecast|firetv|apple\s*tv|roku|bose|shield|nvidia)\b/i;
+const REMOTE_KEYWORDS_RX = /\b(remote|télécommande|telecommande|zapper|controller|air\s*mouse|media\s*center)\b/i;
+
 function _sanitizeCocoDetection(d){
   try {
     if (!d) return d;
     const cls = (d.coco_class || '').toLowerCase();
     const ocr = (d.ocr_text || '').toLowerCase();
-    const TECH_BRANDS = /\b(apple|iphone|samsung|galaxy|pixel|google|xiaomi|redmi|oppo|vivo|oneplus|nothing|realme|tecno|infinix|itel|huawei|honor|nokia|sony|lg)\b/i;
-    const isTechOCR = TECH_BRANDS.test(ocr);
-    // "remote" : si objet a un ratio téléphone (2:1) ou marque tech → rebaptise "Téléphone"
+    const box = d.boxes && d.boxes[0];
+    let bw = 0, bh = 0, ratio = 0;
+    if (box) {
+      bw = box[2] || 0; bh = box[3] || 0;
+      if (bw > 0 && bh > 0) ratio = Math.max(bw, bh) / Math.min(bw, bh);
+    }
+
+    // ── Règle 1 : 'remote' COCO = presque toujours un smartphone ──
+    // Les vraies télécommandes sont rares en stock PME. On inverse la logique :
+    // par défaut "remote" devient "Téléphone", SAUF si preuve explicite de télécommande.
     if (cls === 'remote') {
-      const box = d.boxes && d.boxes[0];
-      let isPhoneShape = false;
-      if (box) {
-        const [, , bw, bh] = box;
-        if (bw && bh) {
-          const r = Math.max(bw, bh) / Math.min(bw, bh);
-          if (r >= 1.6 && r <= 2.5) isPhoneShape = true;
+      const isTechOCR       = TECH_BRANDS_RX.test(ocr);
+      const isRemoteOCR     = REMOTE_KEYWORDS_RX.test(ocr);
+      const isRemoteBrand   = REMOTE_BRANDS_RX.test(ocr);
+      // ratio phone moderne : iPhone 15 Pro Max ≈ 2.16, iPhone 13 ≈ 2.17, Galaxy S24 ≈ 2.22
+      const isPhoneShape    = ratio >= 1.5 && ratio <= 2.5;
+      // ratio télécommande classique : très allongée (3:1+) ou presque carrée
+      const isRemoteShape   = ratio > 3.0 || (ratio > 0 && ratio < 1.3);
+
+      // Garde "Télécommande" SEULEMENT si preuve forte
+      const keepRemote = isRemoteOCR || isRemoteBrand || isRemoteShape;
+      if (!keepRemote) {
+        const labelBase = isTechOCR ? 'Smartphone' : 'Téléphone';
+        // Si OCR capte une marque, enrichis le nom : "iPhone", "Samsung Galaxy"…
+        let refined = labelBase;
+        if (isTechOCR) {
+          const m = ocr.match(TECH_BRANDS_RX);
+          if (m && m[0]) refined = m[0].charAt(0).toUpperCase() + m[0].slice(1).toLowerCase();
         }
-      }
-      if (isTechOCR || isPhoneShape) {
-        d.detected_name = d.detected_name && d.detected_name !== 'Télécommande'
-          ? d.detected_name
-          : (isTechOCR ? 'Téléphone' : 'Téléphone (forme détectée)');
-        if (d.matched_name === 'Télécommande') d.matched_name = d.detected_name;
+        if (!d.detected_name || d.detected_name === 'Télécommande') d.detected_name = refined;
+        if (d.matched_name === 'Télécommande') d.matched_name = refined;
         d.coco_class = 'cell phone';
+        d._sanitized_from = 'remote';
       }
+    }
+
+    // ── Règle 2 : 'book' sur un objet carré → probablement une boîte/carton ──
+    if (cls === 'book' && ratio > 0 && ratio < 1.3) {
+      // Livre classique a un ratio ≈ 1.4-1.6. Carré = plus probable boîte/emballage.
+      if (!ocr || (!/book|livre|cahier|magazine/.test(ocr))) {
+        if (d.detected_name === 'Livre') d.detected_name = 'Boîte / Emballage';
+        if (d.matched_name === 'Livre') d.matched_name = d.detected_name;
+        d._sanitized_from = 'book';
+      }
+    }
+
+    // ── Règle 3 : 'cell phone' sans OCR tech + ratio carré → peut-être powerbank/accessoire ──
+    // (ne change pas, juste on baisse la confidence quand ambigu)
+    if (cls === 'cell phone' && ratio > 0 && ratio < 1.3 && !TECH_BRANDS_RX.test(ocr)) {
+      if (typeof d.confidence === 'number') d.confidence = Math.max(40, d.confidence - 15);
+      d._ambiguous = true;
+    }
+
+    // ── Règle 4 : confidence floor pour les détections sanitized ──
+    if (d._sanitized_from && typeof d.confidence === 'number') {
+      // On vient de corriger → confidence un peu plus basse pour signaler incertitude
+      d.confidence = Math.max(50, Math.min(d.confidence, 85));
     }
   } catch(_){}
   return d;
@@ -11596,28 +11680,38 @@ function getLocationSalesTotal(locId) {
 function uploadLogo() {
   const input = document.createElement('input');
   input.type = 'file'; input.accept = 'image/*';
+  // Attacher à document pour qu'iOS Safari accepte le click() programmatique
+  input.style.display = 'none';
+  document.body.appendChild(input);
+  const cleanup = () => { try { input.remove(); } catch(_){} };
   input.onchange = () => {
-    const file = input.files[0]; if (!file) return;
+    const file = input.files && input.files[0];
+    if (!file) { cleanup(); return; }
     const reader = new FileReader();
     reader.onload = (e) => {
-      // Resize to 200x200 max
       const img = new Image();
       img.onload = () => {
-        const canvas = document.createElement('canvas');
-        const size = Math.min(img.width, img.height, 200);
-        canvas.width = size; canvas.height = size;
-        const ctx = canvas.getContext('2d');
-        const sx = (img.width - size) / 2, sy = (img.height - size) / 2;
-        ctx.drawImage(img, sx, sy, size, size, 0, 0, size, size);
-        const data = canvas.toDataURL('image/jpeg', 0.8);
-        localStorage.setItem('baro_logo', data);
-        showToast(t('businessLogo') + ' OK');
-        render();
+        try {
+          const canvas = document.createElement('canvas');
+          const size = Math.min(img.width, img.height, 200);
+          canvas.width = size; canvas.height = size;
+          const ctx = canvas.getContext('2d');
+          const sx = (img.width - size) / 2, sy = (img.height - size) / 2;
+          ctx.drawImage(img, sx, sy, size, size, 0, 0, size, size);
+          const data = canvas.toDataURL('image/jpeg', 0.8);
+          localStorage.setItem('baro_logo', data);
+          showToast(t('businessLogo') + ' OK');
+        } catch(err) { console.error('uploadLogo resize', err); showToast('Erreur image', 'error'); }
+        finally { cleanup(); render(); }
       };
+      img.onerror = () => { cleanup(); showToast('Image invalide', 'error'); };
       img.src = e.target.result;
     };
+    reader.onerror = () => { cleanup(); showToast('Lecture fichier échouée', 'error'); };
     reader.readAsDataURL(file);
   };
+  // Si l'utilisateur annule la boîte de dialogue, on nettoie quand même après un délai
+  setTimeout(() => { if (!input.files || !input.files.length) cleanup(); }, 60000);
   input.click();
 }
 
@@ -12245,16 +12339,6 @@ function vSettings() {
             <div>
               <div class="settings-row-lbl">Sécurité</div>
               <div class="settings-row-sub">2FA · Biométrie · Sessions</div>
-            </div>
-          </div>
-          ${IC.chevron}
-        </div>
-        <div class="settings-row" onclick="nav('oauth-setup')">
-          <div class="settings-row-inner">
-            <span class="settings-row-ico" style="color:#4285F4">🔗</span>
-            <div>
-              <div class="settings-row-lbl">Connexions OAuth</div>
-              <div class="settings-row-sub">${localStorage.getItem('stockr_google_client_id')?'🟢':'⚪'} Google · ${localStorage.getItem('stockr_apple_service_id')?'🟢':'⚪'} Apple</div>
             </div>
           </div>
           ${IC.chevron}
@@ -14212,15 +14296,20 @@ function vBoutique() {
       <div style="font-size:14px;font-weight:600">${bc.announcement}</div>
     </div>` : ''}
 
-    <div class="card" style="margin-bottom:10px;border:2px dashed var(--accent)">
-      <div class="card-title">${IC.globe} Génération du site</div>
-      <div style="font-size:12px;color:var(--text-3);margin-bottom:10px">Générez votre site en un clic — toutes vos promos, bannières, avis seront inclus</div>
-      <div style="display:flex;gap:6px">
-        <button class="btn btn-primary" style="flex:1" onclick="generateBoutiqueSite()">${IC.check} Générer HTML</button>
-        <button class="btn btn-ghost" style="flex:1" onclick="previewBoutiqueSite()">${IC.globe} Aperçu</button>
+    <div class="boutique-generate-card">
+      <div class="bgen-header">
+        <div class="bgen-ico">${IC.globe}</div>
+        <div class="bgen-head-txt">
+          <div class="bgen-title">Génération du site</div>
+          <div class="bgen-sub">Générez votre site en un clic — toutes vos promos, bannières et avis seront inclus</div>
+        </div>
+      </div>
+      <div class="bgen-actions">
+        <button class="btn btn-primary bgen-btn-primary" onclick="generateBoutiqueSite()">${IC.check} Générer HTML</button>
+        <button class="btn btn-ghost bgen-btn-ghost" onclick="previewBoutiqueSite()">${IC.globe} Aperçu</button>
       </div>
       ${bc.siteGenerated ? `
-      <div style="margin-top:10px;padding:8px 12px;background:var(--success-light,#D1FAE5);border-radius:8px;font-size:12px;color:var(--success);font-weight:600;display:flex;align-items:center;gap:6px">
+      <div class="bgen-status">
         ${IC.check} Site généré le ${new Date(bc.siteGeneratedDate).toLocaleDateString('fr')}
       </div>` : ''}
     </div>
@@ -22088,11 +22177,11 @@ function vSpectraEnhanced() {
 
   if (S.spectra.step === 'loading') {
     return `
-    <div class="sub-hero"><div class="page-header-row"><button class="back-btn-dark" onclick="spectraReset();nav('more')">${IC.left}</button><div style="flex:1"><div class="sub-hero-title">Spectra AI</div><div class="sub-hero-sub">${t('spectraAnalyzing')}</div></div></div></div>
+    <div class="sub-hero spectra-hero-grad"><div class="page-header-row"><button class="back-btn-dark" onclick="spectraReset();nav('more')">${IC.left}</button><div style="flex:1"><div class="sub-hero-title">Spectra AI</div><div class="sub-hero-sub">${t('spectraAnalyzing')}</div></div></div></div>
     <div class="container" style="text-align:center;padding:60px 24px">
-      <div style="width:80px;height:80px;border-radius:50%;background:var(--accent-light);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;animation:pulse 1.5s infinite">${IC.camera}</div>
-      <div style="font-size:16px;font-weight:700">${t('spectraAnalyzing')}</div>
-      <div style="font-size:13px;color:var(--text-3);margin-top:6px">${S.spectraMode==='yolo'?'Détection YOLO — comptage automatique…':S.spectraMode==='barcode'?'Recherche codes-barres…':'Analyse en cours…'}</div>
+      <div class="spectra-loading-ring">${IC.camera}</div>
+      <div style="font-size:16px;font-weight:800;letter-spacing:.3px">${t('spectraAnalyzing')}</div>
+      <div style="font-size:13px;color:var(--text-3);margin-top:6px;font-weight:500">${S.spectraMode==='yolo'?'Détection YOLO — comptage automatique…':S.spectraMode==='barcode'?'Recherche codes-barres…':'Analyse IA en cours…'}</div>
     </div>`;
   }
 
@@ -22100,11 +22189,13 @@ function vSpectraEnhanced() {
   if (S.spectra.step === 'continuous') {
     const camCount = (_spectraCameras && _spectraCameras.length) || 0;
     return `
-    <div class="sub-hero"><div class="page-header-row"><button class="back-btn-dark" onclick="spectraReset();nav('more')">${IC.left}</button><div style="flex:1"><div class="sub-hero-title">Scan temps réel IA</div><div class="sub-hero-sub">COCO-SSD + OCR + mémoire produit</div></div>${camCount>1?`<button class="fab" style="background:var(--card);border:1px solid var(--border)" onclick="spectraSwitchCamera()" title="Changer de caméra">🔄</button>`:''}</div></div>
+    <div class="sub-hero spectra-hero-grad"><div class="page-header-row"><button class="back-btn-dark" onclick="spectraReset();nav('more')">${IC.left}</button><div style="flex:1"><div class="sub-hero-title">Scan temps réel IA</div><div class="sub-hero-sub">COCO-SSD + OCR + mémoire produit</div></div>${camCount>1?`<button class="fab" style="background:var(--card);border:1px solid var(--border)" onclick="spectraSwitchCamera()" title="Changer de caméra">🔄</button>`:''}</div></div>
     <div class="container" style="padding:12px">
-      <div style="position:relative;width:100%;max-width:520px;margin:0 auto;background:#000;border-radius:16px;overflow:hidden;aspect-ratio:4/3">
-        <video id="spectra-video" playsinline muted autoplay style="width:100%;height:100%;display:block;object-fit:cover"></video>
-        <canvas id="spectra-canvas" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none"></canvas>
+      <div class="spectra-scan-frame">
+        <video id="spectra-video" playsinline muted autoplay style="object-fit:cover"></video>
+        <canvas id="spectra-canvas"></canvas>
+        <span class="corner tl"></span><span class="corner tr"></span>
+        <span class="corner bl"></span><span class="corner br"></span>
       </div>
       <div id="spectra-overlay" style="margin-top:14px;padding:14px;background:var(--card);border-radius:12px;border:1px solid var(--border);font-size:13px;min-height:60px">
         <div style="opacity:.6">Chargement IA…</div>
@@ -22123,13 +22214,13 @@ function vSpectraEnhanced() {
   if (S.spectra.step === 'barcode') {
     const camCount = (_spectraCameras && _spectraCameras.length) || 0;
     return `
-    <div class="sub-hero"><div class="page-header-row"><button class="back-btn-dark" onclick="spectraReset();nav('more')">${IC.left}</button><div style="flex:1"><div class="sub-hero-title">Scan code-barres</div><div class="sub-hero-sub">EAN-13 / UPC / QR / Code 128</div></div>${camCount>1?`<button class="fab" style="background:var(--card);border:1px solid var(--border)" onclick="spectraSwitchCamera()" title="Changer de caméra">🔄</button>`:''}</div></div>
+    <div class="sub-hero spectra-hero-grad"><div class="page-header-row"><button class="back-btn-dark" onclick="spectraReset();nav('more')">${IC.left}</button><div style="flex:1"><div class="sub-hero-title">Scan code-barres</div><div class="sub-hero-sub">EAN-13 / UPC / QR / Code 128</div></div>${camCount>1?`<button class="fab" style="background:var(--card);border:1px solid var(--border)" onclick="spectraSwitchCamera()" title="Changer de caméra">🔄</button>`:''}</div></div>
     <div class="container" style="padding:12px">
-      <div style="position:relative;width:100%;max-width:520px;margin:0 auto;background:#000;border-radius:16px;overflow:hidden;aspect-ratio:4/3">
-        <video id="spectra-video" playsinline muted autoplay style="width:100%;height:100%;display:block;object-fit:cover"></video>
-        <div style="position:absolute;inset:20% 15%;border:3px solid var(--accent);border-radius:12px;box-shadow:0 0 0 9999px rgba(0,0,0,.4);pointer-events:none">
-          <div style="position:absolute;top:50%;left:0;right:0;height:2px;background:var(--accent);animation:pulse 1.5s infinite"></div>
-        </div>
+      <div class="spectra-scan-frame">
+        <video id="spectra-video" playsinline muted autoplay style="object-fit:cover"></video>
+        <div style="position:absolute;inset:20% 15%;border:3px solid #a78bfa;border-radius:12px;box-shadow:0 0 0 9999px rgba(0,0,0,.45),0 0 24px rgba(167,139,250,.5);pointer-events:none"></div>
+        <span class="corner tl"></span><span class="corner tr"></span>
+        <span class="corner bl"></span><span class="corner br"></span>
       </div>
       <div style="margin-top:14px;padding:14px;background:var(--card);border-radius:12px;border:1px solid var(--border);font-size:13px;text-align:center">
         Détection en cours… Approchez le code-barres
@@ -22148,11 +22239,11 @@ function vSpectraEnhanced() {
     return `
     <div class="sub-hero"><div class="page-header-row"><button class="back-btn-dark" onclick="spectraReset();nav('more')">${IC.left}</button><div style="flex:1"><div class="sub-hero-title">${t('spectraDetected')}</div><div class="sub-hero-sub">${S.spectra.current+1}/${S.spectra.queue.length} articles détectés</div></div></div></div>
     <div class="container">
-      <div class="spectra-count-result" style="margin-bottom:14px;border-color:var(--accent)">
+      <div class="spectra-count-result" style="margin-bottom:14px">
         <div class="spectra-count-num">${item.quantity}</div>
         <div class="spectra-count-info">
-          <div class="spectra-count-name">${item.detected_name||item.matched_name}</div>
-          <div class="spectra-count-detail">Quantité détectée: ${item.quantity} · Précision: ${item.confidence}%${item.from_memory?' · 🧠 Mémoire':''}</div>
+          <div class="spectra-count-name">${item.detected_name||item.matched_name}${(item._sanitized_from||item._ambiguous)?`<span class="spectra-ambig-badge" title="IA incertaine — vérifie le nom">⚠ À vérifier</span>`:''}</div>
+          <div class="spectra-count-detail">Quantité détectée: ${item.quantity} · Précision: ${item.confidence}%${item.from_memory?' · 🧠 Mémoire':''}${item._sanitized_from==='remote'?' · corrigé téléphone':''}</div>
         </div>
       </div>
       ${S.spectra.naming ? `
@@ -22209,20 +22300,20 @@ function vSpectraEnhanced() {
   }
 
   return `
-  <div class="sub-hero">
+  <div class="sub-hero spectra-hero-grad">
     <div class="page-header-row" style="margin-bottom:14px">
       <button class="back-btn-dark" onclick="nav('more')">${IC.left}</button>
-      <div style="flex:1"><div class="sub-hero-title">Spectra AI</div><div class="sub-hero-sub">Scanner, détecter, compter automatiquement</div></div>
+      <div style="flex:1"><div class="sub-hero-title">✨ Spectra AI</div><div class="sub-hero-sub">Scanner, détecter, compter automatiquement</div></div>
     </div>
   </div>
   <div class="container">
-    <div class="section-hd"><span class="section-lbl">Mode de scan</span></div>
+    <div class="section-hd"><span class="section-lbl" style="color:#7c3aed;font-weight:800;letter-spacing:.5px">✦ MODE DE SCAN</span></div>
     <div class="spectra-mode-grid">
       ${modes.map(m => `
       <div class="spectra-mode-btn ${S.spectraMode===m.id?'active':''}" onclick="S.spectraMode='${m.id}';render()">
         <div class="spectra-mode-ico">${m.icon}</div>
         <div class="spectra-mode-lbl">${m.label}</div>
-        <div style="font-size:10px;color:var(--text-3);margin-top:2px">${m.desc}</div>
+        <div style="font-size:10px;color:var(--text-3);margin-top:3px;font-weight:500">${m.desc}</div>
       </div>`).join('')}
     </div>
 
@@ -22423,24 +22514,19 @@ async function installPWA() {
 }
 
 if ('serviceWorker' in navigator) {
+  // Enregistrement simple, sans auto-reload agressif ni polling 60s.
+  // Le SW utilise skipWaiting() + clients.claim() pour activer la nouvelle version
+  // au prochain chargement de page — c'est suffisant et évite les loops de reload.
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js')
-      .then(reg => {
-        reg.addEventListener('updatefound', () => {
-          const newSW = reg.installing;
-          newSW.addEventListener('statechange', () => {
-            if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
-              showToast(t('updateAvailable'));
-            }
-          });
-        });
-      })
-      .catch(() => {}); // silencieux si localhost sans HTTPS
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
   });
 }
 
 // ── Init ──────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
+// Pattern robuste : si le DOM est déjà parsé (readyState != 'loading'), on démarre
+// immédiatement ; sinon on attend DOMContentLoaded. Couvre TOUS les cas de chargement
+// (script en fin de body, script defer, script async, SW cache hit, etc.)
+function __baroInit() {
   // Exposer au global pour les onclick inline
   window.S             = S;
   window.nav           = nav;
@@ -22891,7 +22977,17 @@ document.addEventListener('DOMContentLoaded', () => {
   } else {
     render(); // Affiche l'écran auth
   }
-});
+}
+
+// Lance __baroInit dès que possible, de façon FIABLE :
+//  - si le DOM est déjà prêt (script en fin de body + defer/sync), on démarre tout de suite
+//  - sinon on attend l'event DOMContentLoaded
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', __baroInit, { once: true });
+} else {
+  // DOM déjà parsé — on appelle directement (async microtask pour laisser finir le parse JS)
+  Promise.resolve().then(__baroInit);
+}
 
 // ── Boot reminders & auto-scheduler ─────────────
 function checkDueScheduledPosts() {
