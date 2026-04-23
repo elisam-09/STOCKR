@@ -2,15 +2,15 @@
 // Stratégie : Cache-first pour assets statiques,
 //             Network-first pour l'API
 
-const CACHE_NAME = 'baro-v36-agent-cards-force';
+const CACHE_NAME = 'baro-v37-png-icons';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
   '/app.js',
   '/styles.css',
   '/manifest.json',
-  '/icons/icon-192.svg',
-  '/icons/icon-512.svg',
+  '/icons/icon-192.png',
+  '/icons/icon-512.png',
 ];
 
 // ── Installation : mise en cache des assets ───
