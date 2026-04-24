@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>STOCKR — Seed Demo 2 (KicksAbidjan)</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: linear-gradient(135deg, #1E1B80 0%, #4F46E5 100%);
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px; color: #fff;
+    }
+    .card {
+      background: rgba(255,255,255,.08);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,.2);
+      border-radius: 20px;
+      padding: 32px;
+      max-width: 520px; width: 100%;
+      box-shadow: 0 25px 60px rgba(0,0,0,.35);
+    }
+    h1 { font-size: 24px; margin-bottom: 8px; }
+    .sub { opacity: .8; font-size: 13px; margin-bottom: 24px; }
+    .info { background: rgba(0,0,0,.2); padding: 14px 16px; border-radius: 12px; font-size: 13px; margin-bottom: 18px; line-height: 1.6; }
+    .info b { color: #a78bfa; }
+    button {
+      width: 100%; padding: 14px;
+      background: linear-gradient(135deg, #a78bfa, #7c3aed);
+      border: none; color: #fff; font-size: 15px; font-weight: 700;
+      border-radius: 12px; cursor: pointer;
+      box-shadow: 0 8px 24px rgba(124,58,237,.4);
+      transition: transform .15s;
+    }
+    button:hover:not(:disabled) { transform: translateY(-1px); }
+    button:disabled { opacity: .5; cursor: not-allowed; }
+    .log {
+      margin-top: 18px;
+      background: rgba(0,0,0,.3); padding: 14px; border-radius: 10px;
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      font-size: 12px; max-height: 280px; overflow-y: auto;
+      white-space: pre-wrap;
+    }
+    .ok { color: #4ade80; }
+    .err { color: #fb7185; }
+    .muted { color: rgba(255,255,255,.5); }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>KicksAbidjan — Demo 2</h1>
+    <div class="sub">Revendeur de sneakers · 6 mois d'historique</div>
+
+    <div class="info">
+      <div><b>Email :</b> demo2@stockr.app</div>
+      <div><b>Mot de passe :</b> demo2shoes</div>
+      <div><b>Profil :</b> Revendeur (reseller)</div>
+      <div><b>Business :</b> KicksAbidjan</div>
+      <div><b>Data :</b> ~15 produits, ~700 ventes, ~80 clients, croissance +400%, quelques ruptures</div>
+    </div>
+
+    <button id="btn" onclick="runSeed()">Initialiser le compte demo</button>
+    <div class="log" id="log">En attente…</div>
+  </div>
+
+<script>
+const BACKEND = 'https://stockr-production-c175.up.railway.app/api';
+const EMAIL = 'demo2@stockr.app';
+const PASSWORD = 'demo2shoes';
+
+// ────────────────────────────────────────────
+// Catalogue : 15 sneakers avec prix FCFA réalistes
+// ────────────────────────────────────────────
+const SHOES = [
+  // name, price (vente), purchasePrice (achat), stock, category, ean
+  { name:'Nike Air Force 1 Blanche',      price:45000,  cost:28000, stock:12, cat:'Nike',    ean:'315115112', pop:10 },
+  { name:'Nike Air Max 90 Essential',     price:55000,  cost:35000, stock:6,  cat:'Nike',    ean:'537384118', pop:7  },
+  { name:'Nike Dunk Low Panda',           price:70000,  cost:45000, stock:0,  cat:'Nike',    ean:'DD137510',  pop:10 }, // RUPTURE
+  { name:'Nike Cortez Classic',           price:38000,  cost:24000, stock:5,  cat:'Nike',    ean:'819719100', pop:4  },
+  { name:'Adidas Samba OG Black',         price:50000,  cost:32000, stock:0,  cat:'Adidas',  ean:'B75807',    pop:9  }, // RUPTURE
+  { name:'Adidas Stan Smith Blanche',     price:40000,  cost:25000, stock:14, cat:'Adidas',  ean:'M20324',    pop:6  },
+  { name:'Adidas Gazelle Indoor',         price:48000,  cost:30000, stock:3,  cat:'Adidas',  ean:'H06259',    pop:5  }, // stock bas
+  { name:'Jordan 1 Mid Chicago',          price:75000,  cost:48000, stock:4,  cat:'Jordan',  ean:'554724173', pop:8  },
+  { name:'Jordan 4 Retro Bred',           price:120000, cost:78000, stock:2,  cat:'Jordan',  ean:'308497060', pop:6  },
+  { name:'Puma Suede Classic Noir',       price:35000,  cost:22000, stock:8,  cat:'Puma',    ean:'352634',    pop:3  },
+  { name:'New Balance 550 White Green',   price:65000,  cost:42000, stock:7,  cat:'NB',      ean:'BB550WT1',  pop:7  },
+  { name:'New Balance 530 Silver',        price:55000,  cost:35000, stock:0,  cat:'NB',      ean:'MR530SG',   pop:6  }, // RUPTURE
+  { name:'Converse Chuck 70 High',        price:32000,  cost:20000, stock:15, cat:'Converse',ean:'162050C',   pop:4  },
+  { name:'Yeezy 350 V2 Zebra',            price:95000,  cost:62000, stock:1,  cat:'Adidas',  ean:'CP9654',    pop:5  }, // stock très bas
+  { name:'Asics Gel-Kayano 14',           price:60000,  cost:38000, stock:6,  cat:'Asics',   ean:'1201A019',  pop:4  },
+];
+
+// ────────────────────────────────────────────
+// Clients types ivoiriens
+// ────────────────────────────────────────────
+const CLIENT_FIRST = ['Aïcha','Mariam','Fatou','Awa','Kadi','Sali','Ange','Nadège','Yasmine','Rachelle','Grace','Cynthia','Priscille','Ines','Lynda','Djeneba','Ramatou','Assiata','Bintou','Salimata','Moussa','Ibrahim','Yacouba','Mamadou','Ousmane','Souleymane','Cheick','Drissa','Adama','Boubacar','Kouassi','Konan','Koffi','Yao','Aka','Brou','Didier','Serge','Franck','Emmanuel','Jean-Marc','Patrick','Olivier','Guillaume','Stéphane','Ange-Marie','Gérard'];
+const CLIENT_LAST  = ['Koné','Traoré','Ouattara','Diabaté','Bamba','Cissé','Touré','Diallo','Fofana','Sanogo','Yao','Kouamé','Kouassi','N\'Guessan','Koffi','Bakayoko','Diomandé','Coulibaly','Keita','Gbané','Gueye','Assi','Adou','Ahoutou','Brou','Djédjé','Goué','Hien','Kipré','Méké','Ouédraogo','Soro','Tapé','Zadi','Yapi'];
+const PHONES_PREFIX = ['07','05','01','08','09']; // Côte d'Ivoire
+
+// ────────────────────────────────────────────
+// Payment methods (XOF realistic)
+// ────────────────────────────────────────────
+const PAYMENT_METHODS = [
+  { id:1, name:'Wave',         type:'mobile_money', provider:'wave',    fee:0,    enabled:true, color:'#00D4FF', icon:'W' },
+  { id:2, name:'Orange Money', type:'mobile_money', provider:'orange',  fee:1.5,  enabled:true, color:'#FF6900', icon:'OM' },
+  { id:3, name:'MTN Money',    type:'mobile_money', provider:'mtn',     fee:1.5,  enabled:true, color:'#FFCC00', icon:'MTN'},
+  { id:4, name:'Moov Money',   type:'mobile_money', provider:'moov',    fee:1.5,  enabled:true, color:'#0075BE', icon:'MM' },
+  { id:5, name:'Espèces',      type:'cash',         provider:'cash',    fee:0,    enabled:true, color:'#10B981', icon:'$' },
+  { id:6, name:'Crédit client',type:'credit',       provider:'credit',  fee:0,    enabled:true, color:'#8B5CF6', icon:'C' },
+];
+
+// ────────────────────────────────────────────
+// Suppliers
+// ────────────────────────────────────────────
+const SUPPLIERS = [
+  { id:1, name:'Import Dubaï Sneakers', phone:'+225 07 07 12 34 56', email:'contact@dubai-kicks.ae', city:'Dubaï', leadTime:14, note:'Fournisseur principal — containers mensuels' },
+  { id:2, name:'Kicks Turquie Istanbul',phone:'+225 01 02 34 56 78', email:'ahmed@istanbul-kicks.tr', city:'Istanbul', leadTime:10, note:'Stock premium Jordan/Yeezy' },
+  { id:3, name:'Abidjan Wholesale',     phone:'+225 05 05 67 89 12', email:'grossiste@abidjan.ci', city:'Abidjan', leadTime:3, note:'Dépannage rapide — marges faibles' },
+];
+
+// ────────────────────────────────────────────
+// Locations
+// ────────────────────────────────────────────
+const LOCATIONS = [
+  { id:1, name:'Boutique Cocody',  type:'store',     address:'Riviera Bonoumin, Cocody, Abidjan', createdAt: Date.now() - 190*86400000 },
+  { id:2, name:'Entrepôt Marcory', type:'warehouse', address:'Zone 4, Marcory, Abidjan',          createdAt: Date.now() - 180*86400000 },
+];
+
+// ────────────────────────────────────────────
+// Utils
+// ────────────────────────────────────────────
+function log(msg, cls='') {
+  const el = document.getElementById('log');
+  const line = document.createElement('div');
+  if (cls) line.className = cls;
+  line.textContent = msg;
+  el.appendChild(line);
+  el.scrollTop = el.scrollHeight;
+}
+function randInt(a,b){ return Math.floor(a + Math.random()*(b-a+1)); }
+function randPick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+function uid(prefix='id'){ return prefix + '_' + Date.now() + '_' + Math.floor(Math.random()*100000); }
+
+// ────────────────────────────────────────────
+// Generate clients
+// ────────────────────────────────────────────
+function genClients(n = 80) {
+  const clients = [];
+  for (let i=0; i<n; i++) {
+    const first = randPick(CLIENT_FIRST);
+    const last = randPick(CLIENT_LAST);
+    const prefix = randPick(PHONES_PREFIX);
+    const phone = `+225 ${prefix} ${randInt(10,99)} ${randInt(10,99)} ${randInt(10,99)} ${randInt(10,99)}`;
+    const createdDaysAgo = randInt(10, 180);
+    clients.push({
+      id: i + 1,
+      name: `${first} ${last}`,
+      phone,
+      email: Math.random() < .3 ? `${first.toLowerCase()}.${last.toLowerCase().replace(/[^a-z]/g,'')}@gmail.com` : '',
+      address: Math.random() < .2 ? randPick(['Cocody','Yopougon','Marcory','Treichville','Abobo','Plateau','Koumassi']) + ', Abidjan' : '',
+      createdAt: Date.now() - createdDaysAgo*86400000,
+      totalSpent: 0,  // will be accumulated
+      totalOrders: 0,
+      points: 0,
+      tier: 'bronze',
+      note: '',
+    });
+  }
+  return clients;
+}
+
+// ────────────────────────────────────────────
+// Generate 6 months of sales with growth
+// ────────────────────────────────────────────
+function genSales(products, clients) {
+  const sales = [];
+  const now = Date.now();
+  const DAY = 86400000;
+
+  // Growth curve : ventes/jour par mois
+  // M1: ~1.5/j, M2: ~2.3/j, M3: ~3.5/j, M4: ~4.8/j, M5: ~6/j, M6: ~7.5/j
+  const monthlyTargets = [
+    { daysAgoStart: 180, daysAgoEnd: 150, perDay: 1.5 },
+    { daysAgoStart: 150, daysAgoEnd: 120, perDay: 2.3 },
+    { daysAgoStart: 120, daysAgoEnd:  90, perDay: 3.5 },
+    { daysAgoStart:  90, daysAgoEnd:  60, perDay: 4.8 },
+    { daysAgoStart:  60, daysAgoEnd:  30, perDay: 6.0 },
+    { daysAgoStart:  30, daysAgoEnd:   0, perDay: 7.5 },
+  ];
+
+  let saleId = 1;
+  const paymentsWeighted = [
+    ...Array(50).fill('Wave'),
+    ...Array(25).fill('Orange Money'),
+    ...Array(15).fill('Espèces'),
+    ...Array(6).fill('MTN Money'),
+    ...Array(3).fill('Moov Money'),
+    ...Array(1).fill('Crédit client'),
+  ];
+
+  // Pondération produits par popularité
+  const weightedProducts = [];
+  products.forEach(p => { for (let i=0; i<p.pop; i++) weightedProducts.push(p); });
+
+  monthlyTargets.forEach(month => {
+    const nDays = month.daysAgoStart - month.daysAgoEnd;
+    for (let d = 0; d < nDays; d++) {
+      const daysAgo = month.daysAgoEnd + d;
+      // varier nombre de ventes ce jour (avec un peu de weekend bonus)
+      const jitter = (Math.random() - .4); // skew positif
+      let nSales = Math.max(0, Math.round(month.perDay + jitter * 3));
+      // weekends boost samedi/dim
+      const dt = new Date(now - daysAgo * DAY);
+      if (dt.getDay() === 6 || dt.getDay() === 0) nSales = Math.round(nSales * 1.4);
+
+      for (let s = 0; s < nSales; s++) {
+        // Possibilité panier multi : 15% des ventes = 2 articles
+        const isMultiCart = Math.random() < 0.15;
+        const cartId = 'cart_' + (now - daysAgo*DAY) + '_' + saleId;
+        const itemsInCart = isMultiCart ? 2 : 1;
+
+        // Heure : majorité entre 10h et 19h
+        const hour = randInt(9, 20);
+        const minute = randInt(0, 59);
+        const saleDate = new Date(now - daysAgo * DAY);
+        saleDate.setHours(hour, minute, 0, 0);
+
+        // Client : ~60% des ventes liées à un client connu
+        let client = null;
+        if (Math.random() < 0.6) {
+          // Client créé avant la date de vente
+          const eligible = clients.filter(c => c.createdAt <= saleDate.getTime());
+          if (eligible.length) client = randPick(eligible);
+        }
+
+        const payment = randPick(paymentsWeighted);
+
+        for (let it = 0; it < itemsInCart; it++) {
+          const prod = randPick(weightedProducts);
+          const qty = 1; // sneakers : toujours 1 unité
+          const unitPrice = prod.price;
+          const unitCost = prod.cost;
+          const total = unitPrice * qty;
+          const cost = unitCost * qty;
+          const profit = total - cost;
+
+          sales.push({
+            id: saleId++,
+            cartId,
+            productId: prod.id,
+            productName: prod.name,
+            quantity: qty,
+            price: unitPrice,
+            unitPrice,
+            purchasePrice: unitCost,
+            cost,
+            total,
+            profit,
+            date: saleDate.getTime(),
+            timestamp: saleDate.toISOString(),
+            clientId: client ? client.id : null,
+            clientName: client ? client.name : '',
+            paymentMethod: payment,
+            locationId: 1,
+            locationName: 'Boutique Cocody',
+            status: 'completed',
+          });
+
+          if (client) {
+            client.totalSpent += total;
+            client.totalOrders += 1;
+            client.points += Math.floor(total / 1000); // 1 point / 1000 FCFA
+          }
+        }
+      }
+    }
+  });
+
+  // Assign loyalty tiers based on totalSpent (mode 'spent')
+  clients.forEach(c => {
+    // tier thresholds (from default config)
+    if (c.totalSpent >= 5000*1000) c.tier = 'platinum';
+    else if (c.totalSpent >= 2000*1000) c.tier = 'gold';
+    else if (c.totalSpent >= 500*1000) c.tier = 'silver';
+    else c.tier = 'bronze';
+  });
+
+  return sales;
+}
+
+// ────────────────────────────────────────────
+// Stock movements (minimal — juste les réappros clés)
+// ────────────────────────────────────────────
+function genStockMovements(products) {
+  const movements = [];
+  const now = Date.now();
+  let mid = 1;
+  products.forEach(p => {
+    // Réappro initial il y a ~185 jours
+    movements.push({
+      id: mid++, productId: p.id, productName: p.name,
+      type: 'purchase', quantity: 40, reason: 'Réappro initial',
+      date: now - 185*86400000, supplierId: 1, cost: p.cost*40,
+    });
+    // 2-3 réappros intermédiaires
+    for (let i = 0; i < 2; i++) {
+      const daysAgo = randInt(30, 150);
+      movements.push({
+        id: mid++, productId: p.id, productName: p.name,
+        type: 'purchase', quantity: randInt(10, 25),
+        reason: 'Réappro', date: now - daysAgo*86400000,
+        supplierId: randPick([1,2,3]), cost: p.cost*randInt(10,25),
+      });
+    }
+  });
+  return movements;
+}
+
+// ────────────────────────────────────────────
+// Activities feed (last 30 days)
+// ────────────────────────────────────────────
+function genActivities() {
+  const acts = [];
+  const now = Date.now();
+  const DAY = 86400000;
+  const types = ['sale','stock','member','settings'];
+  for (let i = 0; i < 40; i++) {
+    const daysAgo = randInt(0, 30);
+    acts.push({
+      id: uid('act'),
+      type: randPick(types),
+      message: randPick([
+        'Nouvelle vente enregistrée',
+        'Stock mis à jour',
+        'Client ajouté',
+        'Paiement reçu',
+        'Réappro effectué',
+        'Alerte stock bas',
+        'Produit modifié',
+      ]),
+      date: now - daysAgo*DAY - randInt(0, DAY),
+      user: 'Aïcha Koné',
+    });
+  }
+  return acts.sort((a,b) => b.date - a.date);
+}
+
+// ────────────────────────────────────────────
+// Payment history (from sales)
+// ────────────────────────────────────────────
+function genPaymentHistory(sales) {
+  // Group sales by cartId + payment
+  const byCart = {};
+  sales.forEach(s => {
+    const k = s.cartId;
+    if (!byCart[k]) byCart[k] = { total:0, method:s.paymentMethod, date:s.date, clientName:s.clientName };
+    byCart[k].total += s.total;
+  });
+  return Object.entries(byCart).map(([cartId, p], i) => ({
+    id: i+1,
+    cartId,
+    amount: p.total,
+    method: p.method,
+    date: p.date,
+    clientName: p.clientName,
+    status: 'confirmed',
+  })).sort((a,b) => b.date - a.date);
+}
+
+// ────────────────────────────────────────────
+// MAIN
+// ────────────────────────────────────────────
+async function runSeed() {
+  const btn = document.getElementById('btn');
+  btn.disabled = true;
+  document.getElementById('log').innerHTML = '';
+
+  try {
+    log('→ Connexion à Railway…');
+    const r = await fetch(`${BACKEND}/auth/login`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ email: EMAIL, password: PASSWORD })
+    });
+    if (!r.ok) {
+      // Try register if login fails
+      log('  ⚠ Login échoué, tentative de création…', 'muted');
+      const rr = await fetch(`${BACKEND}/auth/register`, {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({
+          email: EMAIL, password: PASSWORD,
+          name: 'Aicha Kone', business_name: 'KicksAbidjan',
+          country:'CI', currency:'XOF', language:'fr',
+        })
+      });
+      if (!rr.ok) throw new Error('Register failed: ' + rr.status);
+      var data = await rr.json();
+    } else {
+      var data = await r.json();
+    }
+
+    const token = data.user.auth_token;
+    const userId = data.user.id;
+    log(`  ✓ Token obtenu (user #${userId})`, 'ok');
+
+    // ── Session ──
+    const session = {
+      id: userId, name: 'Aïcha Koné', email: EMAIL,
+      business: 'KicksAbidjan', phone: '+225 07 07 12 34 56',
+      provider: 'email', avatar: '',
+      profile: 'reseller',
+      businessType: 'reseller',
+      country: 'CI', currency: 'XOF', currency_symbol: 'FCFA',
+      language: 'fr', tax_rate: 0,
+      createdAt: Date.now() - 190*86400000,
+    };
+
+    // ── Products (format frontend) ──
+    const products = SHOES.map((s, i) => ({
+      id: i + 1,
+      name: s.name,
+      price: s.price,
+      purchasePrice: s.cost,
+      stock: s.stock,
+      quantity: s.stock,
+      min: 3,
+      alert_threshold: 3,
+      unit: 'pcs',
+      category: s.cat,
+      ean: s.ean,
+      ref: s.ean,
+      image: '',
+      photo_url: '',
+      lead: 14,
+      lead_time_days: 14,
+      expiry: '',
+      perishable: false,
+      locationId: 1,
+      pop: s.pop,
+      createdAt: Date.now() - 185*86400000,
+    }));
+
+    log(`→ ${products.length} produits générés (${products.filter(p=>p.stock===0).length} en rupture)`);
+
+    // ── Clients ──
+    const clients = genClients(80);
+    log(`→ ${clients.length} clients générés`);
+
+    // ── Sales ──
+    log('→ Génération de l\'historique de ventes (6 mois)…');
+    const sales = genSales(products, clients);
+    log(`  ✓ ${sales.length} ventes générées`, 'ok');
+
+    const totalCA = sales.reduce((s,x) => s+x.total, 0);
+    const totalProfit = sales.reduce((s,x) => s+x.profit, 0);
+    log(`  → CA total : ${totalCA.toLocaleString('fr-FR')} FCFA`);
+    log(`  → Bénéfice : ${totalProfit.toLocaleString('fr-FR')} FCFA`);
+
+    // ── Movements & activities ──
+    const movements = genStockMovements(products);
+    const activities = genActivities();
+    const paymentHistory = genPaymentHistory(sales);
+
+    // Loyalty config (tier mode: spent)
+    const loyaltyConfig = {
+      enabled: true,
+      pointsPerFcfa: 0.001, // 1 point par 1000 FCFA
+      tierMode: 'spent',
+      tiers: [
+        { id:'bronze',   name:'Bronze',   min:0,      color:'#CD7F32', gradient:'linear-gradient(135deg,#CD7F32,#8B4513)', perk:'Points x1',   multiplier:1 },
+        { id:'silver',   name:'Argent',   min:500000, color:'#A8A9AD', gradient:'linear-gradient(135deg,#D1D5DB,#6B7280)', perk:'Points x1.2', multiplier:1.2 },
+        { id:'gold',     name:'Or',       min:2000000,color:'#FFD700', gradient:'linear-gradient(135deg,#FFD700,#DAA520)', perk:'Points x1.5 · livraison gratuite', multiplier:1.5 },
+        { id:'platinum', name:'Platine',  min:5000000,color:'#8B5CF6', gradient:'linear-gradient(135deg,#A78BFA,#6D28D9)', perk:'Points x2 · priorité VIP', multiplier:2 },
+      ],
+      rewards: [
+        { id:1, name:'-5000 FCFA sur ta prochaine commande', points: 50, active:true },
+        { id:2, name:'Paire de chaussettes offerte',          points: 30, active:true },
+        { id:3, name:'-15% sur toute la boutique',            points: 200, active:true },
+      ],
+    };
+
+    // Appearance (dark mode off, accent violet)
+    const appearance = {
+      theme: 'light', accentColor: '#7c3aed',
+      fontSize: 'medium', density: 'normal', contrast: 'normal',
+    };
+
+    // Subscription (premium 6 mois)
+    const subscription = {
+      plan: 'premium',
+      activated: Date.now() - 150*86400000,
+      billing: 'monthly',
+      expiresAt: Date.now() + 30*86400000,
+    };
+
+    // Boutique en ligne (publiée)
+    const boutiqueConfig = {
+      name: 'KicksAbidjan',
+      description: 'Le meilleur du sneaker game à Abidjan. Livraison 24h Cocody/Plateau.',
+      theme: 'modern',
+      published: true,
+      publicUrl: 'kicksabidjan',
+      products: products.map(p => p.id),
+      deliveryFees: 2000,
+      deliveryZones: [
+        { name:'Cocody / Riviera', fee: 1500 },
+        { name:'Plateau / Marcory', fee: 2000 },
+        { name:'Yopougon / Abobo',  fee: 3000 },
+      ],
+      deliveryTime: '24-48h',
+      freeDeliveryFrom: 100000,
+      seoTitle: 'KicksAbidjan — Sneakers authentiques Abidjan',
+      seoDescription: 'Nike, Adidas, Jordan, Yeezy. Livraison Abidjan 24h. Paiement Wave / Orange Money.',
+      seoKeywords: 'sneakers abidjan, nike ci, jordan cote ivoire',
+      ogImage: '',
+      announcement: '🔥 Livraison OFFERTE dès 100 000 FCFA',
+      announcementActive: true,
+      deliveryInfo: 'Livraison par VTC partenaire. Paiement à la livraison possible.',
+      businessHours: [
+        { day:'Lundi',    open:'09:00', close:'19:00', closed:false },
+        { day:'Mardi',    open:'09:00', close:'19:00', closed:false },
+        { day:'Mercredi', open:'09:00', close:'19:00', closed:false },
+        { day:'Jeudi',    open:'09:00', close:'19:00', closed:false },
+        { day:'Vendredi', open:'09:00', close:'20:00', closed:false },
+        { day:'Samedi',   open:'10:00', close:'20:00', closed:false },
+        { day:'Dimanche', open:'',      close:'',      closed:true  },
+      ],
+      conditions: 'Produits authentiques garantis. Retour sous 48h si article non conforme.',
+      returnPolicy: 'Retour accepté sous 48h avec facture. Remboursement sous 7 jours.',
+      faqs: [
+        { q:'Les produits sont-ils authentiques ?', a:'Oui, 100% authentiques. Tous sourcés chez nos fournisseurs officiels Dubaï / Istanbul.' },
+        { q:'Livrez-vous en dehors d\'Abidjan ?', a:'Oui, partout en Côte d\'Ivoire via cars de transport. Délai 2-4 jours.' },
+        { q:'Puis-je essayer avant d\'acheter ?', a:'Oui, en boutique à Cocody Bonoumin. Appelez pour rdv.' },
+      ],
+      testimonials: [
+        { name:'Moussa K.', text:'Service impec. Yeezy authentiques, livraison le jour même sur Cocody.', rating:5 },
+        { name:'Cynthia A.', text:'J\'ai eu mes Nike Dunk panda en 2 jours. Bien emballées. Top !', rating:5 },
+        { name:'Franck O.', text:'Sérieux. Peu de choix parfois en exclusivités mais ils commandent vite.', rating:4 },
+      ],
+      socials: { whatsapp:'+2250707123456', instagram:'@kicksabidjan', facebook:'', tiktok:'@kicksabidjan_ci', youtube:'' },
+      visits: 2847,
+    };
+
+    // Promotions (1 active)
+    const promotions = [
+      {
+        id: 1, name: 'Pack Nike -10%', code: 'NIKE10',
+        type: 'percent', value: 10,
+        productIds: products.filter(p => p.category === 'Nike').map(p => p.id),
+        startDate: Date.now() - 7*86400000,
+        endDate: Date.now() + 14*86400000,
+        active: true, used: 12,
+      },
+    ];
+
+    // ── WRITE TO LOCALSTORAGE ──
+    log('→ Écriture du localStorage…');
+    const ls = localStorage;
+    ls.setItem('baro_session',     JSON.stringify(session));
+    ls.setItem('stockr_session',   JSON.stringify(session));
+    ls.setItem('stockr_token',     token);
+    ls.setItem('baro_token',       token);
+    ls.setItem('stockr_business_type', 'reseller');
+    ls.setItem('baro_business_type',   'reseller');
+
+    // Data
+    ls.setItem('baro_products',    JSON.stringify(products));
+    ls.setItem('stockr_products',  JSON.stringify(products));
+    ls.setItem('baro_articles',    JSON.stringify([]));
+    ls.setItem('stockr_articles',  JSON.stringify([]));
+    ls.setItem('baro_sales',       JSON.stringify(sales));
+    ls.setItem('stockr_sales',     JSON.stringify(sales));
+    ls.setItem('baro_clients',     JSON.stringify(clients));
+    ls.setItem('stockr_clients',   JSON.stringify(clients));
+
+    // Configs
+    ls.setItem('baro_locations',   JSON.stringify(LOCATIONS));
+    ls.setItem('baro_current_location', '1');
+    ls.setItem('baro_suppliers',   JSON.stringify(SUPPLIERS));
+    ls.setItem('baro_payments',    JSON.stringify(PAYMENT_METHODS));
+    ls.setItem('baro_payment_history', JSON.stringify(paymentHistory));
+    ls.setItem('baro_movements',   JSON.stringify(movements));
+    ls.setItem('baro_orders',      JSON.stringify([]));
+    ls.setItem('baro_activities',  JSON.stringify(activities));
+    ls.setItem('baro_subscription',JSON.stringify(subscription));
+    ls.setItem('baro_loyalty',     JSON.stringify(loyaltyConfig));
+    ls.setItem('baro_boutique',    JSON.stringify(boutiqueConfig));
+    ls.setItem('stockr_boutique',  JSON.stringify(boutiqueConfig));
+    ls.setItem('baro_promotions',  JSON.stringify(promotions));
+    ls.setItem('baro_campaigns',   JSON.stringify([]));
+    ls.setItem('baro_banners',     JSON.stringify([]));
+    ls.setItem('baro_popups',      JSON.stringify([]));
+    ls.setItem('baro_reviews',     JSON.stringify([]));
+    ls.setItem('baro_packs',       JSON.stringify([]));
+    ls.setItem('stockr_packs',     JSON.stringify([]));
+    ls.setItem('stockr_appearance',JSON.stringify(appearance));
+
+    // Team & audit vides
+    ls.setItem('stockr_team',      JSON.stringify([]));
+    ls.setItem('stockr_audit_log', JSON.stringify([]));
+
+    log('  ✓ localStorage rempli', 'ok');
+    log('');
+    log('✅ SEED TERMINÉ', 'ok');
+    log('');
+    log(`Produits : ${products.length} (dont ${products.filter(p=>p.stock===0).length} ruptures, ${products.filter(p=>p.stock>0&&p.stock<=3).length} stock bas)`);
+    log(`Clients  : ${clients.length}`);
+    log(`Ventes   : ${sales.length} (sur 6 mois)`);
+    log(`CA total : ${totalCA.toLocaleString('fr-FR')} FCFA`);
+    log(`Marge    : ${totalProfit.toLocaleString('fr-FR')} FCFA (${Math.round(totalProfit/totalCA*100)}%)`);
+    log('');
+    log('→ Redirection vers l\'app dans 3s…', 'muted');
+    setTimeout(() => { window.location.href = '/'; }, 3000);
+
+  } catch (e) {
+    log('❌ ERREUR : ' + e.message, 'err');
+    console.error(e);
+    btn.disabled = false;
+  }
+}
+</script>
+</body>
+</html>
