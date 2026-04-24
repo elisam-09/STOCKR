@@ -2517,6 +2517,34 @@ function seedDemoData(bt) {
   if (typeof logAudit === 'function') logAudit('settings', 'demo_seeded', { bt, arts: seedArticles.length, prods: seedProducts.length, sales: seedSales.length });
 }
 
+// Wrapper robuste "Charger exemples" : try/catch + toast résilient + double persistance
+function loadDemoData() {
+  try {
+    const bt = (typeof getBusinessType === 'function') ? getBusinessType() : 'maker';
+    seedDemoData(bt);
+    // Double persistance : certains modules lisent stockr_*, d'autres baro_*
+    try {
+      localStorage.setItem('baro_articles', JSON.stringify(S.articles));
+      localStorage.setItem('baro_products', JSON.stringify(S.products));
+      localStorage.setItem('baro_clients',  JSON.stringify(S.clients));
+      localStorage.setItem('baro_sales',    JSON.stringify(S.sales));
+    } catch(_) {}
+    if (typeof render === 'function') render();
+    if (typeof showToast === 'function') {
+      showToast('Exemples chargés — supprimez-les quand vous voulez', 'success');
+    }
+    return true;
+  } catch (err) {
+    console.error('loadDemoData error', err);
+    if (typeof showToast === 'function') {
+      showToast('Erreur : impossible de charger les exemples. Rechargez la page.', 'error');
+    } else {
+      alert('Erreur : ' + (err.message || err));
+    }
+    return false;
+  }
+}
+
 async function doLogout() {
   if (!confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) return;
   if (typeof logAudit === 'function') logAudit('auth', 'logout', { email: S.session?.email });
@@ -3617,21 +3645,50 @@ async function confirmCart() {
     const cartId = 'cart_' + Date.now();
     let total = 0, count = 0, newSales = [];
     for (const item of S.cart) {
-      // ── Mode revendeur : déstockage article direct ──
-      if (item._reseller) {
-        const art = S.articles.find(a => a.id === item._artId);
-        if (art) art.stock = Math.round((art.stock - item.qty) * 1000) / 1000;
-        const lineTotal  = item.unitPrice * item.qty;
-        const lineProfit = (item.unitPrice - (item.unitCost || 0)) * item.qty;
+      // ── Article stock direct (revendeur) : destockage local, pas d'API ──
+      if (item.kind === 'article' && item.articleId) {
+        const art = S.articles.find(a => a.id === item.articleId);
+        if (art) art.stock = Math.round(((art.stock||0) - item.qty) * 1000) / 1000;
+        const lineTotal  = (item.unitPrice||0) * item.qty;
+        const lineProfit = ((item.unitPrice||0) - (item.unitCost || 0)) * item.qty;
         total += lineTotal; count += item.qty;
-        const newSale = { id: Date.now() + Math.random(), cartId, productId: item._artId, productName: item.productName, qty: item.qty, total: lineTotal, profit: lineProfit, date: new Date().toISOString(), clientId, clientName: resolvedClientName || client?.name || null, paymentMethod: payMethod };
+        const newSale = { id: Date.now() + Math.random(), cartId, productId: null, articleId: item.articleId, productName: item.productName, qty: item.qty, total: lineTotal, profit: lineProfit, date: new Date().toISOString(), clientId, clientName: resolvedClientName || client?.name || null, paymentMethod: payMethod };
         S.sales.unshift(newSale); newSales.push(newSale);
+        try { localStorage.setItem('baro_articles', JSON.stringify(S.articles)); } catch(_){}
         continue;
       }
-      const data = await api('POST', '/api/sales/', { product_id: item.productId, quantity: item.qty, client_id: clientId, client_name: client?.name || null });
+      // ── Pack : destockage local des composants, pas d'API ──
+      if (item.kind === 'pack' && item.packId) {
+        const pack = S.packs?.find(pk => pk.id === item.packId);
+        if (pack?.items?.length) {
+          for (const pi of pack.items) {
+            const p = S.products.find(pr => pr.id === pi.productId);
+            if (p?.composition) {
+              for (const c of p.composition) {
+                const a = S.articles.find(x => x.id === c.id);
+                if (a) a.stock = Math.round(((a.stock||0) - (c.qty||0) * (pi.qty||1) * item.qty) * 1000) / 1000;
+              }
+            }
+          }
+        }
+        const lineTotal  = (item.unitPrice||0) * item.qty;
+        const lineProfit = ((item.unitPrice||0) - (item.unitCost || 0)) * item.qty;
+        total += lineTotal; count += item.qty;
+        const newSale = { id: Date.now() + Math.random(), cartId, productId: null, packId: item.packId, productName: item.productName, qty: item.qty, total: lineTotal, profit: lineProfit, date: new Date().toISOString(), clientId, clientName: resolvedClientName || client?.name || null, paymentMethod: payMethod };
+        S.sales.unshift(newSale); newSales.push(newSale);
+        try { localStorage.setItem('baro_articles', JSON.stringify(S.articles)); } catch(_){}
+        continue;
+      }
+      // ── Produit classique : tente l'API, fallback local si échec (offline ou produit non-sync) ──
+      let data = null;
+      try {
+        data = await api('POST', '/api/sales/', { product_id: item.productId, quantity: item.qty, client_id: clientId, client_name: client?.name || null });
+      } catch(apiErr) {
+        data = null; // fallback géré juste après
+      }
       const product = S.products.find(p => p.id === item.productId);
-      let lineTotal = (product?.price || 0) * item.qty;
-      let lineProfit = ((product?.price || 0) - (product?.purchasePrice || 0)) * item.qty;
+      let lineTotal  = (item.unitPrice || product?.price || 0) * item.qty;
+      let lineProfit = ((item.unitPrice || product?.price || 0) - (item.unitCost || product?.purchasePrice || 0)) * item.qty;
       // Apply promo discount
       const promo = _getActivePromo(item.productId);
       let promoName = null, promoDiscount = 0;
@@ -3642,11 +3699,21 @@ async function confirmCart() {
         lineTotal -= discount;
         lineProfit -= discount;
       }
+      // Si pas de data API → destockage local des composants
+      if (!data && product?.composition) {
+        for (const c of product.composition) {
+          const a = S.articles.find(x => x.id === c.id);
+          if (a) a.stock = Math.round(((a.stock||0) - (c.qty||0) * item.qty) * 1000) / 1000;
+        }
+      }
       total += lineTotal;
       count += item.qty;
-      const newSale = { id: data.sale.id, cartId, productId: data.sale.product_id, productName: data.sale.product_name, qty: data.sale.quantity, total: lineTotal, profit: lineProfit, date: data.sale.timestamp, clientId, clientName: resolvedClientName || client?.name || null, paymentMethod: payMethod, promoName, promoDiscount };
+      const newSale = data?.sale
+        ? { id: data.sale.id, cartId, productId: data.sale.product_id, productName: data.sale.product_name, qty: data.sale.quantity, total: lineTotal, profit: lineProfit, date: data.sale.timestamp, clientId, clientName: resolvedClientName || client?.name || null, paymentMethod: payMethod, promoName, promoDiscount }
+        : { id: Date.now() + Math.random(), cartId, productId: item.productId, productName: item.productName || product?.name, qty: item.qty, total: lineTotal, profit: lineProfit, date: new Date().toISOString(), clientId, clientName: resolvedClientName || client?.name || null, paymentMethod: payMethod, promoName, promoDiscount };
       S.sales.unshift(newSale);
       newSales.push(newSale);
+      try { localStorage.setItem('baro_articles', JSON.stringify(S.articles)); } catch(_){}
     }
     // Loyalty points (with tier multiplier)
     if (S.loyaltyConfig?.enabled && clientId) {
@@ -3671,13 +3738,31 @@ async function confirmCart() {
     S.cart = [];
     showToast(`${count} ${t('unitsSold')} — ${fmt(total)} ${sym()}`);
     showReceiptBanner(newSales, total);
-    // Recharger les articles pour avoir les stocks à jour
-    const arts = await api('GET', '/api/articles/');
-    S.articles = arts.map(articleFromAPI);
-    recalcAllMins();
+    // Persist local state (articles/sales) quoi qu'il arrive
+    try {
+      localStorage.setItem('baro_articles', JSON.stringify(S.articles));
+      localStorage.setItem('baro_sales',    JSON.stringify(S.sales));
+      localStorage.setItem('stockr_articles', JSON.stringify(S.articles));
+      localStorage.setItem('stockr_sales',    JSON.stringify(S.sales));
+    } catch(_) {}
+    // Recharger les articles depuis l'API si possible (silencieux en cas d'échec offline)
+    try {
+      const arts = await api('GET', '/api/articles/');
+      if (Array.isArray(arts) && arts.length) {
+        S.articles = arts.map(articleFromAPI);
+      }
+    } catch(_) { /* offline : garder l'état local */ }
+    try { recalcAllMins(); } catch(_) {}
     render();
   } catch(e) {
-    showToast(e.message, 'error');
+    // Traduire les erreurs anglaises du backend
+    let msg = e?.message || 'Erreur lors de la vente';
+    msg = msg
+      .replace(/Product not found/gi, 'Produit introuvable')
+      .replace(/Insufficient stock/gi, 'Stock insuffisant')
+      .replace(/Network error/gi, 'Erreur réseau')
+      .replace(/Unauthorized/gi, 'Session expirée');
+    showToast(msg, 'error');
   }
 }
 
@@ -3983,18 +4068,37 @@ function bt_sellableItems() {
     })) : [];
 
   if (t === 'reseller') {
-    // L'article est le produit : doit avoir un prix de vente
-    return S.articles.filter(a => (a.price||0) > 0 && (a.stock||0) > 0).map(a => ({
-      id: 'art_' + a.id,
-      articleId: a.id,
-      name: a.name,
-      price: a.price,
-      purchasePrice: a.purchasePrice || 0,
-      stock: a.stock,
-      unit: a.unit,
-      kind: 'article',
-      inBoutique: boutiqueArticleIds.has(a.id),
-    }));
+    // Revendeur : peut vendre
+    //  1) les articles stock direct (doivent avoir prix + stock)
+    //  2) les produits créés dans l'onglet Boutique (S.products)
+    //  3) les packs actifs
+    const arts = (Array.isArray(S.articles) ? S.articles : [])
+      .filter(a => a && (a.price||0) > 0 && (a.stock||0) > 0)
+      .map(a => ({
+        id: 'art_' + a.id,
+        articleId: a.id,
+        name: a.name,
+        price: a.price,
+        purchasePrice: a.purchasePrice || 0,
+        stock: a.stock,
+        unit: a.unit || 'pce',
+        kind: 'article',
+        inBoutique: boutiqueArticleIds.has(a.id),
+      }));
+    const prods = (Array.isArray(S.products) ? S.products : [])
+      .filter(p => p && (p.price||0) > 0)
+      .map(p => ({
+        id: 'prod_' + p.id,
+        productId: p.id,
+        name: '🏪 ' + p.name,
+        price: p.price,
+        purchasePrice: p.purchasePrice || 0,
+        stock: (typeof productMaxMake === 'function') ? productMaxMake(p) : (p.stock||0),
+        unit: p.unit || 'u',
+        kind: 'product',
+        inBoutique: boutiqueProductIds.has(p.id),
+      }));
+    return [...packs, ...prods, ...arts];
   }
   // maker / mixed : produits classiques (+ articles si mixte) + packs
   const prods = S.products.map(p => ({
@@ -5654,7 +5758,7 @@ function vPantry() {
       ${S.articles.length===0 ? `
       <div style="display:flex;flex-direction:column;gap:8px;align-items:center">
         <button class="btn btn-primary" style="width:auto;padding:11px 24px" onclick="nav('add')">${isReseller?'🏪 Ajouter un produit':t('addArticle')}</button>
-        <button class="btn btn-ghost" style="width:auto;padding:8px 16px;font-size:12px" onclick="if(confirm('Charger 5 articles démo pour explorer l&apos;app ?')){seedDemoData(getBusinessType());render();showToast('Exemples chargés — supprimez-les quand vous voulez','success');}">📚 Charger des exemples (optionnel)</button>
+        <button class="btn btn-ghost" style="width:auto;padding:8px 16px;font-size:12px" onclick="if(confirm('Charger 5 articles démo pour explorer l&apos;app ?')){loadDemoData();}">📚 Charger des exemples (optionnel)</button>
       </div>` : ''}
     </div>` : list.map((a,i) => {
       const st  = stockStatus(a.stock, a.min);
@@ -22956,6 +23060,7 @@ function __baroInit() {
   window.switchToMember     = switchToMember;
   window.promptMemberPin    = promptMemberPin;
   window.seedDemoData       = seedDemoData;
+  window.loadDemoData       = loadDemoData;
 
   // Appliquer le thème AVANT le premier render pour éviter le flash
   if (typeof applyTheme === 'function') applyTheme();
