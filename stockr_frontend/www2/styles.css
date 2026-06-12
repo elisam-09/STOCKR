@@ -352,14 +352,25 @@ body.view-entering .anim { animation: fadeUp 0.3s cubic-bezier(0.2, 0, 0, 1) bot
   border-radius: 0 0 28px 28px;
   position: relative;
   overflow: hidden;
+  box-shadow: 0 10px 30px -14px rgba(67, 56, 202, 0.4);
 }
 .hero::before {
   content: '';
   position: absolute;
   top: -50%; right: -30%;
-  width: 260px; height: 260px;
-  background: radial-gradient(circle, rgba(99,102,241,0.3) 0%, transparent 70%);
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(124,115,255,0.35) 0%, transparent 70%);
   pointer-events: none;
+  animation: subHeroPulse 9s ease-in-out infinite;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: -60%; left: -25%;
+  width: 260px; height: 260px;
+  background: radial-gradient(circle, rgba(99,102,241,0.2) 0%, transparent 70%);
+  pointer-events: none;
+  animation: subHeroPulse 12s ease-in-out infinite reverse;
 }
 .hero-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; position: relative; z-index: 1; }
 .hero-greeting { font-size: 12px; color: rgba(255,255,255,0.5); font-weight: 500; margin-bottom: 2px; }
@@ -378,15 +389,24 @@ body.view-entering .anim { animation: fadeUp 0.3s cubic-bezier(0.2, 0, 0, 1) bot
 
 .hero-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; position: relative; z-index: 1; }
 .hero-stat  {
-  background: rgba(255,255,255,0.08);
-  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: linear-gradient(160deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.05) 100%);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.12);
   border-radius: var(--r-md); padding: 12px 6px; text-align: center;
   transition: all var(--t);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
 }
-.hero-stat.warn { background: rgba(220, 38, 38, 0.25); border-color: rgba(220, 38, 38, 0.3); }
-.hero-stat-val  { font-size: 20px; font-weight: 800; color: var(--white); line-height: 1; margin-bottom: 2px; }
-.hero-stat-lbl  { font-size: 9px; color: rgba(255,255,255,0.5); font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; }
+.hero-stat.warn {
+  background: linear-gradient(160deg, rgba(239,68,68,0.32) 0%, rgba(220,38,38,0.18) 100%);
+  border-color: rgba(248,113,113,0.4);
+  animation: heroWarnGlow 2.5s ease-in-out infinite;
+}
+@keyframes heroWarnGlow {
+  0%, 100% { box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 0 0 0 rgba(239,68,68,0.25); }
+  50%      { box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 0 12px 2px rgba(239,68,68,0.3); }
+}
+.hero-stat-val  { font-size: 20px; font-weight: 900; color: var(--white); line-height: 1; margin-bottom: 2px; letter-spacing: -0.5px; }
+.hero-stat-lbl  { font-size: 9px; color: rgba(255,255,255,0.55); font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; }
 
 /* ── Sub-page Header ────────────────────────── */
 .page-header {
@@ -686,10 +706,22 @@ select.input { cursor: pointer; }
   padding: 14px 8px;
   text-align: center;
   box-shadow: var(--shadow-sm);
-  transition: transform var(--t), box-shadow var(--t);
+  transition: transform var(--t), box-shadow var(--t), border-color var(--t);
+  position: relative;
+  overflow: hidden;
 }
+.metric-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(124,115,255,0.35), transparent);
+  opacity: 0;
+  transition: opacity var(--t);
+}
+.metric-card:hover::before { opacity: 1; }
 .metric-card:active { transform: scale(0.96); }
-.metric-val  { font-size: 16px; font-weight: 800; color: var(--text); }
+.metric-val  { font-size: 16px; font-weight: 800; color: var(--text); letter-spacing: -0.3px; font-variant-numeric: tabular-nums; }
 .metric-lbl  { font-size: 10px; color: var(--text-3); margin-top: 3px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; }
 
 /* ── Reco Card ──────────────────────────────── */
@@ -875,7 +907,13 @@ input:checked + .toggle-track::before { transform: translateX(18px); }
   border: 1px solid rgba(255,255,255,0.08);
   box-shadow: 0 8px 32px rgba(0,0,0,0.3);
 }
-.toast.error { background: rgba(80,20,20,0.9); border-color: rgba(220,38,38,0.3); }
+.toast.error { background: rgba(80,20,20,0.92); border-color: rgba(220,38,38,0.35); }
+.toast.success {
+  background: rgba(6,55,38,0.92);
+  border-color: rgba(16,185,129,0.35);
+  box-shadow: 0 8px 32px rgba(16,185,129,0.15), 0 8px 32px rgba(0,0,0,0.25);
+}
+.toast.warning { background: rgba(70,45,5,0.92); border-color: rgba(245,158,11,0.35); }
 
 /* ── Divider ────────────────────────────────── */
 .divider { height: 1px; background: var(--border); margin: 12px 0; }
@@ -1866,8 +1904,9 @@ body.dark .card:hover { border-color: var(--border); }
   border: 1.5px solid var(--border);
   border-radius: 14px;
   cursor: pointer;
-  transition: all .2s;
+  transition: all .2s cubic-bezier(0.2, 0, 0, 1);
 }
+.qa-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 18px -10px rgba(0,0,0,0.15); border-color: rgba(124,115,255,0.3); }
 .qa-btn:active { transform: scale(.94); }
 .qa-ico {
   width: 40px; height: 40px;
@@ -1875,11 +1914,13 @@ body.dark .card:hover { border-color: var(--border); }
   display: flex; align-items: center; justify-content: center;
   color: #fff;
   font-size: 15px;
+  transition: transform .25s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
-.qa-spectra .qa-ico { background: linear-gradient(135deg, #7C3AED, #4F46E5); }
-.qa-sale .qa-ico { background: linear-gradient(135deg, #059669, #10b981); }
-.qa-article .qa-ico { background: linear-gradient(135deg, #D97706, #f59e0b); }
-.qa-report .qa-ico { background: linear-gradient(135deg, #2563EB, #3b82f6); }
+.qa-btn:hover .qa-ico { transform: scale(1.1) rotate(-3deg); }
+.qa-spectra .qa-ico { background: linear-gradient(135deg, #7C3AED, #4F46E5); box-shadow: 0 4px 12px -4px rgba(124,58,237,0.5); }
+.qa-sale .qa-ico { background: linear-gradient(135deg, #059669, #10b981); box-shadow: 0 4px 12px -4px rgba(16,185,129,0.5); }
+.qa-article .qa-ico { background: linear-gradient(135deg, #D97706, #f59e0b); box-shadow: 0 4px 12px -4px rgba(245,158,11,0.5); }
+.qa-report .qa-ico { background: linear-gradient(135deg, #2563EB, #3b82f6); box-shadow: 0 4px 12px -4px rgba(59,130,246,0.5); }
 .qa-lbl {
   font-size: 11px;
   font-weight: 700;

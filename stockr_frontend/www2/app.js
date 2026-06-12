@@ -6382,21 +6382,30 @@ function vFinancial() {
       ${bestDay ? `<div class="metric-card"><div class="metric-val" style="font-size:13px">${new Date(bestDay[0]).toLocaleDateString(_lang==='en'?'en-US':'fr-FR',{day:'numeric',month:'short'})}</div><div class="metric-lbl">${t('bestDay')} (${fmt(bestDay[1])})</div></div>` : `<div class="metric-card"><div class="metric-val">—</div><div class="metric-lbl">${t('bestDay')}</div></div>`}
     </div>`;
     })()}
-    <div class="metric-grid">
-      <div class="metric-card"><div class="metric-val">${filtered.length}</div><div class="metric-lbl">${t('salesCount')}</div></div>
-      <div class="metric-card"><div class="metric-val">${fmt(avg)}</div><div class="metric-lbl">${t('avgTicket')}</div></div>
-      <div class="metric-card"><div class="metric-val">${fmt(stockVal)}</div><div class="metric-lbl">${t('stockVal')}</div></div>
-    </div>
     <div class="card">
       <div class="card-title">${t('topProducts')}</div>
       ${top.length===0
         ? `<div style="font-size:13px;color:var(--text-3)">${t('noSalesPeriod')}</div>`
-        : top.map(([name,d],i)=>`
-          <div class="rank-item">
-            <div class="rank-num ${i===0?'r1':''}">${i+1}</div>
-            <div class="rank-name">${name}${d.profit>0?`<div style="font-size:11px;color:var(--success);font-weight:400">+${fmt(d.profit)} ${t('profitShort')}</div>`:''}</div>
-            <div class="rank-rev">${fmt(d.rev)} ${sym()}</div>
-          </div>`).join('')}
+        : (() => {
+          const maxTopRev = top[0][1].rev || 1;
+          return top.map(([name,d],i)=>`
+          <div class="rank-item" style="position:relative">
+            <div class="rank-num ${i===0?'r1':''}">${i===0?'🏆':i+1}</div>
+            <div class="rank-name" style="flex:1;min-width:0">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">
+                <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${name}</span>
+                <span class="rank-rev" style="flex-shrink:0">${fmt(d.rev)} ${sym()}</span>
+              </div>
+              <div style="height:5px;background:var(--gray-2);border-radius:3px;margin-top:5px;overflow:hidden">
+                <div style="height:100%;width:${Math.max(4, Math.round((d.rev/maxTopRev)*100))}%;background:linear-gradient(90deg,var(--accent),#7C73FF);border-radius:3px;transition:width .6s cubic-bezier(.25,.46,.45,.94)"></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-3);margin-top:3px">
+                <span>${d.qty} vendus</span>
+                ${d.profit>0?`<span style="color:var(--success);font-weight:600">+${fmt(d.profit)} ${t('profitShort')}</span>`:''}
+              </div>
+            </div>
+          </div>`).join('');
+        })()}
     </div>
     ${S.predictions.length > 0 ? `
     <div class="section-hd" style="margin-top:8px">
@@ -7227,6 +7236,11 @@ function vClients() {
     if (!clientStats[ckey].last || s.date > clientStats[ckey].last) clientStats[ckey].last = s.date;
   });
 
+  // KPIs clients : CA cumulé, meilleur client, nouveaux ce mois
+  const totalClientCA = Object.values(clientStats).reduce((s,c) => s + c.total, 0);
+  const bestClientEntry = Object.entries(clientStats).sort((a,b) => b[1].total - a[1].total)[0] || null;
+  const bestClient = bestClientEntry ? S.clients.find(c => String(c.id) === bestClientEntry[0]) : null;
+
   return `
   <div class="page-header">
     <div class="page-header-row">
@@ -7234,6 +7248,21 @@ function vClients() {
       <div class="page-title">${t('clients')}</div>
       <button class="fab" onclick="nav('add-client')">${IC.plus}</button>
     </div>
+    ${S.clients.length > 0 ? `
+    <div class="pantry-kpis" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 0 10px">
+      <div style="text-align:center;padding:8px 4px;background:var(--gray-1);border-radius:8px;border:1px solid var(--border)">
+        <div style="font-size:13px;font-weight:800;color:var(--accent)">${S.clients.length}</div>
+        <div style="font-size:9px;color:var(--text-3);margin-top:1px;font-weight:600;letter-spacing:.3px">CLIENTS</div>
+      </div>
+      <div style="text-align:center;padding:8px 4px;background:linear-gradient(135deg,rgba(16,185,129,0.10),rgba(16,185,129,0.02));border-radius:8px;border:1px solid rgba(16,185,129,0.25)">
+        <div style="font-size:13px;font-weight:800;color:var(--success)">${fmt(totalClientCA)}</div>
+        <div style="font-size:9px;color:var(--text-3);margin-top:1px;font-weight:600;letter-spacing:.3px">CA CLIENTS</div>
+      </div>
+      <div style="text-align:center;padding:8px 4px;background:var(--gray-1);border-radius:8px;border:1px solid var(--border)" title="${bestClient ? bestClient.name : ''}">
+        <div style="font-size:13px;font-weight:800;color:var(--text-1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 4px">${bestClient ? bestClient.name.split(' ')[0] : '—'}</div>
+        <div style="font-size:9px;color:var(--text-3);margin-top:1px;font-weight:600;letter-spacing:.3px">TOP CLIENT</div>
+      </div>
+    </div>` : ''}
     <div class="search-wrap">
       <span class="search-ico">${IC.search}</span>
       <input class="input input-search" type="text" placeholder="    ${t('search')}" value="${S.clientSearch.replace(/"/g,'&quot;')}" oninput="S.clientSearch=this.value;render()">
