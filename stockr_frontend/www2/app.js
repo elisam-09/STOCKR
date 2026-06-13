@@ -10310,7 +10310,8 @@ For EACH product detected, return:
 Return STRICTLY a valid JSON array only, no markdown, no comments:
 [{"exact_name":"...","brand":"...","category":"smartphone","quantity":1,"bbox":[5,10,40,80],"confidence":92}]`;
 
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`, {
+    const _model = localStorage.getItem('stockr_gemini_model') || 'gemini-2.0-flash';
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${_model}:generateContent?key=${apiKey}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -10333,26 +10334,37 @@ Return STRICTLY a valid JSON array only, no markdown, no comments:
     const jsonMatch = text.match(/\[[\s\S]*\]/);
     if (!jsonMatch) return null;
     const products = JSON.parse(jsonMatch[0]);
-    // Convert to spectra detection format
+    // Convert to spectra detection format (champs attendus par l'écran de confirmation)
     const imgW = canvas.width;
     const imgH = canvas.height;
-    return products.map((p, i) => ({
-      id: `ai_${Date.now()}_${i}`,
-      cocoClass: p.category || 'object',
-      detectedName: p.exact_name || 'Produit',
-      brand: p.brand || '',
-      category: p.category || 'other',
-      count: p.quantity || 1,
-      confidence: p.confidence || 80,
-      boxes: [[ // Convert % to px
-        (p.bbox?.[0] || 0) * imgW / 100,
-        (p.bbox?.[1] || 0) * imgH / 100,
-        (p.bbox?.[2] || 50) * imgW / 100,
-        (p.bbox?.[3] || 50) * imgH / 100
-      ]],
-      source: 'gemini',
-      ai_powered: true,
-    }));
+    return products.map((p, i) => {
+      const name = p.exact_name || p.name || 'Produit';
+      // Match auto avec un article/produit existant (par nom approximatif)
+      const norm = s => (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+      const nn = norm(name);
+      let match = (S.articles||[]).find(a => norm(a.name) === nn)
+               || (S.articles||[]).find(a => nn.includes(norm(a.name)) || norm(a.name).includes(nn.split(' ')[0]));
+      return {
+        id: `ai_${Date.now()}_${i}`,
+        cocoClass: p.category || 'object',
+        detected_name: name,
+        matched_name: match ? match.name : name,
+        matched_id: match ? match.id : null,
+        brand: p.brand || '',
+        category: p.category || 'other',
+        quantity: p.quantity || 1,
+        confidence: p.confidence || 85,
+        refined_by: 'Spectra AI (Gemini)',
+        ai_powered: true,
+        source: 'gemini',
+        boxes: [[
+          (p.bbox?.[0] || 0) * imgW / 100,
+          (p.bbox?.[1] || 0) * imgH / 100,
+          (p.bbox?.[2] || 50) * imgW / 100,
+          (p.bbox?.[3] || 50) * imgH / 100
+        ]],
+      };
+    });
   } catch (e) {
     console.warn('[Spectra AI] error:', e.message);
     return null;
@@ -10870,7 +10882,8 @@ async function spectraCaptureFromContinuous(){
   S.spectra.current = 0;
   S.spectra.confirmed = [];
   S.spectra.naming = false;
-  S.spectra.step = 'confirm';
+  // Rien reconnu → écran guidé (proposer l'IA vision plutôt qu'un échec sec)
+  S.spectra.step = (S.spectra.queue && S.spectra.queue.length) ? 'confirm' : 'noresult';
   render();
 }
 
@@ -11037,8 +11050,9 @@ async function spectraOnFile(input) {
     try { await api('POST', '/api/spectra/scan', { detections }); } catch(e){}
 
     if (!detections || detections.length === 0) {
-      showToast(t('spectraNoDetection') || 'Aucune détection', 'error');
-      S.spectra.step = 'camera';
+      // Rien reconnu → écran guidé (propose l'IA vision) plutôt qu'un échec sec
+      S.spectra.queue = [];
+      S.spectra.step = 'noresult';
       render();
       return;
     }
@@ -11050,7 +11064,7 @@ async function spectraOnFile(input) {
     render();
   } catch (err) {
     showToast(err.message || 'Spectra error', 'error');
-    S.spectra.step = 'camera';
+    S.spectra.step = 'noresult';
     render();
   }
 }
@@ -13864,7 +13878,7 @@ function deleteTeamMember(id) {
 // ── SPECTRA AI SETUP (Gemini Vision) ─────────────
 function vSpectraAISetup() {
   const key = localStorage.getItem('stockr_gemini_key') || '';
-  const model = localStorage.getItem('stockr_gemini_model') || 'gemini-2.0-flash-exp';
+  const model = localStorage.getItem('stockr_gemini_model') || 'gemini-2.0-flash';
   const isActive = !!key;
   return `
   <div class="sub-hero" style="background:linear-gradient(135deg,#4285F4,#7C3AED)">
@@ -13904,9 +13918,9 @@ function vSpectraAISetup() {
     <div class="card" style="margin-bottom:12px">
       <div class="card-title">🎯 Modèle IA</div>
       <select id="gemini-model-select" class="input" onchange="localStorage.setItem('stockr_gemini_model', this.value);showToast('Modèle mis à jour','success')">
-        <option value="gemini-2.0-flash-exp" ${model==='gemini-2.0-flash-exp'?'selected':''}>Gemini 2.0 Flash (⚡ Rapide, précis, gratuit)</option>
-        <option value="gemini-1.5-flash" ${model==='gemini-1.5-flash'?'selected':''}>Gemini 1.5 Flash (Stable)</option>
-        <option value="gemini-1.5-pro" ${model==='gemini-1.5-pro'?'selected':''}>Gemini 1.5 Pro (Ultra précis)</option>
+        <option value="gemini-2.0-flash" ${model==='gemini-2.0-flash'?'selected':''}>Gemini 2.0 Flash (⚡ Rapide, précis, gratuit)</option>
+        <option value="gemini-2.5-flash" ${model==='gemini-2.5-flash'?'selected':''}>Gemini 2.5 Flash (Plus récent)</option>
+        <option value="gemini-2.5-pro" ${model==='gemini-2.5-pro'?'selected':''}>Gemini 2.5 Pro (Ultra précis)</option>
       </select>
     </div>
 
@@ -23499,6 +23513,36 @@ function vSpectraEnhanced() {
           <div class="spectra-layer-spin"></div>
         </div>`).join('')}
       </div>
+    </div>`;
+  }
+
+  // ── Aucun résultat : écran guidé (propose l'IA vision plutôt qu'un échec sec) ──
+  if (S.spectra.step === 'noresult') {
+    const hasAI = !!localStorage.getItem('stockr_gemini_key');
+    return `
+    <div class="sub-hero spectra-hero-grad"><div class="page-header-row"><button class="back-btn-dark" onclick="spectraReset();nav('more')">${IC.left}</button><div style="flex:1"><div class="sub-hero-title">Produit non reconnu</div><div class="sub-hero-sub">Spectra n'a pas pu l'identifier avec certitude</div></div></div></div>
+    <div class="container" style="padding:18px">
+      ${S.spectra.capturedImage ? `<img src="${S.spectra.capturedImage}" style="width:100%;max-height:200px;object-fit:cover;border-radius:16px;margin-bottom:16px;border:1px solid var(--border)">` : ''}
+      ${!hasAI ? `
+      <div class="card" style="border:1.5px solid var(--accent);background:linear-gradient(135deg,rgba(124,115,255,.10),rgba(66,133,244,.05));margin-bottom:12px">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+          <div style="width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#4285F4,#7C3AED);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">✨</div>
+          <div><div style="font-size:15px;font-weight:800">Active l'IA vision (gratuit)</div><div style="font-size:12px;color:var(--text-3)">Reconnaît n'importe quel produit, comme Google Lens</div></div>
+        </div>
+        <div style="font-size:12.5px;color:var(--text-2);line-height:1.55;margin-bottom:12px">
+          La reconnaissance locale (hors-ligne) ne couvre pas tous les produits. Avec l'<strong>IA vision Gemini</strong> (clé gratuite, 1500 scans/jour), Spectra identifie <strong>PS5, iPhone, cosmétiques, n'importe quoi</strong> par photo ou vidéo.
+        </div>
+        <button class="btn btn-primary" style="background:linear-gradient(135deg,#4285F4,#7C3AED)" onclick="nav('spectra-ai-setup')">Activer Spectra AI →</button>
+      </div>` : `
+      <div class="card" style="margin-bottom:12px">
+        <div style="font-size:13px;color:var(--text-2);line-height:1.55">L'IA n'a pas reconnu ce produit (image floue, sous un angle difficile, ou produit rare). Réessaie avec une photo plus nette et bien éclairée.</div>
+      </div>`}
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-title">Ajouter manuellement</div>
+        <div style="font-size:12px;color:var(--text-3);margin-bottom:10px">Tu peux créer l'article toi-même en quelques secondes.</div>
+        <button class="btn btn-ghost" onclick="spectraReset();nav('add')">${IC.plus} Créer l'article</button>
+      </div>
+      <button class="btn btn-ghost" style="width:100%" onclick="spectraReset()">${IC.camera} Réessayer un scan</button>
     </div>`;
   }
 
