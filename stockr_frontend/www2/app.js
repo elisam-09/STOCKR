@@ -4547,6 +4547,7 @@ function _doRender() {
   }
 
   if (S.view === 'financial') requestAnimationFrame(() => { renderRevenueChart(); renderProfitChart(); });
+  if (S.view === 'boutique-editor') requestAnimationFrame(() => { try { _refreshBoutiqueLivePreview(); } catch(_){} });
 
   // Count-up des chiffres clés à l'entrée d'une vue (pas sur les re-renders)
   if (viewChanged) __animateCountUps(viewEl);
@@ -15213,6 +15214,39 @@ function boutiqueEditToggle(key, defaultOn) {
   const sw = document.querySelector('[data-bq-toggle="'+key+'"]');
   if (sw) sw.checked = next;
 }
+// Champs texte : met à jour + rafraîchit l'aperçu SANS re-render (garde le focus clavier)
+let _bqTextTimer = null;
+function boutiqueEditText(key, val) {
+  S.boutiqueConfig[key] = val;
+  clearTimeout(_bqTextTimer);
+  _bqTextTimer = setTimeout(() => {
+    localStorage.setItem('baro_boutique', JSON.stringify(S.boutiqueConfig));
+    _refreshBoutiqueLivePreview();
+  }, 260);
+}
+// Réorganise un produit dans la vitrine (flèches monter/descendre)
+function boutiqueMoveProduct(id, dir) {
+  id = String(id);
+  const bc = S.boutiqueConfig;
+  // Construit l'ordre courant complet (packs → produits → articles, puis ordre custom)
+  const packs = (bt_showProducts() ? (S.packs||[]) : []).filter(pk => (bc.packs||[]).includes(pk.id) && pk.active !== false).map(pk => 'pack_'+pk.id);
+  const prods = (bt_showProducts() ? S.products : []).filter(p => (bc.products||[]).includes(p.id)).map(p => String(p.id));
+  const arts  = (bt_showStock()    ? (S.articles||[]) : []).filter(a => (bc.articles||[]).includes(a.id)).map(a => String(a.id));
+  let order = [...packs, ...prods, ...arts];
+  if (Array.isArray(bc.productOrder) && bc.productOrder.length) {
+    const rank = x => { const i = bc.productOrder.indexOf(x); return i === -1 ? 9999 : i; };
+    order.sort((a,b) => rank(a) - rank(b));
+  }
+  const idx = order.indexOf(id);
+  if (idx === -1) return;
+  const swap = idx + dir;
+  if (swap < 0 || swap >= order.length) return;
+  [order[idx], order[swap]] = [order[swap], order[idx]];
+  bc.productOrder = order;
+  localStorage.setItem('baro_boutique', JSON.stringify(bc));
+  haptic('tap');
+  render(); // reconstruit la liste (flèches) — le hook _doRender rafraîchit l'aperçu
+}
 function generateBoutiqueSite(opts) {
   const isPreview = !!(opts && opts.preview);
   const bc = S.boutiqueConfig;
@@ -15224,10 +15258,36 @@ function generateBoutiqueSite(opts) {
     .map(pk => ({ id:'pack_'+pk.id, name:pk.name, price:packFinalPrice(pk), description:pk.description||'Pack économique', category:'Packs', image:'', qty:null, unit:'', _pack:true }));
   const vitrineArts  = (bt_showStock()    ? (S.articles||[]) : []).filter(a => (bc.articles||[]).includes(a.id))
     .map(a => ({ id:a.id, name:a.name, price:a.price||a.salePrice||0, description:a.description||'', category:a.category||'Articles', image:a.image||'', qty:(typeof a.stock==='number'?a.stock:null), unit:a.unit||'', _article:true }));
-  const shopProds = [...vitrinePacks, ...vitrineProds, ...vitrineArts];
+  let shopProds = [...vitrinePacks, ...vitrineProds, ...vitrineArts];
   if (shopProds.length === 0) { if (!(opts && opts.silent)) showToast('Ajoutez des produits/articles/packs en vitrine', 'error'); return; }
+  // Ordre personnalisé défini dans l'éditeur (flèches monter/descendre)
+  if (Array.isArray(bc.productOrder) && bc.productOrder.length) {
+    const rank = id => { const i = bc.productOrder.indexOf(String(id)); return i === -1 ? 9999 : i; };
+    shopProds = shopProds.slice().sort((a, b) => rank(a.id) - rank(b.id));
+  }
   const categories = [...new Set(shopProds.map(p => p.category || 'Autres'))];
   const tc = bc.themeColor || '#4F46E5';
+  // ── Options avancées de l'éditeur visuel (toutes avec défaut raisonnable) ──
+  const gridCols   = bc.gridCols || 2;                       // 1 | 2 | 3
+  const heroStyle  = bc.heroStyle || 'classic';              // classic | minimal | banner
+  const density    = bc.density || 'normal';                 // compact | normal | airy
+  const cardHover  = bc.cardHover || 'lift';                 // lift | zoom | none
+  const pageBg     = bc.pageBg || '#FAFAFC';
+  const headingFont= bc.headingFont || bc.fontFamily || 'Inter';
+  const bodyFont   = bc.bodyFont || bc.fontFamily || 'Inter';
+  const orderStyle = bc.orderBtnStyle || 'whatsapp';         // whatsapp | brand | outline
+  const orderText  = bc.orderBtnText || '+ Ajouter au panier';
+  const heroTitle  = bc.heroTitle || bc.name || S.session?.business || 'Ma Boutique';
+  const heroSub    = bc.heroSubtitle || bc.description || 'Bienvenue ! Découvrez nos produits et commandez en un clic';
+  const announce   = (bc.announceText || '').trim();
+  const cornerR    = bc.borderStyle === 'square' ? '2px' : bc.borderStyle === 'xl' ? '24px' : '16px';
+  const gap        = density === 'compact' ? '8px' : density === 'airy' ? '20px' : '12px';
+  const pad        = density === 'compact' ? '10px' : density === 'airy' ? '24px' : '16px';
+  const hoverCss   = cardHover === 'none'
+    ? ''
+    : cardHover === 'zoom'
+      ? '.pc:hover .pc-img{transform:scale(1.12)}'
+      : '.pc:hover{transform:translateY(-4px);box-shadow:0 18px 40px -12px rgba(0,0,0,.18)}';
   const waNum = (bc.whatsappNumber || '').replace(/\s/g, '').replace(/^\+/, '');
   const waLink = waNum ? `https://wa.me/${waNum}` : 'https://wa.me/';
   const payments = (S.paymentMethods||[]).filter(m => m.active);
@@ -15240,10 +15300,13 @@ function generateBoutiqueSite(opts) {
   const iconRadius   = (bc.borderStyle === 'square') ? '2px' : '14px';
   const btnRadius    = (bc.borderStyle === 'square') ? '2px' : '10px';
   const btnAnim = bc.buttonAnimation || 'rebond';
-  const font = bc.fontFamily || 'Inter';
-  const fontStack = (font === 'Inter' || font === 'system') ? "system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" : `'${font}',system-ui,sans-serif`;
-  const fontImport = (font && font !== 'Inter' && font !== 'system') ?
-    `<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=${encodeURIComponent(font)}:wght@400;600;700;800&display=swap" rel="stylesheet">` : '';
+  const _stack = (f) => (!f || f === 'Inter' || f === 'system') ? "system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" : `'${f}',system-ui,sans-serif`;
+  const fontStack     = _stack(bodyFont);
+  const headingStack  = _stack(headingFont);
+  // Import Google Fonts pour les polices non-système (titres + corps)
+  const _gf = [...new Set([headingFont, bodyFont].filter(f => f && f !== 'Inter' && f !== 'system'))];
+  const fontImport = _gf.length
+    ? `<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>${_gf.map(f=>`<link href="https://fonts.googleapis.com/css2?family=${encodeURIComponent(f)}:wght@400;600;700;800;900&display=swap" rel="stylesheet">`).join('')}` : '';
   // Organisation toggles (défaut true si non défini)
   const showFeatured    = bc.showFeatured    !== false;
   const showCartButton  = bc.showCartButton  !== false;
@@ -15371,7 +15434,7 @@ function generateBoutiqueSite(opts) {
           ${stockBadge}
         </div>
         ${showCartButton
-          ? `<button class="pc-add order-btn" data-id="${esc(String(p.id))}" ${p.qty===0?'disabled':''}>${p.qty===0?'Indisponible':'+ Ajouter au panier'}</button>`
+          ? `<button class="pc-add order-btn" data-id="${esc(String(p.id))}" ${p.qty===0?'disabled':''}>${p.qty===0?'Indisponible':esc(orderText)}</button>`
           : `<a class="pc-add order-btn" style="text-decoration:none;text-align:center" href="${waLink}?text=${encodeURIComponent('Bonjour, je voudrais commander : '+p.name+' — '+fmt(finalPrice)+' '+sym())}" target="_blank">Commander</a>`}
       </div>
     </div>`;
@@ -15403,8 +15466,9 @@ ${snapHead}
 ${cc.head || ''}
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--tc:${tc};--r:${borderRadius};--rb:${btnRadius}}
-body{font-family:${fontStack};background:#FAFAFC;color:#1d1d1f;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+:root{--tc:${tc};--r:${cornerR};--rb:${btnRadius}}
+body{font-family:${fontStack};background:${pageBg};color:#1d1d1f;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+h1,h2,.header h1,.pc-name,.cartbar-total,.ck h2{font-family:${headingStack}}
 ::selection{background:${tc}33}
 /* Top bar sticky verre dépoli */
 .topbar{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:10px;padding:12px 16px;background:rgba(255,255,255,.82);backdrop-filter:blur(18px) saturate(180%);-webkit-backdrop-filter:blur(18px) saturate(180%);border-bottom:1px solid rgba(0,0,0,.05)}
@@ -15415,7 +15479,12 @@ body{font-family:${fontStack};background:#FAFAFC;color:#1d1d1f;-webkit-font-smoo
 .cart-btn:active{transform:scale(.92)}
 .cart-badge{position:absolute;top:-5px;right:-5px;min-width:18px;height:18px;border-radius:9px;background:${tc};color:#fff;font-size:10px;font-weight:800;display:none;align-items:center;justify-content:center;padding:0 4px;box-shadow:0 2px 6px ${tc}66}
 /* Hero */
+.announce-bar{background:#111;color:#fff;text-align:center;font-size:12.5px;font-weight:600;padding:8px 16px;letter-spacing:.2px}
 .header{background:linear-gradient(140deg,${tc} 0%,${tc}dd 55%,${tc}bb 100%);color:#fff;padding:44px 20px 56px;text-align:center;position:relative;overflow:hidden}
+.header-minimal{padding:24px 20px 30px;text-align:left}
+.header-minimal h1{font-size:22px}
+.header-banner{padding:72px 20px 84px}
+.header-banner h1{font-size:32px}
 .header::before{content:'';position:absolute;top:-60%;right:-20%;width:340px;height:340px;background:radial-gradient(circle,rgba(255,255,255,.16) 0%,transparent 70%);pointer-events:none;animation:blob 9s ease-in-out infinite}
 .header::after{content:'';position:absolute;bottom:-70%;left:-15%;width:300px;height:300px;background:radial-gradient(circle,rgba(255,255,255,.10) 0%,transparent 70%);pointer-events:none;animation:blob 12s ease-in-out infinite reverse}
 @keyframes blob{0%,100%{transform:scale(1)}50%{transform:scale(1.18)}}
@@ -15423,7 +15492,7 @@ body{font-family:${fontStack};background:#FAFAFC;color:#1d1d1f;-webkit-font-smoo
 .header h1{font-size:28px;font-weight:900;letter-spacing:-.8px;position:relative;z-index:1}
 .header p{opacity:.88;margin-top:8px;font-size:14px;max-width:420px;margin-left:auto;margin-right:auto;line-height:1.55;position:relative;z-index:1}
 .header-rating{display:inline-flex;align-items:center;gap:6px;margin-top:14px;background:rgba(255,255,255,.18);backdrop-filter:blur(8px);padding:7px 16px;border-radius:999px;font-size:13px;font-weight:700;position:relative;z-index:1;border:1px solid rgba(255,255,255,.22)}
-.container{max-width:680px;margin:0 auto;padding:16px}
+.container{max-width:680px;margin:0 auto;padding:${pad}}
 .info-bar{background:#fff;border-radius:16px;padding:14px 18px;margin:-32px 16px 14px;position:relative;z-index:2;box-shadow:0 12px 32px -8px rgba(0,0,0,.10),0 2px 8px rgba(0,0,0,.04);display:flex;gap:14px;justify-content:center;flex-wrap:wrap;font-size:12px;color:#555;font-weight:500}
 .info-item{display:flex;align-items:center;gap:6px}
 /* Recherche + chips */
@@ -15435,8 +15504,9 @@ body{font-family:${fontStack};background:#FAFAFC;color:#1d1d1f;-webkit-font-smoo
 .chip{flex-shrink:0;padding:7px 15px;border-radius:999px;border:1px solid rgba(0,0,0,.09);background:#fff;font-size:12.5px;font-weight:600;color:#555;cursor:pointer;font-family:inherit;transition:all .18s}
 .chip.active{background:${tc};border-color:${tc};color:#fff;box-shadow:0 4px 12px -4px ${tc}88}
 /* Grille produits */
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding-top:10px}
-@media(min-width:560px){.grid{grid-template-columns:repeat(3,1fr)}}
+.grid{display:grid;grid-template-columns:repeat(${gridCols},1fr);gap:${gap};padding-top:10px}
+${gridCols < 3 ? `@media(min-width:560px){.grid{grid-template-columns:repeat(${Math.min(gridCols+1,3)},1fr)}}` : ''}
+${hoverCss}
 .pc{background:#fff;border-radius:var(--r);overflow:hidden;border:1px solid rgba(0,0,0,.05);box-shadow:0 2px 10px rgba(0,0,0,.04);transition:transform .22s cubic-bezier(.2,0,0,1),box-shadow .22s;animation:cardIn .45s cubic-bezier(.2,0,0,1) both;display:flex;flex-direction:column}
 .pc:hover{transform:translateY(-3px);box-shadow:0 14px 32px -10px rgba(0,0,0,.14)}
 @keyframes cardIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
@@ -15458,7 +15528,7 @@ body{font-family:${fontStack};background:#FAFAFC;color:#1d1d1f;-webkit-font-smoo
 .pc-price{font-weight:800;font-size:16px;color:${tc};letter-spacing:-.3px}
 .pc-price small{font-size:10px;font-weight:600;color:#999}
 .pc-price s{color:#bbb;font-size:11.5px;font-weight:500;margin-right:3px}
-.order-btn{background:linear-gradient(135deg,#25D366,#1fb958);color:#fff;border:none;border-radius:var(--rb);padding:10px 12px;font-weight:700;cursor:pointer;font-size:12.5px;font-family:inherit;transition:transform .15s,box-shadow .15s,filter .15s;box-shadow:0 4px 12px -4px rgba(37,211,102,.5);margin-top:7px}
+.order-btn{${orderStyle==='outline'?`background:transparent;color:${tc};border:2px solid ${tc}`:orderStyle==='brand'?`background:linear-gradient(135deg,${tc},${tc}cc);color:#fff;border:none;box-shadow:0 4px 12px -4px ${tc}88`:'background:linear-gradient(135deg,#25D366,#1fb958);color:#fff;border:none;box-shadow:0 4px 12px -4px rgba(37,211,102,.5)'};border-radius:var(--rb);padding:10px 12px;font-weight:700;cursor:pointer;font-size:12.5px;font-family:inherit;transition:transform .15s,box-shadow .15s,filter .15s;margin-top:7px}
 .order-btn:hover{filter:brightness(1.05);transform:translateY(-1px)}
 .order-btn:active{transform:scale(.96)}
 .order-btn:disabled{background:#E5E5EA;color:#999;box-shadow:none;cursor:not-allowed}
@@ -15514,6 +15584,7 @@ ${btnAnimCss}
 ${cc.css || ''}
 </style></head><body>
 ${gtmBody}
+${announce ? `<div class="announce-bar">${esc(announce)}</div>` : ''}
 ${bannerHTML(topBanner, 'top')}
 <header class="topbar">
   ${logo ? `<img src="${logo}" class="topbar-logo" alt="Logo">` : `<div class="topbar-mono">${esc((bc.name||S.session?.business||'B').charAt(0).toUpperCase())}</div>`}
@@ -15523,11 +15594,11 @@ ${bannerHTML(topBanner, 'top')}
     <span class="cart-badge" id="cart-badge">0</span>
   </button>` : ''}
 </header>
-<div class="header">
-  ${logo ? `<img src="${logo}" class="header-logo" alt="Logo">` : ''}
-  <h1>${esc(bc.name||S.session?.business||'Ma Boutique')}</h1>
-  <p>${esc(bc.description||'Bienvenue ! Découvrez nos produits et commandez en un clic')}</p>
-  ${approvedReviews.length > 0 ? `<div class="header-rating">⭐ ${avgRating} / 5 · ${approvedReviews.length} avis</div>` : ''}
+<div class="header header-${heroStyle}">
+  ${logo && heroStyle !== 'minimal' ? `<img src="${logo}" class="header-logo" alt="Logo">` : ''}
+  <h1>${esc(heroTitle)}</h1>
+  ${heroStyle !== 'minimal' ? `<p>${esc(heroSub)}</p>` : ''}
+  ${approvedReviews.length > 0 && heroStyle !== 'minimal' ? `<div class="header-rating">⭐ ${avgRating} / 5 · ${approvedReviews.length} avis</div>` : ''}
 </div>
 <div class="info-bar">
   ${(bc.deliveryZones||[]).length>0?`<div class="info-item">📍 ${(bc.deliveryZones||[]).slice(0,4).join(', ')}${(bc.deliveryZones||[]).length>4?' +'+((bc.deliveryZones||[]).length-4):''}</div>`:''}
@@ -15590,6 +15661,7 @@ var BARO_WA="${waLink}";
 var BARO_SHOP="${esc(bc.name||S.session?.business||'Ma Boutique').replace(/"/g,'')}";
 var BARO_FEES=${Number(bc.deliveryFees)||0};
 var BARO_SYM="${sym()}";
+var BARO_ORDERTXT=${JSON.stringify(orderText)};
 (function(){
   var cart={};
   function fmtn(n){return Math.round(n).toLocaleString('fr-FR');}
@@ -15606,7 +15678,7 @@ var BARO_SYM="${sym()}";
     document.querySelectorAll('.pc-add[data-id]').forEach(function(b){
       var q=cart[b.getAttribute('data-id')]||0;
       if(q>0){b.classList.add('in-cart');b.textContent='✓ Dans le panier ('+q+')';}
-      else{b.classList.remove('in-cart');if(!b.disabled)b.textContent='+ Ajouter au panier';}
+      else{b.classList.remove('in-cart');if(!b.disabled)b.textContent=BARO_ORDERTXT;}
     });
     renderCk();
   }
@@ -15710,28 +15782,159 @@ function vBoutiqueEditor() {
       <button class="btn btn-primary" style="width:auto;padding:11px 24px" onclick="nav('boutique')">Gérer ma vitrine</button>
     </div></div>`;
   }
-  const previewJSON = JSON.stringify(html);
   const colors = [
     {color:'#4F46E5',name:'Indigo'},{color:'#7C3AED',name:'Violet'},{color:'#059669',name:'Vert'},
     {color:'#2563EB',name:'Bleu'},{color:'#EA580C',name:'Orange'},{color:'#DC2626',name:'Rouge'},
-    {color:'#F472B6',name:'Rose'},{color:'#0891B2',name:'Cyan'},{color:'#000000',name:'Noir'},
+    {color:'#F472B6',name:'Rose'},{color:'#0891B2',name:'Cyan'},{color:'#D97706',name:'Ambre'},
+    {color:'#1f2937',name:'Ardoise'},{color:'#000000',name:'Noir'},
   ];
   const fonts = [
     {id:'Inter',name:'Inter'},{id:'Poppins',name:'Poppins'},{id:'Montserrat',name:'Montserrat'},
     {id:'Playfair Display',name:'Playfair'},{id:'Nunito',name:'Nunito'},{id:'Space Grotesk',name:'Space'},
+    {id:'Lora',name:'Lora'},{id:'Bebas Neue',name:'Bebas'},
   ];
-  const curFont = bc.fontFamily || 'Inter';
-  const curBorder = bc.borderStyle || 'rounded';
-  const curAnim = bc.buttonAnimation || 'rebond';
-  const toggles = [
-    {key:'showCartButton', label:'🛒 Panier & commande', def:true},
-    {key:'showCategories', label:'🏷️ Filtres par catégorie', def:true},
-    {key:'showPromoBadges',label:'🔥 Badges promo', def:true},
-    {key:'showStockCount', label:'📦 Indicateur de stock', def:true},
-    {key:'showReviews',    label:'⭐ Avis clients', def:true},
+  const bgColors = ['#FAFAFC','#FFFFFF','#F5F3FF','#FFF7ED','#F0FDF4','#FEF2F2','#F8FAFC','#1a1a2e'];
+  const g = (k, d) => bc[k] === undefined ? d : bc[k];
+  const tab = S.bqEditorTab || 'style';
+  const tabs = [
+    { id:'style',   label:'🎨 Style' },
+    { id:'layout',  label:'📐 Mise en page' },
+    { id:'content', label:'✍️ Contenu' },
+    { id:'products',label:'📦 Produits' },
   ];
-  const optBtn = (key, val, label, isActive, defAttr) =>
-    `<button class="bq-opt ${isActive?'bq-opt-active':''}" data-bq-key="${key}" data-bq-val="${val}"${defAttr?` data-bq-default="${defAttr}"`:''} onclick="boutiqueEditSet('${key}','${val}')">${label}</button>`;
+  const optBtn = (key, val, label, isActive) =>
+    `<button class="bq-opt ${isActive?'bq-opt-active':''}" data-bq-key="${key}" data-bq-val="${val}" onclick="boutiqueEditSet('${key}','${val}')">${label}</button>`;
+
+  // Ordre actuel des produits (pour l'onglet Produits) — recalculé depuis la config
+  const ordered = (() => {
+    const eP = (bt_showProducts() ? S.products : []).filter(p => (bc.products||[]).includes(p.id))
+      .map(p => ({ id:String(p.id), name:p.name, price:p.price||0, category:p.category||'Produits', image:p.image||'' }));
+    const ePk = (bt_showProducts() ? (S.packs||[]) : []).filter(pk => (bc.packs||[]).includes(pk.id) && pk.active !== false)
+      .map(pk => ({ id:'pack_'+pk.id, name:pk.name, price:packFinalPrice(pk), category:'Packs', image:'' }));
+    const eA = (bt_showStock() ? (S.articles||[]) : []).filter(a => (bc.articles||[]).includes(a.id))
+      .map(a => ({ id:String(a.id), name:a.name, price:a.price||a.salePrice||0, category:a.category||'Articles', image:a.image||'' }));
+    let arr = [...ePk, ...eP, ...eA];
+    if (Array.isArray(bc.productOrder) && bc.productOrder.length) {
+      const rank = id => { const i = bc.productOrder.indexOf(String(id)); return i === -1 ? 9999 : i; };
+      arr = arr.slice().sort((a,b) => rank(a.id) - rank(b.id));
+    }
+    return arr;
+  })();
+
+  const styleTab = `
+    <div class="bq-sec-title">Couleur de la marque</div>
+    <div class="bq-swatches">
+      ${colors.map(c => `<button class="bq-swatch ${tc===c.color?'sel':''}" style="background:${c.color}" title="${c.name}" onclick="boutiqueEditSet('themeColor','${c.color}');document.querySelectorAll('.bq-swatch[data-grp=brand]').forEach(s=>s.classList.remove('sel'));this.classList.add('sel')" data-grp="brand">${tc===c.color?'✓':''}</button>`).join('')}
+      <label class="bq-swatch bq-swatch-custom" title="Personnalisée">✎<input type="color" value="${tc}" onchange="boutiqueEditSet('themeColor',this.value)"></label>
+    </div>
+
+    <div class="bq-sec-title">Couleur de fond</div>
+    <div class="bq-swatches">
+      ${bgColors.map(c => `<button class="bq-swatch bq-swatch-bg ${g('pageBg','#FAFAFC')===c?'sel':''}" style="background:${c};box-shadow:inset 0 0 0 1px rgba(0,0,0,.08);color:#7C3AED" onclick="boutiqueEditSet('pageBg','${c}');document.querySelectorAll('.bq-swatch[data-grp=bg]').forEach(s=>s.classList.remove('sel'));this.classList.add('sel')" data-grp="bg">${g('pageBg','#FAFAFC')===c?'✓':''}</button>`).join('')}
+    </div>
+
+    <div class="bq-sec-title">Police des titres</div>
+    <div class="bq-opts">${fonts.map(f => optBtn('headingFont', f.id, f.name, g('headingFont', g('fontFamily','Inter'))===f.id)).join('')}</div>
+
+    <div class="bq-sec-title">Police du texte</div>
+    <div class="bq-opts">${fonts.map(f => optBtn('bodyFont', f.id, f.name, g('bodyFont', g('fontFamily','Inter'))===f.id)).join('')}</div>
+
+    <div class="bq-sec-title">Coins des cartes</div>
+    <div class="bq-opts">
+      ${optBtn('borderStyle','rounded','Arrondis', g('borderStyle','rounded')==='rounded')}
+      ${optBtn('borderStyle','xl','Très arrondis', g('borderStyle','rounded')==='xl')}
+      ${optBtn('borderStyle','square','Carrés', g('borderStyle','rounded')==='square')}
+    </div>
+
+    <div class="bq-sec-title">Bouton commander</div>
+    <div class="bq-opts">
+      ${optBtn('orderBtnStyle','whatsapp','Vert WhatsApp', g('orderBtnStyle','whatsapp')==='whatsapp')}
+      ${optBtn('orderBtnStyle','brand','Couleur marque', g('orderBtnStyle','whatsapp')==='brand')}
+      ${optBtn('orderBtnStyle','outline','Contour', g('orderBtnStyle','whatsapp')==='outline')}
+    </div>
+
+    <div class="bq-sec-title">Animation du bouton</div>
+    <div class="bq-opts">
+      ${[['rebond','Rebond'],['pulse','Pulse'],['glow','Lueur'],['shake','Secousse'],['none','Aucune']].map(([v,l])=>optBtn('buttonAnimation',v,l,g('buttonAnimation','rebond')===v)).join('')}
+    </div>
+
+    <div class="bq-sec-title">Effet au survol</div>
+    <div class="bq-opts">
+      ${optBtn('cardHover','lift','Élévation', g('cardHover','lift')==='lift')}
+      ${optBtn('cardHover','zoom','Zoom photo', g('cardHover','lift')==='zoom')}
+      ${optBtn('cardHover','none','Aucun', g('cardHover','lift')==='none')}
+    </div>`;
+
+  const layoutTab = `
+    <div class="bq-sec-title">Colonnes de produits</div>
+    <div class="bq-opts">
+      ${optBtn('gridCols','1','1 colonne', String(g('gridCols',2))==='1')}
+      ${optBtn('gridCols','2','2 colonnes', String(g('gridCols',2))==='2')}
+      ${optBtn('gridCols','3','3 colonnes', String(g('gridCols',2))==='3')}
+    </div>
+
+    <div class="bq-sec-title">Style de l'en-tête</div>
+    <div class="bq-opts">
+      ${optBtn('heroStyle','classic','Classique', g('heroStyle','classic')==='classic')}
+      ${optBtn('heroStyle','banner','Grande bannière', g('heroStyle','classic')==='banner')}
+      ${optBtn('heroStyle','minimal','Minimaliste', g('heroStyle','classic')==='minimal')}
+    </div>
+
+    <div class="bq-sec-title">Espacement</div>
+    <div class="bq-opts">
+      ${optBtn('density','compact','Compact', g('density','normal')==='compact')}
+      ${optBtn('density','normal','Normal', g('density','normal')==='normal')}
+      ${optBtn('density','airy','Aéré', g('density','normal')==='airy')}
+    </div>
+
+    <div class="bq-sec-title">Sections affichées</div>
+    <div class="settings-row-block" style="margin-top:4px">
+      ${[
+        {key:'showCartButton', label:'🛒 Panier & commande', def:true},
+        {key:'showCategories', label:'🏷️ Filtres par catégorie', def:true},
+        {key:'showPromoBadges',label:'🔥 Badges promo', def:true},
+        {key:'showStockCount', label:'📦 Indicateur de stock', def:true},
+        {key:'showReviews',    label:'⭐ Avis clients', def:true},
+      ].map(tg => {
+        const on = bc[tg.key] === undefined ? tg.def : bc[tg.key];
+        return `<div class="settings-row" style="cursor:default">
+          <div class="settings-row-inner"><div class="settings-row-lbl" style="font-size:13px">${tg.label}</div></div>
+          <label class="toggle-switch"><input type="checkbox" data-bq-toggle="${tg.key}" ${on?'checked':''} onchange="boutiqueEditToggle('${tg.key}',${tg.def})"><span class="toggle-track"></span></label>
+        </div>`;
+      }).join('')}
+    </div>`;
+
+  const contentTab = `
+    <div class="bq-sec-title">Titre d'accroche</div>
+    <input class="input" value="${(bc.heroTitle||'').replace(/"/g,'&quot;')}" placeholder="${(bc.name||'Ma Boutique').replace(/"/g,'&quot;')}" oninput="boutiqueEditText('heroTitle',this.value)">
+    <div class="bq-sec-title">Sous-titre</div>
+    <input class="input" value="${(bc.heroSubtitle||'').replace(/"/g,'&quot;')}" placeholder="Bienvenue ! Découvrez nos produits…" oninput="boutiqueEditText('heroSubtitle',this.value)">
+    <div class="bq-sec-title">Bandeau d'annonce (haut de page)</div>
+    <input class="input" value="${(bc.announceText||'').replace(/"/g,'&quot;')}" placeholder="ex : 🚚 Livraison gratuite dès 25 000 FCFA" oninput="boutiqueEditText('announceText',this.value)">
+    <div class="bq-sec-title">Texte du bouton commander</div>
+    <input class="input" value="${(bc.orderBtnText||'').replace(/"/g,'&quot;')}" placeholder="+ Ajouter au panier" oninput="boutiqueEditText('orderBtnText',this.value)">
+    <div style="font-size:11px;color:var(--text-3);margin-top:12px;line-height:1.5">💡 Laissez vide pour utiliser les textes par défaut. Le nom et la description de la boutique se modifient dans l'onglet principal Boutique.</div>`;
+
+  const productsTab = `
+    <div class="bq-sec-title">Ordre d'affichage <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--text-3)">· réorganisez avec les flèches</span></div>
+    <div class="bq-prod-list">
+      ${ordered.map((p, i) => `
+      <div class="bq-prod-row">
+        ${p.image ? `<img src="${p.image}" class="bq-prod-img" alt="">` : `<div class="bq-prod-img bq-prod-ph">${(p.name||'?').charAt(0).toUpperCase()}</div>`}
+        <div style="flex:1;min-width:0">
+          <div class="bq-prod-name">${p.name}</div>
+          <div class="bq-prod-meta">${fmt(p.price)} ${sym()}${p.category?' · '+p.category:''}</div>
+        </div>
+        <div class="bq-prod-arrows">
+          <button class="bq-arrow" ${i===0?'disabled':''} onclick="boutiqueMoveProduct('${p.id}',-1)" title="Monter">▲</button>
+          <button class="bq-arrow" ${i===ordered.length-1?'disabled':''} onclick="boutiqueMoveProduct('${p.id}',1)" title="Descendre">▼</button>
+        </div>
+      </div>`).join('')}
+    </div>
+    <div style="font-size:11px;color:var(--text-3);margin-top:12px;line-height:1.5">💡 Le premier produit apparaît en haut de votre boutique. Mettez vos best-sellers en premier !</div>`;
+
+  const tabContent = { style: styleTab, layout: layoutTab, content: contentTab, products: productsTab }[tab] || styleTab;
+
   return `
   <div class="page-header" style="padding-bottom:10px">
     <div class="page-header-row">
@@ -15747,43 +15950,15 @@ function vBoutiqueEditor() {
         <div class="bq-live-badge"><span class="bq-live-dot"></span> EN DIRECT</div>
       </div>
     </div>
+    <div class="bq-tabbar">
+      ${tabs.map(tb => `<button class="bq-tab ${tab===tb.id?'active':''}" onclick="S.bqEditorTab='${tb.id}';render()">${tb.label}</button>`).join('')}
+    </div>
     <div class="bq-controls">
-      <div class="bq-sec-title">🎨 Couleur de la marque</div>
-      <div class="bq-swatches">
-        ${colors.map(c => `<button class="bq-swatch ${tc===c.color?'sel':''}" style="background:${c.color}" title="${c.name}" onclick="boutiqueEditSet('themeColor','${c.color}');document.querySelectorAll('.bq-swatch').forEach(s=>s.classList.remove('sel'));this.classList.add('sel')">${tc===c.color?'✓':''}</button>`).join('')}
-        <label class="bq-swatch bq-swatch-custom" title="Couleur personnalisée">✎<input type="color" value="${tc}" onchange="boutiqueEditSet('themeColor',this.value)"></label>
-      </div>
-
-      <div class="bq-sec-title">🔤 Police</div>
-      <div class="bq-opts">${fonts.map(f => optBtn('fontFamily', f.id, f.name, curFont===f.id)).join('')}</div>
-
-      <div class="bq-sec-title">⬜ Coins</div>
-      <div class="bq-opts">
-        ${optBtn('borderStyle','rounded','Arrondis', curBorder==='rounded')}
-        ${optBtn('borderStyle','square','Carrés', curBorder==='square')}
-      </div>
-
-      <div class="bq-sec-title">✨ Animation bouton</div>
-      <div class="bq-opts">
-        ${[['rebond','Rebond'],['pulse','Pulse'],['glow','Lueur'],['shake','Secousse'],['none','Aucune']].map(([v,l])=>optBtn('buttonAnimation',v,l,curAnim===v)).join('')}
-      </div>
-
-      <div class="bq-sec-title">🧩 Sections affichées</div>
-      <div class="settings-row-block" style="margin-top:4px">
-        ${toggles.map(tg => {
-          const on = bc[tg.key] === undefined ? tg.def : bc[tg.key];
-          return `<div class="settings-row" style="cursor:default">
-            <div class="settings-row-inner"><div class="settings-row-lbl" style="font-size:13px">${tg.label}</div></div>
-            <label class="toggle-switch"><input type="checkbox" data-bq-toggle="${tg.key}" ${on?'checked':''} onchange="boutiqueEditToggle('${tg.key}',${tg.def})"><span class="toggle-track"></span></label>
-          </div>`;
-        }).join('')}
-      </div>
-
-      <button class="btn btn-primary" style="margin-top:16px" onclick="generateBoutiqueSite()">${IC.download||'⬇'} Télécharger mon site</button>
+      ${tabContent}
+      <button class="btn btn-primary" style="margin-top:18px" onclick="generateBoutiqueSite()">${IC.download||'⬇'} Télécharger mon site</button>
       <button class="btn btn-ghost" style="margin-top:8px" onclick="previewBoutiqueSite()">${IC.globe||'🌐'} Ouvrir en plein écran</button>
     </div>
-  </div>
-  <script>(function(){var f=document.getElementById('bq-preview');if(f){f.srcdoc=${previewJSON};}})();<\/script>`;
+  </div>`;
 }
 
 function vBoutiqueAppearance() {
@@ -24045,6 +24220,8 @@ function __baroInit() {
   window.uploadProductFormImage = uploadProductFormImage;
   window.boutiqueEditSet        = boutiqueEditSet;
   window.boutiqueEditToggle     = boutiqueEditToggle;
+  window.boutiqueEditText       = boutiqueEditText;
+  window.boutiqueMoveProduct    = boutiqueMoveProduct;
   window.vBoutiqueEditor        = vBoutiqueEditor;
 
   // Appliquer le thème AVANT le premier render pour éviter le flash

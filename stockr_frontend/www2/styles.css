@@ -1073,7 +1073,44 @@ body.dark .sk {
   box-shadow: 0 4px 12px rgba(0,0,0,.3);
 }
 .bq-live-dot { width: 6px; height: 6px; border-radius: 50%; background: #34d399; animation: intDotPulse 1.6s ease-in-out infinite; box-shadow: 0 0 6px #34d399; }
+.bq-tabbar {
+  display: flex; gap: 4px;
+  padding: 10px 12px 0;
+  position: sticky; top: 0; z-index: 15;
+  background: var(--bg);
+  overflow-x: auto; scrollbar-width: none;
+}
+.bq-tabbar::-webkit-scrollbar { display: none; }
+.bq-tab {
+  flex: 1; white-space: nowrap;
+  padding: 9px 12px; border-radius: 11px 11px 0 0;
+  border: none; background: transparent;
+  font-size: 12.5px; font-weight: 700; color: var(--text-3);
+  cursor: pointer; font-family: var(--font);
+  transition: all .18s var(--ease-out);
+}
+.bq-tab.active { background: var(--surface); color: var(--accent); box-shadow: 0 -2px 8px -4px rgba(0,0,0,.1); }
 .bq-controls { padding: 16px; }
+.bq-prod-list { display: flex; flex-direction: column; gap: 8px; }
+.bq-prod-row {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 8px 10px;
+}
+.bq-prod-img { width: 42px; height: 42px; border-radius: 9px; object-fit: cover; flex-shrink: 0; }
+.bq-prod-ph { display: flex; align-items: center; justify-content: center; background: var(--accent-light); color: var(--accent); font-weight: 800; font-size: 16px; }
+.bq-prod-name { font-size: 13px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bq-prod-meta { font-size: 11px; color: var(--text-3); margin-top: 1px; }
+.bq-prod-arrows { display: flex; flex-direction: column; gap: 3px; flex-shrink: 0; }
+.bq-arrow {
+  width: 30px; height: 22px; border-radius: 6px;
+  border: 1px solid var(--border); background: var(--gray-1);
+  color: var(--text-2); font-size: 10px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .15s var(--ease-out);
+}
+.bq-arrow:active:not(:disabled) { transform: scale(.88); background: var(--accent-light); }
+.bq-arrow:disabled { opacity: .3; cursor: not-allowed; }
 .bq-sec-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .6px; color: var(--text-3); margin: 16px 0 8px; }
 .bq-sec-title:first-child { margin-top: 0; }
 .bq-swatches { display: flex; flex-wrap: wrap; gap: 9px; }
