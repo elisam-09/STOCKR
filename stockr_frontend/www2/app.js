@@ -1989,6 +1989,8 @@ function getExpiringArticles() {
 
 // ── Toast ──────────────────────────────────────
 function showToast(msg, type='') {
+  if (type === 'success') haptic('success');
+  else if (type === 'error') haptic('error');
   const el = document.createElement('div');
   el.className = `toast ${type}`;
   el.textContent = msg;
@@ -4147,10 +4149,75 @@ function showReceiptBanner(sales, total) {
 }
 
 // ── Navigate ──────────────────────────────────
+// ── Pull-to-refresh : tirer vers le bas en haut de page → recharge les données ──
+function __initPullToRefresh() {
+  const viewEl = document.getElementById('view');
+  if (!viewEl || viewEl.__ptrInit) return;
+  viewEl.__ptrInit = true;
+
+  // Indicateur visuel injecté une fois dans #app
+  let ind = document.getElementById('ptr-indicator');
+  if (!ind) {
+    ind = document.createElement('div');
+    ind.id = 'ptr-indicator';
+    ind.innerHTML = '<div class="ptr-spinner"></div>';
+    document.getElementById('app').prepend(ind);
+  }
+
+  let startY = 0, pulling = false, dist = 0, refreshing = false;
+  const THRESHOLD = 72;
+
+  viewEl.addEventListener('touchstart', (e) => {
+    if (refreshing || viewEl.scrollTop > 0) { pulling = false; return; }
+    startY = e.touches[0].clientY;
+    pulling = true;
+    dist = 0;
+  }, { passive: true });
+
+  viewEl.addEventListener('touchmove', (e) => {
+    if (!pulling || refreshing) return;
+    dist = e.touches[0].clientY - startY;
+    if (dist <= 0 || viewEl.scrollTop > 0) { ind.classList.remove('visible', 'armed'); return; }
+    const damped = Math.min(THRESHOLD * 1.4, dist * 0.45); // résistance élastique
+    ind.style.setProperty('--ptr-pull', damped + 'px');
+    ind.classList.add('visible');
+    ind.classList.toggle('armed', damped >= THRESHOLD * 0.92);
+  }, { passive: true });
+
+  viewEl.addEventListener('touchend', async () => {
+    if (!pulling || refreshing) return;
+    pulling = false;
+    const armed = ind.classList.contains('armed');
+    if (!armed) { ind.classList.remove('visible', 'armed'); return; }
+    refreshing = true;
+    haptic('tap');
+    ind.classList.add('refreshing');
+    try {
+      await loadData();
+      showToast('Données actualisées', 'success');
+    } catch(_) {
+      showToast('Actualisation impossible — données locales conservées', '');
+    }
+    ind.classList.remove('visible', 'armed', 'refreshing');
+    refreshing = false;
+  }, { passive: true });
+}
+
+// ── Haptics : retour tactile léger (Android Chrome ; silencieux ailleurs) ──
+function haptic(kind = 'tap') {
+  try {
+    if (!navigator.vibrate) return;
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const patterns = { tap: 8, success: [12, 40, 18], error: [40, 60, 40], warn: 25 };
+    navigator.vibrate(patterns[kind] || 8);
+  } catch(_) {}
+}
+
 function nav(view, extra={}) {
   // Pose un timestamp pour que le filet de sécurité global sache qu'on a bien été appelé
   try { window.__navLastCallAt = Date.now(); } catch(_){}
   try { Object.assign(S, extra); } catch(_){}
+  haptic('tap');
   S.view = view;
   try {
     const vEl = document.getElementById('view');
@@ -14304,7 +14371,10 @@ function vBoutique() {
       <button class="back-btn-dark" onclick="nav('more')">${IC.left}</button>
       <div style="flex:1">
         <div class="sub-hero-title">${t('boutiqueTitle')||'Ma Boutique en ligne'}</div>
-        <div class="sub-hero-sub">${bc.published ? (t('boutiquePublish')||'Publiée') : (t('boutiqueDraft')||'Brouillon')}</div>
+        <div class="sub-hero-sub" style="display:flex;align-items:center;gap:6px">
+          <span style="width:7px;height:7px;border-radius:50%;background:${bc.published?'#34d399':'#94a3b8'};display:inline-block;${bc.published?'box-shadow:0 0 6px rgba(52,211,153,.6);animation:intDotPulse 2s ease-in-out infinite':''}"></span>
+          ${bc.published ? 'En ligne — visible par vos clients' : 'Brouillon — activez pour publier'}
+        </div>
       </div>
       <label class="toggle-switch" style="flex-shrink:0">
         <input type="checkbox" ${bc.published?'checked':''} onchange="toggleBoutiquePublish(this.checked)">
@@ -19553,20 +19623,23 @@ function vIntegrations() {
       const cfg = (S.integrationsConfig||[]).find(c=>c.id===it.id);
       const connected = cfg?.connected;
       return `
-    <div class="card" style="margin-bottom:8px;border-left:3px solid ${connected?it.color:'transparent'};padding:12px 14px;${connected?'background:'+it.color+'05':''}">
+    <div class="card integration-card ${connected?'is-connected':''}" style="margin-bottom:8px;border-left:3px solid ${connected?it.color:'transparent'};padding:12px 14px;${connected?'background:'+it.color+'08':''}">
       <div style="display:flex;align-items:center;gap:12px">
-        <div style="width:42px;height:42px;border-radius:12px;background:${it.color}15;color:${it.color};display:flex;align-items:center;justify-content:center;flex-shrink:0">${it.icon}</div>
+        <div class="int-icon" style="background:${it.color}15;color:${it.color}">${it.icon}</div>
         <div style="flex:1;min-width:0">
-          <div style="font-weight:700;font-size:14px;color:var(--text)">${it.name}</div>
+          <div style="font-weight:700;font-size:14px;color:var(--text);display:flex;align-items:center;gap:6px">
+            ${it.name}
+            ${connected ? `<span class="int-dot" style="background:${it.color}"></span>` : ''}
+          </div>
           <div style="font-size:11px;color:${connected?it.color:'var(--text-3)'};margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${connected ? '✓ '+(cfg.value||cfg.url||'Connecté') : it.desc}</div>
         </div>
         ${connected ? `
           <div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0">
-            <button style="font-size:11px;padding:6px 12px;border-radius:8px;border:1px solid ${it.color};background:${it.color};color:#fff;font-weight:600;cursor:pointer;white-space:nowrap" onclick="openIntegrationDashboard('${it.id}')">Ouvrir</button>
-            <button style="font-size:10px;padding:4px 8px;border-radius:8px;border:1px solid var(--danger);background:transparent;color:var(--danger);font-weight:600;cursor:pointer;white-space:nowrap" onclick="disconnectIntegration('${it.id}','${it.name}')">Retirer</button>
+            <button class="int-btn int-btn-solid" style="border-color:${it.color};background:${it.color}" onclick="openIntegrationDashboard('${it.id}')">Ouvrir</button>
+            <button class="int-btn int-btn-danger" onclick="disconnectIntegration('${it.id}','${it.name}')">Retirer</button>
           </div>
         ` : `
-          <button style="font-size:11px;padding:6px 12px;border-radius:8px;border:1px solid ${it.color};background:${it.color}10;color:${it.color};font-weight:600;cursor:pointer;white-space:nowrap" onclick="connectIntegration('${it.id}')">Connecter</button>
+          <button class="int-btn" style="border-color:${it.color};background:${it.color}10;color:${it.color}" onclick="connectIntegration('${it.id}')">Connecter</button>
         `}
       </div>
     </div>`;}).join('')}`;}).join('')}
@@ -23113,10 +23186,12 @@ function __baroInit() {
   window.promptMemberPin    = promptMemberPin;
   window.seedDemoData       = seedDemoData;
   window.loadDemoData       = loadDemoData;
+  window.haptic             = haptic;
 
   // Appliquer le thème AVANT le premier render pour éviter le flash
   if (typeof applyTheme === 'function') applyTheme();
   if (typeof applyAppearance === 'function') applyAppearance();
+  try { __initPullToRefresh(); } catch(e) { console.warn('ptr init', e); }
 
   // Gérer le retour OAuth (id_token/access_token dans le hash)
   try { _handleOAuthCallback(); } catch(e) { console.warn('oauth cb', e); }
