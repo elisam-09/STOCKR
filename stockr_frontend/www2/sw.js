@@ -2,7 +2,7 @@
 // Stratégie : Cache-first pour assets statiques,
 //             Network-first pour l'API
 
-const CACHE_NAME = 'baro-v54-gemini-autodetect';
+const CACHE_NAME = 'baro-v55-gemini-billing-msg';
 const STATIC_ASSETS = [
   '/',
   '/index.html',

@@ -10287,13 +10287,16 @@ async function _geminiListModels(apiKey) {
     const usable = (data.models || [])
       .filter(m => (m.supportedGenerationMethods || []).includes('generateContent'))
       .map(m => (m.name || '').replace('models/', ''))
-      // Exclure les variantes non-vision / spéciales
-      .filter(n => n && !/embedding|aqa|tts|imagen|image-generation|thinking/i.test(n));
-    // Priorité : flash récents > pro > autres
+      // Exclure non-vision/spéciaux ET les modèles qui exigent la FACTURATION
+      // (pro, preview, exp, thinking → souvent hors palier gratuit → erreur billing)
+      .filter(n => n && !/embedding|aqa|tts|imagen|image-generation|thinking|pro|preview|exp|vision-latest|ultra/i.test(n));
+    // Priorité aux modèles flash GRATUITS et stables
     const score = n =>
-      (/2\.5-flash/.test(n) ? 100 : 0) + (/2\.0-flash/.test(n) ? 90 : 0) +
-      (/flash-latest/.test(n) ? 85 : 0) + (/flash/.test(n) ? 60 : 0) +
-      (/2\.5-pro/.test(n) ? 50 : 0) + (/pro/.test(n) ? 30 : 0) - (n.length * 0.1);
+      (/^gemini-2\.0-flash$/.test(n) ? 100 : 0) +   // le plus fiable en gratuit
+      (/^gemini-2\.5-flash$/.test(n) ? 95 : 0) +
+      (/2\.0-flash-lite/.test(n) ? 80 : 0) +
+      (/flash-latest/.test(n) ? 75 : 0) +
+      (/flash/.test(n) ? 60 : 0) - (n.length * 0.1);
     usable.sort((a, b) => score(b) - score(a));
     _geminiModelsCache = usable;
     return usable;
@@ -10360,9 +10363,8 @@ Return STRICTLY a valid JSON array only, no markdown, no comments:
     const discovered = await _geminiListModels(apiKey);
     const models = [...new Set([
       ...discovered,                          // modèles confirmés dispo (priorité)
-      chosen,
-      'gemini-2.0-flash', 'gemini-2.5-flash', 'gemini-flash-latest',
-      'gemini-2.0-flash-001', 'gemini-pro-latest'
+      'gemini-2.0-flash', 'gemini-2.5-flash', 'gemini-2.0-flash-001',
+      'gemini-flash-latest', 'gemini-2.0-flash-lite'
     ])].filter(Boolean);
     let data = null, lastErr = discovered.__error || '';
     for (const m of models) {
@@ -10383,9 +10385,11 @@ Return STRICTLY a valid JSON array only, no markdown, no comments:
       // Message clair pour l'utilisateur (clé invalide, quota, API non activée…)
       let friendly = lastErr;
       if (/API key not valid|API_KEY_INVALID/i.test(lastErr)) friendly = 'Clé API invalide — vérifiez-la dans Spectra AI.';
-      else if (/quota|RESOURCE_EXHAUSTED/i.test(lastErr)) friendly = 'Quota Gemini dépassé pour aujourd\'hui (réessayez demain).';
-      else if (/not found|is not found|NOT_FOUND/i.test(lastErr)) friendly = 'Modèle IA indisponible pour cette clé.';
-      else if (/PERMISSION_DENIED|SERVICE_DISABLED|has not been used|disabled/i.test(lastErr)) friendly = 'Active l\'API « Generative Language » sur ta clé Google.';
+      else if (/location is not supported|user location|not available in your|country/i.test(lastErr)) friendly = 'Gemini gratuit indisponible dans ton pays. Solutions : active la facturation Google (carte requise, quota gratuit conservé), ou utilise le scan code-barres/local de Spectra.';
+      else if (/billing|prepay|free_tier|free tier|FAILED_PRECONDITION/i.test(lastErr)) friendly = 'Le palier gratuit Gemini exige d\'activer la facturation Google (carte). Sinon, utilise le scan code-barres + dictionnaire local de Spectra.';
+      else if (/quota|RESOURCE_EXHAUSTED|rate.?limit|429|exceeded/i.test(lastErr)) friendly = 'Trop de requêtes — attends 1 minute puis réessaie (limite gratuite par minute).';
+      else if (/not found|is not found|NOT_FOUND/i.test(lastErr)) friendly = 'Aucun modèle IA compatible sur cette clé — recrée une clé sur Google AI Studio.';
+      else if (/PERMISSION_DENIED|SERVICE_DISABLED|has not been used|disabled/i.test(lastErr)) friendly = 'Active l\'API « Generative Language » sur ta clé Google (ou crée la clé sur aistudio.google.com).';
       else if (/Réseau/i.test(lastErr)) friendly = 'Pas de connexion internet — l\'IA vision nécessite internet.';
       _spectraLastAiError = friendly || 'Spectra AI n\'a pas répondu.';
       console.warn('[Spectra AI] échec:', lastErr);
