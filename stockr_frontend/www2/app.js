@@ -10269,6 +10269,39 @@ async function _groupPredictionsSmart(predictions, imgOrCanvas){
 // Utilise la clé API stockée dans localStorage (stockr_gemini_key).
 // Plan gratuit : https://aistudio.google.com/app/apikey
 let _spectraLastAiError = null; // dernière raison d'échec IA (affichée à l'utilisateur)
+// Interroge l'API Google pour la liste des modèles vraiment disponibles sur CETTE clé.
+// Bien plus fiable que de deviner les noms (qui varient selon clé/région/version).
+let _geminiModelsCache = null;
+async function _geminiListModels(apiKey) {
+  if (_geminiModelsCache) return _geminiModelsCache;
+  const out = [];
+  try {
+    const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}&pageSize=100`);
+    if (!resp.ok) {
+      let msg = 'Erreur ' + resp.status;
+      try { const e = await resp.json(); msg = e?.error?.message || msg; } catch(_){}
+      out.__error = msg;
+      return out;
+    }
+    const data = await resp.json();
+    const usable = (data.models || [])
+      .filter(m => (m.supportedGenerationMethods || []).includes('generateContent'))
+      .map(m => (m.name || '').replace('models/', ''))
+      // Exclure les variantes non-vision / spéciales
+      .filter(n => n && !/embedding|aqa|tts|imagen|image-generation|thinking/i.test(n));
+    // Priorité : flash récents > pro > autres
+    const score = n =>
+      (/2\.5-flash/.test(n) ? 100 : 0) + (/2\.0-flash/.test(n) ? 90 : 0) +
+      (/flash-latest/.test(n) ? 85 : 0) + (/flash/.test(n) ? 60 : 0) +
+      (/2\.5-pro/.test(n) ? 50 : 0) + (/pro/.test(n) ? 30 : 0) - (n.length * 0.1);
+    usable.sort((a, b) => score(b) - score(a));
+    _geminiModelsCache = usable;
+    return usable;
+  } catch (e) {
+    out.__error = 'Réseau : ' + (e.message || e);
+    return out;
+  }
+}
 async function _spectraGeminiVision(imgOrCanvas) {
   const apiKey = localStorage.getItem('stockr_gemini_key');
   if (!apiKey) return null;
@@ -10321,10 +10354,17 @@ Return STRICTLY a valid JSON array only, no markdown, no comments:
       }],
       generationConfig: { temperature: 0.2, topK: 32, topP: 1, maxOutputTokens: 2048 }
     });
-    // Liste de modèles à essayer (le choisi d'abord, puis fallbacks robustes)
+    // Liste de modèles à essayer : d'abord ceux RÉELLEMENT dispo sur cette clé
+    // (interrogés via ListModels), puis le choisi, puis des fallbacks connus.
     const chosen = localStorage.getItem('stockr_gemini_model') || 'gemini-2.0-flash';
-    const models = [...new Set([chosen, 'gemini-2.0-flash', 'gemini-2.5-flash', 'gemini-flash-latest', 'gemini-1.5-flash'])];
-    let data = null, lastErr = '';
+    const discovered = await _geminiListModels(apiKey);
+    const models = [...new Set([
+      ...discovered,                          // modèles confirmés dispo (priorité)
+      chosen,
+      'gemini-2.0-flash', 'gemini-2.5-flash', 'gemini-flash-latest',
+      'gemini-2.0-flash-001', 'gemini-pro-latest'
+    ])].filter(Boolean);
+    let data = null, lastErr = discovered.__error || '';
     for (const m of models) {
       try {
         const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${apiKey}`, {
@@ -14020,6 +14060,9 @@ function saveGeminiKey() {
     if (!confirm('Format de clé inhabituel (ne commence pas par AIza...). Continuer quand même ?')) return;
   }
   localStorage.setItem('stockr_gemini_key', key);
+  // Nouvelle clé → on oublie le modèle mémorisé et le cache pour re-découvrir
+  _geminiModelsCache = null;
+  try { localStorage.removeItem('stockr_gemini_model'); } catch(_){}
   showToast('🤖 Spectra AI activé !', 'success');
   render();
 }

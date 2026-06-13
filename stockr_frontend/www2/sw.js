@@ -2,7 +2,7 @@
 // Stratégie : Cache-first pour assets statiques,
 //             Network-first pour l'API
 
-const CACHE_NAME = 'baro-v53-spectra-quota';
+const CACHE_NAME = 'baro-v54-gemini-autodetect';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
