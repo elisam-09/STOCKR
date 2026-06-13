@@ -10686,9 +10686,13 @@ async function spectraStartContinuous(){
   S.spectra.step = 'continuous';
   S.spectra.queue = [];
   S.spectra.confirmed = [];
+  S.spectra._videoVotes = {};   // votes MobileNet accumulés sur plusieurs frames
+  S.spectra._videoFrameN = 0;
+  S.spectra._videoBusy = false;
   render();
   try {
     await loadCocoSSD();
+    loadMobileNet().catch(()=>{}); // précharge le 2e cerveau en arrière-plan
   } catch(err) {
     showToast('IA indisponible : ' + err.message, 'error');
     S.spectra.step = 'camera';
@@ -10741,12 +10745,39 @@ async function _spectraLoop(video, canvas){
         const conf = Math.round(g.score * 100);
         return `<div style="display:flex;justify-content:space-between;gap:10px"><span>${label}</span><b>×${g.count} <span style="opacity:.6;font-size:11px">${conf}%</span></b></div>`;
       }).join('');
-      overlay.innerHTML = lines || '<div style="opacity:.6">Pointez la caméra vers vos produits…</div>';
+      // ── Vote vidéo MobileNet : reconnaît le produit même si COCO ne voit aucune boîte ──
+      const topVote = _spectraTopVideoVote();
+      const voteLine = topVote
+        ? `<div style="display:flex;justify-content:space-between;gap:10px;${lines?'margin-top:6px;padding-top:6px;border-top:1px solid rgba(167,139,250,.25)':''}"><span>🔍 ${topVote.name}</span><b><span style="opacity:.6;font-size:11px">${topVote.votes} vue${topVote.votes>1?'s':''}</span></b></div>`
+        : '';
+      overlay.innerHTML = (lines + voteLine) || '<div style="opacity:.6">Pointez la caméra vers vos produits…</div>';
     }
     // Stocker les dernières détections pour capture
     S.spectra._liveDetections = filtered;
+    // ── Toutes les ~12 frames : classification plein champ MobileNet (vote) ──
+    S.spectra._videoFrameN = (S.spectra._videoFrameN || 0) + 1;
+    if (S.spectra._videoFrameN % 12 === 0 && !S.spectra._videoBusy && _mobilenetModel) {
+      S.spectra._videoBusy = true;
+      _mobilenetModel.classify(video, 2).then(preds => {
+        if (preds && preds[0] && preds[0].probability >= 0.30) {
+          const cls = (preds[0].className || '').split(',')[0].trim().toLowerCase();
+          const name = MOBILENET_FR[cls] || (cls ? cls.charAt(0).toUpperCase() + cls.slice(1) : '');
+          if (name) {
+            S.spectra._videoVotes[name] = (S.spectra._videoVotes[name] || 0) + 1;
+          }
+        }
+      }).catch(()=>{}).finally(() => { S.spectra._videoBusy = false; });
+    }
   } catch(e) { /* swallow */ }
   _spectraLoopId = requestAnimationFrame(() => _spectraLoop(video, canvas));
+}
+
+// Renvoie le produit le plus voté par MobileNet sur le flux vidéo (≥2 votes)
+function _spectraTopVideoVote(){
+  const v = S.spectra._videoVotes || {};
+  let best = null;
+  for (const name in v) { if (!best || v[name] > best.votes) best = { name, votes: v[name] }; }
+  return (best && best.votes >= 2) ? best : null;
 }
 
 function _drawBoundingBoxes(canvas, predictions){
@@ -10778,7 +10809,9 @@ function spectraStopContinuous(){
 
 async function spectraCaptureFromContinuous(){
   const live = S.spectra._liveDetections || [];
-  if (live.length === 0) { showToast('Aucune détection en cours', 'error'); return; }
+  const topVote = _spectraTopVideoVote();
+  // On accepte la capture s'il y a soit des boîtes COCO, soit un vote vidéo MobileNet
+  if (live.length === 0 && !topVote) { showToast('Aucune détection — rapprochez le produit', 'error'); return; }
 
   // Capture la frame actuelle pour OCR (meilleure précision nommage)
   const video = document.getElementById('spectra-video');
@@ -10795,12 +10828,23 @@ async function spectraCaptureFromContinuous(){
 
   spectraStopContinuous();
   S.spectra.step = 'loading';
+  if (captureSource && captureSource.toDataURL) { try { S.spectra.capturedImage = captureSource.toDataURL('image/jpeg', 0.7); } catch(_){} }
   render();
 
   try {
-    // OCR-enhanced grouping depuis la frame capturée
-    const detections = await _groupPredictionsSmart(live, captureSource);
-    S.spectra.queue = detections;
+    if (live.length === 0 && topVote) {
+      // Aucune boîte COCO mais un produit reconnu par vote vidéo MobileNet
+      S.spectra.queue = [{
+        detected_name: topVote.name, matched_name: topVote.name, matched_id: null,
+        quantity: 1, confidence: Math.min(95, 55 + topVote.votes * 8), refined_by: 'MobileNet vidéo',
+      }];
+    } else {
+      // OCR-enhanced grouping depuis la frame capturée
+      const detections = await _groupPredictionsSmart(live, captureSource);
+      // Enrichit avec MobileNet (noms fins) puis fallback plein champ si vide
+      try { await _refineWithMobileNet(detections, captureSource); } catch(_){}
+      S.spectra.queue = detections.length ? detections : (topVote ? [{ detected_name: topVote.name, matched_name: topVote.name, matched_id:null, quantity:1, confidence: Math.min(95, 55 + topVote.votes*8), refined_by:'MobileNet vidéo' }] : []);
+    }
   } catch(e) {
     // Dégrade en groupement rapide si OCR indispo
     S.spectra.queue = _groupPredictionsByClass(live);
