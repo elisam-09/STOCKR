@@ -1536,10 +1536,34 @@ function _localApi(method, path, body) {
 }
 
 // ── API helper ────────────────────────────────
+// Traduit les messages d'erreur anglais du backend en français
+function _frError(msg) {
+  if (!msg || typeof msg !== 'string') return msg;
+  const map = [
+    [/product not found/i,        'Produit introuvable'],
+    [/article not found/i,        'Article introuvable'],
+    [/client not found/i,         'Client introuvable'],
+    [/user not found/i,           'Compte introuvable'],
+    [/not found/i,                'Introuvable'],
+    [/insufficient stock/i,       'Stock insuffisant'],
+    [/invalid credentials/i,      'Email ou mot de passe incorrect'],
+    [/invalid token|unauthorized/i,'Session expirée — reconnectez-vous'],
+    [/email already (exists|registered|taken)/i, 'Cet email est déjà utilisé'],
+    [/password too short/i,       'Mot de passe trop court'],
+    [/network error/i,            'Erreur réseau'],
+    [/internal server error/i,    'Erreur serveur — réessayez'],
+    [/bad request/i,              'Requête invalide'],
+    [/forbidden/i,                'Accès refusé'],
+    [/too many requests/i,        'Trop de tentatives — patientez un instant'],
+  ];
+  for (const [re, fr] of map) { if (re.test(msg)) return fr; }
+  return msg;
+}
+
 async function api(method, path, body) {
   if (USE_LOCAL) {
     try { return _localApi(method, path, body); }
-    catch(e) { throw new Error(e.message); }
+    catch(e) { throw new Error(_frError(e.message)); }
   }
   try {
     const res = await fetch(API_BASE + path, {
@@ -1549,7 +1573,8 @@ async function api(method, path, body) {
     });
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
-      throw new Error(typeof err.error === 'string' ? err.error : (err.error?.error || err.message || `Erreur ${res.status}`));
+      const raw = typeof err.error === 'string' ? err.error : (err.error?.error || err.message || `Erreur ${res.status}`);
+      throw new Error(_frError(raw));
     }
     return res.json();
   } catch(e) {
@@ -1607,12 +1632,17 @@ async function loadData() {
   };
 
   // Pré-hydratation immédiate (pas d'écran vide pendant le fetch)
-  if (local.articles.length || local.products.length || local.sales.length || local.clients.length) {
+  const hasLocal = local.articles.length || local.products.length || local.sales.length || local.clients.length;
+  if (hasLocal) {
     S.articles = local.articles;
     S.products = local.products;
     S.sales    = local.sales;
     S.clients  = local.clients;
     try { recalcAllMins(); } catch(_){}
+    render();
+  } else {
+    // Aucune donnée locale → skeletons pendant le fetch initial
+    S.dataLoading = true;
     render();
   }
 
@@ -1634,12 +1664,14 @@ async function loadData() {
     const localHas = local.articles.length || local.products.length || local.sales.length;
     if (apiEmpty && localHas) {
       console.log('[loadData] API vide + local contient des données → conservation du local');
+      S.dataLoading = false;
       S.predictions = preds || [];
       // Si on a au moins des clients côté API, on les merge
       if (apiClients.length) S.clients = apiClients;
       render();
       return;
     }
+    S.dataLoading = false;
     S.articles    = apiArts;
     S.products    = apiProds;
     S.sales       = apiSales;
@@ -1656,8 +1688,8 @@ async function loadData() {
     render();
   } catch(e) {
     // Offline / API indisponible → on a déjà pré-hydraté, on notifie juste
-    const hadLocal = local.articles.length || local.products.length || local.sales.length || local.clients.length;
-    if (hadLocal) {
+    S.dataLoading = false;
+    if (hasLocal) {
       showToast('Mode hors-ligne', 'info');
     } else {
       showToast(t('errLoad'), 'error');
@@ -2375,7 +2407,13 @@ async function doRegister() {
     if (typeof logAudit === 'function') logAudit('auth', 'register', { email: u.email, bt, verified: true });
     S.authEmail = S.authPwd = S.authPwd2 = S.authName = S.authBiz = '';
     S.authStep = 1;
-    S.view = 'home';
+    // Onboarding 3 écrans pour les nouveaux comptes (une seule fois)
+    if (!localStorage.getItem('baro_onboarded')) {
+      S.view = 'onboarding';
+      S.onboardSlide = 0;
+    } else {
+      S.view = 'home';
+    }
     const btLabel = bt === 'reseller' ? '🏪 Revendeur' : bt === 'maker' ? '🏭 Transformateur' : '🔀 Mixte';
     showToast(`✅ Bienvenue, ${name} ! Mode ${btLabel} activé.`, 'success');
     render();
@@ -4427,6 +4465,7 @@ function _doRender() {
     'oauth-setup': vOAuthSetup,
     'notifications-setup': vNotificationsSetup,
     'video-library': vVideoLibrary,
+    'onboarding': vOnboarding,
   };
   const viewChanged = __markViewTransition(S.view);
   const prevScroll = viewEl.scrollTop;
@@ -4479,7 +4518,7 @@ function _doRender() {
     if (gs) { gs.focus({ preventScroll: true }); gs.setSelectionRange(gs.value.length, gs.value.length); }
   }
 
-  const hideNav = ['detail','add','add-product','edit-product','pack-form','add-client','client-detail','notifications','catalog','add-supplier','supplier-detail','stock-history','purchase-orders','add-order','pricing','subscription','boutique','boutique-appearance','boutique-domain','boutique-pixels','boutique-code','boutique-seo','boutique-hours','boutique-policies','boutique-faq','marketing','social-media','social-setup','payments-setup','integrations','delivery-setup','whatsapp-setup','sms-setup','ecommerce-setup','sheets-setup','pos-setup','compta-setup','api-settings','spectra','clients','exports','team','add-team-member','audit-log','appearance','security','2fa-verify'].includes(S.view);
+  const hideNav = ['detail','add','add-product','edit-product','pack-form','add-client','client-detail','notifications','catalog','add-supplier','supplier-detail','stock-history','purchase-orders','add-order','pricing','subscription','boutique','boutique-appearance','boutique-domain','boutique-pixels','boutique-code','boutique-seo','boutique-hours','boutique-policies','boutique-faq','marketing','social-media','social-setup','payments-setup','integrations','delivery-setup','whatsapp-setup','sms-setup','ecommerce-setup','sheets-setup','pos-setup','compta-setup','api-settings','spectra','clients','exports','team','add-team-member','audit-log','appearance','security','2fa-verify','onboarding'].includes(S.view);
   navEl.style.display = hideNav ? 'none' : '';
   if (!hideNav) navEl.innerHTML = renderNav();
 }
@@ -4500,6 +4539,93 @@ function renderNav() {
       ${tb.icon}
       <span class="nav-label">${tb.label}</span>
     </button>`).join('');
+}
+
+// ── ONBOARDING — 3 écrans de bienvenue (nouveaux comptes) ──
+function vOnboarding() {
+  const slide = S.onboardSlide || 0;
+  const bt = getBusinessType();
+  const slides = [
+    {
+      icon: '👋',
+      accent: '#7C73FF',
+      title: `Bienvenue, ${(S.session?.name || '').split(' ')[0] || 'toi'} !`,
+      text: 'BARO réunit ton stock, tes ventes, tes clients et tes paiements dans une seule app — même sans connexion.',
+      visual: `
+        <div class="ob-visual-row">
+          <div class="ob-mini-card" style="animation-delay:.1s"><span style="font-size:20px">📦</span><span>Stock</span></div>
+          <div class="ob-mini-card" style="animation-delay:.22s"><span style="font-size:20px">💰</span><span>Ventes</span></div>
+          <div class="ob-mini-card" style="animation-delay:.34s"><span style="font-size:20px">👥</span><span>Clients</span></div>
+        </div>`,
+    },
+    {
+      icon: '✨',
+      accent: '#c9a96e',
+      title: 'Deux agents IA travaillent pour toi',
+      text: 'SOVA surveille ton stock et prédit les ruptures avant qu\'elles arrivent. Spectra compte tes produits avec la caméra de ton téléphone.',
+      visual: `
+        <div class="ob-visual-col">
+          <div class="ob-agent-pill" style="animation-delay:.12s;border-color:rgba(201,169,110,.4)"><span style="color:#c9a96e;font-weight:800">SOVA</span><span>Prévisions & alertes stock</span></div>
+          <div class="ob-agent-pill" style="animation-delay:.26s;border-color:rgba(167,139,250,.4)"><span style="color:#a78bfa;font-weight:800">Spectra</span><span>Scan caméra de l'inventaire</span></div>
+        </div>`,
+    },
+    {
+      icon: '🚀',
+      accent: '#34d399',
+      title: 'Démarre en 30 secondes',
+      text: bt === 'reseller'
+        ? 'Ajoute ton premier produit à revendre, ou explore l\'app avec des exemples prêts à l\'emploi.'
+        : 'Ajoute ta première matière première, ou explore l\'app avec des exemples prêts à l\'emploi.',
+      visual: `
+        <div class="ob-visual-col">
+          <button class="btn btn-primary" style="animation:fadeUp .4s var(--ease-out) .15s both" onclick="finishOnboarding('add')">${bt==='reseller'?'🏪 Ajouter mon premier produit':'📦 Ajouter mon premier article'}</button>
+          <button class="btn btn-ghost" style="animation:fadeUp .4s var(--ease-out) .28s both" onclick="finishOnboarding('demo')">📚 Explorer avec des exemples</button>
+        </div>`,
+    },
+  ];
+  const s = slides[slide];
+  return `
+  <div class="ob-wrap" ontouchstart="window.__obX=event.touches[0].clientX" ontouchend="(function(x){if(window.__obX==null)return;const d=x-window.__obX;window.__obX=null;if(d<-50)onboardNext(true);else if(d>50&&S.onboardSlide>0){S.onboardSlide--;haptic('tap');render();}})(event.changedTouches[0].clientX)">
+    <button class="ob-skip" onclick="finishOnboarding()">Passer</button>
+    <div class="ob-body">
+      <div class="ob-icon" style="--ob-accent:${s.accent}">${s.icon}</div>
+      <div class="ob-title">${s.title}</div>
+      <div class="ob-text">${s.text}</div>
+      ${s.visual}
+    </div>
+    <div class="ob-footer">
+      <div class="ob-dots">
+        ${slides.map((_, i) => `<span class="ob-dot ${i===slide?'active':''}" onclick="S.onboardSlide=${i};render()"></span>`).join('')}
+      </div>
+      ${slide < slides.length - 1
+        ? `<button class="btn btn-primary ob-next" onclick="onboardNext()">Suivant</button>`
+        : `<button class="btn btn-primary ob-next" onclick="finishOnboarding()">C'est parti !</button>`}
+    </div>
+  </div>`;
+}
+
+function onboardNext(fromSwipe) {
+  if ((S.onboardSlide || 0) < 2) {
+    S.onboardSlide = (S.onboardSlide || 0) + 1;
+    haptic('tap');
+    render();
+  } else if (!fromSwipe) {
+    finishOnboarding();
+  }
+}
+
+function finishOnboarding(action) {
+  try { localStorage.setItem('baro_onboarded', '1'); } catch(_) {}
+  haptic('success');
+  if (action === 'demo') {
+    loadDemoData();
+    S.view = 'home';
+  } else if (action === 'add') {
+    S.view = 'add';
+  } else {
+    S.view = 'home';
+  }
+  render();
 }
 
 // ── AUTH ──────────────────────────────────────
@@ -5127,6 +5253,25 @@ function vHome() {
   if (!Array.isArray(S.movements))    S.movements    = [];
   if (!Array.isArray(S.invoices))     S.invoices     = [];
   if (typeof S.globalSearch !== 'string') S.globalSearch = '';
+
+  // Skeleton de chargement initial (aucune donnée locale, fetch API en cours)
+  if (S.dataLoading && !S.articles.length && !S.sales.length && !S.clients.length) {
+    return `
+    <div class="hero anim">
+      <div class="hero-top"><div class="sk sk-circle"></div><div style="flex:1;padding-left:12px"><div class="sk sk-line" style="width:40%"></div><div class="sk sk-line lg" style="width:65%;margin-top:6px"></div></div></div>
+      <div class="hero-stats">${[0,1,2,3].map(i=>`<div class="hero-stat"><div class="sk sk-line lg" style="width:60%;margin:0 auto;background:rgba(255,255,255,.15)"></div><div class="sk sk-line" style="width:80%;margin:6px auto 0;background:rgba(255,255,255,.10)"></div></div>`).join('')}</div>
+    </div>
+    <div class="container">
+      ${[0,1,2].map(i=>`
+      <div class="card" style="margin-bottom:8px;animation-delay:${i*0.08}s">
+        <div style="display:flex;gap:12px;align-items:center">
+          <div class="sk sk-avatar"></div>
+          <div style="flex:1"><div class="sk sk-line" style="width:55%"></div><div class="sk sk-line" style="width:35%;margin-top:7px"></div></div>
+        </div>
+      </div>`).join('')}
+      <div style="text-align:center;padding:14px;font-size:12px;color:var(--text-3)">Chargement de tes données…</div>
+    </div>`;
+  }
 
   const bt = (typeof getBusinessType === 'function') ? getBusinessType() : 'maker';
   const isReseller = bt === 'reseller';
@@ -23187,6 +23332,8 @@ function __baroInit() {
   window.seedDemoData       = seedDemoData;
   window.loadDemoData       = loadDemoData;
   window.haptic             = haptic;
+  window.onboardNext        = onboardNext;
+  window.finishOnboarding   = finishOnboarding;
 
   // Appliquer le thème AVANT le premier render pour éviter le flash
   if (typeof applyTheme === 'function') applyTheme();

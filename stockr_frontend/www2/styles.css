@@ -931,6 +931,115 @@ select.input { cursor: pointer; }
 input:checked + .toggle-track { background: var(--accent); }
 input:checked + .toggle-track::before { transform: translateX(18px); }
 
+/* ── Skeletons shimmer ──────────────────────── */
+.sk {
+  background: linear-gradient(90deg, var(--gray-2) 25%, var(--gray-1) 50%, var(--gray-2) 75%);
+  background-size: 200% 100%;
+  animation: skShimmer 1.4s ease-in-out infinite;
+  border-radius: 6px;
+}
+.sk-line   { height: 11px; }
+.sk-line.lg { height: 16px; }
+.sk-circle { width: 48px; height: 48px; border-radius: 14px; flex-shrink: 0; }
+.sk-avatar { width: 44px; height: 44px; border-radius: var(--r-md); flex-shrink: 0; }
+@keyframes skShimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+[data-theme="dark"] .sk,
+body.dark .sk {
+  background: linear-gradient(90deg, var(--gray-2) 25%, var(--gray-3) 50%, var(--gray-2) 75%);
+  background-size: 200% 100%;
+}
+
+/* ── Onboarding 3 écrans ────────────────────── */
+.ob-wrap {
+  min-height: 100%;
+  display: flex; flex-direction: column;
+  padding: 56px 28px 36px;
+  background:
+    radial-gradient(circle at 80% -10%, rgba(124,115,255,0.14) 0%, transparent 50%),
+    radial-gradient(circle at 10% 110%, rgba(99,102,241,0.10) 0%, transparent 50%),
+    var(--bg);
+  position: relative;
+}
+.ob-skip {
+  position: absolute; top: 18px; right: 20px;
+  background: var(--gray-1); border: 1px solid var(--border);
+  color: var(--text-3); font-size: 12px; font-weight: 600;
+  padding: 6px 14px; border-radius: var(--r-full);
+  cursor: pointer; font-family: var(--font);
+  transition: all 0.2s var(--ease-out);
+}
+.ob-skip:hover { color: var(--text-1); }
+.ob-body {
+  flex: 1;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center;
+  gap: 14px;
+}
+.ob-icon {
+  width: 92px; height: 92px;
+  border-radius: 28px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 44px;
+  background: linear-gradient(160deg, color-mix(in srgb, var(--ob-accent, #7C73FF) 18%, var(--surface)) 0%, var(--surface) 100%);
+  border: 1px solid color-mix(in srgb, var(--ob-accent, #7C73FF) 30%, transparent);
+  box-shadow: 0 16px 40px -16px color-mix(in srgb, var(--ob-accent, #7C73FF) 55%, transparent);
+  animation: obIconIn 0.5s var(--ease-spring) both, emptyIcoFloat 3.5s ease-in-out 0.5s infinite;
+}
+@keyframes obIconIn {
+  from { opacity: 0; transform: scale(0.6) rotate(-6deg); }
+  to   { opacity: 1; transform: scale(1) rotate(0); }
+}
+.ob-title {
+  font-size: 24px; font-weight: 900;
+  letter-spacing: -0.5px;
+  color: var(--text-1);
+  animation: fadeUp 0.4s var(--ease-out) 0.08s both;
+}
+.ob-text {
+  font-size: 14px; line-height: 1.65;
+  color: var(--text-2);
+  max-width: 300px;
+  animation: fadeUp 0.4s var(--ease-out) 0.16s both;
+}
+.ob-visual-row { display: flex; gap: 10px; margin-top: 12px; }
+.ob-mini-card {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px 18px;
+  font-size: 12px; font-weight: 700; color: var(--text-2);
+  box-shadow: var(--shadow-md);
+  animation: fadeUp 0.45s var(--ease-spring) both;
+}
+.ob-visual-col { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; width: 100%; max-width: 300px; }
+.ob-agent-pill {
+  display: flex; flex-direction: column; gap: 2px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 12px 16px;
+  font-size: 12px; color: var(--text-3);
+  box-shadow: var(--shadow-md);
+  text-align: left;
+  animation: fadeUp 0.45s var(--ease-spring) both;
+}
+.ob-footer { display: flex; flex-direction: column; gap: 18px; align-items: center; }
+.ob-dots { display: flex; gap: 7px; }
+.ob-dot {
+  width: 7px; height: 7px;
+  border-radius: var(--r-full);
+  background: var(--gray-3);
+  cursor: pointer;
+  transition: all 0.3s var(--ease-out);
+}
+.ob-dot.active { width: 22px; background: var(--accent); }
+.ob-next { max-width: 300px; }
+
 /* ── Cartes intégrations ────────────────────── */
 .integration-card { transition: transform 0.2s var(--ease-out), box-shadow 0.2s var(--ease-out); }
 .integration-card:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }

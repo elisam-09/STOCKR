@@ -2,7 +2,7 @@
 // Stratégie : Cache-first pour assets statiques,
 //             Network-first pour l'API
 
-const CACHE_NAME = 'baro-v41-haptics-ptr';
+const CACHE_NAME = 'baro-v42-onboarding';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
