@@ -6,6 +6,21 @@
 // ── SVG Icons ─────────────────────────────────
 const IC = {
   sova: `<svg width="22" height="22" viewBox="0 0 466 466" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M139.8,45c4.143,0,7.5-3.357,7.5-7.5s-3.357-7.5-7.5-7.5c-12.253,0-23.152,5.907-30,15.023C102.953,35.907,92.053,30,79.8,30c-4.143,0-7.5,3.357-7.5,7.5s3.357,7.5,7.5,7.5c12.406,0,22.5,10.094,22.5,22.5c0,4.143,3.357,7.5,7.5,7.5s7.5-3.357,7.5-7.5C117.3,55.094,127.394,45,139.8,45z"/><path d="M422.411,424.297L200.338,96.142c-5.44-8.039-13.984-14.288-24.005-17.705c0.642-12.645,0.967-26.383,0.967-40.937v-30c0-4.143-3.357-7.5-7.5-7.5h-120c-4.143,0-7.5,3.357-7.5,7.5v30c0,57.634,5.026,100.198,15.819,133.955c11.204,35.041,28.415,59.516,45.405,80.706c3.173,5.901,6.513,11.827,9.749,17.563c18.762,33.257,38.02,67.4,45.635,128.945c0.011,0.503,0.07,0.993,0.176,1.467c1.819,15.173,2.938,31.993,3.171,50.864h-52.454c-4.143,0-7.5,3.357-7.5,7.5s3.357,7.5,7.5,7.5h60h60c4.143,0,7.5-3.357,7.5-7.5c0-19.311-2.089-36.706-5.754-52.5h20.321c4.143,0,7.5-3.357,7.5-7.5v-65.549c0-4.143-3.357-7.5-7.5-7.5c-4.143,0-7.5,3.357-7.5,7.5V391h-16.913c-16.582-52.774-51.15-86.389-80.492-114.912c-11.674-11.348-22.7-22.066-31.316-32.786c-0.024-0.03-0.048-0.06-0.072-0.09c-0.005-0.006-0.01-0.013-0.016-0.02C76.087,194.048,57.299,150.686,57.299,37.5V15h105v22.5c0,16.614-0.43,32.124-1.277,46.099c-0.225,3.711,2.303,7.027,5.941,7.793c8.797,1.853,16.63,6.771,20.952,13.157l133.232,196.875c-6.405,0.715-12.873,1.077-19.335,1.077c-94.841,0-172-77.159-172-172c0-4.143-3.357-7.5-7.5-7.5s-7.5,3.357-7.5,7.5c0,103.112,83.888,187,187,187c9.625,0,19.265-0.744,28.726-2.201l79.451,117.404c2.321,3.432,6.984,4.331,10.414,2.008C423.834,432.39,424.733,427.727,422.411,424.297z"/></svg>`,
+  // ── Logo Spectra — prisme spectral : triangle + faisceau décomposé + œil ──
+  spectra: `<svg width="22" height="22" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="spectraGrad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+        <stop offset="0" stop-color="#a78bfa"/><stop offset=".55" stop-color="#7C3AED"/><stop offset="1" stop-color="#4F46E5"/>
+      </linearGradient>
+    </defs>
+    <polygon points="24,6 41,38 7,38" fill="none" stroke="url(#spectraGrad)" stroke-width="3" stroke-linejoin="round"/>
+    <line x1="2" y1="24" x2="17.5" y2="24" stroke="url(#spectraGrad)" stroke-width="2.6" stroke-linecap="round"/>
+    <line x1="29" y1="20" x2="45" y2="14" stroke="#a78bfa" stroke-width="2.4" stroke-linecap="round" opacity=".95"/>
+    <line x1="30.5" y1="25" x2="46" y2="24" stroke="#7C3AED" stroke-width="2.4" stroke-linecap="round"/>
+    <line x1="29.5" y1="30" x2="45" y2="34" stroke="#4F46E5" stroke-width="2.4" stroke-linecap="round" opacity=".95"/>
+    <circle cx="23.5" cy="29.5" r="4.2" fill="none" stroke="url(#spectraGrad)" stroke-width="2.4"/>
+    <circle cx="23.5" cy="29.5" r="1.5" fill="#7C3AED"/>
+  </svg>`,
   // ── Logo BARO — hexagone + B stylisé (remplace l'ancien logo S) ──
   baro:     `<svg width="28" height="28" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"><polygon points="24,4 42,14 42,34 24,44 6,34 6,14" fill="none"/><g fill="currentColor" stroke="none"><rect x="15" y="14" width="5" height="20" rx="1"/><path d="M20 14 h7 a6 6 0 0 1 6 6 v0 a6 6 0 0 1 -6 6 h-7 z"/><path d="M20 26 h8 a6 6 0 0 1 6 6 v0 a6 6 0 0 1 -6 6 h-8 z"/></g></svg>`,
   baroLg:   `<svg width="56" height="56" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><polygon points="24,4 42,14 42,34 24,44 6,34 6,14" fill="none"/><g fill="currentColor" stroke="none"><rect x="15" y="14" width="5" height="20" rx="1"/><path d="M20 14 h7 a6 6 0 0 1 6 6 v0 a6 6 0 0 1 -6 6 h-7 z"/><path d="M20 26 h8 a6 6 0 0 1 6 6 v0 a6 6 0 0 1 -6 6 h-8 z"/></g></svg>`,
@@ -1658,6 +1673,11 @@ async function loadData() {
     const apiProds   = (prods || []).map(productFromAPI);
     const apiSales   = (sales || []).map(saleFromAPI);
     const apiClients = clients || [];
+    // Préserver les images locales (le backend ne stocke pas les photos)
+    const __imgMap = {};
+    [...local.articles, ...local.products].forEach(x => { if (x && x.image) __imgMap[x.id] = x.image; });
+    apiArts.forEach(a => { if (!a.image && __imgMap[a.id]) a.image = __imgMap[a.id]; });
+    apiProds.forEach(p => { if (!p.image && __imgMap[p.id]) p.image = __imgMap[p.id]; });
     // Règle anti-écrasement : si l'API retourne vide mais on a du local, on garde le local
     // (cas : backend planté ou nouveau device, on ne veut pas effacer les données utilisateur)
     const apiEmpty = !apiArts.length && !apiProds.length && !apiSales.length;
@@ -1717,6 +1737,13 @@ function fmtDate(iso) {
 }
 function initials(name) {
   return name.trim().split(/\s+/).slice(0,2).map(w=>w[0].toUpperCase()).join('');
+}
+// Avatar d'article/produit : photo si présente, sinon monogramme
+function itemAvatar(item, extraStyle = '') {
+  if (item && item.image) {
+    return `<img src="${item.image}" alt="" class="article-avatar" style="object-fit:cover;padding:0;${extraStyle}">`;
+  }
+  return `<div class="article-avatar" style="${extraStyle}">${initials(item?.name || '?')}</div>`;
 }
 function stockStatus(stock, min) {
   if (stock === 0) return { label:'Rupture', cls:'st-out', icon:IC.xmark, bar:'out' };
@@ -2822,7 +2849,10 @@ async function saveProduct() {
       price:          parseFloat(priceEl?.value) || 0,
       composition
     });
-    S.products.push(productFromAPI(data));
+    const newProd = productFromAPI(data);
+    newProd.image = S.productForm?.image || '';
+    S.products.push(newProd);
+    S.productForm = null;
     try { localStorage.setItem('stockr_products', JSON.stringify(S.products)); } catch(_){}
     recalcAllMins();
     if (typeof logAudit === 'function') logAudit('product', 'create', { name: nameEl.value });
@@ -3481,6 +3511,10 @@ async function saveEditProduct() {
     p.price = data.price;
     p.purchasePrice = data.purchase_price || 0;
     p.composition = (data.composition || []).map(c => ({ id: c.article.id, qty: c.quantity_used }));
+    if (S.productForm?.image) p.image = S.productForm.image;
+    else if (S.productForm?.imageCleared) p.image = '';
+    S.productForm = null;
+    try { localStorage.setItem('stockr_products', JSON.stringify(S.products)); } catch(_){}
     recalcAllMins();
     showToast(`"${p.name}" mis à jour`);
     nav('products');
@@ -5401,7 +5435,7 @@ function vHome() {
       <svg class="agent-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c9a96e" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
     </div>
     <div class="agent-card agent-spectra" onclick="nav('spectra')">
-      <div class="agent-icon agent-icon-spectra">${IC.camera}</div>
+      <div class="agent-icon agent-icon-spectra">${IC.spectra}</div>
       <div class="agent-info">
         <div class="agent-name agent-name-spectra">Spectra</div>
         <div class="agent-sub">Scanner IA · audit automatique du stock</div>
@@ -6009,7 +6043,7 @@ function vPantry() {
         return `
         <div class="card card-tap anim" style="animation-delay:${i*0.04}s;padding:12px" onclick="nav('detail',{selectedId:${a.id}})">
           <div style="display:flex;gap:12px;align-items:flex-start">
-            <div class="article-avatar" style="flex:0 0 auto">${initials(a.name)}</div>
+            ${itemAvatar(a, 'flex:0 0 auto')}
             <div style="flex:1;min-width:0">
               <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
                 <div class="article-name" style="font-size:14px;font-weight:700">${a.name}</div>
@@ -6046,7 +6080,7 @@ function vPantry() {
       return `
       <div class="card card-tap anim" style="animation-delay:${i*0.04}s" onclick="nav('detail',{selectedId:${a.id}})">
         <div class="article-row">
-          <div class="article-avatar">${initials(a.name)}</div>
+          ${itemAvatar(a)}
           <div class="article-info">
             <div class="article-name">${a.name}</div>
             <div class="article-meta">${fmtQty(a.stock)} ${a.unit}${a.min>0 ? ` · seuil ${fmtQty(a.min)}` : ''}${val>0 ? ` · <span style="color:var(--accent);font-weight:600">${fmt(val)} ${sym()}</span>` : ''}</div>
@@ -6244,7 +6278,7 @@ function vProducts() {
       return `
       <div class="card anim" style="animation-delay:${i*0.05}s">
         <div class="article-row">
-          <div class="article-avatar">${initials(p.name)}</div>
+          ${itemAvatar(p)}
           <div class="article-info">
             <div class="article-name">${p.name}${promo?' <span style="font-size:10px;padding:1px 6px;border-radius:4px;background:#ef444415;color:#ef4444;font-weight:700;margin-left:4px">-'+promo.discount+'%</span>':''}${inShop?' <span style="font-size:10px;padding:1px 6px;border-radius:4px;background:var(--accent-light);color:var(--accent);font-weight:700;margin-left:4px">🛍️</span>':''}</div>
             <div class="article-meta" style="font-weight:700;color:var(--text-2)">${fmt(p.price)} ${sym()}${p.purchasePrice > 0 ? ` <span style="font-size:11px;font-weight:600;color:${marginPct(p)>=20?'var(--success)':marginPct(p)>=0?'var(--warning)':'var(--danger)'};margin-left:6px">${marginPct(p)}% ${t('margin')}</span>` : ''}</div>
@@ -7030,6 +7064,18 @@ function vAdd() {
   <div class="container">
     <div class="card">
       <div class="form-group">
+        <label class="form-label">Photo ${isReseller?'du produit':'de l\'article'} <span style="color:var(--text-3);font-weight:400;text-transform:none">(recommandé pour la boutique)</span></label>
+        <div style="display:flex;align-items:center;gap:12px">
+          ${f.image
+            ? `<img src="${f.image}" alt="" style="width:72px;height:72px;border-radius:14px;object-fit:cover;border:2px solid var(--border);box-shadow:var(--shadow-sm)">`
+            : `<div style="width:72px;height:72px;border-radius:14px;background:var(--gray-1);border:2px dashed var(--gray-3);display:flex;align-items:center;justify-content:center;color:var(--text-3);font-size:24px">📷</div>`}
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <button type="button" class="btn btn-ghost" style="width:auto;padding:8px 16px;font-size:12px" onclick="uploadFormImage()">${f.image?'Changer la photo':'+ Ajouter une photo'}</button>
+            ${f.image?`<button type="button" class="btn" style="width:auto;padding:4px 12px;font-size:11px;background:none;border:none;color:var(--danger);cursor:pointer" onclick="S.form.image='';render()">Retirer</button>`:''}
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
         <label class="form-label">${isReseller?'Nom du produit':t('articleName')} *</label>
         <input class="input" type="text" placeholder="${isReseller?'ex: Nike Air Max 42, iPhone 13, Robe wax…':'ex: Farine, Tissu, Bouteilles…'}" value="${f.name.replace(/"/g,'&quot;')}" oninput="S.form.name=this.value">
       </div>
@@ -7162,6 +7208,18 @@ function vAddProduct() {
   <div class="container">
     <div class="card">
       <div class="form-group">
+        <label class="form-label">Photo du produit <span style="color:var(--text-3);font-weight:400;text-transform:none">(recommandé pour la boutique)</span></label>
+        <div style="display:flex;align-items:center;gap:12px">
+          ${(S.productForm?.image)
+            ? `<img src="${S.productForm.image}" alt="" style="width:72px;height:72px;border-radius:14px;object-fit:cover;border:2px solid var(--border);box-shadow:var(--shadow-sm)">`
+            : `<div style="width:72px;height:72px;border-radius:14px;background:var(--gray-1);border:2px dashed var(--gray-3);display:flex;align-items:center;justify-content:center;color:var(--text-3);font-size:24px">📷</div>`}
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <button type="button" class="btn btn-ghost" style="width:auto;padding:8px 16px;font-size:12px" onclick="uploadProductFormImage()">${S.productForm?.image?'Changer la photo':'+ Ajouter une photo'}</button>
+            ${S.productForm?.image?`<button type="button" class="btn" style="width:auto;padding:4px 12px;font-size:11px;background:none;border:none;color:var(--danger);cursor:pointer" onclick="S.productForm.image='';render()">Retirer</button>`:''}
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
         <label class="form-label">${t('productName')} *</label>
         <input class="input" id="prod-name" type="text" placeholder="ex: Boubou, Robe, Jupe…">
       </div>
@@ -7215,6 +7273,18 @@ function vEditProduct() {
   </div>
   <div class="container">
     <div class="card">
+      <div class="form-group">
+        <label class="form-label">Photo du produit</label>
+        <div style="display:flex;align-items:center;gap:12px">
+          ${(S.productForm?.image || p.image)
+            ? `<img src="${S.productForm?.image || p.image}" alt="" style="width:72px;height:72px;border-radius:14px;object-fit:cover;border:2px solid var(--border);box-shadow:var(--shadow-sm)">`
+            : `<div style="width:72px;height:72px;border-radius:14px;background:var(--gray-1);border:2px dashed var(--gray-3);display:flex;align-items:center;justify-content:center;color:var(--text-3);font-size:24px">📷</div>`}
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <button type="button" class="btn btn-ghost" style="width:auto;padding:8px 16px;font-size:12px" onclick="uploadProductFormImage()">${(S.productForm?.image || p.image)?'Changer la photo':'+ Ajouter une photo'}</button>
+            ${(S.productForm?.image || p.image)?`<button type="button" class="btn" style="width:auto;padding:4px 12px;font-size:11px;background:none;border:none;color:var(--danger);cursor:pointer" onclick="S.productForm=S.productForm||{};S.productForm.image='';S.productForm.imageCleared=true;render()">Retirer</button>`:''}
+          </div>
+        </div>
+      </div>
       <div class="form-group">
         <label class="form-label">${t('productName')} *</label>
         <input class="input" id="prod-name" type="text" value="${p.name.replace(/"/g,'&quot;')}">
@@ -7867,8 +7937,8 @@ function vSpectra() {
     <div class="spectra-header">
       <button class="back-btn" onclick="nav('home')" style="position:absolute;top:16px;left:16px;color:#fff;z-index:3">${IC.left}</button>
       <div class="spectra-badge"><div class="spectra-badge-dot"></div> SPECTRA IA</div>
-      <div class="spectra-logo-icon">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+      <div class="spectra-logo-icon" style="filter:drop-shadow(0 4px 14px rgba(167,139,250,.45))">
+        ${IC.spectra.replace('width="22" height="22"', 'width="34" height="34"')}
       </div>
       <div class="spectra-title">${t('spectraTitle')}</div>
       <div class="spectra-sub">${t('spectraScanSub')}</div>
@@ -8236,6 +8306,112 @@ const COCO_TRANSLATE = {
 };
 function _translateCocoClass(cls){
   return COCO_TRANSLATE[cls] || (cls ? (cls[0].toUpperCase() + cls.slice(1)) : 'Objet');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// MOBILENET V2 — 2e cerveau de Spectra (1000 classes ImageNet)
+// Affine les détections COCO-SSD génériques avec une classification fine
+// ═══════════════════════════════════════════════════════════════
+let _mobilenetModel = null;
+let _mobilenetLoading = null;
+async function loadMobileNet(){
+  if (_mobilenetModel) return _mobilenetModel;
+  if (_mobilenetLoading) return _mobilenetLoading;
+  _mobilenetLoading = (async () => {
+    try {
+      await _spectraLoadScript('https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.15.0/dist/tf.min.js');
+      await _spectraLoadScript('https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.1/dist/mobilenet.min.js');
+      if (!window.mobilenet) throw new Error('MobileNet script not loaded');
+      _mobilenetModel = await window.mobilenet.load({ version: 2, alpha: 1.0 });
+      return _mobilenetModel;
+    } catch(err) {
+      _mobilenetLoading = null;
+      throw err;
+    }
+  })();
+  return _mobilenetLoading;
+}
+
+// Traduction FR des classes ImageNet pertinentes pour le commerce
+const MOBILENET_FR = {
+  'running shoe':'Chaussure de sport', 'sandal':'Sandale', 'clog':'Sabot/Mule', 'loafer':'Mocassin',
+  'cowboy boot':'Botte', 'perfume':'Parfum', 'lotion':'Lotion/Crème', 'sunscreen':'Crème solaire',
+  'lipstick':'Rouge à lèvres', 'face powder':'Poudre visage', 'hair spray':'Laque cheveux',
+  'water bottle':'Bouteille d\'eau', 'pop bottle':'Bouteille soda', 'beer bottle':'Bouteille bière',
+  'wine bottle':'Bouteille vin', 'pill bottle':'Flacon médicament', 'whiskey jug':'Bonbonne',
+  'coffee mug':'Mug', 'teapot':'Théière', 'frying pan':'Poêle', 'wok':'Wok', 'caldron':'Marmite',
+  'dutch oven':'Cocotte', 'pressure cooker':'Autocuiseur', 'mixing bowl':'Saladier',
+  'backpack':'Sac à dos', 'purse':'Sac à main', 'wallet':'Portefeuille', 'mailbag':'Sacoche',
+  'plastic bag':'Sachet plastique', 'shopping basket':'Panier', 'shopping cart':'Caddie',
+  'sunglasses':'Lunettes de soleil', 'sunglass':'Lunettes de soleil', 'sombrero':'Chapeau',
+  'cowboy hat':'Chapeau', 'bonnet':'Bonnet', 'cap':'Casquette', 'crash helmet':'Casque',
+  'jersey':'Maillot/T-shirt', 'sweatshirt':'Sweat', 'cardigan':'Gilet', 'suit':'Costume',
+  'jean':'Jean', 'miniskirt':'Jupe', 'sarong':'Pagne', 'gown':'Robe', 'abaya':'Abaya',
+  'kimono':'Kimono', 'trench coat':'Manteau', 'fur coat':'Manteau fourrure', 'poncho':'Poncho',
+  'bow tie':'Nœud papillon', 'windsor tie':'Cravate', 'sock':'Chaussettes', 'maillot':'Maillot de bain',
+  'cellular telephone':'Smartphone', 'cellular phone':'Smartphone', 'cellphone':'Smartphone',
+  'ipod':'Lecteur MP3', 'laptop':'Ordinateur portable', 'notebook':'Ordinateur portable',
+  'desktop computer':'Ordinateur', 'monitor':'Écran', 'television':'TV', 'remote control':'Télécommande',
+  'loudspeaker':'Enceinte', 'microphone':'Micro', 'headphone':'Casque audio', 'earphone':'Écouteurs',
+  'digital watch':'Montre digitale', 'analog clock':'Horloge', 'wall clock':'Horloge murale',
+  'stopwatch':'Chronomètre', 'digital clock':'Réveil digital',
+  'hand blower':'Sèche-cheveux', 'hair slide':'Barrette', 'electric fan':'Ventilateur',
+  'space heater':'Chauffage', 'vacuum':'Aspirateur', 'iron':'Fer à repasser',
+  'washer':'Machine à laver', 'dishwasher':'Lave-vaisselle', 'microwave':'Micro-ondes',
+  'toaster':'Grille-pain', 'waffle iron':'Gaufrier', 'espresso maker':'Machine espresso',
+  'coffeepot':'Cafetière', 'rice cooker':'Cuiseur riz', 'crock pot':'Mijoteuse',
+  'refrigerator':'Réfrigérateur', 'stove':'Cuisinière',
+  'banana':'Banane', 'pineapple':'Ananas', 'orange':'Orange', 'lemon':'Citron', 'fig':'Figue',
+  'pomegranate':'Grenade (fruit)', 'jackfruit':'Jacquier', 'custard apple':'Corossol',
+  'strawberry':'Fraise', 'bell pepper':'Poivron', 'cucumber':'Concombre', 'mushroom':'Champignon',
+  'french loaf':'Baguette', 'bagel':'Bagel', 'pretzel':'Bretzel', 'cheeseburger':'Burger',
+  'hotdog':'Hot-dog', 'pizza':'Pizza', 'burrito':'Burrito', 'ice cream':'Glace', 'ice lolly':'Esquimau',
+  'chocolate sauce':'Sauce chocolat', 'dough':'Pâte', 'meat loaf':'Pain de viande',
+  'guacamole':'Guacamole', 'consomme':'Bouillon', 'hot pot':'Marmite', 'trifle':'Dessert',
+  'eggnog':'Lait de poule', 'espresso':'Café', 'cup':'Tasse', 'red wine':'Vin rouge',
+  'soccer ball':'Ballon de foot', 'basketball':'Ballon basket', 'volleyball':'Ballon volley',
+  'tennis ball':'Balle tennis', 'rugby ball':'Ballon rugby', 'golf ball':'Balle golf',
+  'ping-pong ball':'Balle ping-pong', 'dumbbell':'Haltère', 'barbell':'Barre musculation',
+  'mountain bike':'VTT', 'bicycle-built-for-two':'Tandem', 'tricycle':'Tricycle',
+  'umbrella':'Parapluie', 'candle':'Bougie', 'lampshade':'Abat-jour', 'table lamp':'Lampe',
+  'vase':'Vase', 'pot':'Pot', 'quilt':'Couette', 'pillow':'Oreiller', 'towel':'Serviette',
+  'bath towel':'Serviette de bain', 'soap dispenser':'Distributeur savon', 'lotion bottle':'Flacon lotion',
+  'teddy':'Peluche', 'teddy bear':'Peluche', 'doll':'Poupée', 'toyshop':'Jouet',
+  'pencil box':'Trousse', 'pencil sharpener':'Taille-crayon', 'ballpoint':'Stylo', 'fountain pen':'Stylo plume',
+  'binder':'Classeur', 'envelope':'Enveloppe', 'notebook computer':'PC portable',
+  'wig':'Perruque', 'necklace':'Collier', 'gasmask':'Masque',
+};
+
+// Affine les détections génériques avec MobileNet (classification fine sur le crop)
+async function _refineWithMobileNet(detections, img){
+  if (!detections || !detections.length) return detections;
+  let mn;
+  try { mn = await loadMobileNet(); } catch(e) { return detections; }
+  const genericNames = new Set([...Object.values(COCO_TRANSLATE), 'Objet', 'Smartphone', 'Téléphone']);
+  for (const d of detections.slice(0, 8)) {
+    try {
+      if (!d.boxes || !d.boxes.length) continue;
+      const [x, y, w, h] = d.boxes[0];
+      if (w < 32 || h < 32) continue;
+      const canvas = document.createElement('canvas');
+      canvas.width = 224; canvas.height = 224;
+      canvas.getContext('2d').drawImage(img, x, y, w, h, 0, 0, 224, 224);
+      const preds = await mn.classify(canvas, 3);
+      if (!preds || !preds.length) continue;
+      const top = preds[0];
+      const cls = (top.className || '').split(',')[0].trim().toLowerCase();
+      d.fine_class = cls;
+      d.fine_confidence = Math.round((top.probability || 0) * 100);
+      const fr = MOBILENET_FR[cls];
+      // On ne remplace que les noms génériques COCO, jamais un match local/mémoire/OCR
+      const isGeneric = !d.matched_id && genericNames.has(d.detected_name);
+      if (fr && isGeneric && top.probability >= 0.40) {
+        d.detected_name = fr;
+        d.refined_by = 'MobileNet';
+      }
+    } catch(e){ /* crop suivant */ }
+  }
+  return detections;
 }
 
 // ── Regrouper les prédictions par classe (fallback rapide, sans OCR) ──
@@ -10211,6 +10387,8 @@ async function spectraDetectFromImage(img, opts){
   }
   // Nettoyer les faux positifs "Télécommande" pour des téléphones
   detections = detections.map(_sanitizeCocoDetection);
+  // Couche 2 : classification fine MobileNet (1000 classes) sur chaque objet
+  try { detections = await _refineWithMobileNet(detections, img); } catch(e){}
   // Ajouter analyse qualité/dommages pour chaque détection
   try {
     for (const d of detections) {
@@ -12087,6 +12265,47 @@ function uploadLogo() {
 function removeLogo() {
   localStorage.removeItem('baro_logo');
   render();
+}
+
+// ── Upload image produit/article : redimensionne à 640px max, JPEG qualité .82 ──
+function pickItemImage(onDone) {
+  const input = document.createElement('input');
+  input.type = 'file'; input.accept = 'image/*';
+  input.style.display = 'none';
+  document.body.appendChild(input);
+  const cleanup = () => { try { input.remove(); } catch(_){} };
+  input.onchange = () => {
+    const file = input.files && input.files[0];
+    if (!file) { cleanup(); return; }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        try {
+          const MAX = 640;
+          const ratio = Math.min(1, MAX / Math.max(img.width, img.height));
+          const canvas = document.createElement('canvas');
+          canvas.width = Math.round(img.width * ratio);
+          canvas.height = Math.round(img.height * ratio);
+          canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+          onDone(canvas.toDataURL('image/jpeg', 0.82));
+        } catch(err) { showToast('Erreur image', 'error'); }
+        finally { cleanup(); }
+      };
+      img.onerror = () => { cleanup(); showToast('Image invalide', 'error'); };
+      img.src = e.target.result;
+    };
+    reader.onerror = () => { cleanup(); showToast('Lecture fichier échouée', 'error'); };
+    reader.readAsDataURL(file);
+  };
+  setTimeout(() => { if (!input.files || !input.files.length) cleanup(); }, 60000);
+  input.click();
+}
+function uploadFormImage() {
+  pickItemImage(data => { S.form.image = data; haptic('success'); render(); });
+}
+function uploadProductFormImage() {
+  pickItemImage(data => { S.productForm = S.productForm || {}; S.productForm.image = data; haptic('success'); render(); });
 }
 
 // ── CATALOG (WhatsApp) ───────────────────────
@@ -22866,7 +23085,8 @@ function vSpectraEnhanced() {
   <div class="sub-hero spectra-hero-grad">
     <div class="page-header-row" style="margin-bottom:14px">
       <button class="back-btn-dark" onclick="nav('more')">${IC.left}</button>
-      <div style="flex:1"><div class="sub-hero-title">✨ Spectra AI</div><div class="sub-hero-sub">Scanner, détecter, compter automatiquement</div></div>
+      <div style="width:44px;height:44px;border-radius:13px;background:rgba(255,255,255,.10);border:1px solid rgba(167,139,250,.35);display:flex;align-items:center;justify-content:center;flex-shrink:0;filter:drop-shadow(0 4px 12px rgba(124,58,237,.4))">${IC.spectra.replace('width="22" height="22"','width="28" height="28"')}</div>
+      <div style="flex:1"><div class="sub-hero-title">Spectra AI</div><div class="sub-hero-sub">Vision multi-couches · COCO + MobileNet + OCR + EAN</div></div>
     </div>
   </div>
   <div class="container">
@@ -23522,6 +23742,9 @@ function __baroInit() {
   window.haptic             = haptic;
   window.onboardNext        = onboardNext;
   window.finishOnboarding   = finishOnboarding;
+  window.pickItemImage          = pickItemImage;
+  window.uploadFormImage        = uploadFormImage;
+  window.uploadProductFormImage = uploadProductFormImage;
 
   // Appliquer le thème AVANT le premier render pour éviter le flash
   if (typeof applyTheme === 'function') applyTheme();
