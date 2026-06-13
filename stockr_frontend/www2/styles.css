@@ -3207,6 +3207,15 @@ body.dark .spectra-mode-btn.active .spectra-mode-lbl { color: var(--spectra-viol
 .spectra-ai-banner.on .spectra-ai-sub { color: var(--text-3); opacity: 1; }
 .spectra-ai-badge { font-size: 9px; font-weight: 800; letter-spacing: .5px; background: #fff; color: #7C3AED; padding: 2px 7px; border-radius: 6px; }
 .spectra-ai-dot { width: 8px; height: 8px; border-radius: 50%; background: #34d399; box-shadow: 0 0 8px #34d399; animation: intDotPulse 1.8s ease-in-out infinite; }
+.spectra-quota {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 11px 14px; margin-bottom: 12px;
+}
+.spectra-quota.unlimited {
+  text-align: center; font-size: 12px; font-weight: 700;
+  color: var(--success); background: rgba(16,185,129,.06);
+  border-color: rgba(16,185,129,.25);
+}
 .spectra-tuto {
   background: var(--surface); border: 1px solid var(--border);
   border-radius: 16px; margin-bottom: 14px; overflow: hidden;

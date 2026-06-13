@@ -10268,6 +10268,7 @@ async function _groupPredictionsSmart(predictions, imgOrCanvas){
 // Reconnaissance précise de produits (iPhone 17 Pro Max, Nescafé 200g, etc.)
 // Utilise la clé API stockée dans localStorage (stockr_gemini_key).
 // Plan gratuit : https://aistudio.google.com/app/apikey
+let _spectraLastAiError = null; // dernière raison d'échec IA (affichée à l'utilisateur)
 async function _spectraGeminiVision(imgOrCanvas) {
   const apiKey = localStorage.getItem('stockr_gemini_key');
   if (!apiKey) return null;
@@ -10310,30 +10311,58 @@ For EACH product detected, return:
 Return STRICTLY a valid JSON array only, no markdown, no comments:
 [{"exact_name":"...","brand":"...","category":"smartphone","quantity":1,"bbox":[5,10,40,80],"confidence":92}]`;
 
-    const _model = localStorage.getItem('stockr_gemini_model') || 'gemini-2.0-flash';
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${_model}:generateContent?key=${apiKey}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{
-          parts: [
-            { text: prompt },
-            { inline_data: { mime_type: 'image/jpeg', data: base64 } }
-          ]
-        }],
-        generationConfig: { temperature: 0.2, topK: 32, topP: 1, maxOutputTokens: 2048 }
-      })
+    _spectraLastAiError = null;
+    const body = JSON.stringify({
+      contents: [{
+        parts: [
+          { text: prompt },
+          { inline_data: { mime_type: 'image/jpeg', data: base64 } }
+        ]
+      }],
+      generationConfig: { temperature: 0.2, topK: 32, topP: 1, maxOutputTokens: 2048 }
     });
-    if (!response.ok) {
-      console.warn('[Spectra AI] API error:', response.status);
+    // Liste de modèles à essayer (le choisi d'abord, puis fallbacks robustes)
+    const chosen = localStorage.getItem('stockr_gemini_model') || 'gemini-2.0-flash';
+    const models = [...new Set([chosen, 'gemini-2.0-flash', 'gemini-2.5-flash', 'gemini-flash-latest', 'gemini-1.5-flash'])];
+    let data = null, lastErr = '';
+    for (const m of models) {
+      try {
+        const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${apiKey}`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, body
+        });
+        if (resp.ok) { data = await resp.json(); if (m !== chosen) { try { localStorage.setItem('stockr_gemini_model', m); } catch(_){} } break; }
+        // Erreur HTTP : extraire le message précis de l'API
+        let apiMsg = 'Erreur ' + resp.status;
+        try { const err = await resp.json(); apiMsg = err?.error?.message || apiMsg; } catch(_){}
+        lastErr = apiMsg;
+        // 404 = modèle inexistant → essayer le suivant. 400/403 = clé/quota → inutile d'insister
+        if (resp.status === 400 || resp.status === 403) break;
+      } catch(netErr) { lastErr = 'Réseau : ' + (netErr.message || netErr); }
+    }
+    if (!data) {
+      // Message clair pour l'utilisateur (clé invalide, quota, API non activée…)
+      let friendly = lastErr;
+      if (/API key not valid|API_KEY_INVALID/i.test(lastErr)) friendly = 'Clé API invalide — vérifiez-la dans Spectra AI.';
+      else if (/quota|RESOURCE_EXHAUSTED/i.test(lastErr)) friendly = 'Quota Gemini dépassé pour aujourd\'hui (réessayez demain).';
+      else if (/not found|is not found|NOT_FOUND/i.test(lastErr)) friendly = 'Modèle IA indisponible pour cette clé.';
+      else if (/PERMISSION_DENIED|SERVICE_DISABLED|has not been used|disabled/i.test(lastErr)) friendly = 'Active l\'API « Generative Language » sur ta clé Google.';
+      else if (/Réseau/i.test(lastErr)) friendly = 'Pas de connexion internet — l\'IA vision nécessite internet.';
+      _spectraLastAiError = friendly || 'Spectra AI n\'a pas répondu.';
+      console.warn('[Spectra AI] échec:', lastErr);
       return null;
     }
-    const data = await response.json();
     const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
     // Extract JSON array (strip markdown code fences if any)
     const jsonMatch = text.match(/\[[\s\S]*\]/);
-    if (!jsonMatch) return null;
+    if (!jsonMatch) {
+      _spectraLastAiError = 'L\'IA n\'a détecté aucun produit sur cette image.';
+      return null;
+    }
     const products = JSON.parse(jsonMatch[0]);
+    if (!Array.isArray(products) || products.length === 0) {
+      _spectraLastAiError = 'L\'IA n\'a reconnu aucun produit — réessaie avec une photo plus nette.';
+      return null;
+    }
     // Convert to spectra detection format (champs attendus par l'écran de confirmation)
     const imgW = canvas.width;
     const imgH = canvas.height;
@@ -10366,6 +10395,7 @@ Return STRICTLY a valid JSON array only, no markdown, no comments:
       };
     });
   } catch (e) {
+    _spectraLastAiError = 'Erreur Spectra AI : ' + (e.message || e);
     console.warn('[Spectra AI] error:', e.message);
     return null;
   }
@@ -10712,7 +10742,45 @@ function _spectraVideoConstraints(highRes){
   return { ...base, facingMode: { ideal: 'environment' } };
 }
 
+// ── Quota de scans Spectra (incitation Premium) ──────────────
+// Gratuit : 10/jour · Starter : 50/jour · Pro & Enterprise : illimité
+function _spectraDailyLimit() {
+  const plan = (S.subscription && S.subscription.plan) || 'free';
+  if (plan === 'starter') return 50;
+  if (plan === 'pro' || plan === 'enterprise') return Infinity;
+  return 10; // free
+}
+function _spectraScansToday() {
+  try {
+    const raw = JSON.parse(localStorage.getItem('baro_spectra_scans') || '{}');
+    return raw.date === new Date().toDateString() ? (raw.count || 0) : 0;
+  } catch(_) { return 0; }
+}
+function _spectraRecordScan() {
+  try {
+    const today = new Date().toDateString();
+    const raw = JSON.parse(localStorage.getItem('baro_spectra_scans') || '{}');
+    const count = (raw.date === today ? (raw.count || 0) : 0) + 1;
+    localStorage.setItem('baro_spectra_scans', JSON.stringify({ date: today, count }));
+  } catch(_) {}
+}
+// Renvoie true si le scan est autorisé ; sinon affiche l'écran de limite et renvoie false
+function _spectraGuard() {
+  const limit = _spectraDailyLimit();
+  if (_spectraScansToday() >= limit) {
+    S.spectra = S.spectra || {};
+    S.spectra.step = 'limit';
+    S.view = 'spectra';
+    haptic('warn');
+    render();
+    return false;
+  }
+  _spectraRecordScan();
+  return true;
+}
+
 async function spectraStartContinuous(){
+  if (!_spectraGuard()) return;
   S.spectra.step = 'continuous';
   S.spectra.queue = [];
   S.spectra.confirmed = [];
@@ -10889,6 +10957,7 @@ async function spectraCaptureFromContinuous(){
 
 // ── Scan code-barres continu (caméra live) ─────
 async function spectraStartBarcode(){
+  if (!_spectraGuard()) return;
   if (!('BarcodeDetector' in window)) {
     showToast('Code-barres non supporté — scannez une photo', 'error');
     // Fallback : ouvrir picker fichier
@@ -10983,6 +11052,7 @@ async function _onBarcodeDetected(code, format){
 async function spectraOnFile(input) {
   const file = input.files[0];
   if (!file) return;
+  if (!_spectraGuard()) return;
 
   // Capture une miniature pour l'écran d'analyse cinématique (scan-line sur la vraie photo)
   try {
@@ -11386,6 +11456,7 @@ async function scanBarcodeForArticle(){
 }
 
 function spectraStartCompare() {
+  if (!_spectraGuard()) return;
   // Create file input for compare mode
   const input = document.createElement('input');
   input.type = 'file'; input.accept = 'image/*'; input.capture = 'environment';
@@ -11415,6 +11486,7 @@ function spectraStartCompare() {
 
 // ── Spectra : Réception Magique ──────────────
 function spectraStartReception() {
+  if (!_spectraGuard()) return;
   const input = document.createElement('input');
   input.type = 'file'; input.accept = 'image/*'; input.capture = 'environment';
   input.onchange = () => {
@@ -11787,13 +11859,13 @@ function vSubscription() {
 function _planFeatures(plan) {
   if (plan === 'free') return [
     '50 articles', '100 ventes/mois',
-    '1 emplacement', 'Spectra (5/jour)',
+    '1 emplacement', '🔍 Spectra (10 scans/jour)',
     'Factures PDF', 'Mode hors-ligne',
     'Support WhatsApp',
   ];
   if (plan === 'starter') return [
     '500 articles', '2000 ventes/mois',
-    '2 emplacements', 'Spectra (50/jour)',
+    '2 emplacements', '🔍 Spectra (50 scans/jour)',
     'Factures PDF personnalisées', 'Export CSV',
     'WhatsApp catalogue', 'Fournisseurs (10)',
     '3 moyens de paiement',
@@ -11801,7 +11873,7 @@ function _planFeatures(plan) {
   ];
   if (plan === 'pro') return [
     t('unlimited')+' articles', t('unlimited')+' ventes',
-    '5 emplacements', 'Spectra '+t('unlimited'),
+    '5 emplacements', '🔍 Spectra IA vision illimitée ✨',
     'WhatsApp '+t('catalog'), t('purchaseOrders'), t('suppliers')+' illimités',
     t('exportCSV')+' + Excel', 'Boutique en ligne',
     'Marketing & campagnes', 'Intégrations (10)',
@@ -13966,9 +14038,12 @@ async function testGeminiKey() {
   await new Promise(r => img.onload = r);
   const result = await _spectraGeminiVision(img);
   if (result && result.length > 0) {
-    showToast(`✅ Clé valide — ${result.length} élément(s) détecté(s)`, 'success');
+    showToast(`✅ Clé valide — IA opérationnelle !`, 'success');
+  } else if (_spectraLastAiError && /aucun produit|détecté aucun/i.test(_spectraLastAiError)) {
+    // L'IA a répondu (clé OK) mais l'image test ne contient pas de vrai produit → c'est NORMAL
+    showToast('✅ Clé valide — l\'IA répond correctement', 'success');
   } else {
-    showToast('❌ Clé invalide ou quota dépassé', 'error');
+    showToast('❌ ' + (_spectraLastAiError || 'Clé invalide ou quota dépassé'), 'error');
   }
 }
 
@@ -23517,6 +23592,31 @@ function vSpectraEnhanced() {
   }
 
   // ── Aucun résultat : écran guidé (propose l'IA vision plutôt qu'un échec sec) ──
+  // ── Limite de scans atteinte → paywall premium ──
+  if (S.spectra.step === 'limit') {
+    const limit = _spectraDailyLimit();
+    const plan = (S.subscription && S.subscription.plan) || 'free';
+    return `
+    <div class="sub-hero" style="background:linear-gradient(135deg,var(--accent),#7C3AED)"><div class="page-header-row"><button class="back-btn-dark" onclick="spectraReset();nav('more')">${IC.left}</button><div style="flex:1"><div class="sub-hero-title">Limite quotidienne atteinte</div><div class="sub-hero-sub">${limit} scans/jour sur le plan ${plan==='free'?'Gratuit':plan==='starter'?'Starter':plan}</div></div></div></div>
+    <div class="container" style="padding:20px">
+      <div style="text-align:center;padding:18px 0">
+        <div style="font-size:54px;margin-bottom:8px">🚀</div>
+        <div style="font-size:19px;font-weight:900;letter-spacing:-.3px">Tu scannes beaucoup — bravo !</div>
+        <div style="font-size:13px;color:var(--text-3);margin-top:6px;line-height:1.55;max-width:300px;margin-left:auto;margin-right:auto">Tu as utilisé tes <strong>${limit} scans Spectra</strong> du jour. Passe en <strong>Pro</strong> pour des scans <strong>illimités</strong> + IA vision, boutique en ligne, marketing…</div>
+      </div>
+      <div class="card" style="border:2px solid var(--accent);background:linear-gradient(135deg,rgba(124,115,255,.08),rgba(124,115,255,.02));margin-bottom:12px">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+          <span style="font-size:24px">💎</span>
+          <div><div style="font-size:16px;font-weight:800">BARO Pro</div><div style="font-size:12px;color:var(--text-3)">Spectra illimité + tout débloqué</div></div>
+        </div>
+        ${['🔍 Spectra IA vision illimité','🏪 Boutique en ligne','📣 Marketing & campagnes','♾️ Articles & ventes illimités'].map(f=>`<div style="display:flex;gap:8px;font-size:13px;padding:3px 0;color:var(--text-2)"><span style="color:var(--accent)">${IC.check}</span>${f}</div>`).join('')}
+        <button class="btn btn-primary" style="margin-top:14px" onclick="nav('pricing')">Voir les plans Pro →</button>
+      </div>
+      <button class="btn btn-ghost" style="width:100%" onclick="spectraReset()">Revenir demain (gratuit)</button>
+      <div style="font-size:11px;color:var(--text-3);text-align:center;margin-top:12px;line-height:1.5">💡 Le compteur se remet à zéro chaque jour à minuit.</div>
+    </div>`;
+  }
+
   if (S.spectra.step === 'noresult') {
     const hasAI = !!localStorage.getItem('stockr_gemini_key');
     return `
@@ -23534,9 +23634,15 @@ function vSpectraEnhanced() {
         </div>
         <button class="btn btn-primary" style="background:linear-gradient(135deg,#4285F4,#7C3AED)" onclick="nav('spectra-ai-setup')">Activer Spectra AI →</button>
       </div>` : `
+      ${_spectraLastAiError ? `
+      <div class="card" style="margin-bottom:12px;border-left:4px solid var(--danger);background:rgba(239,68,68,.05)">
+        <div style="font-size:13px;font-weight:700;color:var(--danger);margin-bottom:4px">⚠️ Spectra AI : ${_spectraLastAiError}</div>
+        <div style="font-size:12px;color:var(--text-2);line-height:1.5">Vérifie ta clé dans Spectra AI, ou réessaie.</div>
+        <button class="btn btn-ghost" style="margin-top:10px;font-size:12px;padding:8px" onclick="nav('spectra-ai-setup')">Vérifier ma clé →</button>
+      </div>` : `
       <div class="card" style="margin-bottom:12px">
         <div style="font-size:13px;color:var(--text-2);line-height:1.55">L'IA n'a pas reconnu ce produit (image floue, sous un angle difficile, ou produit rare). Réessaie avec une photo plus nette et bien éclairée.</div>
-      </div>`}
+      </div>`}`}
       <div class="card" style="margin-bottom:12px">
         <div class="card-title">Ajouter manuellement</div>
         <div style="font-size:12px;color:var(--text-3);margin-bottom:10px">Tu peux créer l'article toi-même en quelques secondes.</div>
@@ -23690,6 +23796,21 @@ function vSpectraEnhanced() {
           <div class="spectra-ai-sub">Reconnaît PS5, iPhone, n'importe quoi — comme Google Lens</div>
         </div>
         <div style="color:#fff;opacity:.9">${IC.chevron}</div>
+      </div>`;
+    })()}
+    ${(() => {
+      const limit = _spectraDailyLimit();
+      if (limit === Infinity) return `<div class="spectra-quota unlimited">♾️ Scans illimités · Plan Pro</div>`;
+      const left = Math.max(0, limit - _spectraScansToday());
+      const pct = Math.round((left / limit) * 100);
+      const col = left === 0 ? 'var(--danger)' : left <= 3 ? 'var(--warning)' : 'var(--success)';
+      return `<div class="spectra-quota">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+          <span style="font-size:11px;font-weight:700;color:var(--text-2)">Scans gratuits aujourd'hui</span>
+          <span style="font-size:11px;font-weight:800;color:${col}">${left}/${limit} restants</span>
+        </div>
+        <div style="height:5px;background:var(--gray-2);border-radius:3px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${col};border-radius:3px;transition:width .4s"></div></div>
+        ${left <= 3 ? `<div style="font-size:10.5px;color:var(--text-3);margin-top:5px">Bientôt épuisés — <a onclick="nav('pricing')" style="color:var(--accent);font-weight:700;cursor:pointer">passe en Pro pour l'illimité</a></div>` : ''}
       </div>`;
     })()}
 
