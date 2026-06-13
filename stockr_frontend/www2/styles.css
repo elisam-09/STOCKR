@@ -3177,6 +3177,59 @@ body.dark .spectra-mode-btn.active .spectra-mode-lbl { color: var(--spectra-viol
   animation: ptrSpin .8s linear infinite; flex-shrink: 0;
 }
 
+/* ── Bannière activation IA + tutoriel Spectra ── */
+.spectra-ai-banner {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 16px; border-radius: 16px;
+  margin: 4px 0 12px; cursor: pointer;
+  transition: transform .15s var(--ease-out), box-shadow .2s;
+}
+.spectra-ai-banner:active { transform: scale(.98); }
+.spectra-ai-banner.off {
+  background: linear-gradient(135deg, #4285F4, #7C3AED);
+  color: #fff;
+  box-shadow: 0 10px 28px -10px rgba(124,58,237,.6);
+}
+.spectra-ai-banner.on {
+  background: linear-gradient(135deg, rgba(16,185,129,.10), rgba(5,150,105,.04));
+  border: 1px solid rgba(16,185,129,.3);
+}
+.spectra-ai-ic {
+  width: 44px; height: 44px; border-radius: 13px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 22px;
+  background: rgba(255,255,255,.18);
+}
+.spectra-ai-banner.on .spectra-ai-ic { background: rgba(16,185,129,.15); }
+.spectra-ai-ic.pulse { animation: spectraPulse 1.8s ease-in-out infinite; }
+.spectra-ai-title { font-size: 15px; font-weight: 800; display: flex; align-items: center; gap: 7px; }
+.spectra-ai-banner.on .spectra-ai-title { color: var(--text-1); }
+.spectra-ai-sub { font-size: 12px; margin-top: 1px; opacity: .9; }
+.spectra-ai-banner.on .spectra-ai-sub { color: var(--text-3); opacity: 1; }
+.spectra-ai-badge { font-size: 9px; font-weight: 800; letter-spacing: .5px; background: #fff; color: #7C3AED; padding: 2px 7px; border-radius: 6px; }
+.spectra-ai-dot { width: 8px; height: 8px; border-radius: 50%; background: #34d399; box-shadow: 0 0 8px #34d399; animation: intDotPulse 1.8s ease-in-out infinite; }
+.spectra-tuto {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; margin-bottom: 14px; overflow: hidden;
+}
+.spectra-tuto-sum {
+  list-style: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px; font-size: 13.5px; font-weight: 700; color: var(--text-1);
+}
+.spectra-tuto-sum::-webkit-details-marker { display: none; }
+.spectra-tuto-chev { transition: transform .25s var(--ease-out); color: var(--text-3); }
+.spectra-tuto[open] .spectra-tuto-chev { transform: rotate(90deg); }
+.spectra-tuto-body { padding: 4px 16px 16px; }
+.spectra-step { display: flex; gap: 12px; padding: 9px 0; }
+.spectra-step-n {
+  width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+  background: linear-gradient(135deg, #4285F4, #7C3AED); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 800;
+}
+.spectra-step-t { font-size: 13.5px; font-weight: 700; color: var(--text-1); }
+.spectra-step-d { font-size: 12.5px; color: var(--text-2); line-height: 1.55; margin-top: 2px; }
+
 /* Hero header Spectra */
 .spectra-hero-grad {
   background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 55%, #a78bfa 100%) !important;

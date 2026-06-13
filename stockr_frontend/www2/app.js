@@ -23669,6 +23669,53 @@ function vSpectraEnhanced() {
     </div>
   </div>
   <div class="container">
+    ${(() => {
+      const aiOn = !!localStorage.getItem('stockr_gemini_key');
+      if (aiOn) {
+        return `
+        <div class="spectra-ai-banner on" onclick="nav('spectra-ai-setup')">
+          <div class="spectra-ai-ic">✨</div>
+          <div style="flex:1;min-width:0">
+            <div class="spectra-ai-title">IA vision activée <span class="spectra-ai-dot"></span></div>
+            <div class="spectra-ai-sub">Reconnaissance précise de n'importe quel produit · Gérer</div>
+          </div>
+          <div style="color:#34d399">${IC.chevron}</div>
+        </div>`;
+      }
+      return `
+      <div class="spectra-ai-banner off" onclick="nav('spectra-ai-setup')">
+        <div class="spectra-ai-ic pulse">✨</div>
+        <div style="flex:1;min-width:0">
+          <div class="spectra-ai-title">Activer l'IA vision <span class="spectra-ai-badge">GRATUIT</span></div>
+          <div class="spectra-ai-sub">Reconnaît PS5, iPhone, n'importe quoi — comme Google Lens</div>
+        </div>
+        <div style="color:#fff;opacity:.9">${IC.chevron}</div>
+      </div>`;
+    })()}
+
+    <details class="spectra-tuto" ${localStorage.getItem('stockr_gemini_key')||localStorage.getItem('baro_spectra_tuto_seen')?'':'open'} ontoggle="if(this.open)localStorage.setItem('baro_spectra_tuto_seen','1')">
+      <summary class="spectra-tuto-sum">
+        <span>📖 Comment ça marche ? <span style="font-weight:500;color:var(--text-3)">Activer Spectra en 2 min</span></span>
+        <span class="spectra-tuto-chev">${IC.chevron}</span>
+      </summary>
+      <div class="spectra-tuto-body">
+        <div class="spectra-step">
+          <div class="spectra-step-n">1</div>
+          <div><div class="spectra-step-t">Obtiens ta clé gratuite</div><div class="spectra-step-d">Ouvre <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--accent);font-weight:700">aistudio.google.com</a> → connecte-toi avec Google → « Create API key ». C'est gratuit (1500 scans/jour).</div></div>
+        </div>
+        <div class="spectra-step">
+          <div class="spectra-step-n">2</div>
+          <div><div class="spectra-step-t">Colle-la dans Spectra</div><div class="spectra-step-d">Touche le bouton violet <strong>« Activer l'IA vision »</strong> ci-dessus → colle ta clé → Enregistrer.</div></div>
+        </div>
+        <div class="spectra-step">
+          <div class="spectra-step-n">3</div>
+          <div><div class="spectra-step-t">Scanne n'importe quel produit</div><div class="spectra-step-d">Photo, vidéo ou scan live : Spectra identifie le nom exact, la marque, et l'ajoute à ton stock. ✨</div></div>
+        </div>
+        <button class="btn btn-primary" style="margin-top:6px;background:linear-gradient(135deg,#4285F4,#7C3AED)" onclick="event.preventDefault();nav('spectra-ai-setup')">${IC.spectraWhite ? '' : ''}🚀 Activer maintenant</button>
+        <div style="font-size:11px;color:var(--text-3);margin-top:10px;line-height:1.5">💡 Sans clé, Spectra fonctionne quand même <strong>hors-ligne</strong> (codes-barres + dictionnaire de 300+ produits locaux), mais ne reconnaît pas tous les produits par photo.</div>
+      </div>
+    </details>
+
     <div class="section-hd"><span class="section-lbl" style="color:#7c3aed;font-weight:800;letter-spacing:.5px">✦ MODE DE SCAN</span></div>
     <div class="spectra-mode-grid">
       ${modes.map(m => `
