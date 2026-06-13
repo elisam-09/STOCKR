@@ -10434,7 +10434,45 @@ async function _visionOpenAICompat(providerId, apiKey, imgOrCanvas) {
   return null;
 }
 
-// ── Orchestrateur : essaie toutes les IA configurées ──
+// ── IA vision GRATUITE SANS CLÉ (Pollinations) — moteur par défaut ──
+// Endpoint OpenAI-compatible, libre d'accès, CORS navigateur, mondial.
+// Permet de reconnaître n'importe quel produit SANS aucune configuration.
+async function _visionPollinations(imgOrCanvas) {
+  try {
+    const { base64, w, h } = _spectraImgToBase64(imgOrCanvas);
+    const resp = await fetch('https://text.pollinations.ai/openai', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'openai',
+        messages: [{
+          role: 'user',
+          content: [
+            { type: 'text', text: _SPECTRA_PROMPT },
+            { type: 'image_url', image_url: { url: 'data:image/jpeg;base64,' + base64 } },
+          ],
+        }],
+        temperature: 0.2,
+        referrer: 'baro-app',
+      }),
+    });
+    if (!resp.ok) {
+      _spectraLastAiError = 'IA gratuite saturée — réessaie dans 1 min, ou ajoute une clé Groq pour la fiabilité.';
+      return null;
+    }
+    const data = await resp.json().catch(() => null);
+    const text = data?.choices?.[0]?.message?.content || (typeof data === 'string' ? data : '');
+    const products = _extractJSONArray(text);
+    if (products && products.length) return _normalizeAIProducts(products, w, h, 'Spectra AI (gratuit)');
+    _spectraLastAiError = 'Produit non identifié — réessaie avec une photo plus nette.';
+    return null;
+  } catch(e) {
+    _spectraLastAiError = 'IA gratuite indisponible (vérifie ta connexion).';
+    return null;
+  }
+}
+
+// ── Orchestrateur : clés configurées d'abord (fiables), puis IA gratuite sans clé ──
 function _spectraConfiguredProviders() {
   const out = [];
   const groq = (localStorage.getItem('stockr_groq_key')||'').trim();
@@ -10445,13 +10483,14 @@ function _spectraConfiguredProviders() {
   if (gem)  out.push('gemini');
   return out;
 }
-function _spectraHasAI() { return _spectraConfiguredProviders().length > 0; }
+// hasAI = une clé fournisseur est configurée (l'IA keyless n'est plus garantie)
+function _spectraHasOwnKey() { return _spectraConfiguredProviders().length > 0; }
+function _spectraHasAI() { return _spectraHasOwnKey(); }
 
 async function _spectraVisionAI(imgOrCanvas) {
-  const provs = _spectraConfiguredProviders();
-  if (!provs.length) return null;
   _spectraLastAiError = null;
-  for (const p of provs) {
+  // 1) Fournisseurs avec clé (plus fiables / précis) en priorité
+  for (const p of _spectraConfiguredProviders()) {
     try {
       let res = null;
       if (p === 'gemini') res = await _spectraGeminiVision(imgOrCanvas);
@@ -10459,6 +10498,11 @@ async function _spectraVisionAI(imgOrCanvas) {
       if (res && res.length) { _spectraLastAiError = null; return res; }
     } catch(e) { _spectraLastAiError = e.message || String(e); }
   }
+  // 2) IA GRATUITE SANS CLÉ (toujours tentée) → reconnaît n'importe quel produit
+  try {
+    const free = await _visionPollinations(imgOrCanvas);
+    if (free && free.length) { _spectraLastAiError = null; return free; }
+  } catch(e) { _spectraLastAiError = e.message || String(e); }
   return null;
 }
 
@@ -23962,24 +24006,25 @@ function vSpectraEnhanced() {
   </div>
   <div class="container">
     ${(() => {
-      const aiOn = _spectraHasAI();
-      if (aiOn) {
+      const ownKey = _spectraHasOwnKey();
+      if (ownKey) {
         return `
         <div class="spectra-ai-banner on" onclick="nav('spectra-ai-setup')">
           <div class="spectra-ai-ic">✨</div>
           <div style="flex:1;min-width:0">
-            <div class="spectra-ai-title">IA vision activée <span class="spectra-ai-dot"></span></div>
-            <div class="spectra-ai-sub">Reconnaissance précise de n'importe quel produit · Gérer</div>
+            <div class="spectra-ai-title">IA vision activée (ta clé) <span class="spectra-ai-dot"></span></div>
+            <div class="spectra-ai-sub">Reconnaissance maximale de n'importe quel produit · Gérer</div>
           </div>
           <div style="color:#34d399">${IC.chevron}</div>
         </div>`;
       }
+      // Pas de clé → on pousse vers Groq (gratuit, sans carte, marche partout)
       return `
       <div class="spectra-ai-banner off" onclick="nav('spectra-ai-setup')">
         <div class="spectra-ai-ic pulse">✨</div>
         <div style="flex:1;min-width:0">
-          <div class="spectra-ai-title">Activer l'IA vision <span class="spectra-ai-badge">GRATUIT</span></div>
-          <div class="spectra-ai-sub">Reconnaît PS5, iPhone, n'importe quoi — comme Google Lens</div>
+          <div class="spectra-ai-title">Activer l'IA vision <span class="spectra-ai-badge">GRATUIT 2 MIN</span></div>
+          <div class="spectra-ai-sub">Reconnaît PS5, iPhone, n'importe quoi — clé Groq gratuite, sans carte</div>
         </div>
         <div style="color:#fff;opacity:.9">${IC.chevron}</div>
       </div>`;
@@ -24000,26 +24045,26 @@ function vSpectraEnhanced() {
       </div>`;
     })()}
 
-    <details class="spectra-tuto" ${_spectraHasAI()||localStorage.getItem('baro_spectra_tuto_seen')?'':'open'} ontoggle="if(this.open)localStorage.setItem('baro_spectra_tuto_seen','1')">
+    <details class="spectra-tuto" ${_spectraHasOwnKey()||localStorage.getItem('baro_spectra_tuto_seen')?'':'open'} ontoggle="if(this.open)localStorage.setItem('baro_spectra_tuto_seen','1')">
       <summary class="spectra-tuto-sum">
-        <span>📖 Comment ça marche ? <span style="font-weight:500;color:var(--text-3)">Activer Spectra en 2 min</span></span>
+        <span>📖 Activer l'IA <span style="font-weight:500;color:var(--text-3)">Groq gratuit · 2 min</span></span>
         <span class="spectra-tuto-chev">${IC.chevron}</span>
       </summary>
       <div class="spectra-tuto-body">
         <div class="spectra-step">
           <div class="spectra-step-n">1</div>
-          <div><div class="spectra-step-t">Obtiens ta clé gratuite</div><div class="spectra-step-d">Ouvre <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--accent);font-weight:700">aistudio.google.com</a> → connecte-toi avec Google → « Create API key ». C'est gratuit (1500 scans/jour).</div></div>
+          <div><div class="spectra-step-t">Crée ta clé gratuite Groq</div><div class="spectra-step-d">Ouvre <a href="https://console.groq.com/keys" target="_blank" style="color:var(--accent);font-weight:700">console.groq.com/keys</a> → connecte-toi (Google/email) → « Create API Key ». <strong>Gratuit, sans carte, marche en Afrique.</strong></div></div>
         </div>
         <div class="spectra-step">
           <div class="spectra-step-n">2</div>
-          <div><div class="spectra-step-t">Colle-la dans Spectra</div><div class="spectra-step-d">Touche le bouton violet <strong>« Activer l'IA vision »</strong> ci-dessus → colle ta clé → Enregistrer.</div></div>
+          <div><div class="spectra-step-t">Colle-la dans Spectra</div><div class="spectra-step-d">Touche <strong>« Activer l'IA vision »</strong> ci-dessus → champ Groq → colle (gsk_…) → Enregistrer → Tester.</div></div>
         </div>
         <div class="spectra-step">
           <div class="spectra-step-n">3</div>
-          <div><div class="spectra-step-t">Scanne n'importe quel produit</div><div class="spectra-step-d">Photo, vidéo ou scan live : Spectra identifie le nom exact, la marque, et l'ajoute à ton stock. ✨</div></div>
+          <div><div class="spectra-step-t">Scanne n'importe quel produit</div><div class="spectra-step-d">Photo, vidéo ou live : Spectra reconnaît le nom exact (PS5, iPhone, Riz Maman…) et l'ajoute à ton stock. ✨</div></div>
         </div>
-        <button class="btn btn-primary" style="margin-top:6px;background:linear-gradient(135deg,#4285F4,#7C3AED)" onclick="event.preventDefault();nav('spectra-ai-setup')">${IC.spectraWhite ? '' : ''}🚀 Activer maintenant</button>
-        <div style="font-size:11px;color:var(--text-3);margin-top:10px;line-height:1.5">💡 Sans clé, Spectra fonctionne quand même <strong>hors-ligne</strong> (codes-barres + dictionnaire de 300+ produits locaux), mais ne reconnaît pas tous les produits par photo.</div>
+        <button class="btn btn-primary" style="margin-top:6px;background:linear-gradient(135deg,#F55036,#7C3AED)" onclick="event.preventDefault();nav('spectra-ai-setup')">🚀 Activer maintenant</button>
+        <div style="font-size:11px;color:var(--text-3);margin-top:10px;line-height:1.5">💡 Sans clé, Spectra reconnaît quand même via <strong>code-barres + dictionnaire</strong> de 300+ produits locaux (hors-ligne).</div>
       </div>
     </details>
 
