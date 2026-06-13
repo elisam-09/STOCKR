@@ -1040,6 +1040,74 @@ body.dark .sk {
 .ob-dot.active { width: 22px; background: var(--accent); }
 .ob-next { max-width: 300px; }
 
+/* ── Éditeur visuel boutique ────────────────── */
+.bq-editor { display: flex; flex-direction: column; }
+.bq-preview-wrap {
+  position: sticky; top: 0; z-index: 20;
+  padding: 14px 16px 16px;
+  background: linear-gradient(180deg, var(--gray-1), var(--bg));
+  border-bottom: 1px solid var(--border);
+  display: flex; justify-content: center;
+}
+.bq-phone {
+  position: relative;
+  width: 240px; height: 380px;
+  border-radius: 26px;
+  background: #000;
+  padding: 7px;
+  box-shadow: 0 18px 48px -14px rgba(10,10,20,.4), 0 0 0 1px rgba(0,0,0,.06);
+}
+.bq-preview-frame {
+  width: 100%; height: 100%;
+  border: none;
+  border-radius: 20px;
+  background: #fff;
+  display: block;
+}
+.bq-live-badge {
+  position: absolute; top: 14px; right: -8px;
+  background: #111; color: #fff;
+  font-size: 9px; font-weight: 800; letter-spacing: .5px;
+  padding: 4px 9px; border-radius: 7px;
+  display: flex; align-items: center; gap: 5px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.3);
+}
+.bq-live-dot { width: 6px; height: 6px; border-radius: 50%; background: #34d399; animation: intDotPulse 1.6s ease-in-out infinite; box-shadow: 0 0 6px #34d399; }
+.bq-controls { padding: 16px; }
+.bq-sec-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .6px; color: var(--text-3); margin: 16px 0 8px; }
+.bq-sec-title:first-child { margin-top: 0; }
+.bq-swatches { display: flex; flex-wrap: wrap; gap: 9px; }
+.bq-swatch {
+  width: 42px; height: 42px; border-radius: 50%;
+  border: 3px solid transparent; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 15px; font-weight: 800;
+  transition: transform .15s var(--ease-spring), border-color .15s;
+  position: relative;
+}
+.bq-swatch:active { transform: scale(.9); }
+.bq-swatch.sel { border-color: var(--text-1); transform: scale(1.08); }
+.bq-swatch-custom {
+  background: var(--surface) !important;
+  border: 2px dashed var(--gray-4); color: var(--text-3);
+  overflow: hidden;
+}
+.bq-swatch-custom input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.bq-opts { display: flex; flex-wrap: wrap; gap: 7px; }
+.bq-opt {
+  padding: 8px 14px; border-radius: 999px;
+  border: 1px solid var(--border); background: var(--surface);
+  color: var(--text-2); font-size: 12.5px; font-weight: 600;
+  cursor: pointer; font-family: var(--font);
+  transition: all .18s var(--ease-out);
+}
+.bq-opt:active { transform: scale(.95); }
+.bq-opt-active {
+  background: var(--accent-light); color: var(--accent);
+  border-color: rgba(124,115,255,.4);
+  box-shadow: 0 2px 8px -4px rgba(79,70,229,.4);
+}
+
 /* ── Cartes intégrations ────────────────────── */
 .integration-card { transition: transform 0.2s var(--ease-out), box-shadow 0.2s var(--ease-out); }
 .integration-card:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }

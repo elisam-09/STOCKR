@@ -4482,6 +4482,7 @@ function _doRender() {
     'promo-form': vPromoForm, 'promo-detail': vPromoDetail,
     'banner-form': vBannerForm, 'popup-form': vPopupForm,
     'review-form': vReviewForm, 'tracking-form': vTrackingForm,
+    'boutique-editor': vBoutiqueEditor,
     'boutique-appearance': vBoutiqueAppearance,
     'boutique-domain': vBoutiqueDomain,
     'boutique-pixels': vBoutiquePixels,
@@ -4558,7 +4559,7 @@ function _doRender() {
     if (gs) { gs.focus({ preventScroll: true }); gs.setSelectionRange(gs.value.length, gs.value.length); }
   }
 
-  const hideNav = ['detail','add','add-product','edit-product','pack-form','add-client','client-detail','notifications','catalog','add-supplier','supplier-detail','stock-history','purchase-orders','add-order','pricing','subscription','boutique','boutique-appearance','boutique-domain','boutique-pixels','boutique-code','boutique-seo','boutique-hours','boutique-policies','boutique-faq','marketing','social-media','social-setup','payments-setup','integrations','delivery-setup','whatsapp-setup','sms-setup','ecommerce-setup','sheets-setup','pos-setup','compta-setup','api-settings','spectra','clients','exports','team','add-team-member','audit-log','appearance','security','2fa-verify','onboarding'].includes(S.view);
+  const hideNav = ['detail','add','add-product','edit-product','pack-form','add-client','client-detail','notifications','catalog','add-supplier','supplier-detail','stock-history','purchase-orders','add-order','pricing','subscription','boutique','boutique-editor','boutique-appearance','boutique-domain','boutique-pixels','boutique-code','boutique-seo','boutique-hours','boutique-policies','boutique-faq','marketing','social-media','social-setup','payments-setup','integrations','delivery-setup','whatsapp-setup','sms-setup','ecommerce-setup','sheets-setup','pos-setup','compta-setup','api-settings','spectra','clients','exports','team','add-team-member','audit-log','appearance','security','2fa-verify','onboarding'].includes(S.view);
   navEl.style.display = hideNav ? 'none' : '';
   if (!hideNav) navEl.innerHTML = renderNav();
 }
@@ -14819,6 +14820,16 @@ function vBoutique() {
     </div>
   </div>
   <div class="container">
+    <div class="card card-tap" style="margin-bottom:10px;background:linear-gradient(135deg,rgba(124,115,255,0.10),rgba(79,70,229,0.04));border:1px solid rgba(124,115,255,0.22)" onclick="nav('boutique-editor')">
+      <div style="display:flex;align-items:center;gap:13px">
+        <div style="width:46px;height:46px;border-radius:13px;background:linear-gradient(135deg,#7C73FF,#4F46E5);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;box-shadow:0 6px 16px -6px rgba(79,70,229,.6)">🎨</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:15px;font-weight:800;color:var(--text-1)">Éditeur visuel en direct</div>
+          <div style="font-size:12px;color:var(--text-3);margin-top:1px">Couleurs, police, sections — aperçu instantané</div>
+        </div>
+        <div style="color:var(--accent)">${IC.chevron}</div>
+      </div>
+    </div>
     <div class="card" style="margin-bottom:10px">
       <div class="card-title">Configuration</div>
       <div class="form-group">
@@ -15101,6 +15112,36 @@ function updateBoutiqueConfig(key, val) {
   S.boutiqueConfig[key] = val;
   localStorage.setItem('baro_boutique', JSON.stringify(S.boutiqueConfig));
 }
+
+// ── Éditeur visuel : applique un réglage + rafraîchit l'aperçu live SANS re-render ──
+function boutiqueEditSet(key, val) {
+  S.boutiqueConfig[key] = val;
+  localStorage.setItem('baro_boutique', JSON.stringify(S.boutiqueConfig));
+  haptic('tap');
+  _refreshBoutiqueLivePreview();
+  // Met à jour l'état actif des contrôles sans reconstruire l'iframe (pas de flash)
+  document.querySelectorAll('[data-bq-key]').forEach(el => {
+    const k = el.getAttribute('data-bq-key');
+    const v = el.getAttribute('data-bq-val');
+    const cur = S.boutiqueConfig[k];
+    const isActive = String(cur === undefined ? (el.getAttribute('data-bq-default') === 'true') : cur) === v;
+    el.classList.toggle('bq-opt-active', isActive);
+  });
+}
+function _refreshBoutiqueLivePreview() {
+  const frame = document.getElementById('bq-preview');
+  if (!frame) return;
+  const html = generateBoutiqueSite({ preview: true, silent: true });
+  if (html) frame.srcdoc = html;
+}
+function boutiqueEditToggle(key, defaultOn) {
+  const cur = S.boutiqueConfig[key];
+  const next = (cur === undefined ? defaultOn : cur) ? false : true;
+  boutiqueEditSet(key, next);
+  // reflète l'état du switch
+  const sw = document.querySelector('[data-bq-toggle="'+key+'"]');
+  if (sw) sw.checked = next;
+}
 function generateBoutiqueSite(opts) {
   const isPreview = !!(opts && opts.preview);
   const bc = S.boutiqueConfig;
@@ -15113,7 +15154,7 @@ function generateBoutiqueSite(opts) {
   const vitrineArts  = (bt_showStock()    ? (S.articles||[]) : []).filter(a => (bc.articles||[]).includes(a.id))
     .map(a => ({ id:a.id, name:a.name, price:a.price||a.salePrice||0, description:a.description||'', category:a.category||'Articles', image:a.image||'', qty:(typeof a.stock==='number'?a.stock:null), unit:a.unit||'', _article:true }));
   const shopProds = [...vitrinePacks, ...vitrineProds, ...vitrineArts];
-  if (shopProds.length === 0) { showToast('Ajoutez des produits/articles/packs en vitrine', 'error'); return; }
+  if (shopProds.length === 0) { if (!(opts && opts.silent)) showToast('Ajoutez des produits/articles/packs en vitrine', 'error'); return; }
   const categories = [...new Set(shopProds.map(p => p.category || 'Autres'))];
   const tc = bc.themeColor || '#4F46E5';
   const waNum = (bc.whatsappNumber || '').replace(/\s/g, '').replace(/^\+/, '');
@@ -15578,6 +15619,102 @@ ${cc.js ? `<script>${cc.js}<\/script>` : ''}
 // ═══════════════════════════════════════════════
 // APPARENCE — templates, couleurs, organisation
 // ═══════════════════════════════════════════════
+// ═══════════════════════════════════════════════
+// ÉDITEUR VISUEL EN DIRECT — aperçu iframe + contrôles
+// ═══════════════════════════════════════════════
+function vBoutiqueEditor() {
+  const bc = S.boutiqueConfig || (S.boutiqueConfig = {});
+  const tc = bc.themeColor || '#4F46E5';
+  const html = generateBoutiqueSite({ preview: true, silent: true });
+  if (!html) {
+    return `
+    <div class="page-header"><div class="page-header-row">
+      <button class="back-btn" onclick="nav('boutique')">${IC.left}</button>
+      <div class="page-title">Éditeur boutique</div>
+    </div></div>
+    <div class="container"><div class="empty">
+      <div class="empty-ico">🎨</div>
+      <div class="empty-title">Vitrine vide</div>
+      <div class="empty-text">Ajoutez au moins un produit à votre vitrine pour ouvrir l'éditeur visuel.</div>
+      <button class="btn btn-primary" style="width:auto;padding:11px 24px" onclick="nav('boutique')">Gérer ma vitrine</button>
+    </div></div>`;
+  }
+  const previewJSON = JSON.stringify(html);
+  const colors = [
+    {color:'#4F46E5',name:'Indigo'},{color:'#7C3AED',name:'Violet'},{color:'#059669',name:'Vert'},
+    {color:'#2563EB',name:'Bleu'},{color:'#EA580C',name:'Orange'},{color:'#DC2626',name:'Rouge'},
+    {color:'#F472B6',name:'Rose'},{color:'#0891B2',name:'Cyan'},{color:'#000000',name:'Noir'},
+  ];
+  const fonts = [
+    {id:'Inter',name:'Inter'},{id:'Poppins',name:'Poppins'},{id:'Montserrat',name:'Montserrat'},
+    {id:'Playfair Display',name:'Playfair'},{id:'Nunito',name:'Nunito'},{id:'Space Grotesk',name:'Space'},
+  ];
+  const curFont = bc.fontFamily || 'Inter';
+  const curBorder = bc.borderStyle || 'rounded';
+  const curAnim = bc.buttonAnimation || 'rebond';
+  const toggles = [
+    {key:'showCartButton', label:'🛒 Panier & commande', def:true},
+    {key:'showCategories', label:'🏷️ Filtres par catégorie', def:true},
+    {key:'showPromoBadges',label:'🔥 Badges promo', def:true},
+    {key:'showStockCount', label:'📦 Indicateur de stock', def:true},
+    {key:'showReviews',    label:'⭐ Avis clients', def:true},
+  ];
+  const optBtn = (key, val, label, isActive, defAttr) =>
+    `<button class="bq-opt ${isActive?'bq-opt-active':''}" data-bq-key="${key}" data-bq-val="${val}"${defAttr?` data-bq-default="${defAttr}"`:''} onclick="boutiqueEditSet('${key}','${val}')">${label}</button>`;
+  return `
+  <div class="page-header" style="padding-bottom:10px">
+    <div class="page-header-row">
+      <button class="back-btn" onclick="nav('boutique')">${IC.left}</button>
+      <div class="page-title" style="font-size:17px">Éditeur visuel</div>
+      <button class="fab" onclick="generateBoutiqueSite()" title="Télécharger le site">${IC.download||'⬇'}</button>
+    </div>
+  </div>
+  <div class="bq-editor">
+    <div class="bq-preview-wrap">
+      <div class="bq-phone">
+        <iframe id="bq-preview" class="bq-preview-frame" title="Aperçu boutique"></iframe>
+        <div class="bq-live-badge"><span class="bq-live-dot"></span> EN DIRECT</div>
+      </div>
+    </div>
+    <div class="bq-controls">
+      <div class="bq-sec-title">🎨 Couleur de la marque</div>
+      <div class="bq-swatches">
+        ${colors.map(c => `<button class="bq-swatch ${tc===c.color?'sel':''}" style="background:${c.color}" title="${c.name}" onclick="boutiqueEditSet('themeColor','${c.color}');document.querySelectorAll('.bq-swatch').forEach(s=>s.classList.remove('sel'));this.classList.add('sel')">${tc===c.color?'✓':''}</button>`).join('')}
+        <label class="bq-swatch bq-swatch-custom" title="Couleur personnalisée">✎<input type="color" value="${tc}" onchange="boutiqueEditSet('themeColor',this.value)"></label>
+      </div>
+
+      <div class="bq-sec-title">🔤 Police</div>
+      <div class="bq-opts">${fonts.map(f => optBtn('fontFamily', f.id, f.name, curFont===f.id)).join('')}</div>
+
+      <div class="bq-sec-title">⬜ Coins</div>
+      <div class="bq-opts">
+        ${optBtn('borderStyle','rounded','Arrondis', curBorder==='rounded')}
+        ${optBtn('borderStyle','square','Carrés', curBorder==='square')}
+      </div>
+
+      <div class="bq-sec-title">✨ Animation bouton</div>
+      <div class="bq-opts">
+        ${[['rebond','Rebond'],['pulse','Pulse'],['glow','Lueur'],['shake','Secousse'],['none','Aucune']].map(([v,l])=>optBtn('buttonAnimation',v,l,curAnim===v)).join('')}
+      </div>
+
+      <div class="bq-sec-title">🧩 Sections affichées</div>
+      <div class="settings-row-block" style="margin-top:4px">
+        ${toggles.map(tg => {
+          const on = bc[tg.key] === undefined ? tg.def : bc[tg.key];
+          return `<div class="settings-row" style="cursor:default">
+            <div class="settings-row-inner"><div class="settings-row-lbl" style="font-size:13px">${tg.label}</div></div>
+            <label class="toggle-switch"><input type="checkbox" data-bq-toggle="${tg.key}" ${on?'checked':''} onchange="boutiqueEditToggle('${tg.key}',${tg.def})"><span class="toggle-track"></span></label>
+          </div>`;
+        }).join('')}
+      </div>
+
+      <button class="btn btn-primary" style="margin-top:16px" onclick="generateBoutiqueSite()">${IC.download||'⬇'} Télécharger mon site</button>
+      <button class="btn btn-ghost" style="margin-top:8px" onclick="previewBoutiqueSite()">${IC.globe||'🌐'} Ouvrir en plein écran</button>
+    </div>
+  </div>
+  <script>(function(){var f=document.getElementById('bq-preview');if(f){f.srcdoc=${previewJSON};}})();<\/script>`;
+}
+
 function vBoutiqueAppearance() {
   const bc = S.boutiqueConfig;
   const tpl = bc.template || 'feed';
@@ -23835,6 +23972,9 @@ function __baroInit() {
   window.pickItemImage          = pickItemImage;
   window.uploadFormImage        = uploadFormImage;
   window.uploadProductFormImage = uploadProductFormImage;
+  window.boutiqueEditSet        = boutiqueEditSet;
+  window.boutiqueEditToggle     = boutiqueEditToggle;
+  window.vBoutiqueEditor        = vBoutiqueEditor;
 
   // Appliquer le thème AVANT le premier render pour éviter le flash
   if (typeof applyTheme === 'function') applyTheme();
