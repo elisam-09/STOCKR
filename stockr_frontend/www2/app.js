@@ -6822,6 +6822,73 @@ function vSova() {
 }
 
 // ── DETAIL ────────────────────────────────────
+// ── Carte "Historique du stock" : courbe d'aire reconstruite à partir des mouvements ──
+function _stockHistoryCard(art) {
+  const all = (S.stockMovements || []).filter(m =>
+    m.articleId === art.id || m.article === art.name || m.articleName === art.name
+  );
+  // Ventes de cet article (compte aussi comme sorties si non tracées en mouvement)
+  const artSales = (S.sales || []).filter(s => s.articleId === art.id || s.productName === art.name);
+  const soldTotal = artSales.reduce((s, v) => s + (v.qty || 0), 0);
+
+  if (all.length < 2) {
+    return `
+    <div class="card" style="margin-top:8px">
+      <div class="card-title">📈 Historique du stock</div>
+      <div style="display:flex;align-items:center;gap:10px;padding:8px 0">
+        <div style="flex:1">
+          <div style="font-size:12px;color:var(--text-3);line-height:1.5">Pas encore assez de mouvements pour tracer une courbe. Les réceptions et retraits apparaîtront ici au fil du temps.</div>
+        </div>
+      </div>
+      ${soldTotal > 0 ? `<div style="display:flex;gap:8px;margin-top:6px">
+        <div class="metric-card" style="flex:1"><div class="metric-val">${soldTotal}</div><div class="metric-lbl">Vendus (total)</div></div>
+        <div class="metric-card" style="flex:1"><div class="metric-val">${artSales.length}</div><div class="metric-lbl">Ventes</div></div>
+      </div>` : ''}
+    </div>`;
+  }
+
+  // Reconstruit la série du stock dans le temps en "défaisant" les mouvements (récents → anciens)
+  const recent = all.slice(0, 14);
+  let running = art.stock;
+  const series = [{ v: running, date: recent[0]?.date }];
+  for (const m of recent) {
+    const isIn = m.type === 'entry' || m.type === 'in';
+    running = isIn ? running - (m.qty || 0) : running + (m.qty || 0);
+    series.push({ v: Math.max(0, running), date: m.date });
+  }
+  series.reverse(); // chronologique
+  const vals = series.map(p => p.v);
+  const maxV = Math.max(...vals, art.min * 1.5, 1);
+  const W = 300, H = 90, n = vals.length;
+  const xy = vals.map((v, i) => [ (n === 1 ? 0 : (i / (n - 1)) * W), H - (v / maxV) * (H - 8) - 4 ]);
+  const line = xy.map(p => `${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ');
+  const area = `0,${H} ${line} ${W},${H}`;
+  const minY = art.min > 0 ? (H - (art.min / maxV) * (H - 8) - 4) : null;
+  const entries = all.filter(m => m.type === 'entry' || m.type === 'in').reduce((s, m) => s + (m.qty || 0), 0);
+  const exits   = all.filter(m => m.type === 'exit'  || m.type === 'out').reduce((s, m) => s + (m.qty || 0), 0);
+
+  return `
+    <div class="card" style="margin-top:8px">
+      <div class="card-title">📈 Historique du stock <span style="font-size:11px;font-weight:500;color:var(--text-3)">· ${all.length} mouvement${all.length>1?'s':''}</span></div>
+      <svg viewBox="0 0 ${W} ${H}" width="100%" height="92" preserveAspectRatio="none" style="display:block;margin:4px 0 10px">
+        <defs><linearGradient id="stockArea" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="var(--accent)" stop-opacity="0.28"/>
+          <stop offset="1" stop-color="var(--accent)" stop-opacity="0.02"/>
+        </linearGradient></defs>
+        ${minY !== null ? `<line x1="0" y1="${minY.toFixed(1)}" x2="${W}" y2="${minY.toFixed(1)}" stroke="var(--warning)" stroke-width="1.2" stroke-dasharray="4,3" opacity="0.7"/>` : ''}
+        <polygon points="${area}" fill="url(#stockArea)"/>
+        <polyline points="${line}" fill="none" stroke="var(--accent)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        ${xy.map(p => `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="2.4" fill="var(--accent)"/>`).join('')}
+      </svg>
+      <div style="display:flex;gap:8px">
+        <div class="metric-card" style="flex:1"><div class="metric-val" style="color:var(--success)">+${fmtQty(entries)}</div><div class="metric-lbl">Entrées</div></div>
+        <div class="metric-card" style="flex:1"><div class="metric-val" style="color:var(--danger)">−${fmtQty(exits)}</div><div class="metric-lbl">Sorties</div></div>
+        ${soldTotal > 0 ? `<div class="metric-card" style="flex:1"><div class="metric-val">${soldTotal}</div><div class="metric-lbl">Vendus</div></div>` : ''}
+      </div>
+      <button class="btn btn-ghost" style="margin-top:8px;font-size:12px" onclick="nav('stock-history')">Voir tous les mouvements →</button>
+    </div>`;
+}
+
 function vDetail() {
   const art = S.articles.find(a => a.id===S.selectedId);
   if (!art) { nav('pantry'); return ''; }
@@ -6845,7 +6912,9 @@ function vDetail() {
   <div class="sub-hero">
     <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('pantry')">${IC.left}</button>
     <div style="display:flex;align-items:center;gap:14px">
-      <div style="width:56px;height:56px;border-radius:14px;background:var(--gray-8);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:var(--white);flex-shrink:0">${initials(art.name)}</div>
+      ${art.image
+        ? `<img src="${art.image}" alt="" style="width:56px;height:56px;border-radius:14px;object-fit:cover;flex-shrink:0;border:2px solid rgba(255,255,255,.25);box-shadow:0 4px 12px rgba(0,0,0,.2)">`
+        : `<div style="width:56px;height:56px;border-radius:14px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:var(--white);flex-shrink:0">${initials(art.name)}</div>`}
       <div>
         <div style="font-size:22px;font-weight:800;color:var(--white)">${art.name}</div>
         <span class="status ${st.cls}" style="margin-top:6px;display:inline-flex">${st.icon} ${st.label}</span>
@@ -6863,6 +6932,8 @@ function vDetail() {
         <div class="gauge-lbl">${art.min>0?`Seuil minimum : ${art.min} ${art.unit}`:'Seuil non défini — sera calculé automatiquement'}</div>
       </div>
     </div>
+
+    ${_stockHistoryCard(art)}
 
     <div class="card" style="margin-top:8px">
       <div class="card-title">${t('editStock')}</div>
