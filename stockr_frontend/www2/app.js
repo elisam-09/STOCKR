@@ -7,19 +7,25 @@
 const IC = {
   sova: `<svg width="22" height="22" viewBox="0 0 466 466" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M139.8,45c4.143,0,7.5-3.357,7.5-7.5s-3.357-7.5-7.5-7.5c-12.253,0-23.152,5.907-30,15.023C102.953,35.907,92.053,30,79.8,30c-4.143,0-7.5,3.357-7.5,7.5s3.357,7.5,7.5,7.5c12.406,0,22.5,10.094,22.5,22.5c0,4.143,3.357,7.5,7.5,7.5s7.5-3.357,7.5-7.5C117.3,55.094,127.394,45,139.8,45z"/><path d="M422.411,424.297L200.338,96.142c-5.44-8.039-13.984-14.288-24.005-17.705c0.642-12.645,0.967-26.383,0.967-40.937v-30c0-4.143-3.357-7.5-7.5-7.5h-120c-4.143,0-7.5,3.357-7.5,7.5v30c0,57.634,5.026,100.198,15.819,133.955c11.204,35.041,28.415,59.516,45.405,80.706c3.173,5.901,6.513,11.827,9.749,17.563c18.762,33.257,38.02,67.4,45.635,128.945c0.011,0.503,0.07,0.993,0.176,1.467c1.819,15.173,2.938,31.993,3.171,50.864h-52.454c-4.143,0-7.5,3.357-7.5,7.5s3.357,7.5,7.5,7.5h60h60c4.143,0,7.5-3.357,7.5-7.5c0-19.311-2.089-36.706-5.754-52.5h20.321c4.143,0,7.5-3.357,7.5-7.5v-65.549c0-4.143-3.357-7.5-7.5-7.5c-4.143,0-7.5,3.357-7.5,7.5V391h-16.913c-16.582-52.774-51.15-86.389-80.492-114.912c-11.674-11.348-22.7-22.066-31.316-32.786c-0.024-0.03-0.048-0.06-0.072-0.09c-0.005-0.006-0.01-0.013-0.016-0.02C76.087,194.048,57.299,150.686,57.299,37.5V15h105v22.5c0,16.614-0.43,32.124-1.277,46.099c-0.225,3.711,2.303,7.027,5.941,7.793c8.797,1.853,16.63,6.771,20.952,13.157l133.232,196.875c-6.405,0.715-12.873,1.077-19.335,1.077c-94.841,0-172-77.159-172-172c0-4.143-3.357-7.5-7.5-7.5s-7.5,3.357-7.5,7.5c0,103.112,83.888,187,187,187c9.625,0,19.265-0.744,28.726-2.201l79.451,117.404c2.321,3.432,6.984,4.331,10.414,2.008C423.834,432.39,424.733,427.727,422.411,424.297z"/></svg>`,
   // ── Logo Spectra — prisme spectral : triangle + faisceau décomposé + œil ──
+  // Couleurs solides (pas de defs/gradient → aucun conflit d'ID si inséré plusieurs fois)
   spectra: `<svg width="22" height="22" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <linearGradient id="spectraGrad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
-        <stop offset="0" stop-color="#a78bfa"/><stop offset=".55" stop-color="#7C3AED"/><stop offset="1" stop-color="#4F46E5"/>
-      </linearGradient>
-    </defs>
-    <polygon points="24,6 41,38 7,38" fill="none" stroke="url(#spectraGrad)" stroke-width="3" stroke-linejoin="round"/>
-    <line x1="2" y1="24" x2="17.5" y2="24" stroke="url(#spectraGrad)" stroke-width="2.6" stroke-linecap="round"/>
-    <line x1="29" y1="20" x2="45" y2="14" stroke="#a78bfa" stroke-width="2.4" stroke-linecap="round" opacity=".95"/>
-    <line x1="30.5" y1="25" x2="46" y2="24" stroke="#7C3AED" stroke-width="2.4" stroke-linecap="round"/>
-    <line x1="29.5" y1="30" x2="45" y2="34" stroke="#4F46E5" stroke-width="2.4" stroke-linecap="round" opacity=".95"/>
-    <circle cx="23.5" cy="29.5" r="4.2" fill="none" stroke="url(#spectraGrad)" stroke-width="2.4"/>
-    <circle cx="23.5" cy="29.5" r="1.5" fill="#7C3AED"/>
+    <polygon points="24,7 40,37 8,37" fill="rgba(124,58,237,0.10)" stroke="#7C3AED" stroke-width="3.2" stroke-linejoin="round"/>
+    <line x1="3" y1="24" x2="18" y2="24" stroke="#a78bfa" stroke-width="3.2" stroke-linecap="round"/>
+    <line x1="29" y1="20" x2="46" y2="13" stroke="#f0abfc" stroke-width="2.8" stroke-linecap="round"/>
+    <line x1="30.5" y1="25" x2="47" y2="24" stroke="#a78bfa" stroke-width="2.8" stroke-linecap="round"/>
+    <line x1="29.5" y1="30" x2="46" y2="35" stroke="#6366f1" stroke-width="2.8" stroke-linecap="round"/>
+    <circle cx="23.5" cy="28.5" r="4.6" fill="#fff" stroke="#7C3AED" stroke-width="2.6"/>
+    <circle cx="23.5" cy="28.5" r="1.7" fill="#7C3AED"/>
+  </svg>`,
+  // Variante monochrome blanche (pour fonds colorés/dégradés)
+  spectraWhite: `<svg width="22" height="22" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <polygon points="24,7 40,37 8,37" fill="rgba(255,255,255,0.12)" stroke="#fff" stroke-width="3.2" stroke-linejoin="round"/>
+    <line x1="3" y1="24" x2="18" y2="24" stroke="#fff" stroke-width="3.2" stroke-linecap="round"/>
+    <line x1="29" y1="20" x2="46" y2="13" stroke="#f0abfc" stroke-width="2.8" stroke-linecap="round"/>
+    <line x1="30.5" y1="25" x2="47" y2="24" stroke="#fff" stroke-width="2.8" stroke-linecap="round"/>
+    <line x1="29.5" y1="30" x2="46" y2="35" stroke="#c4b5fd" stroke-width="2.8" stroke-linecap="round"/>
+    <circle cx="23.5" cy="28.5" r="4.6" fill="rgba(255,255,255,0.25)" stroke="#fff" stroke-width="2.6"/>
+    <circle cx="23.5" cy="28.5" r="1.7" fill="#fff"/>
   </svg>`,
   // ── Logo BARO — hexagone + B stylisé (remplace l'ancien logo S) ──
   baro:     `<svg width="28" height="28" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"><polygon points="24,4 42,14 42,34 24,44 6,34 6,14" fill="none"/><g fill="currentColor" stroke="none"><rect x="15" y="14" width="5" height="20" rx="1"/><path d="M20 14 h7 a6 6 0 0 1 6 6 v0 a6 6 0 0 1 -6 6 h-7 z"/><path d="M20 26 h8 a6 6 0 0 1 6 6 v0 a6 6 0 0 1 -6 6 h-8 z"/></g></svg>`,
@@ -5435,7 +5441,7 @@ function vHome() {
       <svg class="agent-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c9a96e" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
     </div>
     <div class="agent-card agent-spectra" onclick="nav('spectra')">
-      <div class="agent-icon agent-icon-spectra">${IC.spectra}</div>
+      <div class="agent-icon agent-icon-spectra">${IC.spectraWhite}</div>
       <div class="agent-info">
         <div class="agent-name agent-name-spectra">Spectra</div>
         <div class="agent-sub">Scanner IA · audit automatique du stock</div>
@@ -7938,7 +7944,7 @@ function vSpectra() {
       <button class="back-btn" onclick="nav('home')" style="position:absolute;top:16px;left:16px;color:#fff;z-index:3">${IC.left}</button>
       <div class="spectra-badge"><div class="spectra-badge-dot"></div> SPECTRA IA</div>
       <div class="spectra-logo-icon" style="filter:drop-shadow(0 4px 14px rgba(167,139,250,.45))">
-        ${IC.spectra.replace('width="22" height="22"', 'width="34" height="34"')}
+        ${IC.spectraWhite.replace('width="22" height="22"', 'width="34" height="34"')}
       </div>
       <div class="spectra-title">${t('spectraTitle')}</div>
       <div class="spectra-sub">${t('spectraScanSub')}</div>
@@ -8381,6 +8387,46 @@ const MOBILENET_FR = {
   'binder':'Classeur', 'envelope':'Enveloppe', 'notebook computer':'PC portable',
   'wig':'Perruque', 'necklace':'Collier', 'gasmask':'Masque',
 };
+
+// Classification MobileNet sur l'IMAGE ENTIÈRE → reconnaît n'importe quel produit
+// même quand COCO-SSD ne trouve aucune boîte (objet hors des 80 classes COCO).
+async function _classifyFullImage(img){
+  let mn;
+  try { mn = await loadMobileNet(); } catch(e){ return null; }
+  try {
+    const preds = await mn.classify(img, 5);
+    if (!preds || !preds.length) return null;
+    const top = preds[0];
+    const conf = Math.round((top.probability || 0) * 100);
+    if (conf < 18) return null; // trop incertain
+    const rawCls = (top.className || '').split(',')[0].trim().toLowerCase();
+    const frName = MOBILENET_FR[rawCls] || (rawCls ? rawCls.charAt(0).toUpperCase() + rawCls.slice(1) : 'Produit');
+    const imgW = img.width || img.naturalWidth || img.videoWidth || 300;
+    const imgH = img.height || img.naturalHeight || img.videoHeight || 300;
+    let quality = {};
+    try { quality = _analyzeImageQuality(img, [0, 0, imgW, imgH]); } catch(_){}
+    // Alternatives lisibles (2e et 3e hypothèses) pour aider l'utilisateur à corriger
+    const alts = preds.slice(1, 3).map(p => {
+      const c = (p.className || '').split(',')[0].trim().toLowerCase();
+      return MOBILENET_FR[c] || (c ? c.charAt(0).toUpperCase() + c.slice(1) : '');
+    }).filter(Boolean);
+    return {
+      detected_name: frName,
+      matched_name:  frName,
+      matched_id:    null,
+      quantity:      1,
+      confidence:    conf,
+      fine_class:    rawCls,
+      fine_confidence: conf,
+      refined_by:    'MobileNet',
+      alternatives:  alts,
+      boxes:         [[0, 0, imgW, imgH]],
+      quality_score: quality.score,
+      damage_flags:  quality.flags || [],
+      _fullframe:    true,
+    };
+  } catch(e){ return null; }
+}
 
 // Affine les détections génériques avec MobileNet (classification fine sur le crop)
 async function _refineWithMobileNet(detections, img){
@@ -10376,7 +10422,13 @@ async function spectraDetectFromImage(img, opts){
   const predictions = await model.detect(img, 20);
   const filtered = predictions.filter(p => (p.score || 0) >= 0.4);
   if (opts && opts.fast) {
-    return _groupPredictionsByClass(filtered).map(_sanitizeCocoDetection);
+    const fastDet = _groupPredictionsByClass(filtered).map(_sanitizeCocoDetection);
+    // Même en mode rapide : si COCO ne voit rien, on classe l'image entière
+    if (fastDet.length === 0) {
+      const ff = await _classifyFullImage(img);
+      if (ff) return [ff];
+    }
+    return fastDet;
   }
   // Mode précision maximale : OCR + mémoire + détection dommages
   let detections;
@@ -10389,6 +10441,15 @@ async function spectraDetectFromImage(img, opts){
   detections = detections.map(_sanitizeCocoDetection);
   // Couche 2 : classification fine MobileNet (1000 classes) sur chaque objet
   try { detections = await _refineWithMobileNet(detections, img); } catch(e){}
+  // ── FALLBACK UNIVERSEL : COCO n'a rien détecté → MobileNet sur l'image entière ──
+  // Garantit que Spectra reconnaît n'importe quel produit photographié (1000 classes).
+  if (detections.length === 0) {
+    const ff = await _classifyFullImage(img);
+    if (ff) {
+      showToast(`🔍 Spectra : "${ff.detected_name}" reconnu`, 'success');
+      return [ff];
+    }
+  }
   // Ajouter analyse qualité/dommages pour chaque détection
   try {
     for (const d of detections) {
@@ -10774,6 +10835,12 @@ async function _onBarcodeDetected(code, format){
 async function spectraOnFile(input) {
   const file = input.files[0];
   if (!file) return;
+
+  // Capture une miniature pour l'écran d'analyse cinématique (scan-line sur la vraie photo)
+  try {
+    const dataUrl = await new Promise((res) => { const r = new FileReader(); r.onload = e => res(e.target.result); r.onerror = () => res(''); r.readAsDataURL(file); });
+    S.spectra.capturedImage = dataUrl;
+  } catch(_) { S.spectra.capturedImage = ''; }
 
   S.spectra.step = 'loading';
   render();
@@ -22958,12 +23025,35 @@ function vSpectraEnhanced() {
   const scanHistory = S.spectraScanHistory || [];
 
   if (S.spectra.step === 'loading') {
+    const capturedImg = S.spectra.capturedImage || '';
+    const layers = [
+      { ic:'🎯', label:'Détection des objets', sub:'COCO-SSD' },
+      { ic:'🧠', label:'Classification fine', sub:'MobileNet · 1000 classes' },
+      { ic:'📖', label:'Lecture des étiquettes', sub:'OCR marques & labels' },
+      { ic:'🔖', label:'Codes-barres & base produits', sub:'EAN · OpenFoodFacts' },
+    ];
     return `
-    <div class="sub-hero spectra-hero-grad"><div class="page-header-row"><button class="back-btn-dark" onclick="spectraReset();nav('more')">${IC.left}</button><div style="flex:1"><div class="sub-hero-title">Spectra AI</div><div class="sub-hero-sub">${t('spectraAnalyzing')}</div></div></div></div>
-    <div class="container" style="text-align:center;padding:60px 24px">
-      <div class="spectra-loading-ring">${IC.camera}</div>
-      <div style="font-size:16px;font-weight:800;letter-spacing:.3px">${t('spectraAnalyzing')}</div>
-      <div style="font-size:13px;color:var(--text-3);margin-top:6px;font-weight:500">${S.spectraMode==='yolo'?'Détection YOLO — comptage automatique…':S.spectraMode==='barcode'?'Recherche codes-barres…':'Analyse IA en cours…'}</div>
+    <div class="sub-hero spectra-hero-grad"><div class="page-header-row"><button class="back-btn-dark" onclick="spectraReset();nav('more')">${IC.left}</button><div style="flex:1"><div class="sub-hero-title">Spectra analyse…</div><div class="sub-hero-sub">Vision multi-couches en cours</div></div></div></div>
+    <div class="container" style="padding:20px 18px">
+      <div class="spectra-scanstage">
+        ${capturedImg ? `<img src="${capturedImg}" class="spectra-scanstage-img" alt="">` : `<div class="spectra-scanstage-ph">${IC.spectraWhite.replace('width="22" height="22"','width="56" height="56"')}</div>`}
+        <div class="spectra-scanline"></div>
+        <div class="spectra-grid-overlay"></div>
+        <span class="corner tl"></span><span class="corner tr"></span>
+        <span class="corner bl"></span><span class="corner br"></span>
+      </div>
+      <div style="text-align:center;margin:18px 0 6px">
+        <div style="font-size:17px;font-weight:800;letter-spacing:.2px">${S.spectraMode==='yolo'?'Comptage automatique…':S.spectraMode==='barcode'?'Recherche du code-barres…':'Identification du produit…'}</div>
+        <div style="font-size:12px;color:var(--text-3);margin-top:4px;font-weight:500">Spectra reconnaît n'importe quel produit photographié</div>
+      </div>
+      <div class="spectra-layers">
+        ${layers.map((l,i)=>`
+        <div class="spectra-layer" style="animation-delay:${i*0.5}s">
+          <div class="spectra-layer-ic">${l.ic}</div>
+          <div style="flex:1"><div class="spectra-layer-lbl">${l.label}</div><div class="spectra-layer-sub">${l.sub}</div></div>
+          <div class="spectra-layer-spin"></div>
+        </div>`).join('')}
+      </div>
     </div>`;
   }
 
@@ -23085,7 +23175,7 @@ function vSpectraEnhanced() {
   <div class="sub-hero spectra-hero-grad">
     <div class="page-header-row" style="margin-bottom:14px">
       <button class="back-btn-dark" onclick="nav('more')">${IC.left}</button>
-      <div style="width:44px;height:44px;border-radius:13px;background:rgba(255,255,255,.10);border:1px solid rgba(167,139,250,.35);display:flex;align-items:center;justify-content:center;flex-shrink:0;filter:drop-shadow(0 4px 12px rgba(124,58,237,.4))">${IC.spectra.replace('width="22" height="22"','width="28" height="28"')}</div>
+      <div style="width:44px;height:44px;border-radius:13px;background:rgba(255,255,255,.10);border:1px solid rgba(167,139,250,.35);display:flex;align-items:center;justify-content:center;flex-shrink:0;filter:drop-shadow(0 4px 12px rgba(124,58,237,.4))">${IC.spectraWhite.replace('width="22" height="22"','width="28" height="28"')}</div>
       <div style="flex:1"><div class="sub-hero-title">Spectra AI</div><div class="sub-hero-sub">Vision multi-couches · COCO + MobileNet + OCR + EAN</div></div>
     </div>
   </div>
