@@ -10305,47 +10305,171 @@ async function _geminiListModels(apiKey) {
     return out;
   }
 }
+// ── Prompt partagé par tous les fournisseurs IA vision ──
+const _SPECTRA_PROMPT = `You are Spectra, an elite product recognition AI for African retail SMBs (BARO app).
+Analyze this image like Google Lens and identify EVERY commercial product.
+
+CRITICAL RULES:
+- Use PRECISE commercial names, brand + model + variant + size/capacity.
+- Smartphones: "Apple iPhone 17 Pro Max", "Samsung Galaxy S26 Ultra", "Google Pixel 9 Pro".
+- Gaming: "Sony PlayStation 5", "Xbox Series X", "Nintendo Switch OLED", "Manette DualSense".
+- Laptops: "HP EliteBook 840 G11", "Apple MacBook Air M4", "Dell XPS 15".
+- Food/Drink: "Nescafé Classic 200g", "Coca-Cola 33cl", "Huile Dinor 1L", "Riz Maman 5kg".
+- Hygiene: "Colgate Total 75ml", "Omo Matic 2kg", "Savon Fanico".
+- Clothing/shoes: "Nike Air Force 1 Low", "Levi's 501".
+- NEVER say "remote/Télécommande" for a smartphone. A device with a screen = smartphone.
+- Local African brands: Fanico, Candia, Kirène, Awa, SOSUCO, Maggi, Dinor, Riz Maman.
+
+For EACH product return:
+1. exact_name (brand+model+variant+capacity)
+2. brand
+3. category: one of [smartphone, laptop, tablet, watch, audio, photo, tv, appliance, gaming, drink, food, hygiene, household, beauty, clothing, shoes, bag, tool, stationery, health, toy, auto, other]
+4. quantity (integer visible)
+5. bbox [x,y,width,height] as % 0-100
+6. confidence 0-100
+
+Return STRICTLY a valid JSON array only, no markdown:
+[{"exact_name":"...","brand":"...","category":"gaming","quantity":1,"bbox":[5,10,40,80],"confidence":92}]`;
+
+// Convertit une image/canvas/vidéo en base64 JPEG + dimensions
+function _spectraImgToBase64(imgOrCanvas) {
+  const canvas = imgOrCanvas instanceof HTMLCanvasElement
+    ? imgOrCanvas
+    : (() => {
+        const c = document.createElement('canvas');
+        c.width = imgOrCanvas.naturalWidth || imgOrCanvas.videoWidth || imgOrCanvas.width;
+        c.height = imgOrCanvas.naturalHeight || imgOrCanvas.videoHeight || imgOrCanvas.height;
+        c.getContext('2d').drawImage(imgOrCanvas, 0, 0);
+        return c;
+      })();
+  return { base64: canvas.toDataURL('image/jpeg', 0.85).split(',')[1], w: canvas.width, h: canvas.height };
+}
+
+// Normalise la sortie JSON de n'importe quelle IA → format détection Spectra
+function _normalizeAIProducts(products, imgW, imgH, providerLabel) {
+  const norm = s => (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+  return products.map((p, i) => {
+    const name = p.exact_name || p.name || 'Produit';
+    const nn = norm(name);
+    const match = (S.articles||[]).find(a => norm(a.name) === nn)
+               || (S.articles||[]).find(a => nn.includes(norm(a.name)) || norm(a.name).includes(nn.split(' ')[0]));
+    return {
+      id: `ai_${Date.now()}_${i}`,
+      cocoClass: p.category || 'object',
+      detected_name: name,
+      matched_name: match ? match.name : name,
+      matched_id: match ? match.id : null,
+      brand: p.brand || '',
+      category: p.category || 'other',
+      quantity: p.quantity || 1,
+      confidence: p.confidence || 88,
+      refined_by: providerLabel || 'Spectra AI',
+      ai_powered: true,
+      boxes: [[ (p.bbox?.[0]||0)*imgW/100, (p.bbox?.[1]||0)*imgH/100, (p.bbox?.[2]||50)*imgW/100, (p.bbox?.[3]||50)*imgH/100 ]],
+    };
+  });
+}
+
+// Extrait un tableau JSON d'un texte de réponse LLM (gère ```json ... ```)
+function _extractJSONArray(text) {
+  if (!text) return null;
+  const m = text.match(/\[[\s\S]*\]/);
+  if (!m) return null;
+  try { const a = JSON.parse(m[0]); return Array.isArray(a) ? a : null; } catch(_) { return null; }
+}
+
+// ── Fournisseurs OpenAI-compatibles (Groq, OpenRouter) ──
+const _AI_PROVIDERS = {
+  groq: {
+    label: 'Groq (Llama Vision)',
+    url: 'https://api.groq.com/openai/v1/chat/completions',
+    models: ['meta-llama/llama-4-scout-17b-16e-instruct', 'meta-llama/llama-4-maverick-17b-128e-instruct'],
+    detect: k => /^gsk_/.test(k),
+  },
+  openrouter: {
+    label: 'OpenRouter',
+    url: 'https://openrouter.ai/api/v1/chat/completions',
+    models: ['meta-llama/llama-3.2-11b-vision-instruct:free', 'qwen/qwen2.5-vl-72b-instruct:free', 'google/gemini-2.0-flash-exp:free'],
+    detect: k => /^sk-or-/.test(k),
+  },
+};
+
+async function _visionOpenAICompat(providerId, apiKey, imgOrCanvas) {
+  const prov = _AI_PROVIDERS[providerId];
+  if (!prov) return null;
+  const { base64, w, h } = _spectraImgToBase64(imgOrCanvas);
+  const payloadBase = {
+    messages: [{
+      role: 'user',
+      content: [
+        { type: 'text', text: _SPECTRA_PROMPT },
+        { type: 'image_url', image_url: { url: 'data:image/jpeg;base64,' + base64 } },
+      ],
+    }],
+    temperature: 0.2, max_tokens: 1500,
+  };
+  let lastErr = '';
+  for (const model of prov.models) {
+    try {
+      const resp = await fetch(prov.url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
+        body: JSON.stringify({ ...payloadBase, model }),
+      });
+      if (resp.ok) {
+        const data = await resp.json();
+        const text = data?.choices?.[0]?.message?.content || '';
+        const products = _extractJSONArray(text);
+        if (products && products.length) return _normalizeAIProducts(products, w, h, prov.label);
+        lastErr = 'Aucun produit détecté.';
+        continue;
+      }
+      let msg = 'Erreur ' + resp.status;
+      try { const e = await resp.json(); msg = e?.error?.message || msg; } catch(_){}
+      lastErr = msg;
+      if (resp.status === 401) { lastErr = 'Clé ' + prov.label + ' invalide.'; break; }
+    } catch(e) { lastErr = 'Réseau : ' + (e.message || e); }
+  }
+  _spectraLastAiError = lastErr || (prov.label + ' n\'a pas répondu.');
+  return null;
+}
+
+// ── Orchestrateur : essaie toutes les IA configurées ──
+function _spectraConfiguredProviders() {
+  const out = [];
+  const groq = (localStorage.getItem('stockr_groq_key')||'').trim();
+  const or   = (localStorage.getItem('stockr_openrouter_key')||'').trim();
+  const gem  = (localStorage.getItem('stockr_gemini_key')||'').trim();
+  if (groq) out.push('groq');
+  if (or)   out.push('openrouter');
+  if (gem)  out.push('gemini');
+  return out;
+}
+function _spectraHasAI() { return _spectraConfiguredProviders().length > 0; }
+
+async function _spectraVisionAI(imgOrCanvas) {
+  const provs = _spectraConfiguredProviders();
+  if (!provs.length) return null;
+  _spectraLastAiError = null;
+  for (const p of provs) {
+    try {
+      let res = null;
+      if (p === 'gemini') res = await _spectraGeminiVision(imgOrCanvas);
+      else res = await _visionOpenAICompat(p, localStorage.getItem('stockr_' + p + '_key').trim(), imgOrCanvas);
+      if (res && res.length) { _spectraLastAiError = null; return res; }
+    } catch(e) { _spectraLastAiError = e.message || String(e); }
+  }
+  return null;
+}
+
 async function _spectraGeminiVision(imgOrCanvas) {
   const apiKey = localStorage.getItem('stockr_gemini_key');
   if (!apiKey) return null;
   try {
-    // Convert image to base64
-    const canvas = imgOrCanvas instanceof HTMLCanvasElement
-      ? imgOrCanvas
-      : (() => {
-          const c = document.createElement('canvas');
-          c.width = imgOrCanvas.naturalWidth || imgOrCanvas.videoWidth || imgOrCanvas.width;
-          c.height = imgOrCanvas.naturalHeight || imgOrCanvas.videoHeight || imgOrCanvas.height;
-          c.getContext('2d').drawImage(imgOrCanvas, 0, 0);
-          return c;
-        })();
-    const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
-    const base64 = dataUrl.split(',')[1];
-
-    const prompt = `You are Spectra, an elite product recognition AI for African retail SMBs (BARO app).
-Analyze this image like Google Lens / Gemini Vision and identify EVERY commercial product.
-
-CRITICAL RULES:
-- Use PRECISE commercial names, brand + model + variant + size/capacity.
-- Smartphones: "Apple iPhone 17 Pro Max Titane Clair", "Samsung Galaxy S26 Ultra", "Google Pixel 9 Pro".
-- Laptops: "HP EliteBook 840 G11", "Apple MacBook Air M4 13.6", "Dell XPS 15".
-- Food/Drink: "Nescafé Classic 200g bocal", "Coca-Cola Canette 33cl", "Huile Dinor 1L", "Riz Maman 5kg".
-- Hygiene: "Colgate Total 75ml", "Omo Matic 2kg", "Pampers Size 4 (62 unités)", "Savon Fanico".
-- Electronics accessories: "Clé USB SanDisk Extreme Pro 128Go".
-- Clothing/shoes: "Nike Air Force 1 Low Blanches", "Levi's 501 Original", "Maillot CI FIF".
-- NEVER say "Télécommande" for smartphones. A rectangular device with a screen or camera module = smartphone.
-- Handle local African brands: Fanico, Candia, Kirène, Awa, SOSUCO, Maggi Star, Uncle Sam, Nescafé.
-
-For EACH product detected, return:
-1. exact_name: full precise name incl. brand, model, variant, capacity
-2. brand: brand only
-3. category: one of [smartphone, laptop, tablet, watch, audio, photo, tv, appliance, gaming, drink, food, hygiene, household, beauty, clothing, shoes, bag, tool, stationery, health, toy, auto, other]
-4. quantity: integer count visible
-5. bbox: [x, y, width, height] as % 0-100 of full image
-6. confidence: 0-100
-
-Return STRICTLY a valid JSON array only, no markdown, no comments:
-[{"exact_name":"...","brand":"...","category":"smartphone","quantity":1,"bbox":[5,10,40,80],"confidence":92}]`;
+    const _img = _spectraImgToBase64(imgOrCanvas);
+    const base64 = _img.base64;
+    const canvas = { width: _img.w, height: _img.h };
+    const prompt = _SPECTRA_PROMPT;
 
     _spectraLastAiError = null;
     const body = JSON.stringify({
@@ -10578,8 +10702,8 @@ function _sanitizeCocoDetection(d){
 
 // ── Détection à partir d'une image HTMLImageElement (avec OCR) ──
 async function spectraDetectFromImage(img, opts){
-  // PRIORITÉ 1 : Gemini Vision IA si clé API disponible (reconnaissance précise)
-  const aiResults = await _spectraGeminiVision(img);
+  // PRIORITÉ 1 : IA Vision (Groq / OpenRouter / Gemini) si une clé est configurée
+  const aiResults = await _spectraVisionAI(img);
   if (aiResults && aiResults.length > 0) {
     showToast(`🤖 Spectra AI : ${aiResults.length} produit(s) reconnu(s)`, 'success');
     return aiResults;
@@ -13993,82 +14117,97 @@ function deleteTeamMember(id) {
 // ── AUDIT LOG VIEW ─────────────────────────────
 // ── SPECTRA AI SETUP (Gemini Vision) ─────────────
 function vSpectraAISetup() {
-  const key = localStorage.getItem('stockr_gemini_key') || '';
-  const model = localStorage.getItem('stockr_gemini_model') || 'gemini-2.0-flash';
-  const isActive = !!key;
+  const groq = localStorage.getItem('stockr_groq_key') || '';
+  const orouter = localStorage.getItem('stockr_openrouter_key') || '';
+  const gemini = localStorage.getItem('stockr_gemini_key') || '';
+  const active = _spectraConfiguredProviders();
+  const isActive = active.length > 0;
+  const provName = { groq:'Groq (Llama Vision)', openrouter:'OpenRouter', gemini:'Google Gemini' };
+  const providers = [
+    { id:'groq', name:'Groq', sub:'Llama 4 Vision · gratuit, mondial, sans carte', badge:'RECOMMANDÉ', color:'#F55036', url:'https://console.groq.com/keys', prefix:'gsk_...', key:groq, note:'✅ Marche partout (Afrique incluse), aucune carte requise' },
+    { id:'openrouter', name:'OpenRouter', sub:'Plusieurs modèles vision gratuits', badge:'', color:'#6566F1', url:'https://openrouter.ai/keys', prefix:'sk-or-...', key:orouter, note:'Modèles :free, sans carte' },
+    { id:'gemini', name:'Google Gemini', sub:'Vision Google · gratuit (selon pays)', badge:'', color:'#4285F4', url:'https://aistudio.google.com/app/apikey', prefix:'AIza...', key:gemini, note:'⚠ Palier gratuit indisponible dans certains pays' },
+  ];
   return `
-  <div class="sub-hero" style="background:linear-gradient(135deg,#4285F4,#7C3AED)">
+  <div class="sub-hero" style="background:linear-gradient(135deg,#7C3AED,#4285F4)">
     <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('spectra')">${IC.left}</button>
-    <div class="sub-hero-title">✨ Spectra AI (Gemini Vision)</div>
-    <div class="sub-hero-sub">${isActive ? '🟢 IA activée — reconnaissance précise' : '⚪ Activez pour reconnaissance précise'}</div>
+    <div class="sub-hero-title">✨ Spectra AI — Vision</div>
+    <div class="sub-hero-sub">${isActive ? '🟢 Activé : ' + active.map(p=>provName[p]).join(', ') : '⚪ Choisis UNE IA gratuite ci-dessous'}</div>
   </div>
   <div class="container">
-
     <div class="card" style="margin-bottom:12px;border-left:4px solid ${isActive?'var(--success)':'var(--accent)'}">
-      <div style="font-size:15px;font-weight:800;color:var(--text-1);margin-bottom:8px">
-        ${isActive ? '✅ Spectra AI actif' : '🚀 Activer Spectra AI'}
-      </div>
-      <div style="font-size:13px;color:var(--text-2);line-height:1.5;margin-bottom:12px">
-        Spectra AI utilise <strong>Google Gemini 2.0 Vision</strong> pour reconnaître les produits avec une précision extrême (modèles exacts : iPhone 17 Pro Max, MacBook Air M4, Nescafé 200g, etc.).
-      </div>
-      <div style="background:var(--gray-1);padding:12px;border-radius:10px;font-size:12px;color:var(--text-2);line-height:1.6">
-        <strong>Comment ça marche :</strong><br>
-        1. Obtenez une clé API gratuite sur <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--accent);font-weight:700">Google AI Studio</a> (gratuit à vie, 1500 requêtes/jour)<br>
-        2. Collez-la ici<br>
-        3. Spectra reconnaît les produits avec leur nom exact<br>
-        <strong style="color:var(--success)">✨ Gratuit jusqu'à 1500 scans/jour</strong>
+      <div style="font-size:14px;font-weight:800;margin-bottom:6px">${isActive ? '✅ IA vision active' : '🚀 Active une IA pour reconnaître TOUT produit'}</div>
+      <div style="font-size:12.5px;color:var(--text-2);line-height:1.55">
+        Colle <strong>une seule clé</strong> (n'importe laquelle ci-dessous) — Spectra détecte automatiquement le fournisseur. Tu pourras alors scanner PS5, iPhone, cosmétiques, n'importe quoi par photo ou vidéo.
       </div>
     </div>
 
-    <div class="card" style="margin-bottom:12px">
-      <div class="card-title">🔑 Clé API Gemini</div>
-      <input id="gemini-key-input" class="input" type="password" placeholder="AIzaSyXXX..." value="${key}" autocomplete="off" style="font-family:monospace;font-size:14px !important">
-      <div style="font-size:11px;color:var(--text-3);margin-top:6px">🔒 Stockée uniquement sur votre appareil (localStorage)</div>
-
-      <div style="display:flex;gap:8px;margin-top:10px">
-        <button class="btn btn-ghost" style="flex:1" onclick="document.getElementById('gemini-key-input').type=document.getElementById('gemini-key-input').type==='password'?'text':'password'">👁️ Afficher / Masquer</button>
-        <button class="btn btn-primary" style="flex:1;background:#4285F4" onclick="saveGeminiKey()">💾 Enregistrer</button>
+    ${providers.map(p => `
+    <div class="card" style="margin-bottom:10px;border:1.5px solid ${p.key?'var(--success)':'var(--border)'}">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <div style="width:38px;height:38px;border-radius:10px;background:${p.color}1a;color:${p.color};display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;flex-shrink:0">${p.name.charAt(0)}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:14px;font-weight:800;display:flex;align-items:center;gap:6px">${p.name}${p.badge?`<span style="font-size:9px;font-weight:800;background:${p.color};color:#fff;padding:2px 7px;border-radius:5px">${p.badge}</span>`:''}${p.key?'<span style="font-size:9px;font-weight:800;background:var(--success);color:#fff;padding:2px 7px;border-radius:5px">✓ ACTIF</span>':''}</div>
+          <div style="font-size:11px;color:var(--text-3)">${p.sub}</div>
+        </div>
       </div>
-    </div>
+      <div style="font-size:11px;color:var(--text-2);margin-bottom:8px">${p.note} · <a href="${p.url}" target="_blank" style="color:${p.color};font-weight:700">Obtenir la clé →</a></div>
+      <input id="aikey-${p.id}" class="input" type="password" placeholder="${p.prefix}" value="${p.key}" autocomplete="off" style="font-family:monospace;font-size:13px !important">
+      <div style="display:flex;gap:6px;margin-top:8px">
+        <button class="btn btn-primary" style="flex:1;background:${p.color};border-color:${p.color};font-size:12px;padding:9px" onclick="saveAIKey('${p.id}')">💾 Enregistrer</button>
+        ${p.key?`<button class="btn btn-ghost" style="font-size:12px;padding:9px" onclick="testAIKey('${p.id}')">🧪 Tester</button>
+        <button class="btn btn-ghost" style="font-size:12px;padding:9px;color:var(--danger)" onclick="if(confirm('Supprimer cette clé ?')){localStorage.removeItem('stockr_${p.id}_key');showToast('Clé supprimée');render()}">🗑️</button>`:''}
+      </div>
+    </div>`).join('')}
 
-    <div class="card" style="margin-bottom:12px">
-      <div class="card-title">🎯 Modèle IA</div>
-      <select id="gemini-model-select" class="input" onchange="localStorage.setItem('stockr_gemini_model', this.value);showToast('Modèle mis à jour','success')">
-        <option value="gemini-2.0-flash" ${model==='gemini-2.0-flash'?'selected':''}>Gemini 2.0 Flash (⚡ Rapide, précis, gratuit)</option>
-        <option value="gemini-2.5-flash" ${model==='gemini-2.5-flash'?'selected':''}>Gemini 2.5 Flash (Plus récent)</option>
-        <option value="gemini-2.5-pro" ${model==='gemini-2.5-pro'?'selected':''}>Gemini 2.5 Pro (Ultra précis)</option>
-      </select>
-    </div>
-
-    ${isActive ? `
-    <button class="btn btn-ghost" style="width:100%;margin-bottom:10px" onclick="testGeminiKey()">🧪 Tester la clé (envoyer une image test)</button>
-    <button class="btn btn-ghost" style="width:100%;color:var(--danger);border-color:var(--danger)" onclick="if(confirm('Supprimer la clé API ?')){localStorage.removeItem('stockr_gemini_key');showToast('Clé supprimée','info');render()}">🗑️ Supprimer la clé</button>
-    ` : ''}
-
-    <div class="card" style="margin-top:14px;background:var(--gray-1);text-align:center;padding:16px">
+    <div class="card" style="margin-top:6px;background:var(--gray-1);text-align:center;padding:16px">
       <div style="font-size:12px;color:var(--text-2);line-height:1.6">
-        💡 <strong>Sans clé API</strong>, Spectra utilise la reconnaissance locale (COCO-SSD + OCR + dictionnaire de 300+ produits CI).<br>
-        <strong>Avec Gemini AI</strong>, la précision est proche de ChatGPT Vision.
+        💡 <strong>Sans clé</strong>, Spectra reconnaît hors-ligne via codes-barres + dictionnaire de 300+ produits locaux.<br>
+        <strong>Avec une IA</strong>, reconnaissance de n'importe quel produit comme Google Lens.
       </div>
+      <div style="font-size:11px;color:var(--text-3);margin-top:8px">🔒 Les clés restent uniquement sur ton appareil.</div>
     </div>
   </div>`;
 }
 
-function saveGeminiKey() {
-  const key = (document.getElementById('gemini-key-input')?.value || '').trim();
-  if (!key) {
-    showToast('Entrez une clé API', 'error');
-    return;
-  }
-  if (!/^AIza[0-9A-Za-z_-]{35,}/.test(key)) {
-    if (!confirm('Format de clé inhabituel (ne commence pas par AIza...). Continuer quand même ?')) return;
-  }
-  localStorage.setItem('stockr_gemini_key', key);
-  // Nouvelle clé → on oublie le modèle mémorisé et le cache pour re-découvrir
-  _geminiModelsCache = null;
-  try { localStorage.removeItem('stockr_gemini_model'); } catch(_){}
-  showToast('🤖 Spectra AI activé !', 'success');
+// Enregistre une clé IA (auto-détecte le bon fournisseur même si collée au mauvais endroit)
+function saveAIKey(providerId) {
+  let key = (document.getElementById('aikey-' + providerId)?.value || '').trim();
+  if (!key) { showToast('Colle une clé d\'abord', 'error'); return; }
+  // Auto-détection : si la clé correspond à un autre fournisseur, on corrige
+  let realProvider = providerId;
+  if (/^gsk_/.test(key)) realProvider = 'groq';
+  else if (/^sk-or-/.test(key)) realProvider = 'openrouter';
+  else if (/^AIza/.test(key)) realProvider = 'gemini';
+  localStorage.setItem('stockr_' + realProvider + '_key', key);
+  if (realProvider === 'gemini') { _geminiModelsCache = null; try { localStorage.removeItem('stockr_gemini_model'); } catch(_){} }
+  const names = { groq:'Groq', openrouter:'OpenRouter', gemini:'Gemini' };
+  showToast(`🤖 ${names[realProvider]} activé ! Teste la clé pour confirmer.`, 'success');
   render();
+}
+
+// Compat : ancien nom encore référencé ailleurs
+function saveGeminiKey() {
+  const el = document.getElementById('aikey-gemini') || document.getElementById('gemini-key-input');
+  if (el) { const v = el.value; localStorage.setItem('stockr_gemini_key', (v||'').trim()); _geminiModelsCache=null; try{localStorage.removeItem('stockr_gemini_model');}catch(_){} showToast('🤖 Gemini activé !','success'); render(); }
+}
+async function testAIKey(providerId) {
+  showToast('🧪 Test en cours…', 'info');
+  const canvas = document.createElement('canvas');
+  canvas.width = 240; canvas.height = 240;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#1a1a1a'; ctx.fillRect(0,0,240,240);
+  ctx.fillStyle = '#fff'; ctx.font = 'bold 40px sans-serif'; ctx.fillText('COLA', 55, 130);
+  const img = new Image(); img.src = canvas.toDataURL(); await new Promise(r => img.onload = r);
+  _spectraLastAiError = null;
+  let res = null;
+  try {
+    if (providerId === 'gemini') res = await _spectraGeminiVision(img);
+    else res = await _visionOpenAICompat(providerId, (localStorage.getItem('stockr_'+providerId+'_key')||'').trim(), img);
+  } catch(e) { _spectraLastAiError = e.message; }
+  if (res && res.length > 0) showToast('✅ Clé valide — IA opérationnelle !', 'success');
+  else if (_spectraLastAiError && /aucun produit|détecté aucun/i.test(_spectraLastAiError)) showToast('✅ Clé valide — l\'IA répond bien', 'success');
+  else showToast('❌ ' + (_spectraLastAiError || 'Échec — vérifie la clé'), 'error');
 }
 
 async function testGeminiKey() {
@@ -23665,7 +23804,7 @@ function vSpectraEnhanced() {
   }
 
   if (S.spectra.step === 'noresult') {
-    const hasAI = !!localStorage.getItem('stockr_gemini_key');
+    const hasAI = _spectraHasAI();
     return `
     <div class="sub-hero spectra-hero-grad"><div class="page-header-row"><button class="back-btn-dark" onclick="spectraReset();nav('more')">${IC.left}</button><div style="flex:1"><div class="sub-hero-title">Produit non reconnu</div><div class="sub-hero-sub">Spectra n'a pas pu l'identifier avec certitude</div></div></div></div>
     <div class="container" style="padding:18px">
@@ -23823,7 +23962,7 @@ function vSpectraEnhanced() {
   </div>
   <div class="container">
     ${(() => {
-      const aiOn = !!localStorage.getItem('stockr_gemini_key');
+      const aiOn = _spectraHasAI();
       if (aiOn) {
         return `
         <div class="spectra-ai-banner on" onclick="nav('spectra-ai-setup')">
@@ -23861,7 +24000,7 @@ function vSpectraEnhanced() {
       </div>`;
     })()}
 
-    <details class="spectra-tuto" ${localStorage.getItem('stockr_gemini_key')||localStorage.getItem('baro_spectra_tuto_seen')?'':'open'} ontoggle="if(this.open)localStorage.setItem('baro_spectra_tuto_seen','1')">
+    <details class="spectra-tuto" ${_spectraHasAI()||localStorage.getItem('baro_spectra_tuto_seen')?'':'open'} ontoggle="if(this.open)localStorage.setItem('baro_spectra_tuto_seen','1')">
       <summary class="spectra-tuto-sum">
         <span>📖 Comment ça marche ? <span style="font-weight:500;color:var(--text-3)">Activer Spectra en 2 min</span></span>
         <span class="spectra-tuto-chev">${IC.chevron}</span>
@@ -24482,6 +24621,8 @@ function __baroInit() {
   window.vSpectraAISetup    = vSpectraAISetup;
   window.saveGeminiKey      = saveGeminiKey;
   window.testGeminiKey      = testGeminiKey;
+  window.saveAIKey          = saveAIKey;
+  window.testAIKey          = testAIKey;
   window.vAppearance        = vAppearance;
   window.vSecurity          = vSecurity;
   window.v2FAVerify         = v2FAVerify;
