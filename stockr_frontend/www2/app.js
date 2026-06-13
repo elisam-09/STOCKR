@@ -4261,6 +4261,27 @@ function render() {
   });
 }
 
+// ── Count-up : anime les éléments [data-count] de 0 → valeur ──
+function __animateCountUps(root) {
+  try {
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    (root || document).querySelectorAll('[data-count]').forEach(el => {
+      const target = parseFloat(el.getAttribute('data-count'));
+      if (!isFinite(target) || target <= 0) return;
+      const suffix = el.getAttribute('data-count-suffix') || '';
+      const dur = Math.min(900, 400 + Math.log10(target + 1) * 120);
+      const start = performance.now();
+      const step = (now) => {
+        const p = Math.min(1, (now - start) / dur);
+        const eased = 1 - Math.pow(1 - p, 3); // ease-out cubic
+        el.textContent = fmt(Math.round(target * eased)) + suffix;
+        if (p < 1 && el.isConnected) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    });
+  } catch(_) {}
+}
+
 function _doRender() {
   const viewEl = $('view');
   const navEl  = $('nav');
@@ -4379,6 +4400,9 @@ function _doRender() {
   }
 
   if (S.view === 'financial') requestAnimationFrame(() => { renderRevenueChart(); renderProfitChart(); });
+
+  // Count-up des chiffres clés à l'entrée d'une vue (pas sur les re-renders)
+  if (viewChanged) __animateCountUps(viewEl);
 
   // Restore focus (capture précédente)
   __restoreUIState(snap);
@@ -5130,19 +5154,19 @@ function vHome() {
     </div>
     <div class="hero-stats">
       <div class="hero-stat">
-        <div class="hero-stat-val">${S.articles.length}</div>
+        <div class="hero-stat-val" data-count="${S.articles.length}">${S.articles.length}</div>
         <div class="hero-stat-lbl">${isReseller?'Produits':t('articles')}</div>
       </div>
       <div class="hero-stat ${low.length>0?'warn':''}">
-        <div class="hero-stat-val">${low.length}</div>
+        <div class="hero-stat-val" data-count="${low.length}">${low.length}</div>
         <div class="hero-stat-lbl">${t('alerts')}</div>
       </div>
       <div class="hero-stat">
-        <div class="hero-stat-val">${fmt(todayCA)}</div>
+        <div class="hero-stat-val" data-count="${todayCA}">${fmt(todayCA)}</div>
         <div class="hero-stat-lbl">${t('caToday')}</div>
       </div>
       <div class="hero-stat">
-        <div class="hero-stat-val" style="color:#34d399">${fmt(todayProfit)}</div>
+        <div class="hero-stat-val" style="color:#34d399" data-count="${todayProfit}">${fmt(todayProfit)}</div>
         <div class="hero-stat-lbl">${t('profitToday')}</div>
       </div>
     </div>
@@ -6050,7 +6074,7 @@ function vSales() {
   <div class="sub-hero">
     <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('home')">${IC.left}</button>
     <div class="sub-hero-title">${t('sales')}</div>
-    <div class="sub-hero-big">${fmt(todayCA)} <span style="font-size:16px;color:var(--gray-5)">${sym()}</span></div>
+    <div class="sub-hero-big"><span data-count="${todayCA}">${fmt(todayCA)}</span> <span style="font-size:16px;color:var(--gray-5)">${sym()}</span></div>
     <div class="sub-hero-sub">${t('today')} · ${S.sales.filter(s=>new Date(s.date).toDateString()===new Date().toDateString()).length} ${t('saleOf')} · ${typeLabels[bt]}</div>
   </div>
   <div class="container">
@@ -6329,7 +6353,7 @@ function vFinancial() {
   <div class="sub-hero">
     <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('home')">${IC.left}</button>
     <div class="sub-hero-title">${t('financialTitle')}</div>
-    <div class="sub-hero-big">${fmt(totalCA)} <span style="font-size:16px;color:var(--accent-muted)">${sym()}</span></div>
+    <div class="sub-hero-big"><span data-count="${totalCA}">${fmt(totalCA)}</span> <span style="font-size:16px;color:var(--accent-muted)">${sym()}</span></div>
     <div class="sub-hero-sub">${filtered.length} ${t('saleOf')} · ${t('period')}</div>
   </div>
   <div class="container">
