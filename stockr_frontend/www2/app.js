@@ -8008,9 +8008,33 @@ async function deleteClient(id) {
 function vClientDetail() {
   const client = S.clients.find(c => c.id === S.selectedClientId);
   if (!client) { nav('clients'); return ''; }
-  const clientSales = S.sales.filter(s => s.clientId && String(s.clientId) === String(client.id));
+  const clientSales = S.sales.filter(s => s.clientId && String(s.clientId) === String(client.id))
+    .sort((a,b)=>new Date(b.date)-new Date(a.date));
   const totalSpent = clientSales.reduce((s,v) => s + v.total, 0);
   const totalProfit = clientSales.reduce((s,v) => s + (v.profit||0), 0);
+
+  // ── Insights client ──
+  const now = Date.now(), DAY = 86400000;
+  const avgBasket = clientSales.length ? Math.round(totalSpent / clientSales.length) : 0;
+  const lastSaleTs = clientSales.length ? new Date(clientSales[0].date).getTime() : 0;
+  const daysSince = lastSaleTs ? Math.floor((now - lastSaleTs) / DAY) : null;
+  // Statut : actif (<30j) · à relancer (30-60j) · inactif (>60j)
+  let statut = null;
+  if (daysSince !== null) {
+    if (daysSince <= 30) statut = { label:'Client actif', color:'#10B981', icon:'🟢' };
+    else if (daysSince <= 60) statut = { label:'À relancer', color:'#F59E0B', icon:'🟠' };
+    else statut = { label:'Inactif', color:'#EF4444', icon:'🔴' };
+  }
+  // Produits préférés (top 3 par quantité)
+  const prodMap = {};
+  clientSales.forEach(s => { prodMap[s.productName] = (prodMap[s.productName]||0) + (s.qty||0); });
+  const favProds = Object.entries(prodMap).map(([name,qty])=>({name,qty})).sort((a,b)=>b.qty-a.qty).slice(0,3);
+  // Dépenses sur les 6 derniers mois (pour courbe)
+  const months = [];
+  for (let i=5;i>=0;i--){ const d=new Date(); d.setMonth(d.getMonth()-i); months.push({ key:d.getFullYear()+'-'+d.getMonth(), label:d.toLocaleDateString('fr',{month:'short'}), total:0 }); }
+  clientSales.forEach(s => { const d=new Date(s.date); const k=d.getFullYear()+'-'+d.getMonth(); const m=months.find(x=>x.key===k); if(m) m.total+=s.total||0; });
+  const maxMonth = Math.max(...months.map(m=>m.total), 1);
+  const waNum = (client.phone||'').replace(/\D/g,'').replace(/^0/,'225');
 
   return `
   <div class="sub-hero">
@@ -8020,6 +8044,7 @@ function vClientDetail() {
       <div>
         <div style="font-size:22px;font-weight:800;color:var(--white)">${client.name}</div>
         ${client.phone ? `<div style="font-size:13px;color:var(--gray-5);margin-top:4px">${IC.phone} ${client.phone}</div>` : ''}
+        ${statut ? `<span style="display:inline-flex;align-items:center;gap:5px;margin-top:7px;font-size:11px;font-weight:700;background:rgba(255,255,255,.15);color:#fff;padding:3px 10px;border-radius:999px">${statut.icon} ${statut.label}${daysSince!==null?` · ${daysSince===0?"aujourd'hui":daysSince+'j'}`:''}</span>` : ''}
       </div>
     </div>
   </div>
@@ -8034,10 +8059,47 @@ function vClientDetail() {
         <div class="metric-lbl">${t('purchases')}</div>
       </div>
       <div class="metric-card">
-        <div class="metric-val" style="color:var(--success)">${fmt(totalProfit)}</div>
-        <div class="metric-lbl">${t('profit')}</div>
+        <div class="metric-val">${fmt(avgBasket)}</div>
+        <div class="metric-lbl">Panier moyen</div>
       </div>
     </div>
+
+    ${clientSales.length > 0 ? `
+    <div class="card" style="margin-bottom:14px">
+      <div class="card-title">📈 Dépenses (6 derniers mois)</div>
+      <div style="display:flex;align-items:flex-end;gap:6px;height:90px;padding:6px 0">
+        ${months.map(m => {
+          const h = Math.max(3, Math.round((m.total/maxMonth)*78));
+          return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;justify-content:flex-end">
+            <div style="font-size:9px;color:var(--text-3);font-weight:700">${m.total>0?(m.total>=1000?(m.total/1000).toFixed(0)+'k':m.total):''}</div>
+            <div style="width:100%;max-width:34px;height:${h}px;background:linear-gradient(180deg,var(--accent),#7C73FF);border-radius:6px 6px 0 0;transition:height .5s cubic-bezier(.25,.46,.45,.94)"></div>
+            <div style="font-size:9px;color:var(--text-3);font-weight:600">${m.label}</div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>` : ''}
+
+    ${favProds.length > 0 ? `
+    <div class="card" style="margin-bottom:14px">
+      <div class="card-title">❤️ Produits préférés</div>
+      ${favProds.map((p,i)=>`<div style="display:flex;align-items:center;gap:10px;padding:6px 0;${i>0?'border-top:1px solid var(--border)':''}">
+        <div style="width:24px;height:24px;border-radius:7px;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0">${i+1}</div>
+        <div style="flex:1;font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.name}</div>
+        <div style="font-size:12px;font-weight:700;color:var(--accent)">×${p.qty}</div>
+      </div>`).join('')}
+    </div>` : ''}
+
+    ${statut && (statut.label==='À relancer' || statut.label==='Inactif') && waNum ? `
+    <div class="card" style="margin-bottom:14px;background:linear-gradient(135deg,${statut.color}14,transparent);border:1px solid ${statut.color}40">
+      <div style="display:flex;align-items:center;gap:11px">
+        <div style="font-size:26px;flex-shrink:0">${statut.icon}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:14px;font-weight:800">Relance ce client</div>
+          <div style="font-size:12px;color:var(--text-3)">Pas d'achat depuis ${daysSince} jours — propose-lui une offre</div>
+        </div>
+      </div>
+      <button class="btn btn-primary" style="margin-top:10px;background:#25D366" onclick="window.open('https://wa.me/${waNum}?text='+encodeURIComponent('Bonjour ${client.name.replace(/'/g,'')} 👋 Vous nous manquez ! Une offre spéciale vous attend chez ${(S.session?.business||'').replace(/'/g,'')}.'),'_blank')">${IC.whatsapp} Envoyer un message WhatsApp</button>
+    </div>` : ''}
 
     ${S.loyaltyConfig?.enabled ? (() => {
       const tier = _getClientTier(client);
