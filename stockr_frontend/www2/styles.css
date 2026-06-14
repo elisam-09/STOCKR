@@ -4021,7 +4021,20 @@ body.dark .sova-wrap {
   padding: 14px 18px 6px;
   background: linear-gradient(180deg, rgba(201,169,110,.06), transparent);
   border-bottom: 1px solid var(--sova-border);
+  position: relative;
+  overflow: hidden;
 }
+/* Aurore dorée animée en arrière-plan du header SOVA */
+.sova-header::before {
+  content: '';
+  position: absolute;
+  top: -60%; right: -10%;
+  width: 240px; height: 240px;
+  background: radial-gradient(circle, rgba(201,169,110,.22) 0%, transparent 70%);
+  pointer-events: none;
+  animation: subHeroPulse 9s ease-in-out infinite;
+}
+.sova-header > * { position: relative; z-index: 1; }
 .sova-header-top {
   display: flex;
   justify-content: space-between;
@@ -4063,8 +4076,16 @@ body.dark .sova-wrap {
   align-items: center;
   justify-content: center;
   box-shadow: 0 4px 14px rgba(201,169,110,.35);
+  animation: sovaOwlGlow 3.2s ease-in-out infinite;
 }
 .sova-owl svg { width: 26px; height: 26px; }
+@keyframes sovaOwlGlow {
+  0%, 100% { box-shadow: 0 4px 14px rgba(201,169,110,.35); transform: translateY(0); }
+  50%      { box-shadow: 0 6px 22px rgba(201,169,110,.6); transform: translateY(-2px); }
+}
+/* Anneau de score : apparition douce */
+.sova-score-ring-wrap { animation: fadeIn .5s var(--ease-out) both; }
+.sova-score-num { font-variant-numeric: tabular-nums; }
 .sova-brand-name {
   font-size: 22px;
   font-weight: 900;

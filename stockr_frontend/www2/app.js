@@ -6891,11 +6891,13 @@ function vSova() {
   function tabOverview() {
     return `<div class="sova-score-card">
       <div class="sova-score-ring-wrap">
-        <svg width="100" height="100" viewBox="0 0 100 100">
+        <svg width="100" height="100" viewBox="0 0 100 100" style="transform:rotate(-90deg)">
           <circle cx="50" cy="50" r="${R}" fill="none" stroke="#e8e4d9" stroke-width="8"/>
-          <circle cx="50" cy="50" r="${R}" fill="none" stroke="${scoreColor}" stroke-width="8" stroke-dasharray="${dash.toFixed(1)} ${C.toFixed(1)}" stroke-dashoffset="${(C/4).toFixed(1)}" stroke-linecap="round"/>
+          <circle cx="50" cy="50" r="${R}" fill="none" stroke="${scoreColor}" stroke-width="8" stroke-dasharray="${dash.toFixed(1)} ${C.toFixed(1)}" stroke-linecap="round">
+            <animate attributeName="stroke-dasharray" from="0 ${C.toFixed(1)}" to="${dash.toFixed(1)} ${C.toFixed(1)}" dur="1.2s" fill="freeze" calcMode="spline" keyTimes="0;1" keySplines="0.2 0 0 1"/>
+          </circle>
         </svg>
-        <div class="sova-score-inner"><div class="sova-score-num" style="color:${scoreColor}">${score}</div><div class="sova-score-sub">/100</div></div>
+        <div class="sova-score-inner"><div class="sova-score-num" style="color:${scoreColor}" data-count="${score}">${score}</div><div class="sova-score-sub">/100</div></div>
       </div>
       <div class="sova-score-right">
         <div class="sova-score-label" style="color:${scoreColor}">${scoreLabel}</div>
