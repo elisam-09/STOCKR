@@ -6733,6 +6733,33 @@ function vFinancial() {
       return { ...a, toOrder, daysLeft };
     });
 
+  // ── Comparaison avec la période précédente (même durée) ──
+  const _periodCompare = (() => {
+    if (S.period === 'all') return null;
+    const days = S.period === 'today' ? 1 : S.period === '7d' ? 7 : 30;
+    const now = Date.now(), MS = 86400000;
+    const curStart = now - days * MS;
+    const prevStart = now - 2 * days * MS;
+    const prevCA = (S.sales||[]).filter(s => { const t = new Date(s.date).getTime(); return t >= prevStart && t < curStart; }).reduce((x,s)=>x+(s.total||0),0);
+    if (prevCA === 0 && totalCA === 0) return null;
+    const pct = prevCA > 0 ? Math.round(((totalCA - prevCA) / prevCA) * 100) : (totalCA > 0 ? 100 : 0);
+    return { prevCA, pct, label: S.period === 'today' ? 'hier' : S.period === '7d' ? '7j précédents' : '30j précédents' };
+  })();
+
+  // ── Répartition du CA par catégorie ──
+  const _catBreakdown = (() => {
+    const catOf = name => {
+      const it = (S.articles||[]).find(a=>a.name===name) || (S.products||[]).find(p=>p.name===name);
+      return (it && it.category) ? it.category : 'Autres';
+    };
+    const map = {};
+    filtered.forEach(s => { const c = catOf(s.productName); map[c] = (map[c]||0) + (s.total||0); });
+    const arr = Object.entries(map).map(([cat,rev])=>({cat,rev})).sort((a,b)=>b.rev-a.rev).slice(0,6);
+    const max = arr.length ? arr[0].rev : 1;
+    return { arr, max, total: arr.reduce((s,x)=>s+x.rev,0) };
+  })();
+  const _CAT_COLORS = ['#4F46E5','#7C3AED','#059669','#EA580C','#0891B2','#DC2626'];
+
   const periods = [
     { key:'today', label: t('today') },
     { key:'7d',    label: _lang==='fr'?"7 j":"7 d" },
@@ -6745,7 +6772,7 @@ function vFinancial() {
     <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('home')">${IC.left}</button>
     <div class="sub-hero-title">${t('financialTitle')}</div>
     <div class="sub-hero-big"><span data-count="${totalCA}">${fmt(totalCA)}</span> <span style="font-size:16px;color:var(--accent-muted)">${sym()}</span></div>
-    <div class="sub-hero-sub">${filtered.length} ${t('saleOf')} · ${t('period')}</div>
+    <div class="sub-hero-sub">${filtered.length} ${t('saleOf')}${_periodCompare ? ` · <span style="color:${_periodCompare.pct>=0?'#34d399':'#fca5a5'};font-weight:700">${_periodCompare.pct>=0?'▲':'▼'} ${Math.abs(_periodCompare.pct)}%</span> vs ${_periodCompare.label}` : ''}</div>
   </div>
   <div class="container">
     <div class="period-tabs">
@@ -6759,6 +6786,26 @@ function vFinancial() {
       <div class="chart-title">${t('profitChart')}</div>
       <div class="chart-wrap"><canvas id="profit-chart"></canvas></div>
     </div>
+
+    ${_catBreakdown.arr.length > 0 ? `
+    <div class="card" style="margin-bottom:14px">
+      <div class="card-title">📊 Répartition du CA par catégorie</div>
+      ${_catBreakdown.arr.map((c,i)=>{
+        const pct = _catBreakdown.total>0 ? Math.round((c.rev/_catBreakdown.total)*100) : 0;
+        const w = Math.max(4, Math.round((c.rev/_catBreakdown.max)*100));
+        const col = _CAT_COLORS[i % _CAT_COLORS.length];
+        return `<div style="margin-bottom:10px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
+            <span style="font-size:13px;font-weight:600;color:var(--text-1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.cat}</span>
+            <span style="font-size:12px;font-weight:700;color:${col};flex-shrink:0;margin-left:8px">${fmt(c.rev)} ${sym()} <span style="color:var(--text-3);font-weight:500">· ${pct}%</span></span>
+          </div>
+          <div style="height:8px;background:var(--gray-2);border-radius:5px;overflow:hidden">
+            <div style="height:100%;width:${w}%;background:linear-gradient(90deg,${col},${col}cc);border-radius:5px;transition:width .6s cubic-bezier(.25,.46,.45,.94)"></div>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>` : ''}
+
     <div class="metric-grid">
       <div class="metric-card"><div class="metric-val">${fmt(totalCA)}</div><div class="metric-lbl">${t('caTotal')}</div></div>
       <div class="metric-card"><div class="metric-val" style="color:var(--success)">${fmt(totalProfit)}</div><div class="metric-lbl">${t('profit')}</div></div>
