@@ -346,6 +346,12 @@ body {
 /* ── Animations d'entrée : uniquement au changement de vue, pas à chaque re-render */
 .anim { animation: none; }
 body.view-entering .anim { animation: fadeUp 0.3s cubic-bezier(0.2, 0, 0, 1) both; }
+/* Transition douce de toute la vue (fondu léger, compose avec le stagger des cartes) */
+body.view-entering #view { animation: viewEnter 0.34s cubic-bezier(0.2, 0, 0, 1) both; }
+@keyframes viewEnter {
+  from { opacity: 0; transform: translateY(5px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 
 /* Respect user motion preferences */
 @media (prefers-reduced-motion: reduce) {
@@ -4559,3 +4565,32 @@ body.dark .sova-plan-qty { color: #d4b27a; background: rgba(201,169,110,.18); }
 }
 [data-theme="dark"] .sova-chart-title,
 body.dark .sova-chart-title { color: #d4b27a; }
+
+/* ═══════════════════════════════════════════════
+   FINITIONS PREMIUM GLOBALES (polish final)
+   ═══════════════════════════════════════════════ */
+/* Boutons & cartes tactiles : retour visuel uniforme et net */
+button, .btn, .card-tap, .nav-tab, .filter-chip, .chip, .qa-btn, .settings-row, .fab {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+/* Pression uniforme sur tout élément cliquable non déjà géré */
+.settings-row:active, .info-row[onclick]:active, [onclick]:not(.btn):not(.card):active {
+  transition: transform .08s ease;
+}
+/* Liens internes (a[onclick]) : couleur accent cohérente */
+a[onclick] { cursor: pointer; }
+/* Images cassées : placeholder discret au lieu d'icône brisée */
+img { -webkit-user-drag: none; user-select: none; }
+/* Titres de carte : graisse & espacement homogènes partout */
+.card-title { font-weight: 800; letter-spacing: -.2px; }
+/* Inputs : transition focus douce uniforme */
+.input, input, textarea, select { transition: border-color .18s var(--ease-out), box-shadow .18s var(--ease-out), background-color .2s ease; }
+/* Empêche le "saut" de scroll horizontal accidentel */
+#view { overscroll-behavior-y: contain; }
+/* Sélecteurs natifs : flèche custom discrète, centrée verticalement */
+select.input { background-image: linear-gradient(45deg, transparent 50%, var(--text-3) 50%), linear-gradient(135deg, var(--text-3) 50%, transparent 50%); background-position: calc(100% - 18px) center, calc(100% - 13px) center; background-size: 5px 5px, 5px 5px; background-repeat: no-repeat; padding-right: 36px !important; }
+/* Toasts : ne bloquent jamais les taps */
+#toast-container { pointer-events: none; }
+/* Boutons désactivés : aspect cohérent */
+.btn:disabled, button:disabled { opacity: .5; cursor: not-allowed; }
