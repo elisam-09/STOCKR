@@ -5590,6 +5590,24 @@ function vHome() {
 
     ${(() => {
       if (_showSearch) return '';
+      // Bannière activation notifications (une fois, si pas encore décidé)
+      const canNotify = ('Notification' in window);
+      const perm = canNotify ? Notification.permission : 'unsupported';
+      if (!canNotify || perm !== 'default' || localStorage.getItem('baro_notif_dismissed')) return '';
+      return `
+      <div class="card anim" style="margin-bottom:12px;display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,rgba(124,115,255,.10),rgba(236,72,153,.04));border:1px solid rgba(124,115,255,.22)">
+        <div style="width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#7C73FF);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">🔔</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:14px;font-weight:800">Activer les notifications</div>
+          <div style="font-size:12px;color:var(--text-3)">Sois prévenu des ruptures de stock & objectifs</div>
+        </div>
+        <button class="btn btn-primary" style="width:auto;padding:8px 14px;font-size:12px" onclick="requestNotifPermission()">Activer</button>
+        <button class="btn" style="width:auto;padding:8px;font-size:16px;background:none;border:none;color:var(--text-3);cursor:pointer" onclick="localStorage.setItem('baro_notif_dismissed','1');render()" title="Plus tard">✕</button>
+      </div>`;
+    })()}
+
+    ${(() => {
+      if (_showSearch) return '';
       // Objectif configuré (type × période) + stats réelles
       const goalType = localStorage.getItem('stockr_goal_type') || 'revenue';
       const goalPeriod = localStorage.getItem('stockr_goal_period') || 'day';
@@ -25005,6 +25023,32 @@ function checkDueScheduledPosts() {
   } catch(e) {}
 }
 
+// ── Notifications navigateur réelles (OS-level, quand l'app tourne) ──
+function _notify(title, body, tag) {
+  try {
+    if (!('Notification' in window) || Notification.permission !== 'granted') return;
+    const opts = { body, tag: tag || 'baro', icon: 'icons/icon-192.png', badge: 'icons/icon-192.png', renotify: false };
+    if (navigator.serviceWorker && navigator.serviceWorker.ready) {
+      navigator.serviceWorker.ready.then(reg => reg.showNotification(title, opts)).catch(() => { try { new Notification(title, opts); } catch(_){} });
+    } else {
+      new Notification(title, opts);
+    }
+  } catch(_) {}
+}
+function requestNotifPermission() {
+  if (!('Notification' in window)) { showToast('Notifications non supportées sur cet appareil', 'error'); return; }
+  Notification.requestPermission().then(perm => {
+    if (perm === 'granted') {
+      localStorage.setItem('baro_notif_enabled', '1');
+      showToast('🔔 Notifications activées !', 'success');
+      _notify('BARO — Notifications activées', 'Tu seras prévenu des ruptures de stock et objectifs.', 'welcome');
+    } else {
+      showToast('Notifications refusées — active-les dans les réglages du navigateur', 'info');
+    }
+    render();
+  });
+}
+
 function runBootReminders() {
   try {
     const reminders = [];
@@ -25012,9 +25056,9 @@ function runBootReminders() {
     checkDueScheduledPosts();
     const duePosts = (S.scheduledPosts||[]).filter(p => p.status === 'due' || (p.status==='scheduled' && new Date(p.scheduleDate||p.date).getTime() <= Date.now()));
     if (duePosts.length) reminders.push({ icon:'📅', text:`${duePosts.length} post${duePosts.length>1?'s':''} à publier`, action:()=>nav('social') });
-    // 2) Stock critique
-    const lowStock = (S.articles||[]).filter(a => (a.quantity||0) <= (a.alertThreshold || 5) && (a.quantity||0) > 0);
-    const outStock = (S.articles||[]).filter(a => (a.quantity||0) === 0);
+    // 2) Stock critique — utilise .stock / .min (champs réels de l'état)
+    const lowStock = (S.articles||[]).filter(a => (a.stock||0) > 0 && a.min > 0 && (a.stock||0) < a.min);
+    const outStock = (S.articles||[]).filter(a => (a.stock||0) === 0);
     if (outStock.length) reminders.push({ icon:'🚨', text:`${outStock.length} article${outStock.length>1?'s':''} en rupture`, action:()=>nav('pantry') });
     else if (lowStock.length) reminders.push({ icon:'⚠️', text:`${lowStock.length} article${lowStock.length>1?'s':''} en stock bas`, action:()=>nav('pantry') });
     // 3) Commandes boutique en attente
@@ -25038,8 +25082,17 @@ function runBootReminders() {
     if (reminders.length) {
       const main = reminders[0];
       showToast(`${main.icon} ${main.text}${reminders.length>1?' · +'+(reminders.length-1):''}`, 'info');
+      // Notification navigateur réelle (1×/jour max pour ne pas spammer)
+      const today = new Date().toDateString();
+      if (localStorage.getItem('baro_notif_lastday') !== today) {
+        const extra = reminders.length > 1 ? ` (+${reminders.length - 1} autre${reminders.length>2?'s':''})` : '';
+        _notify(`${main.icon} ${S.session?.business || 'BARO'}`, main.text + extra, 'daily-reminder');
+        localStorage.setItem('baro_notif_lastday', today);
+      }
     }
   } catch(e) { console.warn('runBootReminders', e); }
 }
 window.runBootReminders = runBootReminders;
 window.checkDueScheduledPosts = checkDueScheduledPosts;
+window._notify = _notify;
+window.requestNotifPermission = requestNotifPermission;
