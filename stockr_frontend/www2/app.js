@@ -1994,6 +1994,61 @@ function __planShowConfirmModal(planKey, amount, providerId) {
   `;
   document.body.appendChild(modal);
 }
+// ═══════════════════════════════════════════════════════════════
+// LIMITES DES PLANS — appliquées réellement (pas que du marketing)
+// ═══════════════════════════════════════════════════════════════
+const PLAN_LIMITS = {
+  free:       { articles: 50,       salesPerMonth: 100,    locations: 1,        spectraPerDay: 10,       suppliers: 3,        boutique: false, marketing: false, integrations: 0,        excel: false, loyalty: false, purchaseOrders: false },
+  starter:    { articles: 500,      salesPerMonth: 2000,   locations: 2,        spectraPerDay: 50,       suppliers: 10,       boutique: false, marketing: false, integrations: 0,        excel: true,  loyalty: false, purchaseOrders: false },
+  pro:        { articles: Infinity, salesPerMonth: Infinity, locations: 5,      spectraPerDay: Infinity, suppliers: Infinity, boutique: true,  marketing: true,  integrations: 10,       excel: true,  loyalty: true,  purchaseOrders: true },
+  enterprise: { articles: Infinity, salesPerMonth: Infinity, locations: Infinity, spectraPerDay: Infinity, suppliers: Infinity, boutique: true, marketing: true, integrations: Infinity, excel: true,  loyalty: true,  purchaseOrders: true },
+};
+function _currentPlan() { return (S.subscription && S.subscription.plan) || 'free'; }
+function _planLimit(feature) {
+  const lim = PLAN_LIMITS[_currentPlan()] || PLAN_LIMITS.free;
+  return lim[feature];
+}
+function _salesThisMonth() {
+  const now = new Date();
+  const y = now.getFullYear(), m = now.getMonth();
+  return (S.sales || []).filter(s => { const d = new Date(s.date); return d.getFullYear() === y && d.getMonth() === m; }).length;
+}
+// Vérifie une limite quantitative ; si dépassée, ouvre le paywall et renvoie false
+function _checkPlanLimit(feature, currentCount, label) {
+  const limit = _planLimit(feature);
+  if (limit === Infinity || currentCount < limit) return true;
+  _showPlanLimitModal(feature, limit, label);
+  return false;
+}
+// Modale paywall élégante (réutilisable)
+function _showPlanLimitModal(feature, limit, label) {
+  haptic('warn');
+  const plan = _currentPlan();
+  const nextPlan = plan === 'free' ? 'Starter ou Pro' : 'Pro';
+  const old = document.getElementById('__planLimitModal'); if (old) old.remove();
+  const modal = document.createElement('div');
+  modal.id = '__planLimitModal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:10000;display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(6px);animation:fadeIn .2s';
+  modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+  modal.innerHTML = `
+    <div style="background:var(--surface);border-radius:24px 24px 0 0;width:100%;max-width:480px;padding:24px 20px 28px;animation:ckUp .35s cubic-bezier(.2,0,0,1)">
+      <div style="width:40px;height:4px;border-radius:2px;background:var(--gray-3);margin:0 auto 18px"></div>
+      <div style="text-align:center">
+        <div style="font-size:48px;margin-bottom:8px">🚀</div>
+        <div style="font-size:20px;font-weight:900;letter-spacing:-.3px">Limite ${label} atteinte</div>
+        <div style="font-size:13px;color:var(--text-3);margin-top:8px;line-height:1.55;max-width:320px;margin-left:auto;margin-right:auto">Ton plan <strong>${plan === 'free' ? 'Gratuit' : plan}</strong> est limité à <strong>${limit} ${label}</strong>. Passe en <strong>${nextPlan}</strong> pour augmenter (ou illimité).</div>
+      </div>
+      <div class="card" style="border:2px solid var(--accent);background:linear-gradient(135deg,rgba(124,115,255,.08),transparent);margin:18px 0 12px">
+        ${['♾️ Articles & ventes illimités (Pro)','📍 Plus d\'emplacements','🔍 Spectra IA illimité','🏪 Boutique en ligne + marketing'].map(f=>`<div style="display:flex;gap:8px;font-size:13px;padding:3px 0;color:var(--text-2)"><span style="color:var(--accent)">✓</span>${f}</div>`).join('')}
+      </div>
+      <button class="btn btn-primary" style="width:100%" onclick="document.getElementById('__planLimitModal').remove();nav('pricing')">Voir les plans →</button>
+      <button class="btn btn-ghost" style="width:100%;margin-top:8px" onclick="document.getElementById('__planLimitModal').remove()">Plus tard</button>
+    </div>`;
+  document.body.appendChild(modal);
+}
+// Vérifie l'accès à une fonctionnalité Pro (boutique, marketing…)
+function _planHasFeature(feature) { return !!_planLimit(feature); }
+
 function _doActivatePlan(planKey, opts = {}) {
   const { trial = (planKey !== 'free'), paid = false } = opts;
   S.subscription = {
@@ -2786,6 +2841,8 @@ function recordSale() {
 async function saveArticle() {
   const f = S.form;
   if (!f.name.trim()) { showToast(t('nameRequired'), 'error'); return; }
+  // Limite d'articles selon le plan (free 50, starter 500, pro/ent illimité)
+  if (!_checkPlanLimit('articles', (S.articles || []).length, 'articles')) return;
   const bt = (typeof getBusinessType === 'function') ? getBusinessType() : 'maker';
   const price = parseFloat(f.price) || 0;
   const purchasePrice = parseFloat(f.purchasePrice) || 0;
@@ -3618,6 +3675,7 @@ function clearMultiCart() {
 }
 async function confirmMultiSale() {
   if (!S.multiCart || !Object.keys(S.multiCart).length) { showToast('Panier vide', 'error'); return; }
+  if (!_checkPlanLimit('salesPerMonth', _salesThisMonth(), 'ventes ce mois')) return;
   const sellable = bt_sellableItems();
   const clientSel = $('multi-client');
   const clientId = clientSel ? parseInt(clientSel.value) || null : null;
@@ -3717,6 +3775,8 @@ async function confirmMultiSale() {
 
 async function confirmCart() {
   if (!S.cart.length) { showToast(t('emptyCartMsg'), 'error'); return; }
+  // Limite de ventes/mois selon le plan (free 100, starter 2000, pro/ent illimité)
+  if (!_checkPlanLimit('salesPerMonth', _salesThisMonth(), 'ventes ce mois')) return;
   const { clientId, clientName: resolvedClientName } = _resolveClientForSale();
   const client = clientId ? S.clients.find(c => c.id === clientId) : null;
   const pmSel = $('sale-payment');
@@ -10957,10 +11017,7 @@ function _spectraVideoConstraints(highRes){
 // ── Quota de scans Spectra (incitation Premium) ──────────────
 // Gratuit : 10/jour · Starter : 50/jour · Pro & Enterprise : illimité
 function _spectraDailyLimit() {
-  const plan = (S.subscription && S.subscription.plan) || 'free';
-  if (plan === 'starter') return 50;
-  if (plan === 'pro' || plan === 'enterprise') return Infinity;
-  return 10; // free
+  return (typeof _planLimit === 'function') ? _planLimit('spectraPerDay') : 10;
 }
 function _spectraScansToday() {
   try {
@@ -12653,6 +12710,8 @@ function exportFullCSV(type) {
 
 // ── LOCATIONS ────────────────────────────────
 function addLocation() {
+  // Limite d'emplacements selon le plan (free 1, starter 2, pro 5, ent illimité)
+  if (!_checkPlanLimit('locations', (S.locations || []).length, 'emplacements')) return;
   const nameEl = document.getElementById('loc-name');
   const addrEl = document.getElementById('loc-address');
   const phoneEl = document.getElementById('loc-phone');
@@ -15221,7 +15280,34 @@ function vExports() {
 }
 
 // ── BOUTIQUE EN LIGNE ────────────────────────
+// Écran de verrouillage pour les fonctionnalités réservées aux plans payants
+function _vProLock(emoji, title, desc, features) {
+  return `
+  <div class="sub-hero" style="background:linear-gradient(135deg,var(--accent),#7C3AED)">
+    <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('more')">${IC.left}</button>
+    <div class="sub-hero-title">${emoji} ${title}</div>
+    <div class="sub-hero-sub">Fonctionnalité incluse dans le plan Pro</div>
+  </div>
+  <div class="container" style="padding:20px">
+    <div style="text-align:center;padding:18px 0">
+      <div style="font-size:54px;margin-bottom:8px">🔒</div>
+      <div style="font-size:19px;font-weight:900;letter-spacing:-.3px">${title} — réservé au plan Pro</div>
+      <div style="font-size:13px;color:var(--text-3);margin-top:8px;line-height:1.55;max-width:320px;margin-left:auto;margin-right:auto">${desc}</div>
+    </div>
+    <div class="card" style="border:2px solid var(--accent);background:linear-gradient(135deg,rgba(124,115,255,.08),transparent);margin-bottom:12px">
+      <div style="font-size:14px;font-weight:800;margin-bottom:10px">💎 Avec BARO Pro (20 000 FCFA/mois)</div>
+      ${features.map(f=>`<div style="display:flex;gap:8px;font-size:13px;padding:3px 0;color:var(--text-2)"><span style="color:var(--accent)">✓</span>${f}</div>`).join('')}
+      <button class="btn btn-primary" style="margin-top:14px" onclick="nav('pricing')">Passer en Pro →</button>
+      <button class="btn btn-ghost" style="margin-top:8px" onclick="nav('pricing')">Voir tous les plans</button>
+    </div>
+    <div style="font-size:11px;color:var(--text-3);text-align:center;line-height:1.5">💡 Essai 14 jours offert · Sans engagement · Résiliable à tout moment</div>
+  </div>`;
+}
+
 function vBoutique() {
+  if (!_planHasFeature('boutique')) {
+    return _vProLock('🏪', 'Boutique en ligne', 'Crée une vraie boutique en ligne (page web + panier WhatsApp) que tes clients visitent pour commander.', ['🏪 Boutique en ligne personnalisable', '🎨 Éditeur visuel en direct', '🛒 Panier + commande WhatsApp', '📦 Articles & ventes illimités', '🔍 Spectra IA vision illimité']);
+  }
   const bc = S.boutiqueConfig || (S.boutiqueConfig = {});
   if (!Array.isArray(bc.articles)) bc.articles = [];
   if (!Array.isArray(bc.products)) bc.products = [];
@@ -17277,6 +17363,9 @@ function contactOrderClient(id) {
 
 // ── MARKETING CENTER (hub à onglets) ─────────
 function vMarketing() {
+  if (!_planHasFeature('marketing')) {
+    return _vProLock('📣', 'Marketing & campagnes', 'Lance des promos, bannières, popups, campagnes WhatsApp/SMS et un programme de fidélité pour vendre plus.', ['📣 Promos, bannières, popups', '📧 Campagnes WhatsApp / SMS / Email', '🎁 Programme de fidélité', '⭐ Avis clients', '🔗 Liens de suivi marketing']);
+  }
   const tab = S.marketingTab || 'promos';
   const promos = S.promotions || [];
   const banners = S.banners || [];
@@ -20946,6 +21035,9 @@ function toggleWebhookEvent(id, evt) {
 
 // ── INTEGRATIONS (fonctionnelles) ────────────
 function vIntegrations() {
+  if (!_planHasFeature('integrations')) {
+    return _vProLock('🔌', 'Intégrations & API', 'Connecte WhatsApp Business, Shopify, WooCommerce, Glovo, Yango, Wave et plus à ton stock BARO.', ['🔌 10 intégrations (Pro)', '🛒 Shopify, WooCommerce, Jumia', '🚚 Glovo, Yango Delivery', '💳 Wave, Orange Money dashboards', '🔗 API REST (Enterprise)']);
+  }
   const integrationsList = [
     { id:'whatsapp-business', name:'WhatsApp Business', desc:'Notifications clients automatiques', color:'#25D366', icon:IC.whatsapp, category:'communication',
       setupType:'phone', setupLabel:'Numero WhatsApp Business', setupPlaceholder:'+225 07 XX XX XX XX', url:'https://business.whatsapp.com/' },
