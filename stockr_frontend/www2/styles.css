@@ -4086,6 +4086,22 @@ body.dark .sova-wrap {
 /* Anneau de score : apparition douce */
 .sova-score-ring-wrap { animation: fadeIn .5s var(--ease-out) both; }
 .sova-score-num { font-variant-numeric: tabular-nums; }
+
+/* ── SOVA Idées (insights business) ── */
+.sova-insights-intro { font-size: 13px; color: var(--text-2); line-height: 1.55; margin-bottom: 14px; padding: 12px 14px; background: var(--surface); border: 1px solid var(--sova-border); border-radius: 12px; }
+.sova-insight-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 14px; padding: 14px; margin-bottom: 10px;
+  box-shadow: var(--shadow-sm);
+  animation: fadeUp .4s var(--ease-out) both;
+}
+.sova-insight-head { display: flex; align-items: flex-start; gap: 11px; margin-bottom: 10px; }
+.sova-insight-emoji { font-size: 22px; line-height: 1; flex-shrink: 0; }
+.sova-insight-title { font-size: 14px; font-weight: 800; color: var(--text-1); letter-spacing: -.2px; }
+.sova-insight-sub { font-size: 11.5px; color: var(--text-3); line-height: 1.45; margin-top: 2px; }
+.sova-insight-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 7px 0; border-top: 1px solid var(--border); }
+.sova-insight-name { font-size: 13px; font-weight: 600; color: var(--text-1); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sova-insight-tag { font-size: 11.5px; font-weight: 700; white-space: nowrap; flex-shrink: 0; }
 .sova-brand-name {
   font-size: 22px;
   font-weight: 900;

@@ -6903,7 +6903,7 @@ function vSova() {
   const alertPreds=preds.filter(p=>p.status==='critical'||p.status==='warning');
   const criticalPreds=preds.filter(p=>p.status==='critical');
   const warningPreds=preds.filter(p=>p.status==='warning');
-  const tabs=[{id:'overview',label:'Aperçu'},{id:'alerts',label:`Alertes${alertPreds.length>0?' · '+alertPreds.length:''}`},{id:'tomorrow',label:'Demain'},{id:'articles',label:'Articles'}];
+  const tabs=[{id:'overview',label:'Aperçu'},{id:'insights',label:'💡 Idées'},{id:'alerts',label:`Alertes${alertPreds.length>0?' · '+alertPreds.length:''}`},{id:'tomorrow',label:'Demain'},{id:'articles',label:'Articles'}];
   const R=40,C=2*Math.PI*R,dash=(score/100)*C;
 
   function tabOverview() {
@@ -6927,6 +6927,72 @@ function vSova() {
     ${preds.length>0?sovaChartCoverage(preds):`<div class="sova-empty"><div class="sova-empty-title">SOVA observe</div><div class="sova-empty-sub">Enregistre des ventes pour que SOVA commence à prédire.</div></div>`}`;
   }
 
+  // ── Onglet IDÉES : recommandations business calculées sur les vraies ventes ──
+  function tabInsights() {
+    const now = Date.now(), DAY = 86400000;
+    const sales = S.sales || [];
+    if (sales.length < 3) {
+      return `<div class="sova-empty"><div class="sova-empty-title">💡 Pas encore assez de ventes</div><div class="sova-empty-sub">SOVA a besoin de quelques ventes pour te conseiller sur quoi pousser, garder ou laisser.</div></div>`;
+    }
+    // Stats par produit (nom)
+    const st = {};
+    sales.forEach(s => {
+      const k = s.productName || '?';
+      if (!st[k]) st[k] = { name:k, qty:0, rev:0, profit:0, l7:0, p7:0, last:0 };
+      st[k].qty += s.qty||0; st[k].rev += s.total||0; st[k].profit += s.profit||0;
+      const age = now - new Date(s.date).getTime();
+      if (age < 7*DAY) st[k].l7 += s.qty||0;
+      else if (age < 14*DAY) st[k].p7 += s.qty||0;
+      st[k].last = Math.max(st[k].last, new Date(s.date).getTime());
+    });
+    const arr = Object.values(st);
+    const totalRev = arr.reduce((s,a)=>s+a.rev,0) || 1;
+    // Croisement avec stock (articles/produits) pour marge & dormants
+    const findItem = name => (S.articles||[]).find(a=>a.name===name) || (S.products||[]).find(p=>p.name===name);
+    arr.forEach(a => {
+      const it = findItem(a.name);
+      a.stock = it ? (it.stock!=null?it.stock:'—') : '—';
+      a.marginPct = a.rev>0 ? Math.round((a.profit/a.rev)*100) : 0;
+      a.trend = a.p7>0 ? Math.round(((a.l7-a.p7)/a.p7)*100) : (a.l7>0?100:0);
+      a.daysSince = a.last ? Math.floor((now-a.last)/DAY) : 999;
+    });
+
+    // 🚀 Best-sellers à pousser (top CA, vente récente)
+    const stars = [...arr].filter(a=>a.l7>0||a.daysSince<14).sort((x,y)=>y.rev-x.rev).slice(0,3);
+    // 📈 En croissance forte
+    const rising = [...arr].filter(a=>a.trend>=25 && a.l7>=1).sort((x,y)=>y.trend-x.trend).slice(0,3);
+    // 📉 En déclin
+    const falling = [...arr].filter(a=>a.trend<=-30 && a.p7>=2).sort((x,y)=>x.trend-y.trend).slice(0,3);
+    // 💤 Dorment (vendus avant mais plus rien depuis 30j)
+    const sleeping = [...arr].filter(a=>a.daysSince>=30).sort((x,y)=>y.daysSince-x.daysSince).slice(0,4);
+    // 💰 Forte marge + bonnes ventes → pousser ; ⚠ faible marge + gros volume → renégocier
+    const highMargin = [...arr].filter(a=>a.marginPct>=35 && a.qty>=2).sort((x,y)=>y.marginPct-x.marginPct).slice(0,3);
+    const lowMargin = [...arr].filter(a=>a.marginPct>0 && a.marginPct<15 && a.qty>=3).sort((x,y)=>x.marginPct-y.marginPct).slice(0,3);
+
+    const card = (emoji, color, title, sub, rows) => rows.length ? `
+      <div class="sova-insight-card" style="border-left:3px solid ${color}">
+        <div class="sova-insight-head"><span class="sova-insight-emoji">${emoji}</span><div><div class="sova-insight-title">${title}</div><div class="sova-insight-sub">${sub}</div></div></div>
+        ${rows.map(r=>`<div class="sova-insight-row"><span class="sova-insight-name">${r.name}</span><span class="sova-insight-tag" style="color:${color}">${r.tag}</span></div>`).join('')}
+      </div>` : '';
+
+    const sections = [
+      card('🚀','#22c55e','Mise dessus — tes best-sellers','Mets-les en avant en boutique, garde-les toujours en stock',
+        stars.map(a=>({name:a.name, tag:`${fmt(a.rev)} ${sym()} · ${Math.round(a.rev/totalRev*100)}% du CA`}))),
+      card('📈','#16a34a','En pleine croissance','La demande grimpe — commande plus, profites-en maintenant',
+        rising.map(a=>({name:a.name, tag:`+${a.trend}% cette semaine`}))),
+      card('💰','#7C3AED','Grosses marges à pousser','Tu gagnes beaucoup dessus — vends-en davantage',
+        highMargin.map(a=>({name:a.name, tag:`${a.marginPct}% de marge`}))),
+      card('⚠️','#f59e0b','Marges faibles — renégocie','Gros volume mais peu de profit : négocie le prix d\'achat ou augmente le prix',
+        lowMargin.map(a=>({name:a.name, tag:`seulement ${a.marginPct}% de marge`}))),
+      card('📉','#ef4444','En déclin — surveille','Les ventes baissent : promo, mise en avant, ou réduis le stock',
+        falling.map(a=>({name:a.name, tag:`${a.trend}% cette semaine`}))),
+      card('💤','#9ca3af','Ça dort — envisage de laisser','Aucune vente depuis longtemps : déstocke, brade, ou arrête',
+        sleeping.map(a=>({name:a.name, tag:`${a.daysSince>900?'jamais vendu':a.daysSince+'j sans vente'}`}))),
+    ].filter(Boolean).join('');
+
+    return `<div class="sova-insights-intro">SOVA a analysé tes <strong>${sales.length} ventes</strong>. Voici tes opportunités :</div>${sections || `<div class="sova-empty"><div class="sova-empty-title">Tout est équilibré 👌</div><div class="sova-empty-sub">Continue à vendre, SOVA affinera ses conseils.</div></div>`}`;
+  }
+
   function tabAlerts() {
     if(alertPreds.length===0) return `<div class="sova-empty"><div class="sova-empty-title">Pas d'alerte</div><div class="sova-empty-sub">Tout est bien approvisionné. SOVA veille.</div></div>`;
     return alertPreds.map((p,i)=>{const isCrit=p.status==='critical';const probColor=p.rupture_probability>=70?'#ef4444':p.rupture_probability>=40?'#f59e0b':'#22c55e';return `<div class="sova-alert-card ${isCrit?'sova-alert-critical':'sova-alert-warning'}" style="animation-delay:${i*0.05}s"><div class="sova-alert-top"><div><div class="sova-alert-name">${p.article_name}</div><div class="sova-alert-msg">${p.action?`${p.action.verb} — ${p.action.quantity} ${p.action.unit} avant le ${p.action.before}`:p.message||''}</div></div><div class="sova-alert-risk" style="color:${probColor}">${p.rupture_probability?.toFixed(0)||'—'}%</div></div><div class="sova-alert-stats"><div class="sova-alert-stat"><div class="sova-alert-stat-label">Stock</div><div class="sova-alert-stat-val">${p.current_stock} ${p.unit}</div></div>${p.days_remaining!=null?`<div class="sova-alert-stat"><div class="sova-alert-stat-label">Jours restants</div><div class="sova-alert-stat-val">${p.days_remaining}j</div></div>`:''}<div class="sova-alert-stat"><div class="sova-alert-stat-label">À commander</div><div class="sova-alert-stat-val">${p.order_quantity} ${p.unit}</div></div></div><div class="sova-conf-bar"><div class="sova-conf-fill" style="width:${p.confidence}%"></div></div></div>`;}).join('');
@@ -6944,7 +7010,7 @@ function vSova() {
     return `<div class="sova-art-selector">${filtered.map(p=>`<button class="sova-art-chip ${sel&&sel.article_id===p.article_id?'active':''}" onclick="S.sovaArticle=${p.article_id};render()"><span class="sova-art-dot sova-dot-${p.status}"></span>${p.article_name}</button>`).join('')}</div>${sel?`<div class="sova-detail-card"><div class="sova-detail-name">${sel.article_name}</div><div class="sova-detail-grid"><div class="sova-detail-kpi"><div class="sova-detail-kpi-val">${sel.current_stock} <span style="font-size:14px">${sel.unit}</span></div><div class="sova-detail-kpi-label">En stock</div></div><div class="sova-detail-kpi"><div class="sova-detail-kpi-val">${sel.daily_demand>0.01?sel.daily_demand?.toFixed(2):'—'}</div><div class="sova-detail-kpi-label">Demande/j</div></div><div class="sova-detail-kpi"><div class="sova-detail-kpi-val" style="color:${sel.trend_pct>0?'#22c55e':sel.trend_pct<0?'#ef4444':'#9ca3af'}">${sel.daily_demand>0.01&&sel.trend_pct!==0?(sel.trend_pct>=0?'+':'')+sel.trend_pct+'%':'—'}</div><div class="sova-detail-kpi-label">Tendance</div></div><div class="sova-detail-kpi"><div class="sova-detail-kpi-val">${sel.days_remaining!==null&&sel.daily_demand>0.01?sel.days_remaining+'j':'∞'}</div><div class="sova-detail-kpi-label">Jours restants</div></div></div>${sovaChartForecast(sel)}${sel.action?`<div class="sova-action-banner sova-action-${sel.action.urgency}"><div class="sova-action-verb">${sel.action.verb}</div><div class="sova-action-detail">${sel.action.quantity} ${sel.action.unit} · avant le ${sel.action.before}</div></div>`:''}</div>`:''}`;
   }
 
-  const tabContent=S.sovaTab==='overview'?tabOverview():S.sovaTab==='alerts'?tabAlerts():S.sovaTab==='tomorrow'?tabTomorrow():tabArticles();
+  const tabContent=S.sovaTab==='overview'?tabOverview():S.sovaTab==='insights'?tabInsights():S.sovaTab==='alerts'?tabAlerts():S.sovaTab==='tomorrow'?tabTomorrow():tabArticles();
   const OWL=`<svg width="44" height="44" viewBox="0 0 466 466" fill="#8A6729" xmlns="http://www.w3.org/2000/svg"><path d="M139.8,45c4.143,0,7.5-3.357,7.5-7.5s-3.357-7.5-7.5-7.5c-12.253,0-23.152,5.907-30,15.023C102.953,35.907,92.053,30,79.8,30c-4.143,0-7.5,3.357-7.5,7.5s3.357,7.5,7.5,7.5c12.406,0,22.5,10.094,22.5,22.5c0,4.143,3.357,7.5,7.5,7.5s7.5-3.357,7.5-7.5C117.3,55.094,127.394,45,139.8,45z"/><path d="M422.411,424.297L200.338,96.142c-5.44-8.039-13.984-14.288-24.005-17.705c0.642-12.645,0.967-26.383,0.967-40.937v-30c0-4.143-3.357-7.5-7.5-7.5h-120c-4.143,0-7.5,3.357-7.5,7.5v30c0,57.634,5.026,100.198,15.819,133.955c11.204,35.041,28.415,59.516,45.405,80.706c3.173,5.901,6.513,11.827,9.749,17.563c18.762,33.257,38.02,67.4,45.635,128.945c0.011,0.503,0.07,0.993,0.176,1.467c1.819,15.173,2.938,31.993,3.171,50.864h-52.454c-4.143,0-7.5,3.357-7.5,7.5s3.357,7.5,7.5,7.5h60h60c4.143,0,7.5-3.357,7.5-7.5c0-19.311-2.089-36.706-5.754-52.5h20.321c4.143,0,7.5-3.357,7.5-7.5v-65.549c0-4.143-3.357-7.5-7.5-7.5c-4.143,0-7.5,3.357-7.5,7.5V391h-16.913c-16.582-52.774-51.15-86.389-80.492-114.912c-11.674-11.348-22.7-22.066-31.316-32.786C76.087,194.048,57.299,150.686,57.299,37.5V15h105v22.5c0,16.614-0.43,32.124-1.277,46.099c-0.225,3.711,2.303,7.027,5.941,7.793c8.797,1.853,16.63,6.771,20.952,13.157l133.232,196.875c-6.405,0.715-12.873,1.077-19.335,1.077c-94.841,0-172-77.159-172-172c0-4.143-3.357-7.5-7.5-7.5s-7.5,3.357-7.5,7.5c0,103.112,83.888,187,187,187c9.625,0,19.265-0.744,28.726-2.201l79.451,117.404c2.321,3.432,6.984,4.331,10.414,2.008C423.834,432.39,424.733,427.727,422.411,424.297z"/></svg>`;
   return `<div class="sova-wrap">
     <div class="sova-header">
