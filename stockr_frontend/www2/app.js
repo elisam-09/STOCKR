@@ -1804,6 +1804,54 @@ function fmtTimeAgo(iso) {
 }
 
 // ── Subscription Manager ──────────────────────
+// ═══════════════════════════════════════════════════════════════
+// ENCAISSEMENT DES ABONNEMENTS — liens de paiement hébergés
+// (Stripe Payment Link / CinetPay / PayDunya / Wave — au choix du proprio)
+// L'argent va sur le compte du PROPRIÉTAIRE de l'app. Aucun backend requis.
+// ═══════════════════════════════════════════════════════════════
+// Le proprio colle ses liens dans Réglages → Encaissement (stockés en local
+// ET idéalement en dur ici pour que TOUS les utilisateurs les voient).
+const BILLING_LINKS_DEFAULT = {
+  // Exemple : starter:{ monthly:'https://buy.stripe.com/...', yearly:'...' }
+  starter:    { monthly: '', yearly: '' },
+  pro:        { monthly: '', yearly: '' },
+  enterprise: { monthly: '', yearly: '' },
+};
+function _billingLinks() {
+  let stored = {};
+  try { stored = JSON.parse(localStorage.getItem('baro_billing_links') || '{}'); } catch(_) {}
+  // Fusionne défaut (code) + config locale (proprio)
+  const out = {};
+  for (const p of ['starter','pro','enterprise']) {
+    out[p] = {
+      monthly: (stored[p]?.monthly || BILLING_LINKS_DEFAULT[p].monthly || '').trim(),
+      yearly:  (stored[p]?.yearly  || BILLING_LINKS_DEFAULT[p].yearly  || '').trim(),
+    };
+  }
+  return out;
+}
+function _billingLinkFor(planKey, billing) {
+  const links = _billingLinks();
+  return links[planKey]?.[billing] || links[planKey]?.monthly || '';
+}
+// Au retour du paiement : ?baro_paid=pro → active le plan
+function _handlePaymentReturn() {
+  try {
+    const params = new URLSearchParams(location.search);
+    const paid = params.get('baro_paid');
+    if (paid && ['starter','pro','enterprise'].includes(paid)) {
+      _doActivatePlan(paid, { trial: false, paid: true });
+      showToast(`✅ Paiement reçu — plan ${paid.toUpperCase()} activé !`, 'success');
+      // Nettoie l'URL
+      params.delete('baro_paid');
+      const clean = location.pathname + (params.toString() ? '?' + params.toString() : '');
+      history.replaceState(null, '', clean);
+      return true;
+    }
+  } catch(_) {}
+  return false;
+}
+
 function activatePlan(planKey) {
   // Free plan = activation directe, sans confirmation
   if (planKey === 'free') {
@@ -1855,7 +1903,17 @@ function __planStartTrial(planKey) {
 }
 async function __planPayNow(planKey, amount) {
   __planConfirmClose();
-  // Chercher une méthode de paiement active
+  // 1) Lien de paiement hébergé configuré (Stripe/CinetPay/PayDunya/Wave) → page sécurisée
+  const billing = S.subscription.billing || 'monthly';
+  const link = _billingLinkFor(planKey, billing);
+  if (link) {
+    try { window.open(link, '_blank'); } catch(_) { location.href = link; }
+    // Au retour (redirect ?baro_paid=plan), le plan s'active automatiquement.
+    // En attendant, propose la confirmation manuelle (fallback si pas de redirect).
+    setTimeout(() => __planShowConfirmModal(planKey, amount, 'lien'), 1200);
+    return;
+  }
+  // 2) Sinon : Mobile Money / PayPal (USSD + confirmation)
   const active = (S.paymentMethods||[]).filter(m => m.active);
   if (active.length === 0) {
     // Pas de moyen configuré → ouvrir directement le choix des providers populaires
@@ -1970,7 +2028,8 @@ async function __planProcessPayment(providerId, planKey, amount) {
 
 // Modal de confirmation post-paiement (mobile money / PayPal)
 function __planShowConfirmModal(planKey, amount, providerId) {
-  const LBL = { wave:'Wave', orange:'Orange Money', moov:'Moov Money', mtn:'MTN Mobile Money', paypal:'PayPal' };
+  const LBL = { wave:'Wave', orange:'Orange Money', moov:'Moov Money', mtn:'MTN Mobile Money', paypal:'PayPal', lien:'Paiement en ligne' };
+  const isLink = providerId === 'lien';
   const modal = document.createElement('div');
   modal.id = '__planConfirmPayModal';
   modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px';
@@ -1982,7 +2041,7 @@ function __planShowConfirmModal(planKey, amount, providerId) {
         <div style="font-size:13px;color:var(--text-3);margin-top:6px">${LBL[providerId]||providerId} · ${fmt(amount)} ${sym()}</div>
       </div>
       <div style="background:var(--bg);border-radius:10px;padding:12px;margin-bottom:14px;font-size:12px;color:var(--text-2);line-height:1.5">
-        <strong>⚠️ Important :</strong> Ne cliquez sur "Oui" que si le paiement a bien été débité sur votre ${providerId === 'paypal' ? 'PayPal' : 'Mobile Money'}. Vous recevrez un SMS de confirmation.
+        <strong>⚠️ Important :</strong> ${isLink ? 'Termine le paiement sur la page ouverte. Si elle te redirige vers l\'app, le plan s\'active automatiquement. Sinon clique "Oui" une fois payé.' : 'Ne cliquez sur "Oui" que si le paiement a bien été débité sur votre ' + (providerId === 'paypal' ? 'PayPal' : 'Mobile Money') + '. Vous recevrez un SMS de confirmation.'}
       </div>
       <button class="btn btn-primary" style="width:100%;padding:14px;font-size:15px;font-weight:800;margin-bottom:8px" onclick="document.getElementById('__planConfirmPayModal').remove();_doActivatePlan('${planKey}', { trial:false, paid:true });logActivity('payment','Plan ${planKey} payé via ${providerId} — ${amount} FCFA')">
         ✅ Oui, paiement effectué
@@ -4527,7 +4586,7 @@ function _doRender() {
     catalog: vCatalog, suppliers: vSuppliers,
     'add-supplier': vAddSupplier, 'supplier-detail': vSupplierDetail,
     'stock-history': vStockHistory, 'purchase-orders': vPurchaseOrdersEnhanced,
-    'add-order': vAddOrder, pricing: vPricing, subscription: vSubscription,
+    'add-order': vAddOrder, pricing: vPricing, subscription: vSubscription, 'billing-setup': vBillingSetup,
     // ── Nouvelles vues v2 ──
     more: vMore, boutique: vBoutique, marketing: vMarketing,
     'social-media': vSocialMedia, 'social-setup': vSocialSetup, 'payments-setup': vPayments,
@@ -4620,7 +4679,7 @@ function _doRender() {
     if (gs) { gs.focus({ preventScroll: true }); gs.setSelectionRange(gs.value.length, gs.value.length); }
   }
 
-  const hideNav = ['detail','add','add-product','edit-product','pack-form','add-client','client-detail','notifications','catalog','add-supplier','supplier-detail','stock-history','purchase-orders','add-order','pricing','subscription','boutique','boutique-editor','boutique-appearance','boutique-domain','boutique-pixels','boutique-code','boutique-seo','boutique-hours','boutique-policies','boutique-faq','marketing','social-media','social-setup','payments-setup','integrations','delivery-setup','whatsapp-setup','sms-setup','ecommerce-setup','sheets-setup','pos-setup','compta-setup','api-settings','spectra','clients','exports','team','add-team-member','audit-log','appearance','security','2fa-verify','onboarding'].includes(S.view);
+  const hideNav = ['detail','add','add-product','edit-product','pack-form','add-client','client-detail','notifications','catalog','add-supplier','supplier-detail','stock-history','purchase-orders','add-order','pricing','subscription','billing-setup','boutique','boutique-editor','boutique-appearance','boutique-domain','boutique-pixels','boutique-code','boutique-seo','boutique-hours','boutique-policies','boutique-faq','marketing','social-media','social-setup','payments-setup','integrations','delivery-setup','whatsapp-setup','sms-setup','ecommerce-setup','sheets-setup','pos-setup','compta-setup','api-settings','spectra','clients','exports','team','add-team-member','audit-log','appearance','security','2fa-verify','onboarding'].includes(S.view);
   navEl.style.display = hideNav ? 'none' : '';
   if (!hideNav) navEl.innerHTML = renderNav();
 }
@@ -12122,7 +12181,74 @@ function vSubscription() {
       </div>
       <div style="font-size:11px;color:var(--accent);margin-top:6px;font-weight:700">support@baro.app</div>
     </div>
+
+    <button class="btn btn-ghost" style="margin-top:12px;font-size:12px;color:var(--text-3)" onclick="nav('billing-setup')">⚙️ Configurer l'encaissement (admin)</button>
   </div>`;
+}
+
+// ── Configuration de l'encaissement : liens de paiement hébergés ──
+function vBillingSetup() {
+  const links = _billingLinks();
+  const plans = [
+    { id:'starter', label:'Starter', price:'5 000' },
+    { id:'pro', label:'Professional', price:'20 000' },
+    { id:'enterprise', label:'Enterprise', price:'100 000' },
+  ];
+  return `
+  <div class="sub-hero">
+    <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('pricing')">${IC.left}</button>
+    <div class="sub-hero-title">💰 Encaisser les abonnements</div>
+    <div class="sub-hero-sub">Colle tes liens de paiement — l'argent arrive sur ton compte</div>
+  </div>
+  <div class="container">
+    <div class="card" style="margin-bottom:12px;border-left:4px solid var(--accent)">
+      <div style="font-size:13px;color:var(--text-2);line-height:1.6">
+        Crée un <strong>lien de paiement</strong> par plan chez ton fournisseur, puis colle-le ici. Quand un client choisit un plan, il paie sur la page sécurisée du fournisseur → l'argent arrive sur <strong>ton</strong> compte.
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:12px;background:linear-gradient(135deg,rgba(16,185,129,.08),transparent);border:1px solid rgba(16,185,129,.25)">
+      <div style="font-size:13px;font-weight:800;margin-bottom:6px">🌍 Quel fournisseur choisir ?</div>
+      <div style="font-size:12px;color:var(--text-2);line-height:1.7">
+        🇨🇮 <strong>Côte d'Ivoire / Afrique</strong> : <a href="https://cinetpay.com" target="_blank" style="color:var(--accent);font-weight:700">CinetPay</a>, <a href="https://paydunya.com" target="_blank" style="color:var(--accent);font-weight:700">PayDunya</a> ou <a href="https://www.wave.com/fr/business/" target="_blank" style="color:var(--accent);font-weight:700">Wave Business</a> → acceptent Wave, Orange Money, MoMo + cartes.<br>
+        🌐 <strong>International</strong> : <a href="https://dashboard.stripe.com/payment-links" target="_blank" style="color:var(--accent);font-weight:700">Stripe Payment Links</a> (⚠ ne marche pas pour recevoir depuis la CI).
+      </div>
+    </div>
+
+    ${plans.map(p => `
+    <div class="card" style="margin-bottom:10px">
+      <div style="font-size:14px;font-weight:800;margin-bottom:8px">${p.label} <span style="font-size:12px;color:var(--text-3);font-weight:600">· ${p.price} FCFA/mois</span></div>
+      <label class="form-label">Lien mensuel</label>
+      <input id="bl-${p.id}-monthly" class="input" type="url" placeholder="https://pay.cinetpay.com/... ou https://buy.stripe.com/..." value="${(links[p.id].monthly||'').replace(/"/g,'&quot;')}" style="font-size:12px !important;font-family:monospace">
+      <label class="form-label" style="margin-top:8px">Lien annuel (optionnel)</label>
+      <input id="bl-${p.id}-yearly" class="input" type="url" placeholder="Lien paiement annuel" value="${(links[p.id].yearly||'').replace(/"/g,'&quot;')}" style="font-size:12px !important;font-family:monospace">
+    </div>`).join('')}
+
+    <button class="btn btn-primary" style="margin-top:6px" onclick="saveBillingLinks()">💾 Enregistrer les liens</button>
+
+    <div class="card" style="margin-top:14px;background:var(--gray-1)">
+      <div style="font-size:13px;font-weight:800;margin-bottom:6px">🔁 Activation automatique après paiement</div>
+      <div style="font-size:12px;color:var(--text-2);line-height:1.6">
+        Dans ton fournisseur, mets l'<strong>URL de redirection / succès</strong> sur :<br>
+        <code style="background:var(--surface);padding:3px 8px;border-radius:6px;font-size:11px;display:inline-block;margin-top:4px;word-break:break-all">${location.origin}${location.pathname}?baro_paid=pro</code><br>
+        <span style="font-size:11px;color:var(--text-3)">(remplace <strong>pro</strong> par starter/enterprise selon le lien). Le plan s'activera tout seul au retour.</span>
+      </div>
+    </div>
+    <div style="font-size:11px;color:var(--text-3);margin-top:12px;line-height:1.5;text-align:center">
+      💡 Pour une vérification 100% anti-fraude, un backend avec webhook est recommandé plus tard. Cette méthode (redirection) convient pour démarrer.
+    </div>
+  </div>`;
+}
+function saveBillingLinks() {
+  const get = id => (document.getElementById(id)?.value || '').trim();
+  const data = {};
+  for (const p of ['starter','pro','enterprise']) {
+    data[p] = { monthly: get('bl-'+p+'-monthly'), yearly: get('bl-'+p+'-yearly') };
+  }
+  localStorage.setItem('baro_billing_links', JSON.stringify(data));
+  showToast('✅ Liens de paiement enregistrés', 'success');
+  haptic('success');
+  nav('pricing');
 }
 
 function _planFeatures(plan) {
@@ -24479,6 +24605,8 @@ function __baroInit() {
   window.changeTaxRate           = changeTaxRate;
   window.activatePlan            = activatePlan;
   window.cancelPlan              = cancelPlan;
+  window.vBillingSetup           = vBillingSetup;
+  window.saveBillingLinks        = saveBillingLinks;
   window.setBilling              = setBilling;
   window.__planConfirmClose      = __planConfirmClose;
   window.__planStartTrial        = __planStartTrial;
@@ -24830,6 +24958,8 @@ function __baroInit() {
 
   // Gérer le retour OAuth (id_token/access_token dans le hash)
   try { _handleOAuthCallback(); } catch(e) { console.warn('oauth cb', e); }
+  // Gérer le retour de paiement (?baro_paid=plan) → activation auto
+  try { _handlePaymentReturn(); } catch(e) { console.warn('pay return', e); }
 
   // Restaurer la session + token si existants
   const saved = getSession();
