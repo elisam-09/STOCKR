@@ -4093,6 +4093,42 @@ body.dark .sova-wrap {
 .sova-score-ring-wrap { animation: fadeIn .5s var(--ease-out) both; }
 .sova-score-num { font-variant-numeric: tabular-nums; }
 
+/* ── Vue Stock en grille (cartes photo) ── */
+.stock-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+@media (min-width: 480px) { .stock-grid { grid-template-columns: repeat(3, 1fr); } }
+.sg-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 14px; overflow: hidden; cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: transform .2s var(--ease-out), box-shadow .2s var(--ease-out);
+  display: flex; flex-direction: column;
+}
+.sg-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.sg-card:active { transform: scale(.97); }
+.sg-imgwrap { position: relative; aspect-ratio: 1/1; overflow: hidden; background: var(--gray-1); }
+.sg-img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .35s var(--ease-out); }
+.sg-card:hover .sg-img { transform: scale(1.06); }
+.sg-ph { display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--accent-light), rgba(124,115,255,.06)); }
+.sg-ph span { font-size: 40px; font-weight: 900; color: var(--accent); opacity: .5; }
+.sg-alert {
+  position: absolute; top: 8px; left: 8px;
+  color: #fff; font-size: 9.5px; font-weight: 800; letter-spacing: .2px;
+  padding: 3px 8px; border-radius: 7px;
+  box-shadow: 0 2px 6px rgba(0,0,0,.2);
+}
+.sg-stockbadge {
+  position: absolute; bottom: 8px; right: 8px;
+  color: #fff; font-size: 10px; font-weight: 800;
+  padding: 3px 8px; border-radius: 7px;
+  backdrop-filter: blur(4px); box-shadow: 0 2px 6px rgba(0,0,0,.25);
+}
+.sg-body { padding: 9px 10px 11px; display: flex; flex-direction: column; gap: 4px; flex: 1; }
+.sg-name { font-size: 13px; font-weight: 700; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.sg-row { display: flex; justify-content: space-between; align-items: baseline; gap: 6px; margin-top: auto; }
+.sg-price { font-size: 13px; font-weight: 800; color: var(--accent); letter-spacing: -.2px; }
+.sg-margin { font-size: 12px; font-weight: 800; flex-shrink: 0; }
+.sg-val { font-size: 11px; font-weight: 600; color: var(--text-3); flex-shrink: 0; }
+
 /* ── SOVA Idées (insights business) ── */
 .sova-insights-intro { font-size: 13px; color: var(--text-2); line-height: 1.55; margin-bottom: 14px; padding: 12px 14px; background: var(--surface); border: 1px solid var(--sova-border); border-radius: 12px; }
 .sova-insight-card {

@@ -6154,7 +6154,8 @@ function vPantry() {
         ${isReseller ? `<option value="margin-desc" ${sort==='margin-desc'?'selected':''}>Marge ↓</option>` : ''}
         <option value="expiry" ${sort==='expiry'?'selected':''}>Péremption</option>
       </select>
-      <button class="filter-chip" onclick="nav('stock-history')" style="font-size:10px;padding:4px 10px;margin-left:auto" title="Historique des mouvements">${IC.trending} Mouvements</button>
+      <button class="filter-chip" onclick="S.stockView=(S.stockView==='grid'?'list':'grid');render()" style="font-size:10px;padding:4px 10px;margin-left:auto" title="Affichage liste / grille">${S.stockView==='grid'?'☰ Liste':'▦ Grille'}</button>
+      <button class="filter-chip" onclick="nav('stock-history')" style="font-size:10px;padding:4px 10px" title="Historique des mouvements">${IC.trending} Mouvements</button>
       ${S.locations.length > 1 ? `<button class="filter-chip" onclick="openStockTransfer()" style="font-size:10px;padding:4px 10px" title="Transférer entre emplacements">⇄ Transfert</button>` : ''}
     </div>` : ''}
     ${S.locations.length > 0 ? `
@@ -6174,7 +6175,7 @@ function vPantry() {
         <button class="btn btn-primary" style="width:auto;padding:11px 24px" onclick="nav('add')">${isReseller?'🏪 Ajouter un produit':t('addArticle')}</button>
         <button class="btn btn-ghost" style="width:auto;padding:8px 16px;font-size:12px" onclick="if(confirm('Charger 5 articles démo pour explorer l&apos;app ?')){loadDemoData();}">📚 Charger des exemples (optionnel)</button>
       </div>` : ''}
-    </div>` : list.map((a,i) => {
+    </div>` : (S.stockView === 'grid' ? `<div class="stock-grid">${list.map((a,i)=>_stockGridCard(a,i,isReseller)).join('')}</div>` : list.map((a,i) => {
       const st  = stockStatus(a.stock, a.min);
       const pct = a.min > 0 ? Math.min(100, Math.round((a.stock / Math.max(a.min*2,1))*100)) : 100;
       const val = a.stock * (a.price || 0);
@@ -6238,7 +6239,41 @@ function vPantry() {
           </div>
         </div>
       </div>`;
-    }).join('')}
+    }).join(''))}
+  </div>`;
+}
+
+// ── Carte produit en GRILLE (photo + alerte inline + valeur) ──
+function _stockGridCard(a, i, isReseller) {
+  const st = stockStatus(a.stock, a.min);
+  const val = a.stock * (a.price || 0);
+  const pa = a.purchasePrice || 0, pv = a.price || 0;
+  const marginPctVal = pv > 0 && pa > 0 ? Math.round(((pv - pa) / pv) * 100) : 0;
+  const marginColor = marginPctVal >= 30 ? 'var(--success)' : marginPctVal >= 15 ? 'var(--warning)' : 'var(--danger)';
+  const exp = getExpiryStatus(a.expiry);
+  const initial = (a.name || '?').charAt(0).toUpperCase();
+  const img = a.image
+    ? `<img class="sg-img" src="${a.image}" alt="" loading="lazy">`
+    : `<div class="sg-img sg-ph"><span>${initial}</span></div>`;
+  // Badge d'alerte inline (coin haut-gauche)
+  let alert = '';
+  if (a.stock === 0) alert = `<span class="sg-alert" style="background:var(--danger)">Rupture</span>`;
+  else if (a.min > 0 && a.stock < a.min) alert = `<span class="sg-alert" style="background:var(--warning)">Stock bas</span>`;
+  else if (exp && exp.days <= 30) alert = `<span class="sg-alert" style="background:#EC4899">${exp.label}</span>`;
+  return `
+  <div class="sg-card card-tap anim" style="animation-delay:${Math.min(i*0.03,0.4)}s" onclick="nav('detail',{selectedId:${a.id}})">
+    <div class="sg-imgwrap">
+      ${img}
+      ${alert}
+      <span class="sg-stockbadge" style="background:${st.cls==='st-out'?'var(--danger)':st.cls==='st-low'?'var(--warning)':'var(--success)'}">${fmtQty(a.stock)} ${a.unit||''}</span>
+    </div>
+    <div class="sg-body">
+      <div class="sg-name">${a.name}</div>
+      <div class="sg-row">
+        <span class="sg-price">${pv>0?fmt(pv)+' '+sym():'—'}</span>
+        ${isReseller && marginPctVal>0 ? `<span class="sg-margin" style="color:${marginColor}">+${marginPctVal}%</span>` : (val>0?`<span class="sg-val">${fmt(val)}</span>`:'')}
+      </div>
+    </div>
   </div>`;
 }
 
