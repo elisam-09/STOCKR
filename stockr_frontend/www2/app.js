@@ -23051,6 +23051,8 @@ function vWhatsAppSetup() {
       <div style="margin-bottom:10px">
         <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">Numéro WhatsApp Business (format international)</label>
         <input id="wa-phone" class="input" value="${(d.phone||'').replace(/"/g,'&quot;')}" placeholder="+225 07 XX XX XX XX">
+        ${(d.confirmed && d.confirmedPhone === d.phone) ? `<div style="display:flex;align-items:center;gap:6px;margin-top:7px;font-size:12px;color:#128C7E;font-weight:700">✓ Numéro confirmé — joignable sur WhatsApp</div>`
+          : `<button class="btn btn-ghost" style="width:100%;margin-top:7px;font-size:12px;padding:8px;border:1px solid #25D36660;color:#128C7E" onclick="confirmWhatsAppNumber()">${IC.whatsapp} Confirmer ce numéro (envoi d'un test)</button>`}
       </div>
       <div style="margin-bottom:10px">
         <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">Nom affiché dans la signature</label>
@@ -23125,14 +23127,42 @@ function vWhatsAppSetup() {
   </script>`;
 }
 
+// Confirmation d'un numéro WhatsApp : envoie un message test, l'utilisateur
+// confirme l'avoir reçu sur ce WhatsApp (vérif de joignabilité, sans backend).
+function confirmWhatsAppNumber() {
+  const phone = document.getElementById('wa-phone')?.value.trim() || '';
+  if (!phone) { showToast('Entrez d\'abord le numéro', 'error'); return; }
+  const num = _waNormalize(phone);
+  const code = String(Math.floor(1000 + Math.random()*9000));
+  window.open(`https://wa.me/${num}?text=${encodeURIComponent('✅ BARO — confirmation du numéro. Code : '+code)}`, '_blank');
+  setTimeout(() => {
+    const ok = confirm(`Un message WhatsApp vers ${phone} vient de s'ouvrir.\n\nEnvoyez-le et vérifiez que vous le recevez bien sur CE compte WhatsApp.\n\nAvez-vous bien reçu le message sur ce numéro ?`);
+    if (ok) {
+      S._waConfirmedPhone = phone;
+      // Met à jour la config si déjà enregistrée
+      const cfg = (S.integrationsConfig||[]).find(c => c.id === 'whatsapp-business');
+      if (cfg && cfg.detail && cfg.detail.phone === phone) {
+        cfg.detail.confirmed = true; cfg.detail.confirmedPhone = phone;
+        localStorage.setItem('stockr_integrations', JSON.stringify(S.integrationsConfig));
+      }
+      showToast('✓ Numéro confirmé — joignable sur WhatsApp', 'success');
+      render();
+    }
+  }, 700);
+}
+
 function saveWhatsAppSetup() {
   const mode = document.querySelector('input[name="wa-mode"]:checked')?.value || 'quick';
   const phone = document.getElementById('wa-phone')?.value.trim() || '';
   const signature = document.getElementById('wa-sig')?.value.trim() || '';
   if (!phone) { showToast('Numéro WhatsApp obligatoire', 'error'); return; }
+  const _prevCfg = (S.integrationsConfig||[]).find(c => c.id === 'whatsapp-business');
+  const _wasConfirmed = (S._waConfirmedPhone === phone) || (_prevCfg?.detail?.confirmed && _prevCfg.detail.confirmedPhone === phone);
   const detail = {
     mode,
     phone,
+    confirmed: !!_wasConfirmed,
+    confirmedPhone: _wasConfirmed ? phone : null,
     signature,
     phoneId: document.getElementById('wa-phoneId')?.value.trim() || '',
     waba:    document.getElementById('wa-waba')?.value.trim() || '',
