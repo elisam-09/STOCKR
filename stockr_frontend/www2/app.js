@@ -4472,11 +4472,18 @@ function __markViewTransition(newView) {
   if (!body) return changed;
   if (changed) {
     body.classList.add('view-entering');
-    // Remove after one frame cycle so re-renders within the same view stay static
+    // Remove after the stagger finishes so re-renders within the same view stay static
     clearTimeout(window.__viewEnterTimer);
-    window.__viewEnterTimer = setTimeout(() => body.classList.remove('view-entering'), 450);
+    window.__viewEnterTimer = setTimeout(() => {
+      body.classList.remove('view-entering');
+      window.__viewEnterTimer = null;
+    }, 420);
   } else {
-    body.classList.remove('view-entering');
+    // Re-render dans la MÊME vue : ne JAMAIS interrompre une entrée en cours.
+    // (Retirer view-entering pendant l'animation faisait "snapper" les cartes
+    //  de l'opacité partielle à 1 → le "blink" type rafraîchissement.)
+    // Si l'entrée est finie (timer nul), la classe est déjà absente → statique.
+    if (!window.__viewEnterTimer) body.classList.remove('view-entering');
   }
   return changed;
 }
@@ -4597,7 +4604,9 @@ function _doRender() {
     integrations: vIntegrations,
     'delivery-setup': vDeliverySetup,
     'whatsapp-setup': vWhatsAppSetup,
+    'whatsapp-broadcast': vWhatsappBroadcast,
     'sms-setup': vSmsSetup,
+    'sms-broadcast': vSmsBroadcast,
     'ecommerce-setup': vEcommerceSetup,
     'sheets-setup': vSheetsSetup,
     'pos-setup': vPosSetup,
@@ -4683,7 +4692,7 @@ function _doRender() {
     if (gs) { gs.focus({ preventScroll: true }); gs.setSelectionRange(gs.value.length, gs.value.length); }
   }
 
-  const hideNav = ['detail','add','add-product','edit-product','pack-form','add-client','client-detail','notifications','catalog','add-supplier','supplier-detail','stock-history','purchase-orders','add-order','pricing','subscription','billing-setup','boutique','boutique-editor','boutique-appearance','boutique-domain','boutique-pixels','boutique-code','boutique-seo','boutique-hours','boutique-policies','boutique-faq','marketing','social-media','social-setup','payments-setup','integrations','delivery-setup','whatsapp-setup','sms-setup','ecommerce-setup','sheets-setup','pos-setup','compta-setup','api-settings','spectra','clients','exports','team','add-team-member','audit-log','appearance','security','2fa-verify','onboarding'].includes(S.view);
+  const hideNav = ['detail','add','add-product','edit-product','pack-form','add-client','client-detail','notifications','catalog','add-supplier','supplier-detail','stock-history','purchase-orders','add-order','pricing','subscription','billing-setup','boutique','boutique-editor','boutique-appearance','boutique-domain','boutique-pixels','boutique-code','boutique-seo','boutique-hours','boutique-policies','boutique-faq','marketing','social-media','social-setup','payments-setup','integrations','delivery-setup','whatsapp-setup','whatsapp-broadcast','sms-setup','sms-broadcast','ecommerce-setup','sheets-setup','pos-setup','compta-setup','api-settings','spectra','clients','exports','team','add-team-member','audit-log','appearance','security','2fa-verify','onboarding'].includes(S.view);
   navEl.style.display = hideNav ? 'none' : '';
   if (!hideNav) navEl.innerHTML = renderNav();
 }
@@ -23192,6 +23201,253 @@ function _logSmsSend(to, text, status, provider, error) {
   const log = JSON.parse(localStorage.getItem(key) || '[]');
   log.unshift({ id:'sms_'+Date.now().toString(36), to, preview:text.slice(0,80), status, provider, error:error||null, date:new Date().toISOString() });
   localStorage.setItem(key, JSON.stringify(log.slice(0, 200)));
+}
+
+// ══════════════════════════════════════════════════════════════
+// BROADCAST — Envoi de masse WhatsApp + SMS (réel, depuis les clients)
+// ══════════════════════════════════════════════════════════════
+// Remplace les variables {nom} / {business} / {ville} dans un message.
+function _personalizeMsg(tpl, cl) {
+  return String(tpl || '')
+    .replace(/\{nom\}/gi, (cl && cl.name) || 'client')
+    .replace(/\{business\}/gi, (S.session && S.session.business) || 'notre boutique')
+    .replace(/\{ville\}/gi, (cl && cl.city) || '');
+}
+// Normalise un numéro pour wa.me (international sans +, CI par défaut).
+function _waNormalize(p) {
+  let d = String(p || '').replace(/\D/g, '');
+  if (!d) return '';
+  if (d.length <= 10 && !d.startsWith('225')) d = '225' + d;
+  return d;
+}
+
+function _waBcastState() {
+  if (!S._waBcast) {
+    const biz = (S.session && S.session.business) || 'notre boutique';
+    S._waBcast = { msg: `Bonjour {nom} 👋\n\n${biz} a une nouveauté pour vous ! Passez nous voir 🙏`, sent: {} };
+  }
+  return S._waBcast;
+}
+
+function vWhatsappBroadcast() {
+  const st = _waBcastState();
+  const clients = (S.clients || []).filter(c => c.phone);
+  const promos = (S.promotions || []).filter(p => p.active);
+  const sentCount = clients.filter(c => st.sent[c.id]).length;
+  const pct = clients.length ? Math.round(sentCount / clients.length * 100) : 0;
+  return `
+  <div class="sub-hero" style="background:linear-gradient(135deg,#25D36625,#128C7E12)">
+    <div class="page-header-row" style="margin-bottom:10px">
+      <button class="back-btn-dark" onclick="nav('integrations')">${IC.left}</button>
+      <div style="flex:1">
+        <div class="sub-hero-title">${IC.whatsapp} Broadcast WhatsApp</div>
+        <div class="sub-hero-sub">Envoyez votre message à vos clients, un par un</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${clients.length}</div><div class="hero-stat-lbl">Clients</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${sentCount}</div><div class="hero-stat-lbl">Envoyés</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${pct}%</div><div class="hero-stat-lbl">Progression</div></div>
+    </div>
+  </div>
+  <div class="container">
+    ${clients.length === 0 ? `
+      <div class="card" style="text-align:center;padding:30px 18px">
+        <div style="font-size:34px;margin-bottom:8px">📇</div>
+        <div style="font-weight:800;margin-bottom:4px">Aucun client avec numéro</div>
+        <div style="font-size:12px;color:var(--text-3);margin-bottom:14px">Ajoutez des clients (avec téléphone) pour leur envoyer un message groupé.</div>
+        <button class="btn btn-primary" onclick="nav('add-client')">+ Ajouter un client</button>
+      </div>` : `
+      <div class="card" style="margin-bottom:10px">
+        <div class="card-title">✍️ Votre message</div>
+        <textarea id="wa-bcast-msg" class="input" rows="5" style="font-size:13px;line-height:1.5" oninput="S._waBcast.msg=this.value">${st.msg.replace(/</g,'&lt;')}</textarea>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">
+          <button class="btn btn-ghost" style="font-size:11px;padding:5px 10px" onclick="_waBcastInsert('{nom}')">+ {nom}</button>
+          <button class="btn btn-ghost" style="font-size:11px;padding:5px 10px" onclick="_waBcastInsert('{business}')">+ {business}</button>
+          ${promos.length ? `<button class="btn btn-ghost" style="font-size:11px;padding:5px 10px" onclick="_waBcastAddPromo()">+ Promo en cours</button>` : ''}
+        </div>
+        <div style="font-size:11px;color:var(--text-3);margin-top:8px;line-height:1.4">💡 <b>{nom}</b> est remplacé par le nom de chaque client. WhatsApp ouvre une conversation pré-remplie — touchez « Envoyer » dans WhatsApp pour chaque client.</div>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:10px">
+        <button class="btn btn-primary" style="flex:1;background:#25D366" onclick="_waBcastNext()">${IC.whatsapp} Ouvrir le suivant (${clients.length - sentCount})</button>
+        ${sentCount ? `<button class="btn btn-ghost" onclick="_waBcastReset()">↺ Réinit.</button>` : ''}
+      </div>
+      <div class="card" style="padding:6px 0">
+        ${clients.map(c => {
+          const done = !!st.sent[c.id];
+          return `<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border)">
+            <div style="width:34px;height:34px;border-radius:50%;background:${done?'#25D36620':'var(--gray-1)'};display:flex;align-items:center;justify-content:center;font-weight:800;color:${done?'#128C7E':'var(--text-2)'}">${done?'✓':(c.name||'?').charAt(0).toUpperCase()}</div>
+            <div style="flex:1;min-width:0">
+              <div style="font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${(c.name||'Client').replace(/</g,'&lt;')}</div>
+              <div style="font-size:11px;color:var(--text-3)">${c.phone}</div>
+            </div>
+            <button class="btn ${done?'btn-ghost':'btn-secondary'}" style="padding:6px 12px;font-size:12px" onclick="_waBcastSendOne('${c.id}')">${done?'Renvoyer':'Envoyer'}</button>
+          </div>`;
+        }).join('')}
+      </div>`}
+  </div>`;
+}
+function _waBcastInsert(token) {
+  const ta = document.getElementById('wa-bcast-msg');
+  const st = _waBcastState();
+  if (ta) {
+    const s = ta.selectionStart || ta.value.length;
+    ta.value = ta.value.slice(0, s) + token + ta.value.slice(ta.selectionEnd || s);
+    st.msg = ta.value; ta.focus();
+  } else { st.msg += token; render(); }
+}
+function _waBcastAddPromo() {
+  const promos = (S.promotions || []).filter(p => p.active);
+  if (!promos.length) return;
+  const txt = '\n\n🎁 Offres en cours :\n' + promos.map(p => `• ${p.name} (-${p.discount}%)`).join('\n');
+  const st = _waBcastState();
+  st.msg += txt;
+  render();
+}
+function _waBcastSendOne(id) {
+  const st = _waBcastState();
+  const cl = (S.clients || []).find(c => String(c.id) === String(id));
+  if (!cl) return;
+  const phone = _waNormalize(cl.phone);
+  const msg = _personalizeMsg(st.msg, cl);
+  window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+  st.sent[id] = true;
+  haptic('tap');
+  render();
+}
+function _waBcastNext() {
+  const st = _waBcastState();
+  const clients = (S.clients || []).filter(c => c.phone);
+  const next = clients.find(c => !st.sent[c.id]);
+  if (!next) { showToast('Tous les clients ont été contactés ✓', 'success'); return; }
+  _waBcastSendOne(next.id);
+}
+function _waBcastReset() {
+  const st = _waBcastState();
+  st.sent = {};
+  showToast('Progression réinitialisée');
+  render();
+}
+
+function _smsBcastState() {
+  if (!S._smsBcast) {
+    const biz = (S.session && S.session.business) || 'Notre boutique';
+    S._smsBcast = { msg: `${biz}: bonjour {nom}, une offre vous attend ! Passez vite.`, running: false, results: {} };
+  }
+  return S._smsBcast;
+}
+
+function vSmsBroadcast() {
+  const st = _smsBcastState();
+  const cfg = _getSmsConfig();
+  const clients = (S.clients || []).filter(c => c.phone);
+  const okCount = clients.filter(c => st.results[c.id] === 'sent').length;
+  const failCount = clients.filter(c => st.results[c.id] === 'failed').length;
+  return `
+  <div class="sub-hero" style="background:linear-gradient(135deg,#4F46E525,#4338CA12)">
+    <div class="page-header-row" style="margin-bottom:10px">
+      <button class="back-btn-dark" onclick="nav('integrations')">${IC.left}</button>
+      <div style="flex:1">
+        <div class="sub-hero-title">📨 SMS groupé</div>
+        <div class="sub-hero-sub">${cfg ? 'Envoi automatique via votre passerelle' : 'Passerelle SMS non configurée'}</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${clients.length}</div><div class="hero-stat-lbl">Clients</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${okCount}</div><div class="hero-stat-lbl">Envoyés</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${failCount}</div><div class="hero-stat-lbl">Échecs</div></div>
+    </div>
+  </div>
+  <div class="container">
+    ${!cfg ? `
+      <div class="card" style="margin-bottom:10px;background:#4F46E508;border-color:#4F46E540">
+        <div style="display:flex;gap:10px;align-items:flex-start">
+          <div style="font-size:24px">⚙️</div>
+          <div style="flex:1;font-size:12px;color:var(--text-1);line-height:1.5">
+            <strong style="color:#4338CA">Configurez une passerelle SMS</strong><br>
+            Pour l'envoi <b>automatique</b> de masse, connectez Twilio, Vonage, Africa's Talking ou Orange CI. Sans passerelle, vous pouvez quand même ouvrir l'app SMS de votre téléphone avec tous les numéros pré-remplis.
+          </div>
+        </div>
+        <button class="btn btn-primary" style="width:100%;margin-top:10px" onclick="nav('sms-setup')">⚙️ Configurer la passerelle SMS</button>
+      </div>` : ''}
+    ${clients.length === 0 ? `
+      <div class="card" style="text-align:center;padding:30px 18px">
+        <div style="font-size:34px;margin-bottom:8px">📇</div>
+        <div style="font-weight:800;margin-bottom:4px">Aucun client avec numéro</div>
+        <div style="font-size:12px;color:var(--text-3);margin-bottom:14px">Ajoutez des clients avec téléphone pour leur envoyer un SMS.</div>
+        <button class="btn btn-primary" onclick="nav('add-client')">+ Ajouter un client</button>
+      </div>` : `
+      <div class="card" style="margin-bottom:10px">
+        <div class="card-title">✍️ Votre message <span style="font-weight:500;color:var(--text-3);font-size:11px">(${st.msg.length} car.)</span></div>
+        <textarea id="sms-bcast-msg" class="input" rows="4" maxlength="320" style="font-size:13px;line-height:1.5" oninput="S._smsBcast.msg=this.value;render()">${st.msg.replace(/</g,'&lt;')}</textarea>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">
+          <button class="btn btn-ghost" style="font-size:11px;padding:5px 10px" onclick="_smsBcastInsert('{nom}')">+ {nom}</button>
+          <button class="btn btn-ghost" style="font-size:11px;padding:5px 10px" onclick="_smsBcastInsert('{business}')">+ {business}</button>
+        </div>
+        <div style="font-size:11px;color:var(--text-3);margin-top:8px;line-height:1.4">💡 Gardez le SMS court (~160 car. = 1 message). <b>{nom}</b> est personnalisé par client.</div>
+      </div>
+      ${cfg ? `
+      <button class="btn btn-primary" style="width:100%;margin-bottom:10px;background:#4F46E5" onclick="sendSmsBroadcast()" ${st.running?'disabled':''}>
+        ${st.running ? '⏳ Envoi en cours…' : `📨 Envoyer à ${clients.length} client${clients.length>1?'s':''}`}
+      </button>` : `
+      <button class="btn btn-primary" style="width:100%;margin-bottom:10px" onclick="_smsBcastNative()">📱 Ouvrir l'app SMS (${clients.length} numéros)</button>`}
+      <div class="card" style="padding:6px 0">
+        ${clients.map(c => {
+          const r = st.results[c.id];
+          const color = r === 'sent' ? '#16A34A' : r === 'failed' ? 'var(--danger)' : 'var(--text-3)';
+          const icon = r === 'sent' ? '✓' : r === 'failed' ? '✕' : '·';
+          return `<div style="display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid var(--border)">
+            <div style="width:22px;text-align:center;font-weight:800;color:${color}">${icon}</div>
+            <div style="flex:1;min-width:0">
+              <div style="font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${(c.name||'Client').replace(/</g,'&lt;')}</div>
+              <div style="font-size:11px;color:var(--text-3)">${c.phone}</div>
+            </div>
+            ${r==='failed'?`<span style="font-size:10px;color:var(--danger)">échec</span>`:r==='sent'?`<span style="font-size:10px;color:#16A34A">envoyé</span>`:''}
+          </div>`;
+        }).join('')}
+      </div>`}
+  </div>`;
+}
+function _smsBcastInsert(token) {
+  const ta = document.getElementById('sms-bcast-msg');
+  const st = _smsBcastState();
+  if (ta) {
+    const s = ta.selectionStart || ta.value.length;
+    ta.value = ta.value.slice(0, s) + token + ta.value.slice(ta.selectionEnd || s);
+    st.msg = ta.value; ta.focus();
+  } else { st.msg += token; }
+  render();
+}
+function _smsBcastNative() {
+  const clients = (S.clients || []).filter(c => c.phone);
+  if (!clients.length) return;
+  const st = _smsBcastState();
+  const phones = clients.map(c => c.phone.replace(/\s/g, '')).join(',');
+  // Message non personnalisé (l'app SMS native ne gère pas {nom})
+  const msg = st.msg.replace(/\{nom\}/gi, '').replace(/\s{2,}/g, ' ').trim();
+  window.location.href = `sms:${phones}?body=${encodeURIComponent(msg)}`;
+}
+async function sendSmsBroadcast() {
+  const st = _smsBcastState();
+  const cfg = _getSmsConfig();
+  if (!cfg) { showToast('Configurez d\'abord la passerelle SMS', 'error'); nav('sms-setup'); return; }
+  const clients = (S.clients || []).filter(c => c.phone);
+  if (!clients.length) return;
+  if (st.running) return;
+  st.running = true; st.results = {}; render();
+  let ok = 0, fail = 0;
+  for (const cl of clients) {
+    const text = _personalizeMsg(st.msg, cl);
+    let sent = false;
+    try { sent = await sendSms(cl.phone, text); } catch (_) { sent = false; }
+    st.results[cl.id] = sent ? 'sent' : 'failed';
+    sent ? ok++ : fail++;
+    render();
+  }
+  st.running = false;
+  logActivity('campaign', `SMS groupé — ${ok} envoyés, ${fail} échecs`);
+  showToast(fail ? `Terminé : ${ok} envoyés, ${fail} échecs` : `✓ ${ok} SMS envoyés !`, fail ? 'info' : 'success');
+  render();
 }
 
 // ══════════════════════════════════════════════════════════════

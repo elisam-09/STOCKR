@@ -346,12 +346,8 @@ body {
 /* ── Animations d'entrée : uniquement au changement de vue, pas à chaque re-render */
 .anim { animation: none; }
 body.view-entering .anim { animation: fadeUp 0.3s cubic-bezier(0.2, 0, 0, 1) both; }
-/* Transition douce de toute la vue (fondu léger, compose avec le stagger des cartes) */
-body.view-entering #view { animation: viewEnter 0.34s cubic-bezier(0.2, 0, 0, 1) both; }
-@keyframes viewEnter {
-  from { opacity: 0; transform: translateY(5px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
+/* (anim globale #view retirée : elle coupait au re-render et causait un "blink".
+   Le stagger des cartes .anim suffit pour une entrée fluide sans clignotement) */
 
 /* Respect user motion preferences */
 @media (prefers-reduced-motion: reduce) {
@@ -2436,10 +2432,11 @@ body.dark .card:hover { border-color: var(--border); }
 
 /* ── POLISH — Micro-interactions & Transitions ── */
 
-/* Page view fade-in */
-#view {
-  animation: viewFadeIn .25s ease-out;
-}
+/* Page view fade-in : retiré.
+   Une animation globale sur #view (élément persistant) ne se rejoue pas au
+   changement de vue mais s'ajoutait au stagger des cartes au 1er chargement.
+   L'entrée est désormais portée uniquement par le stagger .anim / .card
+   (voir body.view-entering …), ce qui évite tout double effet. */
 @keyframes viewFadeIn {
   from { opacity: 0; transform: translateY(6px); }
   to   { opacity: 1; transform: translateY(0); }
