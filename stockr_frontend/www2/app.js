@@ -20640,7 +20640,7 @@ function vSocialMedia() {
       <div style="font-size:12px;color:var(--text-3);margin-bottom:12px">Publie un produit sur tes réseaux en un clic</div>
       <select class="input" id="social-product-select" style="margin-bottom:10px">
         <option value="">— Choisir un produit —</option>
-        ${S.products.map(p => `<option value="${p.id}">${p.name} — ${fmt(p.price)} ${sym()}</option>`).join('')}
+        ${bt_sellableItems().filter(it => (it.price||0) > 0).map(it => `<option value="${it.id}">${it.name} — ${fmt(it.price)} ${sym()}</option>`).join('')}
       </select>
       <div style="display:flex;gap:6px;flex-wrap:wrap">
         <button class="btn btn-primary" style="flex:1" onclick="postProductSocial('whatsapp')">${IC.whatsapp} WhatsApp</button>
@@ -20767,25 +20767,40 @@ function toggleSocialAccount(platformId, platformName) {
 async function postProductSocial(channel) {
   const sel = document.getElementById('social-product-select');
   if (!sel || !sel.value) { showToast(t('chooseProduct'), 'error'); return; }
-  const product = S.products.find(p => p.id === parseInt(sel.value));
-  if (!product) return;
+  const item = bt_sellableItems().find(i => i.id === sel.value);
+  if (!item) { showToast('Produit introuvable', 'error'); return; }
+  // Description depuis l'objet sous-jacent (article/produit) si dispo
+  const under = item.kind === 'article' ? (S.articles||[]).find(a=>a.id===item.articleId)
+              : item.kind === 'product' ? (S.products||[]).find(p=>p.id===item.productId) : null;
   const biz = S.session?.business || 'BARO';
-  const lines = [`${product.name}`,`${fmt(product.price)} ${sym()}`,'',(product.description||'Disponible maintenant !'),'Commandez en DM 📲','',`#${biz.replace(/\s+/g,'')} #CoteDIvoire`];
+  const lines = [`${item.name}`,`${fmt(item.price)} ${sym()}`,'',((under&&under.description)||'Disponible maintenant !'),'Commandez en DM 📲','',`#${biz.replace(/\s+/g,'')} #CoteDIvoire`];
   const text = lines.join('\n');
-  const imageUrl = product.image || product.imageUrl || product.photo || null;
+  const imageUrl = item.image || (under && (under.image||under.imageUrl||under.photo)) || null;
   let result = { ok:false, mode:'fallback' };
-  try { result = await publishToNetwork(channel, { text, imageUrl, product }); }
+  try { result = await publishToNetwork(channel, { text, imageUrl, product:item }); }
   catch(e) { result = { ok:false, mode:'error', error:e.message }; }
   S.scheduledPosts.push({
-    id:Date.now(), productId:product.id, productName:product.name,
-    channel, status:'published', date:new Date().toISOString(),
+    id:Date.now(), productId:item.productId||item.articleId||item.packId||null, productName:item.name,
+    channel, status: result.ok ? 'published' : 'failed', date:new Date().toISOString(),
     publishedDate:new Date().toISOString(),
     mode: result.mode, caption: text.substring(0, 140)
   });
   localStorage.setItem('baro_posts', JSON.stringify(S.scheduledPosts));
   if (typeof _logSocialPost === 'function') _logSocialPost(channel, product.name, result);
-  if (result.ok) showToast(`✓ Publié sur ${channel} (API directe)`, 'success');
+  _socialResultToast(channel, result);
   render();
+}
+
+// Message honnête selon le MODE réel de publication (API vs partage vs presse-papier)
+const _SOCIAL_NAMES = { whatsapp:'WhatsApp', facebook:'Facebook', instagram:'Instagram', tiktok:'TikTok', twitter:'X', youtube:'YouTube', sms:'SMS', copy:'le presse-papier' };
+const _SOCIAL_API_MODES = ['graph-api','ig-graph','tiktok-cp','twitter-v2'];
+function _socialResultToast(channel, result) {
+  const name = _SOCIAL_NAMES[channel] || channel;
+  if (!result || !result.ok) { showToast(`Échec de publication sur ${name}${result&&result.error?' — '+result.error:''}`, 'error'); return; }
+  if (_SOCIAL_API_MODES.includes(result.mode)) { showToast(`✓ Publié sur ${name} via l'API officielle`, 'success'); return; }
+  if (result.mode === 'clipboard') { showToast(`Texte copié — collez-le dans ${name} (ouvert)`, 'info'); return; }
+  if (result.mode === 'share-link' || result.mode === 'deep-link') { showToast(`Partage ${name} ouvert — touchez Envoyer pour publier`, 'info'); return; }
+  showToast(`Action ${name} ouverte`, 'info');
 }
 
 // ── SOCIAL MEDIA — PUBLICATION DIRECTE (Meta Graph / TikTok / Twitter v2) ──
@@ -21104,25 +21119,34 @@ if (typeof window !== 'undefined' && !window.__stockrSchedulerStarted) {
 async function postAllNetworks() {
   const sel = document.getElementById('social-product-select');
   if (!sel || !sel.value) { showToast('Choisis un produit','error'); return; }
-  const product = S.products.find(p => p.id === parseInt(sel.value));
-  if (!product) return;
+  const item = bt_sellableItems().find(i => i.id === sel.value);
+  if (!item) { showToast('Produit introuvable','error'); return; }
+  const product = item; // alias pour la suite
+  const under = item.kind === 'article' ? (S.articles||[]).find(a=>a.id===item.articleId)
+              : item.kind === 'product' ? (S.products||[]).find(p=>p.id===item.productId) : null;
   const connected = (S.socialAccounts||[]).filter(a => a.connected).map(a => a.platform);
   if (connected.length === 0) { showToast('Aucun réseau connecté — connecte au moins un réseau', 'warn'); return; }
   if (!confirm(`Publier "${product.name}" sur ${connected.length} réseau(x) connecté(s) ?`)) return;
   const biz = S.session?.business || 'BARO';
-  const text = [`${product.name}`, `${fmt(product.price)} ${sym()}`, '', product.description||'Commandez maintenant !', `#${biz.replace(/\s+/g,'')}`].join('\n');
-  const imageUrl = product.image || product.imageUrl || null;
-  let ok = 0, ko = 0;
+  const text = [`${product.name}`, `${fmt(product.price)} ${sym()}`, '', (under&&under.description)||'Commandez maintenant !', `#${biz.replace(/\s+/g,'')}`].join('\n');
+  const imageUrl = item.image || (under && (under.image||under.imageUrl)) || null;
+  let apiOk = 0, assisted = 0, ko = 0;
   for (const ch of connected) {
     try {
       const result = await publishToNetwork(ch, { text, imageUrl, product });
-      if (result.ok) ok++; else ko++;
+      if (!result.ok) ko++;
+      else if (_SOCIAL_API_MODES.includes(result.mode)) apiOk++;
+      else assisted++;
       _logSocialPost(ch, product.name, result);
       S.scheduledPosts.push({ id:Date.now()+Math.random(), productId:product.id, productName:product.name, channel:ch, status:result.ok?'published':'failed', date:new Date().toISOString(), publishedDate:new Date().toISOString(), mode:result.mode, caption:text.substring(0,140) });
     } catch(e) { ko++; }
   }
   localStorage.setItem('baro_posts', JSON.stringify(S.scheduledPosts));
-  showToast(`Cross-post : ${ok} OK / ${ko} échec`, ko?'warn':'success');
+  const parts = [];
+  if (apiOk) parts.push(`${apiOk} publié(s) via API`);
+  if (assisted) parts.push(`${assisted} à finaliser dans l'app ouverte`);
+  if (ko) parts.push(`${ko} échec`);
+  showToast(parts.join(' · ') || 'Terminé', ko ? 'warn' : 'success');
   render();
 }
 
