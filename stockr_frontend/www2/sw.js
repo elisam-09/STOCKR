@@ -2,7 +2,7 @@
 // Stratégie : Cache-first pour assets statiques,
 //             Network-first pour l'API
 
-const CACHE_NAME = 'baro-v75-waverif';
+const CACHE_NAME = 'baro-v76-wizard';
 const STATIC_ASSETS = [
   '/',
   '/index.html',

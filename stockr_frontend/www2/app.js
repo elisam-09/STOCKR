@@ -4889,6 +4889,7 @@ function _doRender() {
     'notifications-setup': vNotificationsSetup,
     'video-library': vVideoLibrary,
     'onboarding': vOnboarding,
+    'setup-wizard': vSetupWizard,
   };
   const viewChanged = __markViewTransition(S.view);
   const prevScroll = viewEl.scrollTop;
@@ -4942,7 +4943,7 @@ function _doRender() {
     if (gs) { gs.focus({ preventScroll: true }); gs.setSelectionRange(gs.value.length, gs.value.length); }
   }
 
-  const hideNav = ['detail','add','add-product','edit-product','pack-form','add-client','client-detail','notifications','catalog','add-supplier','supplier-detail','stock-history','purchase-orders','add-order','pricing','subscription','billing-setup','boutique','boutique-editor','boutique-appearance','boutique-domain','boutique-pixels','boutique-code','boutique-seo','boutique-hours','boutique-policies','boutique-faq','marketing','social-media','social-setup','payments-setup','integrations','delivery-setup','whatsapp-setup','whatsapp-broadcast','sms-setup','sms-broadcast','email-broadcast','ecommerce-setup','sheets-setup','pos-setup','compta-setup','api-settings','spectra','clients','exports','team','add-team-member','audit-log','appearance','security','2fa-verify','onboarding'].includes(S.view);
+  const hideNav = ['detail','add','add-product','edit-product','pack-form','add-client','client-detail','notifications','catalog','add-supplier','supplier-detail','stock-history','purchase-orders','add-order','pricing','subscription','billing-setup','boutique','boutique-editor','boutique-appearance','boutique-domain','boutique-pixels','boutique-code','boutique-seo','boutique-hours','boutique-policies','boutique-faq','marketing','social-media','social-setup','payments-setup','integrations','delivery-setup','whatsapp-setup','whatsapp-broadcast','sms-setup','sms-broadcast','email-broadcast','ecommerce-setup','sheets-setup','pos-setup','compta-setup','api-settings','spectra','clients','exports','team','add-team-member','audit-log','appearance','security','2fa-verify','onboarding','setup-wizard'].includes(S.view);
   navEl.style.display = hideNav ? 'none' : '';
   if (!hideNav) navEl.innerHTML = renderNav();
 }
@@ -5002,7 +5003,7 @@ function vOnboarding() {
         : 'Ajoute ta première matière première, ou explore l\'app avec des exemples prêts à l\'emploi.',
       visual: `
         <div class="ob-visual-col">
-          <button class="btn btn-primary" style="animation:fadeUp .4s var(--ease-out) .15s both" onclick="finishOnboarding('add')">${bt==='reseller'?'🏪 Ajouter mon premier produit':'📦 Ajouter mon premier article'}</button>
+          <button class="btn btn-primary" style="animation:fadeUp .4s var(--ease-out) .15s both" onclick="finishOnboarding('wizard')">⚡ Configurer ma boutique</button>
           <button class="btn btn-ghost" style="animation:fadeUp .4s var(--ease-out) .28s both" onclick="finishOnboarding('demo')">📚 Explorer avec des exemples</button>
         </div>`,
     },
@@ -5046,10 +5047,181 @@ function finishOnboarding(action) {
     S.view = 'home';
   } else if (action === 'add') {
     S.view = 'add';
+  } else if (action === 'wizard') {
+    S.view = 'setup-wizard';
   } else {
     S.view = 'home';
   }
   render();
+}
+
+// ══════════════════════════════════════════════════════════════
+// ASSISTANT DE PREMIER DÉMARRAGE — wizard de configuration réel
+// ══════════════════════════════════════════════════════════════
+function _wizard() {
+  if (!S.wizard) S.wizard = {
+    step: 0,
+    type: getBusinessType() || 'reseller',
+    biz: S.session?.business || '',
+    city: S.session?.city || '',
+    prod: { name:'', price:'', cost:'', stock:'' },
+    wa: (S.integrationsConfig||[]).find(c=>c.id==='whatsapp-business')?.detail?.phone || '',
+  };
+  return S.wizard;
+}
+function vSetupWizard() {
+  const w = _wizard();
+  const steps = ['Activité','Boutique','1er produit','WhatsApp','Prêt'];
+  const total = steps.length;
+  const pct = Math.round((w.step) / (total - 1) * 100);
+  const isMaker = w.type === 'maker';
+  let body = '';
+  if (w.step === 0) {
+    const choices = [
+      ['reseller','🏪','Revendeur','J\'achète et je revends des produits finis'],
+      ['maker','🏭','Transformateur','Je fabrique à partir de matières premières'],
+      ['mixed','🔀','Mixte','Les deux à la fois'],
+    ];
+    body = `
+      <div class="wiz-h1">Quel est votre type d'activité ?</div>
+      <div class="wiz-sub">BARO s'adapte à votre métier.</div>
+      <div class="wiz-choices">
+        ${choices.map(([id,ic,ti,de]) => `
+          <button class="wiz-choice ${w.type===id?'sel':''}" onclick="wizardSetType('${id}')">
+            <span class="wiz-choice-ic">${ic}</span>
+            <span class="wiz-choice-txt"><span class="wiz-choice-t">${ti}</span><span class="wiz-choice-d">${de}</span></span>
+            <span class="wiz-choice-check">${w.type===id?'✓':''}</span>
+          </button>`).join('')}
+      </div>
+      <button class="btn btn-primary wiz-cta" onclick="wizardNext()">Continuer</button>`;
+  } else if (w.step === 1) {
+    body = `
+      <div class="wiz-h1">Votre boutique</div>
+      <div class="wiz-sub">Apparaît sur vos reçus, factures et votre boutique en ligne.</div>
+      <label class="wiz-label">Nom du commerce *</label>
+      <input id="wiz-biz" class="input" value="${(w.biz||'').replace(/"/g,'&quot;')}" placeholder="Ex : Boutique Awa">
+      <label class="wiz-label">Ville</label>
+      <input id="wiz-city" class="input" value="${(w.city||'').replace(/"/g,'&quot;')}" placeholder="Ex : Abidjan">
+      <button class="btn btn-primary wiz-cta" onclick="wizardNext()">Continuer</button>`;
+  } else if (w.step === 2) {
+    const p = w.prod || {};
+    body = `
+      <div class="wiz-h1">${isMaker ? 'Votre première matière' : 'Votre premier produit'}</div>
+      <div class="wiz-sub">Optionnel — vous pourrez en ajouter autant que vous voulez ensuite.</div>
+      <label class="wiz-label">Nom</label>
+      <input id="wiz-prod-name" class="input" value="${(p.name||'').replace(/"/g,'&quot;')}" placeholder="${isMaker?'Ex : Farine':'Ex : Riz 25kg'}">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div><label class="wiz-label">Prix de vente (${sym()})</label><input id="wiz-prod-price" class="input" type="number" inputmode="numeric" value="${p.price||''}" placeholder="15000"></div>
+        <div><label class="wiz-label">Prix d'achat (${sym()})</label><input id="wiz-prod-cost" class="input" type="number" inputmode="numeric" value="${p.cost||''}" placeholder="12000"></div>
+      </div>
+      <label class="wiz-label">Quantité en stock</label>
+      <input id="wiz-prod-stock" class="input" type="number" inputmode="numeric" value="${p.stock||''}" placeholder="10">
+      <button class="btn btn-primary wiz-cta" onclick="wizardNext()">Continuer</button>
+      <button class="btn btn-ghost wiz-skip2" onclick="wizardSkipStep()">Ignorer cette étape</button>`;
+  } else if (w.step === 3) {
+    body = `
+      <div class="wiz-h1">${IC.whatsapp} WhatsApp Business</div>
+      <div class="wiz-sub">Pour envoyer reçus &amp; relances et recevoir les commandes de votre boutique en ligne.</div>
+      <label class="wiz-label">Numéro WhatsApp (format international)</label>
+      <input id="wiz-wa" class="input" value="${(w.wa||'').replace(/"/g,'&quot;')}" placeholder="+225 07 XX XX XX XX">
+      <button class="btn btn-primary wiz-cta" onclick="wizardNext()">Continuer</button>
+      <button class="btn btn-ghost wiz-skip2" onclick="wizardSkipStep()">Ignorer</button>`;
+  } else {
+    const recap = [
+      ['🏪', { reseller:'Revendeur', maker:'Transformateur', mixed:'Mixte' }[w.type] || 'Activité'],
+      ['🏷️', w.biz || '—'],
+      w.city ? ['📍', w.city] : null,
+      (w.prod && w.prod.name) ? ['📦', `${w.prod.name}${w.prod.price?` · ${fmt(parseFloat(w.prod.price)||0)} ${sym()}`:''}`] : null,
+      w.wa ? [' ', `WhatsApp ${w.wa}`] : null,
+    ].filter(Boolean);
+    body = `
+      <div class="wiz-done-ic">🎉</div>
+      <div class="wiz-h1" style="text-align:center">Tout est prêt !</div>
+      <div class="wiz-sub" style="text-align:center">Votre BARO est configuré. Vous pouvez tout modifier plus tard dans les Paramètres.</div>
+      <div class="wiz-recap">
+        ${recap.map(([ic,txt]) => `<div class="wiz-recap-row"><span class="wiz-recap-ic">${ic}</span><span>${String(txt).replace(/</g,'&lt;')}</span><span class="wiz-recap-ok">✓</span></div>`).join('')}
+      </div>
+      <button class="btn btn-primary wiz-cta" onclick="wizardFinish()">Ouvrir mon tableau de bord →</button>`;
+  }
+  return `
+  <div class="wiz-wrap">
+    <div class="wiz-top">
+      ${(w.step>0 && w.step<total-1) ? `<button class="wiz-nav-btn" onclick="wizardBack()">${IC.left}</button>` : `<span style="width:36px"></span>`}
+      <div class="wiz-progress"><div class="wiz-progress-bar" style="width:${pct}%"></div></div>
+      ${w.step<total-1 ? `<button class="wiz-skip" onclick="wizardSkipAll()">Passer</button>` : `<span style="width:52px"></span>`}
+    </div>
+    <div class="wiz-steplabel">Étape ${Math.min(w.step+1,total)} / ${total}</div>
+    <div class="wiz-body" key="wiz-${w.step}">${body}</div>
+  </div>`;
+}
+function wizardSetType(tp) { _wizard().type = tp; if (typeof haptic==='function') haptic('tap'); render(); }
+function _wizardReadStep() {
+  const w = _wizard();
+  if (w.step === 1) { w.biz = ($('wiz-biz')?.value||'').trim(); w.city = ($('wiz-city')?.value||'').trim(); }
+  else if (w.step === 2) { w.prod = { name:($('wiz-prod-name')?.value||'').trim(), price:($('wiz-prod-price')?.value||'').trim(), cost:($('wiz-prod-cost')?.value||'').trim(), stock:($('wiz-prod-stock')?.value||'').trim() }; }
+  else if (w.step === 3) { w.wa = ($('wiz-wa')?.value||'').trim(); }
+}
+function wizardNext() {
+  const w = _wizard();
+  _wizardReadStep();
+  if (w.step === 1 && !w.biz) { showToast('Indiquez le nom de votre commerce', 'error'); return; }
+  if (w.step === 3) { _wizardCommit(); }
+  w.step = Math.min(4, w.step + 1);
+  if (typeof haptic==='function') haptic('tap');
+  render();
+}
+function wizardSkipStep() {
+  const w = _wizard();
+  if (w.step === 3) { _wizardReadStep(); _wizardCommit(); }
+  w.step = Math.min(4, w.step + 1);
+  render();
+}
+function wizardBack() { const w = _wizard(); _wizardReadStep(); w.step = Math.max(0, w.step - 1); render(); }
+function wizardSkipAll() { try { localStorage.setItem('baro_onboarded','1'); } catch(_){} S.wizard = null; S.view = 'home'; render(); }
+function _wizardCommit() {
+  const w = _wizard();
+  S.session = S.session || {};
+  if (['reseller','maker','mixed'].includes(w.type)) {
+    S.session.businessType = w.type;
+    try { localStorage.setItem('stockr_business_type', w.type); } catch(_){}
+  }
+  if (w.biz) S.session.business = w.biz;
+  if (w.city) S.session.city = w.city;
+  try { saveSession({ ...S.session, token: S.token }); } catch(_){}
+  try {
+    const saved = JSON.parse(localStorage.getItem('stockr_session') || '{}');
+    saved.businessType = w.type; if (w.biz) saved.business = w.biz; if (w.city) saved.city = w.city;
+    localStorage.setItem('stockr_session', JSON.stringify(saved));
+  } catch(_){}
+  // Premier produit / article
+  const p = w.prod || {};
+  if (p.name) {
+    const price = parseFloat(p.price)||0, cost = parseFloat(p.cost)||0, stock = parseFloat(p.stock)||0;
+    const art = { id: Date.now(), name: p.name, price, purchasePrice: cost, stock, min: 0, unit: 'pce', category: '' };
+    if (!Array.isArray(S.articles)) S.articles = [];
+    S.articles.push(art);
+    try { localStorage.setItem('baro_articles', JSON.stringify(S.articles)); } catch(_){}
+    try { localStorage.setItem('stockr_articles', JSON.stringify(S.articles)); } catch(_){}
+    try { api('POST', '/api/articles/', { name: art.name, quantity: stock, unit: 'pce', price, purchase_price: cost }); } catch(_){}
+  }
+  // WhatsApp Business (mode rapide)
+  if (w.wa) {
+    if (!Array.isArray(S.integrationsConfig)) S.integrationsConfig = [];
+    const tpls = (typeof WHATSAPP_DEFAULT_TEMPLATES !== 'undefined') ? WHATSAPP_DEFAULT_TEMPLATES : [];
+    const entry = { id:'whatsapp-business', name:'WhatsApp Business', connected:true, value:w.wa, date:new Date().toISOString(), detail:{ mode:'quick', phone:w.wa, signature:(w.biz||S.session?.business||''), templates: tpls } };
+    const i = S.integrationsConfig.findIndex(c => c.id === 'whatsapp-business');
+    if (i >= 0) S.integrationsConfig[i] = entry; else S.integrationsConfig.push(entry);
+    try { localStorage.setItem('stockr_integrations', JSON.stringify(S.integrationsConfig)); } catch(_){}
+  }
+  try { logActivity('setup', 'Configuration guidée terminée'); } catch(_){}
+}
+function wizardFinish() {
+  try { localStorage.setItem('baro_onboarded','1'); } catch(_){}
+  S.wizard = null;
+  if (typeof haptic==='function') haptic('success');
+  S.view = 'home';
+  render();
+  showToast('Bienvenue sur BARO 🎉', 'success');
 }
 
 // ── AUTH ──────────────────────────────────────
@@ -14095,6 +14267,16 @@ function vSettings() {
     <div class="settings-section">
       <div class="settings-label">Personnalisation</div>
       <div class="settings-row-block">
+        <div class="settings-row" onclick="S.wizard=null;nav('setup-wizard')">
+          <div class="settings-row-inner">
+            <span class="settings-row-ico" style="color:#7C73FF">⚡</span>
+            <div>
+              <div class="settings-row-lbl">Assistant de configuration</div>
+              <div class="settings-row-sub">Activité · Boutique · 1er produit · WhatsApp</div>
+            </div>
+          </div>
+          ${IC.chevron}
+        </div>
         <div class="settings-row" onclick="nav('appearance')">
           <div class="settings-row-inner">
             <span class="settings-row-ico" style="color:#EC4899">🎨</span>

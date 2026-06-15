@@ -4745,3 +4745,53 @@ select.input { background-image: linear-gradient(45deg, transparent 50%, var(--t
   background: linear-gradient(135deg, #16A34A, #059669);
   box-shadow: 0 6px 20px rgba(5,150,105,.34);
 }
+
+/* ── ASSISTANT DE PREMIER DÉMARRAGE (wizard) ─────────────────── */
+.wiz-wrap {
+  min-height: 100%; display: flex; flex-direction: column;
+  padding: calc(14px + env(safe-area-inset-top)) 22px calc(20px + env(safe-area-inset-bottom));
+  max-width: 480px; margin: 0 auto;
+}
+.wiz-top { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+.wiz-nav-btn {
+  width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border);
+  background: var(--surface); color: var(--text-1); cursor: pointer;
+  display: flex; align-items: center; justify-content: center; flex: 0 0 auto;
+}
+.wiz-nav-btn svg { width: 18px; height: 18px; }
+.wiz-progress { flex: 1; height: 6px; background: var(--gray-2); border-radius: 99px; overflow: hidden; }
+.wiz-progress-bar { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-muted)); border-radius: 99px; transition: width .4s cubic-bezier(.25,.8,.25,1); }
+.wiz-skip { background: none; border: none; color: var(--text-3); font-size: 13px; font-weight: 600; cursor: pointer; padding: 6px; flex: 0 0 auto; }
+.wiz-steplabel { font-size: 11px; font-weight: 700; color: var(--text-3); letter-spacing: .4px; text-transform: uppercase; margin: 6px 0 18px; }
+.wiz-body { flex: 1; }
+.wiz-body[key] { animation: fadeUp .32s cubic-bezier(.2,0,0,1) both; }
+.wiz-h1 { font-size: 24px; font-weight: 900; letter-spacing: -.5px; line-height: 1.15; }
+.wiz-h1 svg { width: 22px; height: 22px; vertical-align: -3px; }
+.wiz-sub { font-size: 14px; color: var(--text-3); line-height: 1.5; margin: 8px 0 22px; }
+.wiz-label { display: block; font-size: 12px; font-weight: 700; color: var(--text-2); margin: 14px 0 6px; }
+.wiz-cta { width: 100%; margin-top: 22px; padding: 15px; font-size: 16px; font-weight: 800; }
+.wiz-skip2 { width: 100%; margin-top: 8px; font-size: 13px; color: var(--text-3); }
+/* Choix du type d'activité */
+.wiz-choices { display: flex; flex-direction: column; gap: 10px; }
+.wiz-choice {
+  display: flex; align-items: center; gap: 14px; padding: 16px;
+  border: 2px solid var(--border); border-radius: 16px; background: var(--surface);
+  cursor: pointer; text-align: left; transition: all .18s var(--ease-out);
+}
+.wiz-choice:active { transform: scale(.985); }
+.wiz-choice.sel { border-color: var(--accent); background: var(--accent-light); box-shadow: 0 4px 18px rgba(124,115,255,.18); }
+.wiz-choice-ic { font-size: 30px; flex: 0 0 auto; }
+.wiz-choice-txt { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+.wiz-choice-t { font-size: 16px; font-weight: 800; color: var(--text-1); }
+.wiz-choice-d { font-size: 12px; color: var(--text-3); margin-top: 2px; line-height: 1.35; }
+.wiz-choice-check { width: 24px; height: 24px; border-radius: 50%; flex: 0 0 auto; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #fff; background: var(--accent); opacity: 0; transform: scale(.6); transition: all .2s var(--ease-out); }
+.wiz-choice.sel .wiz-choice-check { opacity: 1; transform: scale(1); }
+/* Écran final */
+.wiz-done-ic { font-size: 64px; text-align: center; margin: 10px 0 4px; animation: qsSlideUp .4s cubic-bezier(.2,.8,.2,1); }
+.wiz-recap { margin: 20px 0 4px; border: 1px solid var(--border); border-radius: 16px; overflow: hidden; background: var(--surface); }
+.wiz-recap-row { display: flex; align-items: center; gap: 12px; padding: 13px 16px; font-size: 14px; font-weight: 600; color: var(--text-1); border-bottom: 1px solid var(--border); }
+.wiz-recap-row:last-child { border-bottom: none; }
+.wiz-recap-ic { font-size: 18px; flex: 0 0 auto; width: 22px; text-align: center; }
+.wiz-recap-ic svg { width: 18px; height: 18px; vertical-align: -3px; }
+.wiz-recap-row > span:nth-child(2) { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wiz-recap-ok { color: var(--success); font-weight: 800; flex: 0 0 auto; }
