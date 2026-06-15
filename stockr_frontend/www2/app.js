@@ -15744,6 +15744,10 @@ function vExports() {
       <div class="card-title" style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">📑</span> Rapports PDF</div>
       <div style="font-size:12px;color:var(--text-3);margin-bottom:10px">Rapports professionnels imprimables (A4, en-tête coloré, stats)</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <button class="btn btn-ghost" onclick="S.period='30d';generateBilanReportPDF()" style="padding:12px;text-align:left;display:flex;flex-direction:column;align-items:flex-start;gap:2px;grid-column:1/-1;border:1.5px solid var(--accent);background:linear-gradient(135deg,rgba(124,115,255,.07),transparent)">
+          <div style="font-weight:800;font-size:13px;color:var(--text-1)">🧾 Bilan financier signé <span style="font-size:10px;color:var(--accent);font-weight:700">· recommandé</span></div>
+          <div style="font-size:11px;color:var(--text-3)">CA, bénéfice, marge, évolution, catégories, top produits — 30 derniers jours</div>
+        </button>
         <button class="btn btn-ghost" onclick="generateStockReportPDF()" style="padding:12px;text-align:left;display:flex;flex-direction:column;align-items:flex-start;gap:2px">
           <div style="font-weight:700;font-size:13px;color:var(--text-1)">📦 Rapport Stock</div>
           <div style="font-size:11px;color:var(--text-3)">${S.articles.length} articles · ${fmt(stockValue)} ${sym()}</div>
