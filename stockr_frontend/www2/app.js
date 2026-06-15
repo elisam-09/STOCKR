@@ -3534,6 +3534,167 @@ function generateClientsReportPDF() {
   showToast('Rapport clients généré');
 }
 
+// ── BILAN FINANCIER PDF — rapport pro signé ───────────────────
+function generateBilanReportPDF() {
+  if (typeof window.jspdf === 'undefined') { showToast('jsPDF indisponible — réessayez en ligne', 'error'); return; }
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit:'mm', format:'a4' });
+  const biz  = S.session?.business || S.session?.name || 'Mon Commerce';
+  const date = new Date().toLocaleDateString('fr-FR', { day:'numeric', month:'long', year:'numeric' });
+  const BRAND = [30,27,128]; // #1E1B80
+
+  // ── Données (alignées sur la vue Bilan) ──
+  const filtered  = salesForPeriod();
+  const totalCA   = filtered.reduce((s,v)=>s+(v.total||0),0);
+  const totalProfit = filtered.reduce((s,v)=>s+(v.profit||0),0);
+  const avgMargin = totalCA > 0 ? Math.round((totalProfit/totalCA)*100) : 0;
+  const nbVentes  = filtered.length;
+  const panier    = nbVentes ? Math.round(totalCA/nbVentes) : 0;
+  const perLabel  = { today:"Aujourd'hui", '7d':'7 derniers jours', '30d':'30 derniers jours', all:'Depuis le début' }[S.period] || 'Global';
+
+  // Comparaison période précédente
+  let compare = null;
+  if (S.period !== 'all') {
+    const days = S.period==='today'?1:S.period==='7d'?7:30;
+    const now=Date.now(), MS=86400000;
+    const curStart=now-days*MS, prevStart=now-2*days*MS;
+    const prevCA=(S.sales||[]).filter(s=>{const t=new Date(s.date).getTime();return t>=prevStart&&t<curStart;}).reduce((x,s)=>x+(s.total||0),0);
+    if (!(prevCA===0 && totalCA===0)) {
+      const pct = prevCA>0?Math.round(((totalCA-prevCA)/prevCA)*100):(totalCA>0?100:0);
+      compare = { pct, label: S.period==='today'?'hier':S.period==='7d'?'7j préc.':'30j préc.' };
+    }
+  }
+
+  // Série pour le graphe (par mois si "all", sinon par jour)
+  const series = (() => {
+    if (S.period === 'all') {
+      const m = {};
+      filtered.forEach(s => { const d=new Date(s.date); const k=d.toLocaleDateString('fr-FR',{month:'short',year:'2-digit'}); m[k]=(m[k]||0)+s.total; });
+      const e = Object.entries(m).slice(-12);
+      return e.map(([label,value])=>({label, value:Math.round(value)}));
+    }
+    const days = S.period==='today'?1:S.period==='7d'?7:30;
+    const arr=[]; const now=new Date();
+    for (let i=days-1;i>=0;i--) {
+      const d=new Date(now); d.setDate(d.getDate()-i); const ds=d.toDateString();
+      const v=filtered.filter(s=>new Date(s.date).toDateString()===ds).reduce((x,s)=>x+s.total,0);
+      arr.push({ label:d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'}), value:Math.round(v) });
+    }
+    return arr;
+  })();
+
+  // Répartition par catégorie (pie)
+  const catColors = [[79,70,229],[124,58,237],[5,150,105],[234,88,12],[8,145,178],[220,38,38]];
+  const catOf = name => { const it=(S.articles||[]).find(a=>a.name===name)||(S.products||[]).find(p=>p.name===name); return (it&&it.category)?it.category:'Autres'; };
+  const cmap={}; filtered.forEach(s=>{ const c=catOf(s.productName); cmap[c]=(cmap[c]||0)+(s.total||0); });
+  const catData = Object.entries(cmap).map(([label,value])=>({label,value})).sort((a,b)=>b.value-a.value).slice(0,6)
+    .map((d,i)=>({ ...d, color:catColors[i%catColors.length] }));
+
+  // Top produits
+  const stats={}; filtered.forEach(s=>{ if(!stats[s.productName])stats[s.productName]={qty:0,rev:0,profit:0}; stats[s.productName].qty+=s.qty; stats[s.productName].rev+=s.total; stats[s.productName].profit+=(s.profit||0); });
+  const top = Object.entries(stats).sort((a,b)=>b[1].rev-a[1].rev).slice(0,8);
+
+  // ── En-tête ──
+  doc.setFillColor(...BRAND); doc.rect(0,0,210,34,'F');
+  doc.setTextColor(255,255,255); doc.setFontSize(21); doc.setFont('helvetica','bold');
+  doc.text('BILAN FINANCIER', 16, 16);
+  doc.setFontSize(10); doc.setFont('helvetica','normal');
+  doc.text(`${biz}  ·  ${perLabel}`, 16, 24);
+  doc.setFontSize(8); doc.setTextColor(200,200,235);
+  doc.text(`Édité le ${date}`, 16, 30);
+  doc.setFontSize(13); doc.setFont('helvetica','bold'); doc.setTextColor(255,255,255);
+  doc.text('BARO', 194, 16, { align:'right' });
+
+  // ── KPI cards (4) ──
+  let y = 42;
+  const kpis = [
+    { l:"Chiffre d'affaires", v:`${fmt(totalCA)} ${sym()}`, c:BRAND },
+    { l:'Bénéfice net',       v:`${fmt(totalProfit)} ${sym()}`, c:[5,150,105] },
+    { l:'Marge moyenne',      v:`${avgMargin}%`, c: avgMargin>=20?[5,150,105]:avgMargin>=0?[180,83,9]:[220,38,38] },
+    { l:'Panier moyen',       v:`${fmt(panier)} ${sym()}`, c:[124,58,237] },
+  ];
+  const cardW = 42, gap = 3.33;
+  kpis.forEach((k,i) => {
+    const x = 16 + i*(cardW+gap);
+    doc.setFillColor(249,250,251); doc.setDrawColor(230,231,235); doc.setLineWidth(0.3);
+    doc.roundedRect(x, y, cardW, 22, 2, 2, 'FD');
+    doc.setFillColor(...k.c); doc.rect(x, y, 1.4, 22, 'F');
+    doc.setFontSize(7); doc.setTextColor(110,110,120); doc.setFont('helvetica','normal');
+    doc.text(k.l.toUpperCase(), x+4, y+6);
+    doc.setFontSize(11.5); doc.setTextColor(...k.c); doc.setFont('helvetica','bold');
+    doc.text(String(k.v), x+4, y+15, { maxWidth: cardW-6 });
+  });
+  y += 28;
+
+  // Ligne info : nb ventes + comparaison
+  doc.setFontSize(9); doc.setFont('helvetica','normal'); doc.setTextColor(60,60,60);
+  let info = `${nbVentes} vente${nbVentes>1?'s':''} sur la période`;
+  doc.text(info, 16, y);
+  if (compare) {
+    const up = compare.pct>=0;
+    doc.setTextColor(...(up?[5,150,105]:[220,38,38])); doc.setFont('helvetica','bold');
+    doc.text(`${up?'▲':'▼'} ${Math.abs(compare.pct)}% vs ${compare.label}`, 194, y, { align:'right' });
+  }
+  y += 6;
+
+  // ── Graphe d'évolution du CA ──
+  if (series.some(s=>s.value>0)) {
+    _pdfBarChart(doc, { data:series, x:16, y, w:178, h:52, title:'Évolution du chiffre d\'affaires', color:BRAND, maxLabel: series.length<=14?series.length:0 });
+  } else {
+    doc.setFontSize(9); doc.setTextColor(150,150,150);
+    doc.text('Aucune vente sur la période sélectionnée.', 16, y+10);
+  }
+  y += 60;
+
+  // ── Colonne gauche : pie catégories · Colonne droite : top produits ──
+  const colY = y;
+  if (catData.length) {
+    _pdfPieChart(doc, { data:catData, cx:48, cy:colY+24, r:20, title:'Répartition du CA par catégorie' });
+  }
+  // Top produits (droite)
+  doc.setFontSize(10); doc.setFont('helvetica','bold'); doc.setTextColor(30,30,30);
+  doc.text('Top produits', 110, colY);
+  let ty = colY+7;
+  doc.setFillColor(...BRAND); doc.rect(110, ty-5, 84, 8, 'F');
+  doc.setTextColor(255,255,255); doc.setFontSize(8); doc.setFont('helvetica','bold');
+  doc.text('PRODUIT', 113, ty); doc.text('QTÉ', 165, ty, {align:'center'}); doc.text('CA', 191, ty, {align:'right'});
+  ty += 7;
+  doc.setFont('helvetica','normal'); doc.setTextColor(40,40,40); doc.setFontSize(8);
+  if (top.length === 0) { doc.setTextColor(150,150,150); doc.text('—', 113, ty); }
+  top.forEach(([name,st],i)=>{
+    if (i%2) { doc.setFillColor(249,250,251); doc.rect(110, ty-4, 84, 7, 'F'); }
+    doc.setTextColor(40,40,40); doc.text(String(name).slice(0,26), 113, ty);
+    doc.text(fmtQty(st.qty), 165, ty, {align:'center'});
+    doc.setFont('helvetica','bold'); doc.text(`${fmt(st.rev)}`, 191, ty, {align:'right'});
+    doc.setFont('helvetica','normal');
+    ty += 7;
+  });
+
+  // ── Bloc signature / arrêté ──
+  let sy = Math.max(colY + 60, ty + 8, 232);
+  if (sy > 250) sy = 250;
+  doc.setDrawColor(220,220,225); doc.setLineWidth(0.3); doc.line(16, sy-4, 194, sy-4);
+  doc.setFontSize(9); doc.setFont('helvetica','normal'); doc.setTextColor(50,50,50);
+  const arrete = `Arrêté le présent bilan à un chiffre d'affaires de ${fmt(totalCA)} ${sym()} pour un bénéfice net de ${fmt(totalProfit)} ${sym()} (marge ${avgMargin}%).`;
+  doc.text(doc.splitTextToSize(arrete, 120), 16, sy+2);
+  doc.setFontSize(9);
+  doc.text(`Fait à ${(S.session?.city||'________________')}, le ${date}.`, 16, sy+16);
+  // Cadre cachet & signature (droite)
+  doc.setDrawColor(200,200,205); doc.roundedRect(134, sy-2, 60, 28, 2, 2, 'S');
+  doc.setFontSize(7.5); doc.setTextColor(130,130,135);
+  doc.text('Cachet & signature', 137, sy+3);
+  doc.setFontSize(9); doc.setTextColor(40,40,40); doc.setFont('helvetica','bold');
+  doc.text(String(biz).slice(0,30), 137, sy+23);
+
+  // ── Pied de page ──
+  doc.setFontSize(7.5); doc.setFont('helvetica','normal'); doc.setTextColor(150,150,150);
+  doc.text(`Document généré automatiquement par BARO · ${date} · non contractuel`, 105, 290, { align:'center' });
+
+  doc.save(`bilan_${S.period}_${new Date().toISOString().slice(0,10)}.pdf`);
+  logActivity('export', `Bilan PDF exporté (${perLabel})`);
+  showToast('📄 Bilan PDF généré', 'success');
+}
+
 function updateMarginPreview() {
   const cost = parseFloat($('prod-cost')?.value) || 0;
   const price = parseFloat($('prod-price')?.value) || 0;
@@ -6827,6 +6988,7 @@ function vFinancial() {
     <div class="period-tabs">
       ${periods.map(p=>`<button class="period-tab ${S.period===p.key?'active':''}" onclick="S.period='${p.key}';render()">${p.label}</button>`).join('')}
     </div>
+    <button class="btn btn-secondary" style="width:100%;margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:8px" onclick="generateBilanReportPDF()">${IC.pdf} Exporter le bilan en PDF</button>
     <div class="chart-card">
       <div class="chart-title">${t('revenueChart')}</div>
       <div class="chart-wrap"><canvas id="revenue-chart"></canvas></div>
