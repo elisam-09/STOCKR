@@ -4856,6 +4856,7 @@ function _doRender() {
     'whatsapp-broadcast': vWhatsappBroadcast,
     'sms-setup': vSmsSetup,
     'sms-broadcast': vSmsBroadcast,
+    'email-broadcast': vEmailBroadcast,
     'ecommerce-setup': vEcommerceSetup,
     'sheets-setup': vSheetsSetup,
     'pos-setup': vPosSetup,
@@ -4941,7 +4942,7 @@ function _doRender() {
     if (gs) { gs.focus({ preventScroll: true }); gs.setSelectionRange(gs.value.length, gs.value.length); }
   }
 
-  const hideNav = ['detail','add','add-product','edit-product','pack-form','add-client','client-detail','notifications','catalog','add-supplier','supplier-detail','stock-history','purchase-orders','add-order','pricing','subscription','billing-setup','boutique','boutique-editor','boutique-appearance','boutique-domain','boutique-pixels','boutique-code','boutique-seo','boutique-hours','boutique-policies','boutique-faq','marketing','social-media','social-setup','payments-setup','integrations','delivery-setup','whatsapp-setup','whatsapp-broadcast','sms-setup','sms-broadcast','ecommerce-setup','sheets-setup','pos-setup','compta-setup','api-settings','spectra','clients','exports','team','add-team-member','audit-log','appearance','security','2fa-verify','onboarding'].includes(S.view);
+  const hideNav = ['detail','add','add-product','edit-product','pack-form','add-client','client-detail','notifications','catalog','add-supplier','supplier-detail','stock-history','purchase-orders','add-order','pricing','subscription','billing-setup','boutique','boutique-editor','boutique-appearance','boutique-domain','boutique-pixels','boutique-code','boutique-seo','boutique-hours','boutique-policies','boutique-faq','marketing','social-media','social-setup','payments-setup','integrations','delivery-setup','whatsapp-setup','whatsapp-broadcast','sms-setup','sms-broadcast','email-broadcast','ecommerce-setup','sheets-setup','pos-setup','compta-setup','api-settings','spectra','clients','exports','team','add-team-member','audit-log','appearance','security','2fa-verify','onboarding'].includes(S.view);
   navEl.style.display = hideNav ? 'none' : '';
   if (!hideNav) navEl.innerHTML = renderNav();
 }
@@ -18095,18 +18096,34 @@ function _renderPromosTab(promos) {
 }
 
 function _renderCampaignsTab(campaigns) {
+  const withPhone = (S.clients||[]).filter(c=>c.phone).length;
+  const withEmail = (S.clients||[]).filter(c=>c.email).length;
   return `
-    <div class="section-hd">
-      <span class="section-lbl">Campagnes marketing</span>
-      <button class="fab" style="width:32px;height:32px" onclick="addCampaign()">${IC.plus}</button>
+    <div class="section-hd"><span class="section-lbl">Nouveau broadcast</span></div>
+    <div style="font-size:11px;color:var(--text-3);margin-bottom:10px">Envoyez un message en masse à vos clients — choisissez le canal</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px">
+      <button class="btn btn-ghost" onclick="nav('whatsapp-broadcast')" style="flex-direction:column;gap:5px;padding:14px 6px;border:1.5px solid #25D36640;background:#25D3660a">
+        <span style="font-size:22px">${IC.whatsapp}</span>
+        <span style="font-size:12px;font-weight:800">WhatsApp</span>
+        <span style="font-size:10px;color:var(--text-3)">${withPhone} contacts</span>
+      </button>
+      <button class="btn btn-ghost" onclick="nav('sms-broadcast')" style="flex-direction:column;gap:5px;padding:14px 6px;border:1.5px solid #4F46E540;background:#4F46E50a">
+        <span style="font-size:22px">📨</span>
+        <span style="font-size:12px;font-weight:800">SMS</span>
+        <span style="font-size:10px;color:var(--text-3)">${withPhone} contacts</span>
+      </button>
+      <button class="btn btn-ghost" onclick="nav('email-broadcast')" style="flex-direction:column;gap:5px;padding:14px 6px;border:1.5px solid #EA433540;background:#EA43350a">
+        <span style="font-size:22px">📧</span>
+        <span style="font-size:12px;font-weight:800">Email</span>
+        <span style="font-size:10px;color:var(--text-3)">${withEmail} contacts</span>
+      </button>
     </div>
-    <div style="font-size:11px;color:var(--text-3);margin-bottom:8px">Envoyez des messages WhatsApp/SMS/Email en masse à vos clients</div>
+    <div class="section-hd"><span class="section-lbl">Historique des envois</span></div>
     ${campaigns.length === 0 ? `
     <div class="card" style="text-align:center;padding:24px">
-      <div style="color:var(--text-3);margin-bottom:8px;font-size:32px">📧</div>
-      <div style="font-size:14px;font-weight:700;margin-bottom:4px">Aucune campagne</div>
-      <div style="font-size:12px;color:var(--text-3);margin-bottom:12px">Relancez vos clients et boostez vos ventes</div>
-      <button class="btn btn-primary" style="max-width:220px;margin:0 auto" onclick="addCampaign()">+ Nouvelle campagne</button>
+      <div style="color:var(--text-3);margin-bottom:8px;font-size:32px">📭</div>
+      <div style="font-size:14px;font-weight:700;margin-bottom:4px">Aucun envoi pour l'instant</div>
+      <div style="font-size:12px;color:var(--text-3)">Vos broadcasts envoyés apparaîtront ici</div>
     </div>` : campaigns.map(c => `
     <div class="campaign-card">
       <div class="campaign-top">
@@ -23571,8 +23588,25 @@ function _waBcastSendOne(id) {
   const msg = _personalizeMsg(st.msg, cl);
   window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
   st.sent[id] = true;
-  haptic('tap');
+  _waBcastSyncCampaign();
+  if (typeof haptic === 'function') haptic('tap');
   render();
+}
+// Historise/maj la campagne WhatsApp au fil des envois (la même session = 1 campagne)
+function _waBcastSyncCampaign() {
+  const st = _waBcastState();
+  const clients = (S.clients||[]).filter(c=>c.phone);
+  const sentCount = clients.filter(c=>st.sent[c.id]).length;
+  if (!Array.isArray(S.campaigns)) S.campaigns = [];
+  if (!st.campaignId) {
+    st.campaignId = Date.now();
+    S.campaigns.unshift({ id: st.campaignId, name:'Broadcast WhatsApp', type:'whatsapp', message:String(st.msg||'').slice(0,280), recipients: clients.length, sent:true, sentCount, date:new Date().toISOString(), sentDate:new Date().toISOString() });
+    if (S.campaigns.length > 100) S.campaigns = S.campaigns.slice(0,100);
+  } else {
+    const c = S.campaigns.find(x=>x.id===st.campaignId);
+    if (c) { c.sentCount = sentCount; c.sentDate = new Date().toISOString(); }
+  }
+  localStorage.setItem('baro_campaigns', JSON.stringify(S.campaigns));
 }
 function _waBcastNext() {
   const st = _waBcastState();
@@ -23584,6 +23618,7 @@ function _waBcastNext() {
 function _waBcastReset() {
   const st = _waBcastState();
   st.sent = {};
+  st.campaignId = null;
   showToast('Progression réinitialisée');
   render();
 }
@@ -23705,8 +23740,97 @@ async function sendSmsBroadcast() {
   }
   st.running = false;
   logActivity('campaign', `SMS groupé — ${ok} envoyés, ${fail} échecs`);
+  _logCampaign('sms', st.msg, clients.length, ok);
   showToast(fail ? `Terminé : ${ok} envoyés, ${fail} échecs` : `✓ ${ok} SMS envoyés !`, fail ? 'info' : 'success');
   render();
+}
+
+// Historise un envoi de masse dans S.campaigns (vue Campagnes unifiée)
+function _logCampaign(type, message, recipients, sentCount) {
+  if (!Array.isArray(S.campaigns)) S.campaigns = [];
+  const names = { whatsapp:'Broadcast WhatsApp', sms:'SMS groupé', email:'Email groupé' };
+  S.campaigns.unshift({
+    id: Date.now(),
+    name: names[type] || 'Campagne',
+    type,
+    message: String(message||'').slice(0, 280),
+    recipients: recipients||0,
+    sent: true,
+    sentCount: sentCount||0,
+    date: new Date().toISOString(),
+    sentDate: new Date().toISOString(),
+  });
+  if (S.campaigns.length > 100) S.campaigns = S.campaigns.slice(0, 100);
+  localStorage.setItem('baro_campaigns', JSON.stringify(S.campaigns));
+}
+
+// ── BROADCAST EMAIL (mailto groupé en BCC — réel, sans backend) ──
+function _emailBcastState() {
+  if (!S._emailBcast) {
+    const biz = (S.session && S.session.business) || 'Notre boutique';
+    S._emailBcast = {
+      subject: `${biz} — une nouveauté pour vous`,
+      msg: `Bonjour,\n\n${biz} a le plaisir de vous présenter ses nouveautés. Passez nous voir ou répondez à cet email pour commander !\n\nÀ très vite,\nL'équipe ${biz}`,
+    };
+  }
+  return S._emailBcast;
+}
+function vEmailBroadcast() {
+  const st = _emailBcastState();
+  const clients = (S.clients || []).filter(c => c.email);
+  return `
+  <div class="sub-hero" style="background:linear-gradient(135deg,#EA433525,#C5221F12)">
+    <div class="page-header-row" style="margin-bottom:10px">
+      <button class="back-btn-dark" onclick="nav('marketing')">${IC.left}</button>
+      <div style="flex:1">
+        <div class="sub-hero-title">📧 Email groupé</div>
+        <div class="sub-hero-sub">Envoi en copie cachée (BCC) via votre messagerie</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${clients.length}</div><div class="hero-stat-lbl">Destinataires</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">BCC</div><div class="hero-stat-lbl">Confidentiel</div></div>
+    </div>
+  </div>
+  <div class="container">
+    ${clients.length === 0 ? `
+      <div class="card" style="text-align:center;padding:30px 18px">
+        <div style="font-size:34px;margin-bottom:8px">📭</div>
+        <div style="font-weight:800;margin-bottom:4px">Aucun client avec email</div>
+        <div style="font-size:12px;color:var(--text-3);margin-bottom:14px">Ajoutez l'adresse email de vos clients pour leur écrire en groupe.</div>
+        <button class="btn btn-primary" onclick="nav('add-client')">+ Ajouter un client</button>
+      </div>` : `
+      <div class="card" style="margin-bottom:10px">
+        <div class="card-title">✉️ Objet</div>
+        <input id="email-bcast-subject" class="input" value="${st.subject.replace(/"/g,'&quot;')}" oninput="S._emailBcast.subject=this.value" placeholder="Objet de l'email">
+      </div>
+      <div class="card" style="margin-bottom:10px">
+        <div class="card-title">✍️ Message</div>
+        <textarea id="email-bcast-msg" class="input" rows="7" style="font-size:13px;line-height:1.5" oninput="S._emailBcast.msg=this.value">${st.msg.replace(/</g,'&lt;')}</textarea>
+        <div style="font-size:11px;color:var(--text-3);margin-top:8px;line-height:1.4">💡 Les destinataires sont mis en <b>copie cachée (BCC)</b> : personne ne voit les emails des autres. Votre application mail s'ouvre — vérifiez puis envoyez.</div>
+      </div>
+      <button class="btn btn-primary" style="width:100%;margin-bottom:10px;background:#EA4335" onclick="_emailBcastSend()">📧 Ouvrir l'email groupé (${clients.length})</button>
+      <div class="card" style="padding:6px 0">
+        ${clients.map(c => `<div style="display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid var(--border)">
+            <div style="width:30px;height:30px;border-radius:50%;background:var(--gray-1);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--text-2);font-size:13px">${(c.name||'?').charAt(0).toUpperCase()}</div>
+            <div style="flex:1;min-width:0">
+              <div style="font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${(c.name||'Client').replace(/</g,'&lt;')}</div>
+              <div style="font-size:11px;color:var(--text-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.email}</div>
+            </div>
+          </div>`).join('')}
+      </div>`}
+  </div>`;
+}
+function _emailBcastSend() {
+  const st = _emailBcastState();
+  const clients = (S.clients || []).filter(c => c.email);
+  if (!clients.length) return;
+  const bcc = clients.map(c => c.email.trim()).filter(Boolean).join(',');
+  const subject = encodeURIComponent(st.subject || '');
+  const body = encodeURIComponent(st.msg || '');
+  window.location.href = `mailto:?bcc=${encodeURIComponent(bcc)}&subject=${subject}&body=${body}`;
+  _logCampaign('email', st.msg, clients.length, clients.length);
+  showToast(`Email ouvert — ${clients.length} destinataires en BCC`, 'success');
 }
 
 // ══════════════════════════════════════════════════════════════
