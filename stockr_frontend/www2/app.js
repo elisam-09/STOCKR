@@ -3895,15 +3895,15 @@ function clearMultiCart() {
   S.multiCart = {};
   render();
 }
-async function confirmMultiSale() {
+async function confirmMultiSale(opts = {}) {
   if (!S.multiCart || !Object.keys(S.multiCart).length) { showToast('Panier vide', 'error'); return; }
   if (!_checkPlanLimit('salesPerMonth', _salesThisMonth(), 'ventes ce mois')) return;
   const sellable = bt_sellableItems();
   const clientSel = $('multi-client');
-  const clientId = clientSel ? parseInt(clientSel.value) || null : null;
+  const clientId = (opts.clientId !== undefined) ? opts.clientId : (clientSel ? parseInt(clientSel.value) || null : null);
   const client = clientId ? S.clients.find(c => c.id === clientId) : null;
   const pmSel = $('multi-payment');
-  const payMethod = pmSel ? pmSel.value : 'cash';
+  const payMethod = opts.payMethod || (pmSel ? pmSel.value : 'cash');
 
   let total = 0, newSales = [];
   for (const [itemId, qty] of Object.entries(S.multiCart)) {
@@ -3993,6 +3993,94 @@ async function confirmMultiSale() {
   S.multiSearch = '';
   showReceiptBanner(newSales, total);
   render();
+}
+
+// ── VENTE RAPIDE depuis le stock/boutique (revendeur & mixte) ──
+// Un article est vendable directement s'il a un prix de vente et du stock.
+function _articleSellable(a) {
+  const t = getBusinessType();
+  return (t === 'reseller' || t === 'mixed') && (a && (a.price||0) > 0 && (a.stock||0) > 0);
+}
+function openQuickSell(articleId) {
+  const a = S.articles.find(x => x.id === articleId);
+  if (!a) return;
+  if ((a.price||0) <= 0) { showToast('Ajoutez un prix de vente à cet article', 'info'); nav('detail',{selectedId:articleId}); return; }
+  if ((a.stock||0) <= 0) { showToast('Stock épuisé pour ' + a.name, 'error'); return; }
+  S._qs = { id: articleId, qty: 1, pay: 'cash', clientId: null };
+  const existing = document.getElementById('qs-modal'); if (existing) existing.remove();
+  const modal = document.createElement('div');
+  modal.id = 'qs-modal';
+  modal.className = 'qs-overlay';
+  modal.onclick = (e) => { if (e.target === modal) closeQuickSell(); };
+  modal.innerHTML = `<div class="qs-sheet"><div class="qs-inner"></div></div>`;
+  document.body.appendChild(modal);
+  _qsRender();
+  if (typeof haptic === 'function') haptic('tap');
+}
+function closeQuickSell() { const m = document.getElementById('qs-modal'); if (m) m.remove(); S._qs = null; }
+function _qsSetQty(d) {
+  const qs = S._qs; if (!qs) return;
+  const a = S.articles.find(x => x.id === qs.id); const max = a ? Math.max(1, Math.floor(a.stock)) : 1;
+  qs.qty = Math.max(1, Math.min(max, (qs.qty||1) + d)); _qsRender();
+}
+function _qsSetQtyVal(v) {
+  const qs = S._qs; if (!qs) return;
+  const a = S.articles.find(x => x.id === qs.id); const max = a ? Math.max(1, Math.floor(a.stock)) : 1;
+  qs.qty = Math.max(1, Math.min(max, parseInt(v)||1)); _qsRender();
+}
+function _qsSetPay(p) { if (S._qs) { S._qs.pay = p; _qsRender(); } }
+function _qsSetClient(v) { if (S._qs) { S._qs.clientId = v ? parseInt(v) : null; _qsRender(); } }
+function _qsBody() {
+  const qs = S._qs; if (!qs) return '';
+  const a = S.articles.find(x => x.id === qs.id); if (!a) return '';
+  const price = a.price||0, cost = a.purchasePrice||0;
+  const total = price * qs.qty, profit = (price - cost) * qs.qty;
+  const max = Math.max(1, Math.floor(a.stock));
+  const pms = [['cash','💵 Espèces'],['wave','Wave'],['orange','Orange'],['moov','Moov'],['mtn','MTN']];
+  const clientsOpts = (S.clients||[]).map(c=>`<option value="${c.id}" ${qs.clientId===c.id?'selected':''}>${(c.name||'Client').replace(/"/g,'&quot;')}</option>`).join('');
+  return `
+    <div class="qs-head">
+      ${itemAvatar(a, 'flex:0 0 auto')}
+      <div style="flex:1;min-width:0">
+        <div class="qs-title">${a.name}</div>
+        <div class="qs-sub">${fmtQty(a.stock)} ${a.unit||'pcs'} · ${fmt(price)} ${sym()}/u${cost>0?` · marge +${Math.round(((price-cost)/price)*100)}%`:''}</div>
+      </div>
+      <button class="qs-x" onclick="closeQuickSell()" aria-label="Fermer">✕</button>
+    </div>
+    <div class="qs-label">Quantité</div>
+    <div class="qs-qtyrow">
+      <button class="qs-step" onclick="_qsSetQty(-1)">−</button>
+      <input class="qs-qty" type="number" inputmode="numeric" value="${qs.qty}" min="1" max="${max}" onchange="_qsSetQtyVal(this.value)">
+      <button class="qs-step" onclick="_qsSetQty(1)">+</button>
+      <div class="qs-max">/ ${max} dispo</div>
+    </div>
+    <div class="qs-label">Paiement</div>
+    <div class="qs-pms">
+      ${pms.map(([k,l])=>`<button class="qs-pm ${qs.pay===k?'active':''}" onclick="_qsSetPay('${k}')">${l}</button>`).join('')}
+    </div>
+    ${(S.clients||[]).length ? `
+    <div class="qs-label">Client (optionnel)</div>
+    <select class="input qs-client" onchange="_qsSetClient(this.value)"><option value="">— Aucun —</option>${clientsOpts}</select>` : ''}
+    <div class="qs-totals">
+      <div class="qs-trow"><span>Total</span><b>${fmt(total)} ${sym()}</b></div>
+      ${cost>0?`<div class="qs-trow qs-profit"><span>Bénéfice</span><b>+${fmt(profit)} ${sym()}</b></div>`:''}
+    </div>
+    <button class="btn btn-primary qs-confirm" onclick="quickSellConfirm()">✓ Confirmer la vente</button>
+  `;
+}
+function _qsRender() {
+  const m = document.getElementById('qs-modal'); if (!m || !S._qs) return;
+  const inner = m.querySelector('.qs-inner'); if (inner) inner.innerHTML = _qsBody();
+}
+async function quickSellConfirm() {
+  const qs = S._qs; if (!qs) return;
+  const a = S.articles.find(x => x.id === qs.id); if (!a) { closeQuickSell(); return; }
+  if ((a.stock||0) < qs.qty) { showToast('Stock insuffisant', 'error'); return; }
+  const payMethod = qs.pay || 'cash';
+  const clientId = qs.clientId || null;
+  S.multiCart = { ['art_'+qs.id]: qs.qty };
+  closeQuickSell();
+  await confirmMultiSale({ clientId, payMethod });
 }
 
 async function confirmCart() {
@@ -6395,6 +6483,7 @@ function vPantry() {
               ${(() => { const exp = getExpiryStatus(a.expiry); return exp && exp.days <= 30 ? `<span class="expiry-badge-sm" style="color:${exp.color}">${exp.label}</span>` : ''; })()}
             </div>
           </div>
+          ${_articleSellable(a) ? `<button class="qs-trigger" onclick="event.stopPropagation();openQuickSell(${a.id})">${IC.dollar} Vendre</button>` : ''}
         </div>`;
       }
       return `
@@ -6412,6 +6501,7 @@ function vPantry() {
             <div style="color:var(--gray-4)">${IC.chevron}</div>
           </div>
         </div>
+        ${_articleSellable(a) ? `<button class="qs-trigger" onclick="event.stopPropagation();openQuickSell(${a.id})">${IC.dollar} Vendre · ${fmt(a.price)} ${sym()}</button>` : ''}
       </div>`;
     }).join(''))}
   </div>`;
@@ -6447,6 +6537,7 @@ function _stockGridCard(a, i, isReseller) {
         <span class="sg-price">${pv>0?fmt(pv)+' '+sym():'—'}</span>
         ${isReseller && marginPctVal>0 ? `<span class="sg-margin" style="color:${marginColor}">+${marginPctVal}%</span>` : (val>0?`<span class="sg-val">${fmt(val)}</span>`:'')}
       </div>
+      ${_articleSellable(a) ? `<button class="sg-sell" onclick="event.stopPropagation();openQuickSell(${a.id})">${IC.dollar} Vendre</button>` : ''}
     </div>
   </div>`;
 }
@@ -7396,6 +7487,8 @@ function vDetail() {
         <div class="gauge-lbl">${art.min>0?`Seuil minimum : ${art.min} ${art.unit}`:'Seuil non défini — sera calculé automatiquement'}</div>
       </div>
     </div>
+
+    ${_articleSellable(art) ? `<button class="qs-trigger" style="margin-top:10px;padding:14px;font-size:15px" onclick="openQuickSell(${art.id})">${IC.dollar} Vendre — ${fmt(pv)} ${sym()}</button>` : ''}
 
     ${_stockHistoryCard(art)}
 
