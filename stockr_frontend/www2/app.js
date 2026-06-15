@@ -3715,8 +3715,10 @@ function updateMultiCartQty(itemId, delta) {
   const it = sellable.find(i => i.id === itemId);
   const max = it ? it.stock : 9999;
   const current = S.multiCart[itemId] || 0;
-  const next = Math.max(1, Math.min(max, current + delta));
-  S.multiCart[itemId] = next;
+  const raw = current + delta;
+  if (raw <= 0) { delete S.multiCart[itemId]; }   // retire l'article à 0
+  else { S.multiCart[itemId] = Math.min(max, raw); }
+  haptic('tap');
   render();
 }
 function setMultiCartQty(itemId, val) {
@@ -4282,6 +4284,7 @@ function bt_sellableItems() {
         stock: a.stock,
         unit: a.unit || 'pce',
         kind: 'article',
+        image: a.image || '',
         inBoutique: boutiqueArticleIds.has(a.id),
       }));
     const prods = (Array.isArray(S.products) ? S.products : [])
@@ -4295,6 +4298,7 @@ function bt_sellableItems() {
         stock: (typeof productMaxMake === 'function') ? productMaxMake(p) : (p.stock||0),
         unit: p.unit || 'u',
         kind: 'product',
+        image: p.image || '',
         inBoutique: boutiqueProductIds.has(p.id),
       }));
     return [...packs, ...prods, ...arts];
@@ -6592,29 +6596,30 @@ function vSales() {
         <span class="search-ico">${IC.search}</span>
         <input class="input input-search" type="text" placeholder="    Rechercher..." value="${multiQ.replace(/"/g,'&quot;')}" oninput="S.multiSearch=this.value;render()">
       </div>
+      <div style="font-size:11px;color:var(--text-3);margin-bottom:8px">👆 Touche un produit pour l'ajouter · re-touche pour +1</div>
       ${sellable.length === 0 ? `
       <div style="text-align:center;padding:16px;color:var(--text-3);font-size:13px">Aucun article disponible</div>` :
       filteredSell.length === 0 ? `
       <div style="text-align:center;padding:16px;color:var(--text-3);font-size:13px">Aucun résultat</div>` :
-      `<div style="display:flex;flex-direction:column;gap:6px;max-height:360px;overflow-y:auto">
+      `<div class="pos-grid">
         ${filteredSell.map(it => {
           const inCart = (S.multiCart[it.id]||0);
+          const initial = (it.name||'?').replace(/^[🏪📦]\s*/,'').charAt(0).toUpperCase();
+          const img = it.image
+            ? `<img class="pos-img" src="${it.image}" alt="" loading="lazy">`
+            : `<div class="pos-img pos-ph"><span>${initial}</span></div>`;
+          const out = (it.stock||0) <= 0;
           return `
-          <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:${inCart>0?'var(--accent-light)':'var(--surface)'};border:1px solid ${inCart>0?'var(--accent)':'var(--border)'};border-radius:10px">
-            <label style="flex:1;cursor:pointer;display:flex;align-items:center;gap:10px">
-              <input type="checkbox" ${inCart>0?'checked':''} onchange="toggleMultiCart('${it.id}')" style="width:18px;height:18px;accent-color:var(--accent)">
-              <div style="flex:1">
-                <div style="font-size:13px;font-weight:700">${it.name}${it.inBoutique?' <span style="font-size:10px;color:var(--accent);font-weight:800;padding:1px 5px;background:var(--accent-light);border-radius:4px">🏪 BOUTIQUE</span>':''}</div>
-                <div style="font-size:11px;color:var(--text-3)">${fmt(it.price)} ${sym()} · Stock: ${it.stock} ${it.unit}${it.kind==='article'?' <span style="color:var(--accent)">•article</span>':''}</div>
-              </div>
-            </label>
-            ${inCart>0 ? `
-            <div style="display:flex;align-items:center;gap:4px">
-              <button onclick="updateMultiCartQty('${it.id}',-1)" style="width:26px;height:26px;border-radius:6px;border:1px solid var(--border);background:var(--surface);cursor:pointer;font-weight:700">−</button>
-              <input type="number" value="${inCart}" min="1" max="${it.stock}" onchange="setMultiCartQty('${it.id}',this.value)" style="width:44px;height:26px;text-align:center;border:1px solid var(--border);border-radius:6px;font-weight:700;background:var(--surface);color:var(--text-1)">
-              <button onclick="updateMultiCartQty('${it.id}',1)" style="width:26px;height:26px;border-radius:6px;border:1px solid var(--border);background:var(--surface);cursor:pointer;font-weight:700">+</button>
-            </div>` : ''}
-          </div>`;
+          <button class="pos-tile ${inCart>0?'active':''}" ${out?'disabled':''} onclick="updateMultiCartQty('${it.id}',1)">
+            <div class="pos-imgwrap">
+              ${img}
+              ${inCart>0?`<span class="pos-qty">${inCart}</span>`:''}
+              ${out?`<span class="pos-out">Rupture</span>`:''}
+            </div>
+            <div class="pos-tile-name">${it.name.replace(/^🏪\s*/,'')}</div>
+            <div class="pos-tile-price">${fmt(it.price)} ${sym()}</div>
+            ${inCart>0?`<span class="pos-minus" onclick="event.stopPropagation();updateMultiCartQty('${it.id}',-1)">−</span>`:''}
+          </button>`;
         }).join('')}
       </div>`}
     </div>

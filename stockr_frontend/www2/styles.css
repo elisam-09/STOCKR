@@ -4093,6 +4093,41 @@ body.dark .sova-wrap {
 .sova-score-ring-wrap { animation: fadeIn .5s var(--ease-out) both; }
 .sova-score-num { font-variant-numeric: tabular-nums; }
 
+/* ── POS : grille de vente rapide tappable ── */
+.pos-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; max-height: 420px; overflow-y: auto; padding: 2px; }
+@media (max-width: 360px) { .pos-grid { grid-template-columns: repeat(2, 1fr); } }
+.pos-tile {
+  position: relative; border: 1px solid var(--border); background: var(--surface);
+  border-radius: 12px; padding: 0 0 8px; cursor: pointer; overflow: hidden;
+  display: flex; flex-direction: column; text-align: left;
+  font-family: var(--font); transition: transform .12s var(--ease-out), box-shadow .15s, border-color .15s;
+}
+.pos-tile:active { transform: scale(.94); }
+.pos-tile.active { border-color: var(--accent); box-shadow: 0 4px 14px -6px rgba(79,70,229,.5); }
+.pos-tile:disabled { opacity: .5; cursor: not-allowed; }
+.pos-imgwrap { position: relative; aspect-ratio: 1/1; overflow: hidden; background: var(--gray-1); }
+.pos-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pos-ph { display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--accent-light), rgba(124,115,255,.06)); }
+.pos-ph span { font-size: 30px; font-weight: 900; color: var(--accent); opacity: .5; }
+.pos-qty {
+  position: absolute; top: 6px; right: 6px;
+  min-width: 22px; height: 22px; border-radius: 11px;
+  background: var(--accent); color: #fff; font-size: 12px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center; padding: 0 6px;
+  box-shadow: 0 2px 8px rgba(79,70,229,.5); animation: posBump .25s var(--ease-spring);
+}
+@keyframes posBump { 0% { transform: scale(.5); } 60% { transform: scale(1.25); } 100% { transform: scale(1); } }
+.pos-out { position: absolute; top: 6px; left: 6px; background: var(--danger); color: #fff; font-size: 9px; font-weight: 800; padding: 2px 7px; border-radius: 6px; }
+.pos-tile-name { font-size: 11.5px; font-weight: 700; line-height: 1.25; padding: 7px 8px 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 2.4em; }
+.pos-tile-price { font-size: 12px; font-weight: 800; color: var(--accent); padding: 2px 8px 0; }
+.pos-minus {
+  position: absolute; bottom: 6px; right: 6px;
+  width: 26px; height: 26px; border-radius: 50%;
+  background: var(--danger); color: #fff; font-size: 18px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,.25);
+}
+
 /* ── Vue Stock en grille (cartes photo) ── */
 .stock-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
 @media (min-width: 480px) { .stock-grid { grid-template-columns: repeat(3, 1fr); } }
