@@ -4795,3 +4795,51 @@ select.input { background-image: linear-gradient(45deg, transparent 50%, var(--t
 .wiz-recap-ic svg { width: 18px; height: 18px; vertical-align: -3px; }
 .wiz-recap-row > span:nth-child(2) { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .wiz-recap-ok { color: var(--success); font-weight: 800; flex: 0 0 auto; }
+
+/* ── CRÉATEUR VISUEL (éditeur glisser-déposer) ───────────────── */
+.ce-wrap { display: flex; flex-direction: column; min-height: 100%; background: var(--bg); }
+.ce-topbar { display: flex; align-items: center; gap: 10px; padding: calc(10px + env(safe-area-inset-top)) 14px 10px; }
+.ce-top-btn { width: 38px; height: 38px; border-radius: 50%; border: none; background: var(--surface); color: var(--text-1); cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-sm); }
+.ce-top-btn svg { width: 19px; height: 19px; }
+.ce-top-btn.ce-export { background: var(--accent); color: #fff; }
+.ce-title { flex: 1; font-size: 17px; font-weight: 800; letter-spacing: -.3px; }
+.ce-ratios { display: flex; gap: 6px; padding: 0 14px 10px; justify-content: center; }
+.ce-ratio { padding: 6px 12px; border-radius: 99px; border: 1px solid var(--border); background: var(--surface); color: var(--text-2); font-size: 11px; font-weight: 700; cursor: pointer; }
+.ce-ratio.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.ce-stage-wrap { display: flex; justify-content: center; padding: 4px 14px 12px; }
+.ce-stage { position: relative; overflow: hidden; border-radius: 14px; box-shadow: 0 12px 40px rgba(0,0,0,.3); touch-action: none; user-select: none; }
+.ce-empty { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; text-align: center; color: rgba(255,255,255,.85); font-size: 13px; font-weight: 600; line-height: 1.5; padding: 20px; pointer-events: none; text-shadow: 0 1px 4px rgba(0,0,0,.4); }
+.ce-el { position: absolute; cursor: grab; touch-action: none; }
+.ce-el:active { cursor: grabbing; }
+.ce-text { line-height: 1.1; word-wrap: break-word; }
+.ce-text .ce-txt { }
+.ce-el.ce-sel { outline: 2px solid #4F8DFD; outline-offset: 2px; }
+.ce-handle { position: absolute; display: none; align-items: center; justify-content: center; }
+.ce-el.ce-sel .ce-handle { display: flex; }
+.ce-h-rs { right: -11px; bottom: -11px; width: 22px; height: 22px; border-radius: 50%; background: #4F8DFD; border: 2px solid #fff; cursor: nwse-resize; box-shadow: 0 2px 6px rgba(0,0,0,.3); }
+.ce-h-del { top: -12px; right: -12px; width: 24px; height: 24px; border-radius: 50%; background: var(--danger); color: #fff; border: 2px solid #fff; font-size: 15px; line-height: 1; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,.3); }
+.ce-add { display: flex; gap: 8px; overflow-x: auto; padding: 4px 14px 12px; -webkit-overflow-scrolling: touch; }
+.ce-add::-webkit-scrollbar { display: none; }
+.ce-add-btn { flex: 0 0 auto; padding: 9px 14px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface); color: var(--text-1); font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+.ce-add-btn:active { transform: scale(.95); }
+.ce-panel { flex: 1; background: var(--surface); border-radius: 20px 20px 0 0; padding: 16px 16px calc(20px + env(safe-area-inset-bottom)); box-shadow: 0 -6px 24px rgba(0,0,0,.12); }
+.ce-panel-hd { display: flex; align-items: center; justify-content: space-between; font-size: 14px; font-weight: 800; margin-bottom: 12px; }
+.ce-mini { width: 32px; height: 32px; border-radius: 9px; border: 1px solid var(--border); background: var(--gray-1); color: var(--text-1); font-size: 14px; cursor: pointer; }
+.ce-mini-del { color: var(--danger); }
+.ce-ta { width: 100%; font-size: 15px; margin-bottom: 12px; resize: none; }
+.ce-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.ce-row-l { font-size: 12px; font-weight: 700; color: var(--text-3); width: 72px; flex: 0 0 auto; }
+.ce-row input[type=range] { flex: 1; accent-color: var(--accent); }
+.ce-seg { display: flex; gap: 4px; flex: 1; }
+.ce-seg button { flex: 1; padding: 8px 4px; border: 1px solid var(--border); background: var(--surface); color: var(--text-2); font-size: 12px; font-weight: 700; border-radius: 9px; cursor: pointer; }
+.ce-seg button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+.ce-swatches { display: flex; gap: 6px; flex: 1; flex-wrap: wrap; align-items: center; }
+.ce-sw { width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--border); cursor: pointer; padding: 0; }
+.ce-cp { width: 34px; height: 30px; border: 1px solid var(--border); border-radius: 8px; padding: 0; cursor: pointer; background: none; }
+.ce-toggle { padding: 8px 14px; border-radius: 9px; border: 1px solid var(--border); background: var(--surface); color: var(--text-2); font-size: 12px; font-weight: 700; cursor: pointer; }
+.ce-toggle.on { background: var(--success); border-color: var(--success); color: #fff; }
+.ce-grads { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+.ce-grad { width: 46px; height: 46px; border-radius: 12px; border: 2px solid var(--border); cursor: pointer; padding: 0; }
+.ce-prodrow { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
+.ce-prod { flex: 0 0 auto; width: 56px; height: 56px; border-radius: 12px; border: 1px solid var(--border); background-size: cover; background-position: center; cursor: pointer; padding: 0; }
+.ce-hint { font-size: 11px; color: var(--text-3); line-height: 1.5; }

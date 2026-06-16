@@ -4890,6 +4890,7 @@ function _doRender() {
     'video-library': vVideoLibrary,
     'onboarding': vOnboarding,
     'setup-wizard': vSetupWizard,
+    'creator': vCreator,
   };
   const viewChanged = __markViewTransition(S.view);
   const prevScroll = viewEl.scrollTop;
@@ -4943,7 +4944,7 @@ function _doRender() {
     if (gs) { gs.focus({ preventScroll: true }); gs.setSelectionRange(gs.value.length, gs.value.length); }
   }
 
-  const hideNav = ['detail','add','add-product','edit-product','pack-form','add-client','client-detail','notifications','catalog','add-supplier','supplier-detail','stock-history','purchase-orders','add-order','pricing','subscription','billing-setup','boutique','boutique-editor','boutique-appearance','boutique-domain','boutique-pixels','boutique-code','boutique-seo','boutique-hours','boutique-policies','boutique-faq','marketing','social-media','social-setup','payments-setup','integrations','delivery-setup','whatsapp-setup','whatsapp-broadcast','sms-setup','sms-broadcast','email-broadcast','ecommerce-setup','sheets-setup','pos-setup','compta-setup','api-settings','spectra','clients','exports','team','add-team-member','audit-log','appearance','security','2fa-verify','onboarding','setup-wizard'].includes(S.view);
+  const hideNav = ['detail','add','add-product','edit-product','pack-form','add-client','client-detail','notifications','catalog','add-supplier','supplier-detail','stock-history','purchase-orders','add-order','pricing','subscription','billing-setup','boutique','boutique-editor','boutique-appearance','boutique-domain','boutique-pixels','boutique-code','boutique-seo','boutique-hours','boutique-policies','boutique-faq','marketing','social-media','social-setup','payments-setup','integrations','delivery-setup','whatsapp-setup','whatsapp-broadcast','sms-setup','sms-broadcast','email-broadcast','ecommerce-setup','sheets-setup','pos-setup','compta-setup','api-settings','spectra','clients','exports','team','add-team-member','audit-log','appearance','security','2fa-verify','onboarding','setup-wizard','creator'].includes(S.view);
   navEl.style.display = hideNav ? 'none' : '';
   if (!hideNav) navEl.innerHTML = renderNav();
 }
@@ -20070,7 +20071,355 @@ function applyVideoTemplate(tplId) {
 }
 
 // Éditeur image canvas (simple mais fonctionnel)
+// ══════════════════════════════════════════════════════════════
+// CRÉATEUR VISUEL — éditeur glisser-déposer premium (canvas réel)
+//   Chaque élément (texte/prix/image/forme) est sélectionnable,
+//   déplaçable au doigt/souris, redimensionnable. Export PNG net.
+// ══════════════════════════════════════════════════════════════
+const CE_RATIOS = {
+  square:   { w:1080, h:1080, label:'Carré 1:1' },
+  portrait: { w:1080, h:1350, label:'Post 4:5' },
+  story:    { w:1080, h:1920, label:'Story 9:16' },
+};
+function _creator() {
+  if (!S.creator) {
+    S.creator = {
+      ratio:'square',
+      bg:{ type:'gradient', c1:'#4F46E5', c2:'#9333EA', img:null },
+      elements:[],
+      selected:null,
+    };
+  }
+  return S.creator;
+}
+function _ceStage() {
+  const r = CE_RATIOS[_creator().ratio] || CE_RATIOS.square;
+  const availW = Math.min((window.innerWidth || 380) - 36, 420);
+  const availH = (window.innerHeight || 720) * 0.44;
+  let SW = availW, SH = SW * r.h / r.w;
+  if (SH > availH) { SH = availH; SW = SH * r.w / r.h; }
+  return { SW: Math.round(SW), SH: Math.round(SH), R: r };
+}
+function _ceBgStyle(bg) {
+  if (bg.type === 'image' && bg.img) return `background-image:url('${bg.img}');background-size:cover;background-position:center;`;
+  if (bg.type === 'solid') return `background:${bg.c1};`;
+  return `background:linear-gradient(135deg,${bg.c1},${bg.c2});`;
+}
+function _ceHandles() {
+  return `<span class="ce-handle ce-h-rs" onpointerdown="_ceResizeDown(event)"></span>`
+       + `<button class="ce-handle ce-h-del" onpointerdown="event.stopPropagation()" onclick="event.stopPropagation();_ceDelete()">×</button>`;
+}
+function _ceEl(el, SW, SH, sel) {
+  const left = (el.x * SW) + 'px', top = (el.y * SH) + 'px';
+  const cls = 'ce-el ce-' + el.type + (sel ? ' ce-sel' : '');
+  const common = `data-id="${el.id}" onpointerdown="_ceDown(event,'${el.id}')"`;
+  if (el.type === 'text') {
+    const style = `left:${left};top:${top};width:${el.w*SW}px;font-size:${el.fs*SH}px;color:${el.color};font-weight:${el.weight||800};text-align:${el.align||'center'};`
+      + (el.shadow ? 'text-shadow:0 2px 10px rgba(0,0,0,.4);' : '');
+    const inner = `<span class="ce-txt" style="${el.bg?`background:${el.bg};padding:.12em .45em;border-radius:.28em;`:''}-webkit-box-decoration-break:clone;box-decoration-break:clone;">${(el.text||'Texte').replace(/</g,'&lt;')}</span>`;
+    return `<div class="${cls}" ${common} style="${style}">${inner}${_ceHandles()}</div>`;
+  }
+  if (el.type === 'image') {
+    return `<div class="${cls}" ${common} style="left:${left};top:${top};width:${el.w*SW}px;height:${el.h*SH}px;border-radius:${(el.radius||0)*SW}px;background-image:url('${el.src}');background-size:cover;background-position:center;">${_ceHandles()}</div>`;
+  }
+  if (el.type === 'shape') {
+    const rad = el.shape === 'circle' ? '50%' : ((el.radius||0)*SW) + 'px';
+    return `<div class="${cls}" ${common} style="left:${left};top:${top};width:${el.w*SW}px;height:${el.h*SH}px;background:${el.color};border-radius:${rad};opacity:${el.opacity!=null?el.opacity:1};">${_ceHandles()}</div>`;
+  }
+  return '';
+}
+function vCreator() {
+  const cr = _creator();
+  const { SW, SH } = _ceStage();
+  const sel = cr.elements.find(e => e.id === cr.selected);
+  const itemsWithImg = bt_sellableItems().map(it => {
+    const under = it.kind==='article' ? (S.articles||[]).find(a=>a.id===it.articleId) : it.kind==='product' ? (S.products||[]).find(p=>p.id===it.productId) : null;
+    const img = it.image || (under && (under.image||under.imageUrl||under.photo)) || null;
+    return img ? { name: it.name, img } : null;
+  }).filter(Boolean);
+  return `
+  <div class="ce-wrap">
+    <div class="ce-topbar">
+      <button class="ce-top-btn" onclick="nav('social-media')">${IC.left}</button>
+      <div class="ce-title">Créateur visuel</div>
+      <button class="ce-top-btn ce-export" onclick="_ceExport()">${IC.download}</button>
+    </div>
+
+    <div class="ce-ratios">
+      ${Object.entries(CE_RATIOS).map(([k,r]) => `<button class="ce-ratio ${cr.ratio===k?'active':''}" onclick="_ceSetRatio('${k}')">${r.label}</button>`).join('')}
+    </div>
+
+    <div class="ce-stage-wrap">
+      <div class="ce-stage" id="ce-stage" style="width:${SW}px;height:${SH}px;${_ceBgStyle(cr.bg)}" onpointerdown="_ceStageTap(event)">
+        ${cr.elements.map(e => _ceEl(e, SW, SH, e.id===cr.selected)).join('')}
+        ${cr.elements.length===0 ? `<div class="ce-empty">Ajoutez des éléments ci-dessous<br>puis glissez-les pour les placer</div>` : ''}
+      </div>
+    </div>
+
+    <div class="ce-add">
+      <button class="ce-add-btn" onclick="_ceAddTitle()">＋ Titre</button>
+      <button class="ce-add-btn" onclick="_ceAddText()">＋ Texte</button>
+      <button class="ce-add-btn" onclick="_ceAddPrice()">＋ Prix</button>
+      <button class="ce-add-btn" onclick="_ceAddShape('rect')">▭ Forme</button>
+      <button class="ce-add-btn" onclick="_ceAddShape('circle')">● Cercle</button>
+      <label class="ce-add-btn">📷 Image<input type="file" accept="image/*" style="display:none" onchange="_ceUploadImage(event)"></label>
+    </div>
+
+    <div class="ce-panel">
+      ${sel ? _cePropsPanel(sel) : _ceBgPanel(cr, itemsWithImg)}
+    </div>
+  </div>`;
+}
+function _cePropsPanel(el) {
+  const swatches = ['#FFFFFF','#000000','#EF4444','#F59E0B','#10B981','#3B82F6','#7C3AED','#EC4899','#FCD34D'];
+  let body = `<div class="ce-panel-hd"><span>${el.type==='text'?'✏️ Texte':el.type==='image'?'🖼️ Image':'🔷 Forme'} sélectionné</span>
+    <div style="display:flex;gap:6px">
+      <button class="ce-mini" onclick="_ceLayer(1)" title="Avancer">⬆</button>
+      <button class="ce-mini" onclick="_ceLayer(-1)" title="Reculer">⬇</button>
+      <button class="ce-mini" onclick="_ceDup()" title="Dupliquer">⧉</button>
+      <button class="ce-mini ce-mini-del" onclick="_ceDelete()" title="Supprimer">🗑</button>
+    </div></div>`;
+  if (el.type === 'text') {
+    body += `
+      <textarea class="input ce-ta" rows="2" oninput="_ceSetText(this.value)" placeholder="Votre texte">${(el.text||'').replace(/</g,'&lt;')}</textarea>
+      <div class="ce-row"><span class="ce-row-l">Taille</span><input type="range" min="0.03" max="0.22" step="0.005" value="${el.fs}" oninput="_ceLive('fs',this.value)"></div>
+      <div class="ce-row"><span class="ce-row-l">Graisse</span>
+        <div class="ce-seg">${[['400','Léger'],['700','Gras'],['900','Extra']].map(([w,l])=>`<button class="${String(el.weight)===w?'on':''}" onclick="_ceSetR('weight','${w}')">${l}</button>`).join('')}</div>
+      </div>
+      <div class="ce-row"><span class="ce-row-l">Aligner</span>
+        <div class="ce-seg">${[['left','◧'],['center','▣'],['right','◨']].map(([a,l])=>`<button class="${(el.align||'center')===a?'on':''}" onclick="_ceSetR('align','${a}')">${l}</button>`).join('')}</div>
+      </div>
+      <div class="ce-row"><span class="ce-row-l">Couleur</span><div class="ce-swatches">${swatches.map(c=>`<button class="ce-sw" style="background:${c}" onclick="_ceSetR('color','${c}')"></button>`).join('')}<input type="color" value="${el.color}" oninput="_ceLive('color',this.value)" class="ce-cp"></div></div>
+      <div class="ce-row"><span class="ce-row-l">Fond texte</span>
+        <div class="ce-seg"><button class="${!el.bg?'on':''}" onclick="_ceSetR('bg','')">Aucun</button>${['#EF4444','#10B981','#111827'].map(c=>`<button style="background:${c};color:#fff" class="${el.bg===c?'on':''}" onclick="_ceSetR('bg','${c}')">A</button>`).join('')}</div>
+      </div>
+      <div class="ce-row"><span class="ce-row-l">Ombre</span><button class="ce-toggle ${el.shadow?'on':''}" onclick="_ceSetR('shadow',${el.shadow?'false':'true'})">${el.shadow?'Activée':'Désactivée'}</button></div>`;
+  } else if (el.type === 'shape') {
+    body += `
+      <div class="ce-row"><span class="ce-row-l">Couleur</span><div class="ce-swatches">${swatches.map(c=>`<button class="ce-sw" style="background:${c}" onclick="_ceSetR('color','${c}')"></button>`).join('')}<input type="color" value="${el.color}" oninput="_ceLive('color',this.value)" class="ce-cp"></div></div>
+      <div class="ce-row"><span class="ce-row-l">Opacité</span><input type="range" min="0.1" max="1" step="0.05" value="${el.opacity!=null?el.opacity:1}" oninput="_ceLive('opacity',this.value)"></div>
+      ${el.shape!=='circle'?`<div class="ce-row"><span class="ce-row-l">Arrondi</span><input type="range" min="0" max="0.3" step="0.01" value="${el.radius||0}" oninput="_ceLive('radius',this.value)"></div>`:''}`;
+  } else if (el.type === 'image') {
+    body += `<div class="ce-row"><span class="ce-row-l">Arrondi</span><input type="range" min="0" max="0.5" step="0.02" value="${el.radius||0}" oninput="_ceLive('radius',this.value)"></div>
+      <div class="ce-hint">Glissez les coins pour redimensionner.</div>`;
+  }
+  body += `<button class="btn btn-ghost" style="width:100%;margin-top:10px;font-size:12px" onclick="_ceDeselect()">✓ Terminer la sélection</button>`;
+  return body;
+}
+function _ceBgPanel(cr, itemsWithImg) {
+  const grads = [['#4F46E5','#9333EA'],['#F97316','#EF4444'],['#10B981','#059669'],['#EC4899','#8B5CF6'],['#0EA5E9','#2563EB'],['#111827','#374151']];
+  return `
+    <div class="ce-panel-hd"><span>🎨 Arrière-plan</span></div>
+    <div class="ce-grads">${grads.map(([a,b])=>`<button class="ce-grad" style="background:linear-gradient(135deg,${a},${b})" onclick="_ceSetBg('gradient','${a}','${b}')"></button>`).join('')}</div>
+    <div class="ce-row"><span class="ce-row-l">Couleur unie</span><input type="color" value="${cr.bg.c1}" oninput="_ceSetBg('solid',this.value)" class="ce-cp"></div>
+    <label class="btn btn-ghost" style="width:100%;margin-top:6px;font-size:12px;cursor:pointer">🖼️ Photo de fond<input type="file" accept="image/*" style="display:none" onchange="_ceUploadBg(event)"></label>
+    ${itemsWithImg.length ? `
+      <div class="ce-panel-hd" style="margin-top:14px"><span>📦 Ajouter une photo produit</span></div>
+      <div class="ce-prodrow">${itemsWithImg.slice(0,12).map(p=>`<button class="ce-prod" style="background-image:url('${p.img}')" title="${p.name.replace(/"/g,'&quot;')}" onclick="_ceAddProductImg('${p.img}')"></button>`).join('')}</div>` : ''}
+    <div class="ce-hint" style="margin-top:12px">Astuce : touchez un élément sur l'image pour le modifier, glissez-le pour le déplacer.</div>`;
+}
+// ── Interactions ──
+function _ceStageTap(e) { if (e.target && e.target.id === 'ce-stage') { _creator().selected = null; render(); } }
+function _ceDown(e, id) {
+  if (e.target.classList && (e.target.classList.contains('ce-h-rs') || e.target.classList.contains('ce-h-del'))) return;
+  e.preventDefault();
+  const cr = _creator();
+  const { SW, SH } = _ceStage();
+  const el = cr.elements.find(x => x.id === id);
+  if (!el) return;
+  document.querySelectorAll('.ce-el').forEach(n => n.classList.toggle('ce-sel', n.dataset.id === id));
+  const wasSelected = cr.selected === id;
+  cr.selected = id;
+  const node = document.querySelector(`.ce-el[data-id="${id}"]`);
+  const startX = e.clientX, startY = e.clientY, ex = el.x, ey = el.y;
+  let moved = false;
+  function mv(ev) {
+    const dx = (ev.clientX - startX) / SW, dy = (ev.clientY - startY) / SH;
+    if (Math.abs(ev.clientX - startX) > 3 || Math.abs(ev.clientY - startY) > 3) moved = true;
+    el.x = Math.max(-el.w*0.5, Math.min(0.98, ex + dx));
+    el.y = Math.max(-0.1, Math.min(0.98, ey + dy));
+    if (node) { node.style.left = (el.x*SW)+'px'; node.style.top = (el.y*SH)+'px'; }
+  }
+  function up() {
+    document.removeEventListener('pointermove', mv);
+    document.removeEventListener('pointerup', up);
+    if (moved || !wasSelected) render(); // refresh panel for new selection
+  }
+  document.addEventListener('pointermove', mv);
+  document.addEventListener('pointerup', up);
+}
+function _ceResizeDown(e) {
+  e.preventDefault(); e.stopPropagation();
+  const cr = _creator();
+  const el = cr.elements.find(x => x.id === cr.selected);
+  if (!el) return;
+  const { SW, SH } = _ceStage();
+  const node = document.querySelector(`.ce-el[data-id="${el.id}"]`);
+  const startX = e.clientX;
+  const ew = el.w || 0.3, eh = el.h || 0.3, efs = el.fs || 0.07;
+  function mv(ev) {
+    const dw = (ev.clientX - startX) / SW;
+    el.w = Math.max(0.06, Math.min(1.2, ew + dw));
+    if (el.type === 'text') {
+      el.fs = Math.max(0.02, efs * (el.w / ew));
+      if (node) { node.style.width = (el.w*SW)+'px'; node.style.fontSize = (el.fs*SH)+'px'; }
+    } else {
+      el.h = Math.max(0.06, Math.min(1.2, eh + dw * (SW / SH)));
+      if (node) { node.style.width = (el.w*SW)+'px'; node.style.height = (el.h*SH)+'px'; }
+    }
+  }
+  function up() { document.removeEventListener('pointermove', mv); document.removeEventListener('pointerup', up); render(); }
+  document.addEventListener('pointermove', mv);
+  document.addEventListener('pointerup', up);
+}
+function _ceAdd(props) {
+  const cr = _creator();
+  const id = 'el' + Date.now().toString(36) + Math.random().toString(36).slice(2,5);
+  cr.elements.push({ id, ...props });
+  cr.selected = id;
+  if (typeof haptic==='function') haptic('tap');
+  render();
+}
+function _ceAddTitle() { _ceAdd({ type:'text', text:'PROMO', x:0.12, y:0.08, w:0.76, fs:0.13, color:'#FFFFFF', weight:900, align:'center', shadow:true }); }
+function _ceAddText()  { _ceAdd({ type:'text', text:'Votre texte ici', x:0.2, y:0.45, w:0.6, fs:0.06, color:'#FFFFFF', weight:700, align:'center', shadow:true }); }
+function _ceAddPrice() { _ceAdd({ type:'text', text:'5 000 '+sym(), x:0.28, y:0.72, w:0.44, fs:0.09, color:'#FFFFFF', weight:900, align:'center', bg:'#EF4444' }); }
+function _ceAddShape(shape) { _ceAdd({ type:'shape', shape, x:0.3, y:0.34, w:0.4, h:0.4, color:'#FFFFFF', opacity:0.95, radius: shape==='rect'?0.04:0 }); }
+function _ceAddProductImg(src) { _ceAdd({ type:'image', src, x:0.2, y:0.18, w:0.6, h:0.6, radius:0.06 }); }
+function _ceUploadImage(e) {
+  const f = e.target?.files?.[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = () => _ceAdd({ type:'image', src:r.result, x:0.2, y:0.2, w:0.6, h:0.6, radius:0.06 });
+  r.readAsDataURL(f);
+}
+function _ceUploadBg(e) {
+  const f = e.target?.files?.[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = () => { const cr=_creator(); cr.bg.type='image'; cr.bg.img=r.result; render(); };
+  r.readAsDataURL(f);
+}
+function _ceSetRatio(k) { _creator().ratio = k; render(); }
+function _ceSetBg(type, c1, c2) { const cr=_creator(); cr.bg.type=type; if(c1)cr.bg.c1=c1; if(c2)cr.bg.c2=c2; if(type!=='image')cr.bg.img=null; render(); }
+function _ceDeselect() { _creator().selected = null; render(); }
+function _ceDelete() { const cr=_creator(); cr.elements = cr.elements.filter(e=>e.id!==cr.selected); cr.selected=null; if(typeof haptic==='function')haptic('tap'); render(); }
+function _ceDup() {
+  const cr=_creator(); const el=cr.elements.find(e=>e.id===cr.selected); if(!el)return;
+  const id='el'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+  cr.elements.push({ ...JSON.parse(JSON.stringify(el)), id, x:Math.min(0.9,(el.x||0)+0.05), y:Math.min(0.9,(el.y||0)+0.05) });
+  cr.selected=id; render();
+}
+function _ceLayer(dir) {
+  const cr=_creator(); const i=cr.elements.findIndex(e=>e.id===cr.selected); if(i<0)return;
+  const j=i+dir; if(j<0||j>=cr.elements.length)return;
+  const tmp=cr.elements[i]; cr.elements[i]=cr.elements[j]; cr.elements[j]=tmp; render();
+}
+function _ceSetR(prop, val) { // discrete -> re-render
+  const cr=_creator(); const el=cr.elements.find(e=>e.id===cr.selected); if(!el)return;
+  if (prop==='shadow') el.shadow = (val===true||val==='true');
+  else el[prop] = val;
+  render();
+}
+function _ceSetText(val) {
+  const cr=_creator(); const el=cr.elements.find(e=>e.id===cr.selected); if(!el)return;
+  el.text = val;
+  const node = document.querySelector(`.ce-el[data-id="${el.id}"] .ce-txt`);
+  if (node) node.textContent = val || 'Texte';
+}
+function _ceLive(prop, val) { // continuous -> live DOM, no render
+  const cr=_creator(); const el=cr.elements.find(e=>e.id===cr.selected); if(!el)return;
+  const { SW, SH } = _ceStage();
+  const node = document.querySelector(`.ce-el[data-id="${el.id}"]`);
+  const v = (prop==='color') ? val : parseFloat(val);
+  el[prop] = v;
+  if (!node) return;
+  if (prop==='fs') node.style.fontSize = (v*SH)+'px';
+  else if (prop==='opacity') node.style.opacity = v;
+  else if (prop==='radius') node.style.borderRadius = el.shape==='circle' ? '50%' : (v*SW)+'px';
+  else if (prop==='color') { if (el.type==='shape') node.style.background = v; else node.style.color = v; }
+}
+// ── Export (rasterisation canvas → PNG net) ──
+function _ceLoadImg(src) { return new Promise(res => { const i=new Image(); i.crossOrigin='anonymous'; i.onload=()=>res(i); i.onerror=()=>res(null); i.src=src; }); }
+function _ceRoundRect(ctx,x,y,w,h,r){ r=Math.max(0,Math.min(r,w/2,h/2)); ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+function _ceDrawCover(ctx,img,x,y,w,h){ const ir=img.width/img.height, tr=w/h; let sw,sh,sx,sy; if(ir>tr){ sh=img.height; sw=sh*tr; sx=(img.width-sw)/2; sy=0;} else { sw=img.width; sh=sw/tr; sx=0; sy=(img.height-sh)/2;} ctx.drawImage(img,sx,sy,sw,sh,x,y,w,h); }
+function _ceWrap(ctx,text,maxW){ const words=String(text||'').split(/\s+/); const lines=[]; let line='';
+  for(const wd of words){ const t=line?line+' '+wd:wd; if(ctx.measureText(t).width>maxW && line){lines.push(line); line=wd;} else line=t; }
+  if(line) lines.push(line); return lines.length?lines:['']; }
+function _ceDrawText(ctx, el, EW, EH) {
+  const x=el.x*EW, y=el.y*EH, w=el.w*EW, fs=el.fs*EH, lh=fs*1.14, align=el.align||'center';
+  ctx.save();
+  ctx.font = `${el.weight||800} ${fs}px Inter, Arial, sans-serif`;
+  ctx.textBaseline='top';
+  const lines=_ceWrap(ctx, el.text, w);
+  const pad = el.bg ? fs*0.32 : 0;
+  if (el.bg) {
+    let maxw=0; lines.forEach(l=>maxw=Math.max(maxw,ctx.measureText(l).width));
+    const boxw=Math.min(w,maxw)+pad*2, boxh=lines.length*lh+pad*0.6;
+    let bx = align==='center'? x+(w-boxw)/2 : align==='right'? x+w-boxw : x;
+    ctx.fillStyle=el.bg; _ceRoundRect(ctx,bx,y,boxw,boxh,fs*0.28); ctx.fill();
+  }
+  if (el.shadow) { ctx.shadowColor='rgba(0,0,0,.4)'; ctx.shadowBlur=fs*0.2; ctx.shadowOffsetY=fs*0.07; }
+  ctx.fillStyle=el.color||'#fff'; ctx.textAlign=align;
+  const tx = align==='center'? x+w/2 : align==='right'? x+w-pad : x+pad;
+  lines.forEach((l,i)=> ctx.fillText(l, tx, y+pad*0.6 + i*lh));
+  ctx.restore();
+}
+async function _ceExport() {
+  const cr = _creator();
+  if (!cr.elements.length && cr.bg.type !== 'image') { showToast('Ajoutez au moins un élément', 'info'); return; }
+  showToast('Génération de l\'image…', 'info');
+  const r = CE_RATIOS[cr.ratio], EW=r.w, EH=r.h;
+  const c = document.createElement('canvas'); c.width=EW; c.height=EH;
+  const ctx = c.getContext('2d');
+  if (cr.bg.type==='image' && cr.bg.img) { const im=await _ceLoadImg(cr.bg.img); if(im){_ceDrawCover(ctx,im,0,0,EW,EH);} else {ctx.fillStyle=cr.bg.c1;ctx.fillRect(0,0,EW,EH);} }
+  else if (cr.bg.type==='solid') { ctx.fillStyle=cr.bg.c1; ctx.fillRect(0,0,EW,EH); }
+  else { const g=ctx.createLinearGradient(0,0,EW,EH); g.addColorStop(0,cr.bg.c1); g.addColorStop(1,cr.bg.c2); ctx.fillStyle=g; ctx.fillRect(0,0,EW,EH); }
+  for (const el of cr.elements) {
+    if (el.type==='shape') {
+      ctx.save(); ctx.globalAlpha=el.opacity!=null?el.opacity:1; ctx.fillStyle=el.color;
+      const x=el.x*EW,y=el.y*EH,w=el.w*EW,h=el.h*EH;
+      if (el.shape==='circle') { ctx.beginPath(); ctx.ellipse(x+w/2,y+h/2,w/2,h/2,0,0,Math.PI*2); ctx.fill(); }
+      else { _ceRoundRect(ctx,x,y,w,h,(el.radius||0)*EW); ctx.fill(); }
+      ctx.restore();
+    } else if (el.type==='image') {
+      const im=await _ceLoadImg(el.src);
+      if (im) { const x=el.x*EW,y=el.y*EH,w=el.w*EW,h=el.h*EH; ctx.save(); if(el.radius){_ceRoundRect(ctx,x,y,w,h,el.radius*EW); ctx.clip();} _ceDrawCover(ctx,im,x,y,w,h); ctx.restore(); }
+    } else if (el.type==='text') {
+      _ceDrawText(ctx, el, EW, EH);
+    }
+  }
+  ctx.save(); ctx.globalAlpha=0.5; ctx.fillStyle='#fff'; ctx.textAlign='right'; ctx.textBaseline='alphabetic';
+  ctx.font='600 '+Math.round(EH*0.02)+'px Inter, Arial'; ctx.fillText('Créé avec BARO', EW-EW*0.04, EH-EH*0.03); ctx.restore();
+  c.toBlob(async (blob) => {
+    if (!blob) { showToast('Erreur export', 'error'); return; }
+    const file = new File([blob], `baro-creation-${Date.now()}.png`, { type:'image/png' });
+    if (navigator.canShare && navigator.canShare({ files:[file] })) {
+      try { await navigator.share({ files:[file], title:'BARO' }); showToast('✅ Partagé', 'success'); return; } catch(_){}
+    }
+    const a = document.createElement('a'); a.download = file.name; a.href = URL.createObjectURL(blob); a.click();
+    showToast('🖼️ Image téléchargée', 'success');
+  }, 'image/png');
+}
+function openCreator(template) {
+  S.creator = null;
+  const cr = _creator();
+  if (template) _ceApplyTemplate(template);
+  S.view = 'creator';
+  render();
+}
+function _ceApplyTemplate(t) {
+  const cr = _creator();
+  if (t.bgColor) cr.bg = { type:'gradient', c1:t.bgColor, c2:(t.bgColor2||t.bgColor), img:null };
+  cr.elements = [];
+  if (t.title)    cr.elements.push({ id:'t'+Date.now(), type:'text', text:t.title,    x:0.1, y:0.1,  w:0.8, fs:0.12, color:t.textColor||'#fff', weight:900, align:'center', shadow:true });
+  if (t.subtitle) cr.elements.push({ id:'s'+Date.now(), type:'text', text:t.subtitle, x:0.15,y:0.66, w:0.7, fs:0.055,color:t.textColor||'#fff', weight:600, align:'center', shadow:true });
+  if (t.badge)    cr.elements.push({ id:'b'+Date.now(), type:'text', text:t.badge,    x:0.3, y:0.82, w:0.4, fs:0.06, color:'#fff', weight:900, align:'center', bg:'#EF4444' });
+  cr.selected = null;
+}
+
 function openImageEditor(preset) {
+  // Redirige vers le nouvel éditeur glisser-déposer (plus puissant)
+  openCreator(preset || null);
+  return;
+  /* eslint-disable no-unreachable */
   const data = preset || { title:'VOTRE TITRE', subtitle:'Sous-titre', badge:'', bgColor:'#4F46E5', textColor:'#fff' };
   const existing = document.getElementById('img-editor-modal');
   if (existing) existing.remove();
