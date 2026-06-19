@@ -4843,3 +4843,21 @@ select.input { background-image: linear-gradient(45deg, transparent 50%, var(--t
 .ce-prodrow { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
 .ce-prod { flex: 0 0 auto; width: 56px; height: 56px; border-radius: 12px; border: 1px solid var(--border); background-size: cover; background-position: center; cursor: pointer; padding: 0; }
 .ce-hint { font-size: 11px; color: var(--text-3); line-height: 1.5; }
+
+/* ── DEMANDER UN PAIEMENT (feuille modale) ───────────────────── */
+.payreq-sheet {
+  background: var(--surface); width: 100%; max-width: 460px;
+  border-radius: 22px 22px 0 0; padding: 8px 18px calc(18px + env(safe-area-inset-bottom));
+  box-shadow: 0 -12px 40px rgba(0,0,0,.3); animation: qsSlideUp .26s cubic-bezier(.2,.8,.2,1);
+  max-height: 92vh; overflow-y: auto;
+}
+.payreq-sheet::before { content: ''; display: block; width: 40px; height: 4px; border-radius: 99px; background: var(--border); margin: 4px auto 12px; }
+.payreq-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.payreq-methods { display: flex; flex-wrap: wrap; gap: 7px; }
+.payreq-m { padding: 9px 14px; border-radius: 999px; border: 1.5px solid var(--border); background: var(--surface); color: var(--text-2); font-size: 13px; font-weight: 700; cursor: pointer; transition: all .15s var(--ease-out); }
+.payreq-m.on { background: var(--accent); border-color: var(--accent); color: #fff; box-shadow: 0 2px 10px rgba(124,115,255,.3); }
+.payreq-preview { margin-top: 14px; }
+.payreq-link-box { background: var(--gray-1); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; }
+.payreq-link-lbl { font-size: 11px; font-weight: 700; color: var(--text-3); text-transform: uppercase; letter-spacing: .4px; margin-bottom: 5px; }
+.payreq-link { font-size: 13px; color: var(--accent); font-weight: 600; word-break: break-all; text-decoration: none; }
+.payreq-hint { font-size: 12px; color: var(--text-3); line-height: 1.5; padding: 4px 2px; }

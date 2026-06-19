@@ -3985,7 +3985,7 @@ async function confirmMultiSale(opts = {}) {
   }
   if (payMethod !== 'cash') {
     S.paymentHistory.unshift({ id:Date.now(), provider:payMethod, amount:total, clientName:client?.name||'Client', date:new Date().toISOString() });
-    localStorage.setItem('stockr_payment_history', JSON.stringify(S.paymentHistory));
+    localStorage.setItem('baro_payment_history', JSON.stringify(S.paymentHistory));
   }
   logActivity('sale', `Vente multi: ${newSales.length} article(s) — ${fmt(total)} ${sym()}`);
   showToast(`✅ ${newSales.length} articles vendus — ${fmt(total)} ${sym()}`, 'success');
@@ -21792,6 +21792,7 @@ function vPayments() {
     </div>
   </div>
   <div class="container">
+    <button class="btn btn-primary" style="width:100%;margin:4px 0 16px;padding:15px;font-size:15px;font-weight:800;background:linear-gradient(135deg,#16A34A,#059669);box-shadow:0 6px 20px rgba(5,150,105,.3)" onclick="requestPaymentModal()">💰 Demander un paiement</button>
     <div class="section-hd"><span class="section-lbl">Méthodes de paiement</span></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
     ${providers.map(prov => {
@@ -21953,7 +21954,7 @@ function payWithMobileMoney(providerId, amount, description) {
       date: new Date().toISOString(), status: 'initiated',
       phone: method.phone,
     });
-    localStorage.setItem('stockr_paymentHistory', JSON.stringify(S.paymentHistory));
+    localStorage.setItem('baro_payment_history', JSON.stringify(S.paymentHistory));
     showToast(`📱 Lien ${providerId} ouvert — confirmez sur votre téléphone`, 'info');
     return { success:true, pending:true };
   } catch(e) {
@@ -21983,7 +21984,7 @@ async function payWithProvider(providerId, amount, description){
     window.open(url, '_blank');
     S.paymentHistory = S.paymentHistory || [];
     S.paymentHistory.unshift({ id:Date.now(), provider:'paypal', amount, description, date:new Date().toISOString(), status:'initiated', email });
-    localStorage.setItem('stockr_paymentHistory', JSON.stringify(S.paymentHistory));
+    localStorage.setItem('baro_payment_history', JSON.stringify(S.paymentHistory));
     showToast('💰 PayPal ouvert — confirmez sur PayPal.com', 'info');
     return { success:true, pending:true };
   }
@@ -22039,7 +22040,7 @@ async function payWithProvider(providerId, amount, description){
       date: new Date().toISOString(), token: resp.details?.paymentToken || null,
       status: 'completed'
     });
-    localStorage.setItem('stockr_paymentHistory', JSON.stringify(S.paymentHistory));
+    localStorage.setItem('baro_payment_history', JSON.stringify(S.paymentHistory));
     showToast(`${method.name} : ${fmt(amount)} ${sym()} encaissé`, 'success');
     return { success:true, token: resp.details?.paymentToken };
   } catch(e) {
@@ -22052,6 +22053,125 @@ function disconnectPayment(providerId) {
   localStorage.setItem('baro_payments', JSON.stringify(S.paymentMethods));
   showToast('Moyen de paiement retire');
   render();
+}
+
+// ══════════════════════════════════════════════════════════════
+// DEMANDER UN PAIEMENT — génère un lien/instruction et le partage
+// ══════════════════════════════════════════════════════════════
+// Retourne ce qui est partageable pour une méthode + montant.
+function _payShareable(method, amount) {
+  const digits = String(method.phone || method.email || '').replace(/\D/g, '');
+  const a = Math.max(0, Math.round(amount || 0));
+  switch (method.provider) {
+    case 'wave':   return { link: `https://pay.wave.com/m/${digits}/c/ci?amount=${a}`, label: 'Lien de paiement Wave' };
+    case 'paypal': { const h = (method.email || method.phone || '').split('@')[0]; return { link: `https://www.paypal.com/paypalme/${encodeURIComponent(h)}/${a}`, label: 'Lien PayPal' }; }
+    case 'orange': return { instruction: `Pour payer ${fmt(a)} ${sym()} : Orange Money vers ${method.phone}`, ussd: `*144*4*6*${digits}*${a}#` };
+    case 'moov':   return { instruction: `Pour payer ${fmt(a)} ${sym()} : Moov Money vers ${method.phone}`, ussd: `*155*${digits}*${a}#` };
+    case 'mtn':    return { instruction: `Pour payer ${fmt(a)} ${sym()} : MTN MoMo vers ${method.phone}`, ussd: `*133*1*${digits}*${a}#` };
+    default:       return { instruction: `Paiement ${method.name} de ${fmt(a)} ${sym()} (carte / en personne).`, inPerson: true };
+  }
+}
+function _payReqState() {
+  if (!S._payReq) {
+    const active = (S.paymentMethods || []).filter(m => m.active);
+    S._payReq = { amount: '', desc: '', clientId: null, method: active[0]?.provider || null };
+  }
+  return S._payReq;
+}
+function requestPaymentModal() {
+  const active = (S.paymentMethods || []).filter(m => m.active);
+  const existing = document.getElementById('payreq-modal');
+  if (existing) existing.remove();
+  const st = _payReqState();
+  if (active.length && !active.find(m => m.provider === st.method)) st.method = active[0].provider;
+  const modal = document.createElement('div');
+  modal.id = 'payreq-modal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:10000;display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(6px);animation:fadeIn .2s ease';
+  modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+  if (!active.length) {
+    modal.innerHTML = `<div class="payreq-sheet"><div class="payreq-hd"><div style="font-size:17px;font-weight:800">💰 Demander un paiement</div><button class="qs-x" onclick="document.getElementById('payreq-modal').remove()">✕</button></div>
+      <div style="text-align:center;padding:24px 8px"><div style="font-size:38px;margin-bottom:8px">💳</div><div style="font-weight:700;margin-bottom:4px">Aucun moyen de paiement actif</div><div style="font-size:12px;color:var(--text-3);margin-bottom:16px">Configurez Wave, Orange Money, PayPal… pour demander des paiements.</div><button class="btn btn-primary" onclick="document.getElementById('payreq-modal').remove()">Configurer un moyen</button></div></div>`;
+    document.body.appendChild(modal);
+    return;
+  }
+  const clientsWithPhone = (S.clients || []).filter(c => c.phone);
+  modal.innerHTML = `
+    <div class="payreq-sheet">
+      <div class="payreq-hd"><div style="font-size:17px;font-weight:800">💰 Demander un paiement</div><button class="qs-x" onclick="document.getElementById('payreq-modal').remove()">✕</button></div>
+      <label class="qs-label">Montant (${sym()})</label>
+      <input id="payreq-amount" class="input" type="number" inputmode="numeric" placeholder="5000" value="${st.amount}" oninput="S._payReq.amount=this.value;_payReqPreview()" style="font-size:18px;font-weight:800">
+      <label class="qs-label">Description (optionnel)</label>
+      <input id="payreq-desc" class="input" placeholder="Ex : Commande riz" value="${(st.desc||'').replace(/"/g,'&quot;')}" oninput="S._payReq.desc=this.value">
+      ${clientsWithPhone.length ? `<label class="qs-label">Client (pour envoyer sur WhatsApp)</label>
+      <select id="payreq-client" class="input" onchange="S._payReq.clientId=this.value?parseInt(this.value):null">
+        <option value="">— Aucun (partage libre) —</option>
+        ${clientsWithPhone.map(c=>`<option value="${c.id}" ${st.clientId===c.id?'selected':''}>${(c.name||'Client').replace(/</g,'&lt;')}</option>`).join('')}
+      </select>` : ''}
+      <label class="qs-label">Encaisser via</label>
+      <div class="payreq-methods">
+        ${active.map(m => `<button class="payreq-m ${st.method===m.provider?'on':''}" onclick="S._payReq.method='${m.provider}';_payReqPreview();document.querySelectorAll('.payreq-m').forEach(b=>b.classList.remove('on'));this.classList.add('on')">${m.name}</button>`).join('')}
+      </div>
+      <div id="payreq-preview" class="payreq-preview"></div>
+      <div style="display:flex;gap:8px;margin-top:14px">
+        <button class="btn btn-ghost" style="flex:1" onclick="_payReqCopy()">📋 Copier</button>
+        <button class="btn btn-primary" style="flex:2;background:#25D366" onclick="_payReqShare()">${IC.whatsapp} Envoyer au client</button>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+  _payReqPreview();
+  setTimeout(()=>document.getElementById('payreq-amount')?.focus(), 150);
+}
+function _payReqBuild() {
+  const st = _payReqState();
+  const method = (S.paymentMethods || []).find(m => m.provider === st.method && m.active);
+  const amount = parseFloat(st.amount) || 0;
+  if (!method || amount <= 0) return null;
+  const sh = _payShareable(method, amount);
+  const biz = S.session?.business || 'notre boutique';
+  const descPart = st.desc ? ` (${st.desc})` : '';
+  let msg;
+  if (sh.link) msg = `Bonjour 👋\nVoici votre lien de paiement ${method.name} pour ${fmt(amount)} ${sym()}${descPart} chez ${biz} :\n${sh.link}\n\nMerci !`;
+  else msg = `Bonjour 👋\n${sh.instruction}${descPart}.${sh.ussd?`\nCode : ${sh.ussd}`:''}\n\nMerci de votre confiance — ${biz}`;
+  return { method, amount, sh, msg };
+}
+function _payReqPreview() {
+  const el = document.getElementById('payreq-preview');
+  if (!el) return;
+  const b = _payReqBuild();
+  if (!b) { el.innerHTML = `<div class="payreq-hint">Entrez un montant pour générer le lien / l'instruction.</div>`; return; }
+  if (b.sh.link) {
+    el.innerHTML = `<div class="payreq-link-box"><div class="payreq-link-lbl">${b.sh.label}</div><a href="${b.sh.link}" target="_blank" class="payreq-link">${b.sh.link}</a></div>`;
+  } else if (b.sh.inPerson) {
+    el.innerHTML = `<div class="payreq-hint">${b.method.name} : encaissement carte/en personne (pas de lien à distance).</div>`;
+  } else {
+    el.innerHTML = `<div class="payreq-link-box"><div class="payreq-link-lbl">Instruction client</div><div style="font-size:13px;font-weight:600">${b.sh.instruction}</div>${b.sh.ussd?`<div style="font-size:12px;color:var(--text-3);margin-top:4px">USSD : <b>${b.sh.ussd}</b></div>`:''}</div>`;
+  }
+}
+function _payReqRecord(b) {
+  S.paymentHistory = S.paymentHistory || [];
+  const cl = b && _payReqState().clientId ? (S.clients||[]).find(c=>c.id===_payReqState().clientId) : null;
+  S.paymentHistory.unshift({ id: Date.now(), provider: b.method.provider, amount: b.amount, description: _payReqState().desc || 'Demande de paiement', date: new Date().toISOString(), status: 'requested', clientName: cl?.name || null });
+  localStorage.setItem('baro_payment_history', JSON.stringify(S.paymentHistory));
+}
+function _payReqShare() {
+  const b = _payReqBuild();
+  if (!b) { showToast('Entrez un montant', 'error'); return; }
+  const st = _payReqState();
+  const cl = st.clientId ? (S.clients||[]).find(c=>c.id===st.clientId) : null;
+  const phone = cl?.phone ? cl.phone.replace(/\D/g,'') : '';
+  window.open(`https://wa.me/${phone}?text=${encodeURIComponent(b.msg)}`, '_blank');
+  _payReqRecord(b);
+  if (typeof logActivity === 'function') logActivity('payment', `Demande de paiement ${b.method.name} — ${fmt(b.amount)} ${sym()}`);
+  document.getElementById('payreq-modal')?.remove();
+  showToast('Demande envoyée sur WhatsApp', 'success');
+  render();
+}
+function _payReqCopy() {
+  const b = _payReqBuild();
+  if (!b) { showToast('Entrez un montant', 'error'); return; }
+  const txt = b.sh.link || (b.sh.instruction + (b.sh.ussd ? ` (${b.sh.ussd})` : ''));
+  navigator.clipboard?.writeText(txt).then(() => showToast('Copié dans le presse-papier', 'success'), () => showToast('Copie impossible', 'error'));
+  _payReqRecord(b);
 }
 
 // ═══════════════════════════════════════════════
