@@ -8542,6 +8542,8 @@ function vClientDetail() {
       </div>
     </div>
 
+    <button class="btn btn-primary" style="width:100%;margin-bottom:12px;padding:13px;font-weight:800;background:linear-gradient(135deg,#16A34A,#059669)" onclick="requestPaymentModal(${client.id})">💰 Demander un paiement à ${(client.name||'ce client').replace(/'/g,"\\'").replace(/"/g,'&quot;').split(' ')[0]}</button>
+
     ${clientSales.length > 0 ? `
     <div class="card" style="margin-bottom:14px">
       <div class="card-title">📈 Dépenses (6 derniers mois)</div>
@@ -22078,8 +22080,10 @@ function _payReqState() {
   }
   return S._payReq;
 }
-function requestPaymentModal() {
+function requestPaymentModal(clientId) {
   const active = (S.paymentMethods || []).filter(m => m.active);
+  S._payReq = null; // repart propre
+  if (clientId != null) _payReqState().clientId = clientId;
   const existing = document.getElementById('payreq-modal');
   if (existing) existing.remove();
   const st = _payReqState();
