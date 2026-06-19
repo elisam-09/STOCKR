@@ -3991,7 +3991,7 @@ async function confirmMultiSale(opts = {}) {
   showToast(`✅ ${newSales.length} articles vendus — ${fmt(total)} ${sym()}`, 'success');
   S.multiCart = {};
   S.multiSearch = '';
-  showReceiptBanner(newSales, total);
+  showReceiptBanner(newSales, total, { provider: payMethod, clientId });
   render();
 }
 
@@ -4030,13 +4030,23 @@ function _qsSetQtyVal(v) {
 }
 function _qsSetPay(p) { if (S._qs) { S._qs.pay = p; _qsRender(); } }
 function _qsSetClient(v) { if (S._qs) { S._qs.clientId = v ? parseInt(v) : null; _qsRender(); } }
+// Options de paiement pour la vente : Espèces + vos méthodes ACTIVES configurées.
+// Repli sur le mobile money courant si rien n'est encore configuré.
+function _salePayChips() {
+  const labels = { wave:'Wave', orange:'Orange', moov:'Moov', mtn:'MTN', paypal:'PayPal', visa:'Carte', gpay:'Google Pay', applepay:'Apple Pay', stripe:'Carte' };
+  const active = (S.paymentMethods || []).filter(m => m.active);
+  const chips = [['cash','💵 Espèces']];
+  if (active.length) active.forEach(m => chips.push([m.provider, labels[m.provider] || m.name]));
+  else [['wave','Wave'],['orange','Orange'],['moov','Moov'],['mtn','MTN']].forEach(c => chips.push(c));
+  return chips;
+}
 function _qsBody() {
   const qs = S._qs; if (!qs) return '';
   const a = S.articles.find(x => x.id === qs.id); if (!a) return '';
   const price = a.price||0, cost = a.purchasePrice||0;
   const total = price * qs.qty, profit = (price - cost) * qs.qty;
   const max = Math.max(1, Math.floor(a.stock));
-  const pms = [['cash','💵 Espèces'],['wave','Wave'],['orange','Orange'],['moov','Moov'],['mtn','MTN']];
+  const pms = _salePayChips();
   const clientsOpts = (S.clients||[]).map(c=>`<option value="${c.id}" ${qs.clientId===c.id?'selected':''}>${(c.name||'Client').replace(/"/g,'&quot;')}</option>`).join('');
   return `
     <div class="qs-head">
@@ -4569,8 +4579,26 @@ function bt_sellableItems() {
   return [...packs, ...prods];
 }
 
+// Envoie au client le lien/instruction de paiement pour le montant de sa vente.
+function sendSalePaymentLink(provider, clientId, amount) {
+  const method = (S.paymentMethods||[]).find(m => m.provider === provider && m.active);
+  if (!method) { showToast('Configurez ' + provider + ' dans Paiements', 'info'); nav('payments-setup'); return; }
+  const sh = _payShareable(method, amount);
+  const cl = clientId ? (S.clients||[]).find(c => c.id === clientId) : null;
+  const biz = S.session?.business || 'notre boutique';
+  let msg;
+  if (sh.link) msg = `Bonjour 👋\nMerci pour votre achat chez ${biz} ! Voici votre lien de paiement ${method.name} (${fmt(amount)} ${sym()}) :\n${sh.link}`;
+  else msg = `Bonjour 👋\nMerci pour votre achat chez ${biz} ! ${sh.instruction}.${sh.ussd?`\nCode : ${sh.ussd}`:''}`;
+  const phone = cl?.phone ? cl.phone.replace(/\D/g,'') : '';
+  window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+  S.paymentHistory = S.paymentHistory || [];
+  S.paymentHistory.unshift({ id: Date.now(), provider, amount, description: 'Lien après vente', date: new Date().toISOString(), status: 'requested', clientName: cl?.name || null });
+  localStorage.setItem('baro_payment_history', JSON.stringify(S.paymentHistory));
+  const b = document.getElementById('receipt-banner'); if (b) b.remove();
+  showToast('Lien de paiement envoyé sur WhatsApp', 'success');
+}
 // ── Bannière reçu post-vente ──────────────────
-function showReceiptBanner(sales, total) {
+function showReceiptBanner(sales, total, payInfo) {
   const existing = document.getElementById('receipt-banner');
   if (existing) existing.remove();
   const sym = S.session?.currency_symbol || 'FCFA';
@@ -4580,12 +4608,19 @@ function showReceiptBanner(sales, total) {
   // Stocker les ventes dans un attribut data sérialisé
   const sid = 'rb_' + Date.now();
   window[sid] = sales;
+  // Lien de paiement proposé si vente non-cash via une méthode partageable + client
+  const _shareableProv = ['wave','paypal','orange','moov','mtn'];
+  const _payLinkBtn = (payInfo && payInfo.provider && _shareableProv.includes(payInfo.provider)
+      && (S.paymentMethods||[]).some(m => m.provider === payInfo.provider && m.active))
+    ? `<button class="rb-btn rb-pay" onclick="sendSalePaymentLink('${payInfo.provider}',${payInfo.clientId||'null'},${Math.round(total)})">${IC.dollar} Lien paiement</button>`
+    : '';
   el.innerHTML = `
     <div class="receipt-banner-left">
       <div class="receipt-banner-title">${t('saleConfirmed')}</div>
       <div class="receipt-banner-total">${fmt(total)} ${sym}</div>
     </div>
     <div class="receipt-banner-btns">
+      ${_payLinkBtn}
       <button class="rb-btn rb-pdf" onclick="generateInvoicePDF(window['${sid}']);document.getElementById('receipt-banner').remove()">
         ${IC.pdf} PDF
       </button>
@@ -4595,7 +4630,7 @@ function showReceiptBanner(sales, total) {
       <button class="rb-close" onclick="document.getElementById('receipt-banner').remove()">✕</button>
     </div>`;
   document.body.appendChild(el);
-  setTimeout(() => { const b = document.getElementById('receipt-banner'); if (b) b.remove(); }, 10000);
+  setTimeout(() => { const b = document.getElementById('receipt-banner'); if (b) b.remove(); }, 12000);
 }
 
 // ── Navigate ──────────────────────────────────

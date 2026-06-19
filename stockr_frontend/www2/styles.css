@@ -1376,6 +1376,8 @@ body.dark .sk {
 .rb-btn:active { opacity: 0.8; }
 .rb-pdf { background: rgba(255,255,255,0.15); color: #fff; }
 .rb-wa  { background: #25D366; color: #fff; }
+.rb-pay { background: #16A34A; color: #fff; }
+.rb-pay svg { width: 13px; height: 13px; }
 .rb-close { background: none; border: none; color: rgba(255,255,255,0.5); cursor: pointer; font-size: 16px; padding: 4px; line-height: 1; }
 
 /* ── Chart card ─────────────────────────────── */
