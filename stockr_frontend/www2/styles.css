@@ -4864,6 +4864,14 @@ select.input { background-image: linear-gradient(45deg, transparent 50%, var(--t
 .payreq-link { font-size: 13px; color: var(--accent); font-weight: 600; word-break: break-all; text-decoration: none; }
 .payreq-hint { font-size: 12px; color: var(--text-3); line-height: 1.5; padding: 4px 2px; }
 
+/* ── Vérification SMS du numéro marchand (inline, premium) ───── */
+.pay-verify-btn { width: 100%; margin-top: 8px; font-size: 12px; padding: 9px; border: 1px solid var(--accent); color: var(--accent); font-weight: 700; }
+.pay-verified-badge { display: flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 12px; color: var(--success); font-weight: 800; }
+.pay-verify-sent { font-size: 12px; color: var(--text-2); line-height: 1.45; margin: 10px 0 8px; }
+.pay-code-row { display: flex; gap: 8px; align-items: center; }
+.pay-code-inp { flex: 1; min-width: 0; text-align: center; letter-spacing: 6px; font-size: 18px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.pay-resend { background: none; border: none; color: var(--accent); font-size: 12px; font-weight: 700; cursor: pointer; padding: 8px 0 2px; }
+
 /* ═══════════════════════════════════════════════════════════════
    MICRO-POLISH PREMIUM — chiffres tabulaires & finitions
    Les chiffres (KPI, prix, totaux, compteurs anim.) utilisent des

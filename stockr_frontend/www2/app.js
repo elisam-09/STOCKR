@@ -21923,11 +21923,11 @@ function setupPayment(providerId, providerName) {
           <label class="form-label">${conf.main} *</label>
           <input class="input" id="pay-main-inp" type="text" placeholder="${conf.placeholder}" value="${(currentMethod.phone||currentMethod.email||currentMethod.merchantId||'').replace(/"/g,'&quot;')}" style="font-size:16px">
           <div style="font-size:11px;color:var(--text-3);margin-top:4px">${conf.hint}</div>
-          ${['wave','orange','moov','mtn'].includes(providerId) ? (
+          ${['wave','orange','moov','mtn'].includes(providerId) ? `<div id="pay-verify-zone">${
             (currentMethod.verified && currentMethod.verifiedPhone === currentMethod.phone)
-              ? `<div style="display:flex;align-items:center;gap:6px;margin-top:8px;font-size:12px;color:var(--success);font-weight:700">✓ Numéro vérifié par SMS</div>`
-              : `<button class="btn btn-ghost" style="width:100%;margin-top:8px;font-size:12px;padding:8px;border:1px solid var(--accent);color:var(--accent)" onclick="verifyPaymentNumber('${providerId}')">📲 Vérifier ce numéro par SMS</button>`
-          ) : ''}
+              ? `<div class="pay-verified-badge">✓ Numéro vérifié par SMS</div>`
+              : `<button class="btn btn-ghost pay-verify-btn" onclick="verifyPaymentNumber('${providerId}')">📲 Vérifier ce numéro par SMS</button>`
+          }</div>` : ''}
         </div>
         ${['paypal','visa','stripe','gpay','applepay'].includes(providerId) ? `
         <div class="form-group">
@@ -21949,35 +21949,64 @@ function setupPayment(providerId, providerName) {
 }
 
 // Vérifie qu'un numéro mobile money appartient bien au marchand : envoie un code
-// par SMS (passerelle configurée si dispo, sinon l'app SMS du téléphone) puis
-// demande de le saisir. Honnête : aucune validation factice.
+// par SMS (passerelle configurée si dispo, sinon webhook, sinon l'app SMS du
+// téléphone) puis saisie INLINE du code (UI premium, pas de prompt natif).
 async function verifyPaymentNumber(providerId) {
   const num = (document.getElementById('pay-main-inp')?.value || '').trim();
   if (!num) { showToast('Entrez d\'abord le numéro', 'error'); document.getElementById('pay-main-inp')?.focus(); return; }
   const code = String(Math.floor(100000 + Math.random() * 900000));
   const msg = `BARO : code de vérification de votre numéro marchand : ${code}. Ne le partagez avec personne.`;
+  let sent = false, channel = 'native';
   const cfg = (typeof _getSmsConfig === 'function') ? _getSmsConfig() : null;
-  let sent = false;
   if (cfg && typeof sendSms === 'function') {
     showToast('Envoi du SMS…', 'info');
     try { sent = await sendSms(num, msg); } catch(_) { sent = false; }
+    if (sent) channel = 'gateway';
   }
   if (!sent) {
-    // Pas de passerelle SMS : on ouvre l'app SMS du téléphone vers ce numéro.
-    try { window.open(`sms:${num.replace(/[^\d+]/g,'')}?body=${encodeURIComponent(msg)}`, '_blank'); } catch(_){}
+    const wh = localStorage.getItem('stockr_sms_webhook');
+    if (wh && typeof _sendVerificationSMS === 'function') {
+      try { const r = await _sendVerificationSMS(num, code, 'Vérif numéro marchand'); sent = !!(r && r.ok); } catch(_) {}
+      if (sent) channel = 'webhook';
+    }
   }
-  const entered = prompt(`Un code à 6 chiffres a été ${sent ? 'envoyé par SMS au' : 'préparé pour le'} ${num}.\n${sent ? '' : "Envoyez le SMS qui vient de s'ouvrir, puis "}Saisissez le code reçu :`);
-  if (entered == null) return;
-  if (entered.trim() === code) {
+  if (!sent) {
+    // Pas de passerelle : on ouvre l'app SMS du téléphone vers ce numéro.
+    try { window.open(`sms:${num.replace(/[^\d+]/g,'')}?body=${encodeURIComponent(msg)}`, '_blank'); } catch(_){}
+    channel = 'native';
+  }
+  window.__payVerifyPending = { providerId, code, num };
+  const zone = document.getElementById('pay-verify-zone');
+  if (zone) {
+    zone.innerHTML = `
+      <div class="pay-verify-sent">${sent
+        ? `Code envoyé par SMS au <b>${num}</b>`
+        : `L'app SMS s'ouvre vers <b>${num}</b> — envoyez le message, puis entrez le code reçu`}</div>
+      <div class="pay-code-row">
+        <input id="pay-code-inp" class="input pay-code-inp" inputmode="numeric" maxlength="6" placeholder="Code à 6 chiffres" autocomplete="one-time-code">
+        <button class="btn btn-primary" style="flex:0 0 auto;padding:11px 16px" onclick="confirmPaymentCode('${providerId}')">Valider</button>
+      </div>
+      <button class="pay-resend" onclick="verifyPaymentNumber('${providerId}')">↻ Renvoyer le code</button>`;
+    setTimeout(() => document.getElementById('pay-code-inp')?.focus(), 120);
+  }
+}
+function confirmPaymentCode(providerId) {
+  const p = window.__payVerifyPending;
+  const entered = (document.getElementById('pay-code-inp')?.value || '').trim();
+  if (!p || p.providerId !== providerId) { showToast('Relancez la vérification', 'error'); return; }
+  if (entered === p.code) {
     window.__payVerified = window.__payVerified || {};
-    window.__payVerified[providerId] = num;
+    window.__payVerified[providerId] = p.num;
+    const m = (S.paymentMethods || []).find(x => x.provider === providerId);
+    if (m && m.phone === p.num) { m.verified = true; m.verifiedPhone = p.num; localStorage.setItem('baro_payments', JSON.stringify(S.paymentMethods)); }
+    const zone = document.getElementById('pay-verify-zone');
+    if (zone) zone.innerHTML = `<div class="pay-verified-badge">✓ Numéro vérifié par SMS</div>`;
+    if (typeof haptic === 'function') haptic('success');
     showToast('✓ Numéro vérifié', 'success');
-    // Met à jour la carte déjà enregistrée le cas échéant
-    const m = (S.paymentMethods||[]).find(x => x.provider === providerId);
-    if (m && m.phone === num) { m.verified = true; m.verifiedPhone = num; localStorage.setItem('baro_payments', JSON.stringify(S.paymentMethods)); }
-    setupPayment(providerId, (PAY_PROVIDER_NAMES[providerId] || providerId)); // re-render modale avec badge
   } else {
+    if (typeof haptic === 'function') haptic('error');
     showToast('Code incorrect — réessayez', 'error');
+    const inp = document.getElementById('pay-code-inp'); if (inp) { inp.value=''; inp.focus(); }
   }
 }
 
