@@ -4756,18 +4756,23 @@ function __markViewTransition(newView) {
   if (!body) return changed;
   if (changed) {
     body.classList.add('view-entering');
-    // Remove after the stagger finishes so re-renders within the same view stay static
+    // Fenêtre = plus longue que la fin du stagger le plus tardif (delai max ~0.48s
+    // + duree 0.3s ≈ 0.78s) pour que TOUTES les cartes terminent leur fondu avant
+    // le retrait de la classe → plus de "snap"/blink des cartes du bas.
+    // Aucune re-render normale n'intervient pendant ce laps (render() est debounce
+    // RAF, le count-up a son propre RAF), donc l'entree joue une seule fois.
     clearTimeout(window.__viewEnterTimer);
     window.__viewEnterTimer = setTimeout(() => {
       body.classList.remove('view-entering');
       window.__viewEnterTimer = null;
-    }, 420);
+    }, 850);
   } else {
-    // Re-render dans la MÊME vue : ne JAMAIS interrompre une entrée en cours.
-    // (Retirer view-entering pendant l'animation faisait "snapper" les cartes
-    //  de l'opacité partielle à 1 → le "blink" type rafraîchissement.)
-    // Si l'entrée est finie (timer nul), la classe est déjà absente → statique.
-    if (!window.__viewEnterTimer) body.classList.remove('view-entering');
+    // Re-render dans la MÊME vue (interaction, maj d'état) : on retire la classe
+    // pour que le contenu reste STATIQUE (pas de ré-animation/clignotement à
+    // chaque clic). Les règles body:not(.view-entering) figent alors les cartes.
+    body.classList.remove('view-entering');
+    clearTimeout(window.__viewEnterTimer);
+    window.__viewEnterTimer = null;
   }
   return changed;
 }
