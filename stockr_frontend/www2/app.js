@@ -20624,7 +20624,7 @@ function openVideoEditor(tpl) {
   modal.innerHTML = `
     <div style="background:var(--surface);border-radius:16px;max-width:480px;width:100%;max-height:94vh;overflow-y:auto;box-shadow:0 25px 60px rgba(0,0,0,.5);animation:slideUp .25s ease">
       <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
-        <div style="font-size:16px;font-weight:800;color:var(--text-1)">🎞️ Éditeur vidéo${tpl?' — '+tpl.name:''}</div>
+        <div style="font-size:16px;font-weight:800;color:var(--text-1)">🎬 Studio vidéo${tpl?' — '+tpl.name:''}</div>
         <button style="width:30px;height:30px;border-radius:50%;border:none;background:var(--gray-1);color:var(--text-2);font-size:16px;cursor:pointer" onclick="document.getElementById('vid-editor-modal').remove()">×</button>
       </div>
       <div style="padding:16px 18px">
@@ -20634,13 +20634,15 @@ function openVideoEditor(tpl) {
           <div style="font-size:12px;opacity:.7;margin-top:4px">${tpl?.fmt || 'Format libre'}</div>
         </div>
         <div style="font-size:12px;color:var(--text-3);line-height:1.6;margin-bottom:14px">
-          <b>✨ Studio vidéo BARO</b><br>
-          • Enregistrez écran/caméra (stockées dans l'app)<br>
-          • Importez depuis galerie ou CapCut<br>
-          • Publication directe TikTok, YouTube, IG, FB, X
+          <b>🎬 Studio vidéo BARO</b><br>
+          • Filmez caméra/écran avec votre <b>texte incrusté</b> en direct<br>
+          • Importez vos clips (galerie ou CapCut), stockés dans l'app<br>
+          • Partagez vers TikTok, YouTube, IG, Facebook, X
         </div>
+        <input id="vid-overlay-text" class="input" placeholder="Texte à incruster (ex : -20% ce week-end)" maxlength="60" style="font-size:14px;margin-bottom:8px">
+        <button class="btn" style="width:100%;background:linear-gradient(135deg,#DC2626,#7C3AED);color:#fff;padding:12px;font-size:13px;font-weight:700;margin-bottom:8px" onclick="__vidRecordOverlay()">🔴 Filmer avec texte incrusté</button>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-          <button class="btn" style="background:#DC2626;color:#fff;padding:12px;font-size:12px" onclick="__vidRecordCamera()">🔴 Caméra</button>
+          <button class="btn" style="background:#DC2626;color:#fff;padding:12px;font-size:12px" onclick="__vidRecordCamera()">📹 Caméra simple</button>
           <button class="btn" style="background:#4F46E5;color:#fff;padding:12px;font-size:12px" onclick="__vidRecordScreen()">🖥️ Écran</button>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
@@ -20718,6 +20720,84 @@ function __vidStartRecord(stream, mode) {
 }
 
 function __vidStop() { try { window.__vidRec?.stop(); } catch(e){} }
+
+// ── Enregistrement caméra avec TEXTE INCRUSTÉ (compositing canvas réel) ──
+async function __vidRecordOverlay() {
+  const text = (document.getElementById('vid-overlay-text')?.value || '').trim();
+  if (!text) { showToast('Entrez le texte à incruster', 'info'); document.getElementById('vid-overlay-text')?.focus(); return; }
+  let stream;
+  try { stream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:'environment' }, audio:true }); }
+  catch(e) { showToast('Caméra refusée : ' + e.message, 'error'); return; }
+  __vidStartOverlayRecord(stream, text);
+}
+function __vidStartOverlayRecord(stream, text) {
+  const wrap = document.getElementById('vid-preview-wrap');
+  if (!wrap) { stream.getTracks().forEach(t=>t.stop()); return; }
+  if (typeof HTMLCanvasElement === 'undefined' || !HTMLCanvasElement.prototype.captureStream) {
+    showToast('Incrustation non supportée sur ce navigateur — caméra simple utilisée', 'info');
+    __vidStartRecord(stream, 'camera'); return;
+  }
+  const video = document.createElement('video');
+  video.srcObject = stream; video.muted = true; video.playsInline = true;
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  let raf = null, rec = null;
+  const chunks = [];
+  const start = () => {
+    canvas.width = video.videoWidth || 720;
+    canvas.height = video.videoHeight || 1280;
+    const draw = () => {
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      // Bandeau de texte incrusté (bas)
+      const fs = Math.max(20, Math.round(canvas.width * 0.06));
+      ctx.font = `800 ${fs}px Inter, Arial, sans-serif`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+      const pad = fs * 0.55;
+      const barH = fs + pad * 1.6;
+      const grad = ctx.createLinearGradient(0, canvas.height - barH, 0, canvas.height);
+      grad.addColorStop(0, 'rgba(0,0,0,0)'); grad.addColorStop(0.4, 'rgba(0,0,0,.55)');
+      ctx.fillStyle = grad; ctx.fillRect(0, canvas.height - barH, canvas.width, barH);
+      ctx.fillStyle = '#fff';
+      ctx.shadowColor = 'rgba(0,0,0,.6)'; ctx.shadowBlur = fs * 0.2; ctx.shadowOffsetY = 2;
+      ctx.fillText(text, canvas.width / 2, canvas.height - pad);
+      ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+      raf = requestAnimationFrame(draw);
+    };
+    draw();
+    const cstream = canvas.captureStream(30);
+    const at = stream.getAudioTracks()[0]; if (at) cstream.addTrack(at);
+    const mime = MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus') ? 'video/webm;codecs=vp9,opus' : 'video/webm';
+    rec = new MediaRecorder(cstream, { mimeType: mime });
+    rec.ondataavailable = e => { if (e.data.size) chunks.push(e.data); };
+    rec.onstop = async () => {
+      if (raf) cancelAnimationFrame(raf);
+      stream.getTracks().forEach(t => t.stop());
+      const blob = new Blob(chunks, { type: 'video/webm' });
+      window.__lastVidBlob = blob;
+      const id = await _vidSave(blob, { name: `BARO texte « ${text.slice(0,24)} » ${new Date().toLocaleString('fr-FR')}`, source: 'overlay' });
+      window.__lastVidId = id;
+      const url = URL.createObjectURL(blob);
+      const sizeKb = Math.round(blob.size / 1024);
+      wrap.innerHTML = `
+        <video src="${url}" controls style="width:100%;border-radius:10px;background:#000"></video>
+        <div style="font-size:11px;color:var(--success);text-align:center;margin-top:6px">✅ Clip avec texte incrusté enregistré (${sizeKb} KB) — dans « Mes vidéos »</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
+          <button class="btn btn-ghost" onclick="__vidDownload()">💾 Télécharger</button>
+          <button class="btn btn-primary" onclick="__vidShare()">📤 Publier</button>
+        </div>`;
+      showToast(`🎬 Clip avec texte incrusté prêt (${sizeKb} KB)`, 'success');
+    };
+    rec.start();
+    window.__vidRec = rec;
+    wrap.innerHTML = `
+      <div style="background:#000;border-radius:10px;padding:30px;text-align:center;color:#fff">
+        <div style="font-size:40px;margin-bottom:10px;animation:pulse 1s infinite">🔴</div>
+        <div style="font-size:14px;font-weight:700">Enregistrement avec « ${text.replace(/</g,'&lt;')} »…</div>
+      </div>
+      <button class="btn btn-primary" style="width:100%;margin-top:10px;background:#DC2626" onclick="__vidStop()">⏹ Arrêter</button>`;
+  };
+  video.onloadedmetadata = () => { video.play().then(start).catch(start); };
+}
 
 async function __vidImport(e, source) {
   const file = e.target?.files?.[0];
