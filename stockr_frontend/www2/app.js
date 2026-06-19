@@ -7157,6 +7157,9 @@ function vSales() {
       <div class="empty-ico">${IC.dollarLg}</div>
       <div class="empty-title">${t('noSales')}</div>
       <div class="empty-text">${t('noSalesSub')}</div>
+      ${(typeof bt_sellableItems==='function' && bt_sellableItems().length > 0)
+        ? `<button class="btn btn-primary" onclick="document.getElementById('view').scrollTo({top:0,behavior:'smooth'})">${IC.plus} Enregistrer une vente</button>`
+        : `<button class="btn btn-primary" onclick="nav('add')">${IC.plus} ${getBusinessType()==='reseller'?'Ajouter un produit':'Ajouter un article'}</button>`}
     </div>`;
       // ── Grouper les paniers (même cartId) ──
       const groups = [];

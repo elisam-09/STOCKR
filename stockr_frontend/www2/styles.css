@@ -893,14 +893,23 @@ select.input { cursor: pointer; }
   animation: emptyFadeIn 0.5s cubic-bezier(0.2, 0, 0, 1) both;
 }
 .empty-ico   {
-  color: var(--gray-4); margin-bottom: 16px;
-  padding: 22px;
-  background: radial-gradient(circle at center, rgba(124, 115, 255, 0.08) 0%, transparent 70%);
-  border-radius: 50%;
+  color: var(--accent); margin-bottom: 18px;
+  width: 84px; height: 84px;
+  display: flex; align-items: center; justify-content: center;
+  background:
+    radial-gradient(circle at 50% 38%, var(--accent-light) 0%, transparent 70%),
+    var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 26px;
+  box-shadow: var(--shadow-md);
   animation: emptyIcoFloat 3.5s ease-in-out infinite;
 }
+.empty-ico svg { width: 34px; height: 34px; }
 .empty-title { font-size: 17px; font-weight: 800; margin-bottom: 6px; letter-spacing: -0.2px; }
-.empty-text  { font-size: 13px; color: var(--text-3); margin-bottom: 22px; line-height: 1.6; max-width: 260px; }
+.empty-text  { font-size: 13px; color: var(--text-3); margin-bottom: 22px; line-height: 1.6; max-width: 280px; }
+/* CTA des états vides : largeur agréable + pression douce */
+.empty .btn { min-width: 200px; }
+.empty .btn:active { transform: scale(.97); }
 @keyframes emptyFadeIn {
   from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -1508,7 +1517,7 @@ body.dark td { border-bottom-color: var(--border); color: var(--text); }
 
 /* Empty states et hints */
 body.dark .empty, body.dark .empty-text { color: var(--text-2); }
-body.dark .empty-ico { filter: grayscale(0.2) brightness(0.9); }
+/* L'icône d'état vide garde sa teinte accent en sombre (plus de grisaille) */
 
 /* Code / monospace boxes */
 body.dark code, body.dark pre { background: var(--gray-1); color: #A5F3FC; }
