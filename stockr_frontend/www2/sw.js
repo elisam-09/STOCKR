@@ -2,7 +2,7 @@
 // Stratégie : Cache-first pour assets statiques,
 //             Network-first pour l'API
 
-const CACHE_NAME = 'baro-v82-blinkfix';
+const CACHE_NAME = 'baro-v83-polish';
 const STATIC_ASSETS = [
   '/',
   '/index.html',

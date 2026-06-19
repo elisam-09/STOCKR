@@ -22,8 +22,8 @@
 
   --text:    #0A0A0A;
   --text-1:  #0A0A0A;
-  --text-2:  #4A4A4A;
-  --text-3:  #8A8A8A;
+  --text-2:  #444444;
+  --text-3:  #767676;   /* tertiaire : assombri pour un contraste lisible (~4.5:1) */
 
   --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 
@@ -4863,3 +4863,26 @@ select.input { background-image: linear-gradient(45deg, transparent 50%, var(--t
 .payreq-link-lbl { font-size: 11px; font-weight: 700; color: var(--text-3); text-transform: uppercase; letter-spacing: .4px; margin-bottom: 5px; }
 .payreq-link { font-size: 13px; color: var(--accent); font-weight: 600; word-break: break-all; text-decoration: none; }
 .payreq-hint { font-size: 12px; color: var(--text-3); line-height: 1.5; padding: 4px 2px; }
+
+/* ═══════════════════════════════════════════════════════════════
+   MICRO-POLISH PREMIUM — chiffres tabulaires & finitions
+   Les chiffres (KPI, prix, totaux, compteurs anim.) utilisent des
+   chiffres de largeur fixe : alignement net + zéro tremblement de
+   largeur pendant l'animation count-up. Detail signature "$1B".
+   ═══════════════════════════════════════════════════════════════ */
+.hero-stat-val, .sub-hero-big, .sale-total, .stat-val, .metric-val,
+.kpi-val, .qs-trow b, .wiz-recap .wiz-recap-row,
+[data-count], [data-count] span {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1, "lnum" 1;
+}
+/* Le compteur anim. ne doit pas pousser le layout : largeur stable */
+[data-count] { font-variant-numeric: tabular-nums; }
+/* Prix dans les listes de vente : chiffres alignés */
+.sg-price, .qs-sub, .pos-tile-price { font-variant-numeric: tabular-nums; }
+/* Cartes : pression tactile homogène et douce partout */
+.card-tap { transition: transform .14s var(--ease-out), box-shadow .2s var(--ease-out); }
+.card-tap:active { transform: scale(.985); }
+/* Boutons primaires : ombre portée colorée subtile (profondeur premium) */
+.btn-primary { box-shadow: 0 2px 10px -2px rgba(79,70,229,.35); }
+.btn-primary:active { transform: translateY(1px); box-shadow: 0 1px 5px -2px rgba(79,70,229,.35); }
