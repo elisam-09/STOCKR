@@ -16872,10 +16872,23 @@ function generateBoutiqueSite(opts) {
   </div>` : '';
 
   // ── Cartes produits en grille (image réelle ou monogramme dégradé) ──
+  // ── Badges d'urgence : populaire (ventes) · nouveau (récent) · rareté (stock bas) ──
+  const _saleQtyByName = {};
+  (S.sales || []).forEach(s => { const k = s.productName; if (k) _saleQtyByName[k] = (_saleQtyByName[k] || 0) + (s.qty || 0); });
+  const _topNames = new Set(Object.entries(_saleQtyByName).filter(([, q]) => q > 0).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([n]) => n));
+  const _nowU = Date.now();
+  const _newIds = new Set();
+  [...(S.articles || []), ...(S.products || [])].forEach(it => { if (it && it.createdAt && (_nowU - new Date(it.createdAt).getTime()) < 14 * 86400000) _newIds.add(String(it.id)); });
+  const _LOWQTY = 5;
   const prodsHTML = shopProds.map((p, idx) => {
     const promo = _getActivePromo(p.id);
     const promoPrice = promo ? _applyPromoValue(p.price, promo) : null;
     const finalPrice = promoPrice != null ? promoPrice : p.price;
+    const _urg = [];
+    if (_topNames.has(p.name)) _urg.push('<span class="pc-urg" style="background:#EF4444">🔥 Populaire</span>');
+    if (_newIds.has(String(p.id))) _urg.push('<span class="pc-urg" style="background:#7C3AED">✨ Nouveau</span>');
+    if (p.qty != null && p.qty > 0 && p.qty <= _LOWQTY) _urg.push('<span class="pc-urg" style="background:#D97706">⚡ Plus que ' + p.qty + '</span>');
+    const urgHTML = _urg.length ? `<div class="pc-urgwrap">${_urg.join('')}</div>` : '';
     const initial = (p._pack ? '🎁' : (p.name||'?').charAt(0).toUpperCase());
     const img = p.image
       ? `<img class="pc-img" src="${p.image}" alt="${esc(p.name)}" loading="lazy">`
@@ -16886,6 +16899,7 @@ function generateBoutiqueSite(opts) {
     return `<div class="pc" data-cat="${esc(p.category||'Autres')}" data-name="${esc((p.name||'').toLowerCase())}" style="animation-delay:${Math.min(idx*0.05, 0.45)}s">
       <div class="pc-imgwrap">
         ${img}
+        ${urgHTML}
         ${showPromoBadges && promo ? `<span class="pc-promo">${promo.type==='fixed'?'-'+fmt(promo.value)+' '+sym():'-'+(promo.value||promo.discount)+'%'}</span>` : ''}
         ${p._pack ? '<span class="pc-pack">PACK</span>' : ''}
       </div>
@@ -16982,6 +16996,8 @@ ${hoverCss}
 .pc-promo{position:absolute;top:10px;left:10px;background:#EF4444;color:#fff;font-size:11px;font-weight:800;padding:4px 9px;border-radius:8px;box-shadow:0 4px 10px rgba(239,68,68,.4)}
 .pc-pack{position:absolute;top:10px;right:10px;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);color:#fff;font-size:9px;font-weight:800;letter-spacing:1px;padding:4px 8px;border-radius:6px}
 .pc-stock{font-size:10px;font-weight:700;padding:3px 7px;border-radius:6px;white-space:nowrap}
+.pc-urgwrap{position:absolute;left:8px;bottom:8px;display:flex;flex-direction:column;gap:4px;align-items:flex-start;z-index:2}
+.pc-urg{color:#fff;font-size:9.5px;font-weight:800;padding:3px 8px;border-radius:999px;box-shadow:0 2px 7px rgba(0,0,0,.28);white-space:nowrap;line-height:1.35}
 .pc-stock.ok{background:#ECFDF5;color:#059669}
 .pc-stock.out{background:#FEF2F2;color:#DC2626}
 .pc-body{padding:12px 13px 13px;display:flex;flex-direction:column;gap:5px;flex:1}
