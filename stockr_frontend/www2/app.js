@@ -7816,7 +7816,10 @@ function vDetail() {
       </div>
     </div>
 
-    ${_articleSellable(art) ? `<button class="qs-trigger" style="margin-top:10px;padding:14px;font-size:15px" onclick="openQuickSell(${art.id})">${IC.dollar} Vendre — ${fmt(pv)} ${sym()}</button>` : ''}
+    ${_articleSellable(art) ? `<div style="display:flex;gap:8px;margin-top:10px">
+      <button class="qs-trigger" style="flex:1;margin-top:0;padding:14px;font-size:15px" onclick="openQuickSell(${art.id})">${IC.dollar} Vendre — ${fmt(pv)} ${sym()}</button>
+      <button class="btn btn-ghost" style="flex:0 0 auto;padding:14px 16px;border:1px solid #25D36660;color:#128C7E" onclick="shareProductLink(${art.id})" title="Partager sur WhatsApp">${IC.whatsapp}</button>
+    </div>` : ''}
 
     ${_stockHistoryCard(art)}
 
@@ -16500,6 +16503,10 @@ function vBoutique() {
         <button class="btn btn-primary bgen-btn-primary" onclick="generateBoutiqueSite()">${IC.check} Générer HTML</button>
         <button class="btn btn-ghost bgen-btn-ghost" onclick="previewBoutiqueSite()">${IC.globe} Aperçu</button>
       </div>
+      <div class="bgen-actions" style="margin-top:8px">
+        <button class="btn btn-ghost bgen-btn-ghost" onclick="showBoutiqueQR()">${IC.qrcode} QR code</button>
+        <button class="btn bgen-btn-ghost" style="background:#25D366;color:#fff" onclick="shareBoutiqueWhatsApp()">${IC.whatsapp} Partager</button>
+      </div>
       ${bc.siteGenerated ? `
       <div class="bgen-status">
         ${IC.check} Site généré le ${new Date(bc.siteGeneratedDate).toLocaleDateString('fr')}
@@ -18370,6 +18377,51 @@ function shareBoutiqueWhatsApp() {
 function copyBoutiqueLink() {
   const text = `${S.boutiqueConfig.name||S.session?.business||'Ma Boutique'} — Commandez sur WhatsApp !`;
   navigator.clipboard?.writeText(text).then(() => showToast(t('copied')||'Copie !'));
+}
+// URL publique de la boutique (domaine perso vérifié sinon sous-domaine .baro.shop)
+function _boutiqueUrl() {
+  const bc = S.boutiqueConfig || {};
+  if (bc.customDomainVerified && bc.customDomain) return 'https://' + bc.customDomain;
+  if (bc.domain) return 'https://' + bc.domain + '.baro.shop';
+  return null;
+}
+// QR scannable de la boutique (généré en ligne via api.qrserver.com — URL publique)
+function showBoutiqueQR() {
+  const url = _boutiqueUrl();
+  if (!url) { showToast('Choisissez d\'abord l\'URL de votre boutique', 'info'); nav('boutique-domain'); return; }
+  const existing = document.getElementById('bq-qr-modal'); if (existing) existing.remove();
+  const qrSrc = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=12&data=' + encodeURIComponent(url);
+  const safeUrl = url.replace(/'/g, "\\'");
+  const modal = document.createElement('div');
+  modal.id = 'bq-qr-modal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(6px);animation:fadeIn .2s ease';
+  modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+  modal.innerHTML = `<div style="background:var(--surface);border-radius:18px;max-width:340px;width:100%;padding:22px;text-align:center;box-shadow:0 25px 60px rgba(0,0,0,.35);animation:slideUp .25s ease">
+    <div style="font-size:17px;font-weight:800;margin-bottom:4px">${IC.qrcode} QR de ma boutique</div>
+    <div style="font-size:12px;color:var(--text-3);margin-bottom:14px">Affichez-le en boutique, sur vos flyers ou cartes : vos clients scannent et arrivent direct sur votre boutique en ligne.</div>
+    <div style="background:#fff;border-radius:14px;padding:12px;display:inline-block;min-height:120px"><img src="${qrSrc}" alt="QR boutique" width="240" height="240" style="display:block;width:240px;height:240px" onerror="this.parentElement.innerHTML='<div style=\\'padding:40px 20px;color:#999;font-size:12px\\'>QR indisponible (connexion requise)</div>'"></div>
+    <div style="font-size:12px;color:var(--accent);font-weight:600;margin:12px 0;word-break:break-all">${url}</div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-ghost" style="flex:1" onclick="navigator.clipboard&&navigator.clipboard.writeText('${safeUrl}');showToast('Lien copié !')">📋 Copier</button>
+      <button class="btn btn-primary" style="flex:1" onclick="window.open('${qrSrc}','_blank')">⬇ Télécharger</button>
+    </div>
+    <button class="btn" style="width:100%;margin-top:8px;background:#25D366;color:#fff" onclick="window.open('https://wa.me/?text='+encodeURIComponent('Découvrez ma boutique en ligne 🛍️ : ${safeUrl}'),'_blank')">${IC.whatsapp} Partager le lien</button>
+    <button class="btn btn-ghost" style="width:100%;margin-top:6px;font-size:12px" onclick="document.getElementById('bq-qr-modal').remove()">Fermer</button>
+  </div>`;
+  document.body.appendChild(modal);
+}
+// Partage d'UN produit via WhatsApp (nom, prix, description, lien boutique)
+function shareProductLink(itemId) {
+  const it = (S.articles||[]).find(x => String(x.id) === String(itemId)) || (S.products||[]).find(x => String(x.id) === String(itemId));
+  if (!it) { showToast('Produit introuvable', 'error'); return; }
+  const url = _boutiqueUrl();
+  const biz = S.session?.business || 'notre boutique';
+  const lines = [`*${it.name}* — ${fmt(it.price||0)} ${sym()}`];
+  if (it.description) lines.push(it.description);
+  lines.push('', `Disponible chez ${biz} 🛍️`);
+  if (url) lines.push('🛒 Commander : ' + url);
+  window.open('https://wa.me/?text=' + encodeURIComponent(lines.join('\n')), '_blank');
+  if (typeof haptic === 'function') haptic('tap');
 }
 function addBoutiqueOrder() {
   const clientName = prompt('Nom du client :');
