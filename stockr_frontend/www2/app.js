@@ -15263,9 +15263,9 @@ function vOAuthSetup() {
       </div>
 
       <details style="margin-bottom:10px">
-        <summary style="cursor:pointer;font-size:12px;font-weight:700;color:#000;padding:6px 0">📖 Comment obtenir un Services ID Apple (compte dev $99/an requis)</summary>
-        <div style="font-size:12px;color:var(--text-2);line-height:1.7;padding:8px 0 0 12px;border-left:2px solid #000">
-          1. Ouvrez <a href="https://developer.apple.com/account/resources/identifiers/list/serviceId" target="_blank" style="color:#000;font-weight:700">developer.apple.com/account/resources/identifiers</a><br>
+        <summary style="cursor:pointer;font-size:12px;font-weight:700;color:var(--text-1);padding:6px 0">📖 Comment obtenir un Services ID Apple (compte dev $99/an requis)</summary>
+        <div style="font-size:12px;color:var(--text-2);line-height:1.7;padding:8px 0 0 12px;border-left:2px solid var(--border)">
+          1. Ouvrez <a href="https://developer.apple.com/account/resources/identifiers/list/serviceId" target="_blank" style="color:var(--accent);font-weight:700">developer.apple.com/account/resources/identifiers</a><br>
           2. Créez un <strong>Services ID</strong> (ex: <code>com.votreapp.baro.web</code>)<br>
           3. Activez <strong>Sign In with Apple</strong><br>
           4. Ajoutez le domaine : <code style="background:var(--gray-1);padding:2px 6px;border-radius:4px;font-size:11px">${window.location.hostname}</code><br>
