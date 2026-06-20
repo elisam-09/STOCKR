@@ -16744,6 +16744,18 @@ function generateBoutiqueSite(opts) {
   (bc.deliveryZones || []).forEach(z => { _zoneFeeMap[z] = (bc.zoneFees && bc.zoneFees[z] != null) ? Number(bc.zoneFees[z]) : _defFee; });
   const _bqHasAnyFee = _defFee > 0 || Object.values(_zoneFeeMap).some(f => f > 0);
   const zoneFeesJSON = JSON.stringify(_zoneFeeMap).replace(/</g, '\\u003c');
+  // ── Codes promo niveau commande (promos actives SANS produit ciblé) ──
+  const _pNow = new Date();
+  const _promoMap = {};
+  (S.promotions || []).forEach(p => {
+    if (!p.active || !p.code) return;
+    if (Array.isArray(p.products) && p.products.length) return; // promo produit = auto, pas un code commande
+    if (p.startDate && new Date(p.startDate) > _pNow) return;
+    if (p.endDate && new Date(p.endDate + 'T23:59:59') < _pNow) return;
+    _promoMap[String(p.code).toUpperCase()] = { type: p.type || 'percent', value: Number(p.value) || Number(p.discount) || 0, name: p.name || p.code };
+  });
+  const promoMapJSON = JSON.stringify(_promoMap).replace(/</g, '\\u003c');
+  const _bqHasPromos = Object.keys(_promoMap).length > 0;
   const logo = localStorage.getItem('baro_logo');
   // ── Configuration avancée (apparence / pixels / code / toggles) ──
   const px  = bc.pixels     || {};
@@ -17096,6 +17108,11 @@ ${showCartButton ? `
     <button class="ck-close" onclick="baroCloseCheckout()">✕</button>
     <h2>🛒 Votre commande</h2>
     <div id="ck-items"></div>
+    ${_bqHasPromos?`<div style="display:flex;gap:8px;margin:8px 0 4px">
+      <input id="ck-promo-inp" type="text" autocomplete="off" placeholder="Code promo" style="flex:1;text-transform:uppercase;border:1.5px solid rgba(0,0,0,.12);border-radius:10px;padding:11px 12px;font-size:14px;font-weight:700;letter-spacing:1px;outline:none">
+      <button type="button" onclick="baroPromo()" style="border:none;border-radius:10px;padding:0 16px;font-weight:800;font-size:13px;cursor:pointer;background:#111827;color:#fff">Appliquer</button>
+    </div>
+    <div class="ck-fees" id="ck-discrow" style="display:none;color:#16A34A;font-weight:700"><span id="ck-disc-label">Réduction</span><span id="ck-disc">0</span></div>`:''}
     ${_bqHasAnyFee?`<div class="ck-fees" id="ck-feerow"><span>Livraison</span><span id="ck-fee">${fmt(Number(bc.deliveryFees)||0)} ${sym()}</span></div>`:''}
     <div class="ck-total"><span>Total</span><span id="ck-total">0 ${sym()}</span></div>
     <label>Votre nom</label>
@@ -17113,13 +17130,26 @@ var BARO_WA="${waLink}";
 var BARO_SHOP="${esc(bc.name||S.session?.business||'Ma Boutique').replace(/"/g,'')}";
 var BARO_FEES=${Number(bc.deliveryFees)||0};
 var BARO_ZONEFEES=${zoneFeesJSON};
+var BARO_PROMOS=${promoMapJSON};
 var BARO_SYM="${sym()}";
 var BARO_ORDERTXT=${JSON.stringify(orderText)};
 (function(){
   var cart={};
+  var appliedPromo=null;
   function fmtn(n){return Math.round(n).toLocaleString('fr-FR');}
   function item(id){for(var i=0;i<BARO_ITEMS.length;i++)if(BARO_ITEMS[i].id===id)return BARO_ITEMS[i];return null;}
   function curFee(){var z=(document.getElementById('ck-zone')||{}).value;return (BARO_ZONEFEES&&BARO_ZONEFEES[z]!=null)?BARO_ZONEFEES[z]:BARO_FEES;}
+  function discount(){if(!appliedPromo)return 0;var sub=total();var d=appliedPromo.type==='fixed'?appliedPromo.value:sub*appliedPromo.value/100;return Math.min(Math.round(d),sub);}
+  window.baroPromo=function(){
+    var inp=document.getElementById('ck-promo-inp');var code=(inp?inp.value:'').trim().toUpperCase();
+    if(!code){return;}
+    var p=BARO_PROMOS[code];
+    if(!p){appliedPromo=null;if(inp){inp.style.borderColor='#EF4444';}renderCk();return;}
+    appliedPromo={code:code,type:p.type,value:p.value,name:p.name};
+    if(inp){inp.style.borderColor='#16A34A';inp.disabled=true;}
+    if(navigator.vibrate)navigator.vibrate(12);
+    renderCk();
+  };
   function count(){var c=0;for(var k in cart)c+=cart[k];return c;}
   function total(){var t=0;for(var k in cart){var it=item(k);if(it)t+=it.price*cart[k];}return t;}
   function syncUI(){
@@ -17145,9 +17175,11 @@ var BARO_ORDERTXT=${JSON.stringify(orderText)};
         +'<div class="ck-item-price">'+fmtn(it.price*cart[k])+' '+BARO_SYM+'</div></div>';
     }
     box.innerHTML=h||'<div style="text-align:center;color:#999;padding:18px;font-size:13px">Panier vide — ajoutez des produits</div>';
-    var fee=curFee();
+    var fee=curFee();var disc=discount();
     var fr=document.getElementById('ck-fee');if(fr)fr.textContent=fmtn(fee)+' '+BARO_SYM;
-    var tot=document.getElementById('ck-total');if(tot)tot.textContent=fmtn(total()+(count()>0?fee:0))+' '+BARO_SYM;
+    var dr=document.getElementById('ck-discrow');
+    if(dr){if(disc>0){dr.style.display='';document.getElementById('ck-disc').textContent='−'+fmtn(disc)+' '+BARO_SYM;var dl=document.getElementById('ck-disc-label');if(dl&&appliedPromo)dl.textContent='Réduction ('+appliedPromo.code+')';}else dr.style.display='none';}
+    var tot=document.getElementById('ck-total');if(tot)tot.textContent=fmtn(Math.max(0,total()-disc)+(count()>0?fee:0))+' '+BARO_SYM;
   }
   window.baroZone=function(){renderCk();};
   document.addEventListener('click',function(e){
@@ -17169,10 +17201,11 @@ var BARO_ORDERTXT=${JSON.stringify(orderText)};
     for(var k in cart){var it=item(k);if(!it)continue;
       L.push('• '+it.name+' ×'+cart[k]+' — '+fmtn(it.price*cart[k])+' '+BARO_SYM+(it.promo?' (code '+it.promo+')':''));}
     L.push('━━━━━━━━━━━━━━');
-    var fee=curFee();
+    var fee=curFee();var disc=discount();
     L.push('Sous-total : '+fmtn(total())+' '+BARO_SYM);
+    if(disc>0)L.push('Réduction '+appliedPromo.code+' : -'+fmtn(disc)+' '+BARO_SYM);
     if(fee>0)L.push('Livraison'+(zone?' ('+zone+')':'')+' : '+fmtn(fee)+' '+BARO_SYM);
-    L.push('*TOTAL : '+fmtn(total()+fee)+' '+BARO_SYM+'*');
+    L.push('*TOTAL : '+fmtn(Math.max(0,total()-disc)+fee)+' '+BARO_SYM+'*');
     L.push('');
     if(name)L.push('👤 '+name);
     if(zone)L.push('📍 '+zone);
