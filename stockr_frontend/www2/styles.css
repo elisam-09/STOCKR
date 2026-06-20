@@ -423,7 +423,7 @@ body.view-entering .anim { animation: fadeUp 0.3s cubic-bezier(0.2, 0, 0, 1) bot
 /* ── Sub-page Header ────────────────────────── */
 .page-header {
   background: var(--surface);
-  padding: 52px 20px 14px;
+  padding: max(52px, calc(env(safe-area-inset-top) + 22px)) 20px 14px;
   border-bottom: 1px solid var(--border);
   position: sticky; top: 0; z-index: 50;
 }
@@ -842,7 +842,7 @@ select.input { cursor: pointer; }
 /* ── Sub-hero ───────────────────────────────── */
 .sub-hero {
   background: linear-gradient(140deg, #0f0a2e 0%, #1e1b4b 30%, #312e81 60%, #4338ca 100%);
-  color: var(--white); padding: 52px 20px 24px;
+  color: var(--white); padding: max(52px, calc(env(safe-area-inset-top) + 22px)) 20px 24px;
   border-radius: 0 0 28px 28px;
   position: relative; overflow: hidden;
   box-shadow: 0 8px 24px -12px rgba(67, 56, 202, 0.35);
@@ -4654,9 +4654,17 @@ button, .btn, .card-tap, .nav-tab, .filter-chip, .chip, .qa-btn, .settings-row, 
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
 }
-/* Pression uniforme sur tout élément cliquable non déjà géré */
-.settings-row:active, .info-row[onclick]:active, [onclick]:not(.btn):not(.card):active {
-  transition: transform .08s ease;
+/* Pression tactile : retour visuel net sur les petits éléments interactifs
+   (pilules, onglets, lignes) — pas sur les grands conteneurs. */
+.settings-row:active, .info-row[onclick]:active {
+  transform: scale(.985);
+  transition: transform .1s var(--ease-out);
+}
+.filter-chip:active, .chip:active, .sova-tab:active, .mkt-tab:active,
+.bq-tab:active, .nav-tab:active, .qs-pm:active, .payreq-m:active,
+.ce-add-btn:active, .ce-ratio:active {
+  transform: scale(.93);
+  transition: transform .1s var(--ease-out);
 }
 /* Liens internes (a[onclick]) : couleur accent cohérente */
 a[onclick] { cursor: pointer; }
