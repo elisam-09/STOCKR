@@ -7456,8 +7456,119 @@ function sovaChartForecast(sel) {
   `<polygon points="0,${H} ${pts.join(' ')} ${((Math.min(rDay,DAYS)/DAYS)*W).toFixed(1)},${H}" fill="rgba(138,103,41,0.09)"/><polyline points="${pts.join(' ')}" fill="none" stroke="#8A6729" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`;
 }
 
+// ══════════════════════════════════════════════════════════════
+// SOVA — moteur de prévision CÔTÉ CLIENT (fonctionne hors-ligne)
+// Calcule depuis S.articles + S.sales : demande/j, jours restants,
+// tendance, probabilité de rupture, action, plan de demain, score.
+// ══════════════════════════════════════════════════════════════
+function _sovaComputeLocal() {
+  const now = Date.now(), DAY = 86400000;
+  const sales = S.sales || [];
+  const articles = S.articles || [];
+  const bt = (typeof getBusinessType === 'function') ? getBusinessType() : 'reseller';
+
+  // Agrégat des ventes par nom de produit (fenêtre 30j + 7j/7j précédents)
+  const byName = {};
+  sales.forEach(s => {
+    const k = s.productName || (s.articleId != null ? 'art' + s.articleId : '?');
+    if (!byName[k]) byName[k] = { qty30: 0, l7: 0, p7: 0, last: 0 };
+    const ts = new Date(s.date).getTime(), age = now - ts, o = byName[k];
+    if (age < 30 * DAY) o.qty30 += s.qty || 0;
+    if (age < 7 * DAY) o.l7 += s.qty || 0;
+    else if (age < 14 * DAY) o.p7 += s.qty || 0;
+    o.last = Math.max(o.last, ts);
+  });
+
+  const predictions = articles.map(a => {
+    const s = byName[a.name] || null;
+    const dd = s ? s.qty30 / 30 : 0;                       // demande quotidienne moyenne
+    const stock = a.stock || 0;
+    const lead = a.lead || a.leadTime || a.lead_time_days || 5;
+    const daysRemaining = dd > 0.01 ? Math.floor(stock / dd) : null;
+    const reorderPoint = Math.max(0, Math.ceil(dd * lead));
+    const trend = s && s.p7 > 0 ? Math.round(((s.l7 - s.p7) / s.p7) * 100) : (s && s.l7 > 0 ? 100 : 0);
+    let status = 'ok';
+    if (dd <= 0.01) status = (s && s.last) ? 'ok' : 'no_data';
+    if (daysRemaining != null) {
+      if (stock <= 0 || daysRemaining <= Math.max(1, Math.ceil(lead * 0.6))) status = 'critical';
+      else if (daysRemaining <= lead + 2) status = 'warning';
+    }
+    if (stock <= 0 && dd > 0.01) status = 'critical';
+    const ruptureProb = status === 'critical' ? 90 : status === 'warning' ? 55 : (dd > 0.01 ? 12 : 0);
+    const orderQty = dd > 0.01 ? Math.max(0, Math.ceil(dd * (lead + 14)) - stock) : 0;
+    const before = daysRemaining != null
+      ? new Date(now + Math.max(0, daysRemaining - lead) * DAY).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })
+      : '';
+    let action = null;
+    if ((status === 'critical' || status === 'warning') && orderQty > 0) {
+      action = { verb: status === 'critical' ? 'Commander vite' : 'Réapprovisionner', quantity: orderQty, unit: a.unit || 'pce', before, urgency: status === 'critical' ? 'high' : 'medium' };
+    }
+    return {
+      article_id: a.id, article_name: a.name, unit: a.unit || 'pce',
+      current_stock: stock, daily_demand: dd, days_remaining: daysRemaining,
+      reorder_point: reorderPoint, trend_pct: trend, status,
+      rupture_probability: ruptureProb, order_quantity: orderQty,
+      confidence: Math.min(95, 45 + (s ? Math.min(45, s.qty30 * 3) : 0)),
+      action,
+    };
+  });
+
+  const crit = predictions.filter(p => p.status === 'critical').length;
+  const warn = predictions.filter(p => p.status === 'warning').length;
+  // Une rupture imminente doit faire passer le score sous "Excellent" (honnêteté)
+  let score = Math.max(5, Math.min(100, Math.round(100 - (crit * 22 + warn * 8))));
+  if (!sales.length && !articles.length) score = 50;
+  const introKey = crit > 1 ? 'critical_multi' : crit === 1 ? 'critical_one'
+    : warn > 1 ? 'warning_multi' : warn === 1 ? 'warning_one'
+    : score >= 80 ? 'excellent' : 'good';
+
+  const revRiskArticles = predictions.filter(p => p.status === 'critical').map(p => {
+    const a = articles.find(x => x.id === p.article_id);
+    return { name: p.article_name, amount: Math.round((p.daily_demand || 0) * 7 * ((a && a.price) || 0)) };
+  }).filter(x => x.amount > 0).sort((a, b) => b.amount - a.amount).slice(0, 5);
+  const revRisk = revRiskArticles.reduce((s, x) => s + x.amount, 0);
+
+  return {
+    score, intro_key: introKey,
+    revenue_at_risk: revRisk, revenue_at_risk_articles: revRiskArticles,
+    producible: [], blocked: [],
+    tomorrow: _sovaTomorrowPlan(byName, now, DAY, bt),
+    predictions,
+  };
+}
+function _sovaTomorrowPlan(byName, now, DAY, bt) {
+  const tmr = new Date(now + DAY);
+  let weekday = tmr.toLocaleDateString('fr-FR', { weekday: 'long' });
+  weekday = weekday.charAt(0).toUpperCase() + weekday.slice(1);
+  const plan = [];
+  if (bt === 'reseller') {
+    (S.articles || []).forEach(a => {
+      const s = byName[a.name]; if (!s) return;
+      const dd = s.qty30 / 30; if (dd < 0.2) return;
+      plan.push({ product_name: a.name, expected_qty: Math.max(1, Math.round(dd)), ingredients: [] });
+    });
+  } else {
+    (S.products || []).forEach(p => {
+      const s = byName[p.name]; const dd = s ? s.qty30 / 30 : 0;
+      if (dd < 0.2) return;
+      const qty = Math.max(1, Math.round(dd));
+      const ingredients = (p.composition || []).map(c => {
+        const art = (S.articles || []).find(a => a.id === c.id);
+        const needed = (c.qty || 0) * qty, available = art ? (art.stock || 0) : 0;
+        return { article_name: art ? art.name : '?', needed, unit: art ? (art.unit || 'pce') : '', available, sufficient: available >= needed };
+      });
+      plan.push({ product_name: p.name, expected_qty: qty, ingredients });
+    });
+  }
+  plan.sort((a, b) => b.expected_qty - a.expected_qty);
+  return plan.length ? { weekday, plan: plan.slice(0, 6) } : null;
+}
+
 function vSova() {
-  const d=S.predictions,isNew=d&&!Array.isArray(d);
+  let d=S.predictions;
+  // PWA hors-ligne : le backend renvoie [] → on calcule les prévisions localement
+  if (!d || (Array.isArray(d) && d.length === 0)) { try { d = _sovaComputeLocal(); } catch(e){ console.warn('sova local', e); d = S.predictions; } }
+  const isNew=d&&!Array.isArray(d);
   const score=isNew?(d.score??50):50,introKey=isNew?(d.intro_key||'neutral'):'neutral';
   const revRisk=isNew?(d.revenue_at_risk||0):0,revRiskList=isNew?(d.revenue_at_risk_articles||[]):[];
   const producible=isNew?(d.producible||[]):[];const blocked=isNew?(d.blocked||[]):[];const tomorrow=isNew?(d.tomorrow||null):null;
