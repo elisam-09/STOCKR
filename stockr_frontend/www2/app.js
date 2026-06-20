@@ -16768,6 +16768,9 @@ function generateBoutiqueSite(opts) {
   });
   const promoMapJSON = JSON.stringify(_promoMap).replace(/</g, '\\u003c');
   const _bqHasPromos = Object.keys(_promoMap).length > 0;
+  // ── Horaires d'ouverture (statut Ouvert/Fermé en direct) ──
+  const _hoursArr = (bc.businessHours || []).map(h => ({ o: h.open || '', c: h.close || '', x: !!h.closed }));
+  const hoursJSON = JSON.stringify(_hoursArr).replace(/</g, '\\u003c');
   const logo = localStorage.getItem('baro_logo');
   // ── Configuration avancée (apparence / pixels / code / toggles) ──
   const px  = bc.pixels     || {};
@@ -17093,10 +17096,23 @@ ${bannerHTML(topBanner, 'top')}
   ${approvedReviews.length > 0 && heroStyle !== 'minimal' ? `<div class="header-rating">⭐ ${avgRating} / 5 · ${approvedReviews.length} avis</div>` : ''}
 </div>
 <div class="info-bar">
+  <div class="info-item" id="shop-status" style="font-weight:800;display:none"></div>
   ${(bc.deliveryZones||[]).length>0?`<div class="info-item">📍 ${(bc.deliveryZones||[]).slice(0,4).join(', ')}${(bc.deliveryZones||[]).length>4?' +'+((bc.deliveryZones||[]).length-4):''}</div>`:''}
   ${bc.deliveryFees>0?`<div class="info-item">🚚 Livraison : ${fmt(bc.deliveryFees)} ${sym()}</div>`:'<div class="info-item">🚚 Livraison disponible</div>'}
   <div class="info-item">💬 Commande WhatsApp</div>
 </div>
+<script>(function(){
+  var H=${hoursJSON};var el=document.getElementById('shop-status');
+  if(!el||!H.length){return;}
+  var days=['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
+  function toMin(s){var p=(s||'').split(':');return p.length===2?(+p[0]*60+ +p[1]):null;}
+  var now=new Date(),idx=(now.getDay()+6)%7,td=H[idx],n=now.getHours()*60+now.getMinutes();
+  var open=false,closeStr='';
+  if(td&&!td.x){var o=toMin(td.o),c=toMin(td.c);if(o!=null&&c!=null&&n>=o&&n<c){open=true;closeStr=td.c;}}
+  el.style.display='';
+  if(open){el.textContent='🟢 Ouvert · ferme à '+closeStr;el.style.color='#16A34A';}
+  else{var nx='';for(var i=0;i<7;i++){var j=(idx+i)%7,dd=H[j];if(dd&&!dd.x&&dd.o){if(i===0){var o2=toMin(dd.o);if(o2!=null&&n<o2){nx="aujourd'hui à "+dd.o;break;}else{continue;}}nx=(i===1?'demain':days[j])+' à '+dd.o;break;}}el.textContent='🔴 Fermé'+(nx?' · ouvre '+nx:'');el.style.color='#DC2626';}
+})();</script>
 <div class="toolbar">
   <input class="search" id="shop-search" type="search" placeholder="🔍  Rechercher un produit…">
   ${chipsHTML}
