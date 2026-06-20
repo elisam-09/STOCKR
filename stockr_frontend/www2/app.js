@@ -16912,7 +16912,7 @@ function generateBoutiqueSite(opts) {
       ? (p.qty > 0 ? `<span class="pc-stock ok">✓ Stock</span>` : `<span class="pc-stock out">Rupture</span>`)
       : '';
     return `<div class="pc" data-cat="${esc(p.category||'Autres')}" data-name="${esc((p.name||'').toLowerCase())}" style="animation-delay:${Math.min(idx*0.05, 0.45)}s">
-      <div class="pc-imgwrap">
+      <div class="pc-imgwrap" onclick="baroQV&&baroQV('${esc(String(p.id))}')" style="cursor:zoom-in">
         ${img}
         ${urgHTML}
         ${showPromoBadges && promo ? `<span class="pc-promo">${promo.type==='fixed'?'-'+fmt(promo.value)+' '+sym():'-'+(promo.value||promo.discount)+'%'}</span>` : ''}
@@ -16920,7 +16920,7 @@ function generateBoutiqueSite(opts) {
       </div>
       <div class="pc-body">
         ${showCategories && p.category ? `<div class="pc-cat">${esc(p.category)}</div>` : ''}
-        <div class="pc-name">${esc(p.name)}</div>
+        <div class="pc-name" onclick="baroQV&&baroQV('${esc(String(p.id))}')" style="cursor:pointer">${esc(p.name)}</div>
         ${p.description ? `<div class="pc-desc">${esc(p.description)}</div>` : ''}
         <div class="pc-row">
           <div class="pc-price">${promo ? `<s>${fmt(p.price)}</s> ` : ''}${fmt(finalPrice)} <small>${sym()}</small></div>
@@ -16936,7 +16936,12 @@ function generateBoutiqueSite(opts) {
   const itemsJSON = JSON.stringify(shopProds.map(p => {
     const promo = _getActivePromo(p.id);
     const pp = promo ? _applyPromoValue(p.price, promo) : null;
-    return { id: String(p.id), name: p.name, price: (pp != null ? pp : p.price), promo: promo ? (promo.code || promo.name || '') : '' };
+    return {
+      id: String(p.id), name: p.name, price: (pp != null ? pp : p.price),
+      promo: promo ? (promo.code || promo.name || '') : '',
+      oldPrice: (pp != null ? p.price : 0), desc: p.description || '',
+      img: p.image || '', cat: p.category || '', qty: (p.qty != null ? p.qty : null),
+    };
   })).replace(/</g, '\\u003c');
   const chipsHTML = categories.length > 1
     ? `<div class="chips"><button class="chip active" data-cat="" onclick="baroSetCat('',this)">Tout</button>${categories.map(c => `<button class="chip" data-cat="${esc(c)}" onclick="baroSetCat('${esc(c).replace(/'/g,'&#39;')}',this)">${esc(c)}</button>`).join('')}</div>`
@@ -17285,6 +17290,58 @@ var BARO_ORDERTXT=${JSON.stringify(orderText)};
   }
 })();
 </script>
+<style>
+.qv-overlay{position:fixed;inset:0;background:rgba(0,0,0,.62);z-index:9998;display:none;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px)}
+.qv-overlay.show{display:flex}
+.qv{background:#fff;border-radius:20px;max-width:420px;width:100%;max-height:92vh;overflow-y:auto;position:relative;animation:ckUp .3s cubic-bezier(.2,0,0,1)}
+.qv-x{position:absolute;top:10px;right:10px;width:34px;height:34px;border-radius:50%;border:none;background:rgba(0,0,0,.5);color:#fff;font-size:17px;cursor:pointer;z-index:2}
+.qv-img{width:100%;aspect-ratio:1/1;background:#f4f4f6;overflow:hidden}
+.qv-img img{width:100%;height:100%;object-fit:cover;display:block}
+.qv-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:64px;font-weight:800;color:#c4c4c4;background:linear-gradient(135deg,#eee,#f8f8f8)}
+.qv-info{padding:18px 20px 22px}
+.qv-cat{font-size:11px;font-weight:700;color:#999;text-transform:uppercase;letter-spacing:.5px}
+.qv-name{font-size:21px;font-weight:800;margin:3px 0 8px;line-height:1.2}
+.qv-price{font-size:23px;font-weight:900;color:${tc}}
+.qv-price s{font-size:15px;color:#b0b0b0;font-weight:600;margin-right:6px}
+.qv-stock{font-size:13px;font-weight:700;margin-top:6px}
+.qv-desc{font-size:14px;color:#555;line-height:1.6;margin:12px 0 16px;white-space:pre-wrap}
+.qv-add{width:100%;padding:15px;border:none;border-radius:12px;background:${tc};color:#fff;font-size:15px;font-weight:800;cursor:pointer}
+.qv-add:active{transform:scale(.98)}
+</style>
+<div class="qv-overlay" id="qv-overlay" onclick="if(event.target===this)baroQVClose()">
+  <div class="qv">
+    <button class="qv-x" onclick="baroQVClose()">✕</button>
+    <div class="qv-img" id="qv-img"></div>
+    <div class="qv-info">
+      <div class="qv-cat" id="qv-cat"></div>
+      <div class="qv-name" id="qv-name"></div>
+      <div class="qv-price" id="qv-price"></div>
+      <div class="qv-stock" id="qv-stock"></div>
+      <div class="qv-desc" id="qv-desc"></div>
+      <button class="qv-add" id="qv-add" onclick="baroQVAdd()">${esc(orderText)}</button>
+    </div>
+  </div>
+</div>
+<script>(function(){
+  var IT=${itemsJSON};var cur=null;
+  function find(id){for(var i=0;i<IT.length;i++)if(IT[i].id===id)return IT[i];return null;}
+  function fmtn(n){return Math.round(n).toLocaleString('fr-FR');}
+  window.baroQV=function(id){var it=find(id);if(!it)return;cur=it;
+    var iw=document.getElementById('qv-img');iw.innerHTML=it.img?'<img src="'+it.img+'" alt="">':'<div class="qv-ph">'+((it.name||'?').charAt(0).toUpperCase())+'</div>';
+    document.getElementById('qv-cat').textContent=it.cat||'';
+    document.getElementById('qv-name').textContent=it.name;
+    document.getElementById('qv-price').innerHTML=(it.oldPrice?'<s>'+fmtn(it.oldPrice)+' ${sym()}</s>':'')+fmtn(it.price)+' ${sym()}';
+    var st=document.getElementById('qv-stock');
+    if(it.qty===0){st.textContent='✕ Rupture de stock';st.style.color='#DC2626';}
+    else if(it.qty!=null&&it.qty<=5){st.textContent='⚡ Plus que '+it.qty+' en stock';st.style.color='#D97706';}
+    else{st.textContent='';}
+    document.getElementById('qv-desc').textContent=it.desc||'';
+    document.getElementById('qv-add').style.display=(it.qty===0)?'none':'';
+    document.getElementById('qv-overlay').classList.add('show');document.body.style.overflow='hidden';
+  };
+  window.baroQVClose=function(){document.getElementById('qv-overlay').classList.remove('show');document.body.style.overflow='';};
+  window.baroQVAdd=function(){if(!cur)return;var b=document.querySelector('.pc-add[data-id="'+cur.id+'"]');if(b)b.click();if(navigator.vibrate)navigator.vibrate(8);baroQVClose();};
+})();</script>
 ${waNum?`<a href="${waLink}" target="_blank" class="wa-float"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg></a>`:''}
 ${customJsBody}
 ${cc.js ? `<script>${cc.js}<\/script>` : ''}
