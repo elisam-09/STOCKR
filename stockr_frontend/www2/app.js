@@ -16354,6 +16354,11 @@ function vBoutique() {
         <div style="font-size:11px;color:var(--text-3);margin-top:4px">Appliqué aux zones sans tarif spécifique.</div>
       </div>
       <div class="form-group">
+        <label class="form-label">🎁 Livraison offerte dès (${sym()}) <span style="font-weight:500;color:var(--text-3)">— 0 = désactivé</span></label>
+        <input class="input" type="number" inputmode="numeric" value="${bc.freeDeliveryThreshold || 0}" oninput="updateBoutiqueConfig('freeDeliveryThreshold',parseFloat(this.value)||0)" placeholder="ex : 25000">
+        <div style="font-size:11px;color:var(--text-3);margin-top:4px">Incite le client à remplir son panier pour la livraison gratuite.</div>
+      </div>
+      <div class="form-group">
         <label class="form-label">Zones de livraison</label>
         <div class="zone-chips">
           ${['Abidjan','Cocody','Plateau','Yopougon','Marcory','Treichville','Adjamé','Abobo','Bouaké','San-Pédro','Yamoussoukro','Daloa','Man','Korhogo'].map(z => `
@@ -17124,6 +17129,7 @@ ${showCartButton ? `
     <button class="ck-close" onclick="baroCloseCheckout()">✕</button>
     <h2>🛒 Votre commande</h2>
     <div id="ck-items"></div>
+    ${(Number(bc.freeDeliveryThreshold)>0 && _bqHasAnyFee)?`<div id="ck-freeship" style="display:none;margin:8px 0 4px;padding:9px 12px;border-radius:10px;font-size:12.5px;font-weight:700;text-align:center"></div>`:''}
     ${_bqHasPromos?`<div style="display:flex;gap:8px;margin:8px 0 4px">
       <input id="ck-promo-inp" type="text" autocomplete="off" placeholder="Code promo" style="flex:1;text-transform:uppercase;border:1.5px solid rgba(0,0,0,.12);border-radius:10px;padding:11px 12px;font-size:14px;font-weight:700;letter-spacing:1px;outline:none">
       <button type="button" onclick="baroPromo()" style="border:none;border-radius:10px;padding:0 16px;font-weight:800;font-size:13px;cursor:pointer;background:#111827;color:#fff">Appliquer</button>
@@ -17147,6 +17153,7 @@ var BARO_SHOP="${esc(bc.name||S.session?.business||'Ma Boutique').replace(/"/g,'
 var BARO_FEES=${Number(bc.deliveryFees)||0};
 var BARO_ZONEFEES=${zoneFeesJSON};
 var BARO_PROMOS=${promoMapJSON};
+var BARO_FREESHIP=${Number(bc.freeDeliveryThreshold)||0};
 var BARO_SYM="${sym()}";
 var BARO_ORDERTXT=${JSON.stringify(orderText)};
 (function(){
@@ -17154,7 +17161,8 @@ var BARO_ORDERTXT=${JSON.stringify(orderText)};
   var appliedPromo=null;
   function fmtn(n){return Math.round(n).toLocaleString('fr-FR');}
   function item(id){for(var i=0;i<BARO_ITEMS.length;i++)if(BARO_ITEMS[i].id===id)return BARO_ITEMS[i];return null;}
-  function curFee(){var z=(document.getElementById('ck-zone')||{}).value;return (BARO_ZONEFEES&&BARO_ZONEFEES[z]!=null)?BARO_ZONEFEES[z]:BARO_FEES;}
+  function baseFee(){var z=(document.getElementById('ck-zone')||{}).value;return (BARO_ZONEFEES&&BARO_ZONEFEES[z]!=null)?BARO_ZONEFEES[z]:BARO_FEES;}
+  function curFee(){if(BARO_FREESHIP>0&&total()>=BARO_FREESHIP)return 0;return baseFee();}
   function discount(){if(!appliedPromo)return 0;var sub=total();var d=appliedPromo.type==='fixed'?appliedPromo.value:sub*appliedPromo.value/100;return Math.min(Math.round(d),sub);}
   window.baroPromo=function(){
     var inp=document.getElementById('ck-promo-inp');var code=(inp?inp.value:'').trim().toUpperCase();
@@ -17192,9 +17200,15 @@ var BARO_ORDERTXT=${JSON.stringify(orderText)};
     }
     box.innerHTML=h||'<div style="text-align:center;color:#999;padding:18px;font-size:13px">Panier vide — ajoutez des produits</div>';
     var fee=curFee();var disc=discount();
-    var fr=document.getElementById('ck-fee');if(fr)fr.textContent=fmtn(fee)+' '+BARO_SYM;
+    var fr=document.getElementById('ck-fee');if(fr)fr.textContent=(fee===0&&BARO_FREESHIP>0&&total()>=BARO_FREESHIP)?'Offerte 🎉':(fmtn(fee)+' '+BARO_SYM);
     var dr=document.getElementById('ck-discrow');
     if(dr){if(disc>0){dr.style.display='';document.getElementById('ck-disc').textContent='−'+fmtn(disc)+' '+BARO_SYM;var dl=document.getElementById('ck-disc-label');if(dl&&appliedPromo)dl.textContent='Réduction ('+appliedPromo.code+')';}else dr.style.display='none';}
+    var fs=document.getElementById('ck-freeship');
+    if(fs&&BARO_FREESHIP>0){var sub=total();
+      if(count()===0){fs.style.display='none';}
+      else if(sub>=BARO_FREESHIP){fs.style.display='';fs.style.background='#DCFCE7';fs.style.color='#15803D';fs.textContent='🎉 Livraison offerte !';}
+      else{fs.style.display='';fs.style.background='#FEF3C7';fs.style.color='#92400E';fs.textContent='Plus que '+fmtn(BARO_FREESHIP-sub)+' '+BARO_SYM+' pour la livraison offerte 🎁';}
+    }
     var tot=document.getElementById('ck-total');if(tot)tot.textContent=fmtn(Math.max(0,total()-disc)+(count()>0?fee:0))+' '+BARO_SYM;
   }
   window.baroZone=function(){renderCk();};
@@ -17221,6 +17235,7 @@ var BARO_ORDERTXT=${JSON.stringify(orderText)};
     L.push('Sous-total : '+fmtn(total())+' '+BARO_SYM);
     if(disc>0)L.push('Réduction '+appliedPromo.code+' : -'+fmtn(disc)+' '+BARO_SYM);
     if(fee>0)L.push('Livraison'+(zone?' ('+zone+')':'')+' : '+fmtn(fee)+' '+BARO_SYM);
+    else if(BARO_FREESHIP>0&&total()>=BARO_FREESHIP)L.push('Livraison : Offerte 🎉');
     L.push('*TOTAL : '+fmtn(Math.max(0,total()-disc)+fee)+' '+BARO_SYM+'*');
     L.push('');
     if(name)L.push('👤 '+name);
