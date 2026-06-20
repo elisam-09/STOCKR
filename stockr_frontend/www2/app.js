@@ -16349,8 +16349,9 @@ function vBoutique() {
         <input class="input" value="${bc.description || ''}" oninput="updateBoutiqueConfig('description',this.value)" placeholder="Décrivez votre boutique...">
       </div>
       <div class="form-group">
-        <label class="form-label">Frais de livraison (${sym()})</label>
+        <label class="form-label">Frais de livraison par défaut (${sym()})</label>
         <input class="input" type="number" value="${bc.deliveryFees || 0}" oninput="updateBoutiqueConfig('deliveryFees',parseFloat(this.value)||0)">
+        <div style="font-size:11px;color:var(--text-3);margin-top:4px">Appliqué aux zones sans tarif spécifique.</div>
       </div>
       <div class="form-group">
         <label class="form-label">Zones de livraison</label>
@@ -16359,6 +16360,15 @@ function vBoutique() {
           <span class="zone-chip ${(bc.deliveryZones||[]).includes(z)?'active':''}" onclick="toggleDeliveryZone('${z}')">${z}</span>`).join('')}
         </div>
       </div>
+      ${(bc.deliveryZones||[]).length ? `<div class="form-group">
+        <label class="form-label">🚚 Tarif par zone (optionnel)</label>
+        ${(bc.deliveryZones||[]).map(z => `<div style="display:flex;align-items:center;gap:8px;margin-bottom:7px">
+          <span style="flex:1;font-size:13px;font-weight:600">${z}</span>
+          <input class="input" type="number" inputmode="numeric" style="width:120px;text-align:right" placeholder="déf. ${bc.deliveryFees||0}" value="${(bc.zoneFees&&bc.zoneFees[z]!=null)?bc.zoneFees[z]:''}" oninput="updateBoutiqueZoneFee('${z.replace(/'/g,"\\'")}',this.value)">
+          <span style="font-size:12px;color:var(--text-3)">${sym()}</span>
+        </div>`).join('')}
+        <div style="font-size:11px;color:var(--text-3);margin-top:2px">Laissez vide pour utiliser le tarif par défaut.</div>
+      </div>` : ''}
     </div>
 
     <div class="card" style="margin-bottom:10px">
@@ -16728,6 +16738,12 @@ function generateBoutiqueSite(opts) {
   const waLink = waNum ? `https://wa.me/${waNum}` : 'https://wa.me/';
   const payments = (S.paymentMethods||[]).filter(m => m.active);
   const payHTML = payments.length > 0 ? payments.map(m => `<span class="pay-badge">${m.name}</span>`).join('') : '<span class="pay-badge">Espèces</span>';
+  // ── Frais de livraison par zone (sinon tarif par défaut) ──
+  const _defFee = Number(bc.deliveryFees) || 0;
+  const _zoneFeeMap = {};
+  (bc.deliveryZones || []).forEach(z => { _zoneFeeMap[z] = (bc.zoneFees && bc.zoneFees[z] != null) ? Number(bc.zoneFees[z]) : _defFee; });
+  const _bqHasAnyFee = _defFee > 0 || Object.values(_zoneFeeMap).some(f => f > 0);
+  const zoneFeesJSON = JSON.stringify(_zoneFeeMap).replace(/</g, '\\u003c');
   const logo = localStorage.getItem('baro_logo');
   // ── Configuration avancée (apparence / pixels / code / toggles) ──
   const px  = bc.pixels     || {};
@@ -17080,12 +17096,12 @@ ${showCartButton ? `
     <button class="ck-close" onclick="baroCloseCheckout()">✕</button>
     <h2>🛒 Votre commande</h2>
     <div id="ck-items"></div>
-    ${bc.deliveryFees>0?`<div class="ck-fees"><span>Livraison</span><span>${fmt(bc.deliveryFees)} ${sym()}</span></div>`:''}
+    ${_bqHasAnyFee?`<div class="ck-fees" id="ck-feerow"><span>Livraison</span><span id="ck-fee">${fmt(Number(bc.deliveryFees)||0)} ${sym()}</span></div>`:''}
     <div class="ck-total"><span>Total</span><span id="ck-total">0 ${sym()}</span></div>
     <label>Votre nom</label>
     <input id="ck-name" type="text" placeholder="ex : Aminata Traoré">
     ${(bc.deliveryZones||[]).length>0?`<label>Zone de livraison</label>
-    <select id="ck-zone">${(bc.deliveryZones||[]).map(z=>`<option>${esc(z)}</option>`).join('')}</select>`:''}
+    <select id="ck-zone" onchange="baroZone&&baroZone()">${(bc.deliveryZones||[]).map(z=>`<option>${esc(z)}</option>`).join('')}</select>`:''}
     <label>Paiement souhaité</label>
     <select id="ck-pay"><option>Espèces</option>${payments.map(m=>`<option>${esc(m.name)}</option>`).join('')}</select>
     <button class="ck-send" onclick="baroSend()">Envoyer la commande sur WhatsApp</button>
@@ -17096,12 +17112,14 @@ var BARO_ITEMS=${itemsJSON};
 var BARO_WA="${waLink}";
 var BARO_SHOP="${esc(bc.name||S.session?.business||'Ma Boutique').replace(/"/g,'')}";
 var BARO_FEES=${Number(bc.deliveryFees)||0};
+var BARO_ZONEFEES=${zoneFeesJSON};
 var BARO_SYM="${sym()}";
 var BARO_ORDERTXT=${JSON.stringify(orderText)};
 (function(){
   var cart={};
   function fmtn(n){return Math.round(n).toLocaleString('fr-FR');}
   function item(id){for(var i=0;i<BARO_ITEMS.length;i++)if(BARO_ITEMS[i].id===id)return BARO_ITEMS[i];return null;}
+  function curFee(){var z=(document.getElementById('ck-zone')||{}).value;return (BARO_ZONEFEES&&BARO_ZONEFEES[z]!=null)?BARO_ZONEFEES[z]:BARO_FEES;}
   function count(){var c=0;for(var k in cart)c+=cart[k];return c;}
   function total(){var t=0;for(var k in cart){var it=item(k);if(it)t+=it.price*cart[k];}return t;}
   function syncUI(){
@@ -17127,8 +17145,11 @@ var BARO_ORDERTXT=${JSON.stringify(orderText)};
         +'<div class="ck-item-price">'+fmtn(it.price*cart[k])+' '+BARO_SYM+'</div></div>';
     }
     box.innerHTML=h||'<div style="text-align:center;color:#999;padding:18px;font-size:13px">Panier vide — ajoutez des produits</div>';
-    var tot=document.getElementById('ck-total');if(tot)tot.textContent=fmtn(total()+(count()>0?BARO_FEES:0))+' '+BARO_SYM;
+    var fee=curFee();
+    var fr=document.getElementById('ck-fee');if(fr)fr.textContent=fmtn(fee)+' '+BARO_SYM;
+    var tot=document.getElementById('ck-total');if(tot)tot.textContent=fmtn(total()+(count()>0?fee:0))+' '+BARO_SYM;
   }
+  window.baroZone=function(){renderCk();};
   document.addEventListener('click',function(e){
     var b=e.target.closest('.pc-add[data-id]');
     if(b&&!b.disabled){var id=b.getAttribute('data-id');cart[id]=(cart[id]||0)+1;if(navigator.vibrate)navigator.vibrate(8);syncUI();}
@@ -17148,9 +17169,10 @@ var BARO_ORDERTXT=${JSON.stringify(orderText)};
     for(var k in cart){var it=item(k);if(!it)continue;
       L.push('• '+it.name+' ×'+cart[k]+' — '+fmtn(it.price*cart[k])+' '+BARO_SYM+(it.promo?' (code '+it.promo+')':''));}
     L.push('━━━━━━━━━━━━━━');
+    var fee=curFee();
     L.push('Sous-total : '+fmtn(total())+' '+BARO_SYM);
-    if(BARO_FEES>0)L.push('Livraison : '+fmtn(BARO_FEES)+' '+BARO_SYM);
-    L.push('*TOTAL : '+fmtn(total()+BARO_FEES)+' '+BARO_SYM+'*');
+    if(fee>0)L.push('Livraison'+(zone?' ('+zone+')':'')+' : '+fmtn(fee)+' '+BARO_SYM);
+    L.push('*TOTAL : '+fmtn(total()+fee)+' '+BARO_SYM+'*');
     L.push('');
     if(name)L.push('👤 '+name);
     if(zone)L.push('📍 '+zone);
@@ -18242,8 +18264,19 @@ function toggleDeliveryZone(zone) {
   const idx = S.boutiqueConfig.deliveryZones.indexOf(zone);
   if (idx >= 0) S.boutiqueConfig.deliveryZones.splice(idx, 1);
   else S.boutiqueConfig.deliveryZones.push(zone);
+  // Nettoie le tarif spécifique d'une zone retirée
+  if (idx >= 0 && S.boutiqueConfig.zoneFees) delete S.boutiqueConfig.zoneFees[zone];
   localStorage.setItem('baro_boutique', JSON.stringify(S.boutiqueConfig));
   render();
+}
+// Tarif de livraison spécifique à une zone (sans re-render → garde le focus clavier)
+function updateBoutiqueZoneFee(zone, val) {
+  if (!S.boutiqueConfig.zoneFees) S.boutiqueConfig.zoneFees = {};
+  const n = parseFloat(val);
+  if (val === '' || isNaN(n)) delete S.boutiqueConfig.zoneFees[zone];
+  else S.boutiqueConfig.zoneFees[zone] = n;
+  localStorage.setItem('baro_boutique', JSON.stringify(S.boutiqueConfig));
+  if (typeof _refreshBoutiqueLivePreview === 'function') _refreshBoutiqueLivePreview();
 }
 function _getAllVitrineItems() {
   const bc = S.boutiqueConfig || {};
