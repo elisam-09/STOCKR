@@ -7819,7 +7819,8 @@ function vDetail() {
     ${_articleSellable(art) ? `<div style="display:flex;gap:8px;margin-top:10px">
       <button class="qs-trigger" style="flex:1;margin-top:0;padding:14px;font-size:15px" onclick="openQuickSell(${art.id})">${IC.dollar} Vendre — ${fmt(pv)} ${sym()}</button>
       <button class="btn btn-ghost" style="flex:0 0 auto;padding:14px 16px;border:1px solid #25D36660;color:#128C7E" onclick="shareProductLink(${art.id})" title="Partager sur WhatsApp">${IC.whatsapp}</button>
-    </div>` : ''}
+    </div>
+    <button class="btn btn-ghost" style="width:100%;margin-top:8px;font-size:13px;border:1px solid var(--border)" onclick="openProductOptions(${art.id})">🛍️ Photos & variantes boutique${(art.images&&art.images.length)||(art.variants&&art.variants.length)?` · ${(art.images||[]).length+1} photo(s)${art.variants&&art.variants.length?` · ${art.variants.length} variante(s)`:''}`:''}</button>` : ''}
 
     ${_stockHistoryCard(art)}
 
@@ -16936,11 +16937,15 @@ function generateBoutiqueSite(opts) {
   const itemsJSON = JSON.stringify(shopProds.map(p => {
     const promo = _getActivePromo(p.id);
     const pp = promo ? _applyPromoValue(p.price, promo) : null;
+    const under = p._pack ? null : ((S.articles||[]).find(a => a.id === p.id) || (S.products||[]).find(x => x.id === p.id));
+    const imgs = [p.image, ...((under && under.images) || [])].filter(Boolean);
+    const variants = (under && Array.isArray(under.variants)) ? under.variants.filter(v => v.name && v.options && v.options.length) : [];
     return {
       id: String(p.id), name: p.name, price: (pp != null ? pp : p.price),
       promo: promo ? (promo.code || promo.name || '') : '',
       oldPrice: (pp != null ? p.price : 0), desc: p.description || '',
       img: p.image || '', cat: p.category || '', qty: (p.qty != null ? p.qty : null),
+      imgs: imgs, variants: variants,
     };
   })).replace(/</g, '\\u003c');
   const chipsHTML = categories.length > 1
@@ -17256,8 +17261,8 @@ var BARO_ORDERTXT=${JSON.stringify(orderText)};
     var L=[];
     L.push('🛒 *Commande — '+BARO_SHOP+'*');
     L.push('━━━━━━━━━━━━━━');
-    for(var k in cart){var it=item(k);if(!it)continue;
-      L.push('• '+it.name+' ×'+cart[k]+' — '+fmtn(it.price*cart[k])+' '+BARO_SYM+(it.promo?' (code '+it.promo+')':''));}
+    for(var k in cart){var it=item(k);if(!it)continue;var vsel=(window.BARO_VARSEL||{})[k];
+      L.push('• '+it.name+(vsel?' ['+vsel+']':'')+' ×'+cart[k]+' — '+fmtn(it.price*cart[k])+' '+BARO_SYM+(it.promo?' (code '+it.promo+')':''));}
     L.push('━━━━━━━━━━━━━━');
     var fee=curFee();var disc=discount();
     L.push('Sous-total : '+fmtn(total())+' '+BARO_SYM);
@@ -17305,29 +17310,55 @@ var BARO_ORDERTXT=${JSON.stringify(orderText)};
 .qv-price s{font-size:15px;color:#b0b0b0;font-weight:600;margin-right:6px}
 .qv-stock{font-size:13px;font-weight:700;margin-top:6px}
 .qv-desc{font-size:14px;color:#555;line-height:1.6;margin:12px 0 16px;white-space:pre-wrap}
-.qv-add{width:100%;padding:15px;border:none;border-radius:12px;background:${tc};color:#fff;font-size:15px;font-weight:800;cursor:pointer}
+.qv-add{width:100%;padding:15px;border:none;border-radius:12px;background:${tc};color:#fff;font-size:15px;font-weight:800;cursor:pointer;transition:transform .12s ease}
 .qv-add:active{transform:scale(.98)}
+.qv-thumbs{display:flex;gap:8px;overflow-x:auto;padding:10px 16px 0;-webkit-overflow-scrolling:touch}
+.qv-thumbs::-webkit-scrollbar{display:none}
+.qv-thumb{flex:0 0 auto;width:54px;height:54px;border-radius:10px;background-size:cover;background-position:center;border:2px solid transparent;cursor:pointer;opacity:.6;transition:opacity .2s,border-color .2s,transform .15s}
+.qv-thumb.on{opacity:1;border-color:${tc}}
+.qv-thumb:active{transform:scale(.92)}
+.qv-variants{margin:6px 0 14px}
+.qv-vgroup{margin-bottom:12px}
+.qv-vname{font-size:12px;font-weight:800;color:#333;margin-bottom:7px;text-transform:uppercase;letter-spacing:.4px}
+.qv-opts{display:flex;flex-wrap:wrap;gap:8px}
+.qv-opt{padding:9px 16px;border-radius:10px;border:1.5px solid #e2e2e8;background:#fff;font-size:14px;font-weight:700;color:#333;cursor:pointer;transition:all .15s}
+.qv-opt.on{border-color:${tc};background:${tc};color:#fff;box-shadow:0 3px 10px -2px ${tc}}
+.qv-opt:active{transform:scale(.95)}
+.qv-variants.shake{animation:qvShake .4s}
+@keyframes qvShake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-7px)}40%,80%{transform:translateX(7px)}}
+.pc{cursor:pointer}
+.pc:active{transform:scale(.98)}
 </style>
 <div class="qv-overlay" id="qv-overlay" onclick="if(event.target===this)baroQVClose()">
   <div class="qv">
     <button class="qv-x" onclick="baroQVClose()">✕</button>
     <div class="qv-img" id="qv-img"></div>
+    <div class="qv-thumbs" id="qv-thumbs"></div>
     <div class="qv-info">
       <div class="qv-cat" id="qv-cat"></div>
       <div class="qv-name" id="qv-name"></div>
       <div class="qv-price" id="qv-price"></div>
       <div class="qv-stock" id="qv-stock"></div>
       <div class="qv-desc" id="qv-desc"></div>
+      <div class="qv-variants" id="qv-variants"></div>
       <button class="qv-add" id="qv-add" onclick="baroQVAdd()">${esc(orderText)}</button>
     </div>
   </div>
 </div>
-<script>(function(){
-  var IT=${itemsJSON};var cur=null;
+<script>
+window.BARO_VARSEL=window.BARO_VARSEL||{};
+(function(){
+  var IT=${itemsJSON};var cur=null;var sel={};
   function find(id){for(var i=0;i<IT.length;i++)if(IT[i].id===id)return IT[i];return null;}
   function fmtn(n){return Math.round(n).toLocaleString('fr-FR');}
-  window.baroQV=function(id){var it=find(id);if(!it)return;cur=it;
-    var iw=document.getElementById('qv-img');iw.innerHTML=it.img?'<img src="'+it.img+'" alt="">':'<div class="qv-ph">'+((it.name||'?').charAt(0).toUpperCase())+'</div>';
+  function setMain(src,name){var iw=document.getElementById('qv-img');iw.innerHTML=src?'<img src="'+src+'" alt="">':'<div class="qv-ph">'+((name||'?').charAt(0).toUpperCase())+'</div>';var im=iw.querySelector('img');if(im){im.style.opacity='0';requestAnimationFrame(function(){im.style.transition='opacity .25s ease';im.style.opacity='1';});}}
+  window.baroQVThumb=function(i){var it=cur;if(!it)return;var imgs=(it.imgs&&it.imgs.length)?it.imgs:[it.img];setMain(imgs[i],it.name);document.querySelectorAll('#qv-thumbs .qv-thumb').forEach(function(t,k){t.classList.toggle('on',k===i);});};
+  window.baroQVPick=function(vi,opt,el){sel[vi]=opt;var row=el.parentElement;row.querySelectorAll('.qv-opt').forEach(function(o){o.classList.remove('on');});el.classList.add('on');};
+  window.baroQV=function(id){var it=find(id);if(!it)return;cur=it;sel={};
+    var imgs=(it.imgs&&it.imgs.length)?it.imgs:(it.img?[it.img]:[]);
+    setMain(imgs[0]||'',it.name);
+    var tb=document.getElementById('qv-thumbs');
+    tb.innerHTML=(imgs.length>1)?imgs.map(function(u,i){return '<button class="qv-thumb'+(i===0?' on':'')+'" style="background-image:url(\\''+u+'\\')" onclick="baroQVThumb('+i+')"></button>';}).join(''):'';
     document.getElementById('qv-cat').textContent=it.cat||'';
     document.getElementById('qv-name').textContent=it.name;
     document.getElementById('qv-price').innerHTML=(it.oldPrice?'<s>'+fmtn(it.oldPrice)+' ${sym()}</s>':'')+fmtn(it.price)+' ${sym()}';
@@ -17336,11 +17367,16 @@ var BARO_ORDERTXT=${JSON.stringify(orderText)};
     else if(it.qty!=null&&it.qty<=5){st.textContent='⚡ Plus que '+it.qty+' en stock';st.style.color='#D97706';}
     else{st.textContent='';}
     document.getElementById('qv-desc').textContent=it.desc||'';
+    var vc=document.getElementById('qv-variants');
+    vc.innerHTML=(it.variants&&it.variants.length)?it.variants.map(function(v,vi){return '<div class="qv-vgroup"><div class="qv-vname">'+v.name+'</div><div class="qv-opts">'+v.options.map(function(o){return '<button class="qv-opt" onclick="baroQVPick('+vi+',\\''+String(o).replace(/'/g,"&#39;")+'\\',this)">'+o+'</button>';}).join('')+'</div></div>';}).join(''):'';
     document.getElementById('qv-add').style.display=(it.qty===0)?'none':'';
     document.getElementById('qv-overlay').classList.add('show');document.body.style.overflow='hidden';
   };
   window.baroQVClose=function(){document.getElementById('qv-overlay').classList.remove('show');document.body.style.overflow='';};
-  window.baroQVAdd=function(){if(!cur)return;var b=document.querySelector('.pc-add[data-id="'+cur.id+'"]');if(b)b.click();if(navigator.vibrate)navigator.vibrate(8);baroQVClose();};
+  window.baroQVAdd=function(){if(!cur)return;
+    if(cur.variants&&cur.variants.length){for(var i=0;i<cur.variants.length;i++){if(sel[i]==null){var vc=document.getElementById('qv-variants');if(vc){vc.classList.remove('shake');void vc.offsetWidth;vc.classList.add('shake');}return;}}
+      var parts=cur.variants.map(function(v,i){return v.name+': '+sel[i];});window.BARO_VARSEL[cur.id]=parts.join(' · ');}
+    var b=document.querySelector('.pc-add[data-id="'+cur.id+'"]');if(b)b.click();if(navigator.vibrate)navigator.vibrate(8);baroQVClose();};
 })();</script>
 ${waNum?`<a href="${waLink}" target="_blank" class="wa-float"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg></a>`:''}
 ${customJsBody}
@@ -18495,6 +18531,73 @@ function shareProductLink(itemId) {
   if (url) lines.push('🛒 Commander : ' + url);
   window.open('https://wa.me/?text=' + encodeURIComponent(lines.join('\n')), '_blank');
   if (typeof haptic === 'function') haptic('tap');
+}
+
+// ══════════════════════════════════════════════════════════════
+// OPTIONS BOUTIQUE D'UN PRODUIT — photos supplémentaires + variantes
+// ══════════════════════════════════════════════════════════════
+function _optItem() {
+  const id = S._optId;
+  return (S.articles||[]).find(x => String(x.id) === String(id)) || (S.products||[]).find(x => String(x.id) === String(id));
+}
+function _persistProductObj(a) {
+  if ((S.articles||[]).some(x => x.id === a.id)) {
+    localStorage.setItem('baro_articles', JSON.stringify(S.articles));
+    try { localStorage.setItem('stockr_articles', JSON.stringify(S.articles)); } catch(_){}
+  } else {
+    localStorage.setItem('baro_products', JSON.stringify(S.products));
+    try { localStorage.setItem('stockr_products', JSON.stringify(S.products)); } catch(_){}
+  }
+}
+function openProductOptions(id) {
+  const a = (S.articles||[]).find(x => String(x.id) === String(id)) || (S.products||[]).find(x => String(x.id) === String(id));
+  if (!a) return;
+  if (!Array.isArray(a.images)) a.images = [];
+  if (!Array.isArray(a.variants)) a.variants = [];
+  S._optId = id;
+  _renderProductOptions();
+}
+function _renderProductOptions() {
+  const a = _optItem(); if (!a) return;
+  const ex = document.getElementById('po-modal'); if (ex) ex.remove();
+  const modal = document.createElement('div');
+  modal.id = 'po-modal';
+  modal.className = 'qs-overlay';
+  modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+  modal.innerHTML = `<div class="qs-sheet">${_poBody(a)}</div>`;
+  document.body.appendChild(modal);
+}
+function _poBody(a) {
+  const imgs = a.images || [], variants = a.variants || [];
+  return `
+    <div class="qs-head"><div style="flex:1;min-width:0"><div class="qs-title">🛍️ Options boutique</div><div class="qs-sub">${(a.name||'').replace(/</g,'&lt;')}</div></div><button class="qs-x" onclick="document.getElementById('po-modal').remove()">✕</button></div>
+    <div class="qs-label">Photos (la 1ʳᵉ est la principale)</div>
+    <div class="po-imgs">
+      ${a.image ? `<div class="po-img" style="background-image:url('${a.image}')"><span class="po-main">Principale</span></div>` : ''}
+      ${imgs.map((u,i) => `<div class="po-img" style="background-image:url('${u}')"><button class="po-del" onclick="_poDelImg(${i})">×</button></div>`).join('')}
+      <button class="po-add" onclick="_poAddImg()">＋<span style="font-size:10px;display:block">photo</span></button>
+    </div>
+    <div class="qs-label" style="margin-top:14px">Variantes (taille, couleur…)</div>
+    ${variants.map((v,i) => `<div class="po-var">
+      <input class="input po-var-name" value="${(v.name||'').replace(/"/g,'&quot;')}" placeholder="Nom (ex: Taille)" oninput="_poVarName(${i},this.value)">
+      <input class="input po-var-opts" value="${(v.options||[]).join(', ').replace(/"/g,'&quot;')}" placeholder="S, M, L, XL" oninput="_poVarOpts(${i},this.value)">
+      <button class="po-del2" onclick="_poDelVar(${i})">🗑</button>
+    </div>`).join('')}
+    <button class="btn btn-ghost" style="width:100%;font-size:13px;margin-top:4px" onclick="_poAddVar()">＋ Ajouter une variante</button>
+    <button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="_poSave()">✓ Enregistrer</button>`;
+}
+function _poAddImg() { pickItemImage(d => { const a = _optItem(); if (!a) return; if (!a.images) a.images = []; a.images.push(d); _renderProductOptions(); }); }
+function _poDelImg(i) { const a = _optItem(); if (a && a.images) { a.images.splice(i,1); _renderProductOptions(); } }
+function _poAddVar() { const a = _optItem(); if (!a.variants) a.variants = []; a.variants.push({ name:'', options:[] }); _renderProductOptions(); }
+function _poDelVar(i) { const a = _optItem(); if (a && a.variants) { a.variants.splice(i,1); _renderProductOptions(); } }
+function _poVarName(i, v) { const a = _optItem(); if (a && a.variants[i]) a.variants[i].name = v; }
+function _poVarOpts(i, v) { const a = _optItem(); if (a && a.variants[i]) a.variants[i].options = v.split(',').map(s => s.trim()).filter(Boolean); }
+function _poSave() {
+  const a = _optItem();
+  if (a) { a.variants = (a.variants||[]).filter(v => v.name && v.options && v.options.length); _persistProductObj(a); }
+  document.getElementById('po-modal')?.remove();
+  showToast('Options boutique enregistrées', 'success');
+  if (typeof _refreshBoutiqueLivePreview === 'function') _refreshBoutiqueLivePreview();
 }
 function addBoutiqueOrder() {
   const clientName = prompt('Nom du client :');
