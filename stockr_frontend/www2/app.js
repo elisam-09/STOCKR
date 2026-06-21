@@ -16755,6 +16755,13 @@ function generateBoutiqueSite(opts) {
   const heroTitle  = bc.heroTitle || bc.name || S.session?.business || 'Ma Boutique';
   const heroSub    = bc.heroSubtitle || bc.description || 'Bienvenue ! Découvrez nos produits et commandez en un clic';
   const announce   = (bc.announceText || '').trim();
+  // ── Sections éditables par le vendeur : À propos / Services / Contact ──
+  const _aboutText    = (bc.aboutText || '').trim();
+  const _servicesArr  = (bc.servicesText || '').split('\n').map(s => s.trim()).filter(Boolean);
+  const _ctPhone      = (bc.contactPhone || '').trim();
+  const _ctEmail      = (bc.contactEmail || '').trim();
+  const _ctAddress    = (bc.contactAddress || '').trim();
+  const _hasContact   = !!(_ctPhone || _ctEmail || _ctAddress);
   const cornerR    = bc.borderStyle === 'square' ? '2px' : bc.borderStyle === 'xl' ? '24px' : '16px';
   const gap        = density === 'compact' ? '8px' : density === 'airy' ? '20px' : '12px';
   const pad        = density === 'compact' ? '10px' : density === 'airy' ? '24px' : '16px';
@@ -16971,8 +16978,10 @@ function generateBoutiqueSite(opts) {
       imgs: imgs, variants: variants, reviews: reviews,
     };
   })).replace(/</g, '\\u003c');
+  const _catCount = {};
+  shopProds.forEach(p => { const c = p.category || 'Autres'; _catCount[c] = (_catCount[c]||0) + 1; });
   const chipsHTML = categories.length > 1
-    ? `<div class="chips"><button class="chip active" data-cat="" onclick="baroSetCat('',this)">Tout</button>${categories.map(c => `<button class="chip" data-cat="${esc(c)}" onclick="baroSetCat('${esc(c).replace(/'/g,'&#39;')}',this)">${esc(c)}</button>`).join('')}</div>`
+    ? `<div class="chips"><button class="chip active" data-cat="" onclick="baroSetCat('',this)">Tout <span class="chip-n">${shopProds.length}</span></button>${categories.map(c => `<button class="chip" data-cat="${esc(c)}" onclick="baroSetCat('${esc(c).replace(/'/g,'&#39;')}',this)">${esc(c)} <span class="chip-n">${_catCount[c]||0}</span></button>`).join('')}</div>`
     : '';
   const html = `<!DOCTYPE html>
 <html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -17038,6 +17047,8 @@ h1,h2,.header h1,.pc-name,.cartbar-total,.ck h2{font-family:${headingStack}}
 .chips::-webkit-scrollbar{display:none}
 .chip{flex-shrink:0;padding:7px 15px;border-radius:999px;border:1px solid rgba(0,0,0,.09);background:#fff;font-size:12.5px;font-weight:600;color:#555;cursor:pointer;font-family:inherit;transition:all .18s}
 .chip.active{background:${tc};border-color:${tc};color:#fff;box-shadow:0 4px 12px -4px ${tc}88}
+.chip-n{display:inline-block;min-width:16px;text-align:center;font-size:10.5px;font-weight:800;background:rgba(0,0,0,.06);color:inherit;border-radius:999px;padding:1px 6px;margin-left:3px;font-variant-numeric:tabular-nums}
+.chip.active .chip-n{background:rgba(255,255,255,.25)}
 /* Grille produits */
 .grid{display:grid;grid-template-columns:repeat(${gridCols},1fr);gap:${gap};padding-top:10px}
 ${gridCols < 3 ? `@media(min-width:560px){.grid{grid-template-columns:repeat(${Math.min(gridCols+1,3)},1fr)}}` : ''}
@@ -17087,6 +17098,7 @@ ${hoverCss}
 .ck h2{font-size:19px;font-weight:800;letter-spacing:-.4px;margin-bottom:14px}
 .ck-item{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid #F2F2F5}
 .ck-item-name{flex:1;font-size:13.5px;font-weight:600}
+.ck-var{display:block;font-size:11px;color:#888;font-weight:600;margin-top:2px}
 .ck-item-price{font-size:13px;font-weight:700;color:${tc};white-space:nowrap}
 .ck-qty{display:flex;align-items:center;gap:8px}
 .ck-qty button{width:28px;height:28px;border-radius:8px;border:1px solid rgba(0,0,0,.1);background:#fff;font-size:15px;font-weight:700;cursor:pointer;color:#333}
@@ -17110,6 +17122,17 @@ ${hoverCss}
 .pay-badges{display:flex;flex-wrap:wrap;justify-content:center;gap:6px}
 .pay-badge{background:${tc}12;color:${tc};padding:7px 15px;border-radius:10px;font-size:12px;font-weight:700}
 .delivery-info{text-align:center;font-size:13px;color:#666;margin:8px 0;padding:14px;background:#fff;border-radius:16px;box-shadow:0 2px 10px rgba(0,0,0,.04);border:1px solid rgba(0,0,0,.04)}
+.svc-strip{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:14px 0}
+.svc-item{background:#fff;border:1px solid rgba(0,0,0,.05);box-shadow:0 2px 10px rgba(0,0,0,.04);border-radius:12px;padding:10px 14px;font-size:13px;font-weight:600;color:#333}
+.about-section{background:#fff;border-radius:16px;padding:20px;margin:14px 0;box-shadow:0 2px 10px rgba(0,0,0,.04);border:1px solid rgba(0,0,0,.04)}
+.about-section .pay-section-title{text-align:center}
+.about-text{font-size:14px;line-height:1.65;color:#555;text-align:center;margin:0}
+.contact-section{background:#fff;border-radius:16px;padding:18px;margin:14px 0;box-shadow:0 2px 10px rgba(0,0,0,.04);border:1px solid rgba(0,0,0,.04)}
+.contact-section .pay-section-title{text-align:center}
+.contact-rows{display:flex;flex-direction:column;gap:8px;max-width:340px;margin:0 auto}
+.contact-row{display:flex;align-items:center;gap:11px;padding:11px 14px;border-radius:12px;background:${tc}0a;color:#333;text-decoration:none;font-size:13.5px;font-weight:600;transition:background .15s}
+.contact-row:active{background:${tc}1a}
+.contact-row span:first-child{font-size:16px;flex:0 0 auto}
 .footer{text-align:center;padding:36px 20px 90px;font-size:12px;color:#aaa}
 .footer a{color:${tc};text-decoration:none;font-weight:700}
 .wa-float{position:fixed;bottom:20px;right:20px;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#25D366,#1fb958);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(37,211,102,.45);cursor:pointer;z-index:90;transition:transform .2s}
@@ -17179,11 +17202,25 @@ ${cc.body || ''}
 ${prodsHTML}
 </main>
 <div id="no-results">Aucun produit ne correspond à votre recherche 🙁</div>
+${_servicesArr.length>0?`<div class="svc-strip reveal">${_servicesArr.map(s=>`<div class="svc-item">${esc(s)}</div>`).join('')}</div>`:''}
+${_aboutText?`<div class="about-section reveal">
+  <div class="pay-section-title">À propos</div>
+  <p class="about-text">${esc(_aboutText).replace(/\n/g,'<br>')}</p>
+</div>`:''}
 ${showReviews ? reviewsHTML : ''}
 <div class="pay-section reveal">
   <div class="pay-section-title">Moyens de paiement acceptés</div>
   <div class="pay-badges">${payHTML}</div>
 </div>
+${_hasContact?`<div class="contact-section reveal">
+  <div class="pay-section-title">Contact</div>
+  <div class="contact-rows">
+    ${_ctPhone?`<a class="contact-row" href="tel:${esc(_ctPhone.replace(/\s/g,''))}"><span>📞</span><span>${esc(_ctPhone)}</span></a>`:''}
+    ${_ctEmail?`<a class="contact-row" href="mailto:${esc(_ctEmail)}"><span>✉️</span><span>${esc(_ctEmail)}</span></a>`:''}
+    ${_ctAddress?`<div class="contact-row"><span>📍</span><span>${esc(_ctAddress)}</span></div>`:''}
+    ${waNum?`<a class="contact-row" href="${waLink}" target="_blank"><span>💬</span><span>Écrire sur WhatsApp</span></a>`:''}
+  </div>
+</div>`:''}
 ${(bc.deliveryZones||[]).length>0?`<div class="delivery-info">🏙️ Zones de livraison : ${(bc.deliveryZones||[]).join(' • ')}</div>`:''}
 ${(bc.faqs||[]).length>0?`<div class="pay-section" style="text-align:left">
   <div class="pay-section-title" style="text-align:center">Questions fréquentes</div>
@@ -17277,8 +17314,8 @@ var BARO_ORDERTXT=${JSON.stringify(orderText)};
   function renderCk(){
     var box=document.getElementById('ck-items');if(!box)return;
     var h='';
-    for(var k in cart){var it=item(k);if(!it)continue;
-      h+='<div class="ck-item"><div class="ck-item-name">'+it.name+(it.promo?' <span style="color:#EF4444;font-size:10px;font-weight:800">PROMO</span>':'')+'</div>'
+    for(var k in cart){var it=item(k);if(!it)continue;var vsel=(window.BARO_VARSEL||{})[k];
+      h+='<div class="ck-item"><div class="ck-item-name">'+it.name+(it.promo?' <span style="color:#EF4444;font-size:10px;font-weight:800">PROMO</span>':'')+(vsel?'<span class="ck-var">'+vsel+'</span>':'')+'</div>'
         +'<div class="ck-qty"><button onclick="baroDec(\\''+k+'\\')">−</button><span>'+cart[k]+'</span><button onclick="baroInc(\\''+k+'\\')">+</button></div>'
         +'<div class="ck-item-price">'+fmtn(it.price*cart[k])+' '+BARO_SYM+'</div></div>';
     }
@@ -17744,7 +17781,15 @@ function vBoutiqueEditor() {
     <input class="input" value="${(bc.announceText||'').replace(/"/g,'&quot;')}" placeholder="ex : 🚚 Livraison gratuite dès 25 000 FCFA" oninput="boutiqueEditText('announceText',this.value)">
     <div class="bq-sec-title">Texte du bouton commander</div>
     <input class="input" value="${(bc.orderBtnText||'').replace(/"/g,'&quot;')}" placeholder="+ Ajouter au panier" oninput="boutiqueEditText('orderBtnText',this.value)">
-    <div style="font-size:11px;color:var(--text-3);margin-top:12px;line-height:1.5">💡 Laissez vide pour utiliser les textes par défaut. Le nom et la description de la boutique se modifient dans l'onglet principal Boutique.</div>`;
+    <div class="bq-sec-title" style="margin-top:18px">À propos de la boutique</div>
+    <textarea class="input" rows="3" style="resize:vertical;font-family:inherit" placeholder="Présentez votre commerce : votre histoire, ce qui vous rend unique…" oninput="boutiqueEditText('aboutText',this.value)">${(bc.aboutText||'').replace(/</g,'&lt;')}</textarea>
+    <div class="bq-sec-title" style="margin-top:18px">Services / Atouts <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--text-3)">· un par ligne</span></div>
+    <textarea class="input" rows="3" style="resize:vertical;font-family:inherit" placeholder="🚚 Livraison rapide&#10;💳 Paiement mobile&#10;✅ Produits garantis" oninput="boutiqueEditText('servicesText',this.value)">${(bc.servicesText||'').replace(/</g,'&lt;')}</textarea>
+    <div class="bq-sec-title" style="margin-top:18px">Contact (section bas de page)</div>
+    <input class="input" value="${(bc.contactPhone||'').replace(/"/g,'&quot;')}" placeholder="📞 Téléphone (ex : +225 07 00 00 00 00)" oninput="boutiqueEditText('contactPhone',this.value)">
+    <input class="input" style="margin-top:8px" value="${(bc.contactEmail||'').replace(/"/g,'&quot;')}" placeholder="✉️ Email (ex : contact@boutique.ci)" oninput="boutiqueEditText('contactEmail',this.value)">
+    <input class="input" style="margin-top:8px" value="${(bc.contactAddress||'').replace(/"/g,'&quot;')}" placeholder="📍 Adresse / quartier (ex : Cocody, Abidjan)" oninput="boutiqueEditText('contactAddress',this.value)">
+    <div style="font-size:11px;color:var(--text-3);margin-top:12px;line-height:1.5">💡 Laissez vide pour masquer une section. Le nom et la description de la boutique se modifient dans l'onglet principal Boutique.</div>`;
 
   const productsTab = `
     <div class="bq-sec-title">Ordre d'affichage <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--text-3)">· réorganisez avec les flèches</span></div>
