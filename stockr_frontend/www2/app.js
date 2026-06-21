@@ -17373,6 +17373,15 @@ var BARO_ORDERTXT=${JSON.stringify(orderText)};
 .qv-bar-total small{font-size:10px;color:#999;font-weight:700;text-transform:uppercase;letter-spacing:.4px}
 .qv-bar-total b{font-size:18px;font-weight:900;color:#111;font-variant-numeric:tabular-nums}
 .qv-bar .qv-add{flex:1;margin:0}
+.qv-related{margin:4px 0 6px;border-top:1px solid #eee;padding-top:14px}
+.qv-related-t{font-size:13px;font-weight:800;color:#333;margin-bottom:10px;text-transform:uppercase;letter-spacing:.4px}
+.qv-rel-row{display:flex;gap:10px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px;scrollbar-width:none}
+.qv-rel-row::-webkit-scrollbar{display:none}
+.qv-rel-card{flex:0 0 auto;width:108px;cursor:pointer}
+.qv-rel-card:active{transform:scale(.96)}
+.qv-rel-img{width:108px;height:108px;border-radius:12px;background:#f4f4f6 center/cover no-repeat;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:800;color:#c4c4c4;overflow:hidden}
+.qv-rel-name{font-size:12px;font-weight:700;color:#222;margin-top:6px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.qv-rel-price{font-size:12.5px;font-weight:900;color:${tc};margin-top:2px}
 </style>
 <div class="qv-overlay" id="qv-overlay" onclick="if(event.target===this)baroQVClose()">
   <div class="qv">
@@ -17388,6 +17397,7 @@ var BARO_ORDERTXT=${JSON.stringify(orderText)};
       <div class="qv-variants" id="qv-variants"></div>
       <div class="qv-qtyrow" id="qv-qtyrow"><span>Quantité</span><div class="qv-qtybox"><button onclick="baroQVQty(-1)">−</button><span id="qv-qty">1</span><button onclick="baroQVQty(1)">+</button></div></div>
       <div class="qv-rev" id="qv-rev" style="display:none"></div>
+      <div class="qv-related" id="qv-related" style="display:none"></div>
     </div>
     <div class="qv-bar" id="qv-bar"><div class="qv-bar-total"><small>Total</small><b id="qv-bar-tot"></b></div><button class="qv-add" id="qv-add" onclick="baroQVAdd()">${esc(orderText)}</button></div>
   </div>
@@ -17430,6 +17440,21 @@ window.BARO_VARSEL=window.BARO_VARSEL||{};
           rs.map(function(r){return '<div class="qv-rev-item"><div class="qv-rev-top"><span class="qv-rev-author">'+(r.a||'Client')+'</span><span class="qv-rev-rt">'+stars(+r.r||5)+'</span></div>'+(r.t?'<div class="qv-rev-text">'+r.t+'</div>':'')+'</div>';}).join('');
         rv.style.display='';
       } else rv.style.display='none';
+    }
+    var rel=document.getElementById('qv-related');
+    if(rel){
+      var others=[],used={};used[it.id]=1;
+      IT.forEach(function(x){if(!used[x.id]&&(x.cat||'')===(it.cat||'')){others.push(x);used[x.id]=1;}});
+      IT.forEach(function(x){if(others.length>=8)return;if(!used[x.id]){others.push(x);used[x.id]=1;}});
+      others=others.slice(0,8);
+      if(others.length){
+        rel.innerHTML='<div class="qv-related-t">Vous aimerez aussi</div><div class="qv-rel-row">'+others.map(function(x){
+          var im=(x.imgs&&x.imgs.length)?x.imgs[0]:(x.img||'');
+          var imgHTML=im?'<div class="qv-rel-img" style="background-image:url(\\''+im+'\\')"></div>':'<div class="qv-rel-img">'+((x.name||'?').charAt(0).toUpperCase())+'</div>';
+          return '<div class="qv-rel-card" onclick="baroQV(\\''+String(x.id).replace(/'/g,"&#39;")+'\\')">'+imgHTML+'<div class="qv-rel-name">'+x.name+'</div><div class="qv-rel-price">'+fmtn(x.price)+' ${sym()}</div></div>';
+        }).join('')+'</div>';
+        rel.style.display='';
+      } else rel.style.display='none';
     }
     document.getElementById('qv-overlay').classList.add('show');document.body.style.overflow='hidden';
   };
