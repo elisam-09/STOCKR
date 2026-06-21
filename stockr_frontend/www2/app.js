@@ -17360,8 +17360,17 @@ var BARO_ORDERTXT=${JSON.stringify(orderText)};
 .reveal{opacity:0;transform:translateY(26px);transition:opacity .7s cubic-bezier(.2,0,0,1),transform .7s cubic-bezier(.2,0,0,1);will-change:opacity,transform}
 .reveal.in{opacity:1;transform:none}
 @media(prefers-reduced-motion:reduce){.reveal{opacity:1!important;transform:none!important;transition:none}}
+.qv-img{cursor:zoom-in}
 .qv-img img{transition:transform .5s cubic-bezier(.2,0,0,1)}
 .qv-img:active img{transform:scale(1.08)}
+.qv-lb{position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:10000;display:none;align-items:center;justify-content:center;touch-action:pan-y;animation:lbFade .25s ease}
+.qv-lb.show{display:flex}
+@keyframes lbFade{from{opacity:0}to{opacity:1}}
+.qv-lb-img{max-width:100vw;max-height:84vh;object-fit:contain;user-select:none;-webkit-user-drag:none}
+.qv-lb-x{position:absolute;top:calc(14px + env(safe-area-inset-top));right:16px;width:40px;height:40px;border-radius:50%;border:none;background:rgba(255,255,255,.16);color:#fff;font-size:19px;cursor:pointer;z-index:2}
+.qv-lb-nav{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;border:none;background:rgba(255,255,255,.16);color:#fff;font-size:24px;line-height:1;cursor:pointer;display:none;align-items:center;justify-content:center;z-index:2}
+.qv-lb-prev{left:12px}.qv-lb-next{right:12px}
+.qv-lb-count{position:absolute;bottom:calc(22px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);color:#fff;font-size:13px;font-weight:700;background:rgba(255,255,255,.14);padding:6px 14px;border-radius:999px;letter-spacing:.5px}
 .qv-qtyrow{display:flex;align-items:center;justify-content:space-between;margin:4px 0 14px}
 .qv-qtyrow>span{font-size:13px;font-weight:800;color:#333;text-transform:uppercase;letter-spacing:.4px}
 .qv-qtybox{display:flex;align-items:center;gap:0;border:1.5px solid #e2e2e8;border-radius:12px;overflow:hidden}
@@ -17386,7 +17395,7 @@ var BARO_ORDERTXT=${JSON.stringify(orderText)};
 <div class="qv-overlay" id="qv-overlay" onclick="if(event.target===this)baroQVClose()">
   <div class="qv">
     <button class="qv-x" onclick="baroQVClose()">✕</button>
-    <div class="qv-img" id="qv-img"></div>
+    <div class="qv-img" id="qv-img" onclick="baroLBOpen()"></div>
     <div class="qv-thumbs" id="qv-thumbs"></div>
     <div class="qv-info">
       <div class="qv-cat" id="qv-cat"></div>
@@ -17401,6 +17410,13 @@ var BARO_ORDERTXT=${JSON.stringify(orderText)};
     </div>
     <div class="qv-bar" id="qv-bar"><div class="qv-bar-total"><small>Total</small><b id="qv-bar-tot"></b></div><button class="qv-add" id="qv-add" onclick="baroQVAdd()">${esc(orderText)}</button></div>
   </div>
+</div>
+<div class="qv-lb" id="qv-lb">
+  <button class="qv-lb-x" onclick="baroLBClose()">✕</button>
+  <button class="qv-lb-nav qv-lb-prev" onclick="baroLBNav(-1)">‹</button>
+  <img class="qv-lb-img" id="qv-lb-img" alt="">
+  <button class="qv-lb-nav qv-lb-next" onclick="baroLBNav(1)">›</button>
+  <div class="qv-lb-count" id="qv-lb-count"></div>
 </div>
 <script>
 window.BARO_VARSEL=window.BARO_VARSEL||{};
@@ -17459,6 +17475,23 @@ window.BARO_VARSEL=window.BARO_VARSEL||{};
     document.getElementById('qv-overlay').classList.add('show');document.body.style.overflow='hidden';
   };
   window.baroQVClose=function(){document.getElementById('qv-overlay').classList.remove('show');document.body.style.overflow='';};
+  // ── Visionneuse plein écran des photos produit ──
+  var lbImgs=[],lbIdx=0;
+  function lbRender(){var im=document.getElementById('qv-lb-img');if(im)im.src=lbImgs[lbIdx]||'';
+    var c=document.getElementById('qv-lb-count');if(c)c.textContent=lbImgs.length>1?(lbIdx+1)+' / '+lbImgs.length:'';
+    var multi=lbImgs.length>1,pv=document.querySelector('.qv-lb-prev'),nx=document.querySelector('.qv-lb-next');
+    if(pv)pv.style.display=multi?'flex':'none';if(nx)nx.style.display=multi?'flex':'none';}
+  window.baroLBOpen=function(){if(!cur)return;var imgs=(cur.imgs&&cur.imgs.length)?cur.imgs:(cur.img?[cur.img]:[]);if(!imgs.length)return;lbImgs=imgs;
+    var on=document.querySelector('#qv-thumbs .qv-thumb.on');lbIdx=on&&on.parentElement?[].indexOf.call(on.parentElement.children,on):0;if(lbIdx<0)lbIdx=0;
+    lbRender();document.getElementById('qv-lb').classList.add('show');};
+  window.baroLBClose=function(){document.getElementById('qv-lb').classList.remove('show');};
+  window.baroLBNav=function(d){if(!lbImgs.length)return;lbIdx=(lbIdx+d+lbImgs.length)%lbImgs.length;lbRender();};
+  (function(){var lb=document.getElementById('qv-lb');if(!lb)return;var sx=0;
+    lb.addEventListener('touchstart',function(e){sx=e.touches[0].clientX;},{passive:true});
+    lb.addEventListener('touchend',function(e){var dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>40)baroLBNav(dx<0?1:-1);},{passive:true});
+    lb.addEventListener('click',function(e){if(e.target===lb)baroLBClose();});
+    document.addEventListener('keydown',function(e){if(!lb.classList.contains('show'))return;if(e.key==='ArrowLeft')baroLBNav(-1);else if(e.key==='ArrowRight')baroLBNav(1);else if(e.key==='Escape')baroLBClose();});
+  })();
   window.baroQVAdd=function(){if(!cur)return;
     if(cur.variants&&cur.variants.length){for(var i=0;i<cur.variants.length;i++){if(sel[i]==null){var vc=document.getElementById('qv-variants');if(vc){vc.classList.remove('shake');void vc.offsetWidth;vc.classList.add('shake');}return;}}
       var parts=cur.variants.map(function(v,i){return v.name+': '+sel[i];});window.BARO_VARSEL[cur.id]=parts.join(' · ');}
