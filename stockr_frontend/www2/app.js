@@ -16988,6 +16988,11 @@ h1,h2,.header h1,.pc-name,.cartbar-total,.ck h2{font-family:${headingStack}}
 .cart-btn{position:relative;width:40px;height:40px;border-radius:12px;border:1px solid rgba(0,0,0,.08);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .15s}
 .cart-btn:active{transform:scale(.92)}
 .cart-badge{position:absolute;top:-5px;right:-5px;min-width:18px;height:18px;border-radius:9px;background:${tc};color:#fff;font-size:10px;font-weight:800;display:none;align-items:center;justify-content:center;padding:0 4px;box-shadow:0 2px 6px ${tc}66}
+@keyframes cartBump{0%{transform:scale(1)}30%{transform:scale(1.55)}55%{transform:scale(.82)}80%{transform:scale(1.12)}100%{transform:scale(1)}}
+.cart-badge.bump{animation:cartBump .5s cubic-bezier(.2,0,0,1)}
+.baro-toast{position:fixed;left:50%;bottom:92px;transform:translateX(-50%) translateY(18px);background:rgba(20,20,22,.94);color:#fff;padding:11px 20px;border-radius:999px;font-size:13.5px;font-weight:700;z-index:9999;opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;box-shadow:0 10px 34px rgba(0,0,0,.32);max-width:84vw;text-align:center;backdrop-filter:blur(6px)}
+.baro-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(prefers-reduced-motion:reduce){.cart-badge.bump{animation:none}.baro-toast{transition:opacity .2s}}
 /* Hero */
 .announce-bar{background:#111;color:#fff;text-align:center;font-size:12.5px;font-weight:600;padding:8px 16px;letter-spacing:.2px}
 .header{background:linear-gradient(140deg,${tc} 0%,${tc}dd 55%,${tc}bb 100%);color:#fff;padding:44px 20px 56px;text-align:center;position:relative;overflow:hidden}
@@ -17153,6 +17158,7 @@ ${(bc.faqs||[]).length>0?`<div class="pay-section" style="text-align:left">
 </div>
 ${bannerHTML(bottomBanner, 'bottom')}
 ${popupHTML}
+<div class="baro-toast" id="baro-toast"></div>
 <div class="footer">
   <div style="margin-bottom:8px;font-weight:700;color:#888">${esc(bc.name||S.session?.business||'Ma Boutique')}</div>
   Propulsé par <a href="#">BARO</a>
@@ -17199,6 +17205,9 @@ var BARO_ORDERTXT=${JSON.stringify(orderText)};
 (function(){
   var cart={};
   var appliedPromo=null;
+  var prevCount=0;
+  var toastT=null;
+  window.baroToast=function(msg){var t=document.getElementById('baro-toast');if(!t)return;t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove('show');},1800);};
   function fmtn(n){return Math.round(n).toLocaleString('fr-FR');}
   function item(id){for(var i=0;i<BARO_ITEMS.length;i++)if(BARO_ITEMS[i].id===id)return BARO_ITEMS[i];return null;}
   function baseFee(){var z=(document.getElementById('ck-zone')||{}).value;return (BARO_ZONEFEES&&BARO_ZONEFEES[z]!=null)?BARO_ZONEFEES[z]:BARO_FEES;}
@@ -17218,7 +17227,8 @@ var BARO_ORDERTXT=${JSON.stringify(orderText)};
   function total(){var t=0;for(var k in cart){var it=item(k);if(it)t+=it.price*cart[k];}return t;}
   function syncUI(){
     var c=count(),badge=document.getElementById('cart-badge'),bar=document.getElementById('cartbar');
-    if(badge){badge.style.display=c>0?'flex':'none';badge.textContent=c;}
+    if(badge){var grew=c>prevCount;badge.style.display=c>0?'flex':'none';badge.textContent=c;if(grew){badge.classList.remove('bump');void badge.offsetWidth;badge.classList.add('bump');}}
+    prevCount=c;
     if(bar){bar.classList.toggle('show',c>0);
       document.getElementById('cartbar-count').textContent=c;
       document.getElementById('cartbar-total').textContent=fmtn(total())+' '+BARO_SYM;}
@@ -17254,7 +17264,7 @@ var BARO_ORDERTXT=${JSON.stringify(orderText)};
   window.baroZone=function(){renderCk();};
   document.addEventListener('click',function(e){
     var b=e.target.closest('.pc-add[data-id]');
-    if(b&&!b.disabled){var id=b.getAttribute('data-id');cart[id]=(cart[id]||0)+1;if(navigator.vibrate)navigator.vibrate(8);syncUI();}
+    if(b&&!b.disabled){var id=b.getAttribute('data-id');cart[id]=(cart[id]||0)+1;if(navigator.vibrate)navigator.vibrate(8);syncUI();var _it=item(id);baroToast('✓ '+(_it?_it.name:'Produit')+' ajouté');}
   });
   window.baroInc=function(id){cart[id]=(cart[id]||0)+1;syncUI();};
   window.baroDec=function(id){if(cart[id]>1)cart[id]--;else delete cart[id];syncUI();};
