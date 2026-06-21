@@ -17082,6 +17082,12 @@ ${hoverCss}
 .ck input:focus,.ck select:focus{border-color:${tc}}
 .ck-send{width:100%;margin-top:18px;background:linear-gradient(135deg,#25D366,#1fb958);color:#fff;border:none;border-radius:14px;padding:15px;font-weight:800;font-size:15px;cursor:pointer;font-family:inherit;box-shadow:0 8px 24px -8px rgba(37,211,102,.7)}
 .ck-close{position:absolute;top:14px;right:16px;width:32px;height:32px;border-radius:50%;border:none;background:#F2F2F5;font-size:16px;cursor:pointer;color:#666}
+.ck-empty{text-align:center;padding:26px 12px 14px}
+.ck-empty-ic{width:64px;height:64px;border-radius:50%;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;background:${tc}14;color:${tc}}
+.ck-empty-t{font-size:16px;font-weight:800;color:#222}
+.ck-empty-s{font-size:13px;color:#888;margin:5px 0 16px;line-height:1.5}
+.ck-empty-btn{border:none;background:${tc};color:#fff;font-weight:800;font-size:14px;font-family:inherit;border-radius:12px;padding:11px 22px;cursor:pointer;transition:transform .12s ease}
+.ck-empty-btn:active{transform:scale(.96)}
 /* Sections existantes */
 .pay-section{background:#fff;border-radius:16px;padding:18px;margin:14px 0;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,.04);border:1px solid rgba(0,0,0,.04)}
 .pay-section-title{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#999;margin-bottom:10px;font-weight:700}
@@ -17260,7 +17266,7 @@ var BARO_ORDERTXT=${JSON.stringify(orderText)};
         +'<div class="ck-qty"><button onclick="baroDec(\\''+k+'\\')">−</button><span>'+cart[k]+'</span><button onclick="baroInc(\\''+k+'\\')">+</button></div>'
         +'<div class="ck-item-price">'+fmtn(it.price*cart[k])+' '+BARO_SYM+'</div></div>';
     }
-    box.innerHTML=h||'<div style="text-align:center;color:#999;padding:18px;font-size:13px">Panier vide — ajoutez des produits</div>';
+    box.innerHTML=h||'<div class="ck-empty"><div class="ck-empty-ic"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></div><div class="ck-empty-t">Votre panier est vide</div><div class="ck-empty-s">Parcourez les produits et ajoutez vos favoris ✨</div><button class="ck-empty-btn" onclick="baroCloseCheckout()">Voir les produits</button></div>';
     var fee=curFee();var disc=discount();
     var fr=document.getElementById('ck-fee');if(fr)fr.textContent=(fee===0&&BARO_FREESHIP>0&&total()>=BARO_FREESHIP)?'Offerte 🎉':(fmtn(fee)+' '+BARO_SYM);
     var dr=document.getElementById('ck-discrow');
