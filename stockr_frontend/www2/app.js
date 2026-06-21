@@ -16917,7 +16917,7 @@ function generateBoutiqueSite(opts) {
     const stockBadge = (showStockCount && p.qty != null)
       ? (p.qty > 0 ? `<span class="pc-stock ok">✓ Stock</span>` : `<span class="pc-stock out">Rupture</span>`)
       : '';
-    return `<div class="pc reveal" data-cat="${esc(p.category||'Autres')}" data-name="${esc((p.name||'').toLowerCase())}">
+    return `<div class="pc reveal" data-idx="${idx}" data-cat="${esc(p.category||'Autres')}" data-name="${esc((p.name||'').toLowerCase())}" data-price="${Math.round(finalPrice)||0}">
       <div class="pc-imgwrap" onclick="baroQV&&baroQV('${esc(String(p.id))}')" style="cursor:zoom-in">
         ${img}
         ${urgHTML}
@@ -17012,6 +17012,10 @@ h1,h2,.header h1,.pc-name,.cartbar-total,.ck h2{font-family:${headingStack}}
 .info-item{display:flex;align-items:center;gap:6px}
 /* Recherche + chips */
 .toolbar{max-width:680px;margin:0 auto;padding:2px 16px 4px}
+.toolbar-row{display:flex;gap:8px;align-items:stretch}
+.toolbar-row .search{flex:1}
+.sort-sel{flex:0 0 auto;border-radius:14px;border:1.5px solid rgba(0,0,0,.08);background:#fff;font-size:13.5px;font-weight:600;font-family:inherit;color:#333;padding:0 12px;outline:none;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.03);-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23888' stroke-width='1.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center;padding-right:28px}
+.sort-sel:focus{border-color:${tc}}
 .search{width:100%;padding:13px 18px;border-radius:14px;border:1.5px solid rgba(0,0,0,.08);background:#fff;font-size:15px;font-family:inherit;outline:none;transition:border .2s,box-shadow .2s;box-shadow:0 1px 4px rgba(0,0,0,.03)}
 .search:focus{border-color:${tc};box-shadow:0 0 0 3px ${tc}22}
 .chips{display:flex;gap:7px;overflow-x:auto;padding:12px 0 4px;scrollbar-width:none}
@@ -17136,7 +17140,15 @@ ${bannerHTML(topBanner, 'top')}
   else{var nx='';for(var i=0;i<7;i++){var j=(idx+i)%7,dd=H[j];if(dd&&!dd.x&&dd.o){if(i===0){var o2=toMin(dd.o);if(o2!=null&&n<o2){nx="aujourd'hui à "+dd.o;break;}else{continue;}}nx=(i===1?'demain':days[j])+' à '+dd.o;break;}}el.textContent='🔴 Fermé'+(nx?' · ouvre '+nx:'');el.style.color='#DC2626';}
 })();</script>
 <div class="toolbar">
-  <input class="search" id="shop-search" type="search" placeholder="🔍  Rechercher un produit…">
+  <div class="toolbar-row">
+    <input class="search" id="shop-search" type="search" placeholder="🔍  Rechercher un produit…">
+    ${shopProds.length > 2 ? `<select class="sort-sel" id="shop-sort" onchange="baroSort(this.value)" aria-label="Trier les produits">
+      <option value="">Trier</option>
+      <option value="price-asc">Prix ↑</option>
+      <option value="price-desc">Prix ↓</option>
+      <option value="name">Nom A→Z</option>
+    </select>` : ''}
+  </div>
   ${chipsHTML}
 </div>
 <div class="container">
@@ -17302,6 +17314,17 @@ var BARO_ORDERTXT=${JSON.stringify(orderText)};
   var si=document.getElementById('shop-search');
   if(si)si.addEventListener('input',filter);
   window.baroSetCat=function(c,el){activeCat=c;document.querySelectorAll('.chip').forEach(function(x){x.classList.remove('active');});if(el)el.classList.add('active');filter();};
+  window.baroSort=function(mode){
+    var grid=document.querySelector('main.grid');if(!grid)return;
+    var cards=[].slice.call(grid.querySelectorAll('.pc'));
+    cards.sort(function(a,b){
+      if(mode==='price-asc')return (+a.getAttribute('data-price'))-(+b.getAttribute('data-price'));
+      if(mode==='price-desc')return (+b.getAttribute('data-price'))-(+a.getAttribute('data-price'));
+      if(mode==='name')return (a.getAttribute('data-name')||'').localeCompare(b.getAttribute('data-name')||'');
+      return (+a.getAttribute('data-idx'))-(+b.getAttribute('data-idx'));
+    });
+    cards.forEach(function(c){grid.appendChild(c);});
+  };
   function filter(){
     var q=(si?si.value:'').toLowerCase().trim(),any=false;
     document.querySelectorAll('.pc').forEach(function(el){
