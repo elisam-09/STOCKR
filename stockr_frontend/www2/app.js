@@ -16905,6 +16905,11 @@ function generateBoutiqueSite(opts) {
     if (_newIds.has(String(p.id))) _urg.push('<span class="pc-urg" style="background:#7C3AED">✨ Nouveau</span>');
     if (p.qty != null && p.qty > 0 && p.qty <= _LOWQTY) _urg.push('<span class="pc-urg" style="background:#D97706">⚡ Plus que ' + p.qty + '</span>');
     const urgHTML = _urg.length ? `<div class="pc-urgwrap">${_urg.join('')}</div>` : '';
+    // Note moyenne (avis produit)
+    const _pcUnder = p._pack ? null : ((S.articles||[]).find(a => a.id === p.id) || (S.products||[]).find(x => x.id === p.id));
+    const _pcRevs = (_pcUnder && Array.isArray(_pcUnder.reviews)) ? _pcUnder.reviews.filter(r => r.author || r.text) : [];
+    const _pcAvg = _pcRevs.length ? (_pcRevs.reduce((s, r) => s + (+r.rating || 0), 0) / _pcRevs.length) : 0;
+    const ratingHTML = _pcRevs.length ? `<div class="pc-rating">★ ${_pcAvg.toFixed(1)} <span style="opacity:.7">(${_pcRevs.length})</span></div>` : '';
     const initial = (p._pack ? '🎁' : (p.name||'?').charAt(0).toUpperCase());
     const img = p.image
       ? `<img class="pc-img" src="${p.image}" alt="${esc(p.name)}" loading="lazy">`
@@ -16922,6 +16927,7 @@ function generateBoutiqueSite(opts) {
       <div class="pc-body">
         ${showCategories && p.category ? `<div class="pc-cat">${esc(p.category)}</div>` : ''}
         <div class="pc-name" onclick="baroQV&&baroQV('${esc(String(p.id))}')" style="cursor:pointer">${esc(p.name)}</div>
+        ${ratingHTML}
         ${p.description ? `<div class="pc-desc">${esc(p.description)}</div>` : ''}
         <div class="pc-row">
           <div class="pc-price">${promo ? `<s>${fmt(p.price)}</s> ` : ''}${fmt(finalPrice)} <small>${sym()}</small></div>
@@ -16940,12 +16946,13 @@ function generateBoutiqueSite(opts) {
     const under = p._pack ? null : ((S.articles||[]).find(a => a.id === p.id) || (S.products||[]).find(x => x.id === p.id));
     const imgs = [p.image, ...((under && under.images) || [])].filter(Boolean);
     const variants = (under && Array.isArray(under.variants)) ? under.variants.filter(v => v.name && v.options && v.options.length) : [];
+    const reviews = (under && Array.isArray(under.reviews)) ? under.reviews.filter(r => (r.author||r.text)).map(r => ({ a: r.author || 'Client', r: +r.rating || 5, t: r.text || '' })) : [];
     return {
       id: String(p.id), name: p.name, price: (pp != null ? pp : p.price),
       promo: promo ? (promo.code || promo.name || '') : '',
       oldPrice: (pp != null ? p.price : 0), desc: p.description || '',
       img: p.image || '', cat: p.category || '', qty: (p.qty != null ? p.qty : null),
-      imgs: imgs, variants: variants,
+      imgs: imgs, variants: variants, reviews: reviews,
     };
   })).replace(/</g, '\\u003c');
   const chipsHTML = categories.length > 1
@@ -17326,6 +17333,18 @@ var BARO_ORDERTXT=${JSON.stringify(orderText)};
 .qv-opt:active{transform:scale(.95)}
 .qv-variants.shake{animation:qvShake .4s}
 @keyframes qvShake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-7px)}40%,80%{transform:translateX(7px)}}
+.qv-rev{margin:4px 0 16px;border-top:1px solid #eee;padding-top:14px}
+.qv-rev-agg{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.qv-rev-score{font-size:26px;font-weight:900;color:#222}
+.qv-rev-stars{color:#F59E0B;font-size:15px;letter-spacing:1px}
+.qv-rev-count{font-size:12px;color:#888}
+.qv-rev-item{padding:10px 0;border-bottom:1px solid #f2f2f5}
+.qv-rev-item:last-child{border-bottom:none}
+.qv-rev-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:3px}
+.qv-rev-author{font-size:13px;font-weight:800;color:#333}
+.qv-rev-rt{color:#F59E0B;font-size:12px}
+.qv-rev-text{font-size:13px;color:#555;line-height:1.55}
+.pc-rating{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:700;color:#92400E;background:#FEF3C7;padding:2px 7px;border-radius:999px}
 .pc{cursor:pointer}
 .pc:active{transform:scale(.98)}
 </style>
@@ -17342,6 +17361,7 @@ var BARO_ORDERTXT=${JSON.stringify(orderText)};
       <div class="qv-desc" id="qv-desc"></div>
       <div class="qv-variants" id="qv-variants"></div>
       <button class="qv-add" id="qv-add" onclick="baroQVAdd()">${esc(orderText)}</button>
+      <div class="qv-rev" id="qv-rev" style="display:none"></div>
     </div>
   </div>
 </div>
@@ -17370,6 +17390,15 @@ window.BARO_VARSEL=window.BARO_VARSEL||{};
     var vc=document.getElementById('qv-variants');
     vc.innerHTML=(it.variants&&it.variants.length)?it.variants.map(function(v,vi){return '<div class="qv-vgroup"><div class="qv-vname">'+v.name+'</div><div class="qv-opts">'+v.options.map(function(o){return '<button class="qv-opt" onclick="baroQVPick('+vi+',\\''+String(o).replace(/'/g,"&#39;")+'\\',this)">'+o+'</button>';}).join('')+'</div></div>';}).join(''):'';
     document.getElementById('qv-add').style.display=(it.qty===0)?'none':'';
+    var rv=document.getElementById('qv-rev');
+    if(rv){var rs=it.reviews||[];
+      if(rs.length){var avg=rs.reduce(function(s,r){return s+(+r.r||0);},0)/rs.length;var full=Math.round(avg);
+        var stars=function(n){var o='';for(var i=1;i<=5;i++)o+=(i<=n?'★':'☆');return o;};
+        rv.innerHTML='<div class="qv-rev-agg"><div class="qv-rev-score">'+avg.toFixed(1)+'</div><div><div class="qv-rev-stars">'+stars(full)+'</div><div class="qv-rev-count">'+rs.length+' avis</div></div></div>'+
+          rs.map(function(r){return '<div class="qv-rev-item"><div class="qv-rev-top"><span class="qv-rev-author">'+(r.a||'Client')+'</span><span class="qv-rev-rt">'+stars(+r.r||5)+'</span></div>'+(r.t?'<div class="qv-rev-text">'+r.t+'</div>':'')+'</div>';}).join('');
+        rv.style.display='';
+      } else rv.style.display='none';
+    }
     document.getElementById('qv-overlay').classList.add('show');document.body.style.overflow='hidden';
   };
   window.baroQVClose=function(){document.getElementById('qv-overlay').classList.remove('show');document.body.style.overflow='';};
@@ -18554,6 +18583,7 @@ function openProductOptions(id) {
   if (!a) return;
   if (!Array.isArray(a.images)) a.images = [];
   if (!Array.isArray(a.variants)) a.variants = [];
+  if (!Array.isArray(a.reviews)) a.reviews = [];
   S._optId = id;
   _renderProductOptions();
 }
@@ -18568,7 +18598,7 @@ function _renderProductOptions() {
   document.body.appendChild(modal);
 }
 function _poBody(a) {
-  const imgs = a.images || [], variants = a.variants || [];
+  const imgs = a.images || [], variants = a.variants || [], reviews = a.reviews || [];
   return `
     <div class="qs-head"><div style="flex:1;min-width:0"><div class="qs-title">🛍️ Options boutique</div><div class="qs-sub">${(a.name||'').replace(/</g,'&lt;')}</div></div><button class="qs-x" onclick="document.getElementById('po-modal').remove()">✕</button></div>
     <div class="qs-label">Photos (la 1ʳᵉ est la principale)</div>
@@ -18584,6 +18614,16 @@ function _poBody(a) {
       <button class="po-del2" onclick="_poDelVar(${i})">🗑</button>
     </div>`).join('')}
     <button class="btn btn-ghost" style="width:100%;font-size:13px;margin-top:4px" onclick="_poAddVar()">＋ Ajouter une variante</button>
+    <div class="qs-label" style="margin-top:14px">Avis clients ⭐</div>
+    ${reviews.map((r,i) => `<div class="po-rev">
+      <div style="display:flex;gap:6px;align-items:center">
+        <input class="input" value="${(r.author||'').replace(/"/g,'&quot;')}" placeholder="Nom du client" oninput="_poRevField(${i},'author',this.value)" style="flex:1">
+        <select class="input" onchange="_poRevField(${i},'rating',this.value)" style="width:64px;flex:0 0 auto">${[5,4,3,2,1].map(n=>`<option value="${n}" ${(+r.rating||5)===n?'selected':''}>${n}★</option>`).join('')}</select>
+        <button class="po-del2" onclick="_poDelReview(${i})">🗑</button>
+      </div>
+      <textarea class="input" rows="2" placeholder="Commentaire (ex: Très bon produit, conforme…)" oninput="_poRevField(${i},'text',this.value)" style="margin-top:6px;font-size:13px;resize:none">${(r.text||'').replace(/</g,'&lt;')}</textarea>
+    </div>`).join('')}
+    <button class="btn btn-ghost" style="width:100%;font-size:13px;margin-top:4px" onclick="_poAddReview()">＋ Ajouter un avis</button>
     <button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="_poSave()">✓ Enregistrer</button>`;
 }
 function _poAddImg() { pickItemImage(d => { const a = _optItem(); if (!a) return; if (!a.images) a.images = []; a.images.push(d); _renderProductOptions(); }); }
@@ -18592,9 +18632,16 @@ function _poAddVar() { const a = _optItem(); if (!a.variants) a.variants = []; a
 function _poDelVar(i) { const a = _optItem(); if (a && a.variants) { a.variants.splice(i,1); _renderProductOptions(); } }
 function _poVarName(i, v) { const a = _optItem(); if (a && a.variants[i]) a.variants[i].name = v; }
 function _poVarOpts(i, v) { const a = _optItem(); if (a && a.variants[i]) a.variants[i].options = v.split(',').map(s => s.trim()).filter(Boolean); }
+function _poAddReview() { const a = _optItem(); if (!a.reviews) a.reviews = []; a.reviews.push({ author:'', rating:5, text:'' }); _renderProductOptions(); }
+function _poDelReview(i) { const a = _optItem(); if (a && a.reviews) { a.reviews.splice(i,1); _renderProductOptions(); } }
+function _poRevField(i, k, v) { const a = _optItem(); if (a && a.reviews[i]) a.reviews[i][k] = (k === 'rating') ? (parseInt(v)||5) : v; }
 function _poSave() {
   const a = _optItem();
-  if (a) { a.variants = (a.variants||[]).filter(v => v.name && v.options && v.options.length); _persistProductObj(a); }
+  if (a) {
+    a.variants = (a.variants||[]).filter(v => v.name && v.options && v.options.length);
+    a.reviews = (a.reviews||[]).filter(r => (r.author && r.author.trim()) || (r.text && r.text.trim()));
+    _persistProductObj(a);
+  }
   document.getElementById('po-modal')?.remove();
   showToast('Options boutique enregistrées', 'success');
   if (typeof _refreshBoutiqueLivePreview === 'function') _refreshBoutiqueLivePreview();
