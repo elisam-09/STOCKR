@@ -1684,6 +1684,21 @@ async function loadData() {
     [...local.articles, ...local.products].forEach(x => { if (x && x.image) __imgMap[x.id] = x.image; });
     apiArts.forEach(a => { if (!a.image && __imgMap[a.id]) a.image = __imgMap[a.id]; });
     apiProds.forEach(p => { if (!p.image && __imgMap[p.id]) p.image = __imgMap[p.id]; });
+    // Préserver les extras boutique locaux (le backend ne stocke ni les photos
+    // supplémentaires, ni les variantes, ni les avis) → sinon ils "disparaissent"
+    // au prochain chargement quand l'API répond.
+    const __extraMap = {};
+    [...local.articles, ...local.products].forEach(x => {
+      if (x && x.id != null) __extraMap[x.id] = { images: x.images, variants: x.variants, reviews: x.reviews };
+    });
+    const __applyExtras = o => {
+      const e = __extraMap[o.id]; if (!e) return;
+      if (Array.isArray(e.images)  && e.images.length)  o.images  = e.images;
+      if (Array.isArray(e.variants) && e.variants.length) o.variants = e.variants;
+      if (Array.isArray(e.reviews) && e.reviews.length) o.reviews = e.reviews;
+    };
+    apiArts.forEach(__applyExtras);
+    apiProds.forEach(__applyExtras);
     // Règle anti-écrasement : si l'API retourne vide mais on a du local, on garde le local
     // (cas : backend planté ou nouveau device, on ne veut pas effacer les données utilisateur)
     const apiEmpty = !apiArts.length && !apiProds.length && !apiSales.length;
@@ -8289,6 +8304,7 @@ function vEditProduct() {
           </div>`;
         }).join('')}
       </div>` : ''}
+      <button class="btn btn-ghost" style="width:100%;margin-bottom:10px;font-size:13px;border:1px solid var(--border)" onclick="openProductOptions(${p.id})">🛍️ Photos & variantes boutique${(p.images&&p.images.length)||(p.variants&&p.variants.length)?` · ${(p.images||[]).length+1} photo(s)${p.variants&&p.variants.length?` · ${p.variants.length} variante(s)`:''}`:''}</button>
       <button class="btn btn-primary" onclick="saveEditProduct()">${t('update')}</button>
     </div>
   </div>`;
