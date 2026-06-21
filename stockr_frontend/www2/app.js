@@ -17347,6 +17347,14 @@ var BARO_ORDERTXT=${JSON.stringify(orderText)};
 .pc-rating{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:700;color:#92400E;background:#FEF3C7;padding:2px 7px;border-radius:999px}
 .pc{cursor:pointer}
 .pc:active{transform:scale(.98)}
+.qv-img img{transition:transform .5s cubic-bezier(.2,0,0,1)}
+.qv-img:active img{transform:scale(1.08)}
+.qv-qtyrow{display:flex;align-items:center;justify-content:space-between;margin:4px 0 14px}
+.qv-qtyrow>span{font-size:13px;font-weight:800;color:#333;text-transform:uppercase;letter-spacing:.4px}
+.qv-qtybox{display:flex;align-items:center;gap:0;border:1.5px solid #e2e2e8;border-radius:12px;overflow:hidden}
+.qv-qtybox button{width:42px;height:40px;border:none;background:#fff;font-size:20px;font-weight:700;color:#333;cursor:pointer}
+.qv-qtybox button:active{background:#f0f0f3}
+.qv-qtybox span{min-width:38px;text-align:center;font-size:16px;font-weight:800;font-variant-numeric:tabular-nums}
 </style>
 <div class="qv-overlay" id="qv-overlay" onclick="if(event.target===this)baroQVClose()">
   <div class="qv">
@@ -17360,6 +17368,7 @@ var BARO_ORDERTXT=${JSON.stringify(orderText)};
       <div class="qv-stock" id="qv-stock"></div>
       <div class="qv-desc" id="qv-desc"></div>
       <div class="qv-variants" id="qv-variants"></div>
+      <div class="qv-qtyrow" id="qv-qtyrow"><span>Quantité</span><div class="qv-qtybox"><button onclick="baroQVQty(-1)">−</button><span id="qv-qty">1</span><button onclick="baroQVQty(1)">+</button></div></div>
       <button class="qv-add" id="qv-add" onclick="baroQVAdd()">${esc(orderText)}</button>
       <div class="qv-rev" id="qv-rev" style="display:none"></div>
     </div>
@@ -17368,13 +17377,14 @@ var BARO_ORDERTXT=${JSON.stringify(orderText)};
 <script>
 window.BARO_VARSEL=window.BARO_VARSEL||{};
 (function(){
-  var IT=${itemsJSON};var cur=null;var sel={};
+  var IT=${itemsJSON};var cur=null;var sel={};var qvQty=1;
   function find(id){for(var i=0;i<IT.length;i++)if(IT[i].id===id)return IT[i];return null;}
+  window.baroQVQty=function(d){qvQty=Math.max(1,Math.min(99,qvQty+d));var q=document.getElementById('qv-qty');if(q)q.textContent=qvQty;};
   function fmtn(n){return Math.round(n).toLocaleString('fr-FR');}
   function setMain(src,name){var iw=document.getElementById('qv-img');iw.innerHTML=src?'<img src="'+src+'" alt="">':'<div class="qv-ph">'+((name||'?').charAt(0).toUpperCase())+'</div>';var im=iw.querySelector('img');if(im){im.style.opacity='0';requestAnimationFrame(function(){im.style.transition='opacity .25s ease';im.style.opacity='1';});}}
   window.baroQVThumb=function(i){var it=cur;if(!it)return;var imgs=(it.imgs&&it.imgs.length)?it.imgs:[it.img];setMain(imgs[i],it.name);document.querySelectorAll('#qv-thumbs .qv-thumb').forEach(function(t,k){t.classList.toggle('on',k===i);});};
   window.baroQVPick=function(vi,opt,el){sel[vi]=opt;var row=el.parentElement;row.querySelectorAll('.qv-opt').forEach(function(o){o.classList.remove('on');});el.classList.add('on');};
-  window.baroQV=function(id){var it=find(id);if(!it)return;cur=it;sel={};
+  window.baroQV=function(id){var it=find(id);if(!it)return;cur=it;sel={};qvQty=1;var _q=document.getElementById('qv-qty');if(_q)_q.textContent='1';
     var imgs=(it.imgs&&it.imgs.length)?it.imgs:(it.img?[it.img]:[]);
     setMain(imgs[0]||'',it.name);
     var tb=document.getElementById('qv-thumbs');
@@ -17405,7 +17415,7 @@ window.BARO_VARSEL=window.BARO_VARSEL||{};
   window.baroQVAdd=function(){if(!cur)return;
     if(cur.variants&&cur.variants.length){for(var i=0;i<cur.variants.length;i++){if(sel[i]==null){var vc=document.getElementById('qv-variants');if(vc){vc.classList.remove('shake');void vc.offsetWidth;vc.classList.add('shake');}return;}}
       var parts=cur.variants.map(function(v,i){return v.name+': '+sel[i];});window.BARO_VARSEL[cur.id]=parts.join(' · ');}
-    var b=document.querySelector('.pc-add[data-id="'+cur.id+'"]');if(b)b.click();if(navigator.vibrate)navigator.vibrate(8);baroQVClose();};
+    var b=document.querySelector('.pc-add[data-id="'+cur.id+'"]');if(b){for(var i=0;i<qvQty;i++)b.click();}if(navigator.vibrate)navigator.vibrate(12);baroQVClose();};
 })();</script>
 ${waNum?`<a href="${waLink}" target="_blank" class="wa-float"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg></a>`:''}
 ${customJsBody}
