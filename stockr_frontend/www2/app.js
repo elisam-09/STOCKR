@@ -17358,6 +17358,11 @@ var BARO_ORDERTXT=${JSON.stringify(orderText)};
 .qv-qtybox button{width:42px;height:40px;border:none;background:#fff;font-size:20px;font-weight:700;color:#333;cursor:pointer}
 .qv-qtybox button:active{background:#f0f0f3}
 .qv-qtybox span{min-width:38px;text-align:center;font-size:16px;font-weight:800;font-variant-numeric:tabular-nums}
+.qv-bar{position:sticky;bottom:0;display:flex;align-items:center;gap:12px;padding:12px 20px calc(12px + env(safe-area-inset-bottom));background:rgba(255,255,255,.9);backdrop-filter:saturate(180%) blur(14px);-webkit-backdrop-filter:saturate(180%) blur(14px);border-top:1px solid #ececf0;z-index:3}
+.qv-bar-total{flex:0 0 auto;display:flex;flex-direction:column;line-height:1.12}
+.qv-bar-total small{font-size:10px;color:#999;font-weight:700;text-transform:uppercase;letter-spacing:.4px}
+.qv-bar-total b{font-size:18px;font-weight:900;color:#111;font-variant-numeric:tabular-nums}
+.qv-bar .qv-add{flex:1;margin:0}
 </style>
 <div class="qv-overlay" id="qv-overlay" onclick="if(event.target===this)baroQVClose()">
   <div class="qv">
@@ -17372,9 +17377,9 @@ var BARO_ORDERTXT=${JSON.stringify(orderText)};
       <div class="qv-desc" id="qv-desc"></div>
       <div class="qv-variants" id="qv-variants"></div>
       <div class="qv-qtyrow" id="qv-qtyrow"><span>Quantité</span><div class="qv-qtybox"><button onclick="baroQVQty(-1)">−</button><span id="qv-qty">1</span><button onclick="baroQVQty(1)">+</button></div></div>
-      <button class="qv-add" id="qv-add" onclick="baroQVAdd()">${esc(orderText)}</button>
       <div class="qv-rev" id="qv-rev" style="display:none"></div>
     </div>
+    <div class="qv-bar" id="qv-bar"><div class="qv-bar-total"><small>Total</small><b id="qv-bar-tot"></b></div><button class="qv-add" id="qv-add" onclick="baroQVAdd()">${esc(orderText)}</button></div>
   </div>
 </div>
 <script>
@@ -17382,8 +17387,9 @@ window.BARO_VARSEL=window.BARO_VARSEL||{};
 (function(){
   var IT=${itemsJSON};var cur=null;var sel={};var qvQty=1;
   function find(id){for(var i=0;i<IT.length;i++)if(IT[i].id===id)return IT[i];return null;}
-  window.baroQVQty=function(d){qvQty=Math.max(1,Math.min(99,qvQty+d));var q=document.getElementById('qv-qty');if(q)q.textContent=qvQty;};
+  window.baroQVQty=function(d){qvQty=Math.max(1,Math.min(99,qvQty+d));var q=document.getElementById('qv-qty');if(q)q.textContent=qvQty;qvUpdTotal();};
   function fmtn(n){return Math.round(n).toLocaleString('fr-FR');}
+  function qvUpdTotal(){var b=document.getElementById('qv-bar-tot');if(b&&cur)b.textContent=fmtn((cur.price||0)*qvQty)+' ${sym()}';}
   function setMain(src,name){var iw=document.getElementById('qv-img');iw.innerHTML=src?'<img src="'+src+'" alt="">':'<div class="qv-ph">'+((name||'?').charAt(0).toUpperCase())+'</div>';var im=iw.querySelector('img');if(im){im.style.opacity='0';requestAnimationFrame(function(){im.style.transition='opacity .25s ease';im.style.opacity='1';});}}
   window.baroQVThumb=function(i){var it=cur;if(!it)return;var imgs=(it.imgs&&it.imgs.length)?it.imgs:[it.img];setMain(imgs[i],it.name);document.querySelectorAll('#qv-thumbs .qv-thumb').forEach(function(t,k){t.classList.toggle('on',k===i);});};
   window.baroQVPick=function(vi,opt,el){sel[vi]=opt;var row=el.parentElement;row.querySelectorAll('.qv-opt').forEach(function(o){o.classList.remove('on');});el.classList.add('on');};
@@ -17403,6 +17409,9 @@ window.BARO_VARSEL=window.BARO_VARSEL||{};
     var vc=document.getElementById('qv-variants');
     vc.innerHTML=(it.variants&&it.variants.length)?it.variants.map(function(v,vi){return '<div class="qv-vgroup"><div class="qv-vname">'+v.name+'</div><div class="qv-opts">'+v.options.map(function(o){return '<button class="qv-opt" onclick="baroQVPick('+vi+',\\''+String(o).replace(/'/g,"&#39;")+'\\',this)">'+o+'</button>';}).join('')+'</div></div>';}).join(''):'';
     document.getElementById('qv-add').style.display=(it.qty===0)?'none':'';
+    var bar=document.getElementById('qv-bar');if(bar)bar.style.display=(it.qty===0)?'none':'flex';
+    qvUpdTotal();
+    var qvb=document.querySelector('.qv');if(qvb)qvb.scrollTop=0;
     var rv=document.getElementById('qv-rev');
     if(rv){var rs=it.reviews||[];
       if(rs.length){var avg=rs.reduce(function(s,r){return s+(+r.r||0);},0)/rs.length;var full=Math.round(avg);
