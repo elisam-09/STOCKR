@@ -16541,8 +16541,9 @@ function vBoutique() {
       <div class="empty-text">Aucun produit. Crée des produits d'abord.</div>
       <button class="btn btn-primary" style="max-width:200px" onclick="nav('products')">Voir produits</button>
     </div>` : `
+    ${_bqPickerChips('products', S.products)}
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-      ${S.products.map(p => {
+      ${_bqPickerFilter('products', S.products).map(p => {
         const selected = (bc.products || []).includes(p.id);
         return `
       <div class="boutique-product" style="cursor:pointer;border-color:${selected?'var(--accent)':'var(--border)'};background:${selected?'var(--accent-light)':'var(--surface)'}" onclick="toggleBoutiqueProduct(${p.id})">
@@ -16586,8 +16587,9 @@ function vBoutique() {
       <div class="empty-text">Aucun article en stock.</div>
       <button class="btn btn-primary" style="max-width:200px" onclick="nav('pantry')">Ajouter au stock</button>
     </div>` : `
+    ${_bqPickerChips('articles', (S.articles||[]).filter(a => (a.qty||0) > 0 || (bc.articles||[]).includes(a.id)))}
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-      ${(S.articles||[]).filter(a => (a.qty||0) > 0 || (bc.articles||[]).includes(a.id)).map(a => {
+      ${_bqPickerFilter('articles', (S.articles||[]).filter(a => (a.qty||0) > 0 || (bc.articles||[]).includes(a.id))).map(a => {
         const selected = (bc.articles || []).includes(a.id);
         const price = a.price || a.salePrice || 0;
         return `
@@ -16659,6 +16661,25 @@ function updateBoutiqueConfig(key, val) {
   S.boutiqueConfig[key] = val;
   localStorage.setItem('baro_boutique', JSON.stringify(S.boutiqueConfig));
 }
+
+// ── Filtre par catégorie (avec compteurs) du sélecteur d'items en vitrine ──
+function _bqCatState() { return (S.bqCatFilter = S.bqCatFilter || { products: '', articles: '' }); }
+function _bqPickerFilter(kind, items) {
+  const f = _bqCatState()[kind] || '';
+  return f ? items.filter(x => (x.category || 'Autres') === f) : items;
+}
+function _bqPickerChips(kind, items) {
+  const counts = {};
+  items.forEach(x => { const c = x.category || 'Autres'; counts[c] = (counts[c] || 0) + 1; });
+  const cats = Object.keys(counts).sort((a, b) => a.localeCompare(b));
+  if (cats.length < 2) return '';
+  const cur = _bqCatState()[kind] || '';
+  return `<div class="bq-pick-chips">
+    <button class="bq-pick-chip ${cur === '' ? 'on' : ''}" onclick="boutiqueSetPickCat('${kind}','')">Tout <b>${items.length}</b></button>
+    ${cats.map(c => `<button class="bq-pick-chip ${cur === c ? 'on' : ''}" onclick="boutiqueSetPickCat('${kind}','${String(c).replace(/'/g, "\\'")}')">${c} <b>${counts[c]}</b></button>`).join('')}
+  </div>`;
+}
+function boutiqueSetPickCat(kind, cat) { _bqCatState()[kind] = cat; haptic('tap'); render(); }
 
 // ── Éditeur visuel : applique un réglage + rafraîchit l'aperçu live SANS re-render ──
 function boutiqueEditSet(key, val) {
