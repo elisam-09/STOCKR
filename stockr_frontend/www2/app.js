@@ -6696,6 +6696,7 @@ function vPantry() {
       ${S.articles.length===0 ? `
       <div style="display:flex;flex-direction:column;gap:8px;align-items:center">
         <button class="btn btn-primary" style="width:auto;padding:11px 24px" onclick="nav('add')">${isReseller?'🏪 Ajouter un produit':t('addArticle')}</button>
+        <button class="btn btn-ghost" style="width:auto;padding:9px 18px;font-size:12.5px;border:1px solid var(--border)" onclick="nav('bulk-add')">⚡ Saisie rapide en lot <span style="color:var(--text-3)">— beaucoup d'articles</span></button>
         <button class="btn btn-ghost" style="width:auto;padding:8px 16px;font-size:12px" onclick="if(confirm('Charger 5 articles démo pour explorer l&apos;app ?')){loadDemoData();}">📚 Charger des exemples (optionnel)</button>
       </div>` : ''}
     </div>` : (S.stockView === 'grid' ? `<div class="stock-grid">${list.map((a,i)=>_stockGridCard(a,i,isReseller)).join('')}</div>` : list.map((a,i) => {
