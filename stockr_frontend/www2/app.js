@@ -8118,25 +8118,28 @@ function vBulkAdd() {
       <textarea class="input" id="bulk-text" rows="9" style="resize:vertical;font-family:ui-monospace,monospace;font-size:13px;line-height:1.6" placeholder="Sac à dos ; 12000 ; 8 ; SAC-01 ; Bagagerie&#10;Stylo bleu ; 250 ; 200 ; STY-BL&#10;Carton lait ; 9000 ; 15 ; LAIT-1L ; Alimentaire" oninput="S.bulkText=this.value;_bulkRefresh()">${(S.bulkText||'').replace(/</g,'&lt;')}</textarea>
       <div id="bulk-count" style="font-size:12px;color:var(--text-3);margin-top:6px">${rows.length} ligne(s) détectée(s)</div>
     </div>
-    ${rows.length ? `
-    <div class="card" style="margin-bottom:10px">
-      <div class="card-title">Aperçu (${rows.length})</div>
-      <div style="max-height:260px;overflow-y:auto">
-        ${rows.slice(0,40).map(r => `<div style="display:flex;justify-content:space-between;gap:8px;padding:7px 0;border-bottom:1px solid var(--gray-1);font-size:13px">
-          <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${(r.name||'').replace(/</g,'&lt;')}${r.ref?` <span style="color:var(--text-3);font-size:11px">${(r.ref).replace(/</g,'&lt;')}</span>`:''}</span>
-          <span style="color:var(--text-3);white-space:nowrap">${r.qty?fmtQty(r.qty)+'×':''} ${r.price?fmt(r.price)+' '+sym():''}</span>
-        </div>`).join('')}
-        ${rows.length>40?`<div style="text-align:center;color:var(--text-3);font-size:12px;padding:8px">+ ${rows.length-40} autres…</div>`:''}
-      </div>
+    <div class="card" id="bulk-preview-card" style="margin-bottom:10px;${rows.length?'':'display:none'}">
+      <div class="card-title">Aperçu <span id="bulk-prev-n">(${rows.length})</span></div>
+      <div id="bulk-preview" style="max-height:260px;overflow-y:auto">${_bulkPreviewHTML(rows)}</div>
     </div>
-    <button class="btn btn-primary" style="width:100%" onclick="saveBulkArticles()">✓ Créer ${rows.length} article${rows.length>1?'s':''}</button>
-    ` : `<div class="empty" style="padding:24px"><div class="empty-ico">📋</div><div class="empty-text">Collez votre liste ci-dessus pour voir l'aperçu.</div></div>`}
+    <button class="btn btn-primary" id="bulk-create-btn" style="width:100%;${rows.length?'':'opacity:.5;pointer-events:none'}" onclick="saveBulkArticles()">✓ Créer <span id="bulk-btn-n">${rows.length}</span> article(s)</button>
   </div>`;
+}
+function _bulkPreviewHTML(rows) {
+  if (!rows.length) return '';
+  return rows.slice(0,40).map(r => `<div style="display:flex;justify-content:space-between;gap:8px;padding:7px 0;border-bottom:1px solid var(--gray-1);font-size:13px">
+      <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${(r.name||'').replace(/</g,'&lt;')}${r.ref?` <span style="color:var(--text-3);font-size:11px">${(r.ref).replace(/</g,'&lt;')}</span>`:''}</span>
+      <span style="color:var(--text-3);white-space:nowrap">${r.qty?fmtQty(r.qty)+'×':''} ${r.price?fmt(r.price)+' '+sym():''}</span>
+    </div>`).join('') + (rows.length>40?`<div style="text-align:center;color:var(--text-3);font-size:12px;padding:8px">+ ${rows.length-40} autres…</div>`:'');
 }
 function _bulkRefresh() {
   const rows = _bulkParse(S.bulkText || '');
-  const c = document.getElementById('bulk-count');
-  if (c) c.textContent = `${rows.length} ligne(s) détectée(s)`;
+  const c = document.getElementById('bulk-count');   if (c) c.textContent = `${rows.length} ligne(s) détectée(s)`;
+  const pc = document.getElementById('bulk-preview-card'); if (pc) pc.style.display = rows.length ? '' : 'none';
+  const pn = document.getElementById('bulk-prev-n'); if (pn) pn.textContent = `(${rows.length})`;
+  const pv = document.getElementById('bulk-preview'); if (pv) pv.innerHTML = _bulkPreviewHTML(rows);
+  const bn = document.getElementById('bulk-btn-n');  if (bn) bn.textContent = rows.length;
+  const bt = document.getElementById('bulk-create-btn'); if (bt) bt.style.cssText = `width:100%;${rows.length?'':'opacity:.5;pointer-events:none'}`;
 }
 function saveBulkArticles() {
   const rows = _bulkParse(S.bulkText || '');
