@@ -4951,6 +4951,7 @@ function _doRender() {
     'boutique-pixels': vBoutiquePixels,
     'boutique-code': vBoutiqueCode,
     'boutique-seo': vBoutiqueSEO,
+    'boutique-analytics': vBoutiqueAnalytics,
     'boutique-hours': vBoutiqueHours,
     'boutique-policies': vBoutiquePolicies,
     'boutique-faq': vBoutiqueFAQ,
@@ -5025,7 +5026,7 @@ function _doRender() {
     if (gs) { gs.focus({ preventScroll: true }); gs.setSelectionRange(gs.value.length, gs.value.length); }
   }
 
-  const hideNav = ['detail','add','add-product','edit-product','pack-form','add-client','client-detail','notifications','catalog','add-supplier','supplier-detail','stock-history','purchase-orders','add-order','pricing','subscription','billing-setup','boutique','boutique-editor','boutique-appearance','boutique-domain','boutique-pixels','boutique-code','boutique-seo','boutique-hours','boutique-policies','boutique-faq','marketing','social-media','social-setup','payments-setup','integrations','delivery-setup','whatsapp-setup','whatsapp-broadcast','sms-setup','sms-broadcast','email-broadcast','ecommerce-setup','sheets-setup','pos-setup','compta-setup','api-settings','spectra','clients','exports','team','add-team-member','audit-log','appearance','security','2fa-verify','onboarding','setup-wizard','creator'].includes(S.view);
+  const hideNav = ['detail','add','add-product','edit-product','pack-form','add-client','client-detail','notifications','catalog','add-supplier','supplier-detail','stock-history','purchase-orders','add-order','pricing','subscription','billing-setup','boutique','boutique-editor','boutique-appearance','boutique-domain','boutique-pixels','boutique-code','boutique-seo','boutique-analytics','boutique-hours','boutique-policies','boutique-faq','marketing','social-media','social-setup','payments-setup','integrations','delivery-setup','whatsapp-setup','whatsapp-broadcast','sms-setup','sms-broadcast','email-broadcast','ecommerce-setup','sheets-setup','pos-setup','compta-setup','api-settings','spectra','clients','exports','team','add-team-member','audit-log','appearance','security','2fa-verify','onboarding','setup-wizard','creator'].includes(S.view);
   navEl.style.display = hideNav ? 'none' : '';
   if (!hideNav) navEl.innerHTML = renderNav();
 }
@@ -16501,6 +16502,13 @@ function vBoutique() {
 
     <div class="section-hd"><span class="section-lbl">Outils avancés du site</span></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+      <button class="boutique-tool-card" onclick="nav('boutique-analytics')" style="grid-column:1/-1;background:linear-gradient(135deg,rgba(16,185,129,.10),rgba(5,150,105,.04));border:1px solid rgba(16,185,129,.22)">
+        <div class="btc-ico" style="background:#10B98110;color:#059669">📈</div>
+        <div class="btc-txt">
+          <div class="btc-title">Analytics & Revenus</div>
+          <div class="btc-sub">CA boutique, commandes, top produits, visiteurs</div>
+        </div>
+      </button>
       <button class="boutique-tool-card" onclick="nav('boutique-appearance')">
         <div class="btc-ico" style="background:#4F46E510;color:#4F46E5">🎨</div>
         <div class="btc-txt">
@@ -19049,6 +19057,99 @@ function _poSave() {
   document.getElementById('po-modal')?.remove();
   showToast('Options boutique enregistrées', 'success');
   if (typeof _refreshBoutiqueLivePreview === 'function') _refreshBoutiqueLivePreview();
+}
+function vBoutiqueAnalytics() {
+  const bc = S.boutiqueConfig || {};
+  const orders = S.boutiqueOrders || [];
+  const caBoutique = orders.reduce((s,o) => s + (o.total||0), 0);
+  const nbOrders = orders.length;
+  const panierMoyen = nbOrders ? Math.round(caBoutique / nbOrders) : 0;
+  const vitrine = (typeof _getAllVitrineItems === 'function') ? _getAllVitrineItems() : [];
+  const pending = orders.filter(o => o.status === 'pending').length;
+  const done = orders.filter(o => o.status === 'delivered' || o.status === 'done' || o.status === 'completed').length;
+  // Top produits boutique (depuis les lignes de commande)
+  const prodStats = {};
+  orders.forEach(o => (o.items||[]).forEach(it => { const n = it.name||'?'; if (!prodStats[n]) prodStats[n] = { qty:0, rev:0 }; prodStats[n].qty += (it.qty||1); prodStats[n].rev += (it.price||0)*(it.qty||1); }));
+  const topProds = Object.entries(prodStats).map(([name,v]) => ({ name, ...v })).sort((a,b) => b.rev - a.rev).slice(0,5);
+  const topMax = topProds.length ? topProds[0].rev : 1;
+  // Pixels de suivi visiteurs (réels, hébergés sur GA/Meta/TikTok)
+  const px = bc.pixels || {};
+  const trackers = [];
+  if (px.googleAnalytics_enabled && px.googleAnalytics) trackers.push(['Google Analytics', px.googleAnalytics, 'https://analytics.google.com']);
+  if (px.facebookPixel_enabled && px.facebookPixel) trackers.push(['Meta Pixel', px.facebookPixel, 'https://business.facebook.com/events_manager']);
+  if (px.tiktokPixel_enabled && px.tiktokPixel) trackers.push(['TikTok Pixel', px.tiktokPixel, 'https://ads.tiktok.com']);
+  const _CC = ['#10B981','#4F46E5','#7C3AED','#EA580C','#0891B2'];
+
+  return `
+  <div class="sub-hero">
+    <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('boutique')">${IC.left}</button>
+    <div class="sub-hero-title">📈 Analytics & Revenus</div>
+    <div class="sub-hero-big"><span data-count="${caBoutique}">${fmt(caBoutique)}</span> <span style="font-size:16px;color:var(--accent-muted)">${sym()}</span></div>
+    <div class="sub-hero-sub">CA boutique · ${nbOrders} commande${nbOrders>1?'s':''}</div>
+  </div>
+  <div class="container">
+    <div class="metric-grid">
+      <div class="metric-card"><div class="metric-val">${fmt(caBoutique)}</div><div class="metric-lbl">CA boutique</div></div>
+      <div class="metric-card"><div class="metric-val">${nbOrders}</div><div class="metric-lbl">Commandes</div></div>
+      <div class="metric-card"><div class="metric-val">${fmt(panierMoyen)}</div><div class="metric-lbl">Panier moyen</div></div>
+      <div class="metric-card"><div class="metric-val">${vitrine.length}</div><div class="metric-lbl">En vitrine</div></div>
+    </div>
+
+    ${nbOrders > 0 ? `
+    <div class="card" style="margin-bottom:12px">
+      <div class="card-title">État des commandes</div>
+      <div style="display:flex;gap:10px">
+        <div style="flex:1;text-align:center;padding:12px;border-radius:12px;background:var(--warning-light,rgba(245,158,11,.1))"><div style="font-size:22px;font-weight:900;color:var(--warning,#D97706)">${pending}</div><div style="font-size:12px;color:var(--text-3)">En attente</div></div>
+        <div style="flex:1;text-align:center;padding:12px;border-radius:12px;background:var(--success-light,rgba(16,185,129,.1))"><div style="font-size:22px;font-weight:900;color:var(--success,#059669)">${done}</div><div style="font-size:12px;color:var(--text-3)">Livrées</div></div>
+      </div>
+    </div>` : ''}
+
+    ${topProds.length > 0 ? `
+    <div class="card" style="margin-bottom:12px">
+      <div class="card-title">🏆 Top produits boutique</div>
+      ${topProds.map((p,i) => { const w = Math.max(4, Math.round((p.rev/topMax)*100)); const col = _CC[i%_CC.length];
+        return `<div style="margin-bottom:10px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
+            <span style="font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.name} <span style="color:var(--text-3);font-weight:500">· ${p.qty} vendu${p.qty>1?'s':''}</span></span>
+            <span style="font-size:12px;font-weight:700;color:${col};flex-shrink:0;margin-left:8px">${fmt(p.rev)} ${sym()}</span>
+          </div>
+          <div style="height:8px;background:var(--gray-2);border-radius:5px;overflow:hidden"><div style="height:100%;width:${w}%;background:linear-gradient(90deg,${col},${col}cc);border-radius:5px"></div></div>
+        </div>`; }).join('')}
+    </div>` : ''}
+
+    <div class="card" style="margin-bottom:12px">
+      <div class="card-title">👁️ Visiteurs de la boutique</div>
+      ${trackers.length > 0 ? `
+        <div style="font-size:13px;color:var(--text-2);line-height:1.6;margin-bottom:10px">Suivi des visiteurs <b style="color:var(--success)">actif</b> via :</div>
+        ${trackers.map(t => `<a href="${t[2]}" target="_blank" rel="noopener" class="card card-tap" style="display:flex;align-items:center;gap:10px;margin-bottom:8px;text-decoration:none">
+          <span style="font-size:18px">📊</span>
+          <div style="flex:1"><div style="font-weight:700;font-size:13.5px;color:var(--text-1)">${t[0]}</div><div style="font-size:11px;color:var(--text-3)">ID ${t[1]} · voir le tableau de bord →</div></div>
+        </a>`).join('')}
+        <div style="font-size:11px;color:var(--text-3);line-height:1.5;margin-top:6px">Le nombre exact de visiteurs, sources de trafic et conversions se consultent en temps réel sur la plateforme connectée.</div>
+      ` : `
+        <div style="font-size:13px;color:var(--text-2);line-height:1.6;margin-bottom:12px">Pour compter vos visiteurs et mesurer vos conversions en temps réel, connectez un outil de suivi (gratuit). Il sera injecté automatiquement dans votre boutique.</div>
+        <button class="btn btn-primary" style="width:100%" onclick="nav('boutique-pixels')">Connecter Google Analytics / Pixel</button>
+      `}
+    </div>
+
+    <div class="section-hd"><span class="section-lbl">Commandes reçues</span><button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" onclick="addBoutiqueOrder()">+ Ajouter</button></div>
+    ${nbOrders === 0 ? `
+    <div class="empty" style="padding:28px 16px">
+      <div class="empty-ico">🧾</div>
+      <div class="empty-title">Aucune commande enregistrée</div>
+      <div class="empty-text">Les commandes boutique arrivent via WhatsApp. Enregistrez-les ici pour suivre votre CA, vos best-sellers et vos livraisons.</div>
+      <button class="btn btn-primary" style="max-width:240px" onclick="addBoutiqueOrder()">+ Enregistrer une commande</button>
+    </div>` : orders.slice(0,12).map(o => `
+    <div class="card" style="margin-bottom:6px;padding:12px 14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:700;font-size:13.5px">${o.clientName||'Client'}${o.zone?` · <span style="color:var(--text-3);font-weight:500">${o.zone}</span>`:''}</div>
+          <div style="font-size:11px;color:var(--text-3)">${fmtDate(o.date)} · ${(o.items||[]).reduce((s,x)=>s+(x.qty||1),0)} article(s)</div>
+        </div>
+        <div style="text-align:right"><div style="font-weight:800;color:var(--accent)">${fmt(o.total||0)} ${sym()}</div><div style="font-size:10px;color:var(--text-3)">${o.status==='pending'?'⏳ En attente':'✓ '+(o.status||'')}</div></div>
+      </div>
+    </div>`).join('')}
+  </div>`;
 }
 function addBoutiqueOrder() {
   const clientName = prompt('Nom du client :');
