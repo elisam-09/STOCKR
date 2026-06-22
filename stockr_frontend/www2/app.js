@@ -4925,7 +4925,7 @@ function _doRender() {
   const map = {
     home: vHome, pantry: vPantry, products: vProducts,
     sales: vSales, financial: vFinancial,
-    detail: vDetail, add: vAdd, 'add-product': vAddProduct,
+    detail: vDetail, add: vAdd, 'bulk-add': vBulkAdd, 'add-product': vAddProduct,
     'edit-product': vEditProduct, settings: vSettings,
     sova: vSova, spectra: vSpectraEnhanced, clients: vClients, 'add-client': vAddClient,
     'client-detail': vClientDetail, notifications: vNotifications,
@@ -5031,7 +5031,7 @@ function _doRender() {
     if (gs) { gs.focus({ preventScroll: true }); gs.setSelectionRange(gs.value.length, gs.value.length); }
   }
 
-  const hideNav = ['detail','add','add-product','edit-product','pack-form','add-client','client-detail','notifications','catalog','add-supplier','supplier-detail','stock-history','purchase-orders','add-order','pricing','subscription','billing-setup','boutique','boutique-editor','boutique-appearance','boutique-domain','boutique-pixels','boutique-code','boutique-seo','boutique-analytics','boutique-hours','boutique-policies','boutique-faq','marketing','social-media','social-setup','payments-setup','integrations','delivery-setup','whatsapp-setup','whatsapp-broadcast','sms-setup','sms-broadcast','email-broadcast','ecommerce-setup','sheets-setup','pos-setup','compta-setup','api-settings','spectra','clients','exports','team','add-team-member','audit-log','appearance','security','2fa-verify','onboarding','setup-wizard','creator'].includes(S.view);
+  const hideNav = ['detail','add','add-product','edit-product','pack-form','add-client','client-detail','notifications','catalog','add-supplier','supplier-detail','stock-history','purchase-orders','add-order','pricing','subscription','billing-setup','boutique','boutique-editor','boutique-appearance','boutique-domain','boutique-pixels','boutique-code','boutique-seo','boutique-analytics','boutique-hours','boutique-policies','boutique-faq','bulk-add','marketing','social-media','social-setup','payments-setup','integrations','delivery-setup','whatsapp-setup','whatsapp-broadcast','sms-setup','sms-broadcast','email-broadcast','ecommerce-setup','sheets-setup','pos-setup','compta-setup','api-settings','spectra','clients','exports','team','add-team-member','audit-log','appearance','security','2fa-verify','onboarding','setup-wizard','creator'].includes(S.view);
   navEl.style.display = hideNav ? 'none' : '';
   if (!hideNav) navEl.innerHTML = renderNav();
 }
@@ -8086,6 +8086,90 @@ function confirmDelete(id) {
 }
 
 // ── ADD ARTICLE (adaptatif selon businessType) ────────────────
+// ── Saisie rapide en lot (entrepôts / gros catalogues) ──
+function _bulkParse(txt) {
+  return (txt || '').split('\n').map(l => l.trim()).filter(Boolean).map(line => {
+    const parts = line.split(/\s*[;\t|]\s*/);
+    const name = (parts[0] || '').trim();
+    const price = parseFloat((parts[1] || '').replace(/[^\d.,]/g, '').replace(',', '.')) || 0;
+    const qty   = parts[2] != null && parts[2] !== '' ? (parseFloat((parts[2]).replace(/[^\d.,]/g, '').replace(',', '.')) || 0) : 0;
+    const ref   = (parts[3] || '').trim();
+    const cat   = (parts[4] || '').trim();
+    return { name, price, qty, ref, cat };
+  }).filter(r => r.name);
+}
+function vBulkAdd() {
+  const bt = getBusinessType();
+  const isReseller = bt === 'reseller';
+  const rows = _bulkParse(S.bulkText || '');
+  return `
+  <div class="sub-hero">
+    <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('add')">${IC.left}</button>
+    <div class="sub-hero-title">⚡ Saisie rapide en lot</div>
+    <div class="sub-hero-sub">Collez votre liste — créez des dizaines d'${isReseller?'articles':'articles'} en un clic</div>
+  </div>
+  <div class="container">
+    <div class="card" style="margin-bottom:10px">
+      <div style="font-size:12.5px;color:var(--text-2);line-height:1.6;margin-bottom:10px">
+        <b>Un article par ligne</b>, champs séparés par <code style="background:var(--gray-1);padding:1px 5px;border-radius:4px">;</code> (ou tabulation) :<br>
+        <span style="color:var(--text-3)">Nom ; Prix ; Quantité ; Référence ; Catégorie</span><br>
+        <span style="font-size:11px;color:var(--text-3)">Seul le nom est obligatoire. Ex : <i>Carton vis M6 ; 4500 ; 30 ; REF-VIS-M6 ; Quincaillerie</i></span>
+      </div>
+      <textarea class="input" id="bulk-text" rows="9" style="resize:vertical;font-family:ui-monospace,monospace;font-size:13px;line-height:1.6" placeholder="Sac à dos ; 12000 ; 8 ; SAC-01 ; Bagagerie&#10;Stylo bleu ; 250 ; 200 ; STY-BL&#10;Carton lait ; 9000 ; 15 ; LAIT-1L ; Alimentaire" oninput="S.bulkText=this.value;_bulkRefresh()">${(S.bulkText||'').replace(/</g,'&lt;')}</textarea>
+      <div id="bulk-count" style="font-size:12px;color:var(--text-3);margin-top:6px">${rows.length} ligne(s) détectée(s)</div>
+    </div>
+    ${rows.length ? `
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">Aperçu (${rows.length})</div>
+      <div style="max-height:260px;overflow-y:auto">
+        ${rows.slice(0,40).map(r => `<div style="display:flex;justify-content:space-between;gap:8px;padding:7px 0;border-bottom:1px solid var(--gray-1);font-size:13px">
+          <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${(r.name||'').replace(/</g,'&lt;')}${r.ref?` <span style="color:var(--text-3);font-size:11px">${(r.ref).replace(/</g,'&lt;')}</span>`:''}</span>
+          <span style="color:var(--text-3);white-space:nowrap">${r.qty?fmtQty(r.qty)+'×':''} ${r.price?fmt(r.price)+' '+sym():''}</span>
+        </div>`).join('')}
+        ${rows.length>40?`<div style="text-align:center;color:var(--text-3);font-size:12px;padding:8px">+ ${rows.length-40} autres…</div>`:''}
+      </div>
+    </div>
+    <button class="btn btn-primary" style="width:100%" onclick="saveBulkArticles()">✓ Créer ${rows.length} article${rows.length>1?'s':''}</button>
+    ` : `<div class="empty" style="padding:24px"><div class="empty-ico">📋</div><div class="empty-text">Collez votre liste ci-dessus pour voir l'aperçu.</div></div>`}
+  </div>`;
+}
+function _bulkRefresh() {
+  const rows = _bulkParse(S.bulkText || '');
+  const c = document.getElementById('bulk-count');
+  if (c) c.textContent = `${rows.length} ligne(s) détectée(s)`;
+}
+function saveBulkArticles() {
+  const rows = _bulkParse(S.bulkText || '');
+  if (!rows.length) { showToast('Aucune ligne à créer', 'error'); return; }
+  if (!_checkPlanLimit('articles', (S.articles || []).length + rows.length - 1, 'articles')) return;
+  const now = Date.now();
+  const created = rows.map((r, i) => ({
+    id: now + i,
+    name: r.name,
+    stock: r.qty || 0,
+    unit: 'pcs',
+    min: 0,
+    lead: 7,
+    ref: r.ref || '',
+    price: r.price || 0,
+    purchasePrice: 0,
+    sellPrice: r.price || 0,
+    category: r.cat || '',
+    image: '',
+  }));
+  S.articles = [...created, ...(S.articles || [])];
+  try {
+    localStorage.setItem('baro_articles', JSON.stringify(S.articles));
+    localStorage.setItem('stockr_articles', JSON.stringify(S.articles));
+  } catch(_){}
+  // Sync API en arrière-plan (silencieux si hors-ligne)
+  created.forEach(a => { try { api('POST', '/api/articles/', { name:a.name, quantity:a.stock, unit:a.unit, price:a.price, sell_price:a.sellPrice, ref:a.ref, category:a.category }); } catch(_){} });
+  try { if (typeof recalcAllMins === 'function') recalcAllMins(); } catch(_){}
+  if (typeof logActivity === 'function') logActivity('stock', `Saisie en lot — ${created.length} articles créés`);
+  S.bulkText = '';
+  showToast(`✅ ${created.length} article${created.length>1?'s':''} créé${created.length>1?'s':''} !`, 'success');
+  nav('pantry');
+}
 function vAdd() {
   const f = S.form;
   const bt = getBusinessType();
@@ -8107,6 +8191,11 @@ function vAdd() {
     <div class="sub-hero-sub">${isReseller?'Prix d\'achat → Prix de vente → Marge calculée automatiquement':t('addStockSub')}</div>
   </div>
   <div class="container">
+    <button class="card card-tap" style="width:100%;margin-bottom:10px;display:flex;align-items:center;gap:12px;text-align:left;background:linear-gradient(135deg,rgba(124,115,255,.10),rgba(79,70,229,.04));border:1px solid rgba(124,115,255,.22);cursor:pointer" onclick="nav('bulk-add')">
+      <div style="width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#7C73FF,#4F46E5);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">⚡</div>
+      <div style="flex:1"><div style="font-weight:800;font-size:14px;color:var(--text-1)">Saisie rapide en lot</div><div style="font-size:12px;color:var(--text-3)">Beaucoup d'articles ? Collez une liste, créez tout d'un coup</div></div>
+      <div style="color:var(--accent)">${IC.chevron}</div>
+    </button>
     <div class="card">
       <div class="form-group">
         <label class="form-label">Photo ${isReseller?'du produit':'de l\'article'} <span style="color:var(--text-3);font-weight:400;text-transform:none">(recommandé pour la boutique)</span></label>
@@ -27380,6 +27469,8 @@ function __baroInit() {
   window.addToCart       = addToCart;
   window.removeFromCart  = removeFromCart;
   window.confirmCart     = confirmCart;
+  window.saveBulkArticles = saveBulkArticles;
+  window._bulkRefresh    = _bulkRefresh;
   window.openUnitDrop    = openUnitDrop;
   window.closeUnitDrop   = closeUnitDrop;
   window.updateUnitDrop  = updateUnitDrop;

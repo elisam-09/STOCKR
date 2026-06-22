@@ -2,7 +2,7 @@
 // Stratégie : Cache-first pour assets statiques,
 //             Network-first pour l'API
 
-const CACHE_NAME = 'baro-v123-clickcollect';
+const CACHE_NAME = 'baro-v124-bulkadd';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
