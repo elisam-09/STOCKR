@@ -19093,6 +19093,13 @@ function vBoutiqueAnalytics() {
   orders.forEach(o => (o.items||[]).forEach(it => { const n = it.name||'?'; if (!prodStats[n]) prodStats[n] = { qty:0, rev:0 }; prodStats[n].qty += (it.qty||1); prodStats[n].rev += (it.price||0)*(it.qty||1); }));
   const topProds = Object.entries(prodStats).map(([name,v]) => ({ name, ...v })).sort((a,b) => b.rev - a.rev).slice(0,5);
   const topMax = topProds.length ? topProds[0].rev : 1;
+  // Évolution sur 7 jours (CA + nb commandes par jour)
+  const _days7 = (() => { const arr = []; const now = new Date();
+    for (let i = 6; i >= 0; i--) { const d = new Date(now); d.setDate(d.getDate() - i); const key = d.toDateString();
+      const dayO = orders.filter(o => new Date(o.date).toDateString() === key);
+      arr.push({ label: d.toLocaleDateString('fr-FR', { weekday:'short' }).replace('.','').slice(0,3), rev: dayO.reduce((s,o)=>s+(o.total||0),0), n: dayO.length }); }
+    return arr; })();
+  const _d7max = Math.max(1, ..._days7.map(d => d.rev));
   // Pixels de suivi visiteurs (réels, hébergés sur GA/Meta/TikTok)
   const px = bc.pixels || {};
   const trackers = [];
@@ -19117,6 +19124,17 @@ function vBoutiqueAnalytics() {
     </div>
 
     ${nbOrders > 0 ? `
+    <div class="card" style="margin-bottom:12px">
+      <div class="card-title">Évolution · 7 derniers jours</div>
+      <div style="display:flex;align-items:flex-end;gap:6px;height:130px;padding-top:6px">
+        ${_days7.map(d => { const h = Math.round((d.rev/_d7max)*100); return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end">
+          <div style="font-size:9px;color:var(--text-3);font-weight:700;white-space:nowrap">${d.rev?fmt(d.rev):''}</div>
+          <div title="${d.n} commande(s)" style="width:100%;height:${Math.max(2,h)}%;min-height:3px;background:linear-gradient(180deg,var(--accent),color-mix(in srgb,var(--accent) 70%,#fff));border-radius:6px 6px 0 0;transition:height .5s cubic-bezier(.2,0,0,1)"></div>
+          <div style="font-size:10px;color:var(--text-3)">${d.label}</div>
+        </div>`; }).join('')}
+      </div>
+    </div>
+
     <div class="card" style="margin-bottom:12px">
       <div class="card-title">État des commandes</div>
       <div style="display:flex;gap:10px">
