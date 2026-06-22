@@ -16436,6 +16436,18 @@ function vBoutique() {
         <input class="input" type="number" value="${bc.deliveryFees || 0}" oninput="updateBoutiqueConfig('deliveryFees',parseFloat(this.value)||0)">
         <div style="font-size:11px;color:var(--text-3);margin-top:4px">Appliqué aux zones sans tarif spécifique.</div>
       </div>
+      <div class="form-group" style="border-top:1px solid var(--border);padding-top:12px;margin-top:4px">
+        <label class="form-label" style="display:flex;align-items:center;justify-content:space-between">
+          <span>🏬 Retrait sur place (Click & Collect)</span>
+          <label class="toggle-switch"><input type="checkbox" ${bc.pickupEnabled?'checked':''} onchange="updateBoutiqueConfig('pickupEnabled',this.checked);render()"><span class="toggle-track"></span></label>
+        </label>
+        <div style="font-size:11px;color:var(--text-3);margin:2px 0 8px">Le client choisit de venir chercher sa commande (gratuit, sans livraison).</div>
+        ${bc.pickupEnabled?`
+        <input class="input" value="${(bc.pickupAddress||'').replace(/"/g,'&quot;')}" placeholder="📍 Adresse de retrait (ex : Rue des Jardins, Cocody)" oninput="updateBoutiqueConfig('pickupAddress',this.value)">
+        <input class="input" style="margin-top:8px" value="${(bc.pickupMapUrl||'').replace(/"/g,'&quot;')}" placeholder="🗺️ Lien Google Maps (optionnel)" oninput="updateBoutiqueConfig('pickupMapUrl',this.value)">
+        <input class="input" style="margin-top:8px" value="${(bc.pickupHours||'').replace(/"/g,'&quot;')}" placeholder="🕒 Horaires de retrait (ex : Lun-Sam 9h-19h)" oninput="updateBoutiqueConfig('pickupHours',this.value)">
+        <div style="font-size:11px;color:var(--text-3);margin-top:4px">Sans lien Maps, un itinéraire est généré automatiquement depuis l'adresse.</div>`:''}
+      </div>
       <div class="form-group">
         <label class="form-label">🎁 Livraison offerte dès (${sym()}) <span style="font-weight:500;color:var(--text-3)">— 0 = désactivé</span></label>
         <input class="input" type="number" inputmode="numeric" value="${bc.freeDeliveryThreshold || 0}" oninput="updateBoutiqueConfig('freeDeliveryThreshold',parseFloat(this.value)||0)" placeholder="ex : 25000">
@@ -16898,6 +16910,12 @@ function generateBoutiqueSite(opts) {
   (bc.deliveryZones || []).forEach(z => { _zoneFeeMap[z] = (bc.zoneFees && bc.zoneFees[z] != null) ? Number(bc.zoneFees[z]) : _defFee; });
   const _bqHasAnyFee = _defFee > 0 || Object.values(_zoneFeeMap).some(f => f > 0);
   const zoneFeesJSON = JSON.stringify(_zoneFeeMap).replace(/</g, '\\u003c');
+  // ── Retrait sur place (Click & Collect) ──
+  const _pickupAddr = (bc.pickupAddress || '').trim();
+  const _pickupEnabled = !!bc.pickupEnabled && !!_pickupAddr;
+  const _pickupMap = (bc.pickupMapUrl || '').trim() || ('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(_pickupAddr));
+  const _pickupHours = (bc.pickupHours || '').trim();
+  const pickupJSON = JSON.stringify({ on:_pickupEnabled, addr:_pickupAddr, map:_pickupMap, hours:_pickupHours }).replace(/</g, '\\u003c');
   // ── Codes promo niveau commande (promos actives SANS produit ciblé) ──
   const _pNow = new Date();
   const _promoMap = {};
@@ -17253,6 +17271,14 @@ ${hoverCss}
 .ck-empty-s{font-size:13px;color:#888;margin:5px 0 16px;line-height:1.5}
 .ck-empty-btn{border:none;background:${tc};color:#fff;font-weight:800;font-size:14px;font-family:inherit;border-radius:12px;padding:11px 22px;cursor:pointer;transition:transform .12s ease}
 .ck-empty-btn:active{transform:scale(.96)}
+.ck-mode{display:flex;gap:8px;margin:2px 0 4px}
+.ck-mode-btn{flex:1;padding:11px 8px;border-radius:12px;border:1.5px solid rgba(0,0,0,.12);background:#fff;font-size:13px;font-weight:700;font-family:inherit;color:#555;cursor:pointer;transition:all .15s}
+.ck-mode-btn.on{border-color:${tc};background:${tc};color:#fff;box-shadow:0 4px 12px -4px ${tc}88}
+.ck-mode-btn:active{transform:scale(.97)}
+.ck-pickup-card{background:${tc}0d;border:1px solid ${tc}33;border-radius:12px;padding:12px 14px;margin:8px 0 4px}
+.ck-pickup-addr{font-size:13.5px;font-weight:700;color:#222;line-height:1.4}
+.ck-pickup-h{font-size:12px;color:#666;margin-top:4px}
+.ck-pickup-itin{display:inline-block;margin-top:9px;background:${tc};color:#fff;text-decoration:none;font-size:13px;font-weight:800;padding:8px 16px;border-radius:10px}
 /* Sections existantes */
 .pay-section{background:#fff;border-radius:16px;padding:18px;margin:14px 0;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,.04);border:1px solid rgba(0,0,0,.04)}
 .pay-section-title{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#999;margin-bottom:10px;font-weight:700}
@@ -17473,8 +17499,14 @@ ${showCartButton ? `
     <div class="ck-total"><span>Total</span><span id="ck-total">0 ${sym()}</span></div>
     <label>Votre nom</label>
     <input id="ck-name" type="text" placeholder="ex : Aminata Traoré">
-    ${(bc.deliveryZones||[]).length>0?`<label>Zone de livraison</label>
-    <select id="ck-zone" onchange="baroZone&&baroZone()">${(bc.deliveryZones||[]).map(z=>`<option>${esc(z)}</option>`).join('')}</select>`:''}
+    ${_pickupEnabled?`<label>Mode de réception</label>
+    <div class="ck-mode">
+      <button type="button" class="ck-mode-btn on" id="ck-mode-delivery" onclick="baroSetMode('delivery')">🚚 Livraison</button>
+      <button type="button" class="ck-mode-btn" id="ck-mode-pickup" onclick="baroSetMode('pickup')">🏬 Retrait sur place</button>
+    </div>
+    <div id="ck-pickup-info" style="display:none"></div>`:''}
+    <div id="ck-zone-wrap">${(bc.deliveryZones||[]).length>0?`<label>Zone de livraison</label>
+    <select id="ck-zone" onchange="baroZone&&baroZone()">${(bc.deliveryZones||[]).map(z=>`<option>${esc(z)}</option>`).join('')}</select>`:''}</div>
     <label>Paiement souhaité</label>
     <select id="ck-pay"><option>Espèces</option>${payments.map(m=>`<option>${esc(m.name)}</option>`).join('')}</select>
     <button class="ck-send" onclick="baroSend()">Envoyer la commande sur WhatsApp</button>
@@ -17490,6 +17522,8 @@ var BARO_PROMOS=${promoMapJSON};
 var BARO_FREESHIP=${Number(bc.freeDeliveryThreshold)||0};
 var BARO_SYM="${sym()}";
 var BARO_ORDERTXT=${JSON.stringify(orderText)};
+var BARO_PICKUP=${pickupJSON};
+var baroMode='delivery';
 (function(){
   var cart={};
   var appliedPromo=null;
@@ -17499,7 +17533,15 @@ var BARO_ORDERTXT=${JSON.stringify(orderText)};
   function fmtn(n){return Math.round(n).toLocaleString('fr-FR');}
   function item(id){for(var i=0;i<BARO_ITEMS.length;i++)if(BARO_ITEMS[i].id===id)return BARO_ITEMS[i];return null;}
   function baseFee(){var z=(document.getElementById('ck-zone')||{}).value;return (BARO_ZONEFEES&&BARO_ZONEFEES[z]!=null)?BARO_ZONEFEES[z]:BARO_FEES;}
-  function curFee(){if(BARO_FREESHIP>0&&total()>=BARO_FREESHIP)return 0;return baseFee();}
+  function curFee(){if(baroMode==='pickup')return 0;if(BARO_FREESHIP>0&&total()>=BARO_FREESHIP)return 0;return baseFee();}
+  window.baroSetMode=function(m){baroMode=m;
+    var db=document.getElementById('ck-mode-delivery'),pb=document.getElementById('ck-mode-pickup');
+    if(db)db.classList.toggle('on',m==='delivery');if(pb)pb.classList.toggle('on',m==='pickup');
+    var zw=document.getElementById('ck-zone-wrap'),pi=document.getElementById('ck-pickup-info');
+    if(zw)zw.style.display=(m==='pickup')?'none':'';
+    if(pi){if(m==='pickup'){pi.style.display='';pi.innerHTML='<div class="ck-pickup-card"><div class="ck-pickup-addr">📍 '+BARO_PICKUP.addr+'</div>'+(BARO_PICKUP.hours?'<div class="ck-pickup-h">🕒 '+BARO_PICKUP.hours+'</div>':'')+'<a class="ck-pickup-itin" href="'+BARO_PICKUP.map+'" target="_blank" rel="noopener">🗺️ Itinéraire</a></div>';}else{pi.style.display='none';}}
+    var fr=document.getElementById('ck-feerow');if(fr)fr.style.display=(m==='pickup')?'none':'';
+    if(navigator.vibrate)navigator.vibrate(8);renderCk();};
   function discount(){if(!appliedPromo)return 0;var sub=total();var d=appliedPromo.type==='fixed'?appliedPromo.value:sub*appliedPromo.value/100;return Math.min(Math.round(d),sub);}
   window.baroPromo=function(){
     var inp=document.getElementById('ck-promo-inp');var code=(inp?inp.value:'').trim().toUpperCase();
@@ -17572,12 +17614,15 @@ var BARO_ORDERTXT=${JSON.stringify(orderText)};
     var fee=curFee();var disc=discount();
     L.push('Sous-total : '+fmtn(total())+' '+BARO_SYM);
     if(disc>0)L.push('Réduction '+appliedPromo.code+' : -'+fmtn(disc)+' '+BARO_SYM);
-    if(fee>0)L.push('Livraison'+(zone?' ('+zone+')':'')+' : '+fmtn(fee)+' '+BARO_SYM);
+    var _pickup=(baroMode==='pickup'&&BARO_PICKUP&&BARO_PICKUP.on);
+    if(_pickup)L.push('Retrait sur place 🏬 (gratuit)');
+    else if(fee>0)L.push('Livraison'+(zone?' ('+zone+')':'')+' : '+fmtn(fee)+' '+BARO_SYM);
     else if(BARO_FREESHIP>0&&total()>=BARO_FREESHIP)L.push('Livraison : Offerte 🎉');
     L.push('*TOTAL : '+fmtn(Math.max(0,total()-disc)+fee)+' '+BARO_SYM+'*');
     L.push('');
     if(name)L.push('👤 '+name);
-    if(zone)L.push('📍 '+zone);
+    if(_pickup){L.push('🏬 Retrait : '+BARO_PICKUP.addr);if(BARO_PICKUP.hours)L.push('🕒 '+BARO_PICKUP.hours);}
+    else if(zone)L.push('📍 '+zone);
     if(pay)L.push('💳 '+pay);
     // Mémorise la commande côté acheteur (Mes achats) — local, honnête
     try{var _items=[];for(var k in cart){var it=item(k);if(it)_items.push(it.name+' ×'+cart[k]);}
