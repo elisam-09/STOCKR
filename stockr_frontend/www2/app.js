@@ -7321,6 +7321,16 @@ function vFinancial() {
   })();
   const _CAT_COLORS = ['#4F46E5','#7C3AED','#059669','#EA580C','#0891B2','#DC2626'];
 
+  // ── Ventes par vendeur (visible seulement si une équipe existe) ──
+  const _sellerBreakdown = (() => {
+    if (!(S.teamMembers||[]).length) return null;
+    const map = {};
+    filtered.forEach(s => { const n = s.memberName || 'Non attribué'; if (!map[n]) map[n] = { rev:0, count:0, profit:0 }; map[n].rev += (s.total||0); map[n].count += 1; map[n].profit += (s.profit||0); });
+    const arr = Object.entries(map).map(([name,v]) => ({ name, ...v })).sort((a,b) => b.rev - a.rev);
+    if (!arr.length) return null;
+    return { arr, max: arr[0].rev || 1, total: arr.reduce((s,x)=>s+x.rev,0) };
+  })();
+
   const periods = [
     { key:'today', label: t('today') },
     { key:'7d',    label: _lang==='fr'?"7 j":"7 d" },
@@ -7360,6 +7370,25 @@ function vFinancial() {
           <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
             <span style="font-size:13px;font-weight:600;color:var(--text-1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.cat}</span>
             <span style="font-size:12px;font-weight:700;color:${col};flex-shrink:0;margin-left:8px">${fmt(c.rev)} ${sym()} <span style="color:var(--text-3);font-weight:500">· ${pct}%</span></span>
+          </div>
+          <div style="height:8px;background:var(--gray-2);border-radius:5px;overflow:hidden">
+            <div style="height:100%;width:${w}%;background:linear-gradient(90deg,${col},${col}cc);border-radius:5px;transition:width .6s cubic-bezier(.25,.46,.45,.94)"></div>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>` : ''}
+
+    ${_sellerBreakdown ? `
+    <div class="card" style="margin-bottom:14px">
+      <div class="card-title">👤 Ventes par vendeur</div>
+      ${_sellerBreakdown.arr.map((m,i)=>{
+        const pct = _sellerBreakdown.total>0 ? Math.round((m.rev/_sellerBreakdown.total)*100) : 0;
+        const w = Math.max(4, Math.round((m.rev/_sellerBreakdown.max)*100));
+        const col = _CAT_COLORS[i % _CAT_COLORS.length];
+        return `<div style="margin-bottom:10px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
+            <span style="font-size:13px;font-weight:600;color:var(--text-1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${m.name} <span style="color:var(--text-3);font-weight:500">· ${m.count} vente${m.count>1?'s':''}</span></span>
+            <span style="font-size:12px;font-weight:700;color:${col};flex-shrink:0;margin-left:8px">${fmt(m.rev)} ${sym()} <span style="color:var(--text-3);font-weight:500">· ${pct}%</span></span>
           </div>
           <div style="height:8px;background:var(--gray-2);border-radius:5px;overflow:hidden">
             <div style="height:100%;width:${w}%;background:linear-gradient(90deg,${col},${col}cc);border-radius:5px;transition:width .6s cubic-bezier(.25,.46,.45,.94)"></div>
