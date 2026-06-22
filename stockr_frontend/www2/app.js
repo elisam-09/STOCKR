@@ -2198,7 +2198,7 @@ function showToast(msg, type='') {
 
 // ── Auth Actions ───────────────────────────────
 async function doLogin() {
-  const email = S.authEmail.trim();
+  const email = S.authEmail.trim().toLowerCase();
   const pwd   = S.authPwd;
   if (!email || !pwd) { showToast(t('fillAll'), 'error'); return; }
   try {
@@ -2464,14 +2464,18 @@ function cancel2FA() {
   render();
 }
 
+// Format e-mail standard : nom@domaine.ext (ext ≥ 2 lettres)
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
 function authNextStep() {
   const name  = S.authName.trim();
-  const email = S.authEmail.trim();
+  const email = S.authEmail.trim().toLowerCase();
   const pwd   = S.authPwd;
   const pwd2  = S.authPwd2;
   if (!name || !email || !pwd) { showToast(t('fillAll'), 'error'); return; }
+  if (!EMAIL_RE.test(email))   { showToast('E-mail invalide — format attendu : nom@exemple.com', 'error'); return; }
   if (pwd !== pwd2)            { showToast(t('pwdMismatch'), 'error'); return; }
   if (pwd.length < 6)          { showToast(t('pwdShort'), 'error'); return; }
+  S.authEmail = email; // normalisé en minuscules pour que la connexion corresponde toujours
   S.authStep = 2;
   render();
 }
@@ -2516,10 +2520,14 @@ function getCurrencySymbol(code) {
 async function doRegister() {
   const name     = S.authName.trim();
   const business = (S.authBiz || '').trim();
-  const email    = S.authEmail.trim();
+  const email    = S.authEmail.trim().toLowerCase();
   const pwd      = S.authPwd;
   if (!email || !pwd || !name) {
     showToast(t('fillAll') || 'Remplissez tous les champs', 'error');
+    return;
+  }
+  if (!EMAIL_RE.test(email)) {
+    showToast('E-mail invalide — format attendu : nom@exemple.com', 'error');
     return;
   }
   // Création directe du compte — pas d'étape de vérification email.
