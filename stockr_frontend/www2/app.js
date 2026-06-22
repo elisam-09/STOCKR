@@ -2842,9 +2842,10 @@ function _resolveClientForSale() {
     return { clientId: newClient.id, clientName: newClient.name };
   }
   const sel = $('sale-client');
-  const clientId = sel ? parseInt(sel.value) || null : null;
-  const client   = clientId ? S.clients.find(c => c.id === clientId) : null;
-  return { clientId, clientName: client?.name || null };
+  // Priorité à la sélection live, sinon au choix mémorisé (survit aux re-render entre Confirmer et Valider)
+  let clientId = sel && sel.value ? (parseInt(sel.value) || sel.value) : (S.saleClientPick != null ? S.saleClientPick : null);
+  const client = clientId != null ? S.clients.find(c => String(c.id) === String(clientId)) : null;
+  return { clientId: client ? client.id : null, clientName: client?.name || null };
 }
 
 function recordSale() {
@@ -3184,8 +3185,8 @@ function exportSalesXLSX() {
 }
 function exportClientsXLSX() {
   const rows = (S.clients||[]).map(c => {
-    const spent = S.sales.filter(s=>s.clientId===c.id).reduce((sum,s)=>sum+s.total, 0);
-    const orders = S.sales.filter(s=>s.clientId===c.id).length;
+    const spent = S.sales.filter(s=>String(s.clientId)===String(c.id)).reduce((sum,s)=>sum+s.total, 0);
+    const orders = S.sales.filter(s=>String(s.clientId)===String(c.id)).length;
     return [c.name, c.phone||'', c.email||'', c.address||'', orders, spent, c.loyaltyPoints||0, fmtDate(c.createdAt||new Date().toISOString())];
   });
   const sheet = _buildXlsSheet('Clients', ['Nom','Téléphone','Email','Adresse','Commandes','Total dépensé ('+sym()+')','Points fidélité','Date création'], rows);
@@ -3245,8 +3246,8 @@ function exportFullXLSX() {
   const s4 = _buildXlsSheet('👥 Clients',
     ['Nom','Téléphone','Email','Commandes','Total dépensé','Points fidélité'],
     (S.clients||[]).map(c => {
-      const spent = S.sales.filter(s=>s.clientId===c.id).reduce((sum,v)=>sum+v.total,0);
-      const orders = S.sales.filter(s=>s.clientId===c.id).length;
+      const spent = S.sales.filter(s=>String(s.clientId)===String(c.id)).reduce((sum,v)=>sum+v.total,0);
+      const orders = S.sales.filter(s=>String(s.clientId)===String(c.id)).length;
       return [c.name, c.phone||'', c.email||'', orders, spent, c.loyaltyPoints||0];
     }));
   const s5 = _buildXlsSheet('📦 Packs',
@@ -3533,7 +3534,7 @@ function generateClientsReportPDF() {
   const date = new Date().toLocaleDateString('fr-FR', { day:'numeric', month:'long', year:'numeric' });
   // Enrich clients with stats
   const clients = (S.clients||[]).map(c => {
-    const mySales = S.sales.filter(s => s.clientId === c.id);
+    const mySales = S.sales.filter(s => String(s.clientId) === String(c.id));
     const totalSpent = mySales.reduce((s,v) => s + v.total, 0);
     return { ...c, orderCount: mySales.length, totalSpent, tier: _getClientTier(c) };
   }).sort((a,b) => b.totalSpent - a.totalSpent);
@@ -4088,7 +4089,7 @@ function _qsBody() {
   const total = price * qs.qty, profit = (price - cost) * qs.qty;
   const max = Math.max(1, Math.floor(a.stock));
   const pms = _salePayChips();
-  const clientsOpts = (S.clients||[]).map(c=>`<option value="${c.id}" ${qs.clientId===c.id?'selected':''}>${(c.name||'Client').replace(/"/g,'&quot;')}</option>`).join('');
+  const clientsOpts = (S.clients||[]).map(c=>`<option value="${c.id}" ${qString(s.clientId)===String(c.id)?'selected':''}>${(c.name||'Client').replace(/"/g,'&quot;')}</option>`).join('');
   return `
     <div class="qs-head">
       ${itemAvatar(a, 'flex:0 0 auto')}
@@ -4139,7 +4140,8 @@ async function confirmCart() {
   // Limite de ventes/mois selon le plan (free 100, starter 2000, pro/ent illimité)
   if (!_checkPlanLimit('salesPerMonth', _salesThisMonth(), 'ventes ce mois')) return;
   const { clientId, clientName: resolvedClientName } = _resolveClientForSale();
-  const client = clientId ? S.clients.find(c => c.id === clientId) : null;
+  const client = clientId ? S.clients.find(c => String(c.id) === String(clientId)) : null;
+  const __m = (typeof getCurrentMember === 'function') ? getCurrentMember() : null;
   const pmSel = $('sale-payment');
   const payMethod = pmSel ? pmSel.value : 'cash';
   try {
@@ -4216,6 +4218,8 @@ async function confirmCart() {
       newSales.push(newSale);
       try { localStorage.setItem('baro_articles', JSON.stringify(S.articles)); } catch(_){}
     }
+    // Attribution au vendeur connecté (sinon admin) — pour "Ventes par vendeur" & stats équipe
+    newSales.forEach(s => { s.memberId = __m?.id || null; s.memberName = __m?.name || null; });
     // Loyalty points (with tier multiplier)
     if (S.loyaltyConfig?.enabled && clientId) {
       const cl = S.clients.find(c => c.id === clientId);
@@ -4237,6 +4241,7 @@ async function confirmCart() {
       localStorage.setItem('baro_payment_history', JSON.stringify(S.paymentHistory));
     }
     S.cart = [];
+    S.saleClientPick = null; S.saleNewClient = false;
     showToast(`${count} ${t('unitsSold')} — ${fmt(total)} ${sym()}`);
     showReceiptBanner(newSales, total);
     // Persist local state (articles/sales) quoi qu'il arrive
@@ -7067,9 +7072,9 @@ function vSales() {
         <input class="input" type="text" id="sale-new-client-name" placeholder="Nom du client" style="margin-bottom:6px">
         <input class="input" type="tel" id="sale-new-client-phone" placeholder="Téléphone (optionnel)">
         ` : `
-        <select class="input" id="sale-client">
+        <select class="input" id="sale-client" onchange="S.saleClientPick=this.value?(parseInt(this.value)||this.value):null">
           <option value="">— Aucun client —</option>
-          ${S.clients.map(c=>`<option value="${c.id}">${c.name}${c.phone?' · '+c.phone:''}</option>`).join('')}
+          ${S.clients.map(c=>`<option value="${c.id}" ${String(S.saleClientPick)===String(c.id)?'selected':''}>${c.name}${c.phone?' · '+c.phone:''}</option>`).join('')}
         </select>`}
       </div>
       <div class="form-group">
@@ -14602,7 +14607,7 @@ function vSettings() {
 
 // Statistiques de performance d'un membre
 function _teamMemberStats(memberId) {
-  const memberSales = (S.sales || []).filter(s => s.memberId === memberId);
+  const memberSales = (S.sales || []).filter(s => s.memberId != null && String(s.memberId) === String(memberId));
   const totalCA     = memberSales.reduce((s, v) => s + (v.total || 0), 0);
   const totalProfit = memberSales.reduce((s, v) => s + (v.profit || 0), 0);
   const nbSales     = memberSales.length;
@@ -19403,7 +19408,7 @@ function _renderCampaignsTab(campaigns) {
 // ── TIERS : helpers ─────────────────────────
 function _clientLifetimeSpent(client) {
   if (!client) return 0;
-  return S.sales.filter(s => s.clientId === client.id).reduce((sum, s) => sum + (s.total || 0), 0);
+  return S.sales.filter(s => String(s.clientId) === String(client.id)).reduce((sum, s) => sum + (s.total || 0), 0);
 }
 function _getClientTier(client) {
   const tiers = S.loyaltyConfig?.tiers || [];
@@ -27858,7 +27863,7 @@ function runBootReminders() {
     if (S.loyaltyConfig?.enabled && S.clients?.length) {
       const cutoff = Date.now() - 30*86400000;
       const inactiveVip = S.clients.filter(c => {
-        const lastSale = Math.max(...S.sales.filter(s => s.clientId === c.id).map(s => new Date(s.date).getTime()).concat([0]));
+        const lastSale = Math.max(...S.sales.filter(s => String(s.clientId) === String(c.id)).map(s => new Date(s.date).getTime()).concat([0]));
         if (!lastSale || lastSale > cutoff) return false;
         const t = _getClientTier(c);
         return t && (t.id === 'gold' || t.id === 'platinum');
