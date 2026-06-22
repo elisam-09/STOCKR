@@ -16847,6 +16847,12 @@ function generateBoutiqueSite(opts) {
   const _curBadge     = `${_flagEmoji(_shopCountry)} ${_countryNames[_shopCountry] || _shopCountry} · ${sym()}`;
   // ── Liens de navigation (ancres vers les sections existantes) ──
   const _navLinks = [['#produits','Produits'], ...(_aboutText?[['#apropos','À propos']]:[]), ...(_hasContact?[['#contact','Contact']]:[])];
+  // ── Vidéo d'accroche (façon Apple) : MP4 direct ou YouTube ──
+  const _heroVid = (bc.heroVideo || '').trim();
+  const _ytId = (() => { const m = _heroVid.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{11})/); return m ? m[1] : ''; })();
+  const heroVideoHTML = !_heroVid ? '' : (_ytId
+    ? `<iframe class="hero-video" src="https://www.youtube.com/embed/${_ytId}?autoplay=1&mute=1&loop=1&playlist=${_ytId}&controls=0&modestbranding=1&playsinline=1&rel=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe><div class="hero-vid-ov"></div>`
+    : `<video class="hero-video" autoplay muted loop playsinline><source src="${esc(_heroVid)}" type="video/mp4"></video><div class="hero-vid-ov"></div>`);
   const cornerR    = bc.borderStyle === 'square' ? '2px' : bc.borderStyle === 'xl' ? '24px' : '16px';
   const gap        = density === 'compact' ? '8px' : density === 'airy' ? '20px' : '12px';
   const pad        = density === 'compact' ? '10px' : density === 'airy' ? '24px' : '16px';
@@ -17125,6 +17131,10 @@ h1,h2,.header h1,.pc-name,.cartbar-total,.ck h2{font-family:${headingStack}}
 .header::before{content:'';position:absolute;top:-60%;right:-20%;width:340px;height:340px;background:radial-gradient(circle,rgba(255,255,255,.16) 0%,transparent 70%);pointer-events:none;animation:blob 9s ease-in-out infinite}
 .header::after{content:'';position:absolute;bottom:-70%;left:-15%;width:300px;height:300px;background:radial-gradient(circle,rgba(255,255,255,.10) 0%,transparent 70%);pointer-events:none;animation:blob 12s ease-in-out infinite reverse}
 @keyframes blob{0%,100%{transform:scale(1)}50%{transform:scale(1.18)}}
+.header.has-video::before,.header.has-video::after{display:none}
+.hero-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border:none;z-index:0;pointer-events:none}
+.header.has-video iframe.hero-video{width:177.78vh;min-width:100%;height:56.25vw;min-height:100%;left:50%;top:50%;transform:translate(-50%,-50%)}
+.hero-vid-ov{position:absolute;inset:0;z-index:0;background:linear-gradient(to bottom,rgba(0,0,0,.32),rgba(0,0,0,.58))}
 .header-logo{width:72px;height:72px;border-radius:20px;object-fit:cover;margin-bottom:14px;border:3px solid rgba(255,255,255,.35);box-shadow:0 8px 28px rgba(0,0,0,.25);position:relative;z-index:1}
 .header h1{font-size:clamp(30px,7.5vw,44px);font-weight:900;letter-spacing:-1.2px;line-height:1.04;position:relative;z-index:1}
 .header p{opacity:.9;margin-top:11px;font-size:clamp(14px,3.6vw,16px);max-width:440px;margin-left:auto;margin-right:auto;line-height:1.55;position:relative;z-index:1}
@@ -17291,7 +17301,8 @@ ${bannerHTML(topBanner, 'top')}
   </button>` : ''}
 </header>
 <div class="topnav-m">${_navLinks.map(l=>`<a href="${l[0]}" onclick="event.preventDefault();(document.querySelector('${l[0]}')||document.body).scrollIntoView({behavior:'smooth',block:'start'})">${l[1]}</a>`).join('')}</div>
-<div class="header header-${heroStyle}">
+<div class="header header-${heroStyle}${_heroVid?' has-video':''}">
+  ${heroVideoHTML}
   ${logo && heroStyle !== 'minimal' ? `<img src="${logo}" class="header-logo" alt="Logo">` : ''}
   <h1>${esc(heroTitle)}</h1>
   ${heroStyle !== 'minimal' ? `<p>${esc(heroSub)}</p>` : ''}
@@ -17962,6 +17973,9 @@ function vBoutiqueEditor() {
     <input class="input" value="${(bc.announceText||'').replace(/"/g,'&quot;')}" placeholder="ex : 🚚 Livraison gratuite dès 25 000 FCFA" oninput="boutiqueEditText('announceText',this.value)">
     <div class="bq-sec-title">Texte du bouton commander</div>
     <input class="input" value="${(bc.orderBtnText||'').replace(/"/g,'&quot;')}" placeholder="+ Ajouter au panier" oninput="boutiqueEditText('orderBtnText',this.value)">
+    <div class="bq-sec-title" style="margin-top:18px">🎬 Vidéo d'accroche <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--text-3)">· lien MP4 ou YouTube</span></div>
+    <input class="input" value="${(bc.heroVideo||'').replace(/"/g,'&quot;')}" placeholder="https://… .mp4  ou  https://youtu.be/…" oninput="boutiqueEditText('heroVideo',this.value)">
+    <div style="font-size:11px;color:var(--text-3);margin-top:4px">Animation façon Apple : la vidéo se joue en fond du hero (muette, en boucle). Laissez vide pour un hero classique.</div>
     <div class="bq-sec-title" style="margin-top:18px">À propos de la boutique</div>
     <textarea class="input" rows="3" style="resize:vertical;font-family:inherit" placeholder="Présentez votre commerce : votre histoire, ce qui vous rend unique…" oninput="boutiqueEditText('aboutText',this.value)">${(bc.aboutText||'').replace(/</g,'&lt;')}</textarea>
     <div class="bq-sec-title" style="margin-top:18px">Services / Atouts <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--text-3)">· un par ligne</span></div>
