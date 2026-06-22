@@ -1649,7 +1649,15 @@ async function loadData() {
     articles: (() => { try { return JSON.parse(localStorage.getItem('stockr_articles') || '[]'); } catch { return []; } })(),
     products: (() => { try { return JSON.parse(localStorage.getItem('stockr_products') || '[]'); } catch { return []; } })(),
     sales:    (() => { try { return JSON.parse(localStorage.getItem('stockr_sales')    || '[]'); } catch { return []; } })(),
-    clients:  (() => { try { return JSON.parse(localStorage.getItem('stockr_clients')  || '[]'); } catch { return []; } })(),
+    clients:  (() => { try {
+      // Fusionne les deux stockages historiques (stockr_clients + baro_clients) par id —
+      // un client créé pendant une vente était écrit dans baro_clients seulement et
+      // pouvait "disparaître" au rechargement. On ne perd plus aucun client.
+      const a = JSON.parse(localStorage.getItem('stockr_clients') || '[]');
+      const b = JSON.parse(localStorage.getItem('baro_clients')   || '[]');
+      const map = {}; [...a, ...b].forEach(c => { if (c && c.id != null) map[c.id] = { ...(map[c.id]||{}), ...c }; });
+      return Object.values(map);
+    } catch { return []; } })(),
   };
 
   // Pré-hydratation immédiate (pas d'écran vide pendant le fetch)
@@ -1724,7 +1732,7 @@ async function loadData() {
       localStorage.setItem('stockr_articles', JSON.stringify(S.articles));
       localStorage.setItem('stockr_products', JSON.stringify(S.products));
       localStorage.setItem('stockr_sales',    JSON.stringify(S.sales));
-      localStorage.setItem('stockr_clients',  JSON.stringify(S.clients));
+      _saveClients();
     } catch(_){}
     render();
   } catch(e) {
@@ -2571,7 +2579,7 @@ async function doRegister() {
     try {
       localStorage.setItem('stockr_articles', JSON.stringify(S.articles));
       localStorage.setItem('stockr_products', JSON.stringify(S.products));
-      localStorage.setItem('stockr_clients',  JSON.stringify(S.clients));
+      _saveClients();
       localStorage.setItem('stockr_sales',    JSON.stringify(S.sales));
     } catch(_){}
     if (typeof logAudit === 'function') logAudit('auth', 'register', { email: u.email, bt, verified: true });
@@ -2721,7 +2729,7 @@ function seedDemoData(bt) {
   try {
     localStorage.setItem('stockr_articles', JSON.stringify(S.articles));
     localStorage.setItem('stockr_products', JSON.stringify(S.products));
-    localStorage.setItem('stockr_clients',  JSON.stringify(S.clients));
+    _saveClients();
     localStorage.setItem('stockr_sales',    JSON.stringify(S.sales));
   } catch(_){}
   if (typeof logAudit === 'function') logAudit('settings', 'demo_seeded', { bt, arts: seedArticles.length, prods: seedProducts.length, sales: seedSales.length });
@@ -2736,7 +2744,7 @@ function loadDemoData() {
     try {
       localStorage.setItem('baro_articles', JSON.stringify(S.articles));
       localStorage.setItem('baro_products', JSON.stringify(S.products));
-      localStorage.setItem('baro_clients',  JSON.stringify(S.clients));
+      _saveClients();
       localStorage.setItem('baro_sales',    JSON.stringify(S.sales));
     } catch(_) {}
     if (typeof render === 'function') render();
@@ -2811,6 +2819,13 @@ async function deleteArticle(id) {
   }
 }
 
+// Persiste les clients dans les DEUX stockages historiques pour éviter toute dérive
+// (création pendant une vente, suppression, édition) — source unique de vérité.
+function _saveClients() {
+  const j = JSON.stringify(S.clients);
+  try { localStorage.setItem('stockr_clients', j); } catch(_){}
+  try { localStorage.setItem('baro_clients',   j); } catch(_){}
+}
 function _resolveClientForSale() {
   if (S.saleNewClient) {
     const nameEl  = $('sale-new-client-name');
@@ -2822,7 +2837,7 @@ function _resolveClientForSale() {
     if (existing) return { clientId: existing.id, clientName: existing.name };
     const newClient = { id: Date.now(), name, phone, email: '', address: '', loyaltyPoints: 0, createdAt: new Date().toISOString() };
     S.clients.push(newClient);
-    localStorage.setItem('baro_clients', JSON.stringify(S.clients));
+    _saveClients();
     S.saleNewClient = false;
     return { clientId: newClient.id, clientName: newClient.name };
   }
@@ -2901,7 +2916,7 @@ function recordSale() {
       const mult = tier?.multiplier || 1;
       const pts = Math.floor(saleTotal * (S.loyaltyConfig.pointsPerFcfa || 1) * mult);
       cl.loyaltyPoints = (cl.loyaltyPoints || 0) + pts;
-      localStorage.setItem('baro_clients', JSON.stringify(S.clients));
+      _saveClients();
       // Check tier upgrade
       const newTier = _getClientTier(cl);
       if (newTier && tier && newTier.id !== tier.id && newTier.min > tier.min) {
@@ -4002,7 +4017,7 @@ async function confirmMultiSale(opts = {}) {
       const mult = tier?.multiplier || 1;
       const pts = Math.floor(total * (S.loyaltyConfig.pointsPerFcfa||1) * mult);
       cl.loyaltyPoints = (cl.loyaltyPoints||0) + pts;
-      localStorage.setItem('stockr_clients', JSON.stringify(S.clients));
+      _saveClients();
       const newTier = _getClientTier(cl);
       if (newTier && tier && newTier.id !== tier.id && newTier.min > tier.min) {
         showToast(`🎉 ${cl.name} → palier ${newTier.name} ${newTier.icon||''} !`, 'success');
@@ -4209,7 +4224,7 @@ async function confirmCart() {
         const mult = tier?.multiplier || 1;
         const pts = Math.floor(total * (S.loyaltyConfig.pointsPerFcfa || 1) * mult);
         cl.loyaltyPoints = (cl.loyaltyPoints || 0) + pts;
-        localStorage.setItem('baro_clients', JSON.stringify(S.clients));
+        _saveClients();
         const newTier = _getClientTier(cl);
         if (newTier && tier && newTier.id !== tier.id && newTier.min > tier.min) {
           showToast(`🎉 ${cl.name} a atteint le palier ${newTier.name} ${newTier.icon||''} !`, 'success');
@@ -8646,7 +8661,7 @@ async function saveClient() {
       notes: $('client-notes')?.value?.trim() || '',
     });
     S.clients.push(data);
-    try { localStorage.setItem('stockr_clients', JSON.stringify(S.clients)); } catch(_){}
+    try { _saveClients(); } catch(_){}
     if (typeof logAudit === 'function') logAudit('client', 'create', { name });
     showToast(`${name} — ${t('welcome')} !`);
     nav('clients');
@@ -8663,7 +8678,7 @@ async function deleteClient(id) {
   try {
     await api('DELETE', `/api/clients/${id}`);
     S.clients = S.clients.filter(c => c.id !== id);
-    try { localStorage.setItem('stockr_clients', JSON.stringify(S.clients)); } catch(_){}
+    try { _saveClients(); } catch(_){}
     if (typeof logAudit === 'function') logAudit('client', 'delete', { name: c?.name || '?' });
     showToast(t('delete'));
     nav('clients');
@@ -20631,7 +20646,7 @@ function redeemLoyaltyReward(clientId, rewardIndex) {
   client.loyaltyPoints -= reward.points;
   if (!client.redeemedRewards) client.redeemedRewards = [];
   client.redeemedRewards.push({ name:reward.name, date:new Date().toISOString(), points:reward.points });
-  localStorage.setItem('baro_clients', JSON.stringify(S.clients));
+  _saveClients();
   logActivity('loyalty', `${client.name} a utilise ${reward.points} pts pour "${reward.name}"`);
   showToast(`${client.name} a echange ${reward.points} pts pour "${reward.name}" !`);
   render();
