@@ -17081,6 +17081,9 @@ h1,h2,.header h1,.pc-name,.cartbar-total,.ck h2{font-family:${headingStack}}
 .header h1{font-size:clamp(30px,7.5vw,44px);font-weight:900;letter-spacing:-1.2px;line-height:1.04;position:relative;z-index:1}
 .header p{opacity:.9;margin-top:11px;font-size:clamp(14px,3.6vw,16px);max-width:440px;margin-left:auto;margin-right:auto;line-height:1.55;position:relative;z-index:1}
 .header-rating{display:inline-flex;align-items:center;gap:6px;margin-top:14px;background:rgba(255,255,255,.18);backdrop-filter:blur(8px);padding:7px 16px;border-radius:999px;font-size:13px;font-weight:700;position:relative;z-index:1;border:1px solid rgba(255,255,255,.22)}
+.hero-cta{display:inline-block;margin-top:20px;position:relative;z-index:1;background:#fff;color:${tc};border:none;border-radius:999px;padding:13px 28px;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;box-shadow:0 10px 30px -8px rgba(0,0,0,.35);transition:transform .15s cubic-bezier(.2,0,0,1),box-shadow .15s}
+.hero-cta:hover{transform:translateY(-2px);box-shadow:0 16px 38px -10px rgba(0,0,0,.45)}
+.hero-cta:active{transform:scale(.97)}
 .container{max-width:680px;margin:0 auto;padding:${pad}}
 .info-bar{background:#fff;border-radius:16px;padding:14px 18px;margin:-32px 16px 14px;position:relative;z-index:2;box-shadow:0 12px 32px -8px rgba(0,0,0,.10),0 2px 8px rgba(0,0,0,.04);display:flex;gap:14px;justify-content:center;flex-wrap:wrap;font-size:12px;color:#555;font-weight:500}
 .info-item{display:flex;align-items:center;gap:6px}
@@ -17214,6 +17217,7 @@ ${bannerHTML(topBanner, 'top')}
   <h1>${esc(heroTitle)}</h1>
   ${heroStyle !== 'minimal' ? `<p>${esc(heroSub)}</p>` : ''}
   ${approvedReviews.length > 0 && heroStyle !== 'minimal' ? `<div class="header-rating">⭐ ${avgRating} / 5 · ${approvedReviews.length} avis</div>` : ''}
+  ${heroStyle !== 'minimal' ? `<button class="hero-cta" onclick="(document.querySelector('main.grid')||document.body).scrollIntoView({behavior:'smooth',block:'start'})">Découvrir nos produits</button>` : ''}
 </div>
 <div class="info-bar">
   <div class="info-item" id="shop-status" style="font-weight:800;display:none"></div>
