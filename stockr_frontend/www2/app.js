@@ -2852,7 +2852,8 @@ function recordSale() {
     const pmSel = $('sale-payment');
     const payMethod = pmSel ? pmSel.value : 'cash';
     const { clientId, clientName } = _resolveClientForSale();
-    S.sales.unshift({ id: Date.now(), productId: art.id, productName: art.name, qty, total: saleTotal, profit, date: new Date().toISOString(), paymentMethod: payMethod, clientId, clientName });
+    const __m = (typeof getCurrentMember === 'function') ? getCurrentMember() : null;
+    S.sales.unshift({ id: Date.now(), productId: art.id, productName: art.name, qty, total: saleTotal, profit, date: new Date().toISOString(), paymentMethod: payMethod, clientId, clientName, memberId: __m?.id || null, memberName: __m?.name || null });
     localStorage.setItem('baro_articles', JSON.stringify(S.articles));
     logActivity('sale', `${art.name} x${qty} — ${fmt(saleTotal)} ${sym()}`);
     showToast(`${t('saleConfirmed')} — ${fmt(saleTotal)} ${sym()}`);
@@ -3970,6 +3971,7 @@ async function confirmMultiSale(opts = {}) {
           localStorage.setItem('stockr_stock_movements', JSON.stringify(S.stockMovements));
         }
       }
+      const __mm = (typeof getCurrentMember === 'function') ? getCurrentMember() : null;
       const newSale = {
         id: saleData?.id || Date.now() + Math.random(),
         productId: it.productId || null,
@@ -3983,6 +3985,7 @@ async function confirmMultiSale(opts = {}) {
         clientId, clientName: client?.name || null,
         paymentMethod: payMethod, promoName, promoDiscount,
         kind: it.kind,
+        memberId: __mm?.id || null, memberName: __mm?.name || null,
       };
       S.sales.unshift(newSale);
       newSales.push(newSale);
@@ -7192,7 +7195,7 @@ function vSales() {
           if (seen.has(s.cartId)) continue;
           seen.add(s.cartId);
           const items = filtered.filter(x => x.cartId === s.cartId);
-          groups.push({ isCart: true, items, cartId: s.cartId, date: s.date, clientId: s.clientId, clientName: s.clientName, paymentMethod: s.paymentMethod, total: items.reduce((a,x)=>a+x.total,0), profit: items.reduce((a,x)=>a+(x.profit||0),0) });
+          groups.push({ isCart: true, items, cartId: s.cartId, date: s.date, clientId: s.clientId, clientName: s.clientName, memberName: s.memberName, paymentMethod: s.paymentMethod, total: items.reduce((a,x)=>a+x.total,0), profit: items.reduce((a,x)=>a+(x.profit||0),0) });
         } else {
           groups.push({ isCart: false, ...s });
         }
@@ -7200,6 +7203,8 @@ function vSales() {
       const pmColor = m => m==='wave'?'#1DC3FF':m==='orange'?'#FF6600':m==='moov'?'#00A651':m==='mtn'?'#FFCC00':'var(--accent)';
       const pmLabel = m => m==='wave'?'Wave':m==='orange'?'OM':m==='moov'?'Moov':m==='mtn'?'MTN':m;
       const pmBadge = m => m&&m!=='cash' ? ` <span style="font-size:10px;padding:1px 6px;border-radius:4px;background:${pmColor(m)}20;color:${pmColor(m)};font-weight:600">${pmLabel(m)}</span>` : '';
+      const _showSeller = (S.teamMembers||[]).length > 0;
+      const sellerBadge = g => (_showSeller && g.memberName) ? ` · <span style="color:var(--text-3)">👤 ${g.memberName}</span>` : '';
       return groups.map(g => {
         if (g.isCart) {
           const gid = 'cart_grp_' + g.cartId;
@@ -7210,7 +7215,7 @@ function vSales() {
         <div class="sale-dot" style="${g.paymentMethod&&g.paymentMethod!=='cash'?'background:'+pmColor(g.paymentMethod):''}"></div>
         <div class="sale-info" style="flex:1">
           <div class="sale-prod">Panier · ${g.items.length} articles${pmBadge(g.paymentMethod)}</div>
-          <div class="sale-date">${fmtDate(g.date)}${g.clientName ? ` · <span style="color:var(--accent)">${g.clientName}</span>` : ''}</div>
+          <div class="sale-date">${fmtDate(g.date)}${g.clientName ? ` · <span style="color:var(--accent)">${g.clientName}</span>` : ''}${sellerBadge(g)}</div>
         </div>
         <div class="sale-right">
           <div class="sale-total">${fmt(g.total)} ${S.session?.currency_symbol||'FCFA'}</div>
@@ -7233,7 +7238,7 @@ function vSales() {
       <div class="sale-dot" style="${g.paymentMethod&&g.paymentMethod!=='cash'?'background:'+pmColor(g.paymentMethod):''}"></div>
       <div class="sale-info">
         <div class="sale-prod">${g.productName}${pmBadge(g.paymentMethod)}</div>
-        <div class="sale-date">${fmtDate(g.date)}${g.clientName ? ` · <span style="color:var(--accent)">${g.clientName}</span>` : ''}</div>
+        <div class="sale-date">${fmtDate(g.date)}${g.clientName ? ` · <span style="color:var(--accent)">${g.clientName}</span>` : ''}${sellerBadge(g)}</div>
       </div>
       <div class="sale-right">
         <div class="sale-total">${fmt(g.total)} ${S.session?.currency_symbol||'FCFA'}</div>
