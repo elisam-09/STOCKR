@@ -16855,6 +16855,20 @@ function generateBoutiqueSite(opts) {
   const _curBadge     = `${_flagEmoji(_shopCountry)} ${_countryNames[_shopCountry] || _shopCountry} · ${sym()}`;
   // ── Liens de navigation (ancres vers les sections existantes) ──
   const _navLinks = [['#produits','Produits'], ...(_aboutText?[['#apropos','À propos']]:[]), ...(_hasContact?[['#contact','Contact']]:[])];
+  // ── Réseaux sociaux (icônes pied de page) ──
+  const _socIcon = {
+    facebook:'<path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>',
+    instagram:'<rect x="2" y="2" width="20" height="20" rx="5" ry="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.5" cy="6.5" r="1.3"/>',
+    tiktok:'<path d="M16 3c.3 2.2 1.6 3.8 3.8 4v3c-1.4 0-2.7-.4-3.8-1.1V15a6 6 0 1 1-6-6c.3 0 .7 0 1 .1v3.2A2.8 2.8 0 1 0 13 15V3z"/>',
+    youtube:'<path d="M22 8.2a3 3 0 0 0-2.1-2.1C18 5.6 12 5.6 12 5.6s-6 0-7.9.5A3 3 0 0 0 2 8.2 31 31 0 0 0 1.6 12 31 31 0 0 0 2 15.8a3 3 0 0 0 2.1 2.1c1.9.5 7.9.5 7.9.5s6 0 7.9-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 22.4 12 31 31 0 0 0 22 8.2zM10 15V9l5 3z"/>'
+  };
+  const _socials = [
+    ['facebook', (bc.socialFacebook||'').trim()],
+    ['instagram',(bc.socialInstagram||'').trim()],
+    ['tiktok',   (bc.socialTiktok||'').trim()],
+    ['youtube',  (bc.socialYoutube||'').trim()],
+  ].filter(s => s[1]);
+  const socialsHTML = _socials.map(s => `<a class="ft-soc" href="${esc(s[1])}" target="_blank" rel="noopener" title="${s[0]}"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">${_socIcon[s[0]]}</svg></a>`).join('');
   // ── Vidéo d'accroche (façon Apple) : MP4 direct ou YouTube ──
   const _heroVid = (bc.heroVideo || '').trim();
   const _ytId = (() => { const m = _heroVid.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{11})/); return m ? m[1] : ''; })();
@@ -17391,6 +17405,7 @@ ${popupHTML}
       ${bc.description?`<p class="ft-desc">${esc(bc.description)}</p>`:''}
       <div class="ft-socials">
         ${waNum?`<a class="ft-soc" href="${waLink}" target="_blank" title="WhatsApp"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1 0 12 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-1.7-.1-.4-.1-.9-.3-1.6-.6-2.8-1.2-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.8s.7-2 .9-2.2c.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 1.9c.1.1.1.3 0 .5l-.3.5-.3.3c-.2.2-.3.4-.1.7.2.3.9 1.4 1.9 2.3 1.3 1.1 2.3 1.5 2.6 1.6.3.1.5.1.7-.1l.8-1c.2-.2.4-.2.6-.1l1.8.9c.3.1.5.2.5.3.1.2.1.7-.1 1.3z"/></svg></a>`:''}
+        ${socialsHTML}
         ${_ctEmail?`<a class="ft-soc" href="mailto:${esc(_ctEmail)}" title="Email"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg></a>`:''}
       </div>
       <span class="cur-badge" style="display:inline-block;margin-top:4px">${_curBadge}</span>
@@ -17992,6 +18007,12 @@ function vBoutiqueEditor() {
     <input class="input" value="${(bc.contactPhone||'').replace(/"/g,'&quot;')}" placeholder="📞 Téléphone (ex : +225 07 00 00 00 00)" oninput="boutiqueEditText('contactPhone',this.value)">
     <input class="input" style="margin-top:8px" value="${(bc.contactEmail||'').replace(/"/g,'&quot;')}" placeholder="✉️ Email (ex : contact@boutique.ci)" oninput="boutiqueEditText('contactEmail',this.value)">
     <input class="input" style="margin-top:8px" value="${(bc.contactAddress||'').replace(/"/g,'&quot;')}" placeholder="📍 Adresse / quartier (ex : Cocody, Abidjan)" oninput="boutiqueEditText('contactAddress',this.value)">
+    <div class="bq-sec-title" style="margin-top:18px">🔗 Réseaux sociaux <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--text-3)">· liens complets</span></div>
+    <input class="input" value="${(bc.socialFacebook||'').replace(/"/g,'&quot;')}" placeholder="📘 Facebook (https://facebook.com/…)" oninput="boutiqueEditText('socialFacebook',this.value)">
+    <input class="input" style="margin-top:8px" value="${(bc.socialInstagram||'').replace(/"/g,'&quot;')}" placeholder="📸 Instagram (https://instagram.com/…)" oninput="boutiqueEditText('socialInstagram',this.value)">
+    <input class="input" style="margin-top:8px" value="${(bc.socialTiktok||'').replace(/"/g,'&quot;')}" placeholder="🎵 TikTok (https://tiktok.com/@…)" oninput="boutiqueEditText('socialTiktok',this.value)">
+    <input class="input" style="margin-top:8px" value="${(bc.socialYoutube||'').replace(/"/g,'&quot;')}" placeholder="▶️ YouTube (https://youtube.com/@…)" oninput="boutiqueEditText('socialYoutube',this.value)">
+    <div style="font-size:11px;color:var(--text-3);margin-top:4px">Les icônes apparaissent dans le pied de page de la boutique. WhatsApp & e-mail se prennent du contact ci-dessus.</div>
     <div style="font-size:11px;color:var(--text-3);margin-top:12px;line-height:1.5">💡 Laissez vide pour masquer une section. Le nom et la description de la boutique se modifient dans l'onglet principal Boutique.</div>`;
 
   const productsTab = `
