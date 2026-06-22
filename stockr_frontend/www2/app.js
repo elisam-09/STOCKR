@@ -16840,6 +16840,13 @@ function generateBoutiqueSite(opts) {
   const _ctEmail      = (bc.contactEmail || '').trim();
   const _ctAddress    = (bc.contactAddress || '').trim();
   const _hasContact   = !!(_ctPhone || _ctEmail || _ctAddress);
+  // ── Pays + devise (affichage type Chariow) ──
+  const _shopCountry  = bc.country || S.session?.country || 'CI';
+  const _countryNames = { CI:"Côte d'Ivoire", SN:'Sénégal', ML:'Mali', BF:'Burkina Faso', GN:'Guinée', BJ:'Bénin', TG:'Togo', CM:'Cameroun', CD:'RD Congo', MG:'Madagascar', MA:'Maroc', DZ:'Algérie', TN:'Tunisie', FR:'France', BE:'Belgique', CH:'Suisse', CA:'Canada', US:'États-Unis', GB:'Royaume-Uni' };
+  const _flagEmoji    = cc => (cc && /^[A-Za-z]{2}$/.test(cc)) ? cc.toUpperCase().replace(/./g, c => String.fromCodePoint(127397 + c.charCodeAt(0))) : '🌍';
+  const _curBadge     = `${_flagEmoji(_shopCountry)} ${_countryNames[_shopCountry] || _shopCountry} · ${sym()}`;
+  // ── Liens de navigation (ancres vers les sections existantes) ──
+  const _navLinks = [['#produits','Produits'], ...(_aboutText?[['#apropos','À propos']]:[]), ...(_hasContact?[['#contact','Contact']]:[])];
   const cornerR    = bc.borderStyle === 'square' ? '2px' : bc.borderStyle === 'xl' ? '24px' : '16px';
   const gap        = density === 'compact' ? '8px' : density === 'airy' ? '20px' : '12px';
   const pad        = density === 'compact' ? '10px' : density === 'airy' ? '24px' : '16px';
@@ -17088,6 +17095,18 @@ h1,h2,.header h1,.pc-name,.cartbar-total,.ck h2{font-family:${headingStack}}
 .topbar-logo{width:34px;height:34px;border-radius:9px;object-fit:cover;box-shadow:0 2px 8px rgba(0,0,0,.12)}
 .topbar-mono{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,${tc},${tc}bb);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px}
 .topbar-name{flex:1;font-weight:800;font-size:15px;letter-spacing:-.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topnav{display:none;gap:20px;margin:0 6px}
+.topnav a{color:#444;text-decoration:none;font-size:13.5px;font-weight:600;white-space:nowrap;transition:color .15s}
+.topnav a:hover{color:${tc}}
+@media(min-width:680px){.topnav{display:flex}}
+.cur-badge{flex:0 0 auto;font-size:11px;font-weight:700;color:#444;background:rgba(0,0,0,.05);padding:6px 11px;border-radius:999px;white-space:nowrap;display:none}
+@media(min-width:430px){.cur-badge{display:inline-block}}
+.icon-btn{position:relative;flex:0 0 auto;width:40px;height:40px;border-radius:12px;border:1px solid rgba(0,0,0,.08);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .15s}
+.icon-btn:active{transform:scale(.92)}
+.topnav-m{display:flex;gap:18px;overflow-x:auto;padding:10px 16px;background:#fff;border-bottom:1px solid rgba(0,0,0,.05);scrollbar-width:none}
+.topnav-m::-webkit-scrollbar{display:none}
+.topnav-m a{color:#555;text-decoration:none;font-size:13px;font-weight:600;white-space:nowrap}
+@media(min-width:680px){.topnav-m{display:none}}
 .cart-btn{position:relative;width:40px;height:40px;border-radius:12px;border:1px solid rgba(0,0,0,.08);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .15s}
 .cart-btn:active{transform:scale(.92)}
 .cart-badge{position:absolute;top:-5px;right:-5px;min-width:18px;height:18px;border-radius:9px;background:${tc};color:#fff;font-size:10px;font-weight:800;display:none;align-items:center;justify-content:center;padding:0 4px;box-shadow:0 2px 6px ${tc}66}
@@ -17214,7 +17233,32 @@ ${hoverCss}
 .contact-row{display:flex;align-items:center;gap:11px;padding:11px 14px;border-radius:12px;background:${tc}0a;color:#333;text-decoration:none;font-size:13.5px;font-weight:600;transition:background .15s}
 .contact-row:active{background:${tc}1a}
 .contact-row span:first-child{font-size:16px;flex:0 0 auto}
-.footer{text-align:center;padding:36px 20px 90px;font-size:12px;color:#aaa}
+.footer{background:#fff;border-top:1px solid rgba(0,0,0,.06);margin-top:24px;padding:34px 20px 96px}
+.ft-grid{max-width:680px;margin:0 auto;display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:24px}
+@media(max-width:520px){.ft-grid{grid-template-columns:1fr 1fr;gap:18px}.ft-brand{grid-column:1/-1}}
+.ft-brand-row{display:flex;align-items:center;gap:10px}
+.ft-logo{width:34px;height:34px;border-radius:9px;object-fit:cover}
+.ft-mono{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,${tc},${tc}bb);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px}
+.ft-name{font-weight:800;font-size:15px;color:#222}
+.ft-desc{font-size:12.5px;color:#888;line-height:1.55;margin:10px 0}
+.ft-socials{display:flex;gap:8px;margin:8px 0}
+.ft-soc{width:34px;height:34px;border-radius:9px;background:rgba(0,0,0,.05);color:#444;display:flex;align-items:center;justify-content:center;text-decoration:none;transition:background .15s}
+.ft-soc:hover{background:${tc};color:#fff}
+.ft-col h4{font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:#999;margin-bottom:12px;font-weight:800}
+.ft-col a{display:block;font-size:13px;color:#444;text-decoration:none;margin-bottom:10px;cursor:pointer;transition:color .15s}
+.ft-col a:hover{color:${tc}}
+.ft-bottom{max-width:680px;margin:26px auto 0;padding-top:18px;border-top:1px solid rgba(0,0,0,.06);display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;font-size:11.5px;color:#aaa}
+.ft-bottom a{color:#888;text-decoration:none}
+.legal-ov{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:10001;display:none;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px)}
+.legal-ov.show{display:flex}
+.legal-box{background:#fff;border-radius:18px;max-width:440px;width:100%;max-height:84vh;overflow-y:auto;padding:24px 22px;position:relative;animation:ckUp .3s cubic-bezier(.2,0,0,1)}
+.legal-x{position:absolute;top:12px;right:12px;width:32px;height:32px;border-radius:50%;border:none;background:#f2f2f5;font-size:15px;cursor:pointer;color:#666}
+.legal-box h3{font-size:18px;font-weight:800;margin-bottom:12px;padding-right:30px}
+.legal-box #legal-c,.legal-box #myorders-c{font-size:13.5px;color:#555;line-height:1.65;white-space:pre-wrap}
+.myo-item{border:1px solid #eee;border-radius:12px;padding:12px 14px;margin-bottom:10px}
+.myo-top{display:flex;justify-content:space-between;font-size:12.5px;color:#888;margin-bottom:6px}
+.myo-top b{color:${tc};font-size:14px}
+.myo-items{font-size:12.5px;color:#444;line-height:1.6}
 .footer a{color:${tc};text-decoration:none;font-weight:700}
 .wa-float{position:fixed;bottom:20px;right:20px;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#25D366,#1fb958);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(37,211,102,.45);cursor:pointer;z-index:90;transition:transform .2s}
 .wa-float:hover{transform:scale(1.08)}
@@ -17236,11 +17280,17 @@ ${bannerHTML(topBanner, 'top')}
 <header class="topbar">
   ${logo ? `<img src="${logo}" class="topbar-logo" alt="Logo">` : `<div class="topbar-mono">${esc((bc.name||S.session?.business||'B').charAt(0).toUpperCase())}</div>`}
   <div class="topbar-name">${esc(bc.name||S.session?.business||'Ma Boutique')}</div>
+  <nav class="topnav">${_navLinks.map(l=>`<a href="${l[0]}" onclick="event.preventDefault();(document.querySelector('${l[0]}')||document.body).scrollIntoView({behavior:'smooth',block:'start'})">${l[1]}</a>`).join('')}</nav>
+  <span class="cur-badge" title="Devise de la boutique">${_curBadge}</span>
+  <button class="icon-btn" onclick="baroMyOrders()" title="Mes achats" aria-label="Mes achats">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+  </button>
   ${showCartButton ? `<button class="cart-btn" onclick="baroOpenCheckout()" title="Panier">
     <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
     <span class="cart-badge" id="cart-badge">0</span>
   </button>` : ''}
 </header>
+<div class="topnav-m">${_navLinks.map(l=>`<a href="${l[0]}" onclick="event.preventDefault();(document.querySelector('${l[0]}')||document.body).scrollIntoView({behavior:'smooth',block:'start'})">${l[1]}</a>`).join('')}</div>
 <div class="header header-${heroStyle}">
   ${logo && heroStyle !== 'minimal' ? `<img src="${logo}" class="header-logo" alt="Logo">` : ''}
   <h1>${esc(heroTitle)}</h1>
@@ -17280,12 +17330,12 @@ ${bannerHTML(topBanner, 'top')}
 </div>
 <div class="container">
 ${cc.body || ''}
-<main class="grid">
+<main class="grid" id="produits">
 ${prodsHTML}
 </main>
 <div id="no-results">Aucun produit ne correspond à votre recherche 🙁</div>
 ${_servicesArr.length>0?`<div class="svc-strip reveal">${_servicesArr.map(s=>`<div class="svc-item">${esc(s)}</div>`).join('')}</div>`:''}
-${_aboutText?`<div class="about-section reveal">
+${_aboutText?`<div class="about-section reveal" id="apropos">
   <div class="pay-section-title">À propos</div>
   <p class="about-text">${esc(_aboutText).replace(/\n/g,'<br>')}</p>
 </div>`:''}
@@ -17294,7 +17344,7 @@ ${showReviews ? reviewsHTML : ''}
   <div class="pay-section-title">Moyens de paiement acceptés</div>
   <div class="pay-badges">${payHTML}</div>
 </div>
-${_hasContact?`<div class="contact-section reveal">
+${_hasContact?`<div class="contact-section reveal" id="contact">
   <div class="pay-section-title">Contact</div>
   <div class="contact-rows">
     ${_ctPhone?`<a class="contact-row" href="tel:${esc(_ctPhone.replace(/\s/g,''))}"><span>📞</span><span>${esc(_ctPhone)}</span></a>`:''}
@@ -17312,10 +17362,56 @@ ${(bc.faqs||[]).length>0?`<div class="pay-section" style="text-align:left">
 ${bannerHTML(bottomBanner, 'bottom')}
 ${popupHTML}
 <div class="baro-toast" id="baro-toast"></div>
-<div class="footer">
-  <div style="margin-bottom:8px;font-weight:700;color:#888">${esc(bc.name||S.session?.business||'Ma Boutique')}</div>
-  Propulsé par <a href="#">BARO</a>
+<footer class="footer">
+  <div class="ft-grid">
+    <div class="ft-brand">
+      <div class="ft-brand-row">
+        ${logo ? `<img src="${logo}" class="ft-logo" alt="">` : `<div class="ft-mono">${esc((bc.name||S.session?.business||'B').charAt(0).toUpperCase())}</div>`}
+        <span class="ft-name">${esc(bc.name||S.session?.business||'Ma Boutique')}</span>
+      </div>
+      ${bc.description?`<p class="ft-desc">${esc(bc.description)}</p>`:''}
+      <div class="ft-socials">
+        ${waNum?`<a class="ft-soc" href="${waLink}" target="_blank" title="WhatsApp"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1 0 12 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-1.7-.1-.4-.1-.9-.3-1.6-.6-2.8-1.2-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.8s.7-2 .9-2.2c.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 1.9c.1.1.1.3 0 .5l-.3.5-.3.3c-.2.2-.3.4-.1.7.2.3.9 1.4 1.9 2.3 1.3 1.1 2.3 1.5 2.6 1.6.3.1.5.1.7-.1l.8-1c.2-.2.4-.2.6-.1l1.8.9c.3.1.5.2.5.3.1.2.1.7-.1 1.3z"/></svg></a>`:''}
+        ${_ctEmail?`<a class="ft-soc" href="mailto:${esc(_ctEmail)}" title="Email"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg></a>`:''}
+      </div>
+      <span class="cur-badge" style="display:inline-block;margin-top:4px">${_curBadge}</span>
+    </div>
+    <div class="ft-col">
+      <h4>Liens</h4>
+      ${_navLinks.map(l=>`<a href="${l[0]}" onclick="event.preventDefault();(document.querySelector('${l[0]}')||document.body).scrollIntoView({behavior:'smooth',block:'start'})">${l[1]}</a>`).join('')}
+      <a onclick="baroMyOrders()">Mes achats</a>
+    </div>
+    <div class="ft-col">
+      <h4>Légales</h4>
+      ${bc.conditions?`<a onclick="baroLegal('cgv')">Conditions de vente</a>`:''}
+      ${bc.returnPolicy?`<a onclick="baroLegal('ret')">Politique de retour</a>`:''}
+      <a onclick="baroLegal('conf')">Confidentialité</a>
+    </div>
+  </div>
+  <div class="ft-bottom">
+    <span>© ${new Date().getFullYear()} ${esc(bc.name||S.session?.business||'Ma Boutique')} — Tous droits réservés</span>
+    <span>Propulsé par <a href="#" style="font-weight:700">BARO</a></span>
+  </div>
+</footer>
+<div class="legal-ov" id="legal-ov" onclick="if(event.target===this)this.classList.remove('show')">
+  <div class="legal-box"><button class="legal-x" onclick="document.getElementById('legal-ov').classList.remove('show')">✕</button><h3 id="legal-t"></h3><div id="legal-c"></div></div>
 </div>
+<div class="legal-ov" id="myorders-ov" onclick="if(event.target===this)this.classList.remove('show')">
+  <div class="legal-box"><button class="legal-x" onclick="document.getElementById('myorders-ov').classList.remove('show')">✕</button><h3>🛍️ Mes achats</h3><div id="myorders-c"></div></div>
+</div>
+<script>
+(function(){
+  var BARO_LEGAL={cgv:${JSON.stringify(bc.conditions||'')},ret:${JSON.stringify(bc.returnPolicy||'')},conf:${JSON.stringify('Vos données (nom, téléphone) ne servent qu’à traiter votre commande et ne sont jamais revendues. Pour toute demande, contactez la boutique.')}};
+  var BARO_LEGAL_T={cgv:'Conditions de vente',ret:'Politique de retour',conf:'Confidentialité'};
+  window.baroLegal=function(k){var t=document.getElementById('legal-t'),c=document.getElementById('legal-c');if(!t)return;t.textContent=BARO_LEGAL_T[k]||'Informations';c.textContent=BARO_LEGAL[k]||'—';document.getElementById('legal-ov').classList.add('show');};
+  var MYO_KEY='baro_myorders_'+${JSON.stringify((bc.name||S.session?.business||'shop'))};
+  window._baroSaveOrder=function(o){try{var a=JSON.parse(localStorage.getItem(MYO_KEY)||'[]');a.unshift(o);localStorage.setItem(MYO_KEY,JSON.stringify(a.slice(0,50)));}catch(e){}};
+  window.baroMyOrders=function(){var c=document.getElementById('myorders-c');if(!c)return;var a=[];try{a=JSON.parse(localStorage.getItem(MYO_KEY)||'[]');}catch(e){}
+    if(!a.length){c.innerHTML='<div style="text-align:center;color:#999;padding:24px 8px;font-size:13px">Aucun achat pour le moment.<br>Vos commandes passées ici apparaîtront ici. 🛍️</div>';}
+    else{c.innerHTML=a.map(function(o){return '<div class="myo-item"><div class="myo-top"><span>'+new Date(o.date).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'})+'</span><b>'+o.total+'</b></div><div class="myo-items">'+(o.items||[]).map(function(x){return x;}).join('<br>')+'</div></div>';}).join('');}
+    document.getElementById('myorders-ov').classList.add('show');};
+})();
+</script>
 ${showCartButton ? `
 <div class="cartbar" id="cartbar">
   <div class="cartbar-count" id="cartbar-count">0</div>
@@ -17444,6 +17540,9 @@ var BARO_ORDERTXT=${JSON.stringify(orderText)};
     if(name)L.push('👤 '+name);
     if(zone)L.push('📍 '+zone);
     if(pay)L.push('💳 '+pay);
+    // Mémorise la commande côté acheteur (Mes achats) — local, honnête
+    try{var _items=[];for(var k in cart){var it=item(k);if(it)_items.push(it.name+' ×'+cart[k]);}
+      if(typeof window._baroSaveOrder==='function')window._baroSaveOrder({date:new Date().toISOString(),items:_items,total:fmtn(Math.max(0,total()-disc)+fee)+' '+BARO_SYM});}catch(e){}
     window.open(BARO_WA+'?text='+encodeURIComponent(L.join('\\n')),'_blank');
   };
 })();
