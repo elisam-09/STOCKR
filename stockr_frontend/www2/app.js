@@ -12709,6 +12709,30 @@ async function generateSpectraAuditPDF(){
 }
 
 // ── Scanner un code-barres pour remplir le champ "ref" d'un article ──
+// Applique un code-barres au formulaire article : remplit ref/ean puis
+// pré-remplit nom/photo/catégorie via OpenFoodFacts (si trouvé). Honnête : si
+// le produit n'est pas dans la base, le code est gardé et on le signale.
+async function _applyEanLookup(code){
+  if (!code) return;
+  S.form = S.form || {};
+  S.form.ref = code; S.form.ean = code;
+  const el = document.getElementById('art-ref-input'); if (el) el.value = code;
+  showToast('🔎 Code ' + code + ' — recherche du produit…', '');
+  let off = null;
+  try { off = await lookupProductByEAN(code); } catch(_){}
+  if (off && (off.name || off.image)) {
+    if (off.name && !((S.form.name||'').trim())) {
+      const b = (off.brand||'').trim();
+      S.form.name = (b && !off.name.toLowerCase().includes(b.toLowerCase())) ? (off.name + ' — ' + b) : off.name;
+    }
+    if (off.image && !(S.form.image||'')) S.form.image = off.image;
+    if (off.category && !((S.form.category||'').trim())) S.form.category = off.category;
+    showToast('✓ Produit reconnu : ' + (off.name || code), 'success');
+  } else {
+    showToast('Code ' + code + ' enregistré — produit non trouvé dans la base (remplissez le nom)', '');
+  }
+  try { if (typeof render === 'function') render(); } catch(_){}
+}
 async function scanBarcodeForArticle(){
   if (!('BarcodeDetector' in window)) {
     // Fallback : picker fichier
@@ -12723,11 +12747,7 @@ async function scanBarcodeForArticle(){
         const detections = await spectraDetectBarcodeFromImage(img);
         URL.revokeObjectURL(url);
         if (detections.length > 0) {
-          const code = detections[0].barcode;
-          S.form.ref = code;
-          const el = document.getElementById('art-ref-input');
-          if (el) el.value = code;
-          showToast('Code détecté : ' + code, 'success');
+          await _applyEanLookup(detections[0].barcode);
         } else {
           showToast('Aucun code-barres détecté', 'error');
         }
@@ -12769,12 +12789,8 @@ async function scanBarcodeForArticle(){
       try {
         const codes = await detector.detect(video);
         if (codes.length > 0) {
-          const code = codes[0].rawValue;
-          S.form.ref = code;
-          const el = document.getElementById('art-ref-input');
-          if (el) el.value = code;
-          showToast('Code détecté : ' + code, 'success');
           cleanup();
+          await _applyEanLookup(codes[0].rawValue);
           return;
         }
       } catch(e){}
