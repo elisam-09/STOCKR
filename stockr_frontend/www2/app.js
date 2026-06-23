@@ -1595,11 +1595,19 @@ async function api(method, path, body) {
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
       const raw = typeof err.error === 'string' ? err.error : (err.error?.error || err.message || `Erreur ${res.status}`);
+      // Backend indisponible (serveur non déployé → 404 "Application not found",
+      // ou erreur 5xx) : bascule transparente en mode local pour ne jamais bloquer
+      // l'inscription / connexion / sauvegarde. Les vraies erreurs métier (401, 409…)
+      // sont, elles, bien remontées.
+      if (res.status >= 500 || res.status === 404 || /application not found|not found/i.test(raw)) {
+        if (!USE_LOCAL) { USE_LOCAL = true; try { showToast(t('offlineMode'), ''); } catch(_){} }
+        return _localApi(method, path, body);
+      }
       throw new Error(_frError(raw));
     }
     return res.json();
   } catch(e) {
-    if (e.message === 'Failed to fetch' || e.name === 'TypeError' || e.message.includes('503')) {
+    if (e.message === 'Failed to fetch' || e.name === 'TypeError' || e.message.includes('503') || e.message.includes('Load failed') || e.message.includes('NetworkError')) {
       USE_LOCAL = true;
       showToast(t('offlineMode'), '');
       return _localApi(method, path, body);
