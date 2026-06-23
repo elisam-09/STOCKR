@@ -12034,7 +12034,48 @@ function _analyzeImageQuality(img, bbox){
   }
 }
 
-// ── Scan code-barres depuis image (natif BarcodeDetector) ──
+// ── Lecteur code-barres universel par PHOTO (ZXing, marche sur TOUS les navigateurs) ──
+let _zxingPromise = null;
+function _ensureZXing() {
+  if (window.ZXing && window.ZXing.BrowserMultiFormatReader) return Promise.resolve(window.ZXing);
+  if (_zxingPromise) return _zxingPromise;
+  _zxingPromise = new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js';
+    s.async = true;
+    s.onload = () => resolve(window.ZXing);
+    s.onerror = () => { _zxingPromise = null; reject(new Error('Lecteur code-barres indisponible (hors-ligne ?)')); };
+    document.head.appendChild(s);
+  });
+  return _zxingPromise;
+}
+async function _decodeBarcodeFromFile(file) {
+  const ZX = await _ensureZXing();
+  const url = URL.createObjectURL(file);
+  try {
+    const reader = new ZX.BrowserMultiFormatReader();
+    const result = await reader.decodeFromImageUrl(url);
+    return (result && (result.text || (result.getText && result.getText()))) || null;
+  } finally { try { URL.revokeObjectURL(url); } catch(_){} }
+}
+// Prendre/choisir une photo d'un code-barres -> décode -> recherche produit -> fiche pré-remplie
+function spectraPhotoBarcode() {
+  const inp = document.createElement('input');
+  inp.type = 'file'; inp.accept = 'image/*'; inp.capture = 'environment';
+  inp.onchange = async () => {
+    const f = inp.files && inp.files[0]; if (!f) return;
+    showToast('🔎 Lecture du code-barres…', '');
+    let code = null;
+    try { code = await _decodeBarcodeFromFile(f); } catch(e) { showToast(e.message || 'Lecture impossible', 'error'); }
+    if (code) { _spectraBarcodeManual(String(code).trim()); }
+    else {
+      const m = prompt('Code-barres non lisible sur la photo (essayez plus net / plus proche).\n\nVous pouvez le saisir à la main (EAN) :');
+      if (m && m.trim()) _spectraBarcodeManual(m.trim());
+    }
+  };
+  inp.click();
+}
+// ── Scan code-barres depuis image (natif BarcodeDetector, sinon ZXing) ──
 async function spectraDetectBarcodeFromImage(img){
   if (!('BarcodeDetector' in window)) {
     throw new Error('BarcodeDetector non supporté sur ce navigateur');
@@ -12346,10 +12387,9 @@ async function spectraCaptureFromContinuous(){
 async function spectraStartBarcode(){
   if (!_spectraGuard()) return;
   if (!('BarcodeDetector' in window)) {
-    // Pas de scan caméra sur ce navigateur (ex : ordinateur, Firefox, Safari).
-    // Repli honnête : saisie manuelle du code -> recherche produit (OpenFoodFacts).
-    const code = prompt('Le scan caméra du code-barres n\'est pas disponible sur ce navigateur.\n\nEntrez ou collez le code-barres (EAN) — la fiche sera pré-remplie automatiquement :');
-    if (code && code.trim()) _spectraBarcodeManual(code.trim());
+    // Pas de scan caméra live sur ce navigateur (ordinateur, Firefox, Safari) :
+    // on prend/charge une PHOTO du code-barres et on la décode via ZXing (universel).
+    spectraPhotoBarcode();
     return;
   }
   S.spectra.step = 'barcode';
@@ -12815,23 +12855,19 @@ async function _applyEanLookup(code){
 }
 async function scanBarcodeForArticle(){
   if (!('BarcodeDetector' in window)) {
-    // Fallback : picker fichier
+    // Fallback universel : photo du code-barres décodée via ZXing (tous navigateurs)
     const inp = document.createElement('input');
     inp.type = 'file'; inp.accept = 'image/*'; inp.capture = 'environment';
     inp.onchange = async () => {
       const file = inp.files[0]; if (!file) return;
-      const img = new Image();
-      const url = URL.createObjectURL(file);
-      await new Promise((r,e)=>{img.onload=r;img.onerror=e;img.src=url;});
-      try {
-        const detections = await spectraDetectBarcodeFromImage(img);
-        URL.revokeObjectURL(url);
-        if (detections.length > 0) {
-          await _applyEanLookup(detections[0].barcode);
-        } else {
-          showToast('Aucun code-barres détecté', 'error');
-        }
-      } catch(err) { showToast(err.message, 'error'); }
+      showToast('🔎 Lecture du code-barres…', '');
+      let code = null;
+      try { code = await _decodeBarcodeFromFile(file); } catch(err) { showToast(err.message || 'Lecture impossible', 'error'); }
+      if (code) { await _applyEanLookup(String(code).trim()); }
+      else {
+        const m = prompt('Code-barres non lisible sur la photo.\nSaisissez-le à la main (EAN) :');
+        if (m && m.trim()) await _applyEanLookup(m.trim());
+      }
     };
     inp.click();
     return;
