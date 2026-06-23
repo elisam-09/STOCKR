@@ -2830,15 +2830,17 @@ function _resolveClientForSale() {
   if (S.saleNewClient) {
     const nameEl  = $('sale-new-client-name');
     const phoneEl = $('sale-new-client-phone');
-    const name  = nameEl?.value?.trim();
-    const phone = phoneEl?.value?.trim() || '';
+    // Replier sur l'état mémorisé : le nom saisi survit au re-render entre
+    // "Confirmer" (ajout panier) et "Valider" (sinon le nouveau client était perdu).
+    const name  = ((nameEl && nameEl.value) ? nameEl.value : (S.saleNewClientName || '')).trim();
+    const phone = ((phoneEl && phoneEl.value) ? phoneEl.value : (S.saleNewClientPhone || '')).trim();
     if (!name) return { clientId: null, clientName: null };
     const existing = S.clients.find(c => c.name.toLowerCase() === name.toLowerCase());
-    if (existing) return { clientId: existing.id, clientName: existing.name };
+    if (existing) { S.saleNewClientName = ''; S.saleNewClientPhone = ''; return { clientId: existing.id, clientName: existing.name }; }
     const newClient = { id: Date.now(), name, phone, email: '', address: '', loyaltyPoints: 0, createdAt: new Date().toISOString() };
     S.clients.push(newClient);
     _saveClients();
-    S.saleNewClient = false;
+    S.saleNewClient = false; S.saleNewClientName = ''; S.saleNewClientPhone = '';
     return { clientId: newClient.id, clientName: newClient.name };
   }
   const sel = $('sale-client');
@@ -4241,7 +4243,7 @@ async function confirmCart() {
       localStorage.setItem('baro_payment_history', JSON.stringify(S.paymentHistory));
     }
     S.cart = [];
-    S.saleClientPick = null; S.saleNewClient = false;
+    S.saleClientPick = null; S.saleNewClient = false; S.saleNewClientName = ''; S.saleNewClientPhone = '';
     showToast(`${count} ${t('unitsSold')} — ${fmt(total)} ${sym()}`);
     showReceiptBanner(newSales, total);
     // Persist local state (articles/sales) quoi qu'il arrive
@@ -7082,8 +7084,8 @@ function vSales() {
           <button type="button" class="chip ${S.saleNewClient?'active':''}" onclick="S.saleNewClient=true;render()">+ Nouveau client</button>
         </div>
         ${S.saleNewClient ? `
-        <input class="input" type="text" id="sale-new-client-name" placeholder="Nom du client" style="margin-bottom:6px">
-        <input class="input" type="tel" id="sale-new-client-phone" placeholder="Téléphone (optionnel)">
+        <input class="input" type="text" id="sale-new-client-name" placeholder="Nom du client" style="margin-bottom:6px" value="${(S.saleNewClientName||'').replace(/"/g,'&quot;')}" oninput="S.saleNewClientName=this.value">
+        <input class="input" type="tel" id="sale-new-client-phone" placeholder="Téléphone (optionnel)" value="${(S.saleNewClientPhone||'').replace(/"/g,'&quot;')}" oninput="S.saleNewClientPhone=this.value">
         ` : `
         <select class="input" id="sale-client" onchange="S.saleClientPick=this.value?(parseInt(this.value)||this.value):null">
           <option value="">— Aucun client —</option>
@@ -12344,10 +12346,10 @@ async function spectraCaptureFromContinuous(){
 async function spectraStartBarcode(){
   if (!_spectraGuard()) return;
   if (!('BarcodeDetector' in window)) {
-    showToast('Code-barres non supporté — scannez une photo', 'error');
-    // Fallback : ouvrir picker fichier
-    const fi = document.getElementById('spectra-file');
-    if (fi) fi.click();
+    // Pas de scan caméra sur ce navigateur (ex : ordinateur, Firefox, Safari).
+    // Repli honnête : saisie manuelle du code -> recherche produit (OpenFoodFacts).
+    const code = prompt('Le scan caméra du code-barres n\'est pas disponible sur ce navigateur.\n\nEntrez ou collez le code-barres (EAN) — la fiche sera pré-remplie automatiquement :');
+    if (code && code.trim()) _spectraBarcodeManual(code.trim());
     return;
   }
   S.spectra.step = 'barcode';
@@ -12370,6 +12372,20 @@ async function spectraStartBarcode(){
   }
 }
 
+// Saisie manuelle d'un code-barres (navigateurs sans BarcodeDetector) :
+// recherche OpenFoodFacts puis ouvre le formulaire article pré-rempli.
+async function _spectraBarcodeManual(code){
+  showToast('🔎 Recherche ' + code + '…', '');
+  let off = null;
+  try { off = await lookupProductByEAN(code); } catch(_){}
+  let name = '';
+  if (off && off.name) { const b = (off.brand||'').trim(); name = (b && !off.name.toLowerCase().includes(b.toLowerCase())) ? (off.name + ' — ' + b) : off.name; }
+  S.form = { name, stock: 0, min: 0, unit: '', lead: 7, ref: code, price: 0, purchasePrice: 0, sellPrice: 0, expiry: '', perishable: false, category: (off && off.category) || '', image: (off && off.image) || '', ean: code };
+  try { spectraStopContinuous(); } catch(e){}
+  S.spectra = { step: 'camera', queue: [], current: 0, confirmed: [], naming: false, results: [], compareResults: [] };
+  nav('add');
+  showToast(off && off.name ? ('✓ ' + off.name) : ('Code ' + code + ' — produit non trouvé, complétez le nom'), off && off.name ? 'success' : '');
+}
 async function _spectraBarcodeLoop(video){
   if (S.spectra.step !== 'barcode') return;
   try {
