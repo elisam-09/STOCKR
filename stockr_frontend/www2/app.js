@@ -4937,7 +4937,7 @@ function _doRender() {
   const map = {
     home: vHome, pantry: vPantry, products: vProducts,
     sales: vSales, financial: vFinancial,
-    detail: vDetail, add: vAdd, 'bulk-add': vBulkAdd, 'add-product': vAddProduct,
+    detail: vDetail, add: vAdd, 'bulk-add': vBulkAdd, 'bulk-photos': vBulkPhotos, 'add-product': vAddProduct,
     'edit-product': vEditProduct, settings: vSettings,
     sova: vSova, spectra: vSpectraEnhanced, clients: vClients, 'add-client': vAddClient,
     'client-detail': vClientDetail, notifications: vNotifications,
@@ -5043,7 +5043,7 @@ function _doRender() {
     if (gs) { gs.focus({ preventScroll: true }); gs.setSelectionRange(gs.value.length, gs.value.length); }
   }
 
-  const hideNav = ['detail','add','add-product','edit-product','pack-form','add-client','client-detail','notifications','catalog','add-supplier','supplier-detail','stock-history','purchase-orders','add-order','pricing','subscription','billing-setup','boutique','boutique-editor','boutique-appearance','boutique-domain','boutique-pixels','boutique-code','boutique-seo','boutique-analytics','boutique-hours','boutique-policies','boutique-faq','bulk-add','marketing','social-media','social-setup','payments-setup','integrations','delivery-setup','whatsapp-setup','whatsapp-broadcast','sms-setup','sms-broadcast','email-broadcast','ecommerce-setup','sheets-setup','pos-setup','compta-setup','api-settings','spectra','clients','exports','team','add-team-member','audit-log','appearance','security','2fa-verify','onboarding','setup-wizard','creator'].includes(S.view);
+  const hideNav = ['detail','add','add-product','edit-product','pack-form','add-client','client-detail','notifications','catalog','add-supplier','supplier-detail','stock-history','purchase-orders','add-order','pricing','subscription','billing-setup','boutique','boutique-editor','boutique-appearance','boutique-domain','boutique-pixels','boutique-code','boutique-seo','boutique-analytics','boutique-hours','boutique-policies','boutique-faq','bulk-add','bulk-photos','marketing','social-media','social-setup','payments-setup','integrations','delivery-setup','whatsapp-setup','whatsapp-broadcast','sms-setup','sms-broadcast','email-broadcast','ecommerce-setup','sheets-setup','pos-setup','compta-setup','api-settings','spectra','clients','exports','team','add-team-member','audit-log','appearance','security','2fa-verify','onboarding','setup-wizard','creator'].includes(S.view);
   navEl.style.display = hideNav ? 'none' : '';
   if (!hideNav) navEl.innerHTML = renderNav();
 }
@@ -8183,8 +8183,48 @@ function saveBulkArticles() {
   try { if (typeof recalcAllMins === 'function') recalcAllMins(); } catch(_){}
   if (typeof logActivity === 'function') logActivity('stock', `Saisie en lot — ${created.length} articles créés`);
   S.bulkText = '';
+  S.bulkCreatedIds = created.map(a => a.id);
   showToast(`✅ ${created.length} article${created.length>1?'s':''} créé${created.length>1?'s':''} !`, 'success');
-  nav('pantry');
+  nav('bulk-photos');
+}
+// Étape facultative après la saisie en lot : attacher une photo à chaque article créé
+function vBulkPhotos() {
+  const ids = S.bulkCreatedIds || [];
+  const items = (S.articles || []).filter(a => ids.includes(a.id));
+  if (!items.length) { nav('pantry'); return ''; }
+  const withPhoto = items.filter(a => a.image).length;
+  return `
+  <div class="sub-hero">
+    <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('pantry')">${IC.left}</button>
+    <div class="sub-hero-title">📸 Ajouter les photos</div>
+    <div class="sub-hero-sub">${items.length} article(s) créé(s) · ${withPhoto} avec photo · facultatif</div>
+  </div>
+  <div class="container">
+    <div style="font-size:12.5px;color:var(--text-3);margin-bottom:10px;line-height:1.5">Touchez 📷 pour attribuer une photo à chaque article (recommandé pour la boutique). Vous pouvez aussi passer cette étape.</div>
+    ${items.map(a => `
+      <div class="card" style="margin-bottom:8px;padding:10px 12px;display:flex;align-items:center;gap:12px">
+        <div style="width:54px;height:54px;border-radius:12px;flex-shrink:0;overflow:hidden;background:var(--gray-1);display:flex;align-items:center;justify-content:center;border:1px solid var(--border)">
+          ${a.image ? `<img src="${a.image}" alt="" style="width:100%;height:100%;object-fit:cover">` : `<span style="font-size:20px;color:var(--text-3)">📦</span>`}
+        </div>
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:700;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${(a.name||'').replace(/</g,'&lt;')}</div>
+          <div style="font-size:11px;color:var(--text-3)">${a.ref?(a.ref+' · '):''}${fmt(a.price||0)} ${sym()}</div>
+        </div>
+        <button class="btn ${a.image?'btn-ghost':'btn-primary'}" style="width:auto;padding:9px 14px;font-size:12.5px;flex-shrink:0" onclick="_bulkSetPhoto(${a.id})">${a.image?'Changer':'📷 Photo'}</button>
+      </div>`).join('')}
+    <button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="S.bulkCreatedIds=[];nav('pantry')">Terminé →</button>
+  </div>`;
+}
+function _bulkSetPhoto(id) {
+  if (typeof pickItemImage !== 'function') { showToast('Sélecteur photo indisponible', 'error'); return; }
+  pickItemImage(data => {
+    const a = (S.articles || []).find(x => String(x.id) === String(id));
+    if (!a) return;
+    a.image = data;
+    try { localStorage.setItem('baro_articles', JSON.stringify(S.articles)); localStorage.setItem('stockr_articles', JSON.stringify(S.articles)); } catch(_){}
+    if (typeof haptic === 'function') haptic('success');
+    render();
+  });
 }
 function vAdd() {
   const f = S.form;
@@ -27514,6 +27554,7 @@ function __baroInit() {
   window.confirmCart     = confirmCart;
   window.saveBulkArticles = saveBulkArticles;
   window._bulkRefresh    = _bulkRefresh;
+  window._bulkSetPhoto   = _bulkSetPhoto;
   window.openUnitDrop    = openUnitDrop;
   window.closeUnitDrop   = closeUnitDrop;
   window.updateUnitDrop  = updateUnitDrop;
