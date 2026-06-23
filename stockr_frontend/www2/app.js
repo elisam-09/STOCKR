@@ -4255,7 +4255,19 @@ async function confirmCart() {
     try {
       const arts = await api('GET', '/api/articles/');
       if (Array.isArray(arts) && arts.length) {
-        S.articles = arts.map(articleFromAPI);
+        // Préserver les extras boutique (photo, photos sup., variantes, avis) que
+        // l'API ne stocke pas — sinon ils disparaissent après une vente.
+        const __ex = {}; (S.articles||[]).forEach(x => { if (x && x.id != null) __ex[x.id] = { image:x.image, images:x.images, variants:x.variants, reviews:x.reviews }; });
+        S.articles = arts.map(articleFromAPI).map(a => {
+          const e = __ex[a.id]; if (e) {
+            if (!a.image && e.image) a.image = e.image;
+            if (Array.isArray(e.images)  && e.images.length)  a.images  = e.images;
+            if (Array.isArray(e.variants) && e.variants.length) a.variants = e.variants;
+            if (Array.isArray(e.reviews) && e.reviews.length) a.reviews = e.reviews;
+          }
+          return a;
+        });
+        try { localStorage.setItem('baro_articles', JSON.stringify(S.articles)); localStorage.setItem('stockr_articles', JSON.stringify(S.articles)); } catch(_){}
       }
     } catch(_) { /* offline : garder l'état local */ }
     try { recalcAllMins(); } catch(_) {}
