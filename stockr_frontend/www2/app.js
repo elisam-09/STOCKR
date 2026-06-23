@@ -12580,6 +12580,17 @@ async function spectraFinish() {
   }
 }
 
+// Crée un article depuis Spectra en reprenant la photo scannée (modifiable
+// ensuite via "Changer la photo" dans le formulaire). Pré-remplit aussi le nom
+// si Spectra l'a reconnu.
+function spectraToAddForm() {
+  const img  = (S.spectra && S.spectra.capturedImage) || '';
+  const name = (S.spectra && (S.spectra.bestName || S.spectra.detectedName || S.spectra.suggestedName)) || '';
+  S.form = { name: name || '', stock: 0, min: 0, unit: '', lead: 7, ref: '', price: 0, purchasePrice: 0, sellPrice: 0, expiry: '', perishable: false, category: '', image: img, ean: '' };
+  try { spectraStopContinuous(); } catch(e){}
+  S.spectra = { step: 'camera', queue: [], current: 0, confirmed: [], naming: false, results: [], compareResults: [] };
+  nav('add');
+}
 function spectraReset() {
   // Arrêter caméra si scan continu / code-barres
   try { spectraStopContinuous(); } catch(e){}
@@ -27072,7 +27083,7 @@ function vSpectraEnhanced() {
       <div class="card" style="margin-bottom:12px">
         <div class="card-title">Ajouter manuellement</div>
         <div style="font-size:12px;color:var(--text-3);margin-bottom:10px">Tu peux créer l'article toi-même en quelques secondes.</div>
-        <button class="btn btn-ghost" onclick="spectraReset();nav('add')">${IC.plus} Créer l'article</button>
+        <button class="btn btn-ghost" onclick="spectraToAddForm()">${IC.plus} Créer l'article${S.spectra.capturedImage?' (avec la photo scannée)':''}</button>
       </div>
       <button class="btn btn-ghost" style="width:100%" onclick="spectraReset()">${IC.camera} Réessayer un scan</button>
     </div>`;
@@ -27521,6 +27532,7 @@ function __baroInit() {
   window.spectraConfirmNo  = spectraConfirmNo;
   window.spectraSubmitName = spectraSubmitName;
   window.spectraReset    = spectraReset;
+  window.spectraToAddForm = spectraToAddForm;
   // ── Spectra AI réelle (COCO-SSD + BarcodeDetector) ──
   window.loadCocoSSD             = loadCocoSSD;
   window.spectraDetectFromImage  = spectraDetectFromImage;
