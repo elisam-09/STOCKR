@@ -8786,8 +8786,9 @@ function vClients() {
       const st = clientStats[String(c.id)] || { total: 0, count: 0, last: null };
       const tier = S.loyaltyConfig?.enabled ? _getClientTier(c) : null;
       const showTier = tier && (c.loyaltyPoints > 0 || st.total > 0);
+      const _waPhone = (c.phone||'').replace(/[^0-9]/g,'');
       return `
-      <div class="card card-tap anim" style="animation-delay:${i*0.04}s" onclick="nav('client-detail',{selectedClientId:${c.id}})">
+      <div class="card card-tap" onclick="nav('client-detail',{selectedClientId:${c.id}})">
         <div class="article-row">
           <div class="article-avatar" ${tier ? `style="background:${tier.gradient||tier.color};color:#fff"` : ''}>${initials(c.name)}</div>
           <div class="article-info">
@@ -8799,6 +8800,7 @@ function vClients() {
             ${st.count > 0 ? `<div class="article-meta" style="margin-top:2px">${st.count} ${t('purchases').toLowerCase()} · ${fmt(st.total)} ${sym()}</div>` : ''}
             ${c.loyaltyPoints > 0 ? `<div class="article-meta" style="margin-top:2px;color:var(--warning)">${IC.star} ${c.loyaltyPoints} pts fidelite</div>` : ''}
           </div>
+          ${_waPhone ? `<button class="cl-wa" title="Relancer sur WhatsApp" onclick="event.stopPropagation();window.open('https://wa.me/${_waPhone}?text='+encodeURIComponent('Bonjour ${(c.name||'').split(' ')[0].replace(/'/g,'')} 👋, merci pour votre confiance chez ${(S.session?.business||'notre boutique').replace(/'/g,'')} !'),'_blank')"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1 0 12 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-1.7-.1-.4-.1-.9-.3-1.6-.6-2.8-1.2-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.8s.7-2 .9-2.2c.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 1.9c.1.1.1.3 0 .5l-.3.5-.3.3c-.2.2-.3.4-.1.7.2.3.9 1.4 1.9 2.3 1.3 1.1 2.3 1.5 2.6 1.6.3.1.5.1.7-.1l.8-1c.2-.2.4-.2.6-.1l1.8.9c.3.1.5.2.5.3.1.2.1.7-.1 1.3z"/></svg></button>` : ''}
           <div style="color:var(--gray-4)">${IC.chevron}</div>
         </div>
       </div>`;
