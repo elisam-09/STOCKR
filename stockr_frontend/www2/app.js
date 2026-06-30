@@ -4443,14 +4443,32 @@ function selectUnitCond(v) { S.unitCondVal = v; S.unitCondOther = ''; render(); 
 async function saveAccountInfo() {
   const nameVal  = ($('set-name')?.value  || '').trim();
   const bizVal   = ($('set-biz')?.value   || '').trim();
+  const emailVal = ($('set-email')?.value || '').trim().toLowerCase();
   if (!nameVal) { showToast(t('nameRequired'), 'error'); return; }
+  // L'e-mail est éditable ici → on valide le format et on garde le compte local cohérent
+  if (emailVal && !EMAIL_RE.test(emailVal)) { showToast('E-mail invalide — format attendu : nom@exemple.com', 'error'); return; }
+  const emailChanged = emailVal && emailVal !== (S.session.email || '').toLowerCase();
+  if (emailChanged) {
+    // Refuser si un autre compte local utilise déjà cet e-mail
+    try {
+      const taken = _lsUsers().some(u => u.email === emailVal && u.id !== S.session.id);
+      if (taken) { showToast('Cet e-mail est déjà utilisé par un autre compte', 'error'); return; }
+    } catch(_){}
+  }
   try {
-    await api('PUT', '/api/auth/profile', { name: nameVal, business_name: bizVal });
+    await api('PUT', '/api/auth/profile', { name: nameVal, business_name: bizVal, ...(emailVal ? { email: emailVal } : {}) });
     S.session.name     = nameVal;
     S.session.business = bizVal;
+    if (emailVal) S.session.email = emailVal;
     saveSession({ ...S.session, token: S.token });
+    // Mettre à jour le compte local (baro_users_v2) pour que la connexion suive le nouvel e-mail
+    try {
+      const users = _lsUsers();
+      const u = users.find(x => x.id === S.session.id);
+      if (u) { u.name = nameVal; u.business_name = bizVal; if (emailVal) u.email = emailVal; _lsSave(users); }
+    } catch(_){}
     S.settingsEdit = false;
-    showToast(t('infoUpdated'));
+    showToast(emailChanged ? '✓ Infos mises à jour — connectez-vous avec le nouvel e-mail' : t('infoUpdated'));
     render();
   } catch(e) {
     showToast(e.message, 'error');
