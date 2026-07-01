@@ -13472,7 +13472,7 @@ function vSuppliers() {
       <div class="empty-title">${t('noSuppliers')}</div>
       <div class="empty-sub">${t('noSuppliersSub')}</div>
     </div>` : filtered.map((s, i) => `
-    <div class="card card-tap anim" style="margin-bottom:6px;animation-delay:${i*0.03}s" onclick="nav('supplier-detail',{selectedSupplierId:${s.id}})">
+    <div class="card card-tap" style="margin-bottom:6px" onclick="nav('supplier-detail',{selectedSupplierId:${s.id}})">
       <div class="article-row">
         <div class="article-avatar">${initials(s.name)}</div>
         <div class="article-info">
@@ -13535,6 +13535,35 @@ function vSupplierDetail() {
       ${sup.phone ? `<a href="tel:${sup.phone}" class="btn btn-primary" style="flex:1;text-align:center;text-decoration:none">${IC.phone} &nbsp; ${t('supplierPhone')}</a>` : ''}
       ${sup.phone ? `<a href="https://wa.me/${sup.phone.replace(/[^0-9]/g,'')}" class="btn" style="flex:1;text-align:center;text-decoration:none;background:#25D366;color:#fff" target="_blank">${IC.whatsapp} &nbsp; WhatsApp</a>` : ''}
     </div>
+    ${(() => {
+      // Historique réel des commandes passées à CE fournisseur
+      const ords = (S.purchaseOrders || []).filter(o => String(o.supplierId) === String(sup.id));
+      const totalSpent = ords.filter(o => o.status !== 'cancelled').reduce((s,o) => s + (o.total || 0), 0);
+      if (!ords.length) return `
+    <div class="card" style="margin-top:12px;text-align:center;padding:18px">
+      <div style="font-size:13px;color:var(--text-3);margin-bottom:10px">Aucune commande passée à ce fournisseur.</div>
+      <button class="btn btn-ghost" style="width:auto;padding:9px 18px;font-size:13px" onclick="nav('add-order')">${IC.plus} Passer une commande</button>
+    </div>`;
+      const stLbl = { pending:'⏳ En attente', received:'✓ Reçue', cancelled:'✕ Annulée' };
+      const stCol = { pending:'var(--warning)', received:'var(--success)', cancelled:'var(--danger)' };
+      return `
+    <div class="section-hd" style="margin-top:14px"><span class="section-lbl">Commandes (${ords.length}) · ${fmt(totalSpent)} ${sym()}</span>
+      <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" onclick="nav('add-order')">+ Commander</button>
+    </div>
+    ${ords.slice(0,8).map(o => `
+    <div class="card" style="margin-bottom:6px;padding:11px 14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:700;font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${o.articleName || '?'} × ${o.qty}</div>
+          <div style="font-size:11px;color:var(--text-3)">${fmtDate(o.date)}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-weight:800;font-size:13px">${fmt(o.total || 0)} ${sym()}</div>
+          <div style="font-size:10.5px;font-weight:700;color:${stCol[o.status]||'var(--text-3)'}">${stLbl[o.status]||o.status}</div>
+        </div>
+      </div>
+    </div>`).join('')}`;
+    })()}
     <button class="btn btn-ghost" style="width:100%;margin-top:12px;color:var(--danger);border-color:var(--danger)" onclick="deleteSupplier(${sup.id})">
       ${IC.trash} &nbsp; ${t('delete')}
     </button>
@@ -13559,8 +13588,11 @@ function saveSupplier() {
 }
 
 function deleteSupplier(id) {
+  const sup = S.suppliers.find(s => s.id === id);
+  if (!confirm(`Supprimer le fournisseur « ${sup?.name || ''} » ?\nSes commandes passées restent dans l'historique.`)) return;
   S.suppliers = S.suppliers.filter(s => s.id !== id);
   localStorage.setItem('baro_suppliers', JSON.stringify(S.suppliers));
+  showToast('Fournisseur supprimé');
   nav('suppliers');
 }
 
