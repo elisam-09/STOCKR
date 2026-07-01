@@ -6089,19 +6089,19 @@ function vHome() {
       </div>
     </div>
     <div class="hero-stats">
-      <div class="hero-stat">
+      <div class="hero-stat" onclick="nav('pantry')" style="cursor:pointer">
         <div class="hero-stat-val" data-count="${S.articles.length}">${S.articles.length}</div>
         <div class="hero-stat-lbl">${isReseller?'Produits':t('articles')}</div>
       </div>
-      <div class="hero-stat ${low.length>0?'warn':''}">
+      <div class="hero-stat ${low.length>0?'warn':''}" onclick="nav('notifications')" style="cursor:pointer">
         <div class="hero-stat-val" data-count="${low.length}">${low.length}</div>
         <div class="hero-stat-lbl">${t('alerts')}</div>
       </div>
-      <div class="hero-stat">
+      <div class="hero-stat" onclick="nav('sales')" style="cursor:pointer">
         <div class="hero-stat-val" data-count="${todayCA}">${fmt(todayCA)}</div>
         <div class="hero-stat-lbl">${t('caToday')}</div>
       </div>
-      <div class="hero-stat">
+      <div class="hero-stat" onclick="nav('financial')" style="cursor:pointer">
         <div class="hero-stat-val" style="color:#34d399" data-count="${todayProfit}">${fmt(todayProfit)}</div>
         <div class="hero-stat-lbl">${t('profitToday')}</div>
       </div>
