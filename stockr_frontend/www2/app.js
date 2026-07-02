@@ -149,9 +149,12 @@ function fmtQty(n) {
 }
 
 // ── API base ──────────────────────────────────
+// Priorité : URL configurée dans Paramètres → Serveur (API) > override global > défaut.
+// Permet de brancher un nouveau backend (Render/Railway) sans redéployer le front.
+const _savedApiUrl = (() => { try { return (localStorage.getItem('baro_api_url') || '').trim().replace(/\/+$/, ''); } catch(_) { return ''; } })();
 const API_BASE = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
   ? 'http://localhost:5001'
-  : (window.__BARO_API_URL__ || window.__STOCKR_API_URL__ || 'https://stockr-production-c175.up.railway.app');
+  : (_savedApiUrl || window.__BARO_API_URL__ || window.__STOCKR_API_URL__ || 'https://stockr-production-c175.up.railway.app');
 
 // ── i18n ─────────────────────────────────────
 const LANGS = {
@@ -4472,6 +4475,24 @@ async function saveAccountInfo() {
     render();
   } catch(e) {
     showToast(e.message, 'error');
+  }
+}
+
+// Teste l'URL d'un backend BARO (/api/health) puis l'enregistre et recharge.
+async function saveApiUrl() {
+  const raw = ($('set-api-url')?.value || '').trim().replace(/\/+$/, '');
+  if (!raw) { showToast('Entrez une URL (ou Réinitialiser pour revenir au défaut)', 'error'); return; }
+  if (!/^https:\/\/[^\s]+$/i.test(raw)) { showToast('URL invalide — elle doit commencer par https://', 'error'); return; }
+  showToast('🔎 Test du serveur…', '');
+  try {
+    const res = await fetch(raw + '/api/health', { method: 'GET' });
+    const j = await res.json().catch(() => ({}));
+    if (!res.ok || j.status !== 'healthy') throw new Error('Réponse inattendue (' + res.status + ')');
+    localStorage.setItem('baro_api_url', raw);
+    showToast('✅ Serveur connecté ! Rechargement…', 'success');
+    setTimeout(() => location.reload(), 800);
+  } catch(e) {
+    showToast('❌ Serveur injoignable à cette URL : ' + (e.message || e), 'error');
   }
 }
 
@@ -14599,6 +14620,21 @@ function vSettings() {
             <span class="toggle-track"></span>
           </label>
         </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-label">🌐 Serveur (API) — synchronisation</div>
+      <div class="card" style="padding:14px">
+        <div style="font-size:12px;color:var(--text-3);line-height:1.55;margin-bottom:10px">
+          URL de votre backend BARO (Render / Railway). Une fois connecté, vos comptes et données se synchronisent entre appareils. Vide = serveur par défaut.
+        </div>
+        <input class="input" id="set-api-url" type="url" placeholder="https://baro-api-xxxx.onrender.com" value="${(localStorage.getItem('baro_api_url')||'').replace(/"/g,'&quot;')}">
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button class="btn btn-primary" style="flex:1" onclick="saveApiUrl()">Tester & enregistrer</button>
+          ${localStorage.getItem('baro_api_url') ? `<button class="btn btn-ghost" style="flex:0 0 auto" onclick="localStorage.removeItem('baro_api_url');showToast('URL serveur réinitialisée');setTimeout(()=>location.reload(),600)">Réinitialiser</button>` : ''}
+        </div>
+        <div style="font-size:11px;color:var(--text-3);margin-top:8px">État actuel : <strong>${USE_LOCAL ? '📴 Mode local (serveur injoignable)' : '🟢 Connecté au serveur'}</strong></div>
       </div>
     </div>
 
@@ -27673,6 +27709,7 @@ function __baroInit() {
   window.selectUnit      = selectUnit;
   window.selectUnitCond  = selectUnitCond;
   window.saveAccountInfo = saveAccountInfo;
+  window.saveApiUrl      = saveApiUrl;
   window.toggleDark      = toggleDark;
   window.doLogin         = doLogin;
   window.doRegister      = doRegister;

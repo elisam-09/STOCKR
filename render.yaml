@@ -1,22 +1,33 @@
-# ── BARO — Render Backend Deployment ───────
-# Connecte ce repo GitHub sur render.com → "New Web Service"
-# Root directory : laisser vide (racine du repo)
-
+# ── Déploiement 1 clic du backend BARO sur Render ─────────────────────
+# 1. https://dashboard.render.com → New → Blueprint → choisir ce repo GitHub.
+# 2. Render lit ce fichier et crée le service web + la base PostgreSQL.
+# 3. Une fois en ligne, copiez l'URL du service (https://baro-api-xxxx.onrender.com)
+#    dans BARO : Paramètres → Serveur (API). La synchro multi-appareils s'active.
 services:
   - type: web
     name: baro-api
-    env: python
+    runtime: python
     region: frankfurt          # le plus proche de l'Afrique de l'Ouest
     plan: free
-    rootDir: baro_backend
+    rootDir: stockr_backend
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 1 --timeout 120
     healthCheckPath: /api/health
-
     envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
       - key: SECRET_KEY
         generateValue: true     # Render génère automatiquement une clé sécurisée
       - key: FLASK_ENV
         value: production
       - key: FLASK_DEBUG
         value: "0"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: baro-db
+          property: connectionString
+
+# Base PostgreSQL persistante (sans elle, SQLite serait effacé à chaque déploiement)
+databases:
+  - name: baro-db
+    plan: free
