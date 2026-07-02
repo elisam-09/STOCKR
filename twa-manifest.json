@@ -1,0 +1,51 @@
+{
+  "packageId": "app.baro.stock",
+  "host": "mrcisse12.github.io",
+  "name": "BARO — Gestion de Stock",
+  "launcherName": "BARO",
+  "display": "standalone",
+  "themeColor": "#1E1B80",
+  "navigationColor": "#1E1B80",
+  "navigationColorDark": "#1E1B80",
+  "navigationDividerColor": "#1E1B80",
+  "navigationDividerColorDark": "#1E1B80",
+  "backgroundColor": "#BFE4F7",
+  "enableNotifications": true,
+  "startUrl": "/STOCKR/",
+  "iconUrl": "https://mrcisse12.github.io/STOCKR/icons/icon-512.png",
+  "maskableIconUrl": "https://mrcisse12.github.io/STOCKR/icons/icon-512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "./android.keystore",
+    "alias": "baro"
+  },
+  "appVersionName": "1.0.0",
+  "appVersionCode": 1,
+  "shortcuts": [
+    {
+      "name": "Nouvelle vente",
+      "short_name": "Vente",
+      "url": "/STOCKR/?view=sales",
+      "chosenIconUrl": "https://mrcisse12.github.io/STOCKR/icons/icon-192.png"
+    },
+    {
+      "name": "Nouveau stock",
+      "short_name": "Stock",
+      "url": "/STOCKR/?view=add",
+      "chosenIconUrl": "https://mrcisse12.github.io/STOCKR/icons/icon-192.png"
+    }
+  ],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://mrcisse12.github.io/STOCKR/manifest.json",
+  "fallbackType": "customtabs",
+  "features": {},
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://mrcisse12.github.io/STOCKR/",
+  "minSdkVersion": 21,
+  "orientation": "portrait",
+  "fingerprints": [],
+  "additionalTrustedOrigins": [],
+  "retainedBundles": []
+}
