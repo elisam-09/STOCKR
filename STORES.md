@@ -33,12 +33,22 @@ Conséquence pratique : le modèle le plus simple et conforme est
 statut d'abonnement depuis le backend. C'est le modèle Spotify/Netflix
 ("reader app" : pas de vente dans l'app, connexion seulement).
 
+- [x] Côté backend : **écrit et testé de bout en bout** (`routes/billing_routes.py`)
+      — `GET /api/billing/status`, `POST /api/billing/checkout` (Stripe abonnement
+      récurrent OU CinetPay Wave/OM/MoMo), webhooks `/api/billing/webhook/stripe`
+      (signature HMAC vérifiée) et `/webhook/cinetpay` (re-vérification serveur
+      à serveur). Vérifié : checkout sans clés → 501 honnête ; webhook signé →
+      plan activé ; webhook falsifié → rejeté 400.
+- [x] Côté app : le bouton « 💳 Payer maintenant » tente d'abord le checkout
+      serveur ; replis honnêtes (liens hébergés / mobile money) sinon.
 - [ ] 👤 Créer le compte Stripe (stripe.com) ou CinetPay (cinetpay.com — mieux
-      pour Wave/OM/MoMo en Côte d'Ivoire) et récupérer les clés API.
-- [ ] Côté backend : endpoints `/api/billing/checkout` + webhook (à écrire une
-      fois les clés disponibles — me redemander, c'est ~1 h de travail).
-- ⚠️ Tant que ce n'est pas fait : l'écran Plans reste **informatif** (aucun
-  débit réel). Ne pas annoncer "essai débité après 14 j" avant cette brique.
+      pour Wave/OM/MoMo en Côte d'Ivoire), puis ajouter dans les variables
+      d'environnement du serveur (Render → Environment) :
+      `STRIPE_SECRET_KEY` + `STRIPE_WEBHOOK_SECRET` (webhook à créer dans le
+      dashboard Stripe vers `https://<backend>/api/billing/webhook/stripe`)
+      — ou `CINETPAY_API_KEY` + `CINETPAY_SITE_ID`. Optionnel : `FRONTEND_URL`.
+- ⚠️ Tant que les clés ne sont pas posées : l'écran Plans reste **informatif**
+  (aucun débit réel, aucun débit simulé).
 
 ## Brique 3 — Empaquetage
 

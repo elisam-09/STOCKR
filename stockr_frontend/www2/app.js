@@ -1937,8 +1937,23 @@ function __planStartTrial(planKey) {
 }
 async function __planPayNow(planKey, amount) {
   __planConfirmClose();
-  // 1) Lien de paiement hébergé configuré (Stripe/CinetPay/PayDunya/Wave) → page sécurisée
   const billing = S.subscription.billing || 'monthly';
+  // 0) Checkout serveur (Stripe abonnement / CinetPay) — le vrai débit automatique.
+  //    Actif dès que le backend est déployé avec les clés de paiement.
+  if (!USE_LOCAL && S.token) {
+    try {
+      const ck = await api('POST', '/api/billing/checkout', { plan: planKey, billing });
+      if (ck && ck.url) {
+        try { window.open(ck.url, '_blank'); } catch(_) { location.href = ck.url; }
+        showToast('Page de paiement sécurisée ouverte (' + (ck.provider || 'paiement') + ')', '');
+        return;
+      }
+    } catch(e) {
+      // 501 = paiement non configuré côté serveur → replis locaux ci-dessous (honnête)
+      if (!/non configur/i.test(e.message || '')) { showToast(e.message, 'error'); }
+    }
+  }
+  // 1) Lien de paiement hébergé configuré (Stripe/CinetPay/PayDunya/Wave) → page sécurisée
   const link = _billingLinkFor(planKey, billing);
   if (link) {
     try { window.open(link, '_blank'); } catch(_) { location.href = link; }

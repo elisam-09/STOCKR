@@ -15,6 +15,21 @@ def create_app():
 
     with app.app_context():
         db.create_all()
+        # Migration légère : ajoute les colonnes d'abonnement aux bases existantes
+        # (create_all ne modifie pas les tables déjà créées). Sans effet si présentes.
+        from sqlalchemy import text
+        for col, ddl in [
+            ('plan', "VARCHAR(20) DEFAULT 'free'"),
+            ('plan_status', 'VARCHAR(20)'),
+            ('plan_expires', 'TIMESTAMP'),
+            ('billing_provider', 'VARCHAR(20)'),
+            ('billing_customer_id', 'VARCHAR(120)'),
+        ]:
+            try:
+                db.session.execute(text(f'ALTER TABLE "user" ADD COLUMN {col} {ddl}'))
+                db.session.commit()
+            except Exception:
+                db.session.rollback()
 
     from routes.article_routes import article_bp
     from routes.product_routes import product_bp
@@ -24,6 +39,7 @@ def create_app():
     from routes.prediction_routes import prediction_bp
     from routes.spectra_routes import spectra_bp
     from routes.client_routes import client_bp
+    from routes.billing_routes import billing_bp
 
     app.register_blueprint(article_bp, url_prefix='/api/articles')
     app.register_blueprint(product_bp, url_prefix='/api/products')
@@ -33,6 +49,7 @@ def create_app():
     app.register_blueprint(prediction_bp, url_prefix='/api/predictions')
     app.register_blueprint(spectra_bp, url_prefix='/api/spectra')
     app.register_blueprint(client_bp, url_prefix='/api/clients')
+    app.register_blueprint(billing_bp, url_prefix='/api/billing')
     
     
     @app.route('/api/health')

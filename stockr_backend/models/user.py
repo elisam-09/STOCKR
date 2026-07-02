@@ -31,6 +31,13 @@ class User(db.Model):
     # Token de session (pour mobile)
     auth_token = db.Column(db.String(500), nullable=True)
     token_expiry = db.Column(db.DateTime, nullable=True)
+
+    # Abonnement (activé uniquement via les webhooks de paiement vérifiés)
+    plan = db.Column(db.String(20), nullable=True, default='free')
+    plan_status = db.Column(db.String(20), nullable=True)          # active | cancelled | past_due
+    plan_expires = db.Column(db.DateTime, nullable=True)
+    billing_provider = db.Column(db.String(20), nullable=True)     # stripe | cinetpay
+    billing_customer_id = db.Column(db.String(120), nullable=True)
     
     def set_password(self, password):
         """Hash le mot de passe avec bcrypt"""
@@ -63,6 +70,9 @@ class User(db.Model):
             'currency': self.currency,
             'country': self.country,
             'created_at': self.created_at.isoformat() if self.created_at else None,
+            'plan': self.plan or 'free',
+            'plan_status': self.plan_status,
+            'plan_expires': self.plan_expires.isoformat() if self.plan_expires else None,
         }
         
         if include_token and self.auth_token:
