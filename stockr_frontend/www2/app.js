@@ -1295,6 +1295,8 @@ const S = {
   // Payment methods state
   paymentMethods: JSON.parse(localStorage.getItem('baro_payments') || '[]'),
   paymentHistory: JSON.parse(localStorage.getItem('baro_payment_history') || '[]'),
+  // Dépenses du commerce (loyer, électricité, transport, salaires…)
+  expenses: JSON.parse(localStorage.getItem('baro_expenses') || '[]'),
   // Integrations state
   integrationsConfig: JSON.parse(localStorage.getItem('baro_integrations') || '[]'),
   // API & webhooks state
@@ -1806,6 +1808,38 @@ function salesForPeriod() {
   if (S.period==='7d')    return S.sales.filter(s => new Date(s.date) >= new Date(now-7*86400000));
   if (S.period==='30d')   return S.sales.filter(s => new Date(s.date) >= new Date(now-30*86400000));
   return S.sales;
+}
+// Même découpage de période que les ventes, pour les dépenses du Bilan
+function expensesForPeriod() {
+  const now = new Date();
+  const list = S.expenses || [];
+  if (S.period==='today') return list.filter(e => new Date(e.date).toDateString()===now.toDateString());
+  if (S.period==='7d')    return list.filter(e => new Date(e.date) >= new Date(now-7*86400000));
+  if (S.period==='30d')   return list.filter(e => new Date(e.date) >= new Date(now-30*86400000));
+  return list;
+}
+function addExpense() {
+  const label  = ((($('exp-label')  || {}).value) || S.expLabel  || '').trim();
+  const amount = Math.max(0, parseFloat(((($('exp-amount') || {}).value) || S.expAmount)) || 0);
+  const cat    = ((($('exp-cat') || {}).value) || S.expCat || 'Autre');
+  if (!label)      { showToast('Décrivez la dépense', 'error'); return; }
+  if (amount <= 0) { showToast('Entrez le montant', 'error'); return; }
+  S.expenses = S.expenses || [];
+  S.expenses.unshift({ id: Date.now(), label, amount, category: cat, date: new Date().toISOString() });
+  localStorage.setItem('baro_expenses', JSON.stringify(S.expenses));
+  logActivity('expense', `Dépense : ${label} — ${fmt(amount)} ${sym()}`);
+  showToast(`💸 Dépense enregistrée — ${fmt(amount)} ${sym()}`, 'success');
+  S.expLabel = ''; S.expAmount = ''; S.expCat = '';
+  render();
+}
+function deleteExpense(id) {
+  const e = (S.expenses || []).find(x => String(x.id) === String(id));
+  if (!e) return;
+  if (!confirm(`Supprimer la dépense « ${e.label} » (${fmt(e.amount)} ${sym()}) ?`)) return;
+  S.expenses = S.expenses.filter(x => String(x.id) !== String(id));
+  localStorage.setItem('baro_expenses', JSON.stringify(S.expenses));
+  showToast('Dépense supprimée', 'info');
+  render();
 }
 
 // ── Calcul seuil auto ─────────────────────────
@@ -7685,6 +7719,47 @@ function vFinancial() {
         </div>`;
       }).join('')}
     </div>` : ''}
+
+    ${(() => {
+      const exps = expensesForPeriod();
+      const totalExp = exps.reduce((s,e)=>s+(e.amount||0),0);
+      const net = totalProfit - totalExp;
+      const EXP_CATS = ['Loyer','Électricité & eau','Transport','Salaires','Achats','Marketing','Autre'];
+      const catIco = { 'Loyer':'🏠','Électricité & eau':'💡','Transport':'🚚','Salaires':'👥','Achats':'📦','Marketing':'📣','Autre':'🧾' };
+      return `
+    <div class="card" style="margin-bottom:14px">
+      <div class="card-title">💸 Dépenses de la période</div>
+      <div style="display:flex;gap:6px;margin-bottom:8px">
+        <input class="input" type="text" id="exp-label" placeholder="ex : Loyer boutique" style="flex:2;min-width:0" value="${(S.expLabel||'').replace(/"/g,'&quot;')}" oninput="S.expLabel=this.value">
+        <input class="input" type="number" id="exp-amount" inputmode="numeric" min="0" placeholder="${sym()}" style="flex:1;min-width:0" value="${S.expAmount!=null&&S.expAmount!==''?S.expAmount:''}" oninput="S.expAmount=this.value">
+      </div>
+      <div style="display:flex;gap:6px;margin-bottom:10px">
+        <select class="input" id="exp-cat" style="flex:1" onchange="S.expCat=this.value">
+          ${EXP_CATS.map(c=>`<option value="${c}" ${S.expCat===c?'selected':''}>${catIco[c]} ${c}</option>`).join('')}
+        </select>
+        <button class="btn btn-primary" style="flex:0 0 auto;padding:0 18px" onclick="addExpense()">+ Ajouter</button>
+      </div>
+      ${exps.length === 0 ? `<div style="font-size:12px;color:var(--text-3);padding:4px 0 10px">Aucune dépense sur la période. Loyer, électricité, transport, salaires… enregistrez-les ici pour connaître votre bénéfice NET réel.</div>` : `
+      <div style="display:flex;flex-direction:column;margin-bottom:10px">
+        ${exps.slice(0,8).map(e=>`
+        <div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--gray-1)">
+          <span style="font-size:14px;flex:0 0 auto">${catIco[e.category]||'🧾'}</span>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:13px;font-weight:600;color:var(--text-1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${String(e.label).replace(/</g,'&lt;')}</div>
+            <div style="font-size:10.5px;color:var(--text-3)">${fmtDate(e.date)} · ${e.category||'Autre'}</div>
+          </div>
+          <span style="font-size:13px;font-weight:700;color:var(--danger);flex:0 0 auto">−${fmt(e.amount)} ${sym()}</span>
+          <button class="cart-remove" onclick="deleteExpense('${e.id}')">${IC.xmark}</button>
+        </div>`).join('')}
+        ${exps.length>8?`<div style="font-size:11px;color:var(--text-3);padding-top:6px">+ ${exps.length-8} autre(s) dépense(s) sur la période</div>`:''}
+      </div>`}
+      <div style="display:flex;flex-direction:column;gap:4px;background:var(--gray-1);border-radius:10px;padding:10px 12px">
+        <div style="display:flex;justify-content:space-between;font-size:12.5px;color:var(--text-2)"><span>Bénéfice brut (ventes)</span><b style="color:var(--success)">+${fmt(totalProfit)} ${sym()}</b></div>
+        <div style="display:flex;justify-content:space-between;font-size:12.5px;color:var(--text-2)"><span>Dépenses (${exps.length})</span><b style="color:var(--danger)">−${fmt(totalExp)} ${sym()}</b></div>
+        <div style="display:flex;justify-content:space-between;font-size:14px;border-top:1px solid var(--border);padding-top:6px;margin-top:2px"><b>Bénéfice net</b><b style="color:${net>=0?'var(--success)':'var(--danger)'}">${net>=0?'':'−'}${fmt(Math.abs(net))} ${sym()}</b></div>
+      </div>
+    </div>`;
+    })()}
 
     <div class="metric-grid">
       <div class="metric-card"><div class="metric-val">${fmt(totalCA)}</div><div class="metric-lbl">${t('caTotal')}</div></div>
