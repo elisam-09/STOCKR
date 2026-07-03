@@ -2,7 +2,7 @@
 // Stratégie : Cache-first pour assets statiques,
 //             Network-first pour l'API
 
-const CACHE_NAME = 'baro-v149-expenses';
+const CACHE_NAME = 'baro-v150-pdfnet';
 const STATIC_ASSETS = [
   '/',
   '/index.html',

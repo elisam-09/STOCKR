@@ -3698,6 +3698,10 @@ function generateBilanReportPDF() {
   const avgMargin = totalCA > 0 ? Math.round((totalProfit/totalCA)*100) : 0;
   const nbVentes  = filtered.length;
   const panier    = nbVentes ? Math.round(totalCA/nbVentes) : 0;
+  // Dépenses de la période → bénéfice NET réel (aligné sur la carte 💸 du Bilan)
+  const exps      = expensesForPeriod();
+  const totalExp  = exps.reduce((s,e)=>s+(e.amount||0),0);
+  const netProfit = totalProfit - totalExp;
   const perLabel  = { today:"Aujourd'hui", '7d':'7 derniers jours', '30d':'30 derniers jours', all:'Depuis le début' }[S.period] || 'Global';
 
   // Comparaison période précédente
@@ -3757,7 +3761,7 @@ function generateBilanReportPDF() {
   let y = 42;
   const kpis = [
     { l:"Chiffre d'affaires", v:`${fmt(totalCA)} ${sym()}`, c:BRAND },
-    { l:'Bénéfice net',       v:`${fmt(totalProfit)} ${sym()}`, c:[5,150,105] },
+    { l:'Bénéfice net',       v:`${netProfit<0?'−':''}${fmt(Math.abs(netProfit))} ${sym()}`, c: netProfit>=0?[5,150,105]:[220,38,38] },
     { l:'Marge moyenne',      v:`${avgMargin}%`, c: avgMargin>=20?[5,150,105]:avgMargin>=0?[180,83,9]:[220,38,38] },
     { l:'Panier moyen',       v:`${fmt(panier)} ${sym()}`, c:[124,58,237] },
   ];
@@ -3777,6 +3781,7 @@ function generateBilanReportPDF() {
   // Ligne info : nb ventes + comparaison
   doc.setFontSize(9); doc.setFont('helvetica','normal'); doc.setTextColor(60,60,60);
   let info = `${nbVentes} vente${nbVentes>1?'s':''} sur la période`;
+  if (totalExp > 0) info += `  ·  bénéfice brut ${fmt(totalProfit)} ${sym()}  −  ${exps.length} dépense${exps.length>1?'s':''} ${fmt(totalExp)} ${sym()}`;
   doc.text(info, 16, y);
   if (compare) {
     const up = compare.pct>=0;
@@ -3823,7 +3828,9 @@ function generateBilanReportPDF() {
   if (sy > 250) sy = 250;
   doc.setDrawColor(220,220,225); doc.setLineWidth(0.3); doc.line(16, sy-4, 194, sy-4);
   doc.setFontSize(9); doc.setFont('helvetica','normal'); doc.setTextColor(50,50,50);
-  const arrete = `Arrêté le présent bilan à un chiffre d'affaires de ${fmt(totalCA)} ${sym()} pour un bénéfice net de ${fmt(totalProfit)} ${sym()} (marge ${avgMargin}%).`;
+  const arrete = totalExp > 0
+    ? `Arrêté le présent bilan à un chiffre d'affaires de ${fmt(totalCA)} ${sym()}, un bénéfice brut de ${fmt(totalProfit)} ${sym()} et ${fmt(totalExp)} ${sym()} de dépenses, soit un bénéfice net de ${netProfit<0?'−':''}${fmt(Math.abs(netProfit))} ${sym()} (marge ventes ${avgMargin}%).`
+    : `Arrêté le présent bilan à un chiffre d'affaires de ${fmt(totalCA)} ${sym()} pour un bénéfice net de ${fmt(totalProfit)} ${sym()} (marge ${avgMargin}%).`;
   doc.text(doc.splitTextToSize(arrete, 120), 16, sy+2);
   doc.setFontSize(9);
   doc.text(`Fait à ${(S.session?.city||'________________')}, le ${date}.`, 16, sy+16);
