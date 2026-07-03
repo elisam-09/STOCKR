@@ -8792,43 +8792,35 @@ function vNotifications() {
     </div>` : allAlerts.map((n, i) => {
       const a = n.article;
       const isOut = n.type === 'out';
-      const toOrder = Math.max(0, Math.ceil(a.min - a.stock));
+      const isExp = n.type === 'expired' || n.type === 'expiry_today' || n.type === 'expiry_soon';
+      const color = isOut ? 'var(--danger)' : isExp ? a.expiryInfo.color : 'var(--warning)';
+      const toOrder = Math.max(0, Math.ceil((a.min || 0) - a.stock));
+      const msg = isOut
+        ? t('outOfStockAlert')
+        : isExp
+          ? `${a.expiryInfo.label} — ${new Date(a.expiry).toLocaleDateString(_lang==='en'?'en-US':'fr-FR')}`
+          : `${a.stock} ${a.unit} ${t('unitsRemaining')} — ${t('belowThreshold')} ${a.min}`;
+      const sub = isExp
+        ? `${a.stock} ${a.unit} ${t('inStock')}`
+        : (!isOut && a.lead > 0 ? `${t('deliveryTime')} : ${a.lead}j · ${t('orderSuggestion')} ~${toOrder} ${a.unit}` : '');
+      const ico = isExp
+        ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="${a.expiryInfo.color}" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`
+        : `<span style="font-size:18px">${isOut?'🔴':'🟡'}</span>`;
       return `
-    <div class="card card-tap anim" style="animation-delay:${i*0.04}s;border-left:4px solid ${isOut?'var(--danger)':'var(--warning)'}" onclick="nav('detail',{selectedId:${a.id}})">
+    <div class="card card-tap anim" style="animation-delay:${i*0.04}s;border-left:4px solid ${color}" onclick="nav('detail',{selectedId:${a.id}})">
       <div style="display:flex;align-items:center;gap:12px">
-        <div style="width:40px;height:40px;border-radius:10px;background:${isOut?'rgba(220,38,38,.1)':'rgba(217,119,6,.1)'};display:flex;align-items:center;justify-content:center;flex-shrink:0">
-          <span style="font-size:18px">${isOut?'🔴':'🟡'}</span>
+        <div style="width:40px;height:40px;border-radius:10px;background:${isOut?'rgba(220,38,38,.1)':isExp?a.expiryInfo.color+'15':'rgba(217,119,6,.1)'};display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          ${ico}
         </div>
         <div style="flex:1;min-width:0">
           <div style="font-size:14px;font-weight:700;color:var(--text-1)">${a.name}</div>
-          <div style="font-size:12px;color:${isOut?'var(--danger)':'var(--warning)'};font-weight:600;margin-top:2px">
-            ${isOut ? t('outOfStockAlert') : `${a.stock} ${a.unit} ${t('unitsRemaining')} — ${t('belowThreshold')} ${a.min}`}
-          </div>
-          ${!isOut && a.lead > 0 ? `<div style="font-size:11px;color:var(--text-3);margin-top:2px">${t('deliveryTime')} : ${a.lead}j · ${t('orderSuggestion')} ~${toOrder} ${a.unit}</div>` : ''}
+          <div style="font-size:12px;color:${color};font-weight:600;margin-top:2px">${msg}</div>
+          ${sub ? `<div style="font-size:11px;color:var(--text-3);margin-top:2px">${sub}</div>` : ''}
         </div>
         <div style="color:var(--gray-4)">${IC.chevron}</div>
       </div>
     </div>`;
     }).join('')}
-
-    ${expiring.length > 0 ? `
-    <div class="section-hd" style="margin-top:12px"><div class="section-lbl">${t('expiryAlerts')}</div></div>
-    ${expiring.map((a, i) => `
-    <div class="card card-tap anim" style="animation-delay:${(allAlerts.length + i)*0.04}s;border-left:4px solid ${a.expiryInfo.color}" onclick="nav('detail',{selectedId:${a.id}})">
-      <div style="display:flex;align-items:center;gap:12px">
-        <div style="width:40px;height:40px;border-radius:10px;background:${a.expiryInfo.color}15;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="${a.expiryInfo.color}" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-        </div>
-        <div style="flex:1;min-width:0">
-          <div style="font-size:14px;font-weight:700;color:var(--text-1)">${a.name}</div>
-          <div style="font-size:12px;color:${a.expiryInfo.color};font-weight:600;margin-top:2px">
-            ${a.expiryInfo.label} — ${new Date(a.expiry).toLocaleDateString(_lang==='en'?'en-US':'fr-FR')}
-          </div>
-          <div style="font-size:11px;color:var(--text-3);margin-top:2px">${a.stock} ${a.unit} ${t('inStock')}</div>
-        </div>
-        <div style="color:var(--gray-4)">${IC.chevron}</div>
-      </div>
-    </div>`).join('')}` : ''}
   </div>`;
 }
 
