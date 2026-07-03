@@ -2175,6 +2175,13 @@ function _doActivatePlan(planKey, opts = {}) {
   render();
 }
 function cancelPlan() {
+  // Un plan payé en ligne se résilie chez le fournisseur de paiement — le
+  // réinitialiser ici serait mensonger (le prélèvement continuerait, et la
+  // synchro serveur réappliquerait le plan au prochain démarrage).
+  if (S.subscription?.source === 'server') {
+    alert("Cet abonnement a été payé en ligne" + (S.subscription.provider === 'stripe' ? ' via Stripe' : S.subscription.provider === 'cinetpay' ? ' via CinetPay' : '') + ".\n\nPour arrêter le renouvellement, utilisez le lien « gérer l'abonnement » dans l'email de reçu du paiement, ou contactez le support. L'app repassera automatiquement en plan Gratuit à la fin de la période payée.");
+    return;
+  }
   if (!confirm(t('confirmCancel') + ' ?')) return;
   S.subscription = { plan: 'free', activated: null, billing: 'monthly' };
   localStorage.setItem('baro_subscription', JSON.stringify(S.subscription));
@@ -13406,6 +13413,14 @@ function vSubscription() {
           <div style="font-size:11px;color:var(--text-3)">Expire le ${new Date(sub.trialEnd).toLocaleDateString(_lang==='en'?'en-US':'fr-FR')}</div>
         </div>
       </div>` : ''}
+      ${sub.source === 'server' && sub.expires ? `
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(16,185,129,.08);border-radius:10px;margin-bottom:12px">
+        <div style="width:36px;height:36px;border-radius:50%;background:var(--success);display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px">✓</div>
+        <div>
+          <div style="font-size:13px;font-weight:700;color:var(--text-1)">Abonnement payé${sub.provider ? ' via ' + (sub.provider === 'stripe' ? 'Stripe' : 'CinetPay') : ''}</div>
+          <div style="font-size:11px;color:var(--text-3)">Renouvellement le ${new Date(sub.expires).toLocaleDateString(_lang==='en'?'en-US':'fr-FR')}</div>
+        </div>
+      </div>` : ''}
       <div style="font-size:13px;font-weight:700;margin-bottom:10px;color:var(--text-1)">Fonctionnalités incluses</div>
       ${_planFeatures(sub.plan).map(f => `
       <div style="display:flex;align-items:center;gap:8px;padding:5px 0;font-size:13px">
@@ -14687,7 +14702,13 @@ function vSettings() {
             <span class="settings-row-ico" style="color:var(--accent)">${IC.logo}</span>
             <div>
               <div class="settings-row-lbl">${t('myPlan')}: <strong style="color:var(--accent)">${S.subscription.plan.toUpperCase()}</strong></div>
-              <div class="settings-row-sub">${t('subscriptionManage')}</div>
+              <div class="settings-row-sub">${(() => {
+                const sub = S.subscription || {};
+                const d = s => new Date(s).toLocaleDateString(_lang==='en'?'en-US':'fr-FR', { day:'numeric', month:'long', year:'numeric' });
+                if (sub.source === 'server' && sub.expires) return `Payé · renouvellement le ${d(sub.expires)}`;
+                if (sub.trialEnd && new Date(sub.trialEnd) > new Date()) return `Essai gratuit jusqu'au ${d(sub.trialEnd)}`;
+                return t('subscriptionManage');
+              })()}</div>
             </div>
           </div>
           ${IC.chevron}
