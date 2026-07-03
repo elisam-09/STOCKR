@@ -6724,9 +6724,13 @@ function vHome() {
       </button>
     </div>
 
-    ${S.products.length > 0 ? `
+    ${S.products.length > 0 || (S.sales||[]).some(s => s.kind === 'service') ? `
     <div class="section-hd"><div class="section-lbl">${t('quickSale')}</div></div>
     <div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:8px">
+      <button class="quick-sale-chip" style="border:1px dashed var(--accent)" onclick="S.saleMode='service';nav('sales')">
+        <span style="font-weight:700;font-size:12px">🧾 Prestation</span>
+        <span style="font-size:11px;color:var(--accent)">service sans stock</span>
+      </button>
       ${S.products.slice(0,6).map(p => `
       <button class="quick-sale-chip" onclick="quickSaleProduct(${p.id})">
         <span style="font-weight:700;font-size:12px">${p.name}</span>
