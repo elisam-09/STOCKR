@@ -4237,6 +4237,13 @@ async function quickSellConfirm() {
 }
 
 // ── Prestation / service : encaisser sans stock (coiffure, couture, réparation…) ──
+function _svcPreset(i) {
+  const f = (window._svcFreq || [])[i];
+  if (!f) return;
+  S.serviceDesc = f.d;
+  S.serviceAmount = String(f.a || '');
+  render();
+}
 function confirmServiceSale() {
   const desc   = ((($('svc-desc')   || {}).value) || S.serviceDesc   || '').trim();
   const amount = Math.max(0, parseFloat(((($('svc-amount') || {}).value) || S.serviceAmount)) || 0);
@@ -7240,6 +7247,20 @@ function vSales() {
     <div class="card" style="margin-bottom:14px">
       <div class="card-title">🧾 Encaisser une prestation</div>
       <div style="font-size:12px;color:var(--text-3);margin-bottom:12px">Service sans stock : coiffure, couture, réparation, livraison, conseil, transport…</div>
+      ${(() => {
+        // Prestations fréquentes : 1 tap pour re-remplir (description + dernier montant)
+        const seen = {}, freq = [];
+        for (const s of S.sales) {
+          if (s.kind !== 'service' || !s.productName) continue;
+          const k = s.productName.toLowerCase();
+          if (seen[k]) continue;
+          seen[k] = 1; freq.push({ d: s.productName, a: s.total || 0 });
+          if (freq.length >= 6) break;
+        }
+        window._svcFreq = freq;
+        return freq.length ? `<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">${freq.map((f, i) =>
+          `<button type="button" class="chip" onclick="_svcPreset(${i})">${f.d.replace(/</g,'&lt;')} · ${fmt(f.a)}</button>`).join('')}</div>` : '';
+      })()}
       <div class="form-group">
         <label class="form-label">Description de la prestation</label>
         <input class="input" type="text" id="svc-desc" placeholder="ex : Coupe + brushing, Réparation écran…" value="${(S.serviceDesc||'').replace(/"/g,'&quot;')}" oninput="S.serviceDesc=this.value">
