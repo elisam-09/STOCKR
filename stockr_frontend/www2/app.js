@@ -17227,6 +17227,16 @@ function generateBoutiqueSite(opts) {
   const heroVideoHTML = !_heroVid ? '' : (_ytId
     ? `<iframe class="hero-video" src="https://www.youtube.com/embed/${_ytId}?autoplay=1&mute=1&loop=1&playlist=${_ytId}&controls=0&modestbranding=1&playsinline=1&rel=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe><div class="hero-vid-ov"></div>`
     : `<video class="hero-video" autoplay muted loop playsinline><source src="${esc(_heroVid)}" type="video/mp4"></video><div class="hero-vid-ov"></div>`);
+  // ── Section vidéo (milieu de page) : grande vidéo regardable, avec le son ──
+  const _midVid   = (bc.midVideo || '').trim();
+  const _midYt    = (() => { const m = _midVid.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{11})/); return m ? m[1] : ''; })();
+  const _midTitle = (bc.midVideoTitle || '').trim();
+  const midVideoHTML = !_midVid ? '' : `<div class="vid-section reveal" id="video">
+  ${_midTitle ? `<div class="vid-title">${esc(_midTitle)}</div>` : ''}
+  <div class="vid-wrap">${_midYt
+    ? `<iframe src="https://www.youtube.com/embed/${_midYt}?rel=0&modestbranding=1&playsinline=1" title="${esc(_midTitle || 'Vidéo')}" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe>`
+    : `<video controls playsinline preload="metadata"><source src="${esc(_midVid)}" type="video/mp4"></video>`}</div>
+</div>`;
   const cornerR    = bc.borderStyle === 'square' ? '2px' : bc.borderStyle === 'xl' ? '24px' : '16px';
   const gap        = density === 'compact' ? '8px' : density === 'airy' ? '20px' : '12px';
   const pad        = density === 'compact' ? '10px' : density === 'airy' ? '24px' : '16px';
@@ -17621,6 +17631,10 @@ ${hoverCss}
 .pay-badge{background:${tc}12;color:${tc};padding:7px 15px;border-radius:10px;font-size:12px;font-weight:700}
 .delivery-info{text-align:center;font-size:13px;color:#666;margin:8px 0;padding:14px;background:#fff;border-radius:16px;box-shadow:0 2px 10px rgba(0,0,0,.04);border:1px solid rgba(0,0,0,.04)}
 .svc-strip{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:14px 0}
+.vid-section{margin:22px 0;text-align:center}
+.vid-title{font-size:clamp(20px,5vw,28px);font-weight:800;letter-spacing:-.5px;color:#1a1a1a;margin-bottom:14px}
+.vid-wrap{position:relative;width:100%;aspect-ratio:16/9;border-radius:${cornerR};overflow:hidden;background:#000;box-shadow:0 18px 44px -14px rgba(0,0,0,.28)}
+.vid-wrap iframe,.vid-wrap video{position:absolute;inset:0;width:100%;height:100%;border:0;object-fit:cover}
 .svc-item{background:#fff;border:1px solid rgba(0,0,0,.05);box-shadow:0 2px 10px rgba(0,0,0,.04);border-radius:12px;padding:10px 14px;font-size:13px;font-weight:600;color:#333}
 .about-section{background:#fff;border-radius:16px;padding:20px;margin:14px 0;box-shadow:0 2px 10px rgba(0,0,0,.04);border:1px solid rgba(0,0,0,.04)}
 .about-section .pay-section-title{text-align:center}
@@ -17734,6 +17748,7 @@ ${prodsHTML}
 </main>
 <div id="no-results">Aucun produit ne correspond à votre recherche 🙁</div>
 ${_servicesArr.length>0?`<div class="svc-strip reveal">${_servicesArr.map(s=>`<div class="svc-item">${esc(s)}</div>`).join('')}</div>`:''}
+${midVideoHTML}
 ${_aboutText?`<div class="about-section reveal" id="apropos">
   <div class="pay-section-title">À propos</div>
   <p class="about-text">${esc(_aboutText).replace(/\n/g,'<br>')}</p>
@@ -17752,8 +17767,8 @@ ${_hasContact?`<div class="contact-section reveal" id="contact">
     ${waNum?`<a class="contact-row" href="${waLink}" target="_blank"><span>💬</span><span>Écrire sur WhatsApp</span></a>`:''}
   </div>
 </div>`:''}
-${(bc.deliveryZones||[]).length>0?`<div class="delivery-info">🏙️ Zones de livraison : ${(bc.deliveryZones||[]).join(' • ')}</div>`:''}
-${(bc.faqs||[]).length>0?`<div class="pay-section" style="text-align:left">
+${(bc.deliveryZones||[]).length>0?`<div class="delivery-info reveal">🏙️ Zones de livraison : ${(bc.deliveryZones||[]).join(' • ')}</div>`:''}
+${(bc.faqs||[]).length>0?`<div class="pay-section reveal" style="text-align:left">
   <div class="pay-section-title" style="text-align:center">Questions fréquentes</div>
   ${(bc.faqs||[]).map(f=>`<details style="padding:10px 4px;border-bottom:1px solid #F2F2F5"><summary style="font-weight:700;font-size:13.5px;cursor:pointer">${esc(f.q||f.question||'')}</summary><div style="font-size:13px;color:#666;line-height:1.6;padding:8px 2px 2px">${esc(f.a||f.answer||'')}</div></details>`).join('')}
 </div>`:''}
@@ -17762,7 +17777,7 @@ ${bannerHTML(bottomBanner, 'bottom')}
 ${popupHTML}
 <div class="baro-toast" id="baro-toast"></div>
 <footer class="footer">
-  <div class="ft-grid">
+  <div class="ft-grid reveal">
     <div class="ft-brand">
       <div class="ft-brand-row">
         ${logo ? `<img src="${logo}" class="ft-logo" alt="">` : `<div class="ft-mono">${esc((bc.name||S.session?.business||'B').charAt(0).toUpperCase())}</div>`}
@@ -18384,6 +18399,10 @@ function vBoutiqueEditor() {
     <div class="bq-sec-title" style="margin-top:18px">🎬 Vidéo d'accroche <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--text-3)">· lien MP4 ou YouTube</span></div>
     <input class="input" value="${(bc.heroVideo||'').replace(/"/g,'&quot;')}" placeholder="https://… .mp4  ou  https://youtu.be/…" oninput="boutiqueEditText('heroVideo',this.value)">
     <div style="font-size:11px;color:var(--text-3);margin-top:4px">Animation façon Apple : la vidéo se joue en fond du hero (muette, en boucle). Laissez vide pour un hero classique.</div>
+    <div class="bq-sec-title" style="margin-top:18px">🎥 Section vidéo (milieu de page) <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--text-3)">· lien MP4 ou YouTube</span></div>
+    <input class="input" value="${(bc.midVideoTitle||'').replace(/"/g,'&quot;')}" placeholder="Titre de la section (ex : Découvrez notre atelier)" oninput="boutiqueEditText('midVideoTitle',this.value)">
+    <input class="input" style="margin-top:8px" value="${(bc.midVideo||'').replace(/"/g,'&quot;')}" placeholder="https://… .mp4  ou  https://youtu.be/…" oninput="boutiqueEditText('midVideo',this.value)">
+    <div style="font-size:11px;color:var(--text-3);margin-top:4px">Grande vidéo regardable (avec le son) entre les produits et la section À propos — présentation, atelier, démonstration…</div>
     <div class="bq-sec-title" style="margin-top:18px">À propos de la boutique</div>
     <textarea class="input" rows="3" style="resize:vertical;font-family:inherit" placeholder="Présentez votre commerce : votre histoire, ce qui vous rend unique…" oninput="boutiqueEditText('aboutText',this.value)">${(bc.aboutText||'').replace(/</g,'&lt;')}</textarea>
     <div class="bq-sec-title" style="margin-top:18px">Services / Atouts <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--text-3)">· un par ligne</span></div>
