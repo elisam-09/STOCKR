@@ -3967,11 +3967,36 @@ async function confirmMultiSale(opts = {}) {
   if (!S.multiCart || !Object.keys(S.multiCart).length) { showToast('Panier vide', 'error'); return; }
   if (!_checkPlanLimit('salesPerMonth', _salesThisMonth(), 'ventes ce mois')) return;
   const sellable = bt_sellableItems();
-  const clientSel = $('multi-client');
-  const clientId = (opts.clientId !== undefined) ? opts.clientId : (clientSel ? parseInt(clientSel.value) || null : null);
-  const client = clientId ? S.clients.find(c => c.id === clientId) : null;
+  // ── Résolution du client : nouveau client à la volée, ou choix existant
+  //    (ids chaîne supportés, sélection mémorisée : survit aux re-renders des taps produits) ──
+  let clientId = null;
+  if (opts.clientId !== undefined) {
+    clientId = opts.clientId;
+  } else if (S.multiNewClient) {
+    const nameEl  = $('multi-new-client-name');
+    const phoneEl = $('multi-new-client-phone');
+    const name  = ((nameEl && nameEl.value) ? nameEl.value : (S.multiNewClientName || '')).trim();
+    const phone = ((phoneEl && phoneEl.value) ? phoneEl.value : (S.multiNewClientPhone || '')).trim();
+    if (name) {
+      const existing = S.clients.find(c => (c.name||'').toLowerCase() === name.toLowerCase());
+      if (existing) { clientId = existing.id; }
+      else {
+        const nc = { id: Date.now(), name, phone, email: '', address: '', loyaltyPoints: 0, createdAt: new Date().toISOString() };
+        S.clients.push(nc); _saveClients();
+        clientId = nc.id;
+      }
+      S.multiNewClient = false; S.multiNewClientName = ''; S.multiNewClientPhone = '';
+    }
+  } else {
+    const clientSel = $('multi-client');
+    clientId = clientSel && clientSel.value ? (parseInt(clientSel.value) || clientSel.value) : (S.multiClientPick != null ? S.multiClientPick : null);
+  }
+  const client = clientId != null ? S.clients.find(c => String(c.id) === String(clientId)) : null;
+  clientId = client ? client.id : null;
   const pmSel = $('multi-payment');
   const payMethod = opts.payMethod || (pmSel ? pmSel.value : 'cash');
+  // Panier multi = un même cartId → groupé « Panier · N articles » dans l'historique
+  const _multiCartId = Object.keys(S.multiCart).length > 1 ? 'cart_' + Date.now() : null;
 
   let total = 0, newSales = [];
   for (const [itemId, qty] of Object.entries(S.multiCart)) {
@@ -4018,6 +4043,7 @@ async function confirmMultiSale(opts = {}) {
       const __mm = (typeof getCurrentMember === 'function') ? getCurrentMember() : null;
       const newSale = {
         id: saleData?.id || Date.now() + Math.random(),
+        cartId: _multiCartId,
         productId: it.productId || null,
         articleId: it.articleId || null,
         packId:    it.packId    || null,
@@ -4040,7 +4066,7 @@ async function confirmMultiSale(opts = {}) {
 
   // Loyalty with tier multiplier
   if (S.loyaltyConfig?.enabled && clientId) {
-    const cl = S.clients.find(c => c.id === clientId);
+    const cl = S.clients.find(c => String(c.id) === String(clientId));
     if (cl) {
       const tier = _getClientTier(cl);
       const mult = tier?.multiplier || 1;
@@ -4061,6 +4087,7 @@ async function confirmMultiSale(opts = {}) {
   showToast(`✅ ${newSales.length} articles vendus — ${fmt(total)} ${sym()}`, 'success');
   S.multiCart = {};
   S.multiSearch = '';
+  S.multiClientPick = null;
   showReceiptBanner(newSales, total, { provider: payMethod, clientId });
   render();
 }
@@ -7245,14 +7272,21 @@ function vSales() {
         </div>`;
       }).join('')}
       <div class="cart-total">Total : <strong style="color:var(--accent)">${fmt(total)} ${sym()}</strong></div>
-      ${S.clients.length > 0 ? `
       <div class="form-group" style="margin-top:10px">
-        <label class="form-label">${t('clients')}</label>
-        <select class="input" id="multi-client">
-          <option value="">${t('selectClient')}</option>
-          ${S.clients.map(c=>`<option value="${c.id}">${c.name}${c.phone?' · '+c.phone:''}</option>`).join('')}
-        </select>
-      </div>` : ''}
+        <label class="form-label">${t('clients')} <span style="color:var(--text-3);font-weight:400">(optionnel)</span></label>
+        <div style="display:flex;gap:6px;margin-bottom:8px">
+          <button type="button" class="chip ${!S.multiNewClient?'active':''}" onclick="S.multiNewClient=false;render()">Existant</button>
+          <button type="button" class="chip ${S.multiNewClient?'active':''}" onclick="S.multiNewClient=true;render()">+ Nouveau client</button>
+        </div>
+        ${S.multiNewClient ? `
+        <input class="input" type="text" id="multi-new-client-name" placeholder="Nom du client" style="margin-bottom:6px" value="${(S.multiNewClientName||'').replace(/"/g,'&quot;')}" oninput="S.multiNewClientName=this.value">
+        <input class="input" type="tel" id="multi-new-client-phone" placeholder="Téléphone (optionnel)" value="${(S.multiNewClientPhone||'').replace(/"/g,'&quot;')}" oninput="S.multiNewClientPhone=this.value">
+        ` : `
+        <select class="input" id="multi-client" onchange="S.multiClientPick=this.value?(parseInt(this.value)||this.value):null">
+          <option value="">— Aucun client —</option>
+          ${S.clients.map(c=>`<option value="${c.id}" ${String(S.multiClientPick)===String(c.id)?'selected':''}>${c.name}${c.phone?' · '+c.phone:''}</option>`).join('')}
+        </select>`}
+      </div>
       <div class="form-group">
         <label class="form-label">Mode de paiement</label>
         <select class="input" id="multi-payment">
@@ -14997,7 +15031,9 @@ function vTeam() {
 
   const tab = S.teamTab || 'members';
   const members = S.teamMembers || [];
-  const totalCA = (S.sales || []).reduce((s, v) => s + (v.total || 0), 0);
+  // CA du mois calendaire en cours (le libellé dit « ce mois » — il doit être vrai)
+  const _monthStart = new Date(); _monthStart.setDate(1); _monthStart.setHours(0,0,0,0);
+  const totalCA = (S.sales || []).filter(v => new Date(v.date) >= _monthStart).reduce((s, v) => s + (v.total || 0), 0);
   const totalSalary = members.reduce((s, m) => s + (m.baseSalary || 0), 0);
   const totalCommissions = members.reduce((s, m) => s + _teamCommission(m), 0);
   const totalHours = members.reduce((s, m) => s + (m.hoursWorked || 0), 0);
@@ -15059,7 +15095,7 @@ function vTeam() {
         const roleInfo = ROLE_LABELS[m.role] || ROLE_LABELS.vendor;
         const perfColor = st.perfScore >= 70 ? '#10B981' : st.perfScore >= 40 ? '#F59E0B' : '#EF4444';
         return `
-        <div class="card anim" style="margin-bottom:10px;animation-delay:${i*40}ms;padding:14px;cursor:pointer" onclick="openTeamMember(${m.id})">
+        <div class="card anim" style="margin-bottom:10px;animation-delay:${i*40}ms;padding:14px;cursor:pointer" onclick="openTeamMember('${String(m.id).replace(/[^\w-]/g,'')}')">
           <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
             <div style="width:48px;height:48px;border-radius:24px;background:${roleInfo.color}20;color:${roleInfo.color};display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800">
               ${roleInfo.icon}
@@ -15144,7 +15180,7 @@ function vTeam() {
                 <div style="font-weight:700;font-size:13px;color:var(--text-1)">${m.name}</div>
                 <div style="font-size:11px;color:var(--text-3)">${m.schedule || 'Aucun horaire défini'}</div>
               </div>
-              <button class="btn btn-ghost" style="padding:6px 10px;font-size:11px" onclick="openTeamMember(${m.id})">Modifier</button>
+              <button class="btn btn-ghost" style="padding:6px 10px;font-size:11px" onclick="openTeamMember('${String(m.id).replace(/[^\w-]/g,'')}')">Modifier</button>
             </div>`;
           }).join('')
         }
@@ -15425,7 +15461,7 @@ function deleteAnnouncement(id) {
 }
 
 function openTeamMember(id) {
-  const m = S.teamMembers.find(mb => mb.id === id);
+  const m = S.teamMembers.find(mb => String(mb.id) === String(id));
   if (!m) return;
   S.teamForm = { ...m };
   nav('add-team-member');
