@@ -4236,6 +4236,50 @@ async function quickSellConfirm() {
   await confirmMultiSale({ clientId, payMethod });
 }
 
+// ── Prestation / service : encaisser sans stock (coiffure, couture, réparation…) ──
+function confirmServiceSale() {
+  const desc   = ((($('svc-desc')   || {}).value) || S.serviceDesc   || '').trim();
+  const amount = Math.max(0, parseFloat(((($('svc-amount') || {}).value) || S.serviceAmount)) || 0);
+  const cost   = Math.max(0, parseFloat(((($('svc-cost')   || {}).value) || S.serviceCost))   || 0);
+  if (!desc)       { showToast('Décrivez la prestation', 'error'); return; }
+  if (amount <= 0) { showToast('Entrez le montant encaissé', 'error'); return; }
+  if (!_checkPlanLimit('salesPerMonth', _salesThisMonth(), 'ventes ce mois')) return;
+  const { clientId, clientName } = _resolveClientForSale();
+  const pmSel = $('sale-payment');
+  const payMethod = pmSel ? pmSel.value : 'cash';
+  const __m = (typeof getCurrentMember === 'function') ? getCurrentMember() : null;
+  const sale = {
+    id: Date.now(), kind: 'service',
+    productId: null, articleId: null,
+    productName: desc, qty: 1,
+    total: amount, profit: Math.max(0, amount - cost),
+    date: new Date().toISOString(), paymentMethod: payMethod,
+    clientId, clientName,
+    memberId: __m?.id || null, memberName: __m?.name || null,
+  };
+  S.sales.unshift(sale);
+  localStorage.setItem('stockr_sales', JSON.stringify(S.sales));
+  // Fidélité (même règle que les autres ventes)
+  if (S.loyaltyConfig?.enabled && clientId) {
+    const cl = S.clients.find(c => String(c.id) === String(clientId));
+    if (cl) {
+      const tier = _getClientTier(cl);
+      const pts = Math.floor(amount * (S.loyaltyConfig.pointsPerFcfa || 1) * (tier?.multiplier || 1));
+      cl.loyaltyPoints = (cl.loyaltyPoints || 0) + pts;
+      _saveClients();
+    }
+  }
+  if (payMethod !== 'cash') {
+    S.paymentHistory.unshift({ id: Date.now(), provider: payMethod, amount, clientName: clientName || 'Client', date: new Date().toISOString() });
+    localStorage.setItem('baro_payment_history', JSON.stringify(S.paymentHistory));
+  }
+  logActivity('sale', `Prestation : ${desc} — ${fmt(amount)} ${sym()}`);
+  showToast(`✅ Prestation encaissée — ${fmt(amount)} ${sym()}`, 'success');
+  S.serviceDesc = ''; S.serviceAmount = ''; S.serviceCost = '';
+  showReceiptBanner([sale], amount, { provider: payMethod, clientId });
+  render();
+}
+
 async function confirmCart() {
   if (!S.cart.length) { showToast(t('emptyCartMsg'), 'error'); return; }
   // Limite de ventes/mois selon le plan (free 100, starter 2000, pro/ent illimité)
@@ -7183,6 +7227,7 @@ function vSales() {
     <div class="filter-row" style="margin-bottom:10px">
       <button class="filter-chip ${mode==='simple'?'active':''}" onclick="setSaleMode('simple')">⚡ Vente rapide</button>
       <button class="filter-chip ${mode==='multi'?'active':''}" onclick="setSaleMode('multi')">🛒 Panier multi-produits</button>
+      <button class="filter-chip ${mode==='service'?'active':''}" onclick="setSaleMode('service')">🧾 Prestation</button>
     </div>
 
     ${boutiqueCount > 0 ? `
@@ -7191,7 +7236,46 @@ function vSales() {
       <button class="filter-chip ${boutiqueFilter?'active':''}" onclick="S.saleBoutiqueFilter=true;render()">🏪 Stocks boutique (${boutiqueCount})</button>
     </div>` : ''}
 
-    ${mode === 'simple' ? `
+    ${mode === 'service' ? `
+    <div class="card" style="margin-bottom:14px">
+      <div class="card-title">🧾 Encaisser une prestation</div>
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:12px">Service sans stock : coiffure, couture, réparation, livraison, conseil, transport…</div>
+      <div class="form-group">
+        <label class="form-label">Description de la prestation</label>
+        <input class="input" type="text" id="svc-desc" placeholder="ex : Coupe + brushing, Réparation écran…" value="${(S.serviceDesc||'').replace(/"/g,'&quot;')}" oninput="S.serviceDesc=this.value">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Montant encaissé (${sym()})</label>
+        <input class="input" type="number" id="svc-amount" inputmode="numeric" min="0" placeholder="ex : 5000" value="${S.serviceAmount!=null&&S.serviceAmount!==''?S.serviceAmount:''}" oninput="S.serviceAmount=this.value;const b=document.getElementById('svc-pay-btn');if(b){const v=parseFloat(this.value)||0;b.textContent=v>0?'💰 Encaisser — '+fmt(v)+' ${sym()}':'💰 Encaisser';}">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Coût matériaux/charges <span style="color:var(--text-3);font-weight:400">(optionnel — pour un bénéfice juste)</span></label>
+        <input class="input" type="number" id="svc-cost" inputmode="numeric" min="0" placeholder="0" value="${S.serviceCost!=null&&S.serviceCost!==''?S.serviceCost:''}" oninput="S.serviceCost=this.value">
+      </div>
+      <div class="form-group">
+        <label class="form-label">${t('clients')} <span style="color:var(--text-3);font-weight:400">(optionnel)</span></label>
+        <div style="display:flex;gap:6px;margin-bottom:8px">
+          <button type="button" class="chip ${!S.saleNewClient?'active':''}" onclick="S.saleNewClient=false;render()">Existant</button>
+          <button type="button" class="chip ${S.saleNewClient?'active':''}" onclick="S.saleNewClient=true;render()">+ Nouveau client</button>
+        </div>
+        ${S.saleNewClient ? `
+        <input class="input" type="text" id="sale-new-client-name" placeholder="Nom du client" style="margin-bottom:6px" value="${(S.saleNewClientName||'').replace(/"/g,'&quot;')}" oninput="S.saleNewClientName=this.value">
+        <input class="input" type="tel" id="sale-new-client-phone" placeholder="Téléphone (optionnel)" value="${(S.saleNewClientPhone||'').replace(/"/g,'&quot;')}" oninput="S.saleNewClientPhone=this.value">
+        ` : `
+        <select class="input" id="sale-client" onchange="S.saleClientPick=this.value?(parseInt(this.value)||this.value):null">
+          <option value="">— Aucun client —</option>
+          ${S.clients.map(c=>`<option value="${c.id}" ${String(S.saleClientPick)===String(c.id)?'selected':''}>${c.name}${c.phone?' · '+c.phone:''}</option>`).join('')}
+        </select>`}
+      </div>
+      <div class="form-group">
+        <label class="form-label">Mode de paiement</label>
+        <select class="input" id="sale-payment">
+          <option value="cash">Especes</option>
+          ${(S.paymentMethods||[]).filter(m=>m.active).map(m=>`<option value="${m.provider}">${m.name}</option>`).join('')}
+        </select>
+      </div>
+      <button class="btn btn-primary" style="width:100%" id="svc-pay-btn" onclick="confirmServiceSale()">💰 Encaisser${(parseFloat(S.serviceAmount)||0)>0?` — ${fmt(parseFloat(S.serviceAmount)||0)} ${sym()}`:''}</button>
+    </div>` : mode === 'simple' ? `
     <div class="card" style="margin-bottom:14px">
       <div class="card-title">${t('newSale')}${boutiqueFilter?' <span style="font-size:11px;color:var(--accent);font-weight:700">· Stocks boutique uniquement</span>':''}</div>
       <div class="form-group">
@@ -7432,7 +7516,7 @@ function vSales() {
     <div class="sale-item">
       <div class="sale-dot" style="${g.paymentMethod&&g.paymentMethod!=='cash'?'background:'+pmColor(g.paymentMethod):''}"></div>
       <div class="sale-info">
-        <div class="sale-prod">${g.productName}${pmBadge(g.paymentMethod)}</div>
+        <div class="sale-prod">${g.kind==='service'?'🧾 ':''}${g.productName}${pmBadge(g.paymentMethod)}</div>
         <div class="sale-date">${fmtDate(g.date)}${g.clientName ? ` · <span style="color:var(--accent)">${g.clientName}</span>` : ''}${sellerBadge(g)}</div>
       </div>
       <div class="sale-right">
