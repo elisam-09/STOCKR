@@ -831,6 +831,14 @@ select.input { cursor: pointer; }
 .sale-total { font-weight: 800; font-size: 14px; }
 .sale-qty   { font-size: 11px; color: var(--text-3); }
 
+/* ── En-tête de jour (historique ventes) ────── */
+.day-hd {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin: 16px 2px 7px; font-size: 12px;
+}
+.day-hd span:first-child { font-weight: 800; color: var(--text-2); text-transform: capitalize; letter-spacing: 0.2px; }
+.day-hd span:last-child  { font-weight: 700; color: var(--text-3); font-variant-numeric: tabular-nums; }
+
 /* ── Rank ───────────────────────────────────── */
 .rank-item { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--gray-2); }
 .rank-item:last-child { border-bottom: none; }

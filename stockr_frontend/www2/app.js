@@ -7272,7 +7272,7 @@ function vSales() {
     <div class="filter-row" style="margin-bottom:10px">
       <button class="filter-chip ${!S.saleClientFilter?'active':''}" onclick="S.saleClientFilter=null;render()">${t('all')}</button>
       ${S.clients.filter(c => S.sales.some(s => s.clientId && String(s.clientId) === String(c.id))).map(c => `
-      <button class="filter-chip ${S.saleClientFilter===c.id?'active':''}" onclick="S.saleClientFilter=${c.id};render()">${c.name}</button>`).join('')}
+      <button class="filter-chip ${String(S.saleClientFilter)===String(c.id)?'active':''}" onclick="S.saleClientFilter='${String(c.id).replace(/[^\w-]/g,'')}';render()">${c.name}</button>`).join('')}
     </div>` : ''}
     ${(() => {
       const filtered = S.saleClientFilter ? S.sales.filter(s => s.clientId && String(s.clientId) === String(S.saleClientFilter)) : S.sales;
@@ -7303,11 +7303,28 @@ function vSales() {
       const pmBadge = m => m&&m!=='cash' ? ` <span style="font-size:10px;padding:1px 6px;border-radius:4px;background:${pmColor(m)}20;color:${pmColor(m)};font-weight:600">${pmLabel(m)}</span>` : '';
       const _showSeller = (S.teamMembers||[]).length > 0;
       const sellerBadge = g => (_showSeller && g.memberName) ? ` · <span style="color:var(--text-3)">👤 ${g.memberName}</span>` : '';
+      // ── En-têtes par jour (Aujourd'hui / Hier / date) + total du jour ──
+      const _dayKey = d => new Date(d).toDateString();
+      const _dayLabel = d => {
+        const k = _dayKey(d);
+        if (k === new Date().toDateString()) return "Aujourd'hui";
+        if (k === new Date(Date.now() - 86400000).toDateString()) return 'Hier';
+        return new Date(d).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+      };
+      const _dayTotals = {};
+      groups.forEach(g => { const k = _dayKey(g.date); _dayTotals[k] = (_dayTotals[k] || 0) + (g.total || 0); });
+      let _prevDay = null;
+      const _dayHdr = g => {
+        const k = _dayKey(g.date);
+        if (k === _prevDay) return '';
+        _prevDay = k;
+        return `<div class="day-hd"><span>${_dayLabel(g.date)}</span><span>${fmt(_dayTotals[k])} ${S.session?.currency_symbol||'FCFA'}</span></div>`;
+      };
       return groups.map(g => {
         if (g.isCart) {
           const gid = 'cart_grp_' + g.cartId;
           window[gid] = g.items;
-          return `
+          return _dayHdr(g) + `
     <div class="sale-item" style="flex-direction:column;align-items:stretch;gap:6px">
       <div style="display:flex;align-items:center;gap:8px">
         <div class="sale-dot" style="${g.paymentMethod&&g.paymentMethod!=='cash'?'background:'+pmColor(g.paymentMethod):''}"></div>
@@ -7331,7 +7348,7 @@ function vSales() {
         }
         const sid = 'sale_' + g.id;
         window[sid] = g;
-        return `
+        return _dayHdr(g) + `
     <div class="sale-item">
       <div class="sale-dot" style="${g.paymentMethod&&g.paymentMethod!=='cash'?'background:'+pmColor(g.paymentMethod):''}"></div>
       <div class="sale-info">
