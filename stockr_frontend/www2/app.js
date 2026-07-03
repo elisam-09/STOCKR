@@ -1686,6 +1686,9 @@ async function loadData() {
     render();
   }
 
+  // Statut d'abonnement serveur en parallèle (sans bloquer le chargement)
+  try { _syncBillingStatus(); } catch(_){}
+
   try {
     const [arts, prods, sales, preds, clients] = await Promise.all([
       api('GET', '/api/articles/'),
@@ -2182,6 +2185,42 @@ function setBilling(cycle) {
   S.subscription.billing = cycle;
   localStorage.setItem('baro_subscription', JSON.stringify(S.subscription));
   render();
+}
+// ── Synchronise le plan depuis le serveur (webhooks Stripe/CinetPay) ──
+// Un abonnement payé sur le web (checkout serveur) débloque l'app au
+// prochain démarrage. On ne rétrograde QUE ce que le serveur a accordé
+// (source:'server') — jamais un plan/essai activé localement.
+async function _syncBillingStatus() {
+  if (USE_LOCAL || !S.token) return;
+  try {
+    const st = await api('GET', '/api/billing/status');
+    if (!st || !st.plan) return;
+    const cur = S.subscription || {};
+    if (st.status === 'active' && st.plan !== 'free') {
+      if (cur.plan !== st.plan || cur.source !== 'server') {
+        S.subscription = {
+          plan: st.plan,
+          activated: cur.activated || new Date().toISOString(),
+          billing: cur.billing || 'monthly',
+          expires: st.expires || null,
+          provider: st.provider || null,
+          paid: true,
+          source: 'server',
+        };
+        localStorage.setItem('baro_subscription', JSON.stringify(S.subscription));
+        showToast(`✅ Abonnement ${st.plan.toUpperCase()} synchronisé depuis le serveur`, 'success');
+        render();
+      } else if (cur.expires !== st.expires) {
+        S.subscription = { ...cur, expires: st.expires || null };
+        localStorage.setItem('baro_subscription', JSON.stringify(S.subscription));
+      }
+    } else if (['expired', 'cancelled', 'past_due'].includes(st.status) && cur.source === 'server' && cur.plan !== 'free') {
+      S.subscription = { plan: 'free', activated: null, billing: cur.billing || 'monthly' };
+      localStorage.setItem('baro_subscription', JSON.stringify(S.subscription));
+      showToast('Votre abonnement a expiré — plan Gratuit', 'info');
+      render();
+    }
+  } catch (e) { /* hors-ligne ou backend absent : on garde l'état local, sans bruit */ }
 }
 function getPlanLimits(plan) {
   const limits = {
