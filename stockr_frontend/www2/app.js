@@ -2966,7 +2966,8 @@ function recordSale() {
     const artId = parseInt(sel.value.replace('art_', ''));
     const art = S.articles.find(a => a.id === artId);
     if (!art) return;
-    const qty = Math.max(1, parseFloat(qtyEl.value) || 1);
+    // Quantités décimales autorisées (boucherie au kg, tissu au mètre, vrac…)
+    const qty = Math.max(0.001, parseFloat(qtyEl.value) || 1);
     if (art.stock < qty) { showToast(`Stock insuffisant : ${art.name}`, 'error'); return; }
     art.stock = Math.round((art.stock - qty) * 1000) / 1000;
     const salePrice = art.sellPrice || art.price || 0;
@@ -3990,7 +3991,8 @@ function addToCart() {
     if (product) item = { id:'prod_'+product.id, productId:product.id, name:product.name, price:product.price, purchasePrice:product.purchasePrice||0, kind:'product' };
   }
   if (!item) return;
-  const qty = Math.max(1, parseFloat(qtyEl?.value) || 1);
+  // Quantités décimales autorisées (kg, mètres, litres…)
+  const qty = Math.max(0.001, parseFloat(qtyEl?.value) || 1);
   const existing = S.cart.find(c => c.cartId === item.id);
   if (existing) { existing.qty += qty; }
   else {
@@ -7363,7 +7365,7 @@ function vSales() {
       </div>
       <div class="form-group">
         <label class="form-label">${t('quantity')}</label>
-        <input type="number" class="input" id="sale-qty" value="1" min="1">
+        <input type="number" class="input" id="sale-qty" value="1" min="0.001" step="any" inputmode="decimal">
       </div>
       <div class="form-group">
         <label class="form-label">${t('clients')} <span style="color:var(--text-3);font-weight:400">(optionnel)</span></label>
