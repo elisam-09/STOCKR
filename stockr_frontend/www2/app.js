@@ -4565,7 +4565,8 @@ function deletePack(id) {
 function togglePackActive(id) {
   const pk = S.packs.find(p => p.id === id);
   if (!pk) return;
-  pk.active = !pk.active;
+  // active:undefined = actif implicite → le 1er tap doit bien DÉSACTIVER
+  pk.active = pk.active === false;
   persistPacks();
   showToast(pk.active ? `"${pk.name}" activé` : `"${pk.name}" désactivé`);
   render();
@@ -6208,7 +6209,9 @@ function vHome() {
   const today   = new Date().toDateString();
   const todaySales = S.sales.filter(s => s && new Date(s.date).toDateString()===today);
   const todayCA = todaySales.reduce((s,v)=>s+(v?.total||0),0);
-  const todayProfit = todaySales.reduce((s,v)=>s+(v?.profit||0),0);
+  // Bénéfice NET du jour : profit des ventes − dépenses du jour (cohérent avec le Bilan)
+  const _todayExp = (S.expenses||[]).filter(e => e && new Date(e.date).toDateString()===today).reduce((s,e)=>s+(e.amount||0),0);
+  const todayProfit = todaySales.reduce((s,v)=>s+(v?.profit||0),0) - _todayExp;
 
   // Top products by revenue
   const prodStats = {};
@@ -6303,7 +6306,7 @@ function vHome() {
         <div class="hero-stat-lbl">${t('caToday')}</div>
       </div>
       <div class="hero-stat" onclick="nav('financial')" style="cursor:pointer">
-        <div class="hero-stat-val" style="color:#34d399" data-count="${todayProfit}">${fmt(todayProfit)}</div>
+        <div class="hero-stat-val" style="color:${todayProfit>=0?'#34d399':'#fca5a5'}" data-count="${todayProfit}">${todayProfit<0?'−':''}${fmt(Math.abs(todayProfit))}</div>
         <div class="hero-stat-lbl">${t('profitToday')}</div>
       </div>
     </div>
@@ -14417,15 +14420,6 @@ function getFilteredArticles() {
 
 function getLocationArticleCount(locId) {
   return S.articles.filter(a => a.locationId === locId).length;
-}
-
-function getLocationSalesTotal(locId) {
-  const locArticleIds = S.articles.filter(a => a.locationId === locId).map(a => a.id);
-  return S.sales.filter(s => {
-    const prod = S.products.find(p => p.id === s.productId);
-    if (!prod) return false;
-    return (prod.composition||[]).some(c => locArticleIds.includes(c.id));
-  }).reduce((sum, s) => sum + (s.total || 0), 0);
 }
 
 // ── BUSINESS LOGO ────────────────────────────
