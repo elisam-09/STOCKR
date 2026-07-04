@@ -14508,8 +14508,16 @@ function uploadProductFormImage() {
 }
 
 // ── CATALOG (WhatsApp) ───────────────────────
+// Catalogue selon le métier : produits (transformateur), articles (revendeur), les deux (mixte)
+function _catalogItems() {
+  const out = [];
+  if (bt_showProducts()) S.products.forEach(p => { if ((p.price || 0) > 0) out.push({ id: 'p_' + p.id, name: p.name, price: p.price }); });
+  if (bt_showStock())    S.articles.forEach(a => { const pv = a.sellPrice || a.price || 0; if (pv > 0 && (a.stock || 0) > 0) out.push({ id: 'a_' + a.id, name: a.name, price: pv }); });
+  return out;
+}
+
 function vCatalog() {
-  const prods = S.products.filter(p => p.price > 0);
+  const prods = _catalogItems();
   const sym = S.session?.currency_symbol || 'FCFA';
   const biz = S.session?.business || S.session?.name || '';
   const low = S.articles.filter(a => a.stock > 0 && a.stock < a.min && a.min > 0);
@@ -14557,8 +14565,8 @@ function vCatalog() {
     </div>`).join('')}` : ''}
 
     <div class="section-hd" style="margin-top:8px"><div class="section-lbl">${t('selectProducts')}</div></div>
-    ${prods.length === 0 ? `<div class="card" style="text-align:center;padding:18px;color:var(--text-3);font-size:13px">${t('noProducts')}</div>` : prods.map(p => `
-    <div class="card card-tap" style="margin-bottom:4px" onclick="toggleCatalogProduct(${p.id})">
+    ${prods.length === 0 ? `<div class="card" style="text-align:center;padding:18px;color:var(--text-3);font-size:13px">${getBusinessType()==='reseller' ? 'Aucun article en stock avec un prix de vente — ajoutez-en depuis Stock.' : t('noProducts')}</div>` : prods.map(p => `
+    <div class="card card-tap" style="margin-bottom:4px" onclick="toggleCatalogProduct('${p.id}')">
       <div style="display:flex;align-items:center;gap:10px">
         <div style="width:22px;height:22px;border-radius:6px;border:2px solid ${S.catalogSelected.includes(p.id)?'var(--accent)':'var(--border)'};background:${S.catalogSelected.includes(p.id)?'var(--accent)':'transparent'};display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s">
           ${S.catalogSelected.includes(p.id) ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>' : ''}
@@ -14585,7 +14593,7 @@ function toggleCatalogProduct(id) {
 function generateCatalogImage() {
   const sym = S.session?.currency_symbol || 'FCFA';
   const biz = S.session?.business || S.session?.name || 'Mon Commerce';
-  const selected = S.products.filter(p => S.catalogSelected.includes(p.id));
+  const selected = _catalogItems().filter(p => S.catalogSelected.includes(p.id));
   const logo = localStorage.getItem('baro_logo');
 
   const W = 1080, rowH = 64, headerH = logo ? 200 : 160;
@@ -14683,7 +14691,7 @@ function generateCatalogImage() {
 async function shareCatalogWhatsApp() {
   const sym = S.session?.currency_symbol || 'FCFA';
   const biz = S.session?.business || S.session?.name || '';
-  const selected = S.products.filter(p => S.catalogSelected.includes(p.id));
+  const selected = _catalogItems().filter(p => S.catalogSelected.includes(p.id));
 
   // Try canvas image share first
   try {
