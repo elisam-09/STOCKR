@@ -312,7 +312,7 @@ body {
 .nav-label { font-size: 9px; font-weight: 600; letter-spacing: 0.1px; }
 .nav-tab svg { width: 20px; height: 20px; transition: filter 0.25s ease; }
 
-@media (max-width: 430px) {
+@media (max-width: 520px) {
   body { background: var(--bg); align-items: flex-start; }
   #app { border-radius: 0; max-width: 100%; box-shadow: none; height: 100svh; }
 }
@@ -4762,7 +4762,7 @@ select.input { background-image: linear-gradient(45deg, transparent 50%, var(--t
   animation: fadeIn .18s ease;
 }
 .qs-sheet {
-  background: var(--surface, #fff); width: 100%; max-width: 460px;
+  background: var(--surface, #fff); width: 100%; max-width: 430px;
   border-radius: 22px 22px 0 0; padding: 8px 18px calc(18px + env(safe-area-inset-bottom));
   box-shadow: 0 -12px 40px rgba(0,0,0,.3);
   animation: qsSlideUp .26s cubic-bezier(.2,.8,.2,1);
@@ -4924,7 +4924,7 @@ select.input { background-image: linear-gradient(45deg, transparent 50%, var(--t
 
 /* ── DEMANDER UN PAIEMENT (feuille modale) ───────────────────── */
 .payreq-sheet {
-  background: var(--surface); width: 100%; max-width: 460px;
+  background: var(--surface); width: 100%; max-width: 430px;
   border-radius: 22px 22px 0 0; padding: 8px 18px calc(18px + env(safe-area-inset-bottom));
   box-shadow: 0 -12px 40px rgba(0,0,0,.3); animation: qsSlideUp .26s cubic-bezier(.2,.8,.2,1);
   max-height: 92vh; overflow-y: auto;

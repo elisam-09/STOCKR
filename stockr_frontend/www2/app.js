@@ -2176,7 +2176,7 @@ function _showPlanLimitModal(feature, limit, label) {
   modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:10000;display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(6px);animation:fadeIn .2s';
   modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
   modal.innerHTML = `
-    <div style="background:var(--surface);border-radius:24px 24px 0 0;width:100%;max-width:480px;padding:24px 20px 28px;animation:ckUp .35s cubic-bezier(.2,0,0,1)">
+    <div style="background:var(--surface);border-radius:24px 24px 0 0;width:100%;max-width:430px;padding:24px 20px 28px;animation:ckUp .35s cubic-bezier(.2,0,0,1)">
       <div style="width:40px;height:4px;border-radius:2px;background:var(--gray-3);margin:0 auto 18px"></div>
       <div style="text-align:center">
         <div style="font-size:48px;margin-bottom:8px">🚀</div>
@@ -15573,7 +15573,7 @@ function createMeeting(existingId) {
   const tStr = defaultDate.toTimeString().slice(0,5);
 
   modal.innerHTML = `
-    <div style="background:var(--surface);border-radius:16px;max-width:480px;width:100%;max-height:90vh;overflow-y:auto;padding:20px;box-shadow:0 20px 60px rgba(0,0,0,0.3)">
+    <div style="background:var(--surface);border-radius:16px;max-width:430px;width:100%;max-height:90vh;overflow-y:auto;padding:20px;box-shadow:0 20px 60px rgba(0,0,0,0.3)">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
         <div style="font-size:17px;font-weight:800;color:var(--text-1)">${existing ? '✏️ Modifier la réunion' : '🤝 Nouvelle réunion'}</div>
         <button style="background:none;border:none;font-size:22px;color:var(--text-3);cursor:pointer" onclick="document.getElementById('meeting-modal').remove()">×</button>
@@ -21648,7 +21648,7 @@ function schedulePost() {
   modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
   const tomorrow = new Date(Date.now()+86400000).toISOString().slice(0,10);
   modal.innerHTML = `
-    <div style="background:var(--surface);border-radius:16px;max-width:440px;width:100%;max-height:92vh;overflow-y:auto;box-shadow:0 25px 60px rgba(0,0,0,.35);animation:slideUp .25s ease">
+    <div style="background:var(--surface);border-radius:16px;max-width:430px;width:100%;max-height:92vh;overflow-y:auto;box-shadow:0 25px 60px rgba(0,0,0,.35);animation:slideUp .25s ease">
       <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
         <div style="font-size:17px;font-weight:800;color:var(--text-1)">📅 Programmer une publication</div>
         <button style="width:30px;height:30px;border-radius:50%;border:none;background:var(--gray-1);color:var(--text-2);font-size:16px;cursor:pointer" onclick="document.getElementById('sched-modal').remove()">×</button>
@@ -22394,7 +22394,7 @@ function openVideoEditor(tpl) {
   modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:10001;display:flex;align-items:center;justify-content:center;padding:12px;backdrop-filter:blur(6px);animation:fadeIn .2s ease';
   const savedCount = _vidList().length;
   modal.innerHTML = `
-    <div style="background:var(--surface);border-radius:16px;max-width:480px;width:100%;max-height:94vh;overflow-y:auto;box-shadow:0 25px 60px rgba(0,0,0,.5);animation:slideUp .25s ease">
+    <div style="background:var(--surface);border-radius:16px;max-width:430px;width:100%;max-height:94vh;overflow-y:auto;box-shadow:0 25px 60px rgba(0,0,0,.5);animation:slideUp .25s ease">
       <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
         <div style="font-size:16px;font-weight:800;color:var(--text-1)">🎬 Studio vidéo${tpl?' — '+tpl.name:''}</div>
         <button style="width:30px;height:30px;border-radius:50%;border:none;background:var(--gray-1);color:var(--text-2);font-size:16px;cursor:pointer" onclick="document.getElementById('vid-editor-modal').remove()">×</button>
@@ -22616,7 +22616,7 @@ function __openPublishDialog(blob, vidId) {
   modal.id = 'publish-modal';
   modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:10002;display:flex;align-items:center;justify-content:center;padding:12px;backdrop-filter:blur(6px);animation:fadeIn .2s ease';
   modal.innerHTML = `
-    <div style="background:var(--surface);border-radius:16px;max-width:460px;width:100%;max-height:94vh;overflow-y:auto;box-shadow:0 25px 60px rgba(0,0,0,.5);animation:slideUp .25s ease">
+    <div style="background:var(--surface);border-radius:16px;max-width:430px;width:100%;max-height:94vh;overflow-y:auto;box-shadow:0 25px 60px rgba(0,0,0,.5);animation:slideUp .25s ease">
       <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
         <div style="font-size:16px;font-weight:800;color:var(--text-1)">📤 Publier la vidéo</div>
         <button style="width:30px;height:30px;border-radius:50%;border:none;background:var(--gray-1);color:var(--text-2);font-size:16px;cursor:pointer" onclick="document.getElementById('publish-modal').remove()">×</button>
@@ -22887,7 +22887,7 @@ function openCapCutFlow() {
   modal.id = 'capcut-modal';
   modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:10003;display:flex;align-items:center;justify-content:center;padding:12px;backdrop-filter:blur(6px);animation:fadeIn .2s ease';
   modal.innerHTML = `
-    <div style="background:var(--surface);border-radius:16px;max-width:440px;width:100%;max-height:94vh;overflow-y:auto;box-shadow:0 25px 60px rgba(0,0,0,.5);animation:slideUp .25s ease">
+    <div style="background:var(--surface);border-radius:16px;max-width:430px;width:100%;max-height:94vh;overflow-y:auto;box-shadow:0 25px 60px rgba(0,0,0,.5);animation:slideUp .25s ease">
       <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,#000,#25F4EE);color:#fff">
         <div style="font-size:16px;font-weight:800">✨ Flow CapCut</div>
         <button style="width:30px;height:30px;border-radius:50%;border:none;background:rgba(255,255,255,.2);color:#fff;font-size:16px;cursor:pointer" onclick="document.getElementById('capcut-modal').remove()">×</button>
@@ -24870,7 +24870,7 @@ function __openYTUploadModal() {
   modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:10005;display:flex;align-items:center;justify-content:center;padding:16px';
   modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
   modal.innerHTML = `
-    <div style="background:var(--surface);border-radius:16px;max-width:440px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 25px 60px rgba(0,0,0,.4)">
+    <div style="background:var(--surface);border-radius:16px;max-width:430px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 25px 60px rgba(0,0,0,.4)">
       <div style="background:#FF0000;padding:16px 20px;color:#fff;display:flex;align-items:center;justify-content:space-between">
         <div style="font-size:16px;font-weight:800">▶️ Upload YouTube (API directe)</div>
         <button style="width:30px;height:30px;border-radius:50%;border:none;background:rgba(255,255,255,.2);color:#fff;font-size:16px;cursor:pointer" onclick="document.getElementById('yt-upload-modal').remove()">×</button>
