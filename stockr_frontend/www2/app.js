@@ -1625,6 +1625,48 @@ async function api(method, path, body) {
 }
 
 // ── Mapping API → state ───────────────────────
+// ── Sauvegarde/restauration de la CONFIGURATION sur le serveur ──
+// Poussée à chaque démarrage connecté ; restaurée automatiquement sur un
+// appareil vierge (changement de téléphone). JAMAIS de mots de passe ni de
+// données métier (articles/ventes/clients/dépenses ont leurs propres tables).
+async function _syncStoreBackup() {
+  if (USE_LOCAL || !S.token) return;
+  const EXCLUDE = /^(stockr_articles|baro_articles|stockr_products|stockr_sales|stockr_clients|baro_clients|baro_expenses|baro_users_v2|stockr_session|baro_api_url|stockr_eanDB|baro_spectra_history|baro_activities|baro_local_data|baro_myorders|baro_payment_history|stockr_stock_movements)/;
+  const _collect = () => {
+    const blob = {};
+    let total = 0;
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (!/^(baro|stockr)_/.test(k) || EXCLUDE.test(k)) continue;
+      const v = localStorage.getItem(k);
+      if (v == null || v.length > 300000) continue; // jamais d'énormes valeurs (photos produits)
+      if (total + v.length > 1500000) break;
+      total += v.length;
+      blob[k] = v;
+    }
+    return blob;
+  };
+  try {
+    const srv = await api('GET', '/api/store/');
+    // Appareil vierge (rien de configuré localement) + sauvegarde serveur → restauration
+    const localVide = !(S.teamMembers || []).length && !(S.suppliers || []).length
+      && !((S.boutiqueConfig || {}).name)
+      && !(((S.boutiqueConfig || {}).articles || []).length)
+      && !(((S.boutiqueConfig || {}).products || []).length);
+    if (srv && srv.data && localVide) {
+      let blob = null; try { blob = JSON.parse(srv.data); } catch(_){}
+      if (blob && Object.keys(blob).length) {
+        Object.keys(blob).forEach(k => { try { localStorage.setItem(k, blob[k]); } catch(_){} });
+        showToast('☁️ Configuration restaurée depuis votre compte', 'success');
+        setTimeout(() => location.reload(), 900);
+        return;
+      }
+    }
+    // Sinon : miroir du local vers le serveur (sauvegarde du dernier démarrage)
+    await api('PUT', '/api/store/', { data: JSON.stringify(_collect()) });
+  } catch (e) { /* hors-ligne / serveur absent : silencieux */ }
+}
+
 // Persistance articles : TOUJOURS les deux clés historiques en même temps.
 // (Des chemins n'écrivaient que baro_articles, d'autres que stockr_articles →
 // selon le dernier écrivain, photo/prix disparaissaient au redémarrage.)
@@ -1719,6 +1761,8 @@ async function loadData() {
 
   // Statut d'abonnement serveur en parallèle (sans bloquer le chargement)
   try { _syncBillingStatus(); } catch(_){}
+  // Sauvegarde/restauration de la configuration (boutique, équipe, fournisseurs…)
+  try { _syncStoreBackup(); } catch(_){}
 
   try {
     const [arts, prods, sales, preds, clients, srvExps] = await Promise.all([
