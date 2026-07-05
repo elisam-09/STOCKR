@@ -1827,6 +1827,8 @@ async function loadData() {
       localStorage.setItem('stockr_sales',    JSON.stringify(S.sales));
       _saveClients();
     } catch(_){}
+    // Synchro serveur réussie → horodatage (affiché dans Paramètres)
+    if (!USE_LOCAL) { try { localStorage.setItem('baro_last_sync', new Date().toISOString()); } catch(_){} }
     render();
   } catch(e) {
     // Offline / API indisponible → on a déjà pré-hydraté, on notifie juste
@@ -4768,6 +4770,26 @@ async function saveApiUrl() {
     setTimeout(() => location.reload(), 800);
   } catch(e) {
     showToast('❌ Serveur injoignable à cette URL : ' + (e.message || e), 'error');
+  }
+}
+
+// Synchro manuelle : re-tire les données du serveur + re-pousse config/dépenses.
+let _syncing = false;
+async function syncNow() {
+  if (_syncing) return;
+  if (USE_LOCAL || !S.token) { showToast('Mode local — connectez un serveur dans « Serveur (API) »', 'info'); return; }
+  _syncing = true;
+  const btn = $('sync-now-btn');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Synchronisation…'; }
+  try {
+    await loadData();
+    try { await _syncStoreBackup(); } catch(_){}
+    showToast('☁️ Synchronisé', 'success');
+  } catch(e) {
+    showToast('Synchro impossible — réessayez plus tard', 'error');
+  } finally {
+    _syncing = false;
+    render();
   }
 }
 
@@ -15029,17 +15051,33 @@ function vSettings() {
     </div>
 
     <div class="settings-section">
-      <div class="settings-label">🌐 Serveur (API) — synchronisation</div>
+      <div class="settings-label">☁️ Synchronisation & sauvegarde</div>
+      ${(() => {
+        const online = !USE_LOCAL && !!S.token;
+        const lastSync = localStorage.getItem('baro_last_sync');
+        const lastTxt = lastSync ? fmtDate(lastSync) : 'jamais';
+        return `
+      <div class="card" style="padding:0;overflow:hidden;margin-bottom:10px">
+        <div style="display:flex;align-items:center;gap:12px;padding:14px;background:linear-gradient(135deg,${online?'rgba(16,185,129,.10)':'rgba(148,163,184,.10)'},transparent)">
+          <div style="width:44px;height:44px;border-radius:50%;background:${online?'rgba(16,185,129,.15)':'rgba(148,163,184,.15)'};display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">${online?'☁️':'📴'}</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-weight:800;font-size:14px;color:var(--text-1)">${online?'En ligne — synchronisé':'Mode local (hors-ligne)'}</div>
+            <div style="font-size:11.5px;color:var(--text-3);margin-top:1px">${online?`Compte : ${(S.session?.email||'—')} · dernière synchro : ${lastTxt}`:'Vos données sont sur cet appareil uniquement.'}</div>
+          </div>
+          <span style="width:10px;height:10px;border-radius:50%;background:${online?'#10B981':'#94A3B8'};flex-shrink:0;${online?'box-shadow:0 0 8px rgba(16,185,129,.6);animation:intDotPulse 2s ease-in-out infinite':''}"></span>
+        </div>
+        ${online ? `<button class="btn btn-ghost" id="sync-now-btn" style="width:100%;border:none;border-top:1px solid var(--border);border-radius:0;padding:13px;font-weight:700;color:var(--accent)" onclick="syncNow()">🔄 Synchroniser maintenant</button>` : ''}
+      </div>`;
+      })()}
       <div class="card" style="padding:14px">
         <div style="font-size:12px;color:var(--text-3);line-height:1.55;margin-bottom:10px">
-          URL de votre backend BARO (Render / Railway). Une fois connecté, vos comptes et données se synchronisent entre appareils. Vide = serveur par défaut.
+          URL de votre backend BARO (Render / Railway). Une fois connecté, vos comptes, données et configuration se synchronisent entre appareils. Vide = serveur par défaut.
         </div>
         <input class="input" id="set-api-url" type="url" placeholder="https://baro-api-xxxx.onrender.com" value="${(localStorage.getItem('baro_api_url')||'').replace(/"/g,'&quot;')}">
         <div style="display:flex;gap:8px;margin-top:10px">
           <button class="btn btn-primary" style="flex:1" onclick="saveApiUrl()">Tester & enregistrer</button>
           ${localStorage.getItem('baro_api_url') ? `<button class="btn btn-ghost" style="flex:0 0 auto" onclick="localStorage.removeItem('baro_api_url');showToast('URL serveur réinitialisée');setTimeout(()=>location.reload(),600)">Réinitialiser</button>` : ''}
         </div>
-        <div style="font-size:11px;color:var(--text-3);margin-top:8px">État actuel : <strong>${USE_LOCAL ? '📴 Mode local (serveur injoignable)' : '🟢 Connecté au serveur'}</strong></div>
       </div>
     </div>
 
@@ -28162,6 +28200,7 @@ function __baroInit() {
   window.selectUnitCond  = selectUnitCond;
   window.saveAccountInfo = saveAccountInfo;
   window.saveApiUrl      = saveApiUrl;
+  window.syncNow         = syncNow;
   window.toggleDark      = toggleDark;
   window.doLogin         = doLogin;
   window.doRegister      = doRegister;
