@@ -12,6 +12,7 @@ def create_app():
     
     # Importer tous les modèles avant create_all pour que SQLAlchemy connaisse les tables
     from routes.client_routes import Client  # noqa: F401
+    from routes.expense_routes import Expense  # noqa: F401
 
     with app.app_context():
         db.create_all()
@@ -40,6 +41,7 @@ def create_app():
     from routes.spectra_routes import spectra_bp
     from routes.client_routes import client_bp
     from routes.billing_routes import billing_bp
+    from routes.expense_routes import expense_bp
 
     app.register_blueprint(article_bp, url_prefix='/api/articles')
     app.register_blueprint(product_bp, url_prefix='/api/products')
@@ -50,6 +52,7 @@ def create_app():
     app.register_blueprint(spectra_bp, url_prefix='/api/spectra')
     app.register_blueprint(client_bp, url_prefix='/api/clients')
     app.register_blueprint(billing_bp, url_prefix='/api/billing')
+    app.register_blueprint(expense_bp, url_prefix='/api/expenses')
     
     
     @app.route('/api/health')

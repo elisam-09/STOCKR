@@ -1721,13 +1721,22 @@ async function loadData() {
   try { _syncBillingStatus(); } catch(_){}
 
   try {
-    const [arts, prods, sales, preds, clients] = await Promise.all([
+    const [arts, prods, sales, preds, clients, srvExps] = await Promise.all([
       api('GET', '/api/articles/'),
       api('GET', '/api/products/'),
       api('GET', '/api/sales/'),
       api('GET', '/api/predictions/'),
       api('GET', '/api/clients/').catch(() => []),
+      api('GET', '/api/expenses/').catch(() => null), // null = serveur sans dépenses / hors-ligne → on garde le local
     ]);
+    // Dépenses : le serveur fait foi pour ce qu'il connaît ; les saisies
+    // hors-ligne (sans serverId) sont conservées telles quelles.
+    if (Array.isArray(srvExps)) {
+      const srv = srvExps.map(e => ({ id: 'srv_' + e.id, serverId: e.id, label: e.label, amount: e.amount, category: e.category || 'Autre', date: e.date }));
+      const localOnly = (S.expenses || []).filter(e => e && !e.serverId && !String(e.id).startsWith('srv_'));
+      S.expenses = [...srv, ...localOnly].sort((a, b) => new Date(b.date) - new Date(a.date));
+      try { localStorage.setItem('baro_expenses', JSON.stringify(S.expenses)); } catch(_){}
+    }
     const apiArts    = (arts  || []).map(articleFromAPI);
     const apiProds   = (prods || []).map(productFromAPI);
     const apiSales   = (sales || []).map(saleFromAPI);
@@ -1849,8 +1858,15 @@ function addExpense() {
   if (!label)      { showToast('Décrivez la dépense', 'error'); return; }
   if (amount <= 0) { showToast('Entrez le montant', 'error'); return; }
   S.expenses = S.expenses || [];
-  S.expenses.unshift({ id: Date.now(), label, amount, category: cat, date: new Date().toISOString() });
+  const _exp = { id: Date.now(), label, amount, category: cat, date: new Date().toISOString() };
+  S.expenses.unshift(_exp);
   localStorage.setItem('baro_expenses', JSON.stringify(S.expenses));
+  // Synchro serveur (multi-appareils) — sans bloquer, sans bruit hors-ligne
+  if (!USE_LOCAL && S.token) {
+    api('POST', '/api/expenses/', { label, amount, category: cat, date: _exp.date })
+      .then(r => { if (r && r.id) { _exp.serverId = r.id; localStorage.setItem('baro_expenses', JSON.stringify(S.expenses)); } })
+      .catch(() => {});
+  }
   logActivity('expense', `Dépense : ${label} — ${fmt(amount)} ${sym()}`);
   showToast(`💸 Dépense enregistrée — ${fmt(amount)} ${sym()}`, 'success');
   S.expLabel = ''; S.expAmount = ''; S.expCat = '';
@@ -1862,6 +1878,7 @@ function deleteExpense(id) {
   if (!confirm(`Supprimer la dépense « ${e.label} » (${fmt(e.amount)} ${sym()}) ?`)) return;
   S.expenses = S.expenses.filter(x => String(x.id) !== String(id));
   localStorage.setItem('baro_expenses', JSON.stringify(S.expenses));
+  if (e.serverId && !USE_LOCAL && S.token) { api('DELETE', `/api/expenses/${e.serverId}`).catch(() => {}); }
   showToast('Dépense supprimée', 'info');
   render();
 }
