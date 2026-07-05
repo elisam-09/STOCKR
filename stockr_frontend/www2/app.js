@@ -1631,7 +1631,7 @@ async function api(method, path, body) {
 // données métier (articles/ventes/clients/dépenses ont leurs propres tables).
 async function _syncStoreBackup() {
   if (USE_LOCAL || !S.token) return;
-  const EXCLUDE = /^(stockr_articles|baro_articles|stockr_products|stockr_sales|stockr_clients|baro_clients|baro_expenses|baro_users_v2|stockr_session|baro_api_url|stockr_eanDB|baro_spectra_history|baro_activities|baro_local_data|baro_myorders|baro_payment_history|stockr_stock_movements)/;
+  const EXCLUDE = /^(stockr_articles|baro_articles|stockr_products|stockr_sales|stockr_clients|baro_clients|baro_expenses|baro_users_v2|stockr_session|baro_api_url|stockr_eanDB|baro_spectra_history|baro_activities|baro_local_data|baro_myorders|baro_payment_history|baro_movements|baro_last_sync)/;
   const _collect = () => {
     const blob = {};
     let total = 0;
@@ -4206,8 +4206,7 @@ async function confirmMultiSale(opts = {}) {
           article.stock = Math.max(0, (article.stock||0) - qty);
           _saveArticles();
           try { await api('PUT', `/api/articles/${article.id}`, { stock: article.stock }); } catch(e) {}
-          S.stockMovements.unshift({ id:Date.now()+Math.random(), articleId:article.id, articleName:article.name, type:'out', qty, reason:'Vente directe', date:new Date().toISOString() });
-          localStorage.setItem('stockr_stock_movements', JSON.stringify(S.stockMovements));
+          pushMovement(article.name, 'exit', qty, 'Vente directe');
         }
       } else if (it.kind === 'pack') {
         // Pack : vendre chaque produit du pack au prorata du pack
@@ -4219,8 +4218,7 @@ async function confirmMultiSale(opts = {}) {
             } catch(e) { /* fallback offline */ }
           }
           // Tracer la vente du pack
-          S.stockMovements.unshift({ id:Date.now()+Math.random(), type:'out', qty, reason:`Vente pack "${pack.name}"`, date:new Date().toISOString() });
-          localStorage.setItem('stockr_stock_movements', JSON.stringify(S.stockMovements));
+          pushMovement(pack.name, 'exit', qty, `Vente pack`);
         }
       }
       const __mm = (typeof getCurrentMember === 'function') ? getCurrentMember() : null;
@@ -14041,18 +14039,19 @@ function deleteSupplier(id) {
 }
 
 // ── STOCK MOVEMENT HISTORY ──────────────────
-function logMovement(articleName, type, qty, note) {
-  const mv = {
-    id: Date.now(),
-    article: articleName,
-    type, // 'entry' | 'exit' | 'adjustment'
-    qty,
-    note: note || '',
-    date: new Date().toISOString(),
-  };
-  S.stockMovements.unshift(mv);
+// Persistance unique : baro_movements (la seule clé relue au démarrage).
+function _saveMovements() {
   if (S.stockMovements.length > 500) S.stockMovements = S.stockMovements.slice(0, 500);
-  localStorage.setItem('baro_movements', JSON.stringify(S.stockMovements));
+  try { localStorage.setItem('baro_movements', JSON.stringify(S.stockMovements)); } catch(_){}
+}
+// Enregistre un mouvement dans la forme attendue par l'Historique
+// (article / type 'entry'|'exit'|'adjustment' / note). Point d'entrée unique.
+function pushMovement(articleName, type, qty, note) {
+  S.stockMovements.unshift({ id: Date.now() + Math.random(), article: articleName || '—', type, qty, note: note || '', date: new Date().toISOString() });
+  _saveMovements();
+}
+function logMovement(articleName, type, qty, note) {
+  pushMovement(articleName, type, qty, note);
 }
 
 // ── STOCK TRANSFER BETWEEN LOCATIONS ────────
