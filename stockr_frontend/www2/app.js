@@ -1466,13 +1466,15 @@ function _localApi(method, path, body) {
   // ── Articles ──
   if (path === '/api/articles/' && method === 'GET') return d.articles;
   if (path === '/api/articles/' && method === 'POST') {
-    const a = { id: Date.now(), name: body.name, quantity: body.quantity || 0, unit: body.unit || 'pcs', alert_threshold: body.alert_threshold || 0, lead_time_days: body.lead_time_days || 7, daily_avg_demand: 0 };
+    // Stocker le corps COMPLET (image, sell_price, category, expiry…) — le
+    // squelette 7 champs faisait "disparaître" photo/prix au redémarrage.
+    const a = { quantity: 0, unit: 'pcs', alert_threshold: 0, lead_time_days: 7, daily_avg_demand: 0, ...body, id: Date.now() };
     d.articles.push(a); _lsSaveData(_uid(), d); return a;
   }
   const artId = path.match(/\/api\/articles\/(\d+)/)?.[1];
   if (artId && method === 'PUT') {
     const a = d.articles.find(a => a.id === parseInt(artId));
-    if (a) { Object.assign(a, { quantity: body.quantity ?? a.quantity, alert_threshold: body.alert_threshold ?? a.alert_threshold, lead_time_days: body.lead_time_days ?? a.lead_time_days }); _lsSaveData(_uid(), d); }
+    if (a) { for (const k in body) { if (body[k] !== undefined) a[k] = body[k]; } _lsSaveData(_uid(), d); }
     return a;
   }
   if (artId && method === 'DELETE') {
@@ -1482,14 +1484,15 @@ function _localApi(method, path, body) {
   // ── Products ──
   if (path === '/api/products/' && method === 'GET') return d.products.map(p => ({ ...p, composition: (p.composition||[]).map(c => ({ article: d.articles.find(a=>a.id===c.article_id)||{id:c.article_id,name:'?',unit:'pcs'}, quantity_used: c.quantity_used })) }));
   if (path === '/api/products/' && method === 'POST') {
-    const p = { id: Date.now(), name: body.name, price: body.price || 0, purchase_price: body.purchase_price || 0, composition: body.composition || [] };
+    // Corps complet ici aussi (image, category, description…)
+    const p = { price: 0, purchase_price: 0, composition: [], ...body, id: Date.now() };
     d.products.push(p); _lsSaveData(_uid(), d);
     return { ...p, composition: p.composition.map(c => ({ article: d.articles.find(a=>a.id===c.article_id)||{id:c.article_id,name:'?',unit:'pcs'}, quantity_used: c.quantity_used })) };
   }
   const prodId = path.match(/\/api\/products\/(\d+)/)?.[1];
   if (prodId && method === 'PUT') {
     const p = d.products.find(p => p.id === parseInt(prodId));
-    if (p) { p.name = body.name || p.name; p.price = body.price ?? p.price; p.purchase_price = body.purchase_price ?? p.purchase_price ?? 0; p.composition = body.composition || p.composition; _lsSaveData(_uid(), d); }
+    if (p) { for (const k in body) { if (body[k] !== undefined) p[k] = body[k]; } _lsSaveData(_uid(), d); }
     return { ...p, composition: (p.composition||[]).map(c => ({ article: d.articles.find(a=>a.id===c.article_id)||{id:c.article_id,name:'?',unit:'pcs'}, quantity_used: c.quantity_used })) };
   }
   if (prodId && method === 'DELETE') {
@@ -1622,6 +1625,17 @@ async function api(method, path, body) {
 }
 
 // ── Mapping API → state ───────────────────────
+// Persistance articles : TOUJOURS les deux clés historiques en même temps.
+// (Des chemins n'écrivaient que baro_articles, d'autres que stockr_articles →
+// selon le dernier écrivain, photo/prix disparaissaient au redémarrage.)
+function _saveArticles() {
+  try {
+    const j = JSON.stringify(S.articles || []);
+    localStorage.setItem('stockr_articles', j);
+    localStorage.setItem('baro_articles', j);
+  } catch(_){}
+}
+
 function articleFromAPI(a) {
   return {
     id: a.id, name: a.name, stock: a.quantity, unit: a.unit,
@@ -1659,7 +1673,22 @@ function saleFromAPI(s) {
 async function loadData() {
   // Lire d'abord les données locales comme fallback garanti
   const local = {
-    articles: (() => { try { return JSON.parse(localStorage.getItem('stockr_articles') || '[]'); } catch { return []; } })(),
+    articles: (() => { try {
+      // Fusionne les deux stockages historiques (stockr_articles + baro_articles) par id —
+      // le bouton Vendre & co n'écrivaient que baro_articles alors qu'on ne lisait que
+      // stockr_articles → photo/prix "disparaissaient" au redémarrage. Champ par champ,
+      // la valeur non vide gagne (photo et prix survivent quel que soit le dernier écrivain).
+      const a = JSON.parse(localStorage.getItem('stockr_articles') || '[]');
+      const b = JSON.parse(localStorage.getItem('baro_articles')   || '[]');
+      const map = {};
+      [...a, ...b].forEach(x => {
+        if (!x || x.id == null) return;
+        if (!map[x.id]) { map[x.id] = { ...x }; return; }
+        const m = map[x.id];
+        for (const k in x) { const v = x[k]; if (v !== undefined && v !== null && v !== '' && !(v === 0 && (m[k] || m[k] === 0))) m[k] = v; else if (m[k] === undefined) m[k] = v; }
+      });
+      return Object.values(map);
+    } catch { return []; } })(),
     products: (() => { try { return JSON.parse(localStorage.getItem('stockr_products') || '[]'); } catch { return []; } })(),
     sales:    (() => { try { return JSON.parse(localStorage.getItem('stockr_sales')    || '[]'); } catch { return []; } })(),
     clients:  (() => { try {
@@ -1703,23 +1732,18 @@ async function loadData() {
     const apiProds   = (prods || []).map(productFromAPI);
     const apiSales   = (sales || []).map(saleFromAPI);
     const apiClients = clients || [];
-    // Préserver les images locales (le backend ne stocke pas les photos)
-    const __imgMap = {};
-    [...local.articles, ...local.products].forEach(x => { if (x && x.image) __imgMap[x.id] = x.image; });
-    apiArts.forEach(a => { if (!a.image && __imgMap[a.id]) a.image = __imgMap[a.id]; });
-    apiProds.forEach(p => { if (!p.image && __imgMap[p.id]) p.image = __imgMap[p.id]; });
-    // Préserver les extras boutique locaux (le backend ne stocke ni les photos
-    // supplémentaires, ni les variantes, ni les avis) → sinon ils "disparaissent"
-    // au prochain chargement quand l'API répond.
+    // Préserver TOUT ce que l'API/le shim local ne stocke pas : photos, prix
+    // d'achat/vente, catégorie, EAN, péremption, vitrine, variantes, avis…
+    // Sans ça, un rechargement "efface" la photo et le bloc Vendre (bug récurrent).
     const __extraMap = {};
-    [...local.articles, ...local.products].forEach(x => {
-      if (x && x.id != null) __extraMap[x.id] = { images: x.images, variants: x.variants, reviews: x.reviews };
-    });
+    [...local.articles, ...local.products].forEach(x => { if (x && x.id != null) __extraMap[x.id] = x; });
+    const __ARRAY_FIELDS  = ['images', 'variants', 'reviews'];
+    const __SCALAR_FIELDS = ['image', 'sellPrice', 'purchasePrice', 'price', 'category', 'ean', 'ref', 'expiry', 'perishable', 'inBoutique', 'description', 'locationId'];
     const __applyExtras = o => {
       const e = __extraMap[o.id]; if (!e) return;
-      if (Array.isArray(e.images)  && e.images.length)  o.images  = e.images;
-      if (Array.isArray(e.variants) && e.variants.length) o.variants = e.variants;
-      if (Array.isArray(e.reviews) && e.reviews.length) o.reviews = e.reviews;
+      __ARRAY_FIELDS.forEach(f => { if (Array.isArray(e[f]) && e[f].length && !(Array.isArray(o[f]) && o[f].length)) o[f] = e[f]; });
+      // On ne comble que les valeurs VIDES côté API (null/undefined/''/0) — jamais d'écrasement d'une vraie valeur.
+      __SCALAR_FIELDS.forEach(f => { if ((o[f] == null || o[f] === '' || o[f] === 0) && e[f] != null && e[f] !== '' && e[f] !== 0) o[f] = e[f]; });
     };
     apiArts.forEach(__applyExtras);
     apiProds.forEach(__applyExtras);
@@ -1745,7 +1769,7 @@ async function loadData() {
     recalcAllMins();
     // Persister pour fallback offline
     try {
-      localStorage.setItem('stockr_articles', JSON.stringify(S.articles));
+      _saveArticles();
       localStorage.setItem('stockr_products', JSON.stringify(S.products));
       localStorage.setItem('stockr_sales',    JSON.stringify(S.sales));
       _saveClients();
@@ -2683,7 +2707,7 @@ async function doRegister() {
     S.clients  = S.clients  || [];
     S.sales    = S.sales    || [];
     try {
-      localStorage.setItem('stockr_articles', JSON.stringify(S.articles));
+      _saveArticles();
       localStorage.setItem('stockr_products', JSON.stringify(S.products));
       _saveClients();
       localStorage.setItem('stockr_sales',    JSON.stringify(S.sales));
@@ -2833,7 +2857,7 @@ function seedDemoData(bt) {
   S.clients  = seedClients;
   S.sales    = seedSales.sort((a,b) => new Date(b.date) - new Date(a.date));
   try {
-    localStorage.setItem('stockr_articles', JSON.stringify(S.articles));
+    _saveArticles();
     localStorage.setItem('stockr_products', JSON.stringify(S.products));
     _saveClients();
     localStorage.setItem('stockr_sales',    JSON.stringify(S.sales));
@@ -2848,7 +2872,7 @@ function loadDemoData() {
     seedDemoData(bt);
     // Double persistance : certains modules lisent stockr_*, d'autres baro_*
     try {
-      localStorage.setItem('baro_articles', JSON.stringify(S.articles));
+      _saveArticles();
       localStorage.setItem('baro_products', JSON.stringify(S.products));
       _saveClients();
       localStorage.setItem('baro_sales',    JSON.stringify(S.sales));
@@ -2979,7 +3003,7 @@ function recordSale() {
     const { clientId, clientName } = _resolveClientForSale();
     const __m = (typeof getCurrentMember === 'function') ? getCurrentMember() : null;
     S.sales.unshift({ id: Date.now(), productId: art.id, productName: art.name, qty, total: saleTotal, profit, date: new Date().toISOString(), paymentMethod: payMethod, clientId, clientName, memberId: __m?.id || null, memberName: __m?.name || null });
-    localStorage.setItem('baro_articles', JSON.stringify(S.articles));
+    _saveArticles();
     logActivity('sale', `${art.name} x${qty} — ${fmt(saleTotal)} ${sym()}`);
     showToast(`${t('saleConfirmed')} — ${fmt(saleTotal)} ${sym()}`);
     render();
@@ -3083,7 +3107,7 @@ async function saveArticle() {
     newArt.ean = (f.ean || '').trim();
     newArt.barcode = newArt.ean;
     S.articles.push(newArt);
-    localStorage.setItem('baro_articles', JSON.stringify(S.articles));
+    _saveArticles();
     logActivity('new_article', f.name.trim());
     const msg = bt === 'reseller'
       ? `✅ "${f.name}" ajouté${purchasePrice > 0 && price > 0 ? ` — marge ${Math.round(((price - purchasePrice) / price) * 100)}%` : ''}`
@@ -4110,7 +4134,7 @@ async function confirmMultiSale(opts = {}) {
         const article = S.articles.find(a => a.id === it.articleId);
         if (article) {
           article.stock = Math.max(0, (article.stock||0) - qty);
-          localStorage.setItem('stockr_articles', JSON.stringify(S.articles));
+          _saveArticles();
           try { await api('PUT', `/api/articles/${article.id}`, { stock: article.stock }); } catch(e) {}
           S.stockMovements.unshift({ id:Date.now()+Math.random(), articleId:article.id, articleName:article.name, type:'out', qty, reason:'Vente directe', date:new Date().toISOString() });
           localStorage.setItem('stockr_stock_movements', JSON.stringify(S.stockMovements));
@@ -4352,7 +4376,7 @@ async function confirmCart() {
         total += lineTotal; count += item.qty;
         const newSale = { id: Date.now() + Math.random(), cartId, productId: null, articleId: item.articleId, productName: item.productName, qty: item.qty, total: lineTotal, profit: lineProfit, date: new Date().toISOString(), clientId, clientName: resolvedClientName || client?.name || null, paymentMethod: payMethod };
         S.sales.unshift(newSale); newSales.push(newSale);
-        try { localStorage.setItem('baro_articles', JSON.stringify(S.articles)); } catch(_){}
+        try { _saveArticles(); } catch(_){}
         continue;
       }
       // ── Pack : destockage local des composants, pas d'API ──
@@ -4374,7 +4398,7 @@ async function confirmCart() {
         total += lineTotal; count += item.qty;
         const newSale = { id: Date.now() + Math.random(), cartId, productId: null, packId: item.packId, productName: item.productName, qty: item.qty, total: lineTotal, profit: lineProfit, date: new Date().toISOString(), clientId, clientName: resolvedClientName || client?.name || null, paymentMethod: payMethod };
         S.sales.unshift(newSale); newSales.push(newSale);
-        try { localStorage.setItem('baro_articles', JSON.stringify(S.articles)); } catch(_){}
+        try { _saveArticles(); } catch(_){}
         continue;
       }
       // ── Produit classique : tente l'API, fallback local si échec (offline ou produit non-sync) ──
@@ -4411,7 +4435,7 @@ async function confirmCart() {
         : { id: Date.now() + Math.random(), cartId, productId: item.productId, productName: item.productName || product?.name, qty: item.qty, total: lineTotal, profit: lineProfit, date: new Date().toISOString(), clientId, clientName: resolvedClientName || client?.name || null, paymentMethod: payMethod, promoName, promoDiscount };
       S.sales.unshift(newSale);
       newSales.push(newSale);
-      try { localStorage.setItem('baro_articles', JSON.stringify(S.articles)); } catch(_){}
+      try { _saveArticles(); } catch(_){}
     }
     // Attribution au vendeur connecté (sinon admin) — pour "Ventes par vendeur" & stats équipe
     newSales.forEach(s => { s.memberId = __m?.id || null; s.memberName = __m?.name || null; });
@@ -4441,9 +4465,9 @@ async function confirmCart() {
     showReceiptBanner(newSales, total);
     // Persist local state (articles/sales) quoi qu'il arrive
     try {
-      localStorage.setItem('baro_articles', JSON.stringify(S.articles));
+      _saveArticles();
       localStorage.setItem('baro_sales',    JSON.stringify(S.sales));
-      localStorage.setItem('stockr_articles', JSON.stringify(S.articles));
+      _saveArticles();
       localStorage.setItem('stockr_sales',    JSON.stringify(S.sales));
     } catch(_) {}
     // Recharger les articles depuis l'API si possible (silencieux en cas d'échec offline)
@@ -4462,7 +4486,7 @@ async function confirmCart() {
           }
           return a;
         });
-        try { localStorage.setItem('baro_articles', JSON.stringify(S.articles)); localStorage.setItem('stockr_articles', JSON.stringify(S.articles)); } catch(_){}
+        try { _saveArticles(); } catch(_){}
       }
     } catch(_) { /* offline : garder l'état local */ }
     try { recalcAllMins(); } catch(_) {}
@@ -5532,8 +5556,8 @@ function _wizardCommit() {
     const art = { id: Date.now(), name: p.name, price, purchasePrice: cost, stock, min: 0, unit: 'pce', category: '' };
     if (!Array.isArray(S.articles)) S.articles = [];
     S.articles.push(art);
-    try { localStorage.setItem('baro_articles', JSON.stringify(S.articles)); } catch(_){}
-    try { localStorage.setItem('stockr_articles', JSON.stringify(S.articles)); } catch(_){}
+    try { _saveArticles(); } catch(_){}
+    try { _saveArticles(); } catch(_){}
     try { api('POST', '/api/articles/', { name: art.name, quantity: stock, unit: 'pce', price, purchase_price: cost }); } catch(_){}
   }
   // WhatsApp Business (mode rapide)
@@ -8440,7 +8464,7 @@ function updateArticleField(id, field, value) {
   const art = S.articles.find(a => a.id === id);
   if (!art) return;
   art[field] = value;
-  localStorage.setItem('baro_articles', JSON.stringify(S.articles));
+  _saveArticles();
   showToast(t('infoUpdated'));
 }
 
@@ -8532,8 +8556,8 @@ function saveBulkArticles() {
   }));
   S.articles = [...created, ...(S.articles || [])];
   try {
-    localStorage.setItem('baro_articles', JSON.stringify(S.articles));
-    localStorage.setItem('stockr_articles', JSON.stringify(S.articles));
+    _saveArticles();
+    _saveArticles();
   } catch(_){}
   // Sync API en arrière-plan (silencieux si hors-ligne)
   created.forEach(a => { try { api('POST', '/api/articles/', { name:a.name, quantity:a.stock, unit:a.unit, price:a.price, sell_price:a.sellPrice, ref:a.ref, category:a.category }); } catch(_){} });
@@ -8578,7 +8602,7 @@ function _bulkSetPhoto(id) {
     const a = (S.articles || []).find(x => String(x.id) === String(id));
     if (!a) return;
     a.image = data;
-    try { localStorage.setItem('baro_articles', JSON.stringify(S.articles)); localStorage.setItem('stockr_articles', JSON.stringify(S.articles)); } catch(_){}
+    try { _saveArticles(); } catch(_){}
     if (typeof haptic === 'function') haptic('success');
     render();
   });
@@ -13352,7 +13376,7 @@ async function spectraConfirmReception() {
         else art.stock = (art.stock || 0) + it.quantity;
       }
     });
-    localStorage.setItem('baro_articles', JSON.stringify(S.articles));
+    _saveArticles();
     S.spectra.results = items.map(it => ({ name: it.matched_name || it.detected_name, new_qty: it.quantity, unit: it.matched_unit || 'pce' }));
     S.spectra.step = 'done';
     showToast(t('spectraReceptionDone'), 'success');
@@ -13372,7 +13396,7 @@ function spectraAdjustStock() {
       adjusted++;
     }
   });
-  localStorage.setItem('baro_articles', JSON.stringify(S.articles));
+  _saveArticles();
   showToast(`${t('spectraAdjust')}: ${adjusted} ${t('articles').toLowerCase()}`, 'success');
   spectraReset();
   nav('pantry');
@@ -13542,7 +13566,7 @@ function receiveOrder(id) {
   if (art) {
     if (art.qty !== undefined) art.qty += order.qty;
     else art.stock = (art.stock || 0) + order.qty;
-    localStorage.setItem('baro_articles', JSON.stringify(S.articles));
+    _saveArticles();
     logMovement(art.name, 'entry', order.qty, t('purchaseOrders') + ': ' + (order.supplierName || ''));
   }
   localStorage.setItem('baro_orders', JSON.stringify(S.purchaseOrders));
@@ -13977,7 +14001,7 @@ function openStockTransfer() {
   }
   article.stock -= qty;
   destArticle.stock += qty;
-  localStorage.setItem('stockr_articles', JSON.stringify(S.articles));
+  _saveArticles();
   logMovement(article.name, 'exit', qty, `Transfert → ${toLoc.name}`);
   logMovement(destArticle.name, 'entry', qty, `Transfert ← ${fromLoc.name}`);
   logActivity('stock', `Transfert : ${qty} ${article.unit} ${article.name} (${fromLoc.name} → ${toLoc.name})`);
@@ -14289,7 +14313,7 @@ function quickSaleProduct(productId) {
         logMovement(art.name, 'exit', comp.qty || 1, t('quickSale') + ': ' + prod.name);
       }
     });
-    localStorage.setItem('baro_articles', JSON.stringify(S.articles));
+    _saveArticles();
   }
 
   // Loyalty points
@@ -14392,7 +14416,7 @@ function removeLocation(id) {
   localStorage.setItem('baro_locations', JSON.stringify(S.locations));
   // Un-assign articles from this location
   S.articles.forEach(a => { if (a.locationId === id) a.locationId = null; });
-  localStorage.setItem('baro_articles', JSON.stringify(S.articles));
+  _saveArticles();
   if (S.currentLocation === id) {
     S.currentLocation = null;
     localStorage.removeItem('baro_current_location');
@@ -14411,7 +14435,7 @@ function setArticleLocation(articleId, locationId) {
   const art = S.articles.find(a => a.id === articleId);
   if (!art) return;
   art.locationId = locationId || null;
-  localStorage.setItem('baro_articles', JSON.stringify(S.articles));
+  _saveArticles();
   showToast(`Emplacement mis à jour`);
 }
 
@@ -19727,8 +19751,8 @@ function _optItem() {
 }
 function _persistProductObj(a) {
   if ((S.articles||[]).some(x => x.id === a.id)) {
-    localStorage.setItem('baro_articles', JSON.stringify(S.articles));
-    try { localStorage.setItem('stockr_articles', JSON.stringify(S.articles)); } catch(_){}
+    _saveArticles();
+    try { _saveArticles(); } catch(_){}
   } else {
     localStorage.setItem('baro_products', JSON.stringify(S.products));
     try { localStorage.setItem('stockr_products', JSON.stringify(S.products)); } catch(_){}
@@ -24782,7 +24806,7 @@ async function importFromEcommerce(provider) {
       }
     });
 
-    try { localStorage.setItem('stockr_articles', JSON.stringify(S.articles)); } catch(e){}
+    try { _saveArticles(); } catch(e){}
     if (typeof logAudit === 'function') logAudit('product', 'import_' + provider, { created, updated });
     showToast(`✅ Import ${provider} : ${created} créés, ${updated} mis à jour`, 'success');
     render();
