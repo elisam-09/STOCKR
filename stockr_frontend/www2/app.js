@@ -5524,13 +5524,13 @@ function vSetupWizard() {
   let body = '';
   if (w.step === 0) {
     const choices = [
-      ['reseller','🏪','Revendeur','J\'achète et je revends des produits finis'],
-      ['maker','🏭','Transformateur','Je fabrique à partir de matières premières'],
-      ['mixed','🔀','Mixte','Les deux à la fois'],
+      ['reseller','🏪','Revendeur / Boutique','Boutique, épicerie, quincaillerie, cosmétiques, pharmacie… j\'achète et je revends'],
+      ['maker','🏭','Fabricant / Restaurant','Restaurant, pâtisserie, couture, artisanat… je fabrique à partir de matières'],
+      ['mixed','🔀','Les deux','Je vends ET je fabrique (ex : boutique avec atelier)'],
     ];
     body = `
-      <div class="wiz-h1">Quel est votre type d'activité ?</div>
-      <div class="wiz-sub">BARO s'adapte à votre métier.</div>
+      <div class="wiz-h1">Quel est votre métier ?</div>
+      <div class="wiz-sub">BARO s'adapte à votre activité — vous pourrez changer plus tard.</div>
       <div class="wiz-choices">
         ${choices.map(([id,ic,ti,de]) => `
           <button class="wiz-choice ${w.type===id?'sel':''}" onclick="wizardSetType('${id}')">
@@ -5539,6 +5539,7 @@ function vSetupWizard() {
             <span class="wiz-choice-check">${w.type===id?'✓':''}</span>
           </button>`).join('')}
       </div>
+      <div style="font-size:11.5px;color:var(--text-3);text-align:center;line-height:1.5;margin:2px 4px 0">💇 Vous faites surtout des <strong>services</strong> (coiffure, réparation, transport, conseil) ? Choisissez au plus proche — le mode <strong>🧾 Prestation</strong> fonctionne dans tous les cas.</div>
       <button class="btn btn-primary wiz-cta" onclick="wizardNext()">Continuer</button>`;
   } else if (w.step === 1) {
     body = `
@@ -15085,8 +15086,8 @@ function vSettings() {
       <div class="settings-label">Type d'activité</div>
       <div class="settings-row-block">
         ${[
-          { id:'reseller', icon:'🏪', label:'Revendeur', sub:'Je revends des produits — stock uniquement' },
-          { id:'maker',    icon:'🏭', label:'Transformateur', sub:'Je transforme des matières en produits finis' },
+          { id:'reseller', icon:'🏪', label:'Revendeur / Boutique', sub:'Boutique, épicerie, cosmétiques… stock uniquement' },
+          { id:'maker',    icon:'🏭', label:'Fabricant / Restaurant', sub:'Restaurant, pâtisserie, couture… matières → produits' },
           { id:'mixed',    icon:'🔀', label:'Mixte',    sub:'Les deux — vente directe + fabrication' },
         ].map(bt => `
         <div class="settings-row" onclick="changeBusinessType('${bt.id}')" style="border-left:3px solid ${getBusinessType()===bt.id?'var(--accent)':'transparent'}">
