@@ -4791,6 +4791,68 @@ async function syncNow() {
   }
 }
 
+// ── Sauvegarde / restauration par FICHIER (marche sans serveur) ──
+// Migration d'appareil pour ceux qui ne déploient pas de backend :
+// tout le localStorage BARO dans un .json, restaurable ailleurs.
+function exportBackupFile() {
+  try {
+    const data = {};
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (/^(baro|stockr)_/.test(k)) data[k] = localStorage.getItem(k);
+    }
+    const payload = {
+      _baro_backup: 1,
+      version: (document.querySelector('script[src*="app.js"]')?.src.match(/v=([\w.-]+)/) || [])[1] || '?',
+      exportedAt: new Date().toISOString(),
+      business: S.session?.business || '',
+      keys: Object.keys(data).length,
+      data,
+    };
+    const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const stamp = new Date().toISOString().slice(0, 10);
+    a.href = url;
+    a.download = `baro_sauvegarde_${(S.session?.business || 'donnees').replace(/[^\w-]/g, '_').slice(0, 24)}_${stamp}.json`;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    showToast(`📦 Sauvegarde enregistrée (${payload.keys} éléments)`, 'success');
+    logActivity('backup', 'Sauvegarde par fichier exportée');
+  } catch (e) {
+    showToast('Sauvegarde impossible : ' + (e.message || e), 'error');
+  }
+}
+
+function importBackupFile(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    let payload = null;
+    try { payload = JSON.parse(reader.result); } catch (_) {}
+    if (!payload || !payload._baro_backup || !payload.data || typeof payload.data !== 'object') {
+      showToast('Fichier de sauvegarde invalide', 'error');
+      return;
+    }
+    const n = Object.keys(payload.data).length;
+    const when = payload.exportedAt ? new Date(payload.exportedAt).toLocaleString('fr-FR') : 'date inconnue';
+    if (!confirm(`Restaurer cette sauvegarde ?\n\n${payload.business ? '🏪 ' + payload.business + '\n' : ''}📅 ${when}\n📦 ${n} éléments\n\n⚠️ Cela REMPLACE toutes les données actuelles de cet appareil.`)) return;
+    try {
+      // Purge des clés BARO existantes puis restauration intégrale
+      const toRemove = [];
+      for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (/^(baro|stockr)_/.test(k)) toRemove.push(k); }
+      toRemove.forEach(k => localStorage.removeItem(k));
+      Object.keys(payload.data).forEach(k => { try { localStorage.setItem(k, payload.data[k]); } catch (_) {} });
+      showToast('✅ Données restaurées — redémarrage…', 'success');
+      setTimeout(() => location.reload(), 1000);
+    } catch (e) {
+      showToast('Restauration impossible : ' + (e.message || e), 'error');
+    }
+  };
+  reader.onerror = () => showToast('Lecture du fichier impossible', 'error');
+  reader.readAsText(file);
+}
+
 function toggleDark() {
   S.darkMode = !S.darkMode;
   document.body.classList.toggle('dark', S.darkMode);
@@ -15078,6 +15140,17 @@ function vSettings() {
           <button class="btn btn-primary" style="flex:1" onclick="saveApiUrl()">Tester & enregistrer</button>
           ${localStorage.getItem('baro_api_url') ? `<button class="btn btn-ghost" style="flex:0 0 auto" onclick="localStorage.removeItem('baro_api_url');showToast('URL serveur réinitialisée');setTimeout(()=>location.reload(),600)">Réinitialiser</button>` : ''}
         </div>
+      </div>
+      <div class="card" style="padding:14px;margin-top:10px">
+        <div style="font-weight:800;font-size:13.5px;color:var(--text-1);margin-bottom:4px">📦 Sauvegarde par fichier</div>
+        <div style="font-size:12px;color:var(--text-3);line-height:1.55;margin-bottom:10px">
+          Sans serveur : enregistrez TOUTES vos données (stock, ventes, clients, dépenses, boutique…) dans un fichier, puis restaurez-le sur un autre téléphone. Idéal pour changer d'appareil ou faire une copie de sécurité.
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-primary" style="flex:1" onclick="exportBackupFile()">⬇️ Enregistrer</button>
+          <button class="btn btn-ghost" style="flex:1" onclick="document.getElementById('baro-restore-inp').click()">⬆️ Restaurer</button>
+        </div>
+        <input type="file" id="baro-restore-inp" accept="application/json,.json,.baro" style="display:none" onchange="importBackupFile(this.files[0])">
       </div>
     </div>
 
@@ -28201,6 +28274,8 @@ function __baroInit() {
   window.saveAccountInfo = saveAccountInfo;
   window.saveApiUrl      = saveApiUrl;
   window.syncNow         = syncNow;
+  window.exportBackupFile = exportBackupFile;
+  window.importBackupFile = importBackupFile;
   window.toggleDark      = toggleDark;
   window.doLogin         = doLogin;
   window.doRegister      = doRegister;
