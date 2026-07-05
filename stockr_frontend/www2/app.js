@@ -3338,12 +3338,15 @@ function exportFullXLSX() {
   const topProducts = Object.entries(S.sales.reduce((m,s)=>{m[s.productName]=(m[s.productName]||0)+s.total;return m;},{}))
     .sort((a,b)=>b[1]-a[1]).slice(0,10);
   const dashHdr = `<h2 style="color:#10b981;font-family:Arial">📊 TABLEAU DE BORD — ${S.session?.business||'BARO'}</h2><p>Généré le ${now.toLocaleString('fr-FR')}</p>`;
+  const totalExp = (S.expenses||[]).reduce((s,e)=>s+(e.amount||0),0);
   const dashRows = [
     ['INDICATEUR', 'VALEUR', 'UNITÉ'],
     ['CA total', totalCA, sym()],
     ['CA 30 jours', caMonth, sym()],
     ['CA aujourd\'hui', caToday, sym()],
-    ['Bénéfice total', totalProfit, sym()],
+    ['Bénéfice brut (ventes)', totalProfit, sym()],
+    ['Dépenses totales', totalExp, sym()],
+    ['Bénéfice NET', totalProfit - totalExp, sym()],
     ['Marge moyenne', totalCA ? Math.round(100*totalProfit/totalCA)+'%' : '0%', ''],
     ['Nb ventes', S.sales.length, ''],
     ['Panier moyen', S.sales.length ? Math.round(totalCA/S.sales.length) : 0, sym()],
@@ -3398,8 +3401,12 @@ function exportFullXLSX() {
   const s6 = _buildXlsSheet('📅 Journal 30 jours',
     ['Date','CA','Bénéfice','Nb ventes','Panier moyen'],
     Object.entries(dayAgg).sort((a,b)=>b[0].localeCompare(a[0])).map(([d,v]) => [d, v.ca, v.profit, v.count, v.count ? Math.round(v.ca/v.count) : 0]));
+  const s7 = _buildXlsSheet('💸 Dépenses',
+    ['Date','Libellé','Catégorie','Montant ('+sym()+')'],
+    (S.expenses||[]).map(e => [fmtDate(e.date), e.label||'', e.category||'Autre', e.amount||0]),
+    { totalRow: fmt(totalExp)+' '+sym() });
 
-  downloadXLSX(`stockr_export_complet_${today}.xls`, dashSheet + topSheet + s1 + s2 + s3 + s4 + s5 + s6);
+  downloadXLSX(`stockr_export_complet_${today}.xls`, dashSheet + topSheet + s1 + s2 + s3 + s4 + s5 + s6 + s7);
   showToast('📊 Export complet : 8 feuilles Excel', 'success');
 }
 
@@ -25377,11 +25384,18 @@ function testDeliveryConnection(provider) {
 }
 
 function _exportComptable() {
-  // Export comptable OHADA simplifie
+  // Export comptable OHADA simplifie (ventes + depenses)
   const lines = ['Date;Libelle;Debit;Credit;Compte'];
   S.sales.forEach(s => {
     lines.push(`${s.date};Vente ${s.productName} x${s.qty};${s.total};0;701000`);
     lines.push(`${s.date};Encaissement;0;${s.total};521000`);
+  });
+  // Dépenses : débit compte de charge (mapping simplifié par catégorie), crédit trésorerie
+  const _cptCharge = { 'Loyer':'613000', 'Électricité & eau':'605200', 'Transport':'624000', 'Salaires':'661000', 'Achats':'601000', 'Marketing':'627000' };
+  (S.expenses||[]).forEach(e => {
+    const cpt = _cptCharge[e.category] || '658000';
+    lines.push(`${e.date};Depense ${e.label} (${e.category||'Autre'});${e.amount};0;${cpt}`);
+    lines.push(`${e.date};Reglement depense;0;${e.amount};521000`);
   });
   const blob = new Blob([lines.join('\n')], {type:'text/csv;charset=utf-8'});
   const url = URL.createObjectURL(blob);
