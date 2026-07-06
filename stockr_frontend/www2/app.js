@@ -7930,10 +7930,10 @@ function vFinancial() {
         <input class="input" type="number" id="exp-amount" inputmode="numeric" min="0" placeholder="${sym()}" style="flex:1;min-width:0" value="${S.expAmount!=null&&S.expAmount!==''?S.expAmount:''}" oninput="S.expAmount=this.value">
       </div>
       <div style="display:flex;gap:6px;margin-bottom:10px">
-        <select class="input" id="exp-cat" style="flex:1" onchange="S.expCat=this.value">
+        <select class="input" id="exp-cat" style="flex:1;min-width:0" onchange="S.expCat=this.value">
           ${EXP_CATS.map(c=>`<option value="${c}" ${S.expCat===c?'selected':''}>${catIco[c]} ${c}</option>`).join('')}
         </select>
-        <button class="btn btn-primary" style="flex:0 0 auto;padding:0 18px" onclick="addExpense()">+ Ajouter</button>
+        <button class="btn btn-primary" style="flex:0 0 auto;padding:0 16px;white-space:nowrap" onclick="addExpense()">+ Ajouter</button>
       </div>
       ${exps.length === 0 ? `<div style="font-size:12px;color:var(--text-3);padding:4px 0 10px">Aucune dépense sur la période. Loyer, électricité, transport, salaires… enregistrez-les ici pour connaître votre bénéfice NET réel.</div>` : `
       <div style="display:flex;flex-direction:column;margin-bottom:10px">
