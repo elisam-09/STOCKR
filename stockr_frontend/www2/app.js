@@ -8448,9 +8448,9 @@ function vDetail() {
       </div>
     </div>
 
-    ${_articleSellable(art) ? `<div style="display:flex;gap:8px;margin-top:10px">
-      <button class="qs-trigger" style="flex:1;margin-top:0;padding:14px;font-size:15px" onclick="openQuickSell(${art.id})">${IC.dollar} Vendre — ${fmt(pv)} ${sym()}</button>
-      <button class="btn btn-ghost" style="flex:0 0 auto;padding:14px 16px;border:1px solid #25D36660;color:#128C7E" onclick="shareProductLink(${art.id})" title="Partager sur WhatsApp">${IC.whatsapp}</button>
+    ${_articleSellable(art) ? `<div style="display:flex;gap:8px;margin-top:10px;align-items:stretch">
+      <button class="qs-trigger" style="flex:1 1 auto;width:auto;margin-top:0;padding:0 14px;height:52px;font-size:15px" onclick="openQuickSell(${art.id})">${IC.dollar} Vendre — ${fmt(pv)} ${sym()}</button>
+      <button class="btn btn-ghost" style="flex:0 0 52px;width:52px;height:52px;padding:0;border:1px solid #25D36660;color:#128C7E" onclick="shareProductLink(${art.id})" title="Partager sur WhatsApp" aria-label="Partager sur WhatsApp">${IC.whatsapp}</button>
     </div>
     <button class="btn btn-ghost" style="width:100%;margin-top:8px;font-size:13px;border:1px solid var(--border)" onclick="openProductOptions(${art.id})">🛍️ Photos & variantes boutique${(art.images&&art.images.length)||(art.variants&&art.variants.length)?` · ${(art.images||[]).length+1} photo(s)${art.variants&&art.variants.length?` · ${art.variants.length} variante(s)`:''}`:''}</button>` : ''}
 
