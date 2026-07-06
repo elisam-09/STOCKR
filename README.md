@@ -1,7 +1,29 @@
-# STOCKR
+# STOCKR / BARO
 
-Application de gestion de stock mobile-first pour PME.
-Stack : Flask (Python) + SQLite + Vanilla JS (SPA)
+Application de gestion de stock, ventes & boutique en ligne mobile-first pour PME africaines.
+Stack : Flask (Python) + SQLAlchemy + Vanilla JS (PWA)
+
+---
+
+## 🚀 Activer le mode EN LIGNE (multi-appareils) — 1 clic
+
+L'app fonctionne parfaitement **hors-ligne** (tout est stocké sur l'appareil). Pour
+débloquer les fonctionnalités **en ligne** — comptes accessibles partout, synchro
+automatique entre téléphones, sauvegarde serveur, paiements d'abonnement — il suffit
+de mettre le backend en ligne (gratuit, ~3 min) :
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/elisam-09/STOCKR)
+
+1. Cliquez le bouton ci-dessus → connectez votre compte GitHub → **Apply**.
+   Render lit `render.yaml`, crée le serveur web + la base PostgreSQL (offre gratuite).
+2. Quand c'est « Live », copiez l'URL (ex : `https://baro-api-xxxx.onrender.com`).
+3. Dans l'app : **Paramètres → Serveur (API)** → collez l'URL → *Tester & enregistrer*.
+
+À partir de là : créez un compte, il existe sur **tous** vos appareils ; le pictogramme
+☁️ dans Paramètres passe au vert « En ligne — synchronisé ». Rien à changer côté app.
+
+> Sans ce déploiement, l'app reste 100 % utilisable en local (mono-appareil) — voir aussi
+> la **Sauvegarde par fichier** (Paramètres → 📦) pour migrer sans serveur.
 
 ---
 

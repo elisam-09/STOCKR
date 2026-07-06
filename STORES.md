@@ -15,8 +15,12 @@ est coché ; ce qui exige VOS comptes (Render/Google/Apple/Stripe) est marqué �
 - [x] Guide : `stockr_backend/DEPLOY.md`.
 - [x] App : **Paramètres → Serveur (API)** pour coller l'URL du nouveau backend
       (test réel de `/api/health` avant enregistrement).
-- [ ] 👤 **À faire par vous (~5 min)** : dashboard.render.com → *New → Blueprint*
-      → choisir ce repo → attendre le déploiement → coller l'URL dans l'app.
+- [x] **Bouton 1-clic** ajouté au README :
+      [Deploy to Render](https://render.com/deploy?repo=https://github.com/elisam-09/STOCKR)
+- [ ] 👤 **À faire par vous (~3 min)** : cliquez le bouton *Deploy to Render* du README
+      (ou dashboard.render.com → *New → Blueprint* → ce repo) → *Apply* → attendre
+      « Live » → copier l'URL → la coller dans l'app (**Paramètres → Serveur (API)**).
+      C'est LA seule étape qui rend l'app réellement multi-appareils / en ligne.
 
 ## Brique 2 — Paiement réel des abonnements
 
