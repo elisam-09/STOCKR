@@ -7925,16 +7925,14 @@ function vFinancial() {
       return `
     <div class="card" style="margin-bottom:14px">
       <div class="card-title">💸 Dépenses de la période</div>
-      <div style="display:flex;gap:6px;margin-bottom:8px">
-        <input class="input" type="text" id="exp-label" placeholder="ex : Loyer boutique" style="flex:2;min-width:0" value="${(S.expLabel||'').replace(/"/g,'&quot;')}" oninput="S.expLabel=this.value">
-        <input class="input" type="number" id="exp-amount" inputmode="numeric" min="0" placeholder="${sym()}" style="flex:1;min-width:0" value="${S.expAmount!=null&&S.expAmount!==''?S.expAmount:''}" oninput="S.expAmount=this.value">
-      </div>
-      <div style="display:flex;gap:6px;margin-bottom:10px">
+      <input class="input" type="text" id="exp-label" placeholder="ex : Loyer boutique" style="width:100%;margin-bottom:8px" value="${(S.expLabel||'').replace(/"/g,'&quot;')}" oninput="S.expLabel=this.value">
+      <div style="display:flex;gap:8px;margin-bottom:8px">
+        <input class="input" type="number" id="exp-amount" inputmode="numeric" min="0" placeholder="Montant ${sym()}" style="flex:1;min-width:0" value="${S.expAmount!=null&&S.expAmount!==''?S.expAmount:''}" oninput="S.expAmount=this.value">
         <select class="input" id="exp-cat" style="flex:1;min-width:0" onchange="S.expCat=this.value">
           ${EXP_CATS.map(c=>`<option value="${c}" ${S.expCat===c?'selected':''}>${catIco[c]} ${c}</option>`).join('')}
         </select>
-        <button class="btn btn-primary" style="flex:0 0 auto;padding:0 16px;white-space:nowrap" onclick="addExpense()">+ Ajouter</button>
       </div>
+      <button class="btn btn-primary" style="width:100%;margin-bottom:10px" onclick="addExpense()">＋ Ajouter la dépense</button>
       ${exps.length === 0 ? `<div style="font-size:12px;color:var(--text-3);padding:4px 0 10px">Aucune dépense sur la période. Loyer, électricité, transport, salaires… enregistrez-les ici pour connaître votre bénéfice NET réel.</div>` : `
       <div style="display:flex;flex-direction:column;margin-bottom:10px">
         ${exps.slice(0,8).map(e=>`
