@@ -1667,6 +1667,25 @@ async function _syncStoreBackup() {
   } catch (e) { /* hors-ligne / serveur absent : silencieux */ }
 }
 
+// ── Commandes de la boutique en ligne : récupère celles reçues sur le site ──
+// Le serveur fait foi pour ce qu'il connaît (id 'srv_') ; les commandes
+// saisies manuellement dans l'app sont conservées.
+async function _syncBoutiqueOrders() {
+  if (USE_LOCAL || !S.token) return;
+  try {
+    const srv = await api('GET', '/api/orders/');
+    if (!Array.isArray(srv)) return;
+    const cur = S.boutiqueOrders || [];
+    const localOnly = cur.filter(o => o && !String(o.id).startsWith('srv_'));
+    const mapped = srv.map(o => ({ ...o, id: 'srv_' + o.id, serverId: o.id }));
+    const before = cur.filter(o => String(o.id).startsWith('srv_')).length;
+    S.boutiqueOrders = [...mapped, ...localOnly].sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+    try { localStorage.setItem('baro_boutique_orders', JSON.stringify(S.boutiqueOrders)); } catch(_){}
+    const newCount = mapped.length - before;
+    if (newCount > 0) { showToast(`🛍️ ${newCount} nouvelle(s) commande(s) reçue(s) en ligne`, 'success'); render(); }
+  } catch (e) { /* hors-ligne / serveur absent : silencieux */ }
+}
+
 // Persistance articles : TOUJOURS les deux clés historiques en même temps.
 // (Des chemins n'écrivaient que baro_articles, d'autres que stockr_articles →
 // selon le dernier écrivain, photo/prix disparaissaient au redémarrage.)
@@ -1763,6 +1782,8 @@ async function loadData() {
   try { _syncBillingStatus(); } catch(_){}
   // Sauvegarde/restauration de la configuration (boutique, équipe, fournisseurs…)
   try { _syncStoreBackup(); } catch(_){}
+  // Commandes reçues sur la boutique en ligne (arrivent du site hébergé)
+  try { _syncBoutiqueOrders(); } catch(_){}
 
   try {
     const [arts, prods, sales, preds, clients, srvExps] = await Promise.all([
@@ -18487,6 +18508,9 @@ var BARO_SYM="${sym()}";
 var BARO_ORDERTXT=${JSON.stringify(orderText)};
 var BARO_PICKUP=${pickupJSON};
 var BARO_DELOFF=${_deliveryOff ? 'true' : 'false'};
+// Backend (si le vendeur est connecté a un serveur) : la commande revient dans son app.
+var BARO_API=${JSON.stringify((!USE_LOCAL && S.token && (S.session?.id||S.session?.user_id)) ? API_BASE : '')};
+var BARO_SHOP_ID=${Number(S.session?.id || S.session?.user_id || 0)};
 var baroMode=BARO_DELOFF?'pickup':'delivery';
 (function(){
   var cart={};
@@ -18591,8 +18615,13 @@ var baroMode=BARO_DELOFF?'pickup':'delivery';
     else if(zone)L.push('📍 '+zone);
     if(pay)L.push('💳 '+pay);
     // Mémorise la commande côté acheteur (Mes achats) — local, honnête
-    try{var _items=[];for(var k in cart){var it=item(k);if(it)_items.push(it.name+' ×'+cart[k]);}
-      if(typeof window._baroSaveOrder==='function')window._baroSaveOrder({date:new Date().toISOString(),items:_items,total:fmtn(Math.max(0,total()-disc)+fee)+' '+BARO_SYM});}catch(e){}
+    var _items=[];for(var k in cart){var it=item(k);if(it)_items.push(it.name+(((window.BARO_VARSEL||{})[k])?' ['+window.BARO_VARSEL[k]+']':'')+' ×'+cart[k]);}
+    try{if(typeof window._baroSaveOrder==='function')window._baroSaveOrder({date:new Date().toISOString(),items:_items,total:fmtn(Math.max(0,total()-disc)+fee)+' '+BARO_SYM});}catch(e){}
+    // ── EN LIGNE : la commande revient dans l'app du vendeur (impossible hors-ligne) ──
+    if(BARO_API&&BARO_SHOP_ID){try{
+      fetch(BARO_API+'/api/orders/shop/'+BARO_SHOP_ID,{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({clientName:name,items:_items,total:Math.max(0,total()-disc)+fee,mode:_pickup?'pickup':'delivery',zone:_pickup?'':zone,payment:pay,note:''})}).catch(function(){});
+    }catch(e){}}
     window.open(BARO_WA+'?text='+encodeURIComponent(L.join('\\n')),'_blank');
   };
   if(BARO_DELOFF)window.baroSetMode('pickup');
@@ -20237,11 +20266,13 @@ function addBoutiqueOrder() {
   render();
 }
 function updateOrderStatus(id, status) {
-  const order = S.boutiqueOrders.find(o => o.id === id);
+  const order = S.boutiqueOrders.find(o => String(o.id) === String(id));
   if (!order) return;
   order.status = status;
   order.updatedAt = new Date().toISOString();
   localStorage.setItem('baro_boutique_orders', JSON.stringify(S.boutiqueOrders));
+  // Commande venue du serveur → répercuter le statut en ligne
+  if (order.serverId && !USE_LOCAL && S.token) { api('PUT', `/api/orders/${order.serverId}`, { status }).catch(() => {}); }
   // If confirmed, record as sale
   if (status === 'confirmed') {
     for (const item of (order.items||[])) {
