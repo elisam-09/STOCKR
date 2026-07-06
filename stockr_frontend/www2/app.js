@@ -5336,6 +5336,15 @@ function _doRender() {
     return;
   }
 
+  // Verrou PIN de démarrage : session valide mais app pas encore déverrouillée
+  if (localStorage.getItem('stockr_app_pin') && !S.pinUnlocked) {
+    navEl.style.display = 'none';
+    __markViewTransition('__pinlock');
+    viewEl.innerHTML = vPinLock();
+    if (!sameView) viewEl.scrollTop = 0;
+    return;
+  }
+
   // Redirect si onglet masqué par businessType
   if (S.view === 'products' && !bt_showProducts()) S.view = 'home';
   if (S.view === 'pantry'   && !bt_showStock())    S.view = 'home';
@@ -16863,6 +16872,79 @@ function applyAppearance() {
 }
 
 // ── SÉCURITÉ VIEW ─────────────────────────────
+// ── Verrou PIN de démarrage (protection locale simple, sans compte) ──
+// Hash best-effort (localStorage est côté appareil — obfuscation, pas chiffrement).
+function _pinHash(pin) {
+  let h = 5381;
+  const s = 'baro_' + String(pin);
+  for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) >>> 0;
+  return 'p' + h.toString(36);
+}
+function vPinLock() {
+  const entry = S.pinEntry || '';
+  const err = S.pinError ? 'shake' : '';
+  const dots = [0,1,2,3,4,5].map(i => `<span class="pin-dot ${i < entry.length ? 'on' : ''} ${i < 4 ? '' : (entry.length > 4 || i < entry.length ? '' : 'pin-dot-opt')}"></span>`).join('');
+  const keys = ['1','2','3','4','5','6','7','8','9','', '0','⌫'];
+  const biz = String(S.session?.business || 'BARO').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return `
+  <div class="pinlock">
+    <div class="pinlock-inner ${err}">
+      <div class="pinlock-logo">🔐</div>
+      <div class="pinlock-title">${biz}</div>
+      <div class="pinlock-sub">${S.pinError ? '<span style="color:#fca5a5">Code incorrect, réessayez</span>' : 'Entrez votre code PIN'}</div>
+      <div class="pin-dots">${dots}</div>
+      <div class="pin-pad">
+        ${keys.map(k => k === '' ? `<span></span>` :
+          k === '⌫' ? `<button class="pin-key pin-key-fn" onclick="pinDelete()">⌫</button>` :
+          `<button class="pin-key" onclick="pinPad('${k}')">${k}</button>`).join('')}
+      </div>
+      ${entry.length >= 4 ? `<button class="btn btn-primary" style="width:180px;margin-top:8px" onclick="pinSubmit()">Déverrouiller</button>` : ''}
+    </div>
+  </div>`;
+}
+function pinPad(d) {
+  S.pinError = false;
+  S.pinEntry = (S.pinEntry || '') + d;
+  if (typeof haptic === 'function') haptic('tap');
+  if (S.pinEntry.length > 6) S.pinEntry = S.pinEntry.slice(0, 6);
+  // Auto-validation à 6 chiffres, sinon bouton à partir de 4
+  if (S.pinEntry.length === 6) { pinSubmit(); return; }
+  render();
+}
+function pinDelete() { S.pinError = false; S.pinEntry = (S.pinEntry || '').slice(0, -1); render(); }
+function pinSubmit() {
+  const stored = localStorage.getItem('stockr_app_pin');
+  if (_pinHash(S.pinEntry || '') === stored) {
+    S.pinUnlocked = true; S.pinEntry = ''; S.pinError = false;
+    if (typeof haptic === 'function') haptic('success');
+    render();
+  } else {
+    S.pinError = true; S.pinEntry = '';
+    if (typeof haptic === 'function') haptic('error');
+    render();
+  }
+}
+function setupAppPin() {
+  const pin = prompt('Choisissez un code PIN (4 à 6 chiffres) :');
+  if (pin == null) return;
+  if (!/^\d{4,6}$/.test(pin)) { showToast('Le PIN doit contenir 4 à 6 chiffres', 'error'); return; }
+  const confirm2 = prompt('Confirmez votre code PIN :');
+  if (confirm2 !== pin) { showToast('Les codes ne correspondent pas', 'error'); return; }
+  localStorage.setItem('stockr_app_pin', _pinHash(pin));
+  S.pinUnlocked = true;
+  showToast('🔐 Code PIN activé', 'success');
+  logAudit && logAudit('settings', 'pin_enabled', {});
+  render();
+}
+function removeAppPin() {
+  const pin = prompt('Entrez votre code PIN actuel pour le désactiver :');
+  if (pin == null) return;
+  if (_pinHash(pin) !== localStorage.getItem('stockr_app_pin')) { showToast('Code incorrect', 'error'); return; }
+  localStorage.removeItem('stockr_app_pin');
+  showToast('Code PIN désactivé', 'info');
+  render();
+}
+
 function vSecurity() {
   if (!hasPermission('all')) {
     return `
@@ -16882,6 +16964,21 @@ function vSecurity() {
     <div class="sub-hero-sub">Dernière connexion · ${lastLogin}</div>
   </div>
   <div class="container">
+
+    <!-- PIN de démarrage -->
+    <div class="card" style="margin-bottom:12px">
+      <div class="card-title">🔐 Code PIN au démarrage</div>
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:10px">La protection la plus simple : un code à 4-6 chiffres demandé à chaque ouverture de l'app. Idéal si votre téléphone est partagé au comptoir.</div>
+      ${localStorage.getItem('stockr_app_pin') ? `
+        <div style="display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--success);font-weight:700;margin-bottom:10px">🟢 Code PIN activé</div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-ghost" style="flex:1" onclick="setupAppPin()">Modifier le code</button>
+          <button class="btn btn-ghost" style="flex:1;color:var(--danger);border-color:var(--danger)" onclick="removeAppPin()">Désactiver</button>
+        </div>
+      ` : `
+        <button class="btn btn-primary" style="width:100%" onclick="setupAppPin()">Activer un code PIN</button>
+      `}
+    </div>
 
     <!-- 2FA -->
     <div class="card" style="margin-bottom:12px">
@@ -28276,6 +28373,11 @@ function __baroInit() {
   window.syncNow         = syncNow;
   window.exportBackupFile = exportBackupFile;
   window.importBackupFile = importBackupFile;
+  window.pinPad = pinPad;
+  window.pinDelete = pinDelete;
+  window.pinSubmit = pinSubmit;
+  window.setupAppPin = setupAppPin;
+  window.removeAppPin = removeAppPin;
   window.toggleDark      = toggleDark;
   window.doLogin         = doLogin;
   window.doRegister      = doRegister;
