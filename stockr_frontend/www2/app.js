@@ -1374,6 +1374,8 @@ const ROLE_LABELS = {
 };
 
 function getCurrentMember() {
+  // Vendeur connecté en ligne via un code d'équipe : ses ventes lui sont attribuées.
+  if (S.member && S.session?.isMember) return { id: S.member.id, name: S.member.name, role: S.member.role || 'vendor' };
   if (!S.currentMemberId) return { id:null, name:S.session?.name || 'Admin', role:'admin', email:S.session?.email };
   return S.teamMembers.find(m => m.id === S.currentMemberId) || { id:null, name:S.session?.name || 'Admin', role:'admin' };
 }
@@ -2494,6 +2496,62 @@ async function doLogin() {
     if (typeof logAudit === 'function') logAudit('auth', 'login_failed', { email });
     showToast(e.message || 'Email ou mot de passe incorrect', 'error');
   }
+}
+
+// ── Vendeur : rejoindre la boutique du patron avec un code d'équipe (EN LIGNE) ──
+async function joinTeamWithCode() {
+  const code = ($('join-code')?.value || S.joinCode || '').trim().toUpperCase();
+  const name = ($('join-name')?.value || S.joinName || '').trim();
+  if (!code) { showToast("Entrez le code d'équipe", 'error'); return; }
+  if (!name) { showToast('Entrez votre nom', 'error'); return; }
+  if (USE_LOCAL) { showToast("Rejoindre une équipe nécessite une connexion — configurez le serveur (Paramètres)", 'error'); return; }
+  try {
+    const d = await api('POST', '/api/team/join', { code, name });
+    if (!d || !d.access_token) throw new Error('Réponse serveur invalide');
+    S.token = d.access_token;
+    const bt = d.businessType || 'maker';
+    S.session = {
+      id: d.shop_id, name, email: '', business: d.business_name,
+      businessType: bt, profile: bt === 'reseller' ? 'reseller' : 'transformer',
+      currency: d.currency || 'XOF', currency_symbol: getCurrencySymbol(d.currency || 'XOF'),
+      country: d.country || 'CI', language: d.language || 'fr', tax_rate: 0,
+      isMember: true, memberName: name,
+    };
+    // Contexte vendeur : ses ventes seront attribuées à son nom (getCurrentMember)
+    S.member = { id: 'code_' + name.toLowerCase().replace(/[^\w]/g, ''), name, role: 'vendor' };
+    try { localStorage.setItem('baro_active_member', JSON.stringify(S.member)); } catch(_){}
+    localStorage.setItem('stockr_business_type', bt);
+    saveSession({ ...S.session, token: S.token });
+    S.joinCode = S.joinName = '';
+    showToast(`👥 Bienvenue ${name} — boutique « ${d.business_name} »`, 'success');
+    S.view = 'home';
+    render();
+    await loadData();
+  } catch(e) {
+    showToast(e.message || "Code d'équipe invalide", 'error');
+  }
+}
+
+// ── Patron : récupérer / régénérer le code d'équipe (EN LIGNE) ──
+async function loadTeamCode() {
+  if (USE_LOCAL || !S.token) return;
+  try {
+    const d = await api('GET', '/api/team/code');
+    if (d && d.code) { S.teamCode = d.code; render(); }
+  } catch(_){}
+}
+async function resetTeamCode() {
+  if (!confirm("Régénérer le code d'équipe ?\nLes vendeurs actuels devront saisir le nouveau code pour rester connectés.")) return;
+  try {
+    const d = await api('POST', '/api/team/reset');
+    if (d && d.code) { S.teamCode = d.code; showToast('Nouveau code généré', 'success'); render(); }
+  } catch(e) { showToast(e.message || 'Impossible de régénérer', 'error'); }
+}
+function shareTeamCode() {
+  const code = S.teamCode; if (!code) return;
+  const biz = S.session?.business || 'ma boutique';
+  const msg = `Rejoins l'équipe de ${biz} sur BARO !\n\n1. Ouvre l'app BARO\n2. « Rejoindre une équipe »\n3. Code : ${code}\n\nTes ventes seront enregistrées automatiquement. 🛍️`;
+  window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
 }
 
 function v2FAVerify() {
@@ -5828,6 +5886,18 @@ function vAuth() {
       <div style="margin-top:12px;text-align:center;display:flex;align-items:center;justify-content:center;gap:6px;font-size:10px;color:var(--text-3)">
         <span>🔒</span><span>Connexion sécurisée SSL</span>
       </div>
+      <!-- Rejoindre une équipe avec un code (vendeur) -->
+      ${S.authJoinOpen ? `
+      <div style="margin-top:14px;padding:14px;border:1.5px solid var(--accent);border-radius:12px;background:var(--accent-light)">
+        <div style="font-weight:800;font-size:13.5px;color:var(--text-1);margin-bottom:8px">👥 Rejoindre l'équipe d'une boutique</div>
+        <input class="input" id="join-code" type="text" placeholder="Code (ex : BARO-XXXXXX)" style="text-transform:uppercase;margin-bottom:8px" value="${(S.joinCode||'').replace(/"/g,'&quot;')}" oninput="S.joinCode=this.value">
+        <input class="input" id="join-name" type="text" placeholder="Votre nom (vendeur)" style="margin-bottom:10px" value="${(S.joinName||'').replace(/"/g,'&quot;')}" oninput="S.joinName=this.value">
+        <button class="btn btn-primary" style="width:100%" onclick="joinTeamWithCode()">Rejoindre la boutique</button>
+        <div style="font-size:11px;color:var(--text-3);margin-top:6px;line-height:1.5">Le patron vous donne ce code. Vos ventes seront enregistrées à son compte, à votre nom. Nécessite une connexion internet.</div>
+      </div>
+      ` : `
+      <button class="btn btn-ghost" style="width:100%;margin-top:10px;font-size:13px" onclick="S.authJoinOpen=true;render()">👥 Je suis vendeur — rejoindre avec un code</button>
+      `}
       ` : ''}
 
       <div class="auth-switch">
@@ -15556,6 +15626,22 @@ function vTeam() {
           <div style="font-size:10px;color:var(--text-3)">Commissions</div>
         </div>
       </div>
+
+      ${(!USE_LOCAL && S.token && !S.session?.isMember) ? `
+      <div class="card" style="margin-bottom:12px;background:linear-gradient(135deg,rgba(16,185,129,.10),transparent);border:1px solid rgba(16,185,129,.28)">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="font-size:18px">🔑</span><div style="font-weight:800;font-size:14px;color:var(--text-1)">Code d'équipe — vendeurs en ligne</div></div>
+        <div style="font-size:12px;color:var(--text-3);line-height:1.55;margin-bottom:10px">Vos vendeurs installent BARO sur leur téléphone, tapent ce code, et vendent depuis votre stock — chaque vente est enregistrée à leur nom, en temps réel.</div>
+        ${S.teamCode ? `
+        <div style="display:flex;align-items:center;gap:8px;background:var(--surface);border:1.5px dashed var(--accent);border-radius:10px;padding:12px 14px;margin-bottom:10px">
+          <div style="flex:1;font-family:monospace;font-size:20px;font-weight:800;letter-spacing:1px;color:var(--accent)">${S.teamCode}</div>
+          <button class="btn btn-ghost" style="padding:8px 10px;font-size:12px" onclick="navigator.clipboard&&navigator.clipboard.writeText('${S.teamCode}');showToast('Code copié','success')">Copier</button>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-primary" style="flex:1;background:#25D366" onclick="shareTeamCode()">${IC.whatsapp||''} Partager</button>
+          <button class="btn btn-ghost" style="flex:0 0 auto" onclick="resetTeamCode()">Régénérer</button>
+        </div>
+        ` : `<button class="btn btn-primary" style="width:100%" onclick="loadTeamCode()">Afficher mon code d'équipe</button>`}
+      </div>` : ''}
 
       <button class="btn btn-primary" onclick="nav('add-team-member')" style="width:100%;margin-bottom:12px">
         ＋ Ajouter un collaborateur
@@ -28410,6 +28496,10 @@ function __baroInit() {
   window.toggleDark      = toggleDark;
   window.doLogin         = doLogin;
   window.doRegister      = doRegister;
+  window.joinTeamWithCode = joinTeamWithCode;
+  window.loadTeamCode    = loadTeamCode;
+  window.resetTeamCode   = resetTeamCode;
+  window.shareTeamCode   = shareTeamCode;
   window.confirmSignupVerification = confirmSignupVerification;
   window.resendSignupVerification  = resendSignupVerification;
   window.cancelSignupVerification  = cancelSignupVerification;

@@ -27,6 +27,7 @@ def create_app():
             ('plan_expires', 'TIMESTAMP'),
             ('billing_provider', 'VARCHAR(20)'),
             ('billing_customer_id', 'VARCHAR(120)'),
+            ('team_code', 'VARCHAR(20)'),
         ]:
             try:
                 db.session.execute(text(f'ALTER TABLE "user" ADD COLUMN {col} {ddl}'))
@@ -46,6 +47,7 @@ def create_app():
     from routes.expense_routes import expense_bp
     from routes.store_routes import store_bp
     from routes.order_routes import order_bp
+    from routes.team_routes import team_bp
 
     app.register_blueprint(article_bp, url_prefix='/api/articles')
     app.register_blueprint(product_bp, url_prefix='/api/products')
@@ -59,6 +61,7 @@ def create_app():
     app.register_blueprint(expense_bp, url_prefix='/api/expenses')
     app.register_blueprint(store_bp, url_prefix='/api/store')
     app.register_blueprint(order_bp, url_prefix='/api/orders')
+    app.register_blueprint(team_bp, url_prefix='/api/team')
     
     
     @app.route('/api/health')

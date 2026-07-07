@@ -38,6 +38,9 @@ class User(db.Model):
     plan_expires = db.Column(db.DateTime, nullable=True)
     billing_provider = db.Column(db.String(20), nullable=True)     # stripe | cinetpay
     billing_customer_id = db.Column(db.String(120), nullable=True)
+
+    # Équipe : code partagé permettant aux vendeurs de rejoindre la boutique
+    team_code = db.Column(db.String(20), nullable=True, index=True)
     
     def set_password(self, password):
         """Hash le mot de passe avec bcrypt"""
