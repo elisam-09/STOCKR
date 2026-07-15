@@ -154,7 +154,7 @@ function fmtQty(n) {
 const _savedApiUrl = (() => { try { return (localStorage.getItem('baro_api_url') || '').trim().replace(/\/+$/, ''); } catch(_) { return ''; } })();
 const API_BASE = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
   ? 'http://localhost:5001'
-  : (_savedApiUrl || window.__BARO_API_URL__ || window.__STOCKR_API_URL__ || 'https://stockr-production-c175.up.railway.app');
+  : (_savedApiUrl || window.__BARO_API_URL__ || window.__STOCKR_API_URL__ || 'https://DakanStudios.pythonanywhere.com');
 
 // ── i18n ─────────────────────────────────────
 const LANGS = {
