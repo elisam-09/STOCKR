@@ -15,6 +15,7 @@ def create_app():
     from routes.expense_routes import Expense  # noqa: F401
     from routes.store_routes import StoreBlob  # noqa: F401
     from routes.order_routes import ShopOrder  # noqa: F401
+    from routes.push_routes import PushSub  # noqa: F401
 
     with app.app_context():
         db.create_all()
@@ -48,6 +49,7 @@ def create_app():
     from routes.store_routes import store_bp
     from routes.order_routes import order_bp
     from routes.team_routes import team_bp
+    from routes.push_routes import push_bp
 
     app.register_blueprint(article_bp, url_prefix='/api/articles')
     app.register_blueprint(product_bp, url_prefix='/api/products')
@@ -62,6 +64,7 @@ def create_app():
     app.register_blueprint(store_bp, url_prefix='/api/store')
     app.register_blueprint(order_bp, url_prefix='/api/orders')
     app.register_blueprint(team_bp, url_prefix='/api/team')
+    app.register_blueprint(push_bp, url_prefix='/api/push')
     
     
     @app.route('/api/health')

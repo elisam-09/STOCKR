@@ -2,7 +2,7 @@
 // Stratégie : Cache-first pour assets statiques,
 //             Network-first pour l'API
 
-const CACHE_NAME = 'baro-v171-rowfix';
+const CACHE_NAME = 'baro-v172-push';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -115,4 +115,33 @@ self.addEventListener('fetch', event => {
 // ── Message : forcer la mise à jour du cache ──
 self.addEventListener('message', event => {
   if (event.data === 'skipWaiting') self.skipWaiting();
+});
+
+// ── Push : notification de nouvelle commande (serveur → appareil) ──
+self.addEventListener('push', event => {
+  let data = {};
+  try { data = event.data ? event.data.json() : {}; } catch (_) {}
+  event.waitUntil(
+    self.registration.showNotification(data.title || 'BARO', {
+      body: data.body || '',
+      icon: '/icons/icon-192.png',
+      badge: '/icons/icon-192.png',
+      vibrate: [80, 40, 80],
+      tag: 'baro-order',
+      renotify: true,
+      data: { url: data.url || '/' },
+    })
+  );
+});
+
+// ── Clic sur la notification : ouvre / ramène l'app ──
+self.addEventListener('notificationclick', event => {
+  event.notification.close();
+  const url = (event.notification.data && event.notification.data.url) || '/';
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
+      for (const c of list) { if ('focus' in c) return c.focus(); }
+      return clients.openWindow(url);
+    })
+  );
 });

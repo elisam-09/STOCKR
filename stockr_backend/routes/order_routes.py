@@ -75,6 +75,15 @@ def create_public_order(shop_id):
     )
     db.session.add(order)
     db.session.commit()
+    # Push au patron (best-effort — la commande est déjà enregistrée)
+    try:
+        from routes.push_routes import notify_user
+        who = order.customer_name or 'Un client'
+        notify_user(shop_id, '🛍️ Nouvelle commande',
+                    f'{who} — {int(total):,} F ({len(items)} article(s))'.replace(',', ' '),
+                    '/?view=boutique')
+    except Exception:
+        pass
     return jsonify({'received': True, 'id': order.id}), 201
 
 

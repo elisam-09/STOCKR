@@ -16460,6 +16460,49 @@ function saveAppleServiceId() {
 }
 
 // ── NOTIFICATIONS SETUP (EmailJS + SMS webhook) ──
+// ── Push nouvelle commande (EN LIGNE — serveur → appareil, même app fermée) ──
+function _pushSupported() {
+  return 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
+}
+function _b64ToU8(b64) {
+  const pad = '='.repeat((4 - b64.length % 4) % 4);
+  const raw = atob((b64 + pad).replace(/-/g, '+').replace(/_/g, '/'));
+  const out = new Uint8Array(raw.length);
+  for (let i = 0; i < raw.length; i++) out[i] = raw.charCodeAt(i);
+  return out;
+}
+async function enableOrderPush() {
+  if (USE_LOCAL || !S.token) { showToast('Connectez-vous en ligne pour activer le push', 'error'); return; }
+  if (!_pushSupported()) { showToast('Push non supporté par ce navigateur', 'error'); return; }
+  try {
+    const perm = await Notification.requestPermission();
+    if (perm !== 'granted') { showToast("Autorisation refusée — activez les notifications dans les réglages du navigateur", 'error'); return; }
+    const reg = await navigator.serviceWorker.ready;
+    const d = await api('GET', '/api/push/vapid-key');
+    if (!d || !d.key) throw new Error('Push indisponible sur le serveur');
+    let sub = await reg.pushManager.getSubscription();
+    if (!sub) sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: _b64ToU8(d.key) });
+    const j = sub.toJSON();
+    await api('POST', '/api/push/subscribe', { endpoint: j.endpoint, keys: j.keys });
+    localStorage.setItem('baro_push_enabled', '1');
+    showToast('🔔 Notifications de commande activées sur cet appareil', 'success');
+    render();
+  } catch (e) { showToast(e.message || 'Activation impossible', 'error'); }
+}
+async function disableOrderPush() {
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    const sub = await reg.pushManager.getSubscription();
+    if (sub) {
+      try { await api('POST', '/api/push/unsubscribe', { endpoint: sub.endpoint }); } catch (_) {}
+      await sub.unsubscribe();
+    }
+  } catch (_) {}
+  localStorage.removeItem('baro_push_enabled');
+  showToast('Notifications de commande désactivées', 'info');
+  render();
+}
+
 function vNotificationsSetup() {
   const svc  = localStorage.getItem('stockr_emailjs_service') || '';
   const tpl  = localStorage.getItem('stockr_emailjs_template') || '';
@@ -16468,13 +16511,34 @@ function vNotificationsSetup() {
   const smsKey  = localStorage.getItem('stockr_sms_apikey') || '';
   const emailActive = !!(svc && tpl && pub);
   const smsActive = !!smsHook;
+  const pushOnline = !USE_LOCAL && !!S.token;
+  const pushOn = localStorage.getItem('baro_push_enabled') === '1' && Notification?.permission === 'granted';
   return `
   <div class="sub-hero" style="background:linear-gradient(135deg,#10B981,#0EA5E9)">
     <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('security')">${IC.left}</button>
     <div class="sub-hero-title">📧 Notifications réelles</div>
-    <div class="sub-hero-sub">${emailActive ? '🟢' : '⚪'} Email · ${smsActive ? '🟢' : '⚪'} SMS</div>
+    <div class="sub-hero-sub">${pushOn ? '🟢' : '⚪'} Push · ${emailActive ? '🟢' : '⚪'} Email · ${smsActive ? '🟢' : '⚪'} SMS</div>
   </div>
   <div class="container">
+
+    <!-- ── Push nouvelle commande (EN LIGNE) ── -->
+    <div class="card" style="margin-bottom:12px;border-left:4px solid ${pushOn?'var(--success)':'#8B5CF6'};background:linear-gradient(135deg,rgba(139,92,246,.06),transparent)">
+      <div style="font-size:15px;font-weight:800;color:var(--text-1);margin-bottom:6px">🔔 Push nouvelle commande</div>
+      <div style="font-size:12px;color:var(--text-2);line-height:1.6;margin-bottom:10px">
+        Quand un client commande sur votre <strong>boutique en ligne</strong>, ce téléphone reçoit une vraie notification système — <strong>même app fermée</strong>. Chaque appareil s'active séparément.
+      </div>
+      ${!_pushSupported() ? `
+        <div style="font-size:12px;color:var(--text-3);background:var(--gray-1);border-radius:10px;padding:10px 12px">Ce navigateur ne supporte pas le push. Sur iPhone : installez d'abord BARO sur l'écran d'accueil (iOS 16.4+).</div>
+      ` : !pushOnline ? `
+        <div style="font-size:12px;color:var(--text-3);background:var(--gray-1);border-radius:10px;padding:10px 12px;margin-bottom:10px">Nécessite le mode en ligne (compte connecté au serveur).</div>
+        <button class="btn btn-ghost" style="width:100%" onclick="nav('settings')">Paramètres → Serveur (API)</button>
+      ` : pushOn ? `
+        <div style="display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;color:var(--success);margin-bottom:10px"><span style="width:9px;height:9px;border-radius:50%;background:var(--success);box-shadow:0 0 8px rgba(16,185,129,.6)"></span>Activé sur cet appareil</div>
+        <button class="btn btn-ghost" style="width:100%;color:var(--danger);border-color:var(--danger)" onclick="disableOrderPush()">Désactiver sur cet appareil</button>
+      ` : `
+        <button class="btn btn-primary" style="width:100%;background:linear-gradient(135deg,#8B5CF6,#6366F1)" onclick="enableOrderPush()">🔔 Activer sur cet appareil</button>
+      `}
+    </div>
 
     <!-- ── EmailJS ── -->
     <div class="card" style="margin-bottom:12px;border-left:4px solid ${emailActive?'var(--success)':'#0EA5E9'}">
@@ -28500,6 +28564,8 @@ function __baroInit() {
   window.loadTeamCode    = loadTeamCode;
   window.resetTeamCode   = resetTeamCode;
   window.shareTeamCode   = shareTeamCode;
+  window.enableOrderPush  = enableOrderPush;
+  window.disableOrderPush = disableOrderPush;
   window.confirmSignupVerification = confirmSignupVerification;
   window.resendSignupVerification  = resendSignupVerification;
   window.cancelSignupVerification  = cancelSignupVerification;
