@@ -5504,7 +5504,7 @@ function _doRender() {
     home: vHome, pantry: vPantry, products: vProducts,
     sales: vSales, financial: vFinancial,
     detail: vDetail, add: vAdd, 'bulk-add': vBulkAdd, 'bulk-photos': vBulkPhotos, 'add-product': vAddProduct,
-    'edit-product': vEditProduct, settings: vSettings, 'metier-guide': vMetierGuide, 'multi-store': vMultiStore, 'ai-chat': vAiChat,
+    'edit-product': vEditProduct, settings: vSettings, 'metier-guide': vMetierGuide, 'multi-store': vMultiStore, 'ai-chat': vAiChat, documents: vDocuments, 'devis-form': vDevisForm,
     sova: vSova, spectra: vSpectraEnhanced, clients: vClients, 'add-client': vAddClient,
     'client-detail': vClientDetail, notifications: vNotifications,
     catalog: vCatalog, suppliers: vSuppliers,
@@ -17922,7 +17922,7 @@ function vMore() {
     { id:'stock-history',   icon:IC.trending,   label:t('stockHistory')||'Mouvements', sub:`${S.stockMovements.length} entrees`, color:'#334155' },
     { id:'spectra',         icon:IC.camera,     label:'Spectra AI',                    sub:'Scanner & compter',        color:'#6366f1' },
     { id:'catalog',         icon:IC.pdf,        label:t('catalog')||'Catalogue',       sub:'WhatsApp & PDF',           color:'#16a34a' },
-    { id:'exports',         icon:IC.download||IC.pdf, label:'Exports & Rapports',      sub:'PDF · Excel · CSV',        color:'#0d9488' },
+    { id:'documents',       icon:'📁',          label:'Documents',                     sub:'Devis · factures · rapports · exports', color:'#0d9488' },
     { id:'pricing',         icon:IC.star,       label:t('pricing')||'Tarifs',          sub:t('myPlan')||'Mon plan',    color:'#eab308' },
     { id:'settings',        icon:IC.settings,   label:t('settings')||'Parametres',     sub:t('myAccount')||'Compte',   color:'#64748b' },
   ];
@@ -17963,6 +17963,206 @@ function vMore() {
 }
 
 // ── EXPORTS & RAPPORTS ────────────────────────
+// ═══════════════════════════════════════════════════════════════
+// Lot 141 : Onglet DOCUMENTS — factures, devis, reçus, rapports, exports
+// Rassemble tout ce qui produit un fichier + ajoute un vrai générateur de DEVIS.
+// ═══════════════════════════════════════════════════════════════
+function _docNum(prefix) {
+  const d = new Date();
+  return `${prefix}-${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}-${String(Math.floor(Math.random()*9000)+1000)}`;
+}
+// Générateur de DEVIS PDF réel (même charte que la facture)
+function generateDevisPDF(devis) {
+  if (typeof window.jspdf === 'undefined') { showToast(t('pdfOffline')||'PDF indisponible hors-ligne', 'error'); return; }
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit:'mm', format:'a4' });
+  const sym = S.session?.currency_symbol || 'FCFA';
+  const biz = S.session?.business || S.session?.name || 'Mon Commerce';
+  const logoData = localStorage.getItem('baro_logo') || null;
+  // En-tête
+  doc.setFillColor(124, 58, 237); doc.rect(0,0,210,50,'F');
+  doc.setFillColor(109, 40, 217); doc.rect(0,45,210,5,'F');
+  let logoX = 16;
+  if (logoData) { try { doc.setFillColor(255,255,255); doc.roundedRect(16,12,26,26,2,2,'F'); doc.addImage(logoData,'PNG',18,14,22,22); logoX = 48; } catch(_){} }
+  doc.setTextColor(255,255,255); doc.setFontSize(20); doc.setFont('helvetica','bold');
+  doc.text(biz, logoX, 24);
+  doc.setFontSize(10); doc.setFont('helvetica','normal');
+  if (S.session?.email) doc.text(S.session.email, logoX, 31);
+  doc.setFontSize(26); doc.setFont('helvetica','bold');
+  doc.text('DEVIS', 194, 24, { align:'right' });
+  doc.setFontSize(9); doc.setFont('helvetica','normal');
+  doc.text('N° ' + devis.num, 194, 31, { align:'right' });
+  // Infos
+  let y = 62;
+  doc.setTextColor(90,90,90); doc.setFontSize(9);
+  doc.text('Date : ' + new Date(devis.date).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}), 16, y);
+  doc.text('Valable jusqu\'au : ' + new Date(devis.validUntil).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}), 16, y+6);
+  if (devis.client) { doc.setFont('helvetica','bold'); doc.setTextColor(30,30,30); doc.text('Client : ' + devis.client, 194, y, { align:'right' }); doc.setFont('helvetica','normal'); }
+  // En-tête tableau
+  y += 16;
+  doc.setFillColor(124,58,237); doc.rect(16,y-6,178,9,'F');
+  doc.setTextColor(255,255,255); doc.setFontSize(9); doc.setFont('helvetica','bold');
+  doc.text('DESIGNATION', 20, y); doc.text('QTE', 120, y, {align:'center'});
+  doc.text('PU', 155, y, {align:'right'}); doc.text('TOTAL', 192, y, {align:'right'});
+  // Lignes
+  y += 11; let total = 0;
+  doc.setTextColor(30,30,30); doc.setFont('helvetica','normal'); doc.setFontSize(9);
+  devis.items.forEach((it,i) => {
+    const lineTot = (it.qty||0)*(it.price||0); total += lineTot;
+    if (i%2===1) { doc.setFillColor(250,248,255); doc.rect(16,y-5,178,9,'F'); }
+    doc.text((it.name||'').substring(0,42), 20, y);
+    doc.text(String(it.qty||0), 120, y, {align:'center'});
+    doc.text(fmt(it.price||0)+' '+sym, 155, y, {align:'right'});
+    doc.setFont('helvetica','bold'); doc.text(fmt(lineTot)+' '+sym, 192, y, {align:'right'}); doc.setFont('helvetica','normal');
+    y += 9;
+  });
+  // Total
+  y += 2; doc.setDrawColor(124,58,237); doc.setLineWidth(0.8); doc.line(16,y,194,y); y += 8;
+  const taxRate = parseFloat(S.session?.tax_rate)||0;
+  doc.setFontSize(9); doc.setTextColor(100,100,100);
+  doc.text('Sous-total', 155, y, {align:'right'}); doc.text(fmt(total)+' '+sym, 192, y, {align:'right'}); y += 7;
+  let grand = total;
+  if (taxRate>0) { const tva=Math.round(total*taxRate/100); doc.text(`TVA (${taxRate}%)`,155,y,{align:'right'}); doc.text(fmt(tva)+' '+sym,192,y,{align:'right'}); y+=7; grand+=tva; }
+  y += 2;
+  doc.setFillColor(124,58,237); doc.roundedRect(108,y-2,86,16,2,2,'F');
+  doc.setTextColor(255,255,255); doc.setFontSize(8); doc.text('TOTAL ESTIME', 113, y+4);
+  doc.setFontSize(14); doc.setFont('helvetica','bold'); doc.text(fmt(grand)+' '+sym, 192, y+11, {align:'right'});
+  // Note validité + accord
+  y += 26;
+  doc.setTextColor(120,120,120); doc.setFontSize(8); doc.setFont('helvetica','normal');
+  doc.text('Ce devis est une estimation, non un document de paiement. Valable jusqu\'a la date indiquee.', 16, y);
+  if (devis.note) { const w = doc.splitTextToSize('Note : '+devis.note, 178); doc.text(w, 16, y+6); y += w.length*4; }
+  if (y < 240) { y = 240;
+    doc.setDrawColor(200,200,210); doc.setLineWidth(0.3);
+    doc.setTextColor(120,120,120); doc.setFontSize(8);
+    doc.text('Bon pour accord (date & signature)', 16, y);
+    doc.line(16, y+16, 90, y+16);
+    doc.setDrawColor(124,58,237); doc.setLineWidth(0.5); doc.roundedRect(120,y-4,74,24,2,2,'S');
+    doc.setTextColor(124,58,237); doc.setFontSize(8); doc.setFont('helvetica','bold');
+    doc.text('Cachet & signature', 157, y+2, {align:'center'});
+  }
+  // Pied
+  doc.setFillColor(248,250,252); doc.rect(0,272,210,26,'F');
+  doc.setDrawColor(124,58,237); doc.setLineWidth(1); doc.line(16,272,194,272);
+  doc.setTextColor(124,58,237); doc.setFontSize(10); doc.setFont('helvetica','bold');
+  doc.text('Au plaisir de travailler avec vous !', 105, 279, {align:'center'});
+  doc.setTextColor(100,100,100); doc.setFontSize(8); doc.setFont('helvetica','normal');
+  doc.text(biz + (S.session?.email?' · '+S.session.email:''), 105, 284, {align:'center'});
+  doc.setFontSize(6); doc.setTextColor(160,160,160);
+  doc.text('Devis genere par BARO · ' + new Date().toISOString().slice(0,10), 105, 290, {align:'center'});
+  doc.save(`Devis-${devis.num}.pdf`);
+  showToast('📄 Devis PDF généré', 'success');
+}
+function _saveDevis(d) {
+  try { const a = JSON.parse(localStorage.getItem('baro_devis')||'[]'); a.unshift(d); localStorage.setItem('baro_devis', JSON.stringify(a.slice(0,100))); } catch(_){}
+}
+function vDevisForm() {
+  const f = S.devisForm || (S.devisForm = { client:'', validDays:15, note:'', items:[{ name:'', qty:1, price:0 }] });
+  const total = f.items.reduce((s,it)=>s+(it.qty||0)*(it.price||0),0);
+  return `
+  <div class="sub-hero" style="background:linear-gradient(135deg,#7C3AED,#6366F1)">
+    <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('documents')">${IC.left}</button>
+    <div class="sub-hero-title">📄 Nouveau devis</div>
+    <div class="sub-hero-sub">Estimation professionnelle en PDF</div>
+  </div>
+  <div class="container">
+    <div class="card" style="margin-bottom:12px">
+      <label class="form-label">Client (nom)</label>
+      <input class="input" id="dv-client" type="text" placeholder="ex : Pharmacie du Plateau" value="${(f.client||'').replace(/"/g,'&quot;')}" oninput="S.devisForm.client=this.value">
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <div style="flex:1"><label class="form-label">Validité (jours)</label>
+          <input class="input" id="dv-valid" type="number" min="1" value="${f.validDays}" oninput="S.devisForm.validDays=parseInt(this.value)||15"></div>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:12px">
+      <div class="card-title">Lignes du devis</div>
+      <div id="dv-lines">
+        ${f.items.map((it,i)=>`
+        <div style="display:flex;gap:6px;margin-bottom:8px;align-items:center">
+          <input class="input" style="flex:2;min-width:0" placeholder="Désignation" value="${(it.name||'').replace(/"/g,'&quot;')}" oninput="S.devisForm.items[${i}].name=this.value;_dvTotal()">
+          <input class="input" style="flex:0 0 56px;width:56px;text-align:center" type="number" min="0" step="any" placeholder="Qté" value="${it.qty||''}" oninput="S.devisForm.items[${i}].qty=parseFloat(this.value)||0;_dvTotal()">
+          <input class="input" style="flex:0 0 78px;width:78px;text-align:right" type="number" min="0" placeholder="Prix" value="${it.price||''}" oninput="S.devisForm.items[${i}].price=parseFloat(this.value)||0;_dvTotal()">
+          ${f.items.length>1?`<button class="btn btn-ghost" style="flex:0 0 auto;width:auto;padding:0 10px;color:var(--danger)" onclick="S.devisForm.items.splice(${i},1);render()">✕</button>`:''}
+        </div>`).join('')}
+      </div>
+      <button class="btn btn-ghost" style="width:100%;font-size:13px" onclick="S.devisForm.items.push({name:'',qty:1,price:0});render()">＋ Ajouter une ligne</button>
+    </div>
+    <div class="card" style="margin-bottom:12px">
+      <label class="form-label">Note (optionnel)</label>
+      <textarea class="input" id="dv-note" rows="2" placeholder="ex : Livraison sous 5 jours, acompte 50%…" style="resize:none" oninput="S.devisForm.note=this.value">${(f.note||'').replace(/</g,'&lt;')}</textarea>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:0 4px 12px">
+      <span style="font-size:13px;color:var(--text-3)">Total estimé</span>
+      <span id="dv-total" style="font-size:20px;font-weight:800;color:var(--accent)">${fmt(total)} ${sym()}</span>
+    </div>
+    <button class="btn btn-primary" style="width:100%" onclick="submitDevis()">📄 Générer le devis PDF</button>
+  </div>`;
+}
+function _dvTotal() {
+  const f = S.devisForm; if (!f) return;
+  const total = f.items.reduce((s,it)=>s+(it.qty||0)*(it.price||0),0);
+  const el = document.getElementById('dv-total'); if (el) el.textContent = `${fmt(total)} ${sym()}`;
+}
+function submitDevis() {
+  const f = S.devisForm;
+  const items = (f.items||[]).filter(it => (it.name||'').trim() && (it.qty||0) > 0);
+  if (!items.length) { showToast('Ajoutez au moins une ligne (désignation + quantité)', 'error'); return; }
+  const now = new Date();
+  const devis = {
+    num: _docNum('DV'), date: now.toISOString(),
+    validUntil: new Date(now.getTime() + (f.validDays||15)*86400000).toISOString(),
+    client: (f.client||'').trim(), note: (f.note||'').trim(), items,
+    total: items.reduce((s,it)=>s+(it.qty||0)*(it.price||0),0),
+  };
+  _saveDevis(devis);
+  generateDevisPDF(devis);
+  S.devisForm = { client:'', validDays:15, note:'', items:[{ name:'', qty:1, price:0 }] };
+  nav('documents');
+}
+function vDocuments() {
+  const nbSales = (S.sales||[]).length;
+  const devisHist = (() => { try { return JSON.parse(localStorage.getItem('baro_devis')||'[]'); } catch { return []; } })();
+  const card = (icon, title, sub, onclick, accent) => `
+    <button class="card" style="text-align:left;width:100%;padding:14px;display:flex;align-items:center;gap:12px;cursor:pointer;border:1px solid var(--border);margin-bottom:10px" onclick="${onclick}">
+      <div style="width:44px;height:44px;border-radius:12px;flex-shrink:0;background:${accent}18;color:${accent};display:flex;align-items:center;justify-content:center;font-size:22px">${icon}</div>
+      <div style="flex:1;min-width:0"><div style="font-weight:800;font-size:14.5px;color:var(--text-1)">${title}</div>
+      <div style="font-size:12px;color:var(--text-3);margin-top:1px">${sub}</div></div>
+      <div style="color:var(--text-3);flex-shrink:0">${IC.chevron}</div>
+    </button>`;
+  return `
+  <div class="sub-hero" style="background:linear-gradient(135deg,#0d9488,#4F46E5)">
+    <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('more')">${IC.left}</button>
+    <div class="sub-hero-title">📁 Documents</div>
+    <div class="sub-hero-sub">Factures · devis · reçus · rapports · exports</div>
+  </div>
+  <div class="container">
+    <div class="settings-label" style="margin-bottom:8px">Créer un document</div>
+    ${card('📄','Nouveau devis','Estimation PDF pour un client'+(devisHist.length?` · ${devisHist.length} créé(s)`:''),"nav('devis-form')",'#7C3AED')}
+    ${card('🧾','Facture / reçu','Depuis une vente — bouton Facture PDF','nav(\'sales\')','#4F46E5')}
+    ${card('🛍️','Catalogue produits','Partager votre catalogue (PDF / image)','nav(\'catalog\')','#16A34A')}
+
+    <div class="settings-label" style="margin:16px 0 8px">Rapports professionnels (PDF)</div>
+    ${card('🧮','Bilan financier signé','CA · bénéfice net · marge · top produits',"S.period='30d';generateBilanReportPDF()",'#4F46E5')}
+    ${card('📦','Rapport de stock',`${(S.articles||[]).length} article(s) · valeur & alertes`,'generateStockReportPDF()','#0EA5E9')}
+    ${card('💰','Rapport de ventes',`${nbSales} vente(s) · période complète`,"generateSalesReportPDF('all')",'#F59E0B')}
+    ${card('👥','Rapport clients (CRM)',`${(S.clients||[]).length} client(s) triés par CA`,'generateClientsReportPDF()','#EC4899')}
+
+    <div class="settings-label" style="margin:16px 0 8px">Exports (comptable / tableur)</div>
+    ${card('📗','Export Excel complet','Toutes les tables en .xls','exportFullXLSX()','#059669')}
+    ${card('📊','Tout en CSV','Format universel comptable','exportAllCSV()','#334155')}
+    ${card('📚','Plus d\'exports & options','OHADA, par table, intégrations','nav(\'exports\')','#64748B')}
+
+    ${devisHist.length ? `
+    <div class="settings-label" style="margin:16px 0 8px">Devis récents</div>
+    ${devisHist.slice(0,5).map(d => `
+      <div class="card" style="padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:10px">
+        <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:13.5px;color:var(--text-1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${d.client? (d.client).replace(/</g,'&lt;') : d.num}</div>
+        <div style="font-size:11px;color:var(--text-3)">${new Date(d.date).toLocaleDateString('fr-FR')} · ${fmt(d.total)} ${sym()}</div></div>
+        <button class="btn btn-ghost" style="flex:0 0 auto;width:auto;padding:8px 12px;font-size:12px" onclick='generateDevisPDF(${JSON.stringify(d).replace(/'/g,"&#39;")})'>PDF</button>
+      </div>`).join('')}` : ''}
+  </div>`;
+}
+
 function vExports() {
   const totalCA = S.sales.reduce((s,v)=>s+v.total, 0);
   const totalProfit = S.sales.reduce((s,v)=>s+(v.profit||0), 0);
