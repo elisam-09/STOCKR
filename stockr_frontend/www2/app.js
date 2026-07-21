@@ -5504,7 +5504,7 @@ function _doRender() {
     home: vHome, pantry: vPantry, products: vProducts,
     sales: vSales, financial: vFinancial,
     detail: vDetail, add: vAdd, 'bulk-add': vBulkAdd, 'bulk-photos': vBulkPhotos, 'add-product': vAddProduct,
-    'edit-product': vEditProduct, settings: vSettings, 'metier-guide': vMetierGuide, 'multi-store': vMultiStore,
+    'edit-product': vEditProduct, settings: vSettings, 'metier-guide': vMetierGuide, 'multi-store': vMultiStore, 'ai-chat': vAiChat,
     sova: vSova, spectra: vSpectraEnhanced, clients: vClients, 'add-client': vAddClient,
     'client-detail': vClientDetail, notifications: vNotifications,
     catalog: vCatalog, suppliers: vSuppliers,
@@ -6636,6 +6636,7 @@ function vHome() {
         </div>` : ''}
       </div>
       <div style="display:flex;gap:8px">
+        <button class="hero-btn" onclick="nav('ai-chat')" title="BARO IA — Assistant" style="position:relative;font-size:17px">🤖</button>
         ${__hasTeam ? `<button class="hero-btn" onclick="openMemberSwitcher()" title="Changer de membre" style="position:relative">👥</button>` : ''}
         <button class="hero-btn" onclick="nav('notifications')" style="position:relative">${IC.bell}${low.length>0?`<span style="position:absolute;top:-2px;right:-2px;width:18px;height:18px;border-radius:50%;background:var(--danger);color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center">${low.length}</span>`:''}</button>
         <button class="hero-btn" onclick="nav('settings')">${IC.settings}</button>
@@ -17575,6 +17576,207 @@ function vMetierGuide() {
   </div>`;
 }
 
+// ═══════════════════════════════════════════════════════════════
+// Lot 140 : BARO IA — assistant conversationnel qui connaît VOTRE business
+// LLM réel (Groq/OpenRouter, clé gratuite) nourri d'un résumé de vos données ;
+// repli local honnête (réponses calculées) si aucune clé. Jamais inventé.
+// ═══════════════════════════════════════════════════════════════
+const _AI_CHAT_MODELS = {
+  groq: ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant'],
+  openrouter: ['meta-llama/llama-3.3-70b-instruct:free', 'google/gemini-2.0-flash-exp:free'],
+};
+function _aiChatProvider() {
+  const groq = (localStorage.getItem('stockr_groq_key') || '').trim();
+  if (groq) return { id: 'groq', key: groq, url: _AI_PROVIDERS.groq.url, models: _AI_CHAT_MODELS.groq };
+  const or = (localStorage.getItem('stockr_openrouter_key') || '').trim();
+  if (or) return { id: 'openrouter', key: or, url: _AI_PROVIDERS.openrouter.url, models: _AI_CHAT_MODELS.openrouter };
+  return null;
+}
+// Résumé compact et RÉEL du business (nourrit l'IA — jamais de données inventées)
+function _baroBizContext() {
+  const S_ = S; const money = n => `${fmt(Math.round(n||0))} ${sym()}`;
+  const now = new Date();
+  const dayStart = new Date(); dayStart.setHours(0,0,0,0);
+  const monthStart = new Date(); monthStart.setDate(1); monthStart.setHours(0,0,0,0);
+  const weekStart = new Date(now - 7*86400000);
+  const sales = S_.sales || [];
+  const inRange = (from) => sales.filter(s => new Date(s.date) >= from);
+  const sum = arr => arr.reduce((a,s)=>a+(s.total||0),0);
+  const profit = arr => arr.reduce((a,s)=>a+(s.profit||0),0);
+  const caToday = sum(inRange(dayStart)), caWeek = sum(inRange(weekStart)), caMonth = sum(inRange(monthStart));
+  const arts = S_.articles || [];
+  const stockVal = arts.reduce((a,x)=>a+(x.stock||0)*(x.price||0),0);
+  const low = arts.filter(a => a.min>0 && (a.stock||0)<=a.min).map(a=>`${a.name} (${fmtQty(a.stock)}/${a.min})`);
+  const soon = arts.filter(a => a.expiry).map(a=>({n:a.name,d:a.expiry})).filter(x=>{const dd=(new Date(x.d)-now)/86400000; return dd>=0&&dd<=30;}).map(x=>`${x.n} (${x.d})`);
+  // top produits du mois
+  const byName = {}; inRange(monthStart).forEach(s=>{const n=s.productName||'?';if(!byName[n])byName[n]={q:0,ca:0};byName[n].q+=(s.qty||0);byName[n].ca+=(s.total||0);});
+  const tops = Object.entries(byName).sort((a,b)=>b[1].ca-a[1].ca).slice(0,5).map(([n,v])=>`${n}: ${v.q} vendu(s), ${money(v.ca)}`);
+  const expenses = (S_.expenses||[]).filter(e=>new Date(e.date)>=monthStart).reduce((a,e)=>a+(e.amount||0),0);
+  const net = caMonth - expenses;
+  const clients = S_.clients||[];
+  const bt = (typeof getBusinessType==='function')?getBusinessType():'reseller';
+  const btLabel = {reseller:'Revendeur/Boutique',maker:'Fabricant/Restaurant'}[bt]||bt;
+  const boutiquePending = (S_.boutiqueOrders||[]).filter(o=>o.status==='pending'||!o.status).length;
+  const L = [];
+  L.push(`Commerce: ${S_.session?.business||'—'} (${btLabel}). Devise: ${sym()}.`);
+  L.push(`Chiffre d'affaires — aujourd'hui: ${money(caToday)}, 7 jours: ${money(caWeek)}, ce mois: ${money(caMonth)}.`);
+  L.push(`Bénéfice ce mois: brut ${money(profit(inRange(monthStart)))}, dépenses ${money(expenses)}, NET ${money(net)}.`);
+  L.push(`Ventes ce mois: ${inRange(monthStart).length}. Total historique: ${sales.length} vente(s).`);
+  L.push(`Stock: ${arts.length} article(s), valeur ${money(stockVal)}.`);
+  L.push(low.length?`Stock BAS (${low.length}): ${low.slice(0,10).join('; ')}.`:`Aucun article en stock bas.`);
+  if (soon.length) L.push(`Périment sous 30 j (${soon.length}): ${soon.slice(0,10).join('; ')}.`);
+  L.push(tops.length?`Top ventes du mois: ${tops.join(' | ')}.`:`Aucune vente ce mois.`);
+  L.push(`Clients: ${clients.length}. Équipe: ${(S_.teamMembers||[]).length} membre(s).`);
+  if (boutiquePending) L.push(`Commandes boutique en attente: ${boutiquePending}.`);
+  return L.join('\n');
+}
+function _aiSystemPrompt() {
+  return `Tu es BARO IA, l'assistant business intelligent de l'application BARO (gestion de stock & vente pour commerçants d'Afrique de l'Ouest, Côte d'Ivoire).
+Tu connais les données RÉELLES du commerçant (ci-dessous). Réponds de façon concrète, chaleureuse et actionnable, en français simple (le commerçant n'est pas technicien). Utilise la devise indiquée. Sois bref (3-6 phrases max sauf si on te demande un détail). Si une donnée n'est pas dans le contexte, dis-le honnêtement au lieu d'inventer. Propose des actions concrètes quand c'est pertinent (ex: "réapprovisionne X", "relance ce client sur WhatsApp"). Tu peux donner des conseils de vente, de marge, de gestion, de marketing adaptés à un petit commerce africain.
+
+DONNÉES RÉELLES DU COMMERCE :
+${_baroBizContext()}`;
+}
+// Repli LOCAL déterministe (sans clé IA) — répond aux questions fréquentes en CALCULANT sur les vraies données
+function _aiLocalAnswer(q) {
+  const t = (q||'').toLowerCase();
+  const money = n => `${fmt(Math.round(n||0))} ${sym()}`;
+  const sales = S.sales||[]; const now = new Date();
+  const mStart = new Date(); mStart.setDate(1); mStart.setHours(0,0,0,0);
+  const dStart = new Date(); dStart.setHours(0,0,0,0);
+  const inR = f => sales.filter(s=>new Date(s.date)>=f);
+  const sum = a => a.reduce((x,s)=>x+(s.total||0),0);
+  if (/(bénéf|benef|gagn|profit|net)/.test(t)) {
+    const ca=sum(inR(mStart)); const dep=(S.expenses||[]).filter(e=>new Date(e.date)>=mStart).reduce((a,e)=>a+(e.amount||0),0);
+    return `Ce mois : chiffre d'affaires ${money(ca)}, dépenses ${money(dep)}, **bénéfice net ${money(ca-dep)}**. Ouvre le Bilan pour le détail.`;
+  }
+  if (/(vend|chiffre|ca |vente|aujour|jour)/.test(t)) {
+    return `Chiffre d'affaires : aujourd'hui ${money(sum(inR(dStart)))}, ce mois ${money(sum(inR(mStart)))} (${inR(mStart).length} ventes).`;
+  }
+  if (/(stock bas|rupture|réappro|reappro|manqu|faible)/.test(t)) {
+    const low=(S.articles||[]).filter(a=>a.min>0&&(a.stock||0)<=a.min);
+    return low.length?`${low.length} article(s) en stock bas : ${low.slice(0,8).map(a=>a.name+' ('+fmtQty(a.stock)+')').join(', ')}. Pense à réapprovisionner.`:`Bonne nouvelle : aucun article en stock bas. 👍`;
+  }
+  if (/(périm|perim|expir|péremption|date)/.test(t)) {
+    const soon=(S.articles||[]).filter(a=>a.expiry).filter(a=>{const dd=(new Date(a.expiry)-now)/86400000;return dd>=0&&dd<=30;});
+    return soon.length?`${soon.length} article(s) périment sous 30 jours : ${soon.slice(0,8).map(a=>a.name+' ('+a.expiry+')').join(', ')}. Écoule-les en priorité (promo ?).`:`Aucun article proche de la péremption sous 30 jours.`;
+  }
+  if (/(top|meilleur|plus vendu|populaire)/.test(t)) {
+    const byName={}; inR(mStart).forEach(s=>{const n=s.productName||'?';byName[n]=(byName[n]||0)+(s.qty||0);});
+    const top=Object.entries(byName).sort((a,b)=>b[1]-a[1]).slice(0,5);
+    return top.length?`Tes meilleures ventes ce mois : ${top.map(([n,q])=>n+' ('+q+')').join(', ')}.`:`Pas encore de vente ce mois pour établir un classement.`;
+  }
+  if (/(client)/.test(t)) return `Tu as ${(S.clients||[]).length} client(s) enregistré(s). Va dans Clients pour relancer les meilleurs sur WhatsApp.`;
+  return null; // pas de réponse locale → on invite à activer l'IA
+}
+function _aiPush(role, content) {
+  if (!S.aiChat) S.aiChat = [];
+  S.aiChat.push({ role, content, t: Date.now() });
+  if (S.aiChat.length > 40) S.aiChat = S.aiChat.slice(-40);
+}
+async function sendAiMessage(preset) {
+  const inp = document.getElementById('ai-input');
+  const msg = (preset || (inp ? inp.value : '') || '').trim();
+  if (!msg || S._aiBusy) return;
+  if (inp) inp.value = '';
+  _aiPush('user', msg);
+  S._aiBusy = true; render();
+  setTimeout(() => { const sc = document.getElementById('ai-scroll'); if (sc) sc.scrollTop = sc.scrollHeight; }, 30);
+  const prov = _aiChatProvider();
+  if (!prov) {
+    // Repli local honnête
+    const local = _aiLocalAnswer(msg);
+    _aiPush('assistant', local
+      ? local + `\n\n_💡 Pour des réponses libres à toute question, active l'IA (clé Groq gratuite) — bouton ⚙️ en haut._`
+      : `Je peux déjà répondre sur ton **bénéfice**, ton **chiffre d'affaires**, ton **stock bas**, tes **péremptions**, tes **meilleures ventes** et tes **clients** — pose-moi l'une de ces questions.\n\nPour discuter librement de TOUT (conseils, idées, rédaction…), active l'IA complète : appuie sur ⚙️ en haut et colle une clé **Groq gratuite** (30 sec).`);
+    S._aiBusy = false; render();
+    setTimeout(() => { const sc = document.getElementById('ai-scroll'); if (sc) sc.scrollTop = sc.scrollHeight; }, 30);
+    return;
+  }
+  // Appel LLM réel
+  const history = (S.aiChat || []).filter(m => m.role !== 'system').slice(-12).map(m => ({ role: m.role, content: m.content }));
+  const messages = [{ role: 'system', content: _aiSystemPrompt() }, ...history];
+  let answer = '', lastErr = '';
+  for (const model of prov.models) {
+    try {
+      const resp = await fetch(prov.url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + prov.key },
+        body: JSON.stringify({ model, messages, temperature: 0.4, max_tokens: 700 }),
+      });
+      if (resp.ok) { const d = await resp.json(); answer = d?.choices?.[0]?.message?.content || ''; if (answer) break; }
+      else { try { const e = await resp.json(); lastErr = e?.error?.message || ('Erreur ' + resp.status); } catch(_) { lastErr = 'Erreur ' + resp.status; }
+        if (resp.status === 401) { lastErr = 'Clé IA invalide — vérifie-la dans ⚙️.'; break; } }
+    } catch(e) { lastErr = e.message || 'Réseau indisponible'; }
+  }
+  _aiPush('assistant', answer || `⚠️ ${lastErr || 'IA momentanément indisponible'}. ${_aiLocalAnswer(msg) || 'Réessaie dans un instant.'}`);
+  S._aiBusy = false; render();
+  setTimeout(() => { const sc = document.getElementById('ai-scroll'); if (sc) sc.scrollTop = sc.scrollHeight; }, 30);
+}
+function _aiSetupKey() {
+  const cur = (localStorage.getItem('stockr_groq_key') || '').trim();
+  const k = prompt('Clé IA gratuite (Groq — commence par gsk_, ou OpenRouter sk-or-).\n\nObtiens-la en 30 s sur console.groq.com/keys (gratuit, sans carte).\n\nColle-la ici :', cur);
+  if (k === null) return;
+  const key = k.trim();
+  if (!key) { localStorage.removeItem('stockr_groq_key'); showToast('Clé retirée', 'info'); render(); return; }
+  if (/^gsk_/.test(key)) localStorage.setItem('stockr_groq_key', key);
+  else if (/^sk-or-/.test(key)) localStorage.setItem('stockr_openrouter_key', key);
+  else { showToast('Clé non reconnue (attendu gsk_… ou sk-or-…)', 'error'); return; }
+  showToast('🤖 IA activée !', 'success'); render();
+}
+function clearAiChat() { S.aiChat = []; render(); }
+function vAiChat() {
+  const chat = S.aiChat || [];
+  const hasKey = !!_aiChatProvider();
+  const suggestions = [
+    '💰 Quel est mon bénéfice net ce mois ?',
+    '📉 Quels articles sont en stock bas ?',
+    '🔥 Quels sont mes produits les plus vendus ?',
+    '⏱️ Qu\'est-ce qui périme bientôt ?',
+    '💡 Donne-moi 3 idées pour vendre plus',
+  ];
+  const esc = s => String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const fmtMsg = s => esc(s).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/_(.+?)_/g,'<i style="color:var(--text-3)">$1</i>').replace(/\n/g,'<br>');
+  return `
+  <div class="sub-hero" style="background:linear-gradient(135deg,#6366F1,#0EA5E9)">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <button class="back-btn-dark" onclick="nav('home')">${IC.left}</button>
+      <div style="display:flex;gap:8px">
+        ${chat.length?`<button class="back-btn-dark" style="width:auto;padding:0 12px;font-size:12px" onclick="clearAiChat()">🗑️ Effacer</button>`:''}
+        <button class="back-btn-dark" style="width:auto;padding:0 12px;font-size:12px" onclick="_aiSetupKey()">⚙️ ${hasKey?'IA activée':'Activer'}</button>
+      </div>
+    </div>
+    <div class="sub-hero-title">🤖 BARO IA</div>
+    <div class="sub-hero-sub">${hasKey?'Assistant intelligent — connaît votre commerce':'Assistant business — répond sur vos données'}</div>
+  </div>
+  <div class="container" style="display:flex;flex-direction:column;height:calc(100vh - 260px);min-height:340px">
+    <div id="ai-scroll" style="flex:1;overflow-y:auto;padding:4px 0 8px;-webkit-overflow-scrolling:touch">
+      ${chat.length === 0 ? `
+        <div style="text-align:center;padding:14px 8px 18px">
+          <div style="font-size:46px;margin-bottom:8px">🤖</div>
+          <div style="font-size:15px;font-weight:800;color:var(--text-1);margin-bottom:4px">Bonjour ${S.session?.name?esc(S.session.name.split(' ')[0]):''} 👋</div>
+          <div style="font-size:13px;color:var(--text-3);line-height:1.55;margin-bottom:6px">Je connais votre stock, vos ventes et vos finances. Posez-moi une question :</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          ${suggestions.map(s=>`<button class="card" style="text-align:left;padding:12px 14px;font-size:13px;font-weight:600;color:var(--text-1);cursor:pointer;border:1px solid var(--border)" onclick="sendAiMessage(${JSON.stringify(s.replace(/^[^\s]+\s/,'')).replace(/"/g,'&quot;')})">${esc(s)}</button>`).join('')}
+        </div>
+      ` : chat.map(m => m.role === 'user' ? `
+        <div style="display:flex;justify-content:flex-end;margin-bottom:10px">
+          <div style="max-width:82%;background:linear-gradient(135deg,var(--accent),#6366F1);color:#fff;padding:10px 14px;border-radius:16px 16px 4px 16px;font-size:13.5px;line-height:1.5;box-shadow:0 2px 8px rgba(79,70,229,.25)">${fmtMsg(m.content)}</div>
+        </div>` : `
+        <div style="display:flex;gap:8px;margin-bottom:10px">
+          <div style="width:30px;height:30px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,#6366F1,#0EA5E9);display:flex;align-items:center;justify-content:center;font-size:15px">🤖</div>
+          <div style="max-width:82%;background:var(--surface);border:1px solid var(--border);color:var(--text-1);padding:10px 14px;border-radius:16px 16px 16px 4px;font-size:13.5px;line-height:1.55">${fmtMsg(m.content)}</div>
+        </div>`).join('')}
+      ${S._aiBusy ? `<div style="display:flex;gap:8px;margin-bottom:10px"><div style="width:30px;height:30px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,#6366F1,#0EA5E9);display:flex;align-items:center;justify-content:center;font-size:15px">🤖</div><div style="background:var(--surface);border:1px solid var(--border);padding:12px 16px;border-radius:16px;font-size:13px;color:var(--text-3)">✍️ écrit…</div></div>` : ''}
+    </div>
+    <div style="display:flex;gap:8px;padding:8px 0 4px;border-top:1px solid var(--border)">
+      <input id="ai-input" class="input" type="text" placeholder="Écrivez votre question…" style="flex:1;min-width:0" onkeydown="if(event.key==='Enter')sendAiMessage()" ${S._aiBusy?'disabled':''}>
+      <button class="btn btn-primary" style="flex:0 0 52px;width:52px;padding:0;font-size:18px" onclick="sendAiMessage()" ${S._aiBusy?'disabled':''}>➤</button>
+    </div>
+  </div>`;
+}
+
 // ── Lot 139 : Tableau multi-points de vente ──
 // Comparaison RÉELLE des emplacements (boutiques, comptoirs, entrepôts) :
 // CA, ventes, panier moyen, valeur de stock, top produit — par point de vente.
@@ -17703,6 +17905,7 @@ function vMore() {
   const canAudit    = hasPermission('audit') || canAdmin;
 
   const items = [
+    { id:'ai-chat',         icon:'🤖',          label:'BARO IA — Assistant',            sub:'Posez des questions sur votre commerce', color:'#6366F1' },
     { id:'metier-guide',    icon:'💡',          label:'BARO pour mon métier',           sub:'Pharmacie · restau · services…', color:'#0EA5E9' },
     canAdmin ? { id:'multi-store', icon:'🏬',    label:'Multi-points de vente',          sub:`${(S.locations||[]).length} emplacement(s)`, color:'#7C3AED' } : null,
     canAdmin ? { id:'team',  icon:IC.users,      label:'Équipe',                         sub:`${teamCount} collaborateur(s)`, color:'#7C73FF', badge: teamCount || null } : null,
