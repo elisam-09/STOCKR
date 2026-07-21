@@ -4920,6 +4920,27 @@ async function syncNow() {
   }
 }
 
+// ── Lot 135 : synchro automatique EN LIGNE (reprise + périodique) ──
+// Multi-appareils réel : les ventes des vendeurs, le stock et les commandes
+// boutique apparaissent sur tous les téléphones SANS geste — au retour dans
+// l'app et toutes les 3 minutes. Silencieuse et respectueuse : jamais pendant
+// une saisie ni une vente en cours (pas de « blink »), au plus 1×/minute.
+let _autoSyncLast = 0;
+async function _autoSync() {
+  if (_syncing || USE_LOCAL || !S.token) return;
+  if (document.visibilityState !== 'visible') return;
+  if (Date.now() - _autoSyncLast < 60000) return;
+  const ae = document.activeElement;
+  if (ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.tagName === 'SELECT' || ae.isContentEditable)) return;
+  if (document.querySelector('.qs-overlay')) return;   // vente / options en cours
+  _autoSyncLast = Date.now();
+  _syncing = true;
+  try { await loadData(); } catch(_){}
+  _syncing = false;
+}
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') _autoSync(); });
+setInterval(_autoSync, 180000);
+
 // ── Sauvegarde / restauration par FICHIER (marche sans serveur) ──
 // Migration d'appareil pour ceux qui ne déploient pas de backend :
 // tout le localStorage BARO dans un .json, restaurable ailleurs.
