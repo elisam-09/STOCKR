@@ -3191,7 +3191,7 @@ function recordSale() {
     const payMethod = pmSel ? pmSel.value : 'cash';
     const { clientId, clientName } = _resolveClientForSale();
     const __m = (typeof getCurrentMember === 'function') ? getCurrentMember() : null;
-    S.sales.unshift({ id: Date.now(), productId: art.id, productName: art.name, qty, total: saleTotal, profit, date: new Date().toISOString(), paymentMethod: payMethod, clientId, clientName, memberId: __m?.id || null, memberName: __m?.name || null });
+    S.sales.unshift({ id: Date.now(), productId: art.id, productName: art.name, qty, total: saleTotal, profit, date: new Date().toISOString(), paymentMethod: payMethod, clientId, clientName, memberId: __m?.id || null, memberName: __m?.name || null, locationId: S.currentLocation || null });
     _saveArticles();
     logActivity('sale', `${art.name} x${qty} — ${fmt(saleTotal)} ${sym()}`);
     showToast(`${t('saleConfirmed')} — ${fmt(saleTotal)} ${sym()}`);
@@ -3250,6 +3250,7 @@ function recordSale() {
   // Attribution au membre connecté
   const __currentMember = (typeof getCurrentMember === 'function') ? getCurrentMember() : null;
   if (__currentMember) {
+    __sale.locationId = S.currentLocation || null;
     __sale.memberId = __currentMember.id;
     __sale.memberName = __currentMember.name;
   }
@@ -4365,7 +4366,7 @@ async function confirmMultiSale(opts = {}) {
         clientId, clientName: client?.name || null,
         paymentMethod: payMethod, promoName, promoDiscount,
         kind: it.kind,
-        memberId: __mm?.id || null, memberName: __mm?.name || null,
+        memberId: __mm?.id || null, memberName: __mm?.name || null, locationId: S.currentLocation || null,
       };
       S.sales.unshift(newSale);
       newSales.push(newSale);
@@ -4526,7 +4527,7 @@ function confirmServiceSale() {
     total: amount, profit: Math.max(0, amount - cost),
     date: new Date().toISOString(), paymentMethod: payMethod,
     clientId, clientName,
-    memberId: __m?.id || null, memberName: __m?.name || null,
+    memberId: __m?.id || null, memberName: __m?.name || null, locationId: S.currentLocation || null,
   };
   S.sales.unshift(sale);
   localStorage.setItem('stockr_sales', JSON.stringify(S.sales));
@@ -4635,7 +4636,7 @@ async function confirmCart() {
       try { _saveArticles(); } catch(_){}
     }
     // Attribution au vendeur connecté (sinon admin) — pour "Ventes par vendeur" & stats équipe
-    newSales.forEach(s => { s.memberId = __m?.id || null; s.memberName = __m?.name || null; });
+    newSales.forEach(s => { s.memberId = __m?.id || null; s.memberName = __m?.name || null; s.locationId = S.currentLocation || null; });
     // Loyalty points (with tier multiplier)
     if (S.loyaltyConfig?.enabled && clientId) {
       const cl = S.clients.find(c => c.id === clientId);
@@ -5503,7 +5504,7 @@ function _doRender() {
     home: vHome, pantry: vPantry, products: vProducts,
     sales: vSales, financial: vFinancial,
     detail: vDetail, add: vAdd, 'bulk-add': vBulkAdd, 'bulk-photos': vBulkPhotos, 'add-product': vAddProduct,
-    'edit-product': vEditProduct, settings: vSettings, 'metier-guide': vMetierGuide,
+    'edit-product': vEditProduct, settings: vSettings, 'metier-guide': vMetierGuide, 'multi-store': vMultiStore,
     sova: vSova, spectra: vSpectraEnhanced, clients: vClients, 'add-client': vAddClient,
     'client-detail': vClientDetail, notifications: vNotifications,
     catalog: vCatalog, suppliers: vSuppliers,
@@ -17574,6 +17575,119 @@ function vMetierGuide() {
   </div>`;
 }
 
+// ── Lot 139 : Tableau multi-points de vente ──
+// Comparaison RÉELLE des emplacements (boutiques, comptoirs, entrepôts) :
+// CA, ventes, panier moyen, valeur de stock, top produit — par point de vente.
+// Marche hors-ligne (agrège S.sales.locationId + S.articles.locationId).
+function _msStats(locId, sales) {
+  const s = sales.filter(v => String(v.locationId || '') === String(locId || ''));
+  const ca = s.reduce((a, v) => a + (v.total || 0), 0);
+  const profit = s.reduce((a, v) => a + (v.profit || 0), 0);
+  const nb = s.length;
+  const arts = (S.articles || []).filter(a => String(a.locationId || '') === String(locId || ''));
+  const stockVal = arts.reduce((a, v) => a + (v.stock || 0) * (v.price || 0), 0);
+  const lowCount = arts.filter(a => a.min > 0 && (a.stock || 0) <= a.min).length;
+  // top produit du point de vente
+  const byName = {};
+  s.forEach(v => { const n = v.productName || '?'; byName[n] = (byName[n] || 0) + (v.qty || 0); });
+  const top = Object.entries(byName).sort((a, b) => b[1] - a[1])[0];
+  return { ca, profit, nb, avg: nb ? Math.round(ca / nb) : 0, stockVal, lowCount, nbArts: arts.length, top: top ? top[0] : null };
+}
+function vMultiStore() {
+  const period = S.msPeriod || 'month';
+  const now = new Date();
+  let from = new Date(0);
+  if (period === 'today') { from = new Date(); from.setHours(0,0,0,0); }
+  else if (period === 'week') { from = new Date(now - 7*86400000); }
+  else if (period === 'month') { from = new Date(); from.setDate(1); from.setHours(0,0,0,0); }
+  const sales = (S.sales || []).filter(v => new Date(v.date) >= from);
+  const locs = S.locations || [];
+  // "Non affecté" = ventes/articles sans emplacement (honnête)
+  const rows = [...locs.map(l => ({ id: l.id, name: l.name, type: l.type, ...(_msStats(l.id, sales)) }))];
+  const unassigned = _msStats(null, sales);
+  if (unassigned.nb > 0 || unassigned.nbArts > 0) rows.push({ id: null, name: 'Non affecté', type: 'other', ...unassigned });
+  const totCA = rows.reduce((a, r) => a + r.ca, 0);
+  const totNb = rows.reduce((a, r) => a + r.nb, 0);
+  const totStock = rows.reduce((a, r) => a + r.stockVal, 0);
+  const ranked = rows.slice().sort((a, b) => b.ca - a.ca);
+  const best = ranked[0];
+  const maxCA = Math.max(1, ...rows.map(r => r.ca));
+  const TYPE_ICON = { store:'🏪', warehouse:'🏭', popup:'⛺', other:'📍' };
+  const PLABEL = { today:"Aujourd'hui", week:'7 jours', month:'Ce mois', all:'Tout' };
+  return `
+  <div class="sub-hero" style="background:linear-gradient(135deg,#4F46E5,#7C3AED)">
+    <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('more')">${IC.left}</button>
+    <div class="sub-hero-title">🏬 Multi-points de vente</div>
+    <div class="sub-hero-sub">${locs.length} emplacement(s) · ${fmt(totCA)} ${sym()} · ${totNb} vente(s)</div>
+  </div>
+  <div class="container">
+    ${locs.length === 0 ? `
+      <div class="card" style="text-align:center;padding:36px 20px">
+        <div style="font-size:46px;margin-bottom:10px">🏬</div>
+        <div style="font-size:16px;font-weight:800;color:var(--text-1);margin-bottom:6px">Gérez plusieurs points de vente</div>
+        <div style="font-size:13px;color:var(--text-3);line-height:1.55;margin-bottom:16px">Boutique du centre, comptoir du quartier, entrepôt… Créez vos emplacements : BARO compare leur chiffre d'affaires, leur stock et leurs meilleures ventes, ici, en un coup d'œil.</div>
+        <button class="btn btn-primary" style="width:auto;padding:11px 22px" onclick="nav('pantry')">＋ Créer un emplacement</button>
+      </div>
+    ` : `
+      <div class="filter-row" style="margin-bottom:12px">
+        ${['today','week','month','all'].map(p => `<button class="filter-chip ${period===p?'active':''}" onclick="S.msPeriod='${p}';render()">${PLABEL[p]}</button>`).join('')}
+      </div>
+
+      <!-- Totaux consolidés -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px">
+        <div class="card" style="padding:12px;text-align:center">
+          <div style="font-size:17px;font-weight:800;color:var(--accent)">${fmt(totCA)}</div>
+          <div style="font-size:10px;color:var(--text-3);margin-top:2px">CA total ${sym()}</div>
+        </div>
+        <div class="card" style="padding:12px;text-align:center">
+          <div style="font-size:17px;font-weight:800;color:#0EA5E9">${totNb}</div>
+          <div style="font-size:10px;color:var(--text-3);margin-top:2px">Ventes</div>
+        </div>
+        <div class="card" style="padding:12px;text-align:center">
+          <div style="font-size:17px;font-weight:800;color:#10B981">${fmt(totStock)}</div>
+          <div style="font-size:10px;color:var(--text-3);margin-top:2px">Valeur stock</div>
+        </div>
+      </div>
+
+      ${best && best.ca > 0 ? `<div class="card" style="margin-bottom:12px;padding:12px 14px;background:linear-gradient(135deg,rgba(16,185,129,.12),transparent);border:1px solid rgba(16,185,129,.28);display:flex;align-items:center;gap:10px">
+        <div style="font-size:22px">🏆</div>
+        <div style="flex:1;min-width:0"><div style="font-size:11px;color:var(--text-3);font-weight:700;text-transform:uppercase;letter-spacing:.3px">Meilleur point de vente</div>
+        <div style="font-weight:800;font-size:15px;color:var(--text-1)">${(best.name||'').replace(/</g,'&lt;')} — ${fmt(best.ca)} ${sym()}</div></div>
+      </div>` : ''}
+
+      <!-- Classement par emplacement -->
+      ${ranked.map(r => {
+        const pct = Math.round((r.ca / maxCA) * 100);
+        const share = totCA > 0 ? Math.round((r.ca / totCA) * 100) : 0;
+        return `
+        <div class="card" style="margin-bottom:10px;padding:14px">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+            <div style="font-size:20px;flex-shrink:0">${TYPE_ICON[r.type]||'📍'}</div>
+            <div style="flex:1;min-width:0">
+              <div style="font-weight:800;font-size:14.5px;color:var(--text-1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${(r.name||'').replace(/</g,'&lt;')}</div>
+              <div style="font-size:11px;color:var(--text-3)">${r.nb} vente(s) · panier ${fmt(r.avg)} ${sym()}${r.top?' · top : '+String(r.top).replace(/</g,'&lt;'):''}</div>
+            </div>
+            <div style="text-align:right;flex-shrink:0">
+              <div style="font-size:16px;font-weight:800;color:var(--accent)">${fmt(r.ca)}</div>
+              <div style="font-size:10px;color:var(--text-3)">${share}% du CA</div>
+            </div>
+          </div>
+          <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden;margin-bottom:8px">
+            <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,#4F46E5,#7C3AED);transition:width .3s"></div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;font-size:11px">
+            <div><div style="color:var(--text-3)">Bénéfice</div><div style="font-weight:700;color:#10B981">${fmt(r.profit)}</div></div>
+            <div><div style="color:var(--text-3)">Articles</div><div style="font-weight:700;color:var(--text-1)">${r.nbArts}</div></div>
+            <div><div style="color:var(--text-3)">Stock bas</div><div style="font-weight:700;color:${r.lowCount>0?'#F59E0B':'var(--text-1)'}">${r.lowCount}</div></div>
+          </div>
+        </div>`;
+      }).join('')}
+
+      <div style="font-size:11.5px;color:var(--text-3);text-align:center;padding:6px 16px 16px;line-height:1.5">Chaque vente est rattachée à l'emplacement actif au moment de l'encaissement (sélecteur en haut de l'Accueil). Données 100 % réelles.</div>
+    `}
+  </div>`;
+}
+
 function vMore() {
   const pendingOrders = S.purchaseOrders.filter(o => o.status === 'pending').length;
   const activePromos = (S.promotions || []).filter(p => p.active).length;
@@ -17590,6 +17704,7 @@ function vMore() {
 
   const items = [
     { id:'metier-guide',    icon:'💡',          label:'BARO pour mon métier',           sub:'Pharmacie · restau · services…', color:'#0EA5E9' },
+    canAdmin ? { id:'multi-store', icon:'🏬',    label:'Multi-points de vente',          sub:`${(S.locations||[]).length} emplacement(s)`, color:'#7C3AED' } : null,
     canAdmin ? { id:'team',  icon:IC.users,      label:'Équipe',                         sub:`${teamCount} collaborateur(s)`, color:'#7C73FF', badge: teamCount || null } : null,
     canAudit ? { id:'audit-log', icon:IC.list||IC.grid, label:'Journal d\'audit',          sub:`${auditCount} événement(s)`, color:'#1E293B' } : null,
     { id:'clients',         icon:IC.users,      label:t('clients')||'Clients',          sub:`${S.clients.length} client(s)${loyaltyClients>0?' · '+loyaltyClients+' fid.':''}`, color:'#0ea5e9' },
