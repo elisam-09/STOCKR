@@ -5503,7 +5503,7 @@ function _doRender() {
     home: vHome, pantry: vPantry, products: vProducts,
     sales: vSales, financial: vFinancial,
     detail: vDetail, add: vAdd, 'bulk-add': vBulkAdd, 'bulk-photos': vBulkPhotos, 'add-product': vAddProduct,
-    'edit-product': vEditProduct, settings: vSettings,
+    'edit-product': vEditProduct, settings: vSettings, 'metier-guide': vMetierGuide,
     sova: vSova, spectra: vSpectraEnhanced, clients: vClients, 'add-client': vAddClient,
     'client-detail': vClientDetail, notifications: vNotifications,
     catalog: vCatalog, suppliers: vSuppliers,
@@ -17440,6 +17440,78 @@ async function setSecurity(key, value) {
 }
 
 // ── MORE MENU ────────────────────────────────
+// ── Lot 136 : Guide par métier — « comment BARO m'aide, concrètement » ──
+// Chaque ligne est une VRAIE fonctionnalité existante + un bouton qui y mène.
+function vMetierGuide() {
+  const bt = (typeof getBusinessType === 'function') ? getBusinessType() : 'reseller';
+  const tab = S.metierTab || (bt === 'maker' ? 'restaurant' : 'pharma');
+  const METIERS = {
+    pharma: { icon:'💊', label:'Pharmacie', intro:'Médicaments, parapharmacie, cosmétiques — le stock sensible aux dates.', rows: [
+      ['⏱', 'Fini les médicaments périmés', 'Marquez chaque produit « périssable » avec sa date : BARO vous alerte AVANT l\'expiration, et le filtre Péremption du Stock montre tout ce qui approche.', "nav('pantry')", 'Voir mon stock'],
+      ['📉', 'Fini les ruptures', 'Donnez un seuil minimum à chaque produit (ex : 5 boîtes) : alerte automatique dès qu\'on passe dessous.', "nav('add')", 'Ajouter un produit'],
+      ['📷', 'Scan du code-barres', 'Scannez la boîte : nom, photo et catégorie se pré-remplissent — pas de saisie fastidieuse.', "nav('add')", 'Essayer le scan'],
+      ['⚡', 'Réception des livraisons en série', 'Le grossiste livre 30 références ? Stock → « ⚡ Entrée/Sortie » : cherchez, tapez la quantité, enchaînez — sans quitter l\'écran.', "nav('pantry')", 'Ouvrir le stock'],
+      ['🧾', 'Tout l\'inventaire de départ en 1 session', 'Saisie en lot : collez ou tapez la liste complète (nom, quantité, prix), BARO crée tout d\'un coup.', "nav('bulk-add')", 'Saisie en lot'],
+      ['👥', 'Vendeuses de comptoir', 'Code d\'équipe : chacune vend depuis son téléphone, chaque vente est enregistrée à son nom.', "nav('team')", 'Équipe'],
+      ['🔐', 'Téléphone partagé au comptoir', 'Code PIN au démarrage + journal d\'audit de qui a fait quoi.', "nav('security')", 'Sécurité'],
+      ['📊', 'Le vrai bénéfice, pas le chiffre d\'affaires', 'Bilan net (dépenses déduites), export Excel/PDF pour le comptable (OHADA).', "nav('financial')", 'Bilan'],
+    ]},
+    restaurant: { icon:'🍽️', label:'Restaurant', intro:'Maquis, restaurant, pâtisserie — matières premières et plats.', rows: [
+      ['🥘', 'Vos plats avec leurs recettes', 'Créez un plat (ex : poulet braisé) avec sa composition : chaque vente décompte automatiquement les ingrédients du stock.', "nav('add-product')", 'Créer un plat'],
+      ['⚖️', 'Quantités réelles', 'Kg, litres, décimales : 1,5 kg de riz se vend et se décompte tel quel.', "nav('pantry')", 'Mon stock'],
+      ['🛵', 'Retrait sur place OU livraison', 'Votre menu en ligne : le client commande, paie le mode qui vous arrange — retrait seul possible, avec itinéraire.', "nav('boutique')", 'Ma boutique en ligne'],
+      ['🔔', 'La commande arrive dans l\'app', 'En ligne : chaque commande passée sur votre page apparaît directement ici.', "nav('boutique')", 'Commandes'],
+      ['📉', 'Alerte matières premières', 'Seuil sur la farine, l\'huile, le gaz… BARO prévient avant le manque.', "nav('pantry')", 'Stock'],
+      ['📊', 'Bénéfice net du jour', 'CA − dépenses (loyer, gaz, salaires) = ce que vous gagnez vraiment.', "nav('financial')", 'Bilan'],
+    ]},
+    boutique: { icon:'🏪', label:'Boutique', intro:'Vêtements, téléphones, cosmétiques, épicerie — achat-revente.', rows: [
+      ['💰', 'La marge sous les yeux', 'Prix d\'achat + prix de vente = marge calculée partout, alerte marge faible.', "nav('pantry')", 'Mon stock'],
+      ['🛍️', 'Votre boutique en ligne', 'Site vitrine généré : photos, variantes (tailles, couleurs), avis, promos, paiement à la livraison ou mobile money.', "nav('boutique')", 'Créer ma boutique'],
+      ['📷', 'Une photo = un article', 'Spectra reconnaît le produit en photo et crée la fiche.', "nav('spectra')", 'Spectra AI'],
+      ['👥', 'Clients & relances', 'Historique d\'achat par client, relance WhatsApp en 1 tap.', "nav('clients')", 'Clients'],
+      ['🎯', 'Promos & fidélité', 'Codes promo, points fidélité, campagnes WhatsApp/SMS.', "nav('marketing')", 'Marketing'],
+    ]},
+    services: { icon:'✂️', label:'Services', intro:'Coiffure, couture, réparation, transport — vous vendez votre travail.', rows: [
+      ['🧾', 'Mode Prestation', 'Encaissez une coupe, une réparation, une course — sans gérer de stock. Vos prestations fréquentes en 1 tap.', "nav('sales')", 'Encaisser'],
+      ['💳', 'Demander un paiement', 'Envoyez une demande de paiement mobile money par WhatsApp/SMS.', "nav('payments-setup')", 'Paiements'],
+      ['👥', 'Fichier clients', 'Qui vient souvent, qui doit revenir — relance WhatsApp en 1 tap.', "nav('clients')", 'Clients'],
+      ['📊', 'Vos vrais revenus', 'Prestations − dépenses (loyer, produits, électricité) = bénéfice net.', "nav('financial')", 'Bilan'],
+    ]},
+    entrepot: { icon:'📦', label:'Entrepôt', intro:'Gros volumes, cartons, références — la logistique.', rows: [
+      ['🧾', 'Gros catalogue en 1 session', 'Saisie en lot : référence, nom, quantité, prix — des dizaines de lignes d\'un coup.', "nav('bulk-add')", 'Saisie en lot'],
+      ['⚡', 'Réceptions & expéditions en série', 'Stock → « ⚡ Entrée/Sortie » : enchaînez les références sans re-naviguer.', "nav('pantry')", 'Stock'],
+      ['📍', 'Emplacements multiples', 'Dépôt A, Dépôt B, boutique : stock par emplacement + transferts tracés.', "nav('pantry')", 'Emplacements'],
+      ['🔎', 'Recherche par référence', 'Cherchez par réf ou code-barres dans tout le stock.', "nav('pantry')", 'Rechercher'],
+      ['📜', 'Historique complet', 'Chaque entrée/sortie horodatée — qui, quoi, combien.', "nav('stock-history')", 'Mouvements'],
+    ]},
+  };
+  const m = METIERS[tab] || METIERS.pharma;
+  return `
+  <div class="sub-hero" style="background:linear-gradient(135deg,#0EA5E9,#4F46E5)">
+    <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('more')">${IC.left}</button>
+    <div class="sub-hero-title">💡 BARO pour mon métier</div>
+    <div class="sub-hero-sub">Concrètement, qu'est-ce que ça m'apporte ?</div>
+  </div>
+  <div class="container">
+    <div class="filter-row" style="margin-bottom:12px">
+      ${Object.entries(METIERS).map(([k,v]) => `<button class="filter-chip ${tab===k?'active':''}" onclick="S.metierTab='${k}';render()">${v.icon} ${v.label}</button>`).join('')}
+    </div>
+    <div style="font-size:13px;color:var(--text-2);line-height:1.55;margin-bottom:12px">${m.intro}</div>
+    ${m.rows.map(([ico, titre, txt, action, btn]) => `
+    <div class="card" style="margin-bottom:10px;padding:14px">
+      <div style="display:flex;gap:10px;align-items:flex-start">
+        <div style="font-size:20px;flex-shrink:0;margin-top:1px">${ico}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:800;font-size:14px;color:var(--text-1);margin-bottom:3px">${titre}</div>
+          <div style="font-size:12.5px;color:var(--text-3);line-height:1.55">${txt}</div>
+          <button class="btn btn-ghost" style="width:auto;padding:7px 14px;font-size:12px;margin-top:8px" onclick="${action.replace(/"/g,'&quot;')}">${btn} →</button>
+        </div>
+      </div>
+    </div>`).join('')}
+    <div style="font-size:11.5px;color:var(--text-3);text-align:center;padding:8px 16px 16px;line-height:1.5">Chaque bouton mène à l'écran réel — tout ce qui est listé ici existe et fonctionne.</div>
+  </div>`;
+}
+
 function vMore() {
   const pendingOrders = S.purchaseOrders.filter(o => o.status === 'pending').length;
   const activePromos = (S.promotions || []).filter(p => p.active).length;
@@ -17455,6 +17527,7 @@ function vMore() {
   const canAudit    = hasPermission('audit') || canAdmin;
 
   const items = [
+    { id:'metier-guide',    icon:'💡',          label:'BARO pour mon métier',           sub:'Pharmacie · restau · services…', color:'#0EA5E9' },
     canAdmin ? { id:'team',  icon:IC.users,      label:'Équipe',                         sub:`${teamCount} collaborateur(s)`, color:'#7C73FF', badge: teamCount || null } : null,
     canAudit ? { id:'audit-log', icon:IC.list||IC.grid, label:'Journal d\'audit',          sub:`${auditCount} événement(s)`, color:'#1E293B' } : null,
     { id:'clients',         icon:IC.users,      label:t('clients')||'Clients',          sub:`${S.clients.length} client(s)${loyaltyClients>0?' · '+loyaltyClients+' fid.':''}`, color:'#0ea5e9' },
