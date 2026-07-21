@@ -8968,7 +8968,10 @@ function _qkRender() {
       <input id="qk-qty" class="input" type="number" inputmode="decimal" min="0" step="any" placeholder="Quantité" style="flex:1;min-width:0" onkeydown="if(event.key==='Enter')_qkApply()">
       <button class="btn btn-primary" style="flex:0 0 auto;width:auto;padding:0 20px;white-space:nowrap;background:${st.mode==='add'?'':'linear-gradient(135deg,#F59E0B,#EF4444)'}" onclick="_qkApply()">${st.mode==='add'?'＋ Entrer':'－ Sortir'}</button>
     </div>` : `
-    <input id="qk-search" class="input" type="text" placeholder="🔍 Nom, référence ou code-barres…" value="${(st.q||'').replace(/"/g,'&quot;')}" oninput="S._qk.q=this.value;_qkRender();document.getElementById('qk-search').focus();const v=document.getElementById('qk-search');v.setSelectionRange(v.value.length,v.value.length)">
+    <div style="display:flex;gap:8px;margin-bottom:2px">
+      <input id="qk-search" class="input" type="text" placeholder="🔍 Nom, référence ou code-barres…" style="flex:1;min-width:0" value="${(st.q||'').replace(/"/g,'&quot;')}" oninput="S._qk.q=this.value;_qkRender();document.getElementById('qk-search').focus();const v=document.getElementById('qk-search');v.setSelectionRange(v.value.length,v.value.length)">
+      <button class="btn btn-ghost" style="flex:0 0 52px;width:52px;padding:0;font-size:20px" onclick="_qkScan()" title="Scanner le code-barres" aria-label="Scanner le code-barres">📷</button>
+    </div>
     ${matches.length ? matches.map(a => `
       <button style="display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;border-bottom:1px solid var(--gray-1);padding:10px 4px;cursor:pointer;text-align:left" onclick="S._qk.selId=${JSON.stringify(a.id)};S._qk.q='';_qkRender();setTimeout(()=>document.getElementById('qk-qty')?.focus(),80)">
         <div style="width:36px;height:36px;border-radius:9px;flex-shrink:0;background:var(--gray-1);overflow:hidden;display:flex;align-items:center;justify-content:center">${a.image?`<img src="${a.image}" alt="" style="width:100%;height:100%;object-fit:cover">`:'📦'}</div>
@@ -9003,6 +9006,28 @@ function _qkClose() {
   S._qk = null;
   document.getElementById('qk-modal')?.remove();
   if (done) render(); // rafraîchit la liste du stock une seule fois, à la fin
+}
+// ── Lot 137 : scan code-barres DANS l'Entrée/Sortie en série ──
+// Scannez la boîte → l'article est sélectionné, tapez la quantité, validez,
+// scannez la suivante. Parfait pour réceptionner une livraison entière.
+function _qkScan() {
+  if (!S._qk) return;
+  _grabBarcode(code => {
+    const c = String(code).trim();
+    if (!c || !S._qk) return;
+    const art = (S.articles || []).find(a =>
+      String(a.ean || a.barcode || '') === c || String(a.ref || '') === c);
+    if (art) {
+      S._qk.selId = art.id; S._qk.q = '';
+      _qkRender();
+      if (typeof haptic === 'function') haptic('light');
+      setTimeout(() => document.getElementById('qk-qty')?.focus(), 80);
+    } else {
+      S._qk.q = c;
+      _qkRender();
+      showToast('Code inconnu du stock — créez l\'article d\'abord (＋ ou Saisie en lot)', 'error');
+    }
+  });
 }
 
 // ── Lot 134 : changer la photo principale d'un tap depuis la fiche article ──
@@ -13639,6 +13664,12 @@ async function _applyEanLookup(code){
   try { if (typeof render === 'function') render(); } catch(_){}
 }
 async function scanBarcodeForArticle(){
+  return _grabBarcode(code => _applyEanLookup(String(code).trim()));
+}
+// ── Scanner générique : caméra live (BarcodeDetector) ou photo (ZXing) ──
+// Appelle onCode(code) une fois le code lu — réutilisé par le formulaire
+// article ET par l'Entrée/Sortie en série (Lot 137).
+async function _grabBarcode(onCode){
   if (!('BarcodeDetector' in window)) {
     // Fallback universel : photo du code-barres décodée via ZXing (tous navigateurs)
     const inp = document.createElement('input');
@@ -13648,10 +13679,10 @@ async function scanBarcodeForArticle(){
       showToast('🔎 Lecture du code-barres…', '');
       let code = null;
       try { code = await _decodeBarcodeFromFile(file); } catch(err) { showToast(err.message || 'Lecture impossible', 'error'); }
-      if (code) { await _applyEanLookup(String(code).trim()); }
+      if (code) { await onCode(String(code).trim()); }
       else {
         const m = prompt('Code-barres non lisible sur la photo.\nSaisissez-le à la main (EAN) :');
-        if (m && m.trim()) await _applyEanLookup(m.trim());
+        if (m && m.trim()) await onCode(m.trim());
       }
     };
     inp.click();
@@ -13691,7 +13722,7 @@ async function scanBarcodeForArticle(){
         const codes = await detector.detect(video);
         if (codes.length > 0) {
           cleanup();
-          await _applyEanLookup(codes[0].rawValue);
+          await onCode(String(codes[0].rawValue).trim());
           return;
         }
       } catch(e){}
@@ -15725,6 +15756,12 @@ function _teamCommission(member) {
 
 // ── TEAM VIEW ───────────────────────────────
 function vTeam() {
+  // Lot 137 : le code d'équipe se charge tout seul à l'ouverture (en ligne)
+  if (!USE_LOCAL && S.token && !S.session?.isMember && !S.teamCode && !S._tcLoading) {
+    S._tcLoading = true;
+    try { Promise.resolve(loadTeamCode()).finally(() => { S._tcLoading = false; }); }
+    catch(_) { S._tcLoading = false; }
+  }
   if (!hasPermission('all') && !hasPermission('audit')) {
     return `
     <div class="page-header"><div class="page-header-row">
@@ -15790,11 +15827,11 @@ function vTeam() {
         </div>
       </div>
 
-      ${(!USE_LOCAL && S.token && !S.session?.isMember) ? `
+      ${!S.session?.isMember ? `
       <div class="card" style="margin-bottom:12px;background:linear-gradient(135deg,rgba(16,185,129,.10),transparent);border:1px solid rgba(16,185,129,.28)">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="font-size:18px">🔑</span><div style="font-weight:800;font-size:14px;color:var(--text-1)">Code d'équipe — vendeurs en ligne</div></div>
         <div style="font-size:12px;color:var(--text-3);line-height:1.55;margin-bottom:10px">Vos vendeurs installent BARO sur leur téléphone, tapent ce code, et vendent depuis votre stock — chaque vente est enregistrée à leur nom, en temps réel.</div>
-        ${S.teamCode ? `
+        ${(!USE_LOCAL && S.token) ? (S.teamCode ? `
         <div style="display:flex;align-items:center;gap:8px;background:var(--surface);border:1.5px dashed var(--accent);border-radius:10px;padding:12px 14px;margin-bottom:10px">
           <div style="flex:1 1 auto;min-width:0;font-family:monospace;font-size:19px;font-weight:800;letter-spacing:.5px;color:var(--accent);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${S.teamCode}</div>
           <button class="btn btn-ghost" style="flex:0 0 auto;width:auto;padding:8px 14px;font-size:12px;white-space:nowrap" onclick="navigator.clipboard&&navigator.clipboard.writeText('${S.teamCode}');showToast('Code copié','success')">Copier</button>
@@ -15803,7 +15840,12 @@ function vTeam() {
           <button class="btn btn-primary" style="flex:1 1 auto;width:auto;min-width:0;background:#25D366" onclick="shareTeamCode()">${IC.whatsapp||''} Partager</button>
           <button class="btn btn-ghost" style="flex:0 0 auto;width:auto;padding-left:16px;padding-right:16px;white-space:nowrap" onclick="resetTeamCode()">Régénérer</button>
         </div>
-        ` : `<button class="btn btn-primary" style="width:100%" onclick="loadTeamCode()">Afficher mon code d'équipe</button>`}
+        ` : `<button class="btn btn-primary" style="width:100%" onclick="loadTeamCode()">⏳ Chargement du code…</button>`) : `
+        <div style="font-size:12px;color:var(--text-3);background:var(--gray-1);border-radius:10px;padding:10px 12px;margin-bottom:10px">Nécessite le mode <strong>en ligne</strong> : connectez-vous avec un compte serveur (ou créez-en un — vos données locales sont conservées et envoyées au serveur).</div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-primary" style="flex:1 1 auto;width:auto;min-width:0" onclick="doLogout()">Se connecter en ligne</button>
+          <button class="btn btn-ghost" style="flex:0 0 auto;width:auto;padding-left:14px;padding-right:14px;white-space:nowrap" onclick="nav('settings')">Serveur</button>
+        </div>`}
       </div>` : ''}
 
       <button class="btn btn-primary" onclick="nav('add-team-member')" style="width:100%;margin-bottom:12px">
