@@ -2,7 +2,7 @@
 // Stratégie : Cache-first pour assets statiques,
 //             Network-first pour l'API
 
-const CACHE_NAME = 'baro-v170-pythonanywhere';
+const CACHE_NAME = 'baro-v171-rowfix';
 const STATIC_ASSETS = [
   '/',
   '/index.html',

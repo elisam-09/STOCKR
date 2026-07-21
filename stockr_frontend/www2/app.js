@@ -15235,8 +15235,8 @@ function vSettings() {
         </div>
         <input class="input" id="set-api-url" type="url" placeholder="https://baro-api-xxxx.onrender.com" value="${(localStorage.getItem('baro_api_url')||'').replace(/"/g,'&quot;')}">
         <div style="display:flex;gap:8px;margin-top:10px">
-          <button class="btn btn-primary" style="flex:1" onclick="saveApiUrl()">Tester & enregistrer</button>
-          ${localStorage.getItem('baro_api_url') ? `<button class="btn btn-ghost" style="flex:0 0 auto" onclick="localStorage.removeItem('baro_api_url');showToast('URL serveur réinitialisée');setTimeout(()=>location.reload(),600)">Réinitialiser</button>` : ''}
+          <button class="btn btn-primary" style="flex:1 1 auto;width:auto;min-width:0" onclick="saveApiUrl()">Tester & enregistrer</button>
+          ${localStorage.getItem('baro_api_url') ? `<button class="btn btn-ghost" style="flex:0 0 auto;width:auto;padding-left:14px;padding-right:14px;white-space:nowrap" onclick="localStorage.removeItem('baro_api_url');showToast('URL serveur réinitialisée');setTimeout(()=>location.reload(),600)">Réinitialiser</button>` : ''}
         </div>
       </div>
       <div class="card" style="padding:14px;margin-top:10px">
@@ -15633,12 +15633,12 @@ function vTeam() {
         <div style="font-size:12px;color:var(--text-3);line-height:1.55;margin-bottom:10px">Vos vendeurs installent BARO sur leur téléphone, tapent ce code, et vendent depuis votre stock — chaque vente est enregistrée à leur nom, en temps réel.</div>
         ${S.teamCode ? `
         <div style="display:flex;align-items:center;gap:8px;background:var(--surface);border:1.5px dashed var(--accent);border-radius:10px;padding:12px 14px;margin-bottom:10px">
-          <div style="flex:1;font-family:monospace;font-size:20px;font-weight:800;letter-spacing:1px;color:var(--accent)">${S.teamCode}</div>
-          <button class="btn btn-ghost" style="padding:8px 10px;font-size:12px" onclick="navigator.clipboard&&navigator.clipboard.writeText('${S.teamCode}');showToast('Code copié','success')">Copier</button>
+          <div style="flex:1 1 auto;min-width:0;font-family:monospace;font-size:19px;font-weight:800;letter-spacing:.5px;color:var(--accent);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${S.teamCode}</div>
+          <button class="btn btn-ghost" style="flex:0 0 auto;width:auto;padding:8px 14px;font-size:12px;white-space:nowrap" onclick="navigator.clipboard&&navigator.clipboard.writeText('${S.teamCode}');showToast('Code copié','success')">Copier</button>
         </div>
         <div style="display:flex;gap:8px">
-          <button class="btn btn-primary" style="flex:1;background:#25D366" onclick="shareTeamCode()">${IC.whatsapp||''} Partager</button>
-          <button class="btn btn-ghost" style="flex:0 0 auto" onclick="resetTeamCode()">Régénérer</button>
+          <button class="btn btn-primary" style="flex:1 1 auto;width:auto;min-width:0;background:#25D366" onclick="shareTeamCode()">${IC.whatsapp||''} Partager</button>
+          <button class="btn btn-ghost" style="flex:0 0 auto;width:auto;padding-left:16px;padding-right:16px;white-space:nowrap" onclick="resetTeamCode()">Régénérer</button>
         </div>
         ` : `<button class="btn btn-primary" style="width:100%" onclick="loadTeamCode()">Afficher mon code d'équipe</button>`}
       </div>` : ''}
@@ -24152,7 +24152,7 @@ async function verifyPaymentNumber(providerId) {
         : `L'app SMS s'ouvre vers <b>${num}</b> — envoyez le message, puis entrez le code reçu`}</div>
       <div class="pay-code-row">
         <input id="pay-code-inp" class="input pay-code-inp" inputmode="numeric" maxlength="6" placeholder="Code à 6 chiffres" autocomplete="one-time-code">
-        <button class="btn btn-primary" style="flex:0 0 auto;padding:11px 16px" onclick="confirmPaymentCode('${providerId}')">Valider</button>
+        <button class="btn btn-primary" style="flex:0 0 auto;width:auto;padding:11px 16px;white-space:nowrap" onclick="confirmPaymentCode('${providerId}')">Valider</button>
       </div>
       <button class="pay-resend" onclick="verifyPaymentNumber('${providerId}')">↻ Renvoyer le code</button>`;
     setTimeout(() => document.getElementById('pay-code-inp')?.focus(), 120);
