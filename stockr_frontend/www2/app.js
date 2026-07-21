@@ -7253,6 +7253,7 @@ function vPantry() {
         <option value="expiry" ${sort==='expiry'?'selected':''}>Péremption</option>
       </select>
       <button class="filter-chip" onclick="S.stockView=(S.stockView==='grid'?'list':'grid');render()" style="font-size:10px;padding:4px 10px;margin-left:auto" title="Affichage liste / grille">${S.stockView==='grid'?'☰ Liste':'▦ Grille'}</button>
+      <button class="filter-chip" onclick="openQuickStock()" style="font-size:10px;padding:4px 10px;color:var(--accent)" title="Entrée/Sortie en série — enchaînez les articles sans quitter l'écran">⚡ Entrée/Sortie</button>
       <button class="filter-chip" onclick="nav('stock-history')" style="font-size:10px;padding:4px 10px" title="Historique des mouvements">${IC.trending} Mouvements</button>
       ${S.locations.length > 1 ? `<button class="filter-chip" onclick="openStockTransfer()" style="font-size:10px;padding:4px 10px" title="Transférer entre emplacements">⇄ Transfert</button>` : ''}
     </div>` : ''}
@@ -8566,9 +8567,12 @@ function vDetail() {
   <div class="sub-hero">
     <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('pantry')">${IC.left}</button>
     <div style="display:flex;align-items:center;gap:14px">
-      ${art.image
-        ? `<img src="${art.image}" alt="" style="width:56px;height:56px;border-radius:14px;object-fit:cover;flex-shrink:0;border:2px solid rgba(255,255,255,.25);box-shadow:0 4px 12px rgba(0,0,0,.2)">`
-        : `<div style="width:56px;height:56px;border-radius:14px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:var(--white);flex-shrink:0">${initials(art.name)}</div>`}
+      <button type="button" onclick="changeArticlePhoto(${art.id})" title="Changer la photo" aria-label="Changer la photo principale" style="position:relative;width:56px;height:56px;flex-shrink:0;padding:0;border:none;background:none;cursor:pointer">
+        ${art.image
+          ? `<img src="${art.image}" alt="" style="width:56px;height:56px;border-radius:14px;object-fit:cover;border:2px solid rgba(255,255,255,.25);box-shadow:0 4px 12px rgba(0,0,0,.2)">`
+          : `<div style="width:56px;height:56px;border-radius:14px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:var(--white)">${initials(art.name)}</div>`}
+        <span style="position:absolute;right:-4px;bottom:-4px;width:22px;height:22px;border-radius:50%;background:var(--white);display:flex;align-items:center;justify-content:center;font-size:11px;box-shadow:0 2px 6px rgba(0,0,0,.25)">📷</span>
+      </button>
       <div>
         <div style="font-size:22px;font-weight:800;color:var(--white)">${art.name}</div>
         <span class="status ${st.cls}" style="margin-top:6px;display:inline-flex">${st.icon} ${st.label}</span>
@@ -8903,6 +8907,94 @@ function _bulkSetPhoto(id) {
     a.image = data;
     try { _saveArticles(); } catch(_){}
     if (typeof haptic === 'function') haptic('success');
+    render();
+  });
+}
+// ── Lot 134 : Entrée/Sortie de stock EN SÉRIE (sans navigation) ──
+// Fin du « rentrer, taper, sortir, re-rentrer » : la feuille reste ouverte —
+// cherchez un article, tapez la quantité, validez, enchaînez le suivant.
+function openQuickStock() {
+  S._qk = { mode: 'add', q: '', selId: null, done: 0 };
+  _qkRender();
+  setTimeout(() => document.getElementById('qk-search')?.focus(), 120);
+}
+function _qkRender() {
+  const st = S._qk; if (!st) return;
+  const ex = document.getElementById('qk-modal'); if (ex) ex.remove();
+  const q = (st.q || '').toLowerCase();
+  const matches = q ? (S.articles || []).filter(a =>
+    (a.name || '').toLowerCase().includes(q) ||
+    (a.ref || '').toLowerCase().includes(q) ||
+    (a.ean || '').includes(q)).slice(0, 6) : [];
+  const sel = st.selId != null ? (S.articles || []).find(a => a.id === st.selId) : null;
+  const modal = document.createElement('div');
+  modal.id = 'qk-modal';
+  modal.className = 'qs-overlay';
+  modal.onclick = (e) => { if (e.target === modal) _qkClose(); };
+  modal.innerHTML = `<div class="qs-sheet">
+    <div class="qs-head"><div style="flex:1;min-width:0"><div class="qs-title">⚡ Entrée / Sortie en série</div><div class="qs-sub">${st.done ? `${st.done} mouvement(s) enregistré(s)` : 'Enchaînez les articles sans quitter l’écran'}</div></div><button class="qs-x" onclick="_qkClose()">✕</button></div>
+    <div style="display:flex;gap:8px;margin-bottom:10px">
+      <button class="toggle-btn ${st.mode==='add'?'t-active':''}" style="flex:1;padding:10px" onclick="S._qk.mode='add';_qkRender()">📥 Entrée</button>
+      <button class="toggle-btn ${st.mode==='remove'?'t-active':''}" style="flex:1;padding:10px" onclick="S._qk.mode='remove';_qkRender()">📤 Sortie</button>
+    </div>
+    ${sel ? `
+    <div style="display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--accent-muted);border-radius:12px;padding:10px 12px;margin-bottom:10px">
+      <div style="flex:1;min-width:0"><div style="font-weight:800;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${(sel.name||'').replace(/</g,'&lt;')}</div>
+      <div style="font-size:11px;color:var(--text-3)">Stock actuel : ${fmtQty(sel.stock)} ${sel.unit||''}</div></div>
+      <button class="qs-x" style="flex-shrink:0" onclick="S._qk.selId=null;_qkRender();setTimeout(()=>document.getElementById('qk-search')?.focus(),80)">✕</button>
+    </div>
+    <div style="display:flex;gap:8px">
+      <input id="qk-qty" class="input" type="number" inputmode="decimal" min="0" step="any" placeholder="Quantité" style="flex:1;min-width:0" onkeydown="if(event.key==='Enter')_qkApply()">
+      <button class="btn btn-primary" style="flex:0 0 auto;width:auto;padding:0 20px;white-space:nowrap;background:${st.mode==='add'?'':'linear-gradient(135deg,#F59E0B,#EF4444)'}" onclick="_qkApply()">${st.mode==='add'?'＋ Entrer':'－ Sortir'}</button>
+    </div>` : `
+    <input id="qk-search" class="input" type="text" placeholder="🔍 Nom, référence ou code-barres…" value="${(st.q||'').replace(/"/g,'&quot;')}" oninput="S._qk.q=this.value;_qkRender();document.getElementById('qk-search').focus();const v=document.getElementById('qk-search');v.setSelectionRange(v.value.length,v.value.length)">
+    ${matches.length ? matches.map(a => `
+      <button style="display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;border-bottom:1px solid var(--gray-1);padding:10px 4px;cursor:pointer;text-align:left" onclick="S._qk.selId=${JSON.stringify(a.id)};S._qk.q='';_qkRender();setTimeout(()=>document.getElementById('qk-qty')?.focus(),80)">
+        <div style="width:36px;height:36px;border-radius:9px;flex-shrink:0;background:var(--gray-1);overflow:hidden;display:flex;align-items:center;justify-content:center">${a.image?`<img src="${a.image}" alt="" style="width:100%;height:100%;object-fit:cover">`:'📦'}</div>
+        <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:13.5px;color:var(--text-1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${(a.name||'').replace(/</g,'&lt;')}</div>
+        <div style="font-size:11px;color:var(--text-3)">${fmtQty(a.stock)} ${a.unit||''}${a.ref?' · '+(a.ref).replace(/</g,'&lt;'):''}</div></div>
+      </button>`).join('') : (q ? `<div style="text-align:center;color:var(--text-3);font-size:12.5px;padding:14px">Aucun article trouvé</div>` : `<div style="text-align:center;color:var(--text-3);font-size:12.5px;padding:14px">Tapez pour chercher un article</div>`)}`}
+  </div>`;
+  document.body.appendChild(modal);
+}
+async function _qkApply() {
+  const st = S._qk; if (!st || st.selId == null) return;
+  const art = (S.articles || []).find(a => a.id === st.selId); if (!art) return;
+  const qty = parseFloat(document.getElementById('qk-qty')?.value);
+  if (!qty || qty <= 0) { showToast('Entrez une quantité', 'error'); return; }
+  if (st.mode === 'remove' && (art.stock || 0) < qty) { showToast(t('insufficientStock'), 'error'); return; }
+  const newStock = st.mode === 'add'
+    ? Math.round(((art.stock || 0) + qty) * 10) / 10
+    : Math.round(((art.stock || 0) - qty) * 10) / 10;
+  art.stock = newStock;
+  try { _saveArticles(); } catch(_){}
+  try { api('PUT', `/api/articles/${art.id}`, { quantity: newStock }).catch(() => {}); } catch(_){}
+  pushMovement(art.name, st.mode === 'add' ? 'entry' : 'exit', qty, st.mode === 'add' ? t('reception') : t('withdrawal'));
+  logActivity('stock', `${art.name}: ${st.mode === 'add' ? '+' : '-'}${qty} ${art.unit || ''}`);
+  if (typeof haptic === 'function') haptic('success');
+  showToast(`${st.mode === 'add' ? '＋' : '－'}${qty} ${art.unit || ''} — ${art.name} : ${fmtQty(newStock)}`, 'success');
+  st.done++; st.selId = null; st.q = '';
+  _qkRender();
+  setTimeout(() => document.getElementById('qk-search')?.focus(), 80);
+}
+function _qkClose() {
+  const done = S._qk?.done || 0;
+  S._qk = null;
+  document.getElementById('qk-modal')?.remove();
+  if (done) render(); // rafraîchit la liste du stock une seule fois, à la fin
+}
+
+// ── Lot 134 : changer la photo principale d'un tap depuis la fiche article ──
+// (couvre les articles créés par Spectra : fiche → tap sur la photo → nouvelle photo)
+function changeArticlePhoto(id) {
+  if (typeof pickItemImage !== 'function') { showToast('Sélecteur photo indisponible', 'error'); return; }
+  pickItemImage(data => {
+    const a = (S.articles || []).find(x => String(x.id) === String(id));
+    if (!a) return;
+    a.image = data;
+    try { _saveArticles(); } catch(_){}
+    if (typeof haptic === 'function') haptic('success');
+    showToast('📷 Photo principale mise à jour', 'success');
     render();
   });
 }
