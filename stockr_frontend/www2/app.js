@@ -1700,7 +1700,7 @@ function _saveArticles() {
 }
 
 function articleFromAPI(a) {
-  return {
+  const o = {
     id: a.id, name: a.name, stock: a.quantity, unit: a.unit,
     min: a.alert_threshold || 0, lead: a.lead_time_days,
     ref: a.ref || '',
@@ -1710,8 +1710,15 @@ function articleFromAPI(a) {
     category: a.category || '',
     perishable: !!a.perishable,
     expiry: a.expiry || '',
-    image: a.image || ''
+    image: a.image || '',
+    ean: a.ean || '',
+    description: a.description || ''
   };
+  // Champs synchronisés (Lot 133) — posés seulement si non vides pour laisser
+  // __applyExtras compléter depuis le local sinon
+  if (Array.isArray(a.variants) && a.variants.length) o.variants = a.variants;
+  if (a.in_boutique) o.inBoutique = true;
+  return o;
 }
 function productFromAPI(p) {
   return {
@@ -1823,26 +1830,23 @@ async function loadData() {
     };
     apiArts.forEach(__applyExtras);
     apiProds.forEach(__applyExtras);
-    // Règle anti-écrasement : si l'API retourne vide mais on a du local, on garde le local
-    // (cas : backend planté ou nouveau device, on ne veut pas effacer les données utilisateur)
-    const apiEmpty = !apiArts.length && !apiProds.length && !apiSales.length;
-    const localHas = local.articles.length || local.products.length || local.sales.length;
-    if (apiEmpty && localHas) {
-      console.log('[loadData] API vide + local contient des données → conservation du local');
-      S.dataLoading = false;
-      S.predictions = preds || [];
-      // Si on a au moins des clients côté API, on les merge
-      if (apiClients.length) S.clients = apiClients;
-      render();
-      return;
-    }
+    // ── RÈGLE D'OR (Lot 133) : le serveur COMPLÈTE, il n'efface JAMAIS ──
+    // Avant : S.articles = apiArts remplaçait tout → un article/vente/client créé
+    // hors-ligne (ou via le repli local) DISPARAISSAIT dès que le serveur renvoyait
+    // une liste non vide. Maintenant : tout élément local inconnu du serveur est
+    // conservé, puis les articles locaux sont renvoyés au serveur en arrière-plan.
+    const __ids = list => new Set(list.map(x => String(x.id)));
+    const artIds = __ids(apiArts), prodIds = __ids(apiProds), saleIds = __ids(apiSales), cliIds = __ids(apiClients);
+    const localOnlyArts = local.articles.filter(a => a && a.id != null && !artIds.has(String(a.id)));
     S.dataLoading = false;
-    S.articles    = apiArts;
-    S.products    = apiProds;
-    S.sales       = apiSales;
+    S.articles    = [...apiArts,    ...localOnlyArts];
+    S.products    = [...apiProds,   ...local.products.filter(p => p && p.id != null && !prodIds.has(String(p.id)))];
+    S.sales       = [...apiSales,   ...local.sales.filter(s => s && s.id != null && !saleIds.has(String(s.id)))];
     S.predictions = preds || [];
-    S.clients     = apiClients;
+    S.clients     = [...apiClients, ...local.clients.filter(c => c && c.id != null && !cliIds.has(String(c.id)))];
     recalcAllMins();
+    // Ré-adoption serveur des articles locaux (asynchrone, jamais bloquant)
+    if (localOnlyArts.length) { try { _reconcileLocalArticles(localOnlyArts); } catch(_){} }
     // Persister pour fallback offline
     try {
       _saveArticles();
@@ -1862,6 +1866,49 @@ async function loadData() {
       showToast(t('errLoad'), 'error');
       render();
     }
+  }
+}
+
+// ── Lot 133 : ré-adoption serveur des articles créés hors-ligne ──
+// Chaque article local inconnu du serveur est POSTé avec toutes ses
+// métadonnées ; en cas de succès, l'article adopte l'id serveur et les
+// références (ventes, mouvements) sont remappées. Échec → réessai au
+// prochain démarrage. Ne touche jamais aux photos (locales par choix).
+async function _reconcileLocalArticles(list) {
+  if (USE_LOCAL || !S.token || !Array.isArray(list) || !list.length) return;
+  let adopted = 0;
+  for (const art of list.slice(0, 50)) {
+    try {
+      const d = await api('POST', '/api/articles/', {
+        name: art.name, quantity: art.stock || 0, unit: art.unit || 'pcs',
+        alert_threshold: art.min || null, lead_time_days: art.lead || 7,
+        ref: art.ref || null, price: art.price || 0,
+        purchase_price: art.purchasePrice || 0, sell_price: art.sellPrice || 0,
+        category: art.category || '', ean: art.ean || '',
+        expiry: art.expiry || '', perishable: !!art.perishable,
+        description: art.description || '', in_boutique: !!art.inBoutique,
+        variants: Array.isArray(art.variants) ? art.variants : [],
+      });
+      // id > 1e10 = réponse du shim local (repli hors-ligne) → on ne remappe pas
+      if (!d || d.id == null || d.id === art.id || Number(d.id) > 1e10) continue;
+      const oldId = art.id, newId = d.id;
+      const ref = (S.articles || []).find(a => a.id === oldId);
+      if (ref) ref.id = newId;
+      (S.sales || []).forEach(s => {
+        if (s.articleId === oldId) s.articleId = newId;
+        (s.items || []).forEach(it => { if (it.articleId === oldId) it.articleId = newId; });
+      });
+      (S.movements || []).forEach(m => { if (m.articleId === oldId) m.articleId = newId; });
+      adopted++;
+    } catch(_) { /* hors-ligne / serveur pas à jour → réessai au prochain démarrage */ }
+  }
+  if (adopted) {
+    try {
+      _saveArticles();
+      localStorage.setItem('stockr_sales', JSON.stringify(S.sales));
+      if (typeof _saveMovements === 'function') _saveMovements();
+    } catch(_){}
+    console.log(`[reconcile] ${adopted} article(s) local(aux) adoptés par le serveur`);
   }
 }
 
@@ -3236,6 +3283,9 @@ async function saveArticle() {
       purchase_price:  purchasePrice,
       sell_price:      parseFloat(f.sellPrice) || 0,
       category:        f.category || '',
+      ean:             (f.ean || '').trim(),
+      expiry:          (f.perishable ? f.expiry : '') || f.expiry || '',
+      perishable:      !!f.perishable,
     });
     const newArt = articleFromAPI(data);
     newArt.ref = f.ref || '';
@@ -20274,10 +20324,28 @@ function _poSave() {
     a.variants = (a.variants||[]).filter(v => v.name && v.options && v.options.length);
     a.reviews = (a.reviews||[]).filter(r => (r.author && r.author.trim()) || (r.text && r.text.trim()));
     _persistProductObj(a);
+    _pushArticleMeta(a); // synchro serveur (variantes visibles sur les autres appareils)
   }
   document.getElementById('po-modal')?.remove();
   showToast('Options boutique enregistrées', 'success');
   if (typeof _refreshBoutiqueLivePreview === 'function') _refreshBoutiqueLivePreview();
+}
+// ── Lot 133 : pousse les métadonnées synchronisées d'un ARTICLE au serveur ──
+// Best-effort ; ne concerne que les articles connus du serveur (id serveur),
+// jamais les photos. Produits (table à part) : local seulement pour l'instant.
+function _pushArticleMeta(a) {
+  if (USE_LOCAL || !S.token || !a || a.id == null) return;
+  if (Number(a.id) > 1e10) return;                       // id local → sera réconcilié au prochain démarrage
+  if (!(S.articles || []).some(x => x.id === a.id)) return; // pas un article (produit/pack)
+  try {
+    api('PUT', `/api/articles/${a.id}`, {
+      variants: Array.isArray(a.variants) ? a.variants : [],
+      category: a.category || '', ean: a.ean || '',
+      sell_price: a.sellPrice || 0, price: a.price || 0,
+      purchase_price: a.purchasePrice || 0,
+      in_boutique: !!a.inBoutique, description: a.description || '',
+    }).catch(() => {});
+  } catch(_){}
 }
 function vBoutiqueAnalytics() {
   const bc = S.boutiqueConfig || {};

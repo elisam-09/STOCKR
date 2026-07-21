@@ -35,6 +35,25 @@ def create_app():
                 db.session.commit()
             except Exception:
                 db.session.rollback()
+        # Même chose pour les métadonnées métier des articles (sync multi-appareils)
+        for col, ddl in [
+            ('ref', 'VARCHAR(80)'),
+            ('price', 'FLOAT DEFAULT 0'),
+            ('purchase_price', 'FLOAT DEFAULT 0'),
+            ('sell_price', 'FLOAT DEFAULT 0'),
+            ('category', 'VARCHAR(80)'),
+            ('ean', 'VARCHAR(40)'),
+            ('expiry', 'VARCHAR(20)'),
+            ('perishable', 'BOOLEAN'),
+            ('description', 'VARCHAR(1000)'),
+            ('in_boutique', 'BOOLEAN'),
+            ('variants', 'TEXT'),
+        ]:
+            try:
+                db.session.execute(text(f'ALTER TABLE article ADD COLUMN {col} {ddl}'))
+                db.session.commit()
+            except Exception:
+                db.session.rollback()
 
     from routes.article_routes import article_bp
     from routes.product_routes import product_bp

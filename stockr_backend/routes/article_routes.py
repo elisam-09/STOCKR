@@ -1,8 +1,23 @@
 from flask import Blueprint, request, jsonify
 from models import db, Article, token_required
+import json
 
 
 article_bp = Blueprint('article', __name__)
+
+# Champs métier optionnels acceptés à la création / mise à jour
+_META_FIELDS = ('ref', 'price', 'purchase_price', 'sell_price', 'category',
+                'ean', 'expiry', 'perishable', 'description', 'in_boutique')
+
+
+def _clean_variants(value):
+    """Liste [{name, options[]}] → JSON texte borné (jamais d'erreur)."""
+    if not isinstance(value, list):
+        return None
+    try:
+        return json.dumps(value)[:20000]
+    except (TypeError, ValueError):
+        return None
 
 @article_bp.route('/', methods=['GET'])
 @token_required
@@ -25,6 +40,11 @@ def create_article(current_user):
         lead_time_days=data.get('lead_time_days', 7),
         user_id=current_user.id  # ← LIAISON IMPORTANTE
     )
+    for f in _META_FIELDS:
+        if f in data and data[f] is not None:
+            setattr(article, f, data[f])
+    if 'variants' in data:
+        article.variants = _clean_variants(data['variants'])
     db.session.add(article)
     db.session.commit()
     return jsonify(article.to_dict()), 201
@@ -37,7 +57,9 @@ def update_article(current_user, article_id):
     data = request.json
 
     for key, value in data.items():
-        if hasattr(article, key):
+        if key == 'variants':
+            article.variants = _clean_variants(value)
+        elif hasattr(article, key) and key not in ('id', 'user_id'):
             setattr(article, key, value)
 
     db.session.commit()
