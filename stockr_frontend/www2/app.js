@@ -15827,6 +15827,26 @@ function vTeam() {
         </div>
       </div>
 
+      ${members.length > 0 ? (() => {
+        // Lot 138 : « Vendeur au comptoir » — attribue les ventes en présentiel au bon membre.
+        // Sans ça, tout reste à 0 : c'est LE réglage qui rend l'onglet Équipe utile.
+        const cur = getCurrentMember();
+        const isAdmin = !S.currentMemberId;
+        const info = ROLE_LABELS[cur.role] || ROLE_LABELS.vendor;
+        return `
+        <div class="card" style="margin-bottom:12px;padding:12px 14px;background:linear-gradient(135deg,rgba(124,115,255,.10),transparent);border:1px solid rgba(124,115,255,.28)">
+          <div style="font-size:11px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.3px;margin-bottom:8px">🛒 Vendeur au comptoir</div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="width:40px;height:40px;border-radius:20px;flex-shrink:0;background:${info.color}20;color:${info.color};display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800">${info.icon}</div>
+            <div style="flex:1;min-width:0">
+              <div style="font-weight:800;font-size:14px;color:var(--text-1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${cur.name}${isAdmin?' (vous)':''}</div>
+              <div style="font-size:11px;color:var(--text-3)">Ses ventes lui sont attribuées (CA, commission, score)</div>
+            </div>
+            <button class="btn btn-primary" style="flex:0 0 auto;width:auto;padding:9px 14px;font-size:12.5px;white-space:nowrap" onclick="openMemberSwitcher()">Changer</button>
+          </div>
+        </div>`;
+      })() : ''}
+
       ${!S.session?.isMember ? `
       <div class="card" style="margin-bottom:12px;background:linear-gradient(135deg,rgba(16,185,129,.10),transparent);border:1px solid rgba(16,185,129,.28)">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="font-size:18px">🔑</span><div style="font-weight:800;font-size:14px;color:var(--text-1)">Code d'équipe — vendeurs en ligne</div></div>
@@ -18883,9 +18903,17 @@ ${popupHTML}
   window.baroLegal=function(k){var t=document.getElementById('legal-t'),c=document.getElementById('legal-c');if(!t)return;t.textContent=BARO_LEGAL_T[k]||'Informations';c.textContent=BARO_LEGAL[k]||'—';document.getElementById('legal-ov').classList.add('show');};
   var MYO_KEY='baro_myorders_'+${JSON.stringify((bc.name||S.session?.business||'shop'))};
   window._baroSaveOrder=function(o){try{var a=JSON.parse(localStorage.getItem(MYO_KEY)||'[]');a.unshift(o);localStorage.setItem(MYO_KEY,JSON.stringify(a.slice(0,50)));}catch(e){}};
+  window._baroAttachTrack=function(srv,tc){try{var a=JSON.parse(localStorage.getItem(MYO_KEY)||'[]');if(a[0]){a[0].srv=srv;a[0].tc=tc;localStorage.setItem(MYO_KEY,JSON.stringify(a));}}catch(e){}};
   window.baroMyOrders=function(){var c=document.getElementById('myorders-c');if(!c)return;var a=[];try{a=JSON.parse(localStorage.getItem(MYO_KEY)||'[]');}catch(e){}
     if(!a.length){c.innerHTML='<div style="text-align:center;color:#999;padding:24px 8px;font-size:13px">Aucun achat pour le moment.<br>Vos commandes passées ici apparaîtront ici. 🛍️</div>';}
-    else{c.innerHTML=a.map(function(o){return '<div class="myo-item"><div class="myo-top"><span>'+new Date(o.date).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'})+'</span><b>'+o.total+'</b></div><div class="myo-items">'+(o.items||[]).map(function(x){return x;}).join('<br>')+'</div></div>';}).join('');}
+    else{c.innerHTML=a.map(function(o,i){var st=(o.srv&&o.tc)?'<div class="myo-track" id="myo-st-'+i+'" style="margin-top:6px;font-size:12px;font-weight:700;color:#4F46E5">⏳ Statut en cours de chargement…</div>':'';
+      return '<div class="myo-item"><div class="myo-top"><span>'+new Date(o.date).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'})+'</span><b>'+o.total+'</b></div><div class="myo-items">'+(o.items||[]).map(function(x){return x;}).join('<br>')+'</div>'+st+'</div>';}).join('');
+      // Suivi EN DIRECT : interroge le serveur de la boutique (code secret par commande)
+      if(typeof BARO_API!=='undefined'&&BARO_API){a.slice(0,6).forEach(function(o,i){if(!(o.srv&&o.tc))return;var el=document.getElementById('myo-st-'+i);if(!el)return;
+        fetch(BARO_API+'/api/orders/track/'+o.srv+'?code='+encodeURIComponent(o.tc)).then(function(r){return r.ok?r.json():null;}).then(function(d){
+          if(d&&d.status_label){el.textContent='📦 '+d.status_label;if(d.status==='delivered')el.style.color='#16A34A';if(d.status==='cancelled')el.style.color='#EF4444';}
+          else{el.textContent='';}
+        }).catch(function(){el.textContent='';});});}}
     document.getElementById('myorders-ov').classList.add('show');};
 })();
 </script>
@@ -19046,9 +19074,13 @@ var baroMode=BARO_DELOFF?'pickup':'delivery';
     var _items=[];for(var k in cart){var it=item(k);if(it)_items.push(it.name+(((window.BARO_VARSEL||{})[k])?' ['+window.BARO_VARSEL[k]+']':'')+' ×'+cart[k]);}
     try{if(typeof window._baroSaveOrder==='function')window._baroSaveOrder({date:new Date().toISOString(),items:_items,total:fmtn(Math.max(0,total()-disc)+fee)+' '+BARO_SYM});}catch(e){}
     // ── EN LIGNE : la commande revient dans l'app du vendeur (impossible hors-ligne) ──
+    // et le CLIENT reçoit un code de suivi (statut en direct dans « Mes achats »)
     if(BARO_API&&BARO_SHOP_ID){try{
       fetch(BARO_API+'/api/orders/shop/'+BARO_SHOP_ID,{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({clientName:name,items:_items,total:Math.max(0,total()-disc)+fee,mode:_pickup?'pickup':'delivery',zone:_pickup?'':zone,payment:pay,note:''})}).catch(function(){});
+        body:JSON.stringify({clientName:name,items:_items,total:Math.max(0,total()-disc)+fee,mode:_pickup?'pickup':'delivery',zone:_pickup?'':zone,payment:pay,note:''})})
+        .then(function(r){return r.ok?r.json():null;})
+        .then(function(d){if(d&&d.id&&d.track_code&&typeof window._baroAttachTrack==='function'){window._baroAttachTrack(d.id,d.track_code);if(typeof baroToast==='function')baroToast('📦 Suivi activé — voir « Mes achats »');}})
+        .catch(function(){});
     }catch(e){}}
     window.open(BARO_WA+'?text='+encodeURIComponent(L.join('\\n')),'_blank');
   };

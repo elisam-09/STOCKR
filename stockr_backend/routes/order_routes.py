@@ -5,8 +5,17 @@ from flask import Blueprint, request, jsonify
 from models import db, token_required, User
 from datetime import datetime
 import json
+import secrets
 
 order_bp = Blueprint('order', __name__)
+
+_STATUS_LABELS = {
+    'pending':   'Reçue — en attente de confirmation',
+    'confirmed': 'Confirmée ✅',
+    'preparing': 'En préparation 👨‍🍳',
+    'delivered': 'Livrée / retirée 📦',
+    'cancelled': 'Annulée',
+}
 
 
 class ShopOrder(db.Model):
@@ -23,6 +32,8 @@ class ShopOrder(db.Model):
     note          = db.Column(db.String(500), nullable=True)
     status        = db.Column(db.String(20),  nullable=False, default='pending')
     created_at    = db.Column(db.DateTime,    default=datetime.utcnow)
+    # Code secret de suivi : permet au CLIENT de consulter le statut (public)
+    track_code    = db.Column(db.String(16),  nullable=True, index=True)
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, index=True)
 
@@ -71,6 +82,7 @@ def create_public_order(shop_id):
         payment       = (data.get('payment') or '').strip()[:40] or None,
         note          = (data.get('note') or '').strip()[:500] or None,
         status        = 'pending',
+        track_code    = secrets.token_urlsafe(8)[:12],
         user_id       = shop_id,
     )
     db.session.add(order)
@@ -84,7 +96,26 @@ def create_public_order(shop_id):
                     '/?view=boutique')
     except Exception:
         pass
-    return jsonify({'received': True, 'id': order.id}), 201
+    return jsonify({'received': True, 'id': order.id, 'track_code': order.track_code}), 201
+
+
+# ── Public : le CLIENT suit sa commande (code secret requis, pas de token) ──
+@order_bp.route('/track/<int:order_id>', methods=['GET'])
+def track_order(order_id):
+    code = (request.args.get('code') or '').strip()
+    order = ShopOrder.query.get(order_id)
+    if not order or not code or order.track_code != code:
+        return jsonify({'error': 'Commande introuvable'}), 404
+    owner = User.query.get(order.user_id)
+    return jsonify({
+        'status':        order.status,
+        'status_label':  _STATUS_LABELS.get(order.status, order.status),
+        'total':         order.total,
+        'mode':          order.mode,
+        'items_count':   len(json.loads(order.items or '[]')),
+        'created_at':    order.created_at.isoformat() if order.created_at else None,
+        'business_name': owner.business_name if owner else None,
+    })
 
 
 # ── Propriétaire : liste de ses commandes reçues ──

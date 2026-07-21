@@ -54,6 +54,12 @@ def create_app():
                 db.session.commit()
             except Exception:
                 db.session.rollback()
+        # Suivi de commande côté client (code secret public)
+        try:
+            db.session.execute(text('ALTER TABLE shop_order ADD COLUMN track_code VARCHAR(16)'))
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
 
     from routes.article_routes import article_bp
     from routes.product_routes import product_bp
