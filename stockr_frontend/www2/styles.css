@@ -5054,3 +5054,44 @@ body { letter-spacing: -0.006em; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.05ms !important; }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   ✦ Lot 144 — Raffinement Apple : matière sous-hero + confort tactile
+   Couche additive. Sous-hero = verre avec liseré-reflet supérieur ;
+   liens d'action = couleur accent + zone tactile 44px (confort).
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Sous-héros : arête « liquid glass » (reflet interne haut + ombre profonde) */
+.sub-hero {
+  box-shadow: 0 10px 30px -14px rgba(49, 46, 129, 0.45),
+              inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+/* Voile spéculaire doux en haut du sous-héros (matière Apple) */
+.sub-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 52%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.10) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Liens d'action de section : couleur accent + zone tactile 44px sans décalage visuel */
+.section-act {
+  color: var(--accent);
+  padding: 13px 8px;
+  margin: -13px -8px;
+  border-radius: 10px;
+  transition: opacity 0.15s var(--ease-out), background-color 0.15s;
+}
+.section-act:active { opacity: 0.5; }
+[data-theme="dark"] .section-act { color: var(--accent-muted); }
+
+/* Boutons ronds d'en-tête : matière verre + pression douce */
+.hero-btn, .back-btn-dark {
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  transition: transform 0.15s var(--ease-out), background-color 0.15s;
+}
+.hero-btn:active, .back-btn-dark:active { transform: scale(0.92); }

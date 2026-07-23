@@ -2,7 +2,7 @@
 // Stratégie : Cache-first pour assets statiques,
 //             Network-first pour l'API
 
-const CACHE_NAME = 'baro-v183-liquidglass';
+const CACHE_NAME = 'baro-v184-glasspolish';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
