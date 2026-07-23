@@ -8695,9 +8695,9 @@ function vDetail() {
         <span class="info-val">${art.lead} ${_lang==='fr'?'jours':'days'}</span>
       </div>
       <div class="info-row">
-        <span class="info-lbl">${IC.home} Emplacement</span>
-        <span class="info-val">
-          <select class="input" style="font-size:11px;padding:4px 8px;width:auto;min-width:120px;border-radius:6px" onchange="setArticleLocation(${art.id},parseInt(this.value)||null)">
+        <span class="info-lbl" style="flex-shrink:0">${IC.home} Emplacement</span>
+        <span class="info-val" style="min-width:0;flex:1 1 auto;text-align:right">
+          <select class="input" style="font-size:11px;padding:4px 8px;width:auto;max-width:100%;min-width:0;border-radius:6px" onchange="setArticleLocation(${art.id},parseInt(this.value)||null)">
             <option value="">— Non assigné —</option>
             ${S.locations.map(l => `<option value="${l.id}" ${art.locationId===l.id?'selected':''}>${l.name}${l.type?' ('+({'store':'Boutique','warehouse':'Entrepôt','popup':'Pop-up'}[l.type]||l.type)+')':''}</option>`).join('')}
           </select>
