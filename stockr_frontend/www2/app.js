@@ -17247,7 +17247,12 @@ function vAppearance() {
         <div class="card-title" style="margin:0">🫧 Transparence (Liquid Glass)</div>
         <span id="glass-val" style="font-size:13px;font-weight:800;color:var(--accent)">${a.glass==null?60:a.glass}%</span>
       </div>
-      <div style="font-size:12px;color:var(--text-3);line-height:1.5;margin-bottom:10px">Intensité du flou de verre sur la barre, les feuilles et les notifications. Vers 0 = net et opaque · vers 100 = ultra-translucide.</div>
+      <div style="font-size:12px;color:var(--text-3);line-height:1.5;margin-bottom:10px">Rend la barre, les feuilles et les notifications plus ou moins translucides. Vers 0 = net et opaque · vers 100 = ultra-transparent (on voit à travers).</div>
+      <!-- Aperçu en direct : un panneau de verre sur un fond coloré -->
+      <div style="position:relative;height:74px;border-radius:14px;overflow:hidden;margin-bottom:12px;background:linear-gradient(120deg,#7C3AED 0%,#EC4899 45%,#F59E0B 100%)">
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:space-around;padding:0 10px;color:#fff;font-weight:800;font-size:13px;text-shadow:0 1px 3px rgba(0,0,0,.3)"><span>🛍️</span><span>💰</span><span>📦</span><span>⭐</span></div>
+        <div id="glass-preview-panel" style="position:absolute;left:14px;right:14px;bottom:10px;height:30px;border-radius:9px;border:1px solid rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--text-1);backdrop-filter:blur(${Math.round(4+((a.glass==null?60:a.glass)/100)*28)}px);-webkit-backdrop-filter:blur(${Math.round(4+((a.glass==null?60:a.glass)/100)*28)}px);background:rgba(255,255,255,${(0.98-((a.glass==null?60:a.glass)/100)*0.43).toFixed(3)})">Panneau Liquid Glass</div>
+      </div>
       <input type="range" min="0" max="100" step="5" value="${a.glass==null?60:a.glass}" oninput="setAppearanceLive('glass',this.value)" style="width:100%;accent-color:var(--accent);height:28px;cursor:pointer">
     </div>
 
@@ -17343,9 +17348,19 @@ function applyAppearance() {
   // Contraste
   root.setAttribute('data-contrast', a.contrast || 'normal');
   // ── Lot 147 : Outils de design (macOS Golden Gate) ──
-  // Transparence Liquid Glass : 0 = opaque, 100 = ultra-clair
+  // Transparence Liquid Glass : 0 = opaque/teinté, 100 = ultra-clair
   const glass = (a.glass == null) ? 60 : Math.max(0, Math.min(100, a.glass));
   root.style.setProperty('--glass-blur', Math.round(4 + (glass / 100) * 28) + 'px');
+  // Opacité des surfaces de verre (visible même sans backdrop-filter)
+  // glass 0 → 0.98 (opaque) · glass 100 → 0.55 (bien translucide)
+  const gAlpha = (0.98 - (glass / 100) * 0.43).toFixed(3);
+  root.style.setProperty('--glass-alpha', gAlpha);
+  // Fond de la barre de navigation en INLINE + !important : bat toute la
+  // cascade (body.dark #nav, etc.) → la transparence est réellement visible.
+  const navEl = document.getElementById('nav');
+  if (navEl) {
+    navEl.style.setProperty('background', (resolved === 'dark' ? 'rgba(18,21,29,' : 'rgba(255,255,255,') + gAlpha + ')', 'important');
+  }
   // Rayon des coins : Doux / Standard / Net
   const rScale = a.radius === 'soft' ? 1.35 : a.radius === 'sharp' ? 0.6 : 1;
   root.style.setProperty('--r-scale', String(rScale));
@@ -17358,7 +17373,16 @@ function setAppearanceLive(key, value) {
   S.appearance[key] = (key === 'glass') ? parseInt(value, 10) : value;
   try { localStorage.setItem('stockr_appearance', JSON.stringify(S.appearance)); } catch(_){}
   applyAppearance();
-  if (key === 'glass') { const l = document.getElementById('glass-val'); if (l) l.textContent = value + '%'; }
+  if (key === 'glass') {
+    const l = document.getElementById('glass-val'); if (l) l.textContent = value + '%';
+    // Aperçu live : la vignette de verre se met à jour instantanément
+    const p = document.getElementById('glass-preview-panel');
+    if (p) {
+      p.style.backdropFilter = 'blur(' + Math.round(4 + (value/100)*28) + 'px)';
+      p.style.webkitBackdropFilter = p.style.backdropFilter;
+      p.style.background = 'rgba(255,255,255,' + (0.98 - (value/100)*0.43).toFixed(3) + ')';
+    }
+  }
 }
 
 // ── SÉCURITÉ VIEW ─────────────────────────────
