@@ -5345,6 +5345,8 @@ function nav(view, extra={}) {
 // (rien ne la retire sauf sa propre fin) → ne casse jamais l'anti-blink.
 function __applyViewTransition(viewEl) {
   if (!viewEl) return;
+  // Réglage « Réduire les animations » (Apparence) → aucune transition de vue
+  if (document.documentElement.getAttribute('data-reduce-motion') === '1') { window.__vtDir = null; return; }
   const dir = window.__vtDir || 'tab';
   window.__vtDir = null; // consommé
   const cls = dir === 'fwd' ? 'vt-fwd' : dir === 'back' ? 'vt-back' : 'vt-tab';
@@ -17236,6 +17238,42 @@ function vAppearance() {
       </div>
     </div>
 
+    <!-- ── Lot 147 : Outils de design (macOS Golden Gate) ── -->
+    <div class="settings-label" style="margin:18px 0 8px">✦ Outils de design</div>
+
+    <!-- Transparence Liquid Glass -->
+    <div class="card" style="margin-bottom:12px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+        <div class="card-title" style="margin:0">🫧 Transparence (Liquid Glass)</div>
+        <span id="glass-val" style="font-size:13px;font-weight:800;color:var(--accent)">${a.glass==null?60:a.glass}%</span>
+      </div>
+      <div style="font-size:12px;color:var(--text-3);line-height:1.5;margin-bottom:10px">Intensité du flou de verre sur la barre, les feuilles et les notifications. Vers 0 = net et opaque · vers 100 = ultra-translucide.</div>
+      <input type="range" min="0" max="100" step="5" value="${a.glass==null?60:a.glass}" oninput="setAppearanceLive('glass',this.value)" style="width:100%;accent-color:var(--accent);height:28px;cursor:pointer">
+    </div>
+
+    <!-- Rayon des coins -->
+    <div class="card" style="margin-bottom:12px">
+      <div class="card-title">⬜ Rayon des coins</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+        ${[['soft','Doux','18px'],['standard','Standard','12px'],['sharp','Net','6px']].map(([v,lbl,r]) => `
+          <button onclick="setAppearance('radius','${v}')" style="padding:12px 6px;border-radius:${r};border:2px solid ${(a.radius||'standard')===v?'var(--accent)':'var(--border)'};background:${(a.radius||'standard')===v?'var(--accent-light)':'var(--card-bg)'};cursor:pointer;font-size:12.5px;font-weight:700;color:${(a.radius||'standard')===v?'var(--accent)':'var(--text-1)'};display:flex;flex-direction:column;align-items:center;gap:6px">
+            <span style="display:block;width:26px;height:20px;border:2px solid currentColor;border-radius:${r};opacity:.85"></span>${lbl}
+          </button>
+        `).join('')}
+      </div>
+    </div>
+
+    <!-- Réduire les animations -->
+    <div class="card" style="margin-bottom:12px">
+      <label style="display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer">
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:800;font-size:13.5px;color:var(--text-1)">🎬 Réduire les animations</div>
+          <div style="font-size:12px;color:var(--text-3);margin-top:2px;line-height:1.5">Coupe les glissés et transitions — plus rapide, plus sobre, idéal sur téléphones modestes.</div>
+        </div>
+        <span class="toggle-switch"><input type="checkbox" ${a.reduceMotion?'checked':''} onchange="setAppearance('reduceMotion',this.checked)"><span class="toggle-track"></span></span>
+      </label>
+    </div>
+
     <!-- Reset -->
     <div style="margin-top:14px">
       <button class="btn btn-ghost" style="width:100%" onclick="resetAppearance()">🔄 Réinitialiser les réglages</button>
@@ -17254,7 +17292,7 @@ function setAppearance(key, value) {
 
 function resetAppearance() {
   if (!confirm('Réinitialiser tous les réglages d\'apparence ?')) return;
-  S.appearance = { theme:'light', accentColor:'#6E5BFF', fontSize:'medium', density:'normal', contrast:'normal' };
+  S.appearance = { theme:'light', accentColor:'#6E5BFF', fontSize:'medium', density:'normal', contrast:'normal', glass:60, radius:'standard', reduceMotion:false };
   try { localStorage.setItem('stockr_appearance', JSON.stringify(S.appearance)); } catch(_){}
   applyAppearance();
   showToast('Apparence réinitialisée', 'info');
@@ -17304,6 +17342,23 @@ function applyAppearance() {
   root.style.setProperty('--spacing-scale', spacing);
   // Contraste
   root.setAttribute('data-contrast', a.contrast || 'normal');
+  // ── Lot 147 : Outils de design (macOS Golden Gate) ──
+  // Transparence Liquid Glass : 0 = opaque, 100 = ultra-clair
+  const glass = (a.glass == null) ? 60 : Math.max(0, Math.min(100, a.glass));
+  root.style.setProperty('--glass-blur', Math.round(4 + (glass / 100) * 28) + 'px');
+  // Rayon des coins : Doux / Standard / Net
+  const rScale = a.radius === 'soft' ? 1.35 : a.radius === 'sharp' ? 0.6 : 1;
+  root.style.setProperty('--r-scale', String(rScale));
+  // Réduire les animations
+  root.setAttribute('data-reduce-motion', a.reduceMotion ? '1' : '0');
+}
+// Applique un réglage « live » (curseur) sans re-render complet — garde le drag fluide
+function setAppearanceLive(key, value) {
+  if (!S.appearance) S.appearance = {};
+  S.appearance[key] = (key === 'glass') ? parseInt(value, 10) : value;
+  try { localStorage.setItem('stockr_appearance', JSON.stringify(S.appearance)); } catch(_){}
+  applyAppearance();
+  if (key === 'glass') { const l = document.getElementById('glass-val'); if (l) l.textContent = value + '%'; }
 }
 
 // ── SÉCURITÉ VIEW ─────────────────────────────
@@ -29815,6 +29870,7 @@ function __baroInit() {
   window.deleteTeamMember   = deleteTeamMember;
   window.openTeamMember     = openTeamMember;
   window.setAppearance      = setAppearance;
+  window.setAppearanceLive  = setAppearanceLive;
   window.applyAppearance    = applyAppearance;
   window.resetAppearance    = resetAppearance;
   window.setSecurity        = setSecurity;

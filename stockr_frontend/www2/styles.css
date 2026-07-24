@@ -5171,3 +5171,42 @@ body.vt-active .card { animation: none !important; }
 @media (prefers-reduced-motion: reduce) {
   #view.vt-fwd, #view.vt-back, #view.vt-tab { animation: none !important; }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   ✦ Lot 147 — Outils de design pilotables (macOS Golden Gate)
+   Curseur Transparence (--glass-blur) · Rayon des coins (--r-scale) ·
+   Réduire les animations (data-reduce-motion). Défauts inchangés.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Transparence Liquid Glass pilotée par l'utilisateur */
+#nav {
+  backdrop-filter: blur(var(--glass-blur, 26px)) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(var(--glass-blur, 26px)) saturate(190%) !important;
+}
+.qs-overlay {
+  backdrop-filter: blur(var(--glass-blur, 14px)) saturate(150%) !important;
+  -webkit-backdrop-filter: blur(var(--glass-blur, 14px)) saturate(150%) !important;
+}
+.toast {
+  backdrop-filter: blur(var(--glass-blur, 18px)) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(var(--glass-blur, 18px)) saturate(160%) !important;
+}
+
+/* Rayon des coins pilotable (proportionnel, garde l'harmonie) */
+.card       { border-radius: calc(18px * var(--r-scale, 1)); }
+.btn        { border-radius: calc(14px * var(--r-scale, 1)); }
+.input      { border-radius: calc(12px * var(--r-scale, 1)); }
+.sub-hero   { border-radius: 0 0 calc(30px * var(--r-scale, 1)) calc(30px * var(--r-scale, 1)); }
+.qs-sheet   { border-radius: calc(22px * var(--r-scale, 1)) calc(22px * var(--r-scale, 1)) 0 0; }
+
+/* Réduire les animations (réglage utilisateur, indépendant de l'OS) */
+[data-reduce-motion="1"] *,
+[data-reduce-motion="1"] *::before,
+[data-reduce-motion="1"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.06ms !important;
+}
+[data-reduce-motion="1"] #view.vt-fwd,
+[data-reduce-motion="1"] #view.vt-back,
+[data-reduce-motion="1"] #view.vt-tab { animation: none !important; }
