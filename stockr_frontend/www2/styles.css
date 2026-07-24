@@ -5095,3 +5095,49 @@ body { letter-spacing: -0.006em; }
   transition: transform 0.15s var(--ease-out), background-color 0.15s;
 }
 .hero-btn:active, .back-btn-dark:active { transform: scale(0.92); }
+
+/* ═══════════════════════════════════════════════════════════════
+   ✦ Lot 145 — Feuilles & modales façon iOS (Liquid Glass)
+   Fond plus profond, feuille en ressort avec liseré-reflet, toasts verre.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Voile de fond : flou et saturation plus profonds (matière iOS) */
+.qs-overlay {
+  background: rgba(8, 9, 15, 0.5);
+  -webkit-backdrop-filter: blur(14px) saturate(150%);
+  backdrop-filter: blur(14px) saturate(150%);
+}
+
+/* Feuille : entrée en ressort doux + arête liquid-glass en haut */
+.qs-sheet {
+  animation: qsSheetSpring 0.42s cubic-bezier(0.22, 1.12, 0.36, 1) both;
+  box-shadow: 0 -18px 50px -12px rgba(8, 9, 15, 0.4),
+              inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+[data-theme="dark"] .qs-sheet {
+  box-shadow: 0 -18px 50px -12px rgba(0, 0, 0, 0.6),
+              inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+@keyframes qsSheetSpring {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+/* Poignée un peu plus visible et douce */
+.qs-sheet::before {
+  width: 44px; height: 5px;
+  background: var(--gray-3);
+  opacity: 0.9;
+}
+
+/* Bouton fermer : pression douce */
+.qs-x { transition: transform 0.14s var(--ease-out), background-color 0.15s; }
+.qs-x:active { transform: scale(0.88); background: var(--gray-2); }
+
+/* Toasts : matière verre plus profonde + arête lumineuse */
+.toast {
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  backdrop-filter: blur(18px) saturate(160%);
+  background: rgba(18, 20, 28, 0.82);
+  box-shadow: 0 10px 34px -8px rgba(0, 0, 0, 0.38),
+              inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
