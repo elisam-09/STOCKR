@@ -5141,3 +5141,33 @@ body { letter-spacing: -0.006em; }
   box-shadow: 0 10px 34px -8px rgba(0, 0, 0, 0.38),
               inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   ✦ Lot 146 — Transitions de vue contextuelles (iOS push/pop/tab)
+   One-shot sur #view, jouées UNE fois au changement de vue.
+   Pendant le glissé, le stagger des cartes est fige (mouvement unique).
+   ═══════════════════════════════════════════════════════════════ */
+#view.vt-fwd  { animation: vtFwd  0.34s cubic-bezier(0.32, 0.72, 0, 1) both; }
+#view.vt-back { animation: vtBack 0.34s cubic-bezier(0.32, 0.72, 0, 1) both; }
+#view.vt-tab  { animation: vtTab  0.28s cubic-bezier(0.2, 0, 0, 1) both; }
+
+@keyframes vtFwd {
+  from { opacity: 0; transform: translate3d(26px, 0, 0); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+@keyframes vtBack {
+  from { opacity: 0; transform: translate3d(-26px, 0, 0); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+@keyframes vtTab {
+  from { opacity: 0; transform: translate3d(0, 9px, 0); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+/* Pendant la transition de vue : le contenu glisse comme UN bloc (pas de
+   double animation avec le stagger des cartes → aucun clignotement) */
+body.vt-active .anim,
+body.vt-active .card { animation: none !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  #view.vt-fwd, #view.vt-back, #view.vt-tab { animation: none !important; }
+}

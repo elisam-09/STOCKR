@@ -5313,17 +5313,54 @@ function haptic(kind = 'tap') {
   } catch(_) {}
 }
 
+// Lot 146 : transitions de vue contextuelles (iOS-like)
+// Onglets de la barre du bas = transition douce (fondu) ; entrer dans un
+// sous-écran = glissé depuis la droite (push) ; revenir = glissé depuis la
+// gauche (pop). La direction est déduite d'une pile de navigation légère.
+const __TAB_VIEWS = new Set(['home','pantry','products','sales','financial','more','boutique']);
+if (typeof window !== 'undefined' && !window.__navStack) window.__navStack = ['home'];
 function nav(view, extra={}) {
   // Pose un timestamp pour que le filet de sécurité global sache qu'on a bien été appelé
   try { window.__navLastCallAt = Date.now(); } catch(_){}
   try { Object.assign(S, extra); } catch(_){}
   haptic('tap');
+  // ── Direction contextuelle ──
+  try {
+    const st = window.__navStack;
+    if (__TAB_VIEWS.has(view)) { window.__vtDir = 'tab'; window.__navStack = [view]; }
+    else {
+      const idx = st.indexOf(view);
+      if (idx !== -1) { window.__vtDir = 'back'; window.__navStack = st.slice(0, idx + 1); }
+      else { window.__vtDir = 'fwd'; st.push(view); if (st.length > 20) st.shift(); }
+    }
+  } catch(_) { window.__vtDir = 'tab'; }
   S.view = view;
   try {
     const vEl = document.getElementById('view');
     if (vEl) vEl.scrollTop = 0;
   } catch(_){}
   render();
+}
+// Applique une transition one-shot sur #view, INDÉPENDANTE des re-renders
+// (rien ne la retire sauf sa propre fin) → ne casse jamais l'anti-blink.
+function __applyViewTransition(viewEl) {
+  if (!viewEl) return;
+  const dir = window.__vtDir || 'tab';
+  window.__vtDir = null; // consommé
+  const cls = dir === 'fwd' ? 'vt-fwd' : dir === 'back' ? 'vt-back' : 'vt-tab';
+  viewEl.classList.remove('vt-fwd', 'vt-back', 'vt-tab');
+  document.body.classList.add('vt-active'); // fige le stagger des cartes pendant le glissé
+  // force un reflow pour redémarrer proprement si transitions rapprochées
+  void viewEl.offsetWidth;
+  viewEl.classList.add(cls);
+  const done = () => {
+    viewEl.classList.remove('vt-fwd', 'vt-back', 'vt-tab');
+    document.body.classList.remove('vt-active');
+    viewEl.removeEventListener('animationend', done);
+  };
+  viewEl.addEventListener('animationend', done);
+  clearTimeout(window.__vtTimer);
+  window.__vtTimer = setTimeout(done, 520); // filet de sécurité
 }
 // Expose immédiatement pour que les onclick inline fonctionnent dès le premier clic,
 // même avant DOMContentLoaded.
@@ -5591,6 +5628,8 @@ function _doRender() {
   // Conserve le scroll si on re-render la MÊME view (évite le "blink" de remontée)
   if (viewChanged) {
     if (!S.globalSearch) viewEl.scrollTop = 0;
+    // Lot 146 : transition contextuelle uniquement au vrai changement de vue
+    try { __applyViewTransition(viewEl); } catch(_){}
   } else {
     viewEl.scrollTop = prevScroll;
   }
