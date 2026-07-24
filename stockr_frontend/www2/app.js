@@ -5364,6 +5364,63 @@ function __applyViewTransition(viewEl) {
   clearTimeout(window.__vtTimer);
   window.__vtTimer = setTimeout(done, 520); // filet de sécurité
 }
+
+// ── Lot 149 : Swipe-pour-fermer les feuilles (geste iOS) ──
+// Tirez la feuille vers le bas pour la fermer ; ressort si trop court.
+// Délégation globale : marche pour TOUTES les feuilles .qs-sheet, présentes
+// ou futures. Ne se déclenche que si la feuille est en haut de son scroll
+// (sinon on laisse le contenu défiler normalement).
+(function initSheetSwipe() {
+  if (typeof document === 'undefined' || window.__sheetSwipeInit) return;
+  window.__sheetSwipeInit = true;
+  let sheet = null, overlay = null, startY = 0, dy = 0, active = false;
+  const px = e => (e.touches && e.touches[0] ? e.touches[0].clientY : (e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].clientY : e.clientY));
+  const onStart = (e) => {
+    const t = e.target;
+    if (!t || !t.closest) return;
+    const sh = t.closest('.qs-sheet');
+    if (!sh || sh.scrollTop > 0) return;
+    // Ne pas capturer un geste qui commence sur un champ de saisie / curseur
+    if (t.closest('input,textarea,select,[contenteditable="true"]')) return;
+    sheet = sh; overlay = sh.closest('.qs-overlay') || sh.parentElement;
+    startY = px(e); dy = 0; active = true;
+    sheet.style.transition = 'none';
+  };
+  const onMove = (e) => {
+    if (!active || !sheet) return;
+    dy = px(e) - startY;
+    if (dy <= 0) { sheet.style.transform = 'translateY(0)'; return; }
+    if (sheet.scrollTop > 0) { active = false; sheet.style.transform = ''; return; }
+    sheet.style.transform = 'translateY(' + dy + 'px)';
+    if (overlay) overlay.style.background = 'rgba(8,9,15,' + Math.max(0.12, 0.5 - dy / 700) + ')';
+    if (e.cancelable) e.preventDefault(); // empêche le scroll parent pendant le glissé
+  };
+  const onEnd = () => {
+    if (!active || !sheet) return;
+    active = false;
+    const s = sheet, ov = overlay; sheet = null; overlay = null;
+    s.style.transition = 'transform .3s cubic-bezier(.32,.72,0,1)';
+    if (dy > 100) {
+      // Seuil franchi → fermeture (déclenche le vrai handler de fermeture)
+      s.style.transform = 'translateY(100%)';
+      if (typeof haptic === 'function') haptic('light');
+      const closeBtn = s.querySelector('.qs-x, .ck-close, .qs-close');
+      setTimeout(() => {
+        if (closeBtn) closeBtn.click();
+        else { try { (ov && ov.remove) ? ov.remove() : (s.remove && s.remove()); } catch(_){} }
+      }, 260);
+    } else {
+      // Ressort en place
+      s.style.transform = 'translateY(0)';
+      if (ov) ov.style.background = '';
+    }
+  };
+  document.addEventListener('touchstart', onStart, { passive: true });
+  document.addEventListener('touchmove', onMove, { passive: false });
+  document.addEventListener('touchend', onEnd, { passive: true });
+  document.addEventListener('touchcancel', onEnd, { passive: true });
+})();
+
 // Expose immédiatement pour que les onclick inline fonctionnent dès le premier clic,
 // même avant DOMContentLoaded.
 if (typeof window !== 'undefined') window.nav = nav;
