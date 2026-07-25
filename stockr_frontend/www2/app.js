@@ -5347,6 +5347,9 @@ function __applyViewTransition(viewEl) {
   if (!viewEl) return;
   // Réglage « Réduire les animations » (Apparence) → aucune transition de vue
   if (document.documentElement.getAttribute('data-reduce-motion') === '1') { window.__vtDir = null; return; }
+  // Lot 150 : si une photo va se morpher (shared-element), la transition de vue
+  // s'efface — le morph porte le mouvement (comme iOS).
+  if (window.__sharedPending && (window.__vtDir === 'fwd' || !window.__vtDir)) { window.__vtDir = null; return; }
   const dir = window.__vtDir || 'tab';
   window.__vtDir = null; // consommé
   const cls = dir === 'fwd' ? 'vt-fwd' : dir === 'back' ? 'vt-back' : 'vt-tab';
@@ -5420,6 +5423,60 @@ function __applyViewTransition(viewEl) {
   document.addEventListener('touchend', onEnd, { passive: true });
   document.addEventListener('touchcancel', onEnd, { passive: true });
 })();
+
+// ── Lot 150 : Shared-element — la photo « grandit » de la liste vers la fiche ──
+// Technique FLIP : on capture la position de la photo touchée (source), et après
+// le rendu de la fiche on morphe un clone jusqu'à la photo du hero (cible).
+// Robuste sans RAF (reflow forcé) → marche même quand requestAnimationFrame est
+// throttlé. Fallback silencieux si pas de photo (aucune animation, nav normal).
+(function initSharedElement() {
+  if (typeof document === 'undefined' || window.__sharedInit) return;
+  window.__sharedInit = true;
+  // Capture (phase capture, avant les onclick inline) : mémorise la photo source
+  document.addEventListener('click', (e) => {
+    const t = e.target; if (!t || !t.closest) return;
+    const navEl = t.closest('[onclick]');
+    if (!navEl) return;
+    const oc = navEl.getAttribute('onclick') || '';
+    if (!/nav\(\s*['"]detail['"]/.test(oc)) return;      // uniquement l'ouverture d'une fiche
+    const img = navEl.querySelector('img');
+    if (!img || !img.getBoundingClientRect().width) { window.__shared = null; return; }
+    const r = img.getBoundingClientRect();
+    const cs = getComputedStyle(img);
+    window.__shared = { src: img.currentSrc || img.src, left: r.left, top: r.top, width: r.width, height: r.height, radius: cs.borderRadius, at: Date.now() };
+    window.__sharedPending = true;
+  }, true);
+})();
+// Exécute le morph vers la photo cible du hero de la fiche
+function __runSharedMorph(viewEl) {
+  const s = window.__shared;
+  window.__shared = null;
+  if (!s || Date.now() - s.at > 1200) { window.__sharedPending = false; return; }
+  const target = viewEl && viewEl.querySelector('.sub-hero img');
+  if (!target) { window.__sharedPending = false; return; }
+  const to = target.getBoundingClientRect();
+  if (!to.width) { window.__sharedPending = false; return; }
+  const clone = document.createElement('img');
+  clone.src = s.src;
+  clone.style.cssText = 'position:fixed;z-index:12000;margin:0;pointer-events:none;object-fit:cover;'
+    + 'left:' + to.left + 'px;top:' + to.top + 'px;width:' + to.width + 'px;height:' + to.height + 'px;'
+    + 'border-radius:14px;transform-origin:top left;box-shadow:0 10px 30px -8px rgba(0,0,0,.3)';
+  // Inversion : place le clone visuellement à la position source
+  const sx = s.width / to.width, sy = s.height / to.height;
+  const tx = s.left - to.left, ty = s.top - to.top;
+  clone.style.transform = 'translate(' + tx + 'px,' + ty + 'px) scale(' + sx + ',' + sy + ')';
+  target.style.opacity = '0';
+  document.body.appendChild(clone);
+  void clone.offsetWidth; // commit du reflow → point de départ posé
+  clone.style.transition = 'transform .44s cubic-bezier(.32,.72,0,1), border-radius .44s';
+  clone.style.transform = 'translate(0,0) scale(1,1)';
+  clone.style.borderRadius = (s.radius && s.radius !== '0px') ? s.radius : '14px';
+  let done = false;
+  const finish = () => { if (done) return; done = true; try { target.style.opacity = ''; clone.remove(); } catch(_){} };
+  clone.addEventListener('transitionend', finish, { once: true });
+  setTimeout(finish, 640); // filet de sécurité
+  window.__sharedPending = false;
+}
 
 // Expose immédiatement pour que les onclick inline fonctionnent dès le premier clic,
 // même avant DOMContentLoaded.
@@ -5689,6 +5746,9 @@ function _doRender() {
     if (!S.globalSearch) viewEl.scrollTop = 0;
     // Lot 146 : transition contextuelle uniquement au vrai changement de vue
     try { __applyViewTransition(viewEl); } catch(_){}
+    // Lot 150 : shared-element (photo liste → fiche) prime sur la transition de vue
+    if (window.__sharedPending && S.view === 'detail') { try { __runSharedMorph(viewEl); } catch(_){ window.__sharedPending = false; } }
+    else if (window.__sharedPending) { window.__sharedPending = false; window.__shared = null; }
   } else {
     viewEl.scrollTop = prevScroll;
   }
