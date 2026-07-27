@@ -2671,6 +2671,210 @@ function vExpiry() {
   </div>`;
 }
 
+// ── RÉASSORT INTELLIGENT ───────────────────────────────────
+// Répond à « j'ai trop de produits » : calcule sur les VRAIES ventes
+// quels articles recommander, combien, et quand — et prépare la commande.
+function _reorderData(windowDays) {
+  windowDays = windowDays || 30;
+  const now = Date.now(), DAY = 86400000, since = now - windowDays * DAY;
+  // Ventes réelles dans la fenêtre (par article)
+  const soldMap = {};
+  const saleTs = [];
+  (S.sales || []).forEach(s => {
+    const ts = new Date(s.date).getTime();
+    if (!ts) return;
+    saleTs.push(ts);
+    if (ts >= since && s.productId != null) soldMap[s.productId] = (soldMap[s.productId] || 0) + (s.qty || 0);
+  });
+  // Ancre le dénominateur au vrai historique (évite de sous-estimer si commerce récent)
+  const firstTs = saleTs.length ? Math.min(...saleTs) : now;
+  const spanDays = Math.min(windowDays, Math.max(1, Math.round((now - firstTs) / DAY)));
+  const hasSalesData = saleTs.length > 0;
+
+  const items = (S.articles || []).map(a => {
+    const stock = a.stock || 0;
+    const lead = a.lead || 7;
+    const sold = soldMap[a.id] || 0;
+    const velocity = sold / spanDays;           // unités / jour (réel)
+    let needed = false, source = 'velocity', suggested = 0, daysLeft = Infinity, urgency = null;
+    if (velocity > 0) {
+      daysLeft = stock / velocity;
+      const reorderPoint = velocity * (lead + 3);       // couvre le délai fournisseur + marge
+      const coverDays = lead + 30;                      // reconstituer ~1 mois + délai
+      suggested = Math.max(0, Math.ceil(velocity * coverDays - stock));
+      if (stock <= 0) { needed = true; urgency = 'rupture'; }
+      else if (stock <= reorderPoint) { needed = true; urgency = daysLeft <= lead ? 'urgent' : 'soon'; }
+      if (needed && suggested <= 0) suggested = Math.max(1, Math.ceil(velocity * lead));
+    } else if ((a.min || 0) > 0 && stock < a.min) {
+      // Pas de ventes récentes → repli honnête sur le seuil mini
+      needed = true; source = 'seuil';
+      suggested = Math.max(1, Math.ceil(a.min * 2 - stock));
+      urgency = stock <= 0 ? 'rupture' : 'soon';
+    }
+    return { a, stock, lead, sold, velocity, daysLeft, suggested, needed, source, urgency };
+  }).filter(it => it.needed);
+
+  const rank = { rupture: 0, urgent: 1, soon: 2 };
+  items.sort((x, y) => {
+    const rx = rank[x.urgency] ?? 3, ry = rank[y.urgency] ?? 3;
+    if (rx !== ry) return rx - ry;
+    return (x.daysLeft === Infinity ? 9e9 : x.daysLeft) - (y.daysLeft === Infinity ? 9e9 : y.daysLeft);
+  });
+  return { items, hasSalesData, spanDays };
+}
+function _reorderQtyFor(it) {
+  const ov = S.reorderQty && S.reorderQty[it.a.id];
+  return (ov === undefined || ov === null) ? it.suggested : ov;
+}
+function setReorderWindow(d) { S.reorderWindow = d; render(); }
+function reorderStep(id, delta, suggested) {
+  S.reorderQty = S.reorderQty || {};
+  const cur = (S.reorderQty[id] === undefined || S.reorderQty[id] === null) ? suggested : S.reorderQty[id];
+  S.reorderQty[id] = Math.max(0, Math.round((cur + delta) * 100) / 100);
+  render();
+}
+function toggleReorderItem(id) {
+  S.reorderExcluded = S.reorderExcluded || {};
+  S.reorderExcluded[id] = !S.reorderExcluded[id];
+  render();
+}
+function _reorderSelected() {
+  const win = S.reorderWindow || 30;
+  const { items } = _reorderData(win);
+  return items
+    .filter(it => !(S.reorderExcluded && S.reorderExcluded[it.a.id]))
+    .map(it => ({ name: it.a.name, unit: it.a.unit || '', qty: _reorderQtyFor(it), cost: _reorderQtyFor(it) * (it.a.purchasePrice || 0) }))
+    .filter(l => l.qty > 0);
+}
+function _reorderMessage() {
+  const list = _reorderSelected();
+  const biz = (S.session && S.session.business) || 'Ma boutique';
+  const lines = [`🛒 Commande de réassort — ${biz}`, ''];
+  list.forEach(l => lines.push(`• ${l.name} : ${fmtQty(l.qty)} ${l.unit}`.trim()));
+  lines.push('', 'Merci de me confirmer la disponibilité et le prix.');
+  return lines.join('\n');
+}
+function shareReorderList() {
+  const list = _reorderSelected();
+  if (!list.length) { showToast('Aucun article sélectionné', 'info'); return; }
+  const msg = _reorderMessage();
+  if (navigator.share) { navigator.share({ title: 'Commande de réassort', text: msg }).catch(() => {}); }
+  else { window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank'); }
+}
+function copyReorderList() {
+  const list = _reorderSelected();
+  if (!list.length) { showToast('Aucun article sélectionné', 'info'); return; }
+  const msg = _reorderMessage();
+  if (navigator.clipboard) navigator.clipboard.writeText(msg).then(() => showToast('📋 Commande copiée', 'success')).catch(() => showToast('Copie impossible', 'error'));
+  else showToast('Copie non supportée', 'error');
+}
+
+function vReorder() {
+  const win = S.reorderWindow || 30;
+  const { items, hasSalesData } = _reorderData(win);
+  const U = {
+    rupture: { color: '#EF4444', label: 'Rupture', emoji: '⛔' },
+    urgent:  { color: '#F97316', label: 'Urgent',  emoji: '🔥' },
+    soon:    { color: '#EAB308', label: 'Bientôt', emoji: '⏳' },
+  };
+  const selectedCount = items.filter(it => !(S.reorderExcluded && S.reorderExcluded[it.a.id]) && _reorderQtyFor(it) > 0).length;
+  const totalCost = items
+    .filter(it => !(S.reorderExcluded && S.reorderExcluded[it.a.id]))
+    .reduce((s, it) => s + _reorderQtyFor(it) * (it.a.purchasePrice || 0), 0);
+
+  const winChips = [7, 30, 90].map(d => `
+    <button onclick="setReorderWindow(${d})" style="flex:1;padding:7px 4px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid ${win===d?'var(--accent)':'var(--border)'};background:${win===d?'var(--accent)':'transparent'};color:${win===d?'#fff':'var(--text-2)'}">${d} j</button>`).join('');
+
+  if (items.length === 0) {
+    return `
+    <div class="sub-hero">
+      <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('home')">${IC.left}</button>
+      <div class="sub-hero-title">Réassort intelligent</div>
+      <div class="sub-hero-sub">Calculé sur vos ventes réelles</div>
+    </div>
+    <div class="container">
+      <div class="card" style="text-align:center;padding:34px 22px">
+        <div style="font-size:52px;margin-bottom:12px">✅</div>
+        <div style="font-size:17px;font-weight:800;margin-bottom:8px">${hasSalesData ? 'Aucun réassort nécessaire' : 'Pas encore assez de ventes'}</div>
+        <div style="font-size:13px;color:var(--text-2);line-height:1.55;max-width:300px;margin:0 auto 18px">
+          ${hasSalesData
+            ? 'Tous vos produits ont assez de stock au rythme actuel des ventes. Repassez ici quand le stock baisse.'
+            : 'Enregistrez quelques ventes : BARO apprend le rythme de chaque produit et vous dira quoi recommander, combien, et quand.'}
+        </div>
+        <button class="btn btn-primary" style="width:100%;max-width:280px" onclick="nav('sales')">${IC.plus} Enregistrer une vente</button>
+      </div>
+    </div>`;
+  }
+
+  const card = (it) => {
+    const a = it.a, u = U[it.urgency] || U.soon, qty = _reorderQtyFor(it);
+    const excluded = !!(S.reorderExcluded && S.reorderExcluded[a.id]);
+    const dLeft = it.daysLeft === Infinity ? '—' : Math.max(0, Math.floor(it.daysLeft));
+    const velTxt = it.source === 'seuil' ? 'selon seuil mini'
+      : (it.velocity >= 1 ? `~${Math.round(it.velocity)}/j` : `~${it.velocity.toFixed(1)}/j`);
+    const lineCost = qty * (a.purchasePrice || 0);
+    return `
+    <div class="card" style="padding:0;overflow:hidden;margin-bottom:10px;border:1px solid var(--border);opacity:${excluded?0.5:1}">
+      <div style="display:flex;gap:0">
+        <div style="width:5px;flex-shrink:0;background:${u.color}"></div>
+        <div style="flex:1;min-width:0;padding:12px 13px">
+          <div style="display:flex;align-items:flex-start;gap:10px">
+            <button onclick="toggleReorderItem(${a.id})" title="Inclure / exclure" style="flex-shrink:0;width:22px;height:22px;border-radius:7px;border:2px solid ${excluded?'var(--border)':u.color};background:${excluded?'transparent':u.color};color:#fff;font-size:13px;font-weight:900;cursor:pointer;line-height:1;padding:0;margin-top:1px">${excluded?'':'✓'}</button>
+            <div style="min-width:0;flex:1">
+              <div style="font-size:14.5px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a.name}</div>
+              <div style="font-size:11.5px;color:var(--text-3);margin-top:2px">
+                ${fmtQty(it.stock)} ${a.unit||''} en stock · ${velTxt} · ${dLeft==='—'?'stock dormant':dLeft+' j restants'}
+              </div>
+            </div>
+            <span style="flex-shrink:0;font-size:10.5px;font-weight:800;color:#fff;background:${u.color};padding:4px 9px;border-radius:999px;white-space:nowrap">${u.emoji} ${u.label}</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:11px">
+            <div style="display:flex;align-items:center;gap:0;border:1px solid var(--border);border-radius:10px;overflow:hidden">
+              <button onclick="reorderStep(${a.id},-1,${it.suggested})" style="width:34px;height:34px;border:none;background:var(--gray-1);font-size:18px;font-weight:800;color:var(--text);cursor:pointer;line-height:1">−</button>
+              <div style="min-width:52px;text-align:center;font-size:14px;font-weight:800">${fmtQty(qty)}</div>
+              <button onclick="reorderStep(${a.id},1,${it.suggested})" style="width:34px;height:34px;border:none;background:var(--gray-1);font-size:18px;font-weight:800;color:var(--text);cursor:pointer;line-height:1">+</button>
+              <span style="font-size:11px;color:var(--text-3);padding:0 10px 0 8px">${a.unit||''}</span>
+            </div>
+            <div style="text-align:right">
+              ${lineCost>0?`<div style="font-size:13px;font-weight:800">${fmt(lineCost)} ${sym()}</div><div style="font-size:10px;color:var(--text-3)">coût d'achat</div>`:''}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  };
+
+  return `
+  <div class="sub-hero">
+    <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('home')">${IC.left}</button>
+    <div class="sub-hero-title">Réassort intelligent</div>
+    <div class="sub-hero-sub">Calculé sur vos ventes réelles</div>
+    <div style="margin-top:14px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);border-radius:16px;padding:14px 16px;backdrop-filter:blur(10px)">
+      <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.75);letter-spacing:.4px">À RECOMMANDER MAINTENANT</div>
+      <div style="font-size:30px;font-weight:800;color:#fff;margin-top:3px">${items.length} <span style="font-size:15px;font-weight:600">produit${items.length>1?'s':''}</span></div>
+      <div style="font-size:11.5px;color:rgba(255,255,255,.8);margin-top:3px">Budget d'achat estimé : <b style="color:#fff">${fmt(totalCost)} ${sym()}</b></div>
+    </div>
+  </div>
+  <div class="container" style="padding-bottom:88px">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+      <span style="font-size:12px;color:var(--text-3);font-weight:600;flex-shrink:0">Rythme sur</span>
+      <div style="display:flex;gap:6px;flex:1">${winChips}</div>
+    </div>
+    ${items.map(card).join('')}
+    <div class="card" style="margin-top:6px;background:transparent;border:1px dashed var(--border)">
+      <div style="font-size:11.5px;color:var(--text-3);line-height:1.55">
+        <b style="color:var(--text-2)">Comment c'est calculé —</b> BARO mesure le rythme de vente réel de chaque produit,
+        estime en combien de jours le stock sera épuisé, et propose une quantité couvrant le délai fournisseur + ~1 mois.
+        Ajustez les quantités, décochez ce que vous ne voulez pas, puis partagez la commande.
+      </div>
+    </div>
+  </div>
+  <div style="position:fixed;left:0;right:0;bottom:0;z-index:40;max-width:520px;margin:0 auto;padding:10px 14px calc(10px + env(safe-area-inset-bottom));background:var(--surface,#fff);border-top:1px solid var(--border);display:flex;gap:8px;box-shadow:0 -6px 20px rgba(0,0,0,.06)">
+    <button class="btn" style="flex-shrink:0;padding:12px 14px;font-weight:700;background:var(--gray-1);border:1px solid var(--border)" onclick="copyReorderList()">📋</button>
+    <button class="btn btn-primary" style="flex:1;padding:12px;font-weight:800;background:#25D366" onclick="shareReorderList()">${IC.whatsapp||'📤'} Partager la commande (${selectedCount})</button>
+  </div>`;
+}
+
 // ── Toast ──────────────────────────────────────
 function showToast(msg, type='') {
   if (type === 'success') haptic('success');
@@ -5878,6 +6082,7 @@ function _doRender() {
     detail: vDetail, add: vAdd, 'bulk-add': vBulkAdd, 'bulk-photos': vBulkPhotos, 'add-product': vAddProduct,
     'edit-product': vEditProduct, settings: vSettings, 'metier-guide': vMetierGuide, 'multi-store': vMultiStore, 'ai-chat': vAiChat, documents: vDocuments, 'devis-form': vDevisForm,
     peremptions: vExpiry,
+    reassort: vReorder,
     sova: vSova, spectra: vSpectraEnhanced, clients: vClients, 'add-client': vAddClient,
     'client-detail': vClientDetail, notifications: vNotifications,
     catalog: vCatalog, suppliers: vSuppliers,
@@ -7288,7 +7493,7 @@ function vHome() {
             <div style="font-size:14px;font-weight:700;color:var(--text-1)">${a.name}</div>
             <div style="font-size:11px;color:var(--text-3)">${a.stock} ${a.unit} — ${a.daysLeft} ${t('daysRemaining')}</div>
           </div>
-          <button class="btn btn-primary" style="padding:6px 12px;font-size:11px" onclick="nav('add-order')">
+          <button class="btn btn-primary" style="padding:6px 12px;font-size:11px" onclick="nav('reassort')">
             ${IC.plus} ${a.toOrder} ${a.unit}
           </button>
         </div>
@@ -18374,6 +18579,7 @@ function vMore() {
     { id:'purchase-orders', icon:IC.truck,      label:t('purchaseOrders')||'Commandes', sub:`${pendingOrders} en attente`, color:'#059669', badge: pendingOrders || null },
     { id:'integrations',    icon:IC.link,       label:t('integrations')||'Integrations', sub:`${(S.integrationsConfig||[]).filter(i=>i.connected).length} actif(s)`,  color:'#7c3aed' },
     { id:'suppliers',       icon:IC.package,    label:t('suppliers')||'Fournisseurs',  sub:`${S.suppliers.length} enregistre(s)`, color:'#0891b2' },
+    { id:'reassort',        icon:'🔄',          label:'Réassort intelligent',           sub:'Quoi recommander · calculé sur vos ventes', color:'#0EA5E9', badge: (()=>{try{return _reorderData(S.reorderWindow||30).items.length||null;}catch(_){return null;}})() },
     { id:'peremptions',     icon:'⏳',          label:'Péremptions',                    sub:'Périssables · FEFO · pertes', color:'#EC4899', badge: (S.articles||[]).filter(a=>{const e=getExpiryStatus(a.expiry);return e&&e.days<=30;}).length || null },
     { id:'stock-history',   icon:IC.trending,   label:t('stockHistory')||'Mouvements', sub:`${S.stockMovements.length} entrees`, color:'#334155' },
     { id:'spectra',         icon:IC.camera,     label:'Spectra AI',                    sub:'Scanner & compter',        color:'#6366f1' },
