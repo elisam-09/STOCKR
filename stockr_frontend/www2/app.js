@@ -3051,6 +3051,168 @@ function vCashClose() {
   </div>`;
 }
 
+// ── CRÉDIT CLIENT (le « cahier de dettes » numérique) ──────
+// Central en Afrique de l'Ouest : on vend à crédit, on note qui doit
+// combien, on encaisse plus tard. Suivi de créances, séparé du Bilan
+// (pas de double comptage du chiffre d'affaires).
+function _credits() { if (!Array.isArray(S.credits)) S.credits = JSON.parse(localStorage.getItem('baro_credits') || '[]'); return S.credits; }
+function _saveCredits() { try { localStorage.setItem('baro_credits', JSON.stringify(S.credits || [])); } catch(_){} }
+function _creditPaid(c) { return (c.payments || []).reduce((s, p) => s + (p.amount || 0), 0); }
+function _creditReste(c) { return Math.max(0, (c.amount || 0) - _creditPaid(c)); }
+function _creditsStats() {
+  const list = _credits();
+  const open = list.filter(c => _creditReste(c) > 0);
+  return { totalOwed: open.reduce((s, c) => s + _creditReste(c), 0), openCount: open.length, count: list.length };
+}
+function saveCredit() {
+  const f = S.creditForm || {};
+  const name = (f.name || '').trim();
+  const amount = Math.max(0, parseFloat(f.amount) || 0);
+  if (!name) { showToast('Nom du client requis', 'error'); return; }
+  if (amount <= 0) { showToast('Entrez le montant dû', 'error'); return; }
+  const match = (S.clients || []).find(c => c.name.toLowerCase() === name.toLowerCase());
+  _credits();
+  S.credits.unshift({ id: Date.now(), clientId: match ? match.id : null, clientName: name, phone: (f.phone || (match && match.phone) || '').trim(), amount, payments: [], note: (f.note || '').trim(), date: new Date().toISOString() });
+  _saveCredits();
+  if (typeof logActivity === 'function') logActivity('credit', `Crédit ouvert : ${name} doit ${fmt(amount)} ${sym()}`);
+  showToast('📒 Crédit enregistré', 'success');
+  S.creditForm = {};
+  nav('credits');
+}
+function payCredit(id) {
+  const c = _credits().find(x => String(x.id) === String(id));
+  if (!c) return;
+  const reste = _creditReste(c);
+  const raw = prompt(`Encaisser un remboursement de ${c.clientName}\nReste à payer : ${fmt(reste)} ${sym()}\n\nMontant reçu :`, String(reste));
+  if (raw === null) return;
+  const amt = Math.max(0, Math.min(reste, parseFloat(raw) || 0));
+  if (amt <= 0) { showToast('Montant invalide', 'error'); return; }
+  c.payments = c.payments || [];
+  c.payments.push({ amount: amt, date: new Date().toISOString() });
+  const raste = _creditReste(c);
+  if (raste <= 0) c.settledAt = new Date().toISOString();
+  _saveCredits();
+  if (typeof logActivity === 'function') logActivity('credit', `Remboursement : ${c.clientName} −${fmt(amt)} ${sym()}`);
+  showToast(raste <= 0 ? `✅ ${c.clientName} a tout remboursé` : `💰 ${fmt(amt)} ${sym()} reçu — reste ${fmt(raste)} ${sym()}`, 'success');
+  render();
+}
+function remindCredit(id) {
+  const c = _credits().find(x => String(x.id) === String(id));
+  if (!c) return;
+  const reste = _creditReste(c);
+  const phone = (c.phone || '').replace(/\D/g, '').replace(/^0/, '225');
+  const biz = (S.session && S.session.business) || '';
+  const msg = `Bonjour ${c.clientName} 👋\nPetit rappel amical : il reste ${fmt(reste)} ${sym()} à régler${biz ? ` chez ${biz}` : ''}. Merci !`;
+  if (phone) window.open(`https://wa.me/${phone}?text=` + encodeURIComponent(msg), '_blank');
+  else if (navigator.share) navigator.share({ text: msg }).catch(() => {});
+  else window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+}
+function deleteCredit(id) {
+  const c = _credits().find(x => String(x.id) === String(id));
+  if (!c) return;
+  if (!confirm(`Supprimer le crédit de ${c.clientName} (${fmt(_creditReste(c))} ${sym()} restants) ?`)) return;
+  S.credits = S.credits.filter(x => String(x.id) !== String(id));
+  _saveCredits();
+  showToast('Crédit supprimé', 'info');
+  render();
+}
+function vCreditForm() {
+  const f = S.creditForm || (S.creditForm = {});
+  const names = (S.clients || []).map(c => `<option value="${(c.name||'').replace(/"/g,'&quot;')}">`).join('');
+  return `
+  <div class="sub-hero">
+    <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('credits')">${IC.left}</button>
+    <div class="sub-hero-title">Nouveau crédit</div>
+    <div class="sub-hero-sub">Notez ce qu'un client vous doit</div>
+  </div>
+  <div class="container">
+    <div class="card">
+      <div class="form-group">
+        <label class="form-label">Client</label>
+        <input class="input" list="credit-clients" placeholder="Nom du client" value="${(f.name||'').replace(/"/g,'&quot;')}" oninput="S.creditForm.name=this.value">
+        <datalist id="credit-clients">${names}</datalist>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Téléphone (pour les rappels)</label>
+        <input class="input" type="tel" inputmode="tel" placeholder="ex : 07 00 00 00 00" value="${(f.phone||'').replace(/"/g,'&quot;')}" oninput="S.creditForm.phone=this.value">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Montant dû (${sym()})</label>
+        <input class="input" type="number" inputmode="numeric" min="0" placeholder="ex : 5000" value="${f.amount!=null&&f.amount!==''?f.amount:''}" oninput="S.creditForm.amount=this.value">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Note (facultatif)</label>
+        <input class="input" placeholder="ex : 2 boîtes Doliprane" value="${(f.note||'').replace(/"/g,'&quot;')}" oninput="S.creditForm.note=this.value">
+      </div>
+      <button class="btn btn-primary" style="width:100%;padding:13px;font-weight:800" onclick="saveCredit()">📒 Enregistrer le crédit</button>
+    </div>
+  </div>`;
+}
+function vCredits() {
+  _credits();
+  const tab = S.creditTab || 'open';
+  const st = _creditsStats();
+  const list = (S.credits || []).slice().sort((a, b) => new Date(b.date) - new Date(a.date));
+  const shown = list.filter(c => tab === 'open' ? _creditReste(c) > 0 : _creditReste(c) <= 0);
+
+  const card = (c) => {
+    const reste = _creditReste(c), paid = _creditPaid(c), pct = c.amount > 0 ? Math.round(paid / c.amount * 100) : 100;
+    const settled = reste <= 0;
+    return `
+    <div class="card" style="margin-bottom:10px;padding:13px">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
+        <div style="min-width:0;flex:1">
+          <div style="font-size:15px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.clientName}</div>
+          <div style="font-size:11.5px;color:var(--text-3);margin-top:2px">${c.note ? c.note + ' · ' : ''}${fmtDate(c.date)}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-size:17px;font-weight:800;color:${settled?'var(--success)':'var(--danger)'}">${settled?'Réglé':fmt(reste)+' '+sym()}</div>
+          ${!settled?`<div style="font-size:10px;color:var(--text-3)">sur ${fmt(c.amount)} ${sym()}</div>`:''}
+        </div>
+      </div>
+      ${paid > 0 || !settled ? `
+      <div style="height:5px;background:var(--gray-1);border-radius:3px;margin:10px 0 4px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${settled?'var(--success)':'var(--accent)'};border-radius:3px"></div></div>
+      <div style="font-size:10.5px;color:var(--text-3)">${fmt(paid)} ${sym()} remboursé${pct>0?` (${pct}%)`:''}</div>` : ''}
+      <div style="display:flex;gap:6px;margin-top:11px">
+        ${!settled ? `<button class="btn" style="flex:1;padding:8px 4px;font-size:12px;font-weight:700;background:var(--accent);color:#fff;border:none" onclick="payCredit(${c.id})">💰 Encaisser</button>` : ''}
+        <button class="btn" style="flex:1;padding:8px 4px;font-size:12px;font-weight:700;background:#25D36618;color:#128C4B;border:1px solid #25D36640" onclick="remindCredit(${c.id})">${IC.whatsapp||'💬'} Relancer</button>
+        <button class="btn" style="flex-shrink:0;padding:8px 11px;font-size:12px;background:var(--gray-1);border:1px solid var(--border);color:var(--text-3)" onclick="deleteCredit(${c.id})">🗑️</button>
+      </div>
+    </div>`;
+  };
+
+  return `
+  <div class="sub-hero">
+    <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('clients')">${IC.left}</button>
+    <div class="sub-hero-title">Crédits clients</div>
+    <div class="sub-hero-sub">Le cahier de dettes, en mieux</div>
+    <div style="margin-top:14px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);border-radius:16px;padding:14px 16px;backdrop-filter:blur(10px)">
+      <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.75);letter-spacing:.4px">CE QU'ON VOUS DOIT</div>
+      <div style="font-size:30px;font-weight:800;color:#fff;margin-top:3px">${fmt(st.totalOwed)} <span style="font-size:15px;font-weight:600">${sym()}</span></div>
+      <div style="font-size:11.5px;color:rgba(255,255,255,.8);margin-top:3px">${st.openCount} crédit${st.openCount>1?'s':''} en cours</div>
+    </div>
+  </div>
+  <div class="container">
+    <button class="btn btn-primary" style="width:100%;padding:12px;font-weight:800;margin-bottom:14px" onclick="S.creditForm={};nav('credit-add')">${IC.plus} Nouveau crédit</button>
+    <div style="display:flex;gap:7px;margin-bottom:12px">
+      <button onclick="S.creditTab='open';render()" style="flex:1;padding:8px;border-radius:10px;font-size:12.5px;font-weight:700;cursor:pointer;border:1.5px solid ${tab==='open'?'var(--accent)':'var(--border)'};background:${tab==='open'?'var(--accent)':'transparent'};color:${tab==='open'?'#fff':'var(--text-2)'}">En cours (${st.openCount})</button>
+      <button onclick="S.creditTab='settled';render()" style="flex:1;padding:8px;border-radius:10px;font-size:12.5px;font-weight:700;cursor:pointer;border:1.5px solid ${tab==='settled'?'var(--accent)':'var(--border)'};background:${tab==='settled'?'var(--accent)':'transparent'};color:${tab==='settled'?'#fff':'var(--text-2)'}">Réglés (${st.count-st.openCount})</button>
+    </div>
+    ${shown.length ? shown.map(card).join('') : `
+      <div class="card" style="text-align:center;padding:32px 20px">
+        <div style="font-size:48px;margin-bottom:10px">📒</div>
+        <div style="font-size:15px;font-weight:800;margin-bottom:6px">${tab==='open'?'Aucun crédit en cours':'Aucun crédit réglé'}</div>
+        <div style="font-size:12.5px;color:var(--text-2);line-height:1.5;max-width:280px;margin:0 auto">${tab==='open'?'Quand un client emporte sans payer tout de suite, notez-le ici : vous saurez toujours qui vous doit combien.':'Les crédits entièrement remboursés apparaîtront ici.'}</div>
+      </div>`}
+    <div class="card" style="margin-top:6px;background:transparent;border:1px dashed var(--border)">
+      <div style="font-size:11.5px;color:var(--text-3);line-height:1.55">
+        <b style="color:var(--text-2)">Bon à savoir —</b> ce cahier suit vos <b>créances</b> (ce que les clients vous doivent).
+        Il est séparé du Bilan pour ne pas compter l'argent deux fois. « Encaisser » enregistre un remboursement, « Relancer » envoie un rappel WhatsApp.
+      </div>
+    </div>
+  </div>`;
+}
+
 // ── Toast ──────────────────────────────────────
 function showToast(msg, type='') {
   if (type === 'success') haptic('success');
@@ -6260,6 +6422,7 @@ function _doRender() {
     peremptions: vExpiry,
     reassort: vReorder,
     caisse: vCashClose,
+    credits: vCredits, 'credit-add': vCreditForm,
     sova: vSova, spectra: vSpectraEnhanced, clients: vClients, 'add-client': vAddClient,
     'client-detail': vClientDetail, notifications: vNotifications,
     catalog: vCatalog, suppliers: vSuppliers,
@@ -18758,6 +18921,7 @@ function vMore() {
     { id:'suppliers',       icon:IC.package,    label:t('suppliers')||'Fournisseurs',  sub:`${S.suppliers.length} enregistre(s)`, color:'#0891b2' },
     { id:'reassort',        icon:'🔄',          label:'Réassort intelligent',           sub:'Quoi recommander · calculé sur vos ventes', color:'#0EA5E9', badge: (()=>{try{return _reorderData(S.reorderWindow||30).items.length||null;}catch(_){return null;}})() },
     { id:'caisse',          icon:'🧾',          label:'Clôture de caisse',              sub:'Le Z du soir · comptage du tiroir', color:'#059669' },
+    { id:'credits',         icon:'📒',          label:'Crédits clients',                sub:'Cahier de dettes · qui vous doit', color:'#DC2626', badge: (()=>{try{return _creditsStats().openCount||null;}catch(_){return null;}})() },
     { id:'peremptions',     icon:'⏳',          label:'Péremptions',                    sub:'Périssables · FEFO · pertes', color:'#EC4899', badge: (S.articles||[]).filter(a=>{const e=getExpiryStatus(a.expiry);return e&&e.days<=30;}).length || null },
     { id:'stock-history',   icon:IC.trending,   label:t('stockHistory')||'Mouvements', sub:`${S.stockMovements.length} entrees`, color:'#334155' },
     { id:'spectra',         icon:IC.camera,     label:'Spectra AI',                    sub:'Scanner & compter',        color:'#6366f1' },
