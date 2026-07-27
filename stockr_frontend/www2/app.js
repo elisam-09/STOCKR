@@ -2452,6 +2452,225 @@ function getExpiringArticles() {
     .sort((a, b) => a.expiryInfo.days - b.expiryInfo.days);
 }
 
+// ── CENTRE DE PÉREMPTIONS (FEFO) ───────────────────────────
+// Vital pour pharmacie / restaurant / cosmétiques : voir en un coup d'œil
+// l'argent immobilisé dans du stock qui va périmer, et agir dessus.
+const _EXP_BUCKETS = {
+  expired: { color:'#EF4444', label:'Périmé',   emoji:'⛔' },
+  d7:      { color:'#F97316', label:'≤ 7 j',    emoji:'🔥' },
+  d30:     { color:'#EAB308', label:'≤ 30 j',   emoji:'⏳' },
+  d90:     { color:'#10B981', label:'≤ 90 j',   emoji:'📅' },
+  far:     { color:'var(--text-3)', label:'Plus tard', emoji:'✅' },
+};
+function _expiryBucket(info) {
+  if (!info) return 'far';
+  if (info.status === 'expired') return 'expired';
+  if (info.days <= 7)  return 'd7';
+  if (info.days <= 30) return 'd30';
+  if (info.days <= 90) return 'd90';
+  return 'far';
+}
+// Argent immobilisé dans un article = stock × prix d'achat (coût réellement engagé)
+function _expiryValue(a) {
+  return Math.round((a.stock || 0) * (a.purchasePrice || a.price || 0));
+}
+function _expiryItems() {
+  return S.articles
+    .filter(a => a.expiry)
+    .map(a => {
+      const info = getExpiryStatus(a.expiry);
+      return { ref: a, info, value: _expiryValue(a), bucket: _expiryBucket(info) };
+    })
+    .sort((x, y) => {
+      // Périmés d'abord (les plus en retard en tête), puis par jours restants croissants
+      const kx = x.info ? (x.info.status === 'expired' ? -x.info.days - 1 : x.info.days) : 99999;
+      const ky = y.info ? (y.info.status === 'expired' ? -y.info.days - 1 : y.info.days) : 99999;
+      return kx - ky;
+    });
+}
+function setExpiryFilter(f) { S.expiryFilter = f; render(); }
+
+// Action 1 — SOLDER : baisse réellement le prix de vente pour écouler avant péremption
+function soldeExpiryItem(id) {
+  const a = S.articles.find(x => String(x.id) === String(id));
+  if (!a) return;
+  const cur = a.price || 0;
+  if (cur <= 0) { showToast('Renseignez d\'abord un prix de vente', 'error'); return; }
+  const raw = prompt(`Solder « ${a.name} » pour l'écouler vite.\n\nPrix actuel : ${fmt(cur)} ${sym()}\nRéduction en % (ex : 30) :`, '30');
+  if (raw === null) return;
+  const pct = Math.max(1, Math.min(90, Math.round(parseFloat(raw) || 0)));
+  if (!pct) { showToast('Pourcentage invalide', 'error'); return; }
+  const orig = (a.clearance && a.clearance.originalPrice) || cur;
+  a.price = Math.max(1, Math.round(orig * (1 - pct / 100)));
+  a.clearance = { originalPrice: orig, pct, at: new Date().toISOString() };
+  _saveArticles();
+  if (typeof logActivity === 'function') logActivity('promo', `Solde péremption : ${a.name} −${pct}% → ${fmt(a.price)} ${sym()}`);
+  showToast(`🏷️ ${a.name} soldé −${pct}% → ${fmt(a.price)} ${sym()}`, 'success');
+  render();
+}
+
+// Action 2 — PERTE : retire le stock périmé ET enregistre une perte réelle dans le Bilan
+function writeOffExpiry(id) {
+  const a = S.articles.find(x => String(x.id) === String(id));
+  if (!a) return;
+  const qty = a.stock || 0;
+  if (qty <= 0) { showToast('Le stock est déjà à zéro', 'info'); return; }
+  const loss = Math.round(qty * (a.purchasePrice || a.price || 0));
+  if (!confirm(`Retirer ${fmtQty(qty)} ${a.unit || ''} de « ${a.name} » (périmés) ?\n\n→ Stock ramené à 0\n→ Perte de ${fmt(loss)} ${sym()} enregistrée dans le Bilan`)) return;
+  a.stock = 0;
+  _saveArticles();
+  if (typeof pushMovement === 'function') pushMovement(a.name, 'exit', qty, 'Périmé — retiré du stock');
+  const _exp = { id: Date.now(), label: `Perte périmé — ${a.name} ×${fmtQty(qty)}`, amount: loss, category: 'Perte', date: new Date().toISOString() };
+  S.expenses = S.expenses || [];
+  S.expenses.unshift(_exp);
+  try { localStorage.setItem('baro_expenses', JSON.stringify(S.expenses)); } catch(_){}
+  if (!USE_LOCAL && S.token) {
+    api('POST', '/api/expenses/', { label: _exp.label, amount: loss, category: 'Perte', date: _exp.date })
+      .then(r => { if (r && r.id) { _exp.serverId = r.id; try { localStorage.setItem('baro_expenses', JSON.stringify(S.expenses)); } catch(_){} } })
+      .catch(() => {});
+  }
+  if (typeof logActivity === 'function') logActivity('expense', `Perte périmé : ${a.name} — ${fmt(loss)} ${sym()}`);
+  showToast(`🗑️ ${a.name} retiré — perte de ${fmt(loss)} ${sym()} enregistrée`, 'success');
+  render();
+}
+
+// Action 3 — CORRIGER LA DATE : édite directement la péremption de l'article
+function editExpiryDate(id) {
+  const a = S.articles.find(x => String(x.id) === String(id));
+  if (!a) return;
+  const v = prompt(`Date de péremption de « ${a.name} » (format AAAA-MM-JJ) :`, a.expiry || '');
+  if (v === null) return;
+  const val = v.trim();
+  if (val && !/^\d{4}-\d{2}-\d{2}$/.test(val)) { showToast('Format attendu : AAAA-MM-JJ (ex : 2026-12-31)', 'error'); return; }
+  a.expiry = val;
+  if (val) a.perishable = true;
+  _saveArticles();
+  showToast(val ? `📅 Date mise à jour — ${a.name}` : `Date retirée — ${a.name}`, 'success');
+  render();
+}
+
+function vExpiry() {
+  const filter = S.expiryFilter || 'all';
+  const items = _expiryItems();
+  const cnt = { all: items.length, expired: 0, d7: 0, d30: 0, d90: 0 };
+  items.forEach(it => { if (cnt[it.bucket] !== undefined) cnt[it.bucket]++; });
+  const dangerItems = items.filter(it => it.bucket === 'expired' || it.bucket === 'd7' || it.bucket === 'd30');
+  const atRisk = dangerItems.reduce((s, it) => s + it.value, 0);
+  const expiredValue = items.filter(it => it.bucket === 'expired').reduce((s, it) => s + it.value, 0);
+
+  // ── État vide : aucun article avec date de péremption ──
+  if (items.length === 0) {
+    return `
+    <div class="sub-hero">
+      <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('home')">${IC.left}</button>
+      <div class="sub-hero-title">Péremptions</div>
+      <div class="sub-hero-sub">Ne perdez plus jamais d'argent en produits périmés</div>
+    </div>
+    <div class="container">
+      <div class="card" style="text-align:center;padding:34px 22px">
+        <div style="font-size:52px;margin-bottom:12px">⏳</div>
+        <div style="font-size:17px;font-weight:800;margin-bottom:8px">Aucune date de péremption pour l'instant</div>
+        <div style="font-size:13px;color:var(--text-2);line-height:1.55;max-width:300px;margin:0 auto 18px">
+          Ajoutez une <b>date de péremption</b> à vos produits sensibles (médicaments, aliments, cosmétiques).
+          BARO vous prévient <b>avant</b> qu'ils ne périment, calcule l'argent en jeu et vous aide à agir.
+        </div>
+        <button class="btn btn-primary" style="width:100%;max-width:280px" onclick="nav('pantry')">${IC.package} Ouvrir mon stock</button>
+      </div>
+      <div class="card" style="margin-top:12px;background:linear-gradient(135deg,rgba(14,165,233,.08),transparent);border:1px solid rgba(14,165,233,.25)">
+        <div style="display:flex;gap:11px;align-items:flex-start">
+          <div style="font-size:24px">💊</div>
+          <div style="font-size:12.5px;color:var(--text-2);line-height:1.55">
+            <b style="color:var(--text)">Pour une pharmacie :</b> chaque médicament a une date d'expiration.
+            Cet écran classe vos produits du plus urgent au moins urgent (méthode FEFO) pour vendre en priorité
+            ce qui périme bientôt — et ne jamais délivrer un produit expiré.
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  const chips = [
+    { k: 'all',     c: cnt.all,     color: 'var(--accent)', label: 'Tout' },
+    { k: 'expired', c: cnt.expired, color: _EXP_BUCKETS.expired.color, label: _EXP_BUCKETS.expired.label },
+    { k: 'd7',      c: cnt.d7,      color: _EXP_BUCKETS.d7.color,      label: _EXP_BUCKETS.d7.label },
+    { k: 'd30',     c: cnt.d30,     color: _EXP_BUCKETS.d30.color,     label: _EXP_BUCKETS.d30.label },
+    { k: 'd90',     c: cnt.d90,     color: _EXP_BUCKETS.d90.color,     label: _EXP_BUCKETS.d90.label },
+  ];
+  let shown = filter === 'all' ? items : items.filter(it => it.bucket === filter);
+
+  const card = (it) => {
+    const a = it.ref, b = _EXP_BUCKETS[it.bucket], info = it.info;
+    const dayTxt = !info ? '' :
+      (info.status === 'expired' ? `Périmé depuis ${info.days} j` :
+       info.days === 0 ? 'Expire aujourd\'hui' :
+       `Expire dans ${info.days} j`);
+    const soldable = (a.price || 0) > 0;
+    return `
+    <div class="card" style="padding:0;overflow:hidden;margin-bottom:10px;border:1px solid var(--border)">
+      <div style="display:flex;gap:0">
+        <div style="width:5px;flex-shrink:0;background:${b.color}"></div>
+        <div style="flex:1;min-width:0;padding:12px 13px">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
+            <div style="min-width:0;flex:1">
+              <div style="font-size:14.5px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a.name}</div>
+              <div style="font-size:11.5px;color:var(--text-3);margin-top:2px">
+                ${a.category ? a.category + ' · ' : ''}${fmtQty(a.stock || 0)} ${a.unit || ''} en stock
+              </div>
+            </div>
+            <span style="flex-shrink:0;font-size:11px;font-weight:800;color:#fff;background:${b.color};padding:4px 9px;border-radius:999px;white-space:nowrap">${b.emoji} ${dayTxt}</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap">
+            <span style="font-size:11.5px;color:var(--text-3)">📆 ${fmtDate(a.expiry)}</span>
+            ${it.value > 0 ? `<span style="font-size:11.5px;font-weight:700;color:${it.bucket==='expired'||it.bucket==='d7'?b.color:'var(--text-2)'}">≈ ${fmt(it.value)} ${sym()} en jeu</span>` : ''}
+            ${a.clearance ? `<span style="font-size:10.5px;font-weight:800;color:#fff;background:#EC4899;padding:2px 7px;border-radius:6px">SOLDÉ −${a.clearance.pct}%</span>` : ''}
+          </div>
+          <div style="display:flex;gap:6px;margin-top:11px">
+            <button class="btn" style="flex:1;padding:8px 4px;font-size:12px;font-weight:700;background:var(--gray-1);border:1px solid var(--border);color:${soldable?'var(--text)':'var(--text-3)'}" onclick="soldeExpiryItem(${a.id})">🏷️ Solder</button>
+            <button class="btn" style="flex:1;padding:8px 4px;font-size:12px;font-weight:700;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3);color:#EF4444" onclick="writeOffExpiry(${a.id})">🗑️ Perte</button>
+            <button class="btn" style="flex:1;padding:8px 4px;font-size:12px;font-weight:700;background:var(--gray-1);border:1px solid var(--border);color:var(--text)" onclick="editExpiryDate(${a.id})">📅 Date</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  };
+
+  return `
+  <div class="sub-hero">
+    <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('home')">${IC.left}</button>
+    <div class="sub-hero-title">Péremptions</div>
+    <div class="sub-hero-sub">FEFO — le plus urgent d'abord</div>
+    <div style="margin-top:14px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);border-radius:16px;padding:14px 16px;backdrop-filter:blur(10px)">
+      <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.75);letter-spacing:.4px">ARGENT À RÉCUPÉRER AVANT PÉREMPTION</div>
+      <div style="font-size:30px;font-weight:800;color:#fff;margin-top:3px">${fmt(atRisk)} <span style="font-size:15px;font-weight:600">${sym()}</span></div>
+      <div style="font-size:11.5px;color:rgba(255,255,255,.8);margin-top:3px">
+        ${dangerItems.length} produit${dangerItems.length>1?'s':''} à écouler sous 30 j${expiredValue>0?` · <span style="color:#FCA5A5;font-weight:700">${fmt(expiredValue)} ${sym()} déjà périmés</span>`:''}
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div style="display:flex;gap:7px;overflow-x:auto;padding:2px 0 10px;-webkit-overflow-scrolling:touch">
+      ${chips.map(ch => `
+        <button onclick="setExpiryFilter('${ch.k}')" style="flex-shrink:0;display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:999px;font-size:12.5px;font-weight:700;cursor:pointer;border:1.5px solid ${filter===ch.k?ch.color:'var(--border)'};background:${filter===ch.k?ch.color:'var(--surface,#fff)'};color:${filter===ch.k?'#fff':'var(--text-2)'}">
+          ${ch.label}
+          <span style="font-size:11px;font-weight:800;background:${filter===ch.k?'rgba(255,255,255,.25)':'var(--gray-1)'};color:${filter===ch.k?'#fff':'var(--text-3)'};padding:1px 7px;border-radius:999px;min-width:18px;text-align:center">${ch.c}</span>
+        </button>`).join('')}
+    </div>
+    ${shown.length === 0 ? `
+      <div class="card" style="text-align:center;padding:26px 18px;color:var(--text-3)">
+        <div style="font-size:34px;margin-bottom:8px">✅</div>
+        <div style="font-size:14px;font-weight:700;color:var(--text-2)">Rien dans cette catégorie</div>
+      </div>` :
+      shown.map(card).join('')}
+    <div class="card" style="margin-top:6px;background:transparent;border:1px dashed var(--border)">
+      <div style="font-size:11.5px;color:var(--text-3);line-height:1.55">
+        <b style="color:var(--text-2)">Comment ça marche —</b> « Solder » baisse réellement le prix de vente pour écouler vite.
+        « Perte » retire le stock périmé et l'enregistre comme perte dans votre Bilan (bénéfice net).
+        « Date » corrige la péremption. Les produits sont classés du plus urgent au moins urgent.
+      </div>
+    </div>
+  </div>`;
+}
+
 // ── Toast ──────────────────────────────────────
 function showToast(msg, type='') {
   if (type === 'success') haptic('success');
@@ -5658,6 +5877,7 @@ function _doRender() {
     sales: vSales, financial: vFinancial,
     detail: vDetail, add: vAdd, 'bulk-add': vBulkAdd, 'bulk-photos': vBulkPhotos, 'add-product': vAddProduct,
     'edit-product': vEditProduct, settings: vSettings, 'metier-guide': vMetierGuide, 'multi-store': vMultiStore, 'ai-chat': vAiChat, documents: vDocuments, 'devis-form': vDevisForm,
+    peremptions: vExpiry,
     sova: vSova, spectra: vSpectraEnhanced, clients: vClients, 'add-client': vAddClient,
     'client-detail': vClientDetail, notifications: vNotifications,
     catalog: vCatalog, suppliers: vSuppliers,
@@ -7022,7 +7242,7 @@ function vHome() {
       const expiring = getExpiringArticles();
       if (expiring.length === 0) return '';
       return `
-      <div class="alert-banner expiry-alert" onclick="nav('pantry')">
+      <div class="alert-banner expiry-alert" onclick="nav('peremptions')">
         <div class="alert-ico" style="background:rgba(245,158,11,.12);color:var(--warning)">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         </div>
@@ -7405,7 +7625,7 @@ function vPantry() {
         <div style="font-size:14px;font-weight:800;color:${lowCount>0?'var(--warning)':'var(--text-3)'}">${lowCount}</div>
         <div style="font-size:9px;color:var(--text-3);margin-top:1px;font-weight:600;letter-spacing:.3px">FAIBLE</div>
       </div>
-      <div style="text-align:center;padding:8px 4px;background:${expCount>0?'rgba(236,72,153,0.08)':'var(--gray-1)'};border-radius:8px;border:1px solid ${expCount>0?'rgba(236,72,153,0.25)':'var(--border)'};cursor:pointer" onclick="S.filter='expiring';render()">
+      <div style="text-align:center;padding:8px 4px;background:${expCount>0?'rgba(236,72,153,0.08)':'var(--gray-1)'};border-radius:8px;border:1px solid ${expCount>0?'rgba(236,72,153,0.25)':'var(--border)'};cursor:pointer" onclick="nav('peremptions')">
         <div style="font-size:14px;font-weight:800;color:${expCount>0?'#EC4899':'var(--text-3)'}">${expCount}</div>
         <div style="font-size:9px;color:var(--text-3);margin-top:1px;font-weight:600;letter-spacing:.3px">PÉREMPTION</div>
       </div>
@@ -18154,6 +18374,7 @@ function vMore() {
     { id:'purchase-orders', icon:IC.truck,      label:t('purchaseOrders')||'Commandes', sub:`${pendingOrders} en attente`, color:'#059669', badge: pendingOrders || null },
     { id:'integrations',    icon:IC.link,       label:t('integrations')||'Integrations', sub:`${(S.integrationsConfig||[]).filter(i=>i.connected).length} actif(s)`,  color:'#7c3aed' },
     { id:'suppliers',       icon:IC.package,    label:t('suppliers')||'Fournisseurs',  sub:`${S.suppliers.length} enregistre(s)`, color:'#0891b2' },
+    { id:'peremptions',     icon:'⏳',          label:'Péremptions',                    sub:'Périssables · FEFO · pertes', color:'#EC4899', badge: (S.articles||[]).filter(a=>{const e=getExpiryStatus(a.expiry);return e&&e.days<=30;}).length || null },
     { id:'stock-history',   icon:IC.trending,   label:t('stockHistory')||'Mouvements', sub:`${S.stockMovements.length} entrees`, color:'#334155' },
     { id:'spectra',         icon:IC.camera,     label:'Spectra AI',                    sub:'Scanner & compter',        color:'#6366f1' },
     { id:'catalog',         icon:IC.pdf,        label:t('catalog')||'Catalogue',       sub:'WhatsApp & PDF',           color:'#16a34a' },
