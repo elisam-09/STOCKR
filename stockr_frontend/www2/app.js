@@ -2875,6 +2875,182 @@ function vReorder() {
   </div>`;
 }
 
+// ── CLÔTURE DE CAISSE (le « Z » du soir) ───────────────────
+// Rituel de tout commerce : en fin de journée, on totalise les ventes,
+// on ventile par mode de paiement, et on compte le tiroir pour vérifier.
+function _pmLabel(k) {
+  return ({ cash:'Espèces', wave:'Wave', orange:'Orange Money', moov:'Moov Money', mtn:'MTN MoMo', card:'Carte', mobile:'Mobile Money' })[k] || (k ? k.charAt(0).toUpperCase() + k.slice(1) : 'Autre');
+}
+function _pmEmoji(k) {
+  return ({ cash:'💵', wave:'🌊', orange:'🟠', moov:'🔵', mtn:'🟡', card:'💳', mobile:'📱' })[k] || '💰';
+}
+function _cashCloseData(dateStr) {
+  const day = dateStr ? new Date(dateStr + 'T00:00:00') : new Date();
+  const ds = day.toDateString();
+  const sales = (S.sales || []).filter(s => new Date(s.date).toDateString() === ds);
+  const expenses = (S.expenses || []).filter(e => new Date(e.date).toDateString() === ds);
+  const byMethod = {}; let totalCA = 0, cashSales = 0;
+  sales.forEach(s => {
+    const pm = s.paymentMethod || 'cash';
+    byMethod[pm] = (byMethod[pm] || 0) + (s.total || 0);
+    totalCA += s.total || 0;
+    if (pm === 'cash') cashSales += s.total || 0;
+  });
+  const totalExp = expenses.reduce((a, e) => a + (e.amount || 0), 0);
+  const opening = Number(S.cashOpeningFloat) || 0;
+  const expectedCash = opening + cashSales - totalExp;
+  const totalProfit = sales.reduce((a, s) => a + (s.profit || 0), 0);
+  return { ds, day, sales, expenses, byMethod, totalCA, totalProfit, cashSales, totalExp, opening, expectedCash, count: sales.length };
+}
+function _todayISO() { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
+function setCashDate(v) { S.cashCloseDate = v; render(); }
+function _cashRecalc() {
+  const d = _cashCloseData(S.cashCloseDate || _todayISO());
+  const exp = document.getElementById('cash-expected'); if (exp) exp.textContent = fmt(d.expectedCash) + ' ' + sym();
+  const counted = Number(S.cashCounted);
+  const vEl = document.getElementById('cash-variance');
+  if (vEl) {
+    if (S.cashCounted === '' || S.cashCounted == null || isNaN(counted)) { vEl.textContent = '—'; vEl.style.color = 'var(--text-3)'; }
+    else { const varc = Math.round(counted - d.expectedCash); vEl.textContent = (varc > 0 ? '+' : '') + fmt(varc) + ' ' + sym(); vEl.style.color = varc === 0 ? 'var(--success)' : (varc > 0 ? 'var(--accent)' : 'var(--danger)'); }
+  }
+}
+function saveCashClose() {
+  if (!Array.isArray(S.cashCloses)) S.cashCloses = JSON.parse(localStorage.getItem('baro_cashcloses') || '[]');
+  const dstr = S.cashCloseDate || _todayISO();
+  const d = _cashCloseData(dstr);
+  const counted = Number(S.cashCounted);
+  if (S.cashCounted === '' || S.cashCounted == null || isNaN(counted)) { showToast('Entrez le montant compté dans le tiroir', 'error'); return; }
+  const variance = Math.round(counted - d.expectedCash);
+  const rec = { id: Date.now(), date: d.day.toISOString(), totalCA: d.totalCA, totalProfit: d.totalProfit, count: d.count, byMethod: d.byMethod, cashSales: d.cashSales, expenses: d.totalExp, opening: d.opening, counted, expected: d.expectedCash, variance, at: new Date().toISOString(), by: (S.session && S.session.name) || '' };
+  S.cashCloses.unshift(rec);
+  try { localStorage.setItem('baro_cashcloses', JSON.stringify(S.cashCloses)); } catch(_){}
+  if (typeof logActivity === 'function') logActivity('cashclose', `Clôture de caisse — CA ${fmt(d.totalCA)} ${sym()}, écart ${variance >= 0 ? '+' : ''}${fmt(variance)} ${sym()}`);
+  showToast(variance === 0 ? '✅ Caisse clôturée — tiroir juste !' : `✅ Caisse clôturée — écart ${variance > 0 ? '+' : ''}${fmt(variance)} ${sym()}`, 'success');
+  S.cashCounted = '';
+  render();
+}
+function _cashCloseMessage() {
+  const d = _cashCloseData(S.cashCloseDate || _todayISO());
+  const biz = (S.session && S.session.business) || 'Ma boutique';
+  const counted = Number(S.cashCounted);
+  const lines = [`🧾 Clôture de caisse — ${biz}`, fmtDate(d.day.toISOString()), ''];
+  lines.push(`Ventes : ${fmt(d.totalCA)} ${sym()} (${d.count})`);
+  Object.keys(d.byMethod).forEach(pm => lines.push(`  ${_pmEmoji(pm)} ${_pmLabel(pm)} : ${fmt(d.byMethod[pm])} ${sym()}`));
+  lines.push('', `Fond d'ouverture : ${fmt(d.opening)} ${sym()}`);
+  lines.push(`Ventes espèces : ${fmt(d.cashSales)} ${sym()}`);
+  lines.push(`Dépenses : −${fmt(d.totalExp)} ${sym()}`);
+  lines.push(`Espèces attendues : ${fmt(d.expectedCash)} ${sym()}`);
+  if (!(S.cashCounted === '' || S.cashCounted == null || isNaN(counted))) {
+    const varc = Math.round(counted - d.expectedCash);
+    lines.push(`Espèces comptées : ${fmt(counted)} ${sym()}`);
+    lines.push(`Écart : ${varc > 0 ? '+' : ''}${fmt(varc)} ${sym()}${varc === 0 ? ' ✅' : ''}`);
+  }
+  return lines.join('\n');
+}
+function shareCashClose() {
+  const msg = _cashCloseMessage();
+  if (navigator.share) navigator.share({ title: 'Clôture de caisse', text: msg }).catch(() => {});
+  else window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+}
+
+function vCashClose() {
+  if (!Array.isArray(S.cashCloses)) S.cashCloses = JSON.parse(localStorage.getItem('baro_cashcloses') || '[]');
+  if (!S.cashCloseDate) S.cashCloseDate = _todayISO();
+  const d = _cashCloseData(S.cashCloseDate);
+  const isToday = S.cashCloseDate === _todayISO();
+  const methods = Object.keys(d.byMethod).sort((a, b) => d.byMethod[b] - d.byMethod[a]);
+  const alreadyClosed = (S.cashCloses || []).find(c => new Date(c.date).toDateString() === d.ds);
+
+  return `
+  <div class="sub-hero">
+    <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('financial')">${IC.left}</button>
+    <div class="sub-hero-title">Clôture de caisse</div>
+    <div class="sub-hero-sub">Le « Z » de fin de journée</div>
+    <div style="margin-top:14px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);border-radius:16px;padding:14px 16px;backdrop-filter:blur(10px)">
+      <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.75);letter-spacing:.4px">RECETTES DU JOUR</div>
+      <div style="font-size:30px;font-weight:800;color:#fff;margin-top:3px">${fmt(d.totalCA)} <span style="font-size:15px;font-weight:600">${sym()}</span></div>
+      <div style="font-size:11.5px;color:rgba(255,255,255,.8);margin-top:3px">${d.count} vente${d.count>1?'s':''} · bénéfice ${fmt(d.totalProfit)} ${sym()}</div>
+    </div>
+  </div>
+  <div class="container">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+      <span style="font-size:12px;font-weight:700;color:var(--text-2);flex-shrink:0">Journée</span>
+      <input class="input" type="date" value="${S.cashCloseDate}" max="${_todayISO()}" onchange="setCashDate(this.value)" style="flex:1">
+      ${isToday?'<span style="font-size:11px;font-weight:700;color:var(--success);background:rgba(16,185,129,.12);padding:4px 10px;border-radius:999px;flex-shrink:0">Aujourd\'hui</span>':''}
+    </div>
+
+    ${alreadyClosed ? `
+    <div class="card" style="margin-bottom:12px;background:linear-gradient(135deg,rgba(16,185,129,.10),transparent);border:1px solid rgba(16,185,129,.3)">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="font-size:22px">✅</div>
+        <div style="flex:1;font-size:12.5px;color:var(--text-2)">Caisse déjà clôturée à ${new Date(alreadyClosed.at).toLocaleTimeString('fr',{hour:'2-digit',minute:'2-digit'})} — écart ${alreadyClosed.variance>0?'+':''}${fmt(alreadyClosed.variance)} ${sym()}. Vous pouvez re-clôturer.</div>
+      </div>
+    </div>` : ''}
+
+    <div class="card" style="margin-bottom:12px">
+      <div class="card-title">💳 Ventes par mode de paiement</div>
+      ${methods.length ? methods.map((pm,i) => {
+        const pct = d.totalCA>0 ? Math.round(d.byMethod[pm]/d.totalCA*100) : 0;
+        return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;${i>0?'border-top:1px solid var(--border)':''}">
+          <div style="font-size:18px;flex-shrink:0">${_pmEmoji(pm)}</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:13px;font-weight:700">${_pmLabel(pm)}</div>
+            <div style="height:5px;background:var(--gray-1);border-radius:3px;margin-top:4px;overflow:hidden"><div style="height:100%;width:${pct}%;background:var(--accent);border-radius:3px"></div></div>
+          </div>
+          <div style="text-align:right;flex-shrink:0"><div style="font-size:13px;font-weight:800">${fmt(d.byMethod[pm])}</div><div style="font-size:10px;color:var(--text-3)">${pct}%</div></div>
+        </div>`;
+      }).join('') : `<div style="font-size:13px;color:var(--text-3);padding:6px 0">Aucune vente ce jour.</div>`}
+    </div>
+
+    <div class="card" style="margin-bottom:12px">
+      <div class="card-title">💵 Comptage du tiroir</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 0">
+        <label style="font-size:13px;color:var(--text-2)">Fond d'ouverture</label>
+        <input class="input" type="number" inputmode="numeric" min="0" placeholder="0" value="${S.cashOpeningFloat!=null&&S.cashOpeningFloat!==''?S.cashOpeningFloat:''}" oninput="S.cashOpeningFloat=this.value;_cashRecalc()" style="width:130px;text-align:right">
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-top:1px solid var(--border);font-size:13px">
+        <span style="color:var(--text-2)">+ Ventes espèces</span><span style="font-weight:700">${fmt(d.cashSales)} ${sym()}</span>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;font-size:13px">
+        <span style="color:var(--text-2)">− Dépenses du jour</span><span style="font-weight:700;color:var(--danger)">${fmt(d.totalExp)} ${sym()}</span>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-top:2px solid var(--border);font-size:14px">
+        <span style="font-weight:700">= Espèces attendues</span><span id="cash-expected" style="font-weight:800">${fmt(d.expectedCash)} ${sym()}</span>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0;border-top:1px solid var(--border)">
+        <label style="font-size:13px;font-weight:700">Espèces comptées</label>
+        <input class="input" type="number" inputmode="numeric" min="0" placeholder="compter le tiroir" value="${S.cashCounted!=null&&S.cashCounted!==''?S.cashCounted:''}" oninput="S.cashCounted=this.value;_cashRecalc()" style="width:150px;text-align:right">
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 12px;margin-top:6px;background:var(--gray-1);border-radius:10px">
+        <span style="font-size:13px;font-weight:800">Écart de caisse</span>
+        <span id="cash-variance" style="font-size:16px;font-weight:800;color:var(--text-3)">—</span>
+      </div>
+      <div style="font-size:10.5px;color:var(--text-3);margin-top:8px;line-height:1.5">Un écart positif = plus d'espèces que prévu, négatif = il en manque. (On suppose les dépenses payées en espèces.)</div>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-bottom:16px">
+      <button class="btn" style="flex-shrink:0;padding:13px 16px;font-weight:700;background:var(--gray-1);border:1px solid var(--border)" onclick="shareCashClose()">📤</button>
+      <button class="btn btn-primary" style="flex:1;padding:13px;font-weight:800" onclick="saveCashClose()">🔒 Clôturer la caisse</button>
+    </div>
+
+    ${(S.cashCloses||[]).length ? `
+    <div class="section-hd"><div class="section-lbl">Historique des clôtures</div></div>
+    ${(S.cashCloses||[]).slice(0,10).map(c => `
+      <div class="card" style="margin-bottom:6px;padding:11px 13px">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+          <div style="min-width:0">
+            <div style="font-size:13px;font-weight:800">${fmtDate(c.date)}</div>
+            <div style="font-size:11px;color:var(--text-3)">CA ${fmt(c.totalCA)} ${sym()} · ${c.count} vente${c.count>1?'s':''}${c.by?' · '+c.by:''}</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0">
+            <div style="font-size:13px;font-weight:800;color:${c.variance===0?'var(--success)':(c.variance>0?'var(--accent)':'var(--danger)')}">${c.variance>0?'+':''}${fmt(c.variance)} ${sym()}</div>
+            <div style="font-size:10px;color:var(--text-3)">écart</div>
+          </div>
+        </div>
+      </div>`).join('')}` : ''}
+  </div>`;
+}
+
 // ── Toast ──────────────────────────────────────
 function showToast(msg, type='') {
   if (type === 'success') haptic('success');
@@ -6083,6 +6259,7 @@ function _doRender() {
     'edit-product': vEditProduct, settings: vSettings, 'metier-guide': vMetierGuide, 'multi-store': vMultiStore, 'ai-chat': vAiChat, documents: vDocuments, 'devis-form': vDevisForm,
     peremptions: vExpiry,
     reassort: vReorder,
+    caisse: vCashClose,
     sova: vSova, spectra: vSpectraEnhanced, clients: vClients, 'add-client': vAddClient,
     'client-detail': vClientDetail, notifications: vNotifications,
     catalog: vCatalog, suppliers: vSuppliers,
@@ -18580,6 +18757,7 @@ function vMore() {
     { id:'integrations',    icon:IC.link,       label:t('integrations')||'Integrations', sub:`${(S.integrationsConfig||[]).filter(i=>i.connected).length} actif(s)`,  color:'#7c3aed' },
     { id:'suppliers',       icon:IC.package,    label:t('suppliers')||'Fournisseurs',  sub:`${S.suppliers.length} enregistre(s)`, color:'#0891b2' },
     { id:'reassort',        icon:'🔄',          label:'Réassort intelligent',           sub:'Quoi recommander · calculé sur vos ventes', color:'#0EA5E9', badge: (()=>{try{return _reorderData(S.reorderWindow||30).items.length||null;}catch(_){return null;}})() },
+    { id:'caisse',          icon:'🧾',          label:'Clôture de caisse',              sub:'Le Z du soir · comptage du tiroir', color:'#059669' },
     { id:'peremptions',     icon:'⏳',          label:'Péremptions',                    sub:'Périssables · FEFO · pertes', color:'#EC4899', badge: (S.articles||[]).filter(a=>{const e=getExpiryStatus(a.expiry);return e&&e.days<=30;}).length || null },
     { id:'stock-history',   icon:IC.trending,   label:t('stockHistory')||'Mouvements', sub:`${S.stockMovements.length} entrees`, color:'#334155' },
     { id:'spectra',         icon:IC.camera,     label:'Spectra AI',                    sub:'Scanner & compter',        color:'#6366f1' },
