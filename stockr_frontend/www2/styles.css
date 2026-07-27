@@ -399,7 +399,8 @@ body.view-entering .anim { animation: fadeUp 0.3s cubic-bezier(0.2, 0, 0, 1) bot
 }
 .hero-btn:active { background: rgba(255,255,255,0.2); transform: scale(0.92); }
 
-.hero-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; position: relative; z-index: 1; }
+.hero-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; position: relative; z-index: 5; }
+.hero-stat { position: relative; z-index: 5; }
 .hero-stat  {
   background: linear-gradient(160deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.05) 100%);
   backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
@@ -1363,25 +1364,28 @@ body.dark .sk {
 /* ── Receipt banner ─────────────────────────── */
 .receipt-banner {
   position: fixed;
-  bottom: 84px; left: 50%;
-  transform: translateX(-50%);
-  width: calc(100% - 32px);
-  max-width: 398px;
+  bottom: calc(80px + env(safe-area-inset-bottom));
+  left: 0; right: 0;
+  margin-left: auto; margin-right: auto;
+  width: calc(100% - 24px);
+  max-width: 406px;
+  box-sizing: border-box;
   background: #1e1b4b;
   border-radius: var(--r-lg);
-  padding: 14px 16px;
+  padding: 12px 14px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
+  flex-wrap: wrap;
   z-index: 500;
   box-shadow: 0 8px 32px rgba(79,70,229,0.35);
   animation: fadeUp 0.25s ease both;
 }
-.receipt-banner-left  { flex: 1; }
+.receipt-banner-left  { flex: 1 1 auto; min-width: 110px; }
 .receipt-banner-title { font-size: 11px; color: rgba(255,255,255,0.6); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
 .receipt-banner-total { font-size: 18px; font-weight: 800; color: #fff; }
-.receipt-banner-btns  { display: flex; gap: 6px; align-items: center; }
+.receipt-banner-btns  { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; justify-content: flex-end; flex-shrink: 0; }
 .rb-btn {
   display: flex; align-items: center; gap: 5px;
   padding: 7px 11px;

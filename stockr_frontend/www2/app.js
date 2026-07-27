@@ -18823,14 +18823,33 @@ function vMultiStore() {
     <div class="sub-hero-sub">${locs.length} emplacement(s) · ${fmt(totCA)} ${sym()} · ${totNb} vente(s)</div>
   </div>
   <div class="container">
-    ${locs.length === 0 ? `
+    ${S.locationAdd ? `
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-title">➕ Nouvel emplacement</div>
+        <input class="input" id="loc-name" type="text" placeholder="Nom (ex : Boutique du centre)" style="margin-bottom:8px">
+        <input class="input" id="loc-address" type="text" placeholder="Adresse (facultatif)" style="margin-bottom:8px">
+        <div style="display:flex;gap:8px;margin-bottom:10px">
+          <input class="input" id="loc-phone" type="tel" placeholder="Téléphone" style="flex:1;min-width:0">
+          <select class="input" id="loc-type" style="flex:1;min-width:0">
+            <option value="store">Boutique</option>
+            <option value="warehouse">Entrepôt</option>
+            <option value="popup">Pop-up / Stand</option>
+          </select>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-primary" style="flex:1;font-weight:700" onclick="addLocation()">Créer l'emplacement</button>
+          <button class="btn btn-ghost" onclick="S.locationAdd=false;render()">Annuler</button>
+        </div>
+      </div>` : ''}
+    ${locs.length > 0 && !S.locationAdd ? `<button class="btn btn-primary" style="width:100%;margin-bottom:12px;font-weight:700" onclick="S.locationAdd=true;render()">＋ Ajouter un emplacement</button>` : ''}
+    ${locs.length === 0 && !S.locationAdd ? `
       <div class="card" style="text-align:center;padding:36px 20px">
         <div style="font-size:46px;margin-bottom:10px">🏬</div>
         <div style="font-size:16px;font-weight:800;color:var(--text-1);margin-bottom:6px">Gérez plusieurs points de vente</div>
         <div style="font-size:13px;color:var(--text-3);line-height:1.55;margin-bottom:16px">Boutique du centre, comptoir du quartier, entrepôt… Créez vos emplacements : BARO compare leur chiffre d'affaires, leur stock et leurs meilleures ventes, ici, en un coup d'œil.</div>
-        <button class="btn btn-primary" style="width:auto;padding:11px 22px" onclick="nav('pantry')">＋ Créer un emplacement</button>
+        <button class="btn btn-primary" style="width:auto;padding:11px 22px" onclick="S.locationAdd=true;render()">＋ Créer un emplacement</button>
       </div>
-    ` : `
+    ` : locs.length === 0 ? '' : `
       <div class="filter-row" style="margin-bottom:12px">
         ${['today','week','month','all'].map(p => `<button class="filter-chip ${period===p?'active':''}" onclick="S.msPeriod='${p}';render()">${PLABEL[p]}</button>`).join('')}
       </div>
