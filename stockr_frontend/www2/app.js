@@ -20219,6 +20219,28 @@ h1,h2,.header h1,.pc-name,.cartbar-total,.ck h2{font-family:${headingStack}}
 .topnav-m::-webkit-scrollbar{display:none}
 .topnav-m a{color:#555;text-decoration:none;font-size:13px;font-weight:600;white-space:nowrap}
 @media(min-width:680px){.topnav-m{display:none}}
+/* Hamburger + tiroir premium */
+.hamb{flex:0 0 auto;width:40px;height:40px;border-radius:12px;border:1px solid rgba(0,0,0,.08);background:#fff;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;transition:transform .15s}
+.hamb:active{transform:scale(.9)}
+.hamb span{display:block;width:18px;height:2px;border-radius:2px;background:#2a2a2a;transition:transform .3s cubic-bezier(.2,0,0,1),opacity .2s}
+body.drawer-open .hamb span:nth-child(1){transform:translateY(6px) rotate(45deg)}
+body.drawer-open .hamb span:nth-child(2){opacity:0}
+body.drawer-open .hamb span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+@media(min-width:680px){.hamb{display:none}}
+.drawer-back{position:fixed;inset:0;z-index:70;background:rgba(10,10,20,.44);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);opacity:0;visibility:hidden;transition:opacity .3s,visibility .3s}
+body.drawer-open .drawer-back{opacity:1;visibility:visible}
+.shop-drawer{position:fixed;top:0;right:0;bottom:0;z-index:71;width:82%;max-width:320px;background:#fff;box-shadow:-18px 0 50px -14px rgba(0,0,0,.32);transform:translateX(100%);transition:transform .36s cubic-bezier(.22,1,.36,1);display:flex;flex-direction:column;padding:18px 20px calc(20px + env(safe-area-inset-bottom));overflow-y:auto}
+body.drawer-open .shop-drawer{transform:none}
+.drawer-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.drawer-title{font-weight:800;font-size:16px;letter-spacing:-.3px;color:#111;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.drawer-x{flex:0 0 auto;width:34px;height:34px;border-radius:10px;border:1px solid rgba(0,0,0,.08);background:#fff;font-size:15px;cursor:pointer;color:#555}
+.drawer-nav{display:flex;flex-direction:column;margin-top:6px}
+.drawer-nav a{display:flex;align-items:center;gap:8px;padding:15px 4px;font-size:16.5px;font-weight:700;color:#1a1a1a;text-decoration:none;border-bottom:1px solid rgba(0,0,0,.06);transition:color .15s,padding-left .18s}
+.drawer-nav a:hover{color:${tc};padding-left:8px}
+.drawer-soc{display:flex;gap:10px;margin-top:18px}
+.drawer-soc .ft-soc{width:40px;height:40px;border-radius:12px;border:1px solid rgba(0,0,0,.08);display:flex;align-items:center;justify-content:center;color:#444;text-decoration:none}
+.drawer-cur{margin-top:auto;padding-top:18px;font-size:12px;font-weight:700;color:#888}
+@media(prefers-reduced-motion:reduce){.shop-drawer,.drawer-back,.hamb span{transition:none}}
 .cart-btn{position:relative;width:40px;height:40px;border-radius:12px;border:1px solid rgba(0,0,0,.08);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .15s}
 .cart-btn:active{transform:scale(.92)}
 .cart-badge{position:absolute;top:-5px;right:-5px;min-width:18px;height:18px;border-radius:9px;background:${tc};color:#fff;font-size:10px;font-weight:800;display:none;align-items:center;justify-content:center;padding:0 4px;box-shadow:0 2px 6px ${tc}66}
@@ -20248,6 +20270,10 @@ h1,h2,.header h1,.pc-name,.cartbar-total,.ck h2{font-family:${headingStack}}
 .hero-cta{display:inline-block;margin-top:20px;position:relative;z-index:1;background:#fff;color:${tc};border:none;border-radius:999px;padding:13px 28px;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;box-shadow:0 10px 30px -8px rgba(0,0,0,.35);transition:transform .15s cubic-bezier(.2,0,0,1),box-shadow .15s}
 .hero-cta:hover{transform:translateY(-2px);box-shadow:0 16px 38px -10px rgba(0,0,0,.45)}
 .hero-cta:active{transform:scale(.97)}
+.scroll-cue{position:absolute;bottom:14px;right:14px;z-index:1;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;color:#fff;cursor:pointer;animation:cueBob 1.9s ease-in-out infinite}
+.header-banner .scroll-cue{bottom:22px}
+@keyframes cueBob{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
+@media(prefers-reduced-motion:reduce){.scroll-cue{animation:none}}
 .container{max-width:680px;margin:0 auto;padding:${pad}}
 .info-bar{background:#fff;border-radius:16px;padding:14px 18px;margin:-32px 16px 14px;position:relative;z-index:2;box-shadow:0 12px 32px -8px rgba(0,0,0,.10),0 2px 8px rgba(0,0,0,.04);display:flex;gap:14px;justify-content:center;flex-wrap:wrap;font-size:12px;color:#555;font-weight:500}
 .info-item{display:flex;align-items:center;gap:6px}
@@ -20417,8 +20443,18 @@ ${bannerHTML(topBanner, 'top')}
     <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
     <span class="cart-badge" id="cart-badge">0</span>
   </button>` : ''}
+  <button class="hamb" aria-label="Menu" aria-expanded="false" onclick="var b=document.body.classList.toggle('drawer-open');this.setAttribute('aria-expanded',b)"><span></span><span></span><span></span></button>
 </header>
-<div class="topnav-m">${_navLinks.map(l=>`<a href="${l[0]}" onclick="event.preventDefault();(document.querySelector('${l[0]}')||document.body).scrollIntoView({behavior:'smooth',block:'start'})">${l[1]}</a>`).join('')}</div>
+<div class="drawer-back" onclick="document.body.classList.remove('drawer-open')"></div>
+<aside class="shop-drawer" role="dialog" aria-label="Menu">
+  <div class="drawer-head"><span class="drawer-title">${esc(bc.name||S.session?.business||'Menu')}</span><button class="drawer-x" aria-label="Fermer" onclick="document.body.classList.remove('drawer-open')">✕</button></div>
+  <nav class="drawer-nav">
+    ${_navLinks.map(l=>`<a href="${l[0]}" onclick="event.preventDefault();document.body.classList.remove('drawer-open');(document.querySelector('${l[0]}')||document.body).scrollIntoView({behavior:'smooth',block:'start'})">${l[1]}</a>`).join('')}
+    <a href="#" onclick="event.preventDefault();document.body.classList.remove('drawer-open');baroMyOrders()">🛍️ Mes achats</a>
+  </nav>
+  ${socialsHTML?`<div class="drawer-soc">${socialsHTML}</div>`:''}
+  <div class="drawer-cur">${_curBadge}</div>
+</aside>
 <div class="header header-${heroStyle}${_heroVid?' has-video':''}">
   ${heroVideoHTML}
   ${logo && heroStyle !== 'minimal' ? `<img src="${logo}" class="header-logo" alt="Logo">` : ''}
@@ -20426,6 +20462,7 @@ ${bannerHTML(topBanner, 'top')}
   ${heroStyle !== 'minimal' ? `<p>${esc(heroSub)}</p>` : ''}
   ${approvedReviews.length > 0 && heroStyle !== 'minimal' ? `<div class="header-rating">⭐ ${avgRating} / 5 · ${approvedReviews.length} avis</div>` : ''}
   ${heroStyle !== 'minimal' ? `<button class="hero-cta" onclick="(document.querySelector('main.grid')||document.body).scrollIntoView({behavior:'smooth',block:'start'})">Découvrir nos produits</button>` : ''}
+  ${heroStyle !== 'minimal' ? `<div class="scroll-cue" title="Explorer" aria-hidden="true" onclick="(document.querySelector('main.grid')||document.body).scrollIntoView({behavior:'smooth',block:'start'})"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></div>` : ''}
 </div>
 <div class="info-bar">
   <div class="info-item" id="shop-status" style="font-weight:800;display:none"></div>
