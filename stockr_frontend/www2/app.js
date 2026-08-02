@@ -3213,6 +3213,92 @@ function vCredits() {
   </div>`;
 }
 
+// ── MA JOURNÉE — centre d'action quotidien ─────────────────
+// Réunit sur un écran tout ce qui demande l'attention aujourd'hui,
+// à partir des vraies données (péremptions, réassort, caisse, crédits).
+function _todayActions() {
+  const acts = [];
+  const today = new Date().toDateString();
+  // 1. Péremptions (périmés en priorité, puis bientôt périmés)
+  try {
+    const exp = (typeof getExpiringArticles === 'function') ? getExpiringArticles() : [];
+    if (exp.length) {
+      const expired = exp.filter(a => a.expiryInfo && a.expiryInfo.status === 'expired').length;
+      acts.push({ pri: expired > 0 ? 0 : 2, icon: '⏳', color: '#EC4899',
+        title: expired > 0 ? `${expired} produit${expired>1?'s':''} périmé${expired>1?'s':''}` : `${exp.length} bientôt périmé${exp.length>1?'s':''}`,
+        detail: expired > 0 ? `À retirer${exp.length-expired>0?` · ${exp.length-expired} à écouler`:''}` : 'À solder avant péremption',
+        cta: 'peremptions', label: 'Gérer' });
+    }
+  } catch(_){}
+  // 2. Réassort (rupture en priorité)
+  try {
+    const ro = (typeof _reorderData === 'function') ? (_reorderData(S.reorderWindow || 30).items || []) : [];
+    if (ro.length) {
+      const rupture = ro.filter(i => i.urgency === 'rupture').length;
+      acts.push({ pri: rupture > 0 ? 1 : 3, icon: '🔄', color: '#0EA5E9',
+        title: `${ro.length} produit${ro.length>1?'s':''} à recommander`,
+        detail: rupture > 0 ? `${rupture} en rupture de stock` : 'Selon vos ventes récentes',
+        cta: 'reassort', label: 'Commander' });
+    }
+  } catch(_){}
+  // 3. Caisse non clôturée aujourd'hui (s'il y a eu des ventes)
+  try {
+    const tSales = (S.sales || []).filter(s => new Date(s.date).toDateString() === today);
+    const closes = Array.isArray(S.cashCloses) ? S.cashCloses : JSON.parse(localStorage.getItem('baro_cashcloses') || '[]');
+    const closedToday = closes.some(c => new Date(c.date).toDateString() === today);
+    if (tSales.length > 0 && !closedToday) {
+      const ca = tSales.reduce((s, v) => s + (v.total || 0), 0);
+      acts.push({ pri: 4, icon: '🧾', color: '#10B981',
+        title: 'Clôturer la caisse', detail: `${tSales.length} vente${tSales.length>1?'s':''} · ${fmt(ca)} ${sym()}`,
+        cta: 'caisse', label: 'Clôturer' });
+    }
+  } catch(_){}
+  // 4. Crédits clients en cours
+  try {
+    const st = (typeof _creditsStats === 'function') ? _creditsStats() : { openCount: 0, totalOwed: 0 };
+    if (st.openCount > 0) {
+      acts.push({ pri: 5, icon: '📒', color: '#DC2626',
+        title: `${st.openCount} crédit${st.openCount>1?'s':''} en cours`, detail: `${fmt(st.totalOwed)} ${sym()} à recouvrer`,
+        cta: 'credits', label: 'Voir' });
+    }
+  } catch(_){}
+  acts.sort((a, b) => a.pri - b.pri);
+  return acts;
+}
+function _todayActionsCount() { try { return _todayActions().length; } catch(_) { return 0; } }
+function vToday() {
+  const acts = _todayActions();
+  const h = new Date().getHours();
+  const greeting = h < 12 ? 'Bonjour' : h < 18 ? 'Bon après-midi' : 'Bonsoir';
+  const name = ((S.session && S.session.name) || '').split(' ')[0];
+  return `
+  <div class="sub-hero">
+    <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('home')">${IC.left}</button>
+    <div class="sub-hero-title">Ma journée</div>
+    <div class="sub-hero-sub">${greeting}${name ? ' ' + name : ''} — ${acts.length ? acts.length + ' action' + (acts.length>1?'s':'') + ' à traiter' : 'tout est à jour'}</div>
+  </div>
+  <div class="container">
+    ${acts.length ? acts.map(a => `
+      <div class="card card-tap" style="margin-bottom:10px;padding:0;overflow:hidden;display:flex" onclick="nav('${a.cta}')">
+        <div style="width:5px;background:${a.color};flex-shrink:0"></div>
+        <div style="flex:1;min-width:0;padding:13px 14px;display:flex;align-items:center;gap:13px">
+          <div style="width:44px;height:44px;border-radius:13px;background:${a.color}1f;display:grid;place-items:center;font-size:22px;flex-shrink:0">${a.icon}</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:15px;font-weight:800;letter-spacing:-.01em">${a.title}</div>
+            <div style="font-size:12.5px;color:var(--text-3);margin-top:2px">${a.detail}</div>
+          </div>
+          <span style="flex-shrink:0;font-size:12px;font-weight:800;color:#fff;background:${a.color};padding:7px 13px;border-radius:999px">${a.label}</span>
+        </div>
+      </div>`).join('') : `
+      <div class="card" style="text-align:center;padding:40px 22px">
+        <div style="font-size:54px;margin-bottom:12px">✨</div>
+        <div style="font-size:18px;font-weight:800;margin-bottom:8px">Tout est à jour</div>
+        <div style="font-size:13.5px;color:var(--text-2);line-height:1.55;max-width:300px;margin:0 auto">Aucune action urgente : pas de rupture, rien à retirer, caisse clôturée, crédits suivis. Revenez après vos prochaines ventes.</div>
+      </div>`}
+    ${acts.length ? `<div class="card" style="margin-top:6px;background:transparent;border:1px dashed var(--border)"><div style="font-size:11.5px;color:var(--text-3);line-height:1.55"><b style="color:var(--text-2)">Votre journée en un écran —</b> BARO réunit ici tout ce qui demande votre attention aujourd'hui, à partir de vos vraies données. Touchez une carte pour agir.</div></div>` : ''}
+  </div>`;
+}
+
 // ── Toast ──────────────────────────────────────
 function showToast(msg, type='') {
   if (type === 'success') haptic('success');
@@ -6423,6 +6509,7 @@ function _doRender() {
     reassort: vReorder,
     caisse: vCashClose,
     credits: vCredits, 'credit-add': vCreditForm,
+    today: vToday,
     sova: vSova, spectra: vSpectraEnhanced, clients: vClients, 'add-client': vAddClient,
     'client-detail': vClientDetail, notifications: vNotifications,
     catalog: vCatalog, suppliers: vSuppliers,
@@ -7592,6 +7679,14 @@ function vHome() {
     </div>
     ${_showSearch ? _searchHTML : ''}
     ${!_showSearch ? `
+    ${(()=>{const n=(typeof _todayActionsCount==='function')?_todayActionsCount():0; if(!n) return ''; return `
+    <div class="card card-tap" style="margin-bottom:14px;padding:0;overflow:hidden;display:flex;background:linear-gradient(135deg,var(--accent),#7C73FF);color:#fff;border:none" onclick="nav('today')">
+      <div style="flex:1;padding:15px 16px;display:flex;align-items:center;gap:13px">
+        <div style="font-size:26px">☀️</div>
+        <div style="flex:1;min-width:0"><div style="font-size:15px;font-weight:800">Ma journée</div><div style="font-size:12.5px;opacity:.92">${n} action${n>1?'s':''} à traiter aujourd'hui</div></div>
+        <div style="background:rgba(255,255,255,.25);min-width:30px;height:30px;padding:0 8px;border-radius:999px;display:grid;place-items:center;font-weight:800;font-size:14px">${n}</div>
+      </div>
+    </div>`;})()}
     <div class="section-hd" style="margin-top:4px"><div class="section-lbl" style="font-size:12px;letter-spacing:.5px;color:var(--text-3);font-weight:700">✦ TES AGENTS IA</div></div>
     <div class="agent-card agent-sova" onclick="nav('sova')">
       <div class="agent-icon agent-icon-sova">${IC.sova}</div>
@@ -18924,6 +19019,7 @@ function vMore() {
   const canAudit    = hasPermission('audit') || canAdmin;
 
   const items = [
+    { id:'today',           icon:'☀️',          label:'Ma journée',                     sub:'Vos actions du jour, en un écran', color:'#F59E0B', badge:(()=>{try{return _todayActionsCount()||null;}catch(_){return null;}})() },
     { id:'ai-chat',         icon:'🤖',          label:'BARO IA — Assistant',            sub:'Posez des questions sur votre commerce', color:'#6366F1' },
     { id:'metier-guide',    icon:'💡',          label:'BARO pour mon métier',           sub:'Pharmacie · restau · services…', color:'#0EA5E9' },
     canAdmin ? { id:'multi-store', icon:'🏬',    label:'Multi-points de vente',          sub:`${(S.locations||[]).length} emplacement(s)`, color:'#7C3AED' } : null,
