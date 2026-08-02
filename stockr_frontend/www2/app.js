@@ -18837,8 +18837,8 @@ function vMultiStore() {
           </select>
         </div>
         <div style="display:flex;gap:8px">
-          <button class="btn btn-primary" style="flex:1;font-weight:700" onclick="addLocation()">Créer l'emplacement</button>
-          <button class="btn btn-ghost" onclick="S.locationAdd=false;render()">Annuler</button>
+          <button class="btn btn-ghost" style="flex:1;min-width:0;white-space:nowrap" onclick="S.locationAdd=false;render()">Annuler</button>
+          <button class="btn btn-primary" style="flex:2;min-width:0;font-weight:700;white-space:nowrap" onclick="addLocation()">Créer l'emplacement</button>
         </div>
       </div>` : ''}
     ${locs.length > 0 && !S.locationAdd ? `<button class="btn btn-primary" style="width:100%;margin-bottom:12px;font-weight:700" onclick="S.locationAdd=true;render()">＋ Ajouter un emplacement</button>` : ''}
