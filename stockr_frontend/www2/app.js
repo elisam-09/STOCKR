@@ -2302,9 +2302,32 @@ function __planShowConfirmModal(planKey, amount, providerId) {
 const PLAN_LIMITS = {
   free:       { articles: 50,       salesPerMonth: 100,    locations: 1,        spectraPerDay: 10,       suppliers: 3,        boutique: false, marketing: false, integrations: 0,        excel: false, loyalty: false, purchaseOrders: false },
   starter:    { articles: 500,      salesPerMonth: 2000,   locations: 2,        spectraPerDay: 50,       suppliers: 10,       boutique: false, marketing: false, integrations: 0,        excel: true,  loyalty: false, purchaseOrders: false },
-  pro:        { articles: Infinity, salesPerMonth: Infinity, locations: 5,      spectraPerDay: Infinity, suppliers: Infinity, boutique: true,  marketing: true,  integrations: 10,       excel: true,  loyalty: true,  purchaseOrders: true },
-  enterprise: { articles: Infinity, salesPerMonth: Infinity, locations: Infinity, spectraPerDay: Infinity, suppliers: Infinity, boutique: true, marketing: true, integrations: Infinity, excel: true,  loyalty: true,  purchaseOrders: true },
+  pro:        { articles: Infinity, salesPerMonth: Infinity, locations: 5,      spectraPerDay: Infinity, suppliers: Infinity, boutique: true,  marketing: true,  integrations: 10,       excel: true,  loyalty: true,  purchaseOrders: true,  customDomain: false, whiteLabel: false, advancedAnalytics: false },
+  enterprise: { articles: Infinity, salesPerMonth: Infinity, locations: Infinity, spectraPerDay: Infinity, suppliers: Infinity, boutique: true, marketing: true, integrations: Infinity, excel: true,  loyalty: true,  purchaseOrders: true,  customDomain: true,  whiteLabel: true,  advancedAnalytics: true },
 };
+// Libellé lisible du plan (réutilisé par les verrous Entreprise)
+const PLAN_LABELS = { free:'Gratuit', starter:'Starter', pro:'Pro', enterprise:'Entreprise' };
+// Écran de verrouillage dédié aux fonctions réservées au plan Entreprise
+function _vEnterpriseLock(icon, title, desc, perks) {
+  return `
+  <div class="sub-hero" style="background:linear-gradient(140deg,#0b0a1f,#1b1650 55%,#3b2fa8)">
+    <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('boutique')">${IC.left}</button>
+    <div class="sub-hero-title">${icon} ${title}</div>
+    <div class="sub-hero-sub">Réservé au plan Entreprise</div>
+  </div>
+  <div class="container">
+    <div class="card" style="text-align:center;padding:30px 22px">
+      <div style="display:inline-flex;align-items:center;gap:7px;background:linear-gradient(135deg,#8B5CF6,#6366F1);color:#fff;font-size:11px;font-weight:800;letter-spacing:.6px;padding:6px 14px;border-radius:999px;margin-bottom:14px">◆ ENTREPRISE</div>
+      <div style="font-size:18px;font-weight:800;margin-bottom:8px">${title}</div>
+      <div style="font-size:13px;color:var(--text-2);line-height:1.55;max-width:320px;margin:0 auto 18px">${desc}</div>
+      <div style="text-align:left;max-width:320px;margin:0 auto 20px">
+        ${perks.map(p => `<div style="display:flex;gap:9px;font-size:13px;padding:5px 0;color:var(--text-2)"><span style="color:#8B5CF6;font-weight:800">✓</span>${p}</div>`).join('')}
+      </div>
+      <button class="btn btn-primary" style="width:100%;max-width:300px;background:linear-gradient(135deg,#8B5CF6,#6366F1)" onclick="nav('pricing')">Voir le plan Entreprise →</button>
+      <div style="font-size:11.5px;color:var(--text-3);margin-top:12px">Votre plan actuel : <b>${PLAN_LABELS[_currentPlan()]||_currentPlan()}</b></div>
+    </div>
+  </div>`;
+}
 function _currentPlan() { return (S.subscription && S.subscription.plan) || 'free'; }
 function _planLimit(feature) {
   const lim = PLAN_LIMITS[_currentPlan()] || PLAN_LIMITS.free;
@@ -19559,6 +19582,52 @@ function vBoutique() {
     </div>`;
     })()}
 
+    ${(() => {
+      const isEnt = _planHasFeature('whiteLabel');
+      const planNm = PLAN_LABELS[_currentPlan()] || _currentPlan();
+      const rows = [
+        ['Boutique en ligne + éditeur visuel', true, true],
+        ['Panier & commande WhatsApp', true, true],
+        ['Revenus & analytics essentiels', true, true],
+        ['Points de vente', '5', 'Illimités'],
+        ['Domaine personnalisé (mapharmacie.ci)', false, true],
+        ['Retirer la mention « Propulsé par BARO »', false, true],
+        ['Analytics avancés (par point de vente)', false, true],
+      ];
+      const cell = v => v === true ? '<span style="color:var(--success);font-weight:800">✓</span>'
+                     : v === false ? '<span style="color:var(--text-3)">—</span>'
+                     : `<span style="font-weight:700;font-size:11.5px">${v}</span>`;
+      return `
+    <div class="card" style="margin-bottom:10px;padding:0;overflow:hidden">
+      <div style="padding:14px 15px;background:linear-gradient(135deg,rgba(139,92,246,.14),transparent);display:flex;align-items:center;gap:10px">
+        <div style="font-size:20px">◆</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:14.5px;font-weight:800">Pro &amp; Entreprise</div>
+          <div style="font-size:11.5px;color:var(--text-3)">Votre plan : <b style="color:${isEnt?'#8B5CF6':'var(--text-2)'}">${planNm}</b></div>
+        </div>
+        ${!isEnt ? `<button class="btn" style="flex-shrink:0;padding:7px 13px;font-size:11.5px;font-weight:800;background:linear-gradient(135deg,#8B5CF6,#6366F1);color:#fff;border:none" onclick="nav('pricing')">Passer</button>` : `<span style="flex-shrink:0;font-size:10.5px;font-weight:800;color:#fff;background:linear-gradient(135deg,#8B5CF6,#6366F1);padding:5px 11px;border-radius:999px">ACTIF</span>`}
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 54px 74px;font-size:10px;font-weight:800;color:var(--text-3);letter-spacing:.4px;padding:8px 15px 6px;border-top:1px solid var(--border)">
+        <span></span><span style="text-align:center">PRO</span><span style="text-align:center">ENTREPRISE</span>
+      </div>
+      ${rows.map((r,i) => `<div style="display:grid;grid-template-columns:1fr 54px 74px;align-items:center;padding:7px 15px;${i>0?'border-top:1px solid var(--border)':''}">
+        <span style="font-size:12.5px;color:var(--text-2)">${r[0]}</span>
+        <span style="text-align:center">${cell(r[1])}</span>
+        <span style="text-align:center">${cell(r[2])}</span>
+      </div>`).join('')}
+      <div style="display:flex;align-items:center;gap:10px;padding:12px 15px;border-top:1px solid var(--border);${isEnt?'':'opacity:.6'}">
+        <div style="flex:1;min-width:0">
+          <div style="font-size:12.5px;font-weight:700">Marque blanche</div>
+          <div style="font-size:11px;color:var(--text-3)">${isEnt ? 'Masquer « Propulsé par BARO » sur votre boutique' : 'Disponible avec le plan Entreprise'}</div>
+        </div>
+        <label class="toggle-switch" style="flex-shrink:0">
+          <input type="checkbox" ${bc.hideBaroBranding&&isEnt?'checked':''} ${isEnt?'':'disabled'} onchange="${isEnt?"updateBoutiqueConfig('hideBaroBranding',this.checked)":"this.checked=false;nav('pricing')"}">
+          <span class="toggle-track"></span>
+        </label>
+      </div>
+    </div>`;
+    })()}
+
     <div class="card" style="margin-bottom:10px">
       <div class="card-title">Configuration</div>
       <div class="form-group">
@@ -20670,7 +20739,7 @@ ${popupHTML}
   </div>
   <div class="ft-bottom">
     <span>© ${new Date().getFullYear()} ${esc(bc.name||S.session?.business||'Ma Boutique')} — Tous droits réservés</span>
-    <span>Propulsé par <a href="#" style="font-weight:700">BARO</a></span>
+    ${(_planHasFeature('whiteLabel') && bc.hideBaroBranding) ? '' : `<span>Propulsé par <a href="#" style="font-weight:700">BARO</a></span>`}
   </div>
 </footer>
 <div class="legal-ov" id="legal-ov" onclick="if(event.target===this)this.classList.remove('show')">
@@ -21510,6 +21579,11 @@ function vBoutiqueAppearance() {
 // NOM DE DOMAINE
 // ═══════════════════════════════════════════════
 function vBoutiqueDomain() {
+  if (!_planHasFeature('customDomain')) {
+    return _vEnterpriseLock('🌐', 'Domaine personnalisé',
+      "Faites vivre votre boutique sur votre propre adresse (ex : mapharmacie.ci) au lieu d'un sous-domaine BARO.",
+      ['Votre nom de domaine à vous', 'Certificat HTTPS automatique', 'Meilleur référencement Google', 'Image de marque professionnelle']);
+  }
   const bc = S.boutiqueConfig;
   const verified = bc.customDomainVerified;
   return `
@@ -22492,6 +22566,49 @@ function vBoutiqueAnalytics() {
           <div style="height:8px;background:var(--gray-2);border-radius:5px;overflow:hidden"><div style="height:100%;width:${w}%;background:linear-gradient(90deg,${col},${col}cc);border-radius:5px"></div></div>
         </div>`; }).join('')}
     </div>` : ''}
+
+    ${(() => {
+      const isEnt = _planHasFeature('advancedAnalytics');
+      const locs = S.locations || [];
+      if (!isEnt) {
+        return `
+    <div class="card" style="margin-bottom:12px;position:relative;overflow:hidden">
+      <div class="card-title">◆ Analytics avancés</div>
+      <div style="filter:blur(3px);pointer-events:none;user-select:none" aria-hidden="true">
+        ${['Boutique du centre','Comptoir quartier','Entrepôt'].map((n,i)=>`<div style="display:flex;justify-content:space-between;padding:7px 0;font-size:13px"><span>${n}</span><b>${fmt([84000,52000,31000][i])} ${sym()}</b></div>`).join('')}
+      </div>
+      <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;background:linear-gradient(180deg,rgba(255,255,255,.55),var(--surface) 78%);padding:14px;text-align:center">
+        <div style="font-size:10.5px;font-weight:800;color:#fff;background:linear-gradient(135deg,#8B5CF6,#6366F1);padding:4px 11px;border-radius:999px;letter-spacing:.5px">◆ ENTREPRISE</div>
+        <div style="font-size:12.5px;color:var(--text-2);max-width:270px;line-height:1.5">Revenus détaillés <b>par point de vente</b>, comparaison et export.</div>
+        <button class="btn" style="padding:8px 16px;font-size:12px;font-weight:800;background:linear-gradient(135deg,#8B5CF6,#6366F1);color:#fff;border:none" onclick="nav('pricing')">Débloquer</button>
+      </div>
+    </div>`;
+      }
+      // ── Réel : CA par point de vente, calculé sur les vraies ventes ──
+      const rows = locs.map(l => {
+        const sl = (S.sales||[]).filter(s => String(s.locationId) === String(l.id));
+        return { name: l.name, ca: sl.reduce((a,s)=>a+(s.total||0),0), n: sl.length };
+      });
+      const unassigned = (S.sales||[]).filter(s => !s.locationId);
+      if (unassigned.length) rows.push({ name:'Non affecté', ca: unassigned.reduce((a,s)=>a+(s.total||0),0), n: unassigned.length });
+      rows.sort((a,b)=>b.ca-a.ca);
+      const mx = Math.max(1, ...rows.map(r=>r.ca));
+      return `
+    <div class="card" style="margin-bottom:12px">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px">
+        <div class="card-title" style="margin:0">◆ Analytics avancés</div>
+        <span style="font-size:9.5px;font-weight:800;color:#fff;background:linear-gradient(135deg,#8B5CF6,#6366F1);padding:3px 9px;border-radius:999px;letter-spacing:.4px">ENTREPRISE</span>
+      </div>
+      ${rows.length ? rows.map(r => `<div style="margin-bottom:9px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
+          <span style="font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${String(r.name).replace(/</g,'&lt;')} <span style="color:var(--text-3);font-weight:500">· ${r.n} vente${r.n>1?'s':''}</span></span>
+          <b style="font-size:12px;flex-shrink:0;margin-left:8px;color:#8B5CF6">${fmt(r.ca)} ${sym()}</b>
+        </div>
+        <div style="height:8px;background:var(--gray-2);border-radius:5px;overflow:hidden"><div style="height:100%;width:${Math.max(4,Math.round(r.ca/mx*100))}%;background:linear-gradient(90deg,#8B5CF6,#6366F1);border-radius:5px"></div></div>
+      </div>`).join('')
+      : `<div style="font-size:12.5px;color:var(--text-3)">Créez des points de vente pour comparer leurs revenus ici.</div>`}
+    </div>`;
+    })()}
 
     <div class="card" style="margin-bottom:12px">
       <div class="card-title">👁️ Visiteurs de la boutique</div>
