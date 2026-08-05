@@ -2,7 +2,7 @@
 // Stratégie : Cache-first pour assets statiques,
 //             Network-first pour l'API
 
-const CACHE_NAME = 'baro-v201-proent';
+const CACHE_NAME = 'baro-v202-vitrine';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
