@@ -19395,6 +19395,36 @@ function _vProLock(emoji, title, desc, features) {
   </div>`;
 }
 
+// ── Performance réelle de la boutique (commandes réellement reçues) ──
+function _bqPerf() {
+  const orders = (S.boutiqueOrders || []).filter(o => o && o.status !== 'cancelled');
+  const now = new Date(), mStart = new Date(now.getFullYear(), now.getMonth(), 1);
+  const paid = orders.filter(o => o.status && o.status !== 'pending');
+  const ca = orders.reduce((s, o) => s + (o.total || 0), 0);
+  const caMonth = orders.filter(o => new Date(o.date) >= mStart).reduce((s, o) => s + (o.total || 0), 0);
+  const pending = orders.filter(o => !o.status || o.status === 'pending');
+  const avg = orders.length ? Math.round(ca / orders.length) : 0;
+  // 7 derniers jours
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(); d.setDate(d.getDate() - i); d.setHours(0,0,0,0);
+    const ds = d.toDateString();
+    const dayO = orders.filter(o => new Date(o.date).toDateString() === ds);
+    days.push({ lbl: d.toLocaleDateString('fr-FR', { weekday:'short' }).replace('.','').slice(0,2),
+                rev: dayO.reduce((s,o)=>s+(o.total||0),0), n: dayO.length });
+  }
+  const maxDay = Math.max(1, ...days.map(d => d.rev));
+  // Top produits commandés (depuis les lignes de commande)
+  const pm = {};
+  orders.forEach(o => (o.items || []).forEach(it => {
+    const nm = typeof it === 'string' ? it.replace(/\s*[×x]\s*\d+.*$/,'').trim() : (it.name || it.productName || '');
+    if (nm) pm[nm] = (pm[nm] || 0) + 1;
+  }));
+  const top = Object.entries(pm).sort((a,b)=>b[1]-a[1]).slice(0,3);
+  const visits = Number((S.boutiqueConfig||{}).visits) || 0;
+  return { orders, ca, caMonth, pending, paid, avg, days, maxDay, top, visits, count: orders.length };
+}
+
 function vBoutique() {
   if (!_planHasFeature('boutique')) {
     return _vProLock('🏪', 'Boutique en ligne', 'Crée une vraie boutique en ligne (page web + panier WhatsApp) que tes clients visitent pour commander.', ['🏪 Boutique en ligne personnalisable', '🎨 Éditeur visuel en direct', '🛒 Panier + commande WhatsApp', '📦 Articles & ventes illimités', '🔍 Spectra IA vision illimité']);
@@ -19460,6 +19490,75 @@ function vBoutique() {
         <div style="color:var(--accent)">${IC.chevron}</div>
       </div>
     </div>
+
+    ${(() => {
+      const P = _bqPerf();
+      if (P.count === 0) {
+        return `
+    <div class="card" style="margin-bottom:10px;background:linear-gradient(135deg,rgba(16,185,129,.08),transparent);border:1px solid rgba(16,185,129,.2)">
+      <div style="display:flex;gap:12px;align-items:flex-start">
+        <div style="font-size:26px;flex-shrink:0">📈</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:14.5px;font-weight:800">Revenus & performance</div>
+          <div style="font-size:12.5px;color:var(--text-2);line-height:1.5;margin-top:3px">Aucune commande boutique pour l'instant. Dès la première commande reçue, vous verrez ici votre chiffre d'affaires, le panier moyen, l'évolution et vos meilleures ventes.</div>
+        </div>
+      </div>
+    </div>`;
+      }
+      const pctPending = P.count ? Math.round(P.pending.length / P.count * 100) : 0;
+      return `
+    <div class="card" style="margin-bottom:10px;padding:0;overflow:hidden">
+      <div style="padding:14px 15px 12px;background:linear-gradient(135deg,rgba(16,185,129,.12),transparent)">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+          <div style="font-size:11px;font-weight:800;letter-spacing:.5px;color:var(--text-3)">REVENUS BOUTIQUE</div>
+          <button class="btn" style="padding:5px 11px;font-size:11px;font-weight:700;background:var(--gray-1);border:1px solid var(--border);color:var(--text-2)" onclick="nav('boutique-analytics')">Détails →</button>
+        </div>
+        <div style="font-size:27px;font-weight:800;margin-top:3px;letter-spacing:-.02em">${fmt(P.ca)} <span style="font-size:14px;font-weight:600;color:var(--text-3)">${sym()}</span></div>
+        <div style="font-size:12px;color:var(--text-3);margin-top:2px">${fmt(P.caMonth)} ${sym()} ce mois · ${P.count} commande${P.count>1?'s':''}</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--border)">
+        <div style="padding:11px 8px;text-align:center;border-right:1px solid var(--border)">
+          <div style="font-size:15px;font-weight:800">${fmt(P.avg)}</div>
+          <div style="font-size:9.5px;color:var(--text-3);font-weight:600;letter-spacing:.3px;margin-top:1px">PANIER MOYEN</div>
+        </div>
+        <div style="padding:11px 8px;text-align:center;border-right:1px solid var(--border);cursor:pointer" onclick="document.getElementById('bq-orders')?.scrollIntoView({behavior:'smooth'})">
+          <div style="font-size:15px;font-weight:800;color:${P.pending.length?'var(--warning)':'var(--text-1)'}">${P.pending.length}</div>
+          <div style="font-size:9.5px;color:var(--text-3);font-weight:600;letter-spacing:.3px;margin-top:1px">À TRAITER</div>
+        </div>
+        <div style="padding:11px 8px;text-align:center">
+          <div style="font-size:15px;font-weight:800;color:var(--success)">${P.paid.length}</div>
+          <div style="font-size:9.5px;color:var(--text-3);font-weight:600;letter-spacing:.3px;margin-top:1px">HONORÉES</div>
+        </div>
+      </div>
+      <div style="padding:13px 15px;border-top:1px solid var(--border)">
+        <div style="font-size:11px;font-weight:700;color:var(--text-3);margin-bottom:9px">7 DERNIERS JOURS</div>
+        <div style="display:flex;align-items:flex-end;gap:5px;height:56px">
+          ${P.days.map(d => {
+            const h = d.rev > 0 ? Math.max(6, Math.round(d.rev / P.maxDay * 46)) : 3;
+            return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;justify-content:flex-end" title="${d.n} commande(s) · ${fmt(d.rev)} ${sym()}">
+              <div style="width:100%;max-width:26px;height:${h}px;border-radius:5px 5px 2px 2px;background:${d.rev>0?'linear-gradient(180deg,var(--accent),#7C73FF)':'var(--gray-2)'}"></div>
+              <div style="font-size:9px;color:var(--text-3);font-weight:600">${d.lbl}</div>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>
+      ${P.top.length ? `
+      <div style="padding:12px 15px;border-top:1px solid var(--border)">
+        <div style="font-size:11px;font-weight:700;color:var(--text-3);margin-bottom:8px">MEILLEURES VENTES EN LIGNE</div>
+        ${P.top.map((t,i) => `<div style="display:flex;align-items:center;gap:9px;padding:4px 0">
+          <div style="width:20px;height:20px;border-radius:6px;background:var(--accent-light,rgba(110,91,255,.12));color:var(--accent);font-size:10.5px;font-weight:800;display:grid;place-items:center;flex-shrink:0">${i+1}</div>
+          <div style="flex:1;min-width:0;font-size:12.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${String(t[0]).replace(/</g,'&lt;')}</div>
+          <div style="font-size:11.5px;font-weight:700;color:var(--accent);flex-shrink:0">×${t[1]}</div>
+        </div>`).join('')}
+      </div>` : ''}
+      <div style="padding:10px 15px;border-top:1px solid var(--border);font-size:11px;color:var(--text-3);line-height:1.5">
+        ${P.visits > 0
+          ? `👁️ ${P.visits} visite${P.visits>1?'s':''} · ${((P.count/P.visits)*100).toFixed(1)}% de conversion`
+          : `Le comptage des visites démarre dès que la boutique est publiée et visitée.`}
+      </div>
+    </div>`;
+    })()}
+
     <div class="card" style="margin-bottom:10px">
       <div class="card-title">Configuration</div>
       <div class="form-group">
@@ -19742,8 +19841,8 @@ function vBoutique() {
       </div>
     </div>
 
-    <div class="section-hd">
-      <span class="section-lbl">Commandes recues (${orders.length})</span>
+    <div class="section-hd" id="bq-orders">
+      <span class="section-lbl">Commandes reçues (${orders.length})</span>
       <button class="fab" style="width:32px;height:32px" onclick="addBoutiqueOrder()">${IC.plus}</button>
     </div>
     ${orders.length === 0 ? `
@@ -22409,7 +22508,7 @@ function vBoutiqueAnalytics() {
       `}
     </div>
 
-    <div class="section-hd"><span class="section-lbl">Commandes reçues</span><button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" onclick="addBoutiqueOrder()">+ Ajouter</button></div>
+    <div class="section-hd" id="bq-orders"><span class="section-lbl">Commandes reçues</span><button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" onclick="addBoutiqueOrder()">+ Ajouter</button></div>
     ${nbOrders === 0 ? `
     <div class="empty" style="padding:28px 16px">
       <div class="empty-ico">🧾</div>
