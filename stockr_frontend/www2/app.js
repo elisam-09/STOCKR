@@ -1699,6 +1699,15 @@ function _saveArticles() {
   } catch(_){}
 }
 
+// Normalise les produits venant du stockage local ou du serveur : un produit
+// hérité (ancienne version, import, saisie partielle) peut ne pas avoir de
+// `composition`, ce qui faisait planter toute la vue Produits (13 accès directs).
+function _normalizeProducts(list) {
+  if (!Array.isArray(list)) return [];
+  list.forEach(p => { if (p && !Array.isArray(p.composition)) p.composition = []; });
+  return list;
+}
+
 function articleFromAPI(a) {
   const o = {
     id: a.id, name: a.name, stock: a.quantity, unit: a.unit,
@@ -1776,7 +1785,7 @@ async function loadData() {
   const hasLocal = local.articles.length || local.products.length || local.sales.length || local.clients.length;
   if (hasLocal) {
     S.articles = local.articles;
-    S.products = local.products;
+    S.products = _normalizeProducts(local.products);
     S.sales    = local.sales;
     S.clients  = local.clients;
     try { recalcAllMins(); } catch(_){}
@@ -1840,7 +1849,7 @@ async function loadData() {
     const localOnlyArts = local.articles.filter(a => a && a.id != null && !artIds.has(String(a.id)));
     S.dataLoading = false;
     S.articles    = [...apiArts,    ...localOnlyArts];
-    S.products    = [...apiProds,   ...local.products.filter(p => p && p.id != null && !prodIds.has(String(p.id)))];
+    S.products    = _normalizeProducts([...apiProds,   ...local.products.filter(p => p && p.id != null && !prodIds.has(String(p.id)))]);
     S.sales       = [...apiSales,   ...local.sales.filter(s => s && s.id != null && !saleIds.has(String(s.id)))];
     S.predictions = preds || [];
     S.clients     = [...apiClients, ...local.clients.filter(c => c && c.id != null && !cliIds.has(String(c.id)))];
@@ -1945,7 +1954,9 @@ function stockStatus(stock, min) {
   return               { label:'OK',       cls:'st-ok',  icon:IC.check, bar:''    };
 }
 function productMaxMake(product) {
-  if (!product.composition.length) return 99;
+  // Garde : un produit hérité (ou importé) peut ne pas avoir de composition —
+  // sans ce test, toute la vue Produits plantait sur un seul enregistrement.
+  if (!product || !Array.isArray(product.composition) || !product.composition.length) return 99;
   return Math.floor(Math.min(...product.composition.map(c => {
     const a = S.articles.find(x => x.id === c.id);
     return a ? a.stock / c.qty : 0;
@@ -20526,19 +20537,41 @@ ${hoverCss}
 .order-btn.in-cart{background:linear-gradient(135deg,${tc},${tc}cc);box-shadow:0 4px 12px -4px ${tc}77}
 #no-results{display:none;text-align:center;padding:48px 20px;color:#999;font-size:14px}
 /* Barre panier flottante */
-.cartbar{position:fixed;left:50%;bottom:18px;transform:translate(-50%,90px);width:min(92%,560px);background:rgba(20,20,28,.92);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);color:#fff;border-radius:18px;padding:13px 18px;display:flex;align-items:center;gap:12px;box-shadow:0 18px 48px -10px rgba(0,0,0,.45);z-index:95;transition:transform .35s cubic-bezier(.2,0,0,1);border:1px solid rgba(255,255,255,.1)}
+.cartbar{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));transform:translate(-50%,120px);
+  width:min(92%,560px);
+  background:linear-gradient(180deg,rgba(30,30,42,.94),rgba(16,16,24,.96));
+  backdrop-filter:blur(22px) saturate(180%);-webkit-backdrop-filter:blur(22px) saturate(180%);
+  color:#fff;border-radius:20px;padding:13px 16px 13px 14px;display:flex;align-items:center;gap:12px;
+  box-shadow:0 2px 6px rgba(0,0,0,.28),0 24px 60px -14px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.14);
+  z-index:95;transition:transform .62s cubic-bezier(.16,1,.3,1);border:1px solid rgba(255,255,255,.11)}
 .cartbar.show{transform:translate(-50%,0)}
-.cartbar-count{background:${tc};min-width:26px;height:26px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;padding:0 7px}
-.cartbar-total{flex:1;font-weight:800;font-size:16px;letter-spacing:-.3px}
-.cartbar-go{background:#25D366;color:#fff;border:none;border-radius:12px;padding:11px 20px;font-weight:800;font-size:13px;cursor:pointer;font-family:inherit;box-shadow:0 6px 16px -6px rgba(37,211,102,.7);transition:transform .15s}
-.cartbar-go:active{transform:scale(.95)}
+.cartbar-count{background:linear-gradient(140deg,${tc},${tc}cc);min-width:28px;height:28px;border-radius:14px;
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12.5px;padding:0 8px;
+  box-shadow:0 4px 12px -4px ${tc}cc,inset 0 1px 0 rgba(255,255,255,.28);font-variant-numeric:tabular-nums}
+.cartbar-total{flex:1;font-weight:800;font-size:16.5px;letter-spacing:-.35px;font-variant-numeric:tabular-nums}
+.cartbar-go{position:relative;overflow:hidden;background:linear-gradient(140deg,#2AE070,#16A34A);color:#fff;border:none;
+  border-radius:13px;padding:12px 20px;font-weight:800;font-size:13.5px;cursor:pointer;font-family:inherit;
+  box-shadow:0 6px 18px -6px rgba(37,211,102,.75),inset 0 1px 0 rgba(255,255,255,.3);
+  transition:transform .35s cubic-bezier(.16,1,.3,1),box-shadow .3s;white-space:nowrap}
+.cartbar-go:hover{transform:translateY(-1px);box-shadow:0 10px 24px -8px rgba(37,211,102,.85),inset 0 1px 0 rgba(255,255,255,.3)}
+.cartbar-go:active{transform:scale(.96)}
+/* Reflet qui traverse le bouton commander */
+.cartbar-go::after{content:'';position:absolute;inset:0;
+  background:linear-gradient(105deg,transparent 38%,rgba(255,255,255,.34) 50%,transparent 62%);
+  transform:translateX(-120%);animation:goSheen 3.4s ease-in-out 1.2s infinite}
+@keyframes goSheen{0%{transform:translateX(-120%)}28%,100%{transform:translateX(120%)}}
+@media(prefers-reduced-motion:reduce){.cartbar{transition:none}.cartbar-go::after{animation:none;opacity:0}}
 /* Checkout */
 .ck-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);z-index:100;display:none;align-items:flex-end;justify-content:center}
 .ck-overlay.show{display:flex}
-.ck{background:#fff;border-radius:24px 24px 0 0;width:100%;max-width:560px;max-height:88vh;overflow-y:auto;padding:22px 20px 28px;animation:ckUp .35s cubic-bezier(.2,0,0,1)}
-@keyframes ckUp{from{transform:translateY(60%)}to{transform:translateY(0)}}
-.ck-handle{width:40px;height:4px;border-radius:2px;background:#E0E0E5;margin:0 auto 16px}
-.ck h2{font-size:19px;font-weight:800;letter-spacing:-.4px;margin-bottom:14px}
+.ck{position:relative;background:#fff;border-radius:26px 26px 0 0;width:100%;max-width:560px;max-height:88vh;
+  overflow-y:auto;padding:20px 20px calc(28px + env(safe-area-inset-bottom));
+  box-shadow:0 -1px 0 rgba(255,255,255,.9) inset,0 -24px 60px -20px rgba(0,0,0,.35);
+  animation:ckUp .58s cubic-bezier(.16,1,.3,1) both}
+@keyframes ckUp{from{transform:translateY(70%) scale(.985);opacity:.4}to{transform:none;opacity:1}}
+.ck-handle{width:44px;height:5px;border-radius:3px;background:linear-gradient(90deg,#E4E4EA,#D2D2DA,#E4E4EA);margin:0 auto 16px}
+.ck h2{font-size:23px;font-weight:800;letter-spacing:-.045em;margin-bottom:16px;line-height:1.1;text-wrap:balance}
+@media(prefers-reduced-motion:reduce){.ck{animation:none}}
 .ck-item{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid #F2F2F5}
 .ck-item-name{flex:1;font-size:13.5px;font-weight:600}
 .ck-var{display:block;font-size:11px;color:#888;font-weight:600;margin-top:2px}
@@ -20546,12 +20579,28 @@ ${hoverCss}
 .ck-qty{display:flex;align-items:center;gap:8px}
 .ck-qty button{width:28px;height:28px;border-radius:8px;border:1px solid rgba(0,0,0,.1);background:#fff;font-size:15px;font-weight:700;cursor:pointer;color:#333}
 .ck-qty span{min-width:18px;text-align:center;font-weight:700;font-size:13px}
-.ck-total{display:flex;justify-content:space-between;font-size:15px;font-weight:800;padding:14px 0 4px}
-.ck-fees{display:flex;justify-content:space-between;font-size:12.5px;color:#777;padding:8px 0 0}
-.ck label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#999;margin:14px 0 5px}
-.ck input,.ck select{width:100%;padding:12px 14px;border-radius:12px;border:1.5px solid rgba(0,0,0,.1);font-size:15px;font-family:inherit;outline:none;background:#fff}
-.ck input:focus,.ck select:focus{border-color:${tc}}
-.ck-send{width:100%;margin-top:18px;background:linear-gradient(135deg,#25D366,#1fb958);color:#fff;border:none;border-radius:14px;padding:15px;font-weight:800;font-size:15px;cursor:pointer;font-family:inherit;box-shadow:0 8px 24px -8px rgba(37,211,102,.7)}
+.ck-total{display:flex;justify-content:space-between;align-items:baseline;font-size:15px;font-weight:800;
+  padding:15px 14px;margin-top:12px;border-radius:14px;
+  background:linear-gradient(140deg,${tc}12,${tc}05);border:1px solid ${tc}22;
+  font-variant-numeric:tabular-nums}
+.ck-total span:last-child,.ck-total b:last-child{font-size:21px;letter-spacing:-.03em;color:${tc}}
+.ck-fees{display:flex;justify-content:space-between;font-size:12.5px;color:#777;padding:8px 2px 0;font-variant-numeric:tabular-nums}
+.ck label{display:block;font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:#8b8b96;margin:15px 0 6px}
+.ck input,.ck select{width:100%;padding:14px 15px;border-radius:14px;border:1.5px solid rgba(0,0,0,.09);
+  font-size:15.5px;font-family:inherit;outline:none;background:#fcfcfd;
+  transition:border-color .2s,box-shadow .25s,background .2s}
+.ck input:focus,.ck select:focus{border-color:${tc};background:#fff;box-shadow:0 0 0 4px ${tc}1f}
+.ck-send{position:relative;overflow:hidden;width:100%;margin-top:20px;
+  background:linear-gradient(140deg,#2AE070,#16A34A);color:#fff;border:none;border-radius:16px;padding:17px;
+  font-weight:800;font-size:15.5px;letter-spacing:-.01em;cursor:pointer;font-family:inherit;
+  box-shadow:0 10px 28px -10px rgba(37,211,102,.8),inset 0 1px 0 rgba(255,255,255,.3);
+  transition:transform .35s cubic-bezier(.16,1,.3,1),box-shadow .3s}
+.ck-send:hover{transform:translateY(-2px);box-shadow:0 16px 34px -12px rgba(37,211,102,.9),inset 0 1px 0 rgba(255,255,255,.3)}
+.ck-send:active{transform:scale(.98)}
+.ck-send::after{content:'';position:absolute;inset:0;
+  background:linear-gradient(105deg,transparent 38%,rgba(255,255,255,.3) 50%,transparent 62%);
+  transform:translateX(-120%);animation:goSheen 3.8s ease-in-out 1.5s infinite}
+@media(prefers-reduced-motion:reduce){.ck-send{transition:none}.ck-send::after{animation:none;opacity:0}}
 .ck-close{position:absolute;top:14px;right:16px;width:32px;height:32px;border-radius:50%;border:none;background:#F2F2F5;font-size:16px;cursor:pointer;color:#666}
 .ck-empty{text-align:center;padding:26px 12px 14px}
 .ck-empty-ic{width:64px;height:64px;border-radius:50%;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;background:${tc}14;color:${tc}}
