@@ -20394,28 +20394,20 @@ h1,h2,.header h1,.pc-name,.cartbar-total,.ck h2{font-family:${headingStack}}
 .topnav-m::-webkit-scrollbar{display:none}
 .topnav-m a{color:#555;text-decoration:none;font-size:13px;font-weight:600;white-space:nowrap}
 @media(min-width:680px){.topnav-m{display:none}}
-/* Hamburger + tiroir premium */
-.hamb{flex:0 0 auto;width:40px;height:40px;border-radius:12px;border:1px solid rgba(0,0,0,.08);background:#fff;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;transition:transform .15s}
-.hamb:active{transform:scale(.9)}
-.hamb span{display:block;width:18px;height:2px;border-radius:2px;background:#2a2a2a;transition:transform .3s cubic-bezier(.2,0,0,1),opacity .2s}
-body.drawer-open .hamb span:nth-child(1){transform:translateY(6px) rotate(45deg)}
-body.drawer-open .hamb span:nth-child(2){opacity:0}
-body.drawer-open .hamb span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
-@media(min-width:680px){.hamb{display:none}}
-.drawer-back{position:fixed;inset:0;z-index:70;background:rgba(10,10,20,.44);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);opacity:0;visibility:hidden;transition:opacity .3s,visibility .3s}
-body.drawer-open .drawer-back{opacity:1;visibility:visible}
-.shop-drawer{position:fixed;top:0;right:0;bottom:0;z-index:71;width:82%;max-width:320px;background:#fff;box-shadow:-18px 0 50px -14px rgba(0,0,0,.32);transform:translateX(100%);transition:transform .36s cubic-bezier(.22,1,.36,1);display:flex;flex-direction:column;padding:18px 20px calc(20px + env(safe-area-inset-bottom));overflow-y:auto}
-body.drawer-open .shop-drawer{transform:none}
-.drawer-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
-.drawer-title{font-weight:800;font-size:16px;letter-spacing:-.3px;color:#111;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.drawer-x{flex:0 0 auto;width:34px;height:34px;border-radius:10px;border:1px solid rgba(0,0,0,.08);background:#fff;font-size:15px;cursor:pointer;color:#555}
-.drawer-nav{display:flex;flex-direction:column;margin-top:6px}
-.drawer-nav a{display:flex;align-items:center;gap:8px;padding:15px 4px;font-size:16.5px;font-weight:700;color:#1a1a1a;text-decoration:none;border-bottom:1px solid rgba(0,0,0,.06);transition:color .15s,padding-left .18s}
-.drawer-nav a:hover{color:${tc};padding-left:8px}
-.drawer-soc{display:flex;gap:10px;margin-top:18px}
-.drawer-soc .ft-soc{width:40px;height:40px;border-radius:12px;border:1px solid rgba(0,0,0,.08);display:flex;align-items:center;justify-content:center;color:#444;text-decoration:none}
-.drawer-cur{margin-top:auto;padding-top:18px;font-size:12px;font-weight:700;color:#888}
-@media(prefers-reduced-motion:reduce){.shop-drawer,.drawer-back,.hamb span{transition:none}}
+/* Navigation en pastilles (mobile) — sobre, tactile, sans menu caché */
+.navpills{display:flex;gap:8px;overflow-x:auto;padding:11px 16px 12px;background:#fff;
+  border-bottom:1px solid rgba(0,0,0,.05);scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.navpills::-webkit-scrollbar{display:none}
+.navpills a{flex-shrink:0;padding:8px 15px;border-radius:999px;border:1px solid rgba(0,0,0,.08);
+  background:linear-gradient(180deg,#fff,#fafafc);color:#3a3a44;text-decoration:none;
+  font-size:13px;font-weight:700;letter-spacing:-.1px;white-space:nowrap;
+  box-shadow:0 1px 2px rgba(16,18,28,.04);
+  transition:transform .35s cubic-bezier(.16,1,.3,1),box-shadow .35s,color .2s,border-color .2s}
+.navpills a:hover{color:${tc};border-color:${tc}44;transform:translateY(-2px);
+  box-shadow:0 6px 16px -6px ${tc}55}
+.navpills a:active{transform:scale(.96)}
+@media(min-width:680px){.navpills{display:none}}
+@media(prefers-reduced-motion:reduce){.navpills a{transition:none}}
 .cart-btn{position:relative;width:40px;height:40px;border-radius:12px;border:1px solid rgba(0,0,0,.08);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .15s}
 .cart-btn:active{transform:scale(.92)}
 .cart-badge{position:absolute;top:-5px;right:-5px;min-width:18px;height:18px;border-radius:9px;background:${tc};color:#fff;font-size:10px;font-weight:800;display:none;align-items:center;justify-content:center;padding:0 4px;box-shadow:0 2px 6px ${tc}66}
@@ -20476,6 +20468,15 @@ body.drawer-open .shop-drawer{transform:none}
 .chip.active{background:${tc};border-color:${tc};color:#fff;box-shadow:0 4px 12px -4px ${tc}88}
 .chip-n{display:inline-block;min-width:16px;text-align:center;font-size:10.5px;font-weight:800;background:rgba(0,0,0,.06);color:inherit;border-radius:999px;padding:1px 6px;margin-left:3px;font-variant-numeric:tabular-nums}
 .chip.active .chip-n{background:rgba(255,255,255,.25)}
+/* Entrée échelonnée des catégories */
+@keyframes chipIn{from{opacity:0;transform:translateY(8px) scale(.94)}to{opacity:1;transform:none}}
+.chip{animation:chipIn .5s cubic-bezier(.16,1,.3,1) both}
+.chip:nth-child(1){animation-delay:.04s}.chip:nth-child(2){animation-delay:.09s}
+.chip:nth-child(3){animation-delay:.14s}.chip:nth-child(4){animation-delay:.19s}
+.chip:nth-child(5){animation-delay:.24s}.chip:nth-child(6){animation-delay:.29s}
+.chip:nth-child(n+7){animation-delay:.33s}
+.chip:active{transform:scale(.94)}
+@media(prefers-reduced-motion:reduce){.chip{animation:none}}
 /* Grille produits */
 .grid{display:grid;grid-template-columns:repeat(${gridCols},1fr);gap:${gap};padding-top:10px}
 ${gridCols < 3 ? `@media(min-width:560px){.grid{grid-template-columns:repeat(${Math.min(gridCols+1,3)},1fr)}}` : ''}
@@ -20567,8 +20568,11 @@ ${hoverCss}
 .ck-pickup-h{font-size:12px;color:#666;margin-top:4px}
 .ck-pickup-itin{display:inline-block;margin-top:9px;background:${tc};color:#fff;text-decoration:none;font-size:13px;font-weight:800;padding:8px 16px;border-radius:10px}
 /* Sections existantes */
-.pay-section{background:#fff;border-radius:16px;padding:18px;margin:14px 0;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,.04);border:1px solid rgba(0,0,0,.04)}
-.pay-section-title{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#999;margin-bottom:10px;font-weight:700}
+.pay-section{position:relative;background:#fff;border-radius:16px;padding:22px 18px;margin:14px 0;text-align:center;
+  box-shadow:0 1px 2px rgba(16,18,28,.04),0 6px 20px -8px rgba(16,18,28,.08);border:1px solid rgba(0,0,0,.045)}
+.pay-section::before,.about-section::before,.contact-section::before{content:'';position:absolute;inset:0;
+  border-radius:inherit;pointer-events:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.9)}
+.pay-section-title{font-size:19px;letter-spacing:-.03em;color:#16161c;margin-bottom:12px;font-weight:800;line-height:1.15;text-wrap:balance}
 .pay-badges{display:flex;flex-wrap:wrap;justify-content:center;gap:6px}
 .pay-badge{background:${tc}12;color:${tc};padding:7px 15px;border-radius:10px;font-size:12px;font-weight:700}
 .delivery-info{text-align:center;font-size:13px;color:#666;margin:8px 0;padding:14px;background:#fff;border-radius:16px;box-shadow:0 2px 10px rgba(0,0,0,.04);border:1px solid rgba(0,0,0,.04)}
@@ -20643,19 +20647,12 @@ ${bannerHTML(topBanner, 'top')}
     <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
     <span class="cart-badge" id="cart-badge">0</span>
   </button>` : ''}
-  <button class="hamb" aria-label="Menu" aria-expanded="false" onclick="var b=document.body.classList.toggle('drawer-open');this.setAttribute('aria-expanded',b)"><span></span><span></span><span></span></button>
 </header>
 <div class="scroll-prog" id="scroll-prog" aria-hidden="true"></div>
-<div class="drawer-back" onclick="document.body.classList.remove('drawer-open')"></div>
-<aside class="shop-drawer" role="dialog" aria-label="Menu">
-  <div class="drawer-head"><span class="drawer-title">${esc(bc.name||S.session?.business||'Menu')}</span><button class="drawer-x" aria-label="Fermer" onclick="document.body.classList.remove('drawer-open')">✕</button></div>
-  <nav class="drawer-nav">
-    ${_navLinks.map(l=>`<a href="${l[0]}" onclick="event.preventDefault();document.body.classList.remove('drawer-open');(document.querySelector('${l[0]}')||document.body).scrollIntoView({behavior:'smooth',block:'start'})">${l[1]}</a>`).join('')}
-    <a href="#" onclick="event.preventDefault();document.body.classList.remove('drawer-open');baroMyOrders()">🛍️ Mes achats</a>
-  </nav>
-  ${socialsHTML?`<div class="drawer-soc">${socialsHTML}</div>`:''}
-  <div class="drawer-cur">${_curBadge}</div>
-</aside>
+<nav class="navpills" aria-label="Navigation">
+  ${_navLinks.map(l=>`<a href="${l[0]}" onclick="event.preventDefault();(document.querySelector('${l[0]}')||document.body).scrollIntoView({behavior:'smooth',block:'start'})">${l[1]}</a>`).join('')}
+  <a href="#" onclick="event.preventDefault();baroMyOrders()">Mes achats</a>
+</nav>
 <div class="header header-${heroStyle}${_heroVid?' has-video':''}">
   ${heroVideoHTML}
   ${logo && heroStyle !== 'minimal' ? `<img src="${logo}" class="header-logo" alt="Logo">` : ''}
@@ -20699,13 +20696,15 @@ ${bannerHTML(topBanner, 'top')}
 </div>
 <div class="container">
 ${cc.body || ''}
+<div class="sec-eyebrow reveal"><span>${shopProds.length} article${shopProds.length>1?'s':''} · Notre sélection</span></div>
 <main class="grid" id="produits">
 ${prodsHTML}
 </main>
 <div id="no-results">Aucun produit ne correspond à votre recherche 🙁</div>
 ${_servicesArr.length>0?`<div class="svc-strip reveal">${_servicesArr.map(s=>`<div class="svc-item">${esc(s)}</div>`).join('')}</div>`:''}
 ${midVideoHTML}
-${_aboutText?`<div class="about-section reveal" id="apropos">
+${_aboutText?`<div class="sec-eyebrow reveal"><span>La maison</span></div>
+<div class="about-section reveal" id="apropos">
   <div class="pay-section-title">À propos</div>
   <p class="about-text">${esc(_aboutText).replace(/\n/g,'<br>')}</p>
 </div>`:''}
@@ -20714,7 +20713,8 @@ ${showReviews ? reviewsHTML : ''}
   <div class="pay-section-title">Moyens de paiement acceptés</div>
   <div class="pay-badges">${payHTML}</div>
 </div>
-${_hasContact?`<div class="contact-section reveal" id="contact">
+${_hasContact?`<div class="sec-eyebrow reveal"><span>Nous joindre</span></div>
+<div class="contact-section reveal" id="contact">
   <div class="pay-section-title">Contact</div>
   <div class="contact-rows">
     ${_ctPhone?`<a class="contact-row" href="tel:${esc(_ctPhone.replace(/\s/g,''))}"><span>📞</span><span>${esc(_ctPhone)}</span></a>`:''}
