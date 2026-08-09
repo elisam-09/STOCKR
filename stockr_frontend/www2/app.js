@@ -1939,7 +1939,11 @@ function fmtDate(iso) {
   return d.toLocaleDateString('fr-FR', { day:'numeric', month:'short' });
 }
 function initials(name) {
-  return name.trim().split(/\s+/).slice(0,2).map(w=>w[0].toUpperCase()).join('');
+  // Robuste : un nom vide/absent (commerce pas encore nommé, client sans nom)
+  // faisait planter TOUTE la vue appelante. On retombe sur un monogramme neutre.
+  const parts = String(name == null ? '' : name).trim().split(/\s+/).filter(Boolean);
+  if (!parts.length) return '?';
+  return parts.slice(0, 2).map(w => w.charAt(0).toUpperCase()).join('');
 }
 // Avatar d'article/produit : photo si présente, sinon monogramme
 function itemAvatar(item, extraStyle = '') {
@@ -18325,6 +18329,11 @@ function applyAppearance() {
   root.setAttribute('data-theme', resolved);
   document.body?.setAttribute('data-theme', resolved);
   S.darkMode = resolved === 'dark';
+  // La feuille de style a DEUX mécanismes de thème sombre : l'attribut
+  // data-theme (119 règles) ET la classe body.dark (100 règles). Sans cette
+  // synchro, choisir "sombre" depuis l'écran Apparence n'appliquait que la
+  // moitié du thème (hero, nav, sous-hero restaient clairs → texte illisible).
+  document.body?.classList.toggle('dark', S.darkMode);
   // Couleur d'accent (on la pose aussi sur body pour gagner la cascade
   // contre les blocs [data-theme="dark"] qui redéfinissent --accent sur body)
   if (a.accentColor) {
