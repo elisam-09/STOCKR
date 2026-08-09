@@ -1437,21 +1437,79 @@ function _lsData(uid)       { try { return JSON.parse(localStorage.getItem('baro
 function _lsSaveData(uid,d) { localStorage.setItem('baro_data_' + uid, JSON.stringify(d)); }
 function _uid()             { return S.session?.id; }
 
+// ── Sécurité : toute ouverture d'onglet externe reçoit 'noopener' ──────────
+// Sans cela, la page ouverte accède à window.opener et peut rediriger NOTRE
+// onglet vers une fausse page de connexion (détournement d'onglet inversé).
+// Exception : window.open('') — fenêtre vierge de même origine dans laquelle
+// l'app écrit un aperçu ; 'noopener' renverrait null et casserait l'écriture.
+(function () {
+  if (typeof window === 'undefined' || window.__openHardened) return;
+  const _open = window.open.bind(window);
+  window.open = function (url, target, features) {
+    if (!url) return _open(url, target, features);
+    const f = features ? String(features) : '';
+    return _open(url, target, /\bnoopener\b/.test(f) ? f : (f ? f + ',noopener' : 'noopener'));
+  };
+  window.__openHardened = true;
+})();
+
+// ── Empreinte de mot de passe (mode local) ─────────────────
+// Les comptes locaux stockaient le mot de passe EN CLAIR dans localStorage :
+// quiconque a accès à l'appareil (ou une faille XSS) pouvait tout lire, et les
+// gens réutilisent leurs mots de passe. On stocke désormais une empreinte
+// SHA-256 salée. Le sel est l'IDENTIFIANT du compte (stable) et non l'e-mail :
+// sinon changer d'e-mail invaliderait l'empreinte et verrouillerait l'utilisateur
+// définitivement, puisque le mot de passe en clair n'existe plus pour re-hacher.
+// Les anciens comptes en clair sont migrés à leur prochaine connexion.
+async function _pwdHash(salt, password) {
+  const data = 'baro|v1|' + String(salt == null ? '' : salt) + '|' + String(password || '');
+  try {
+    if (crypto && crypto.subtle) {
+      const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(data));
+      return 'h1$' + Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+  } catch (_) {}
+  // Repli si SubtleCrypto indisponible (contexte non sécurisé) — moins solide,
+  // mais toujours préférable au stockage en clair.
+  let h1 = 0x811c9dc5, h2 = 5381;
+  for (let i = 0; i < data.length; i++) {
+    h1 = ((h1 ^ data.charCodeAt(i)) * 0x01000193) >>> 0;
+    h2 = ((h2 << 5) + h2 + data.charCodeAt(i)) >>> 0;
+  }
+  return 'h0$' + h1.toString(16) + h2.toString(16);
+}
+
 function _localApi(method, path, body) {
   // ── Auth ──
   if (path === '/api/auth/register' && method === 'POST') {
-    const users = _lsUsers();
-    if (users.find(u => u.email === body.email)) throw new Error('Email déjà utilisé');
-    const user = { id: Date.now(), email: body.email, _pwd: body.password, name: body.name, business_name: body.business_name || body.name, currency: body.currency || 'XOF', country: body.country || 'SN', language: body.language || 'fr', profile: body.profile || 'transformer', tax_rate: parseFloat(body.tax_rate) || 0, auth_token: 'local_' + Date.now() };
-    users.push(user);
-    _lsSave(users);
-    _lsSaveData(user.id, { articles: [], products: [], sales: [], clients: [] });
-    return { user };
+    return (async () => {
+      const users = _lsUsers();
+      if (users.find(u => u.email === body.email)) throw new Error('Email déjà utilisé');
+      const _uidNew = Date.now();
+      const user = { id: _uidNew, email: body.email, _pwdh: await _pwdHash(_uidNew, body.password), name: body.name, business_name: body.business_name || body.name, currency: body.currency || 'XOF', country: body.country || 'SN', language: body.language || 'fr', profile: body.profile || 'transformer', tax_rate: parseFloat(body.tax_rate) || 0, auth_token: 'local_' + Date.now() };
+      users.push(user);
+      _lsSave(users);
+      _lsSaveData(user.id, { articles: [], products: [], sales: [], clients: [] });
+      return { user };
+    })();
   }
   if (path === '/api/auth/login' && method === 'POST') {
-    const user = _lsUsers().find(u => u.email === body.email && u._pwd === body.password);
-    if (!user) throw new Error('Email ou mot de passe incorrect');
-    return { user: { ...user, auth_token: 'local_' + user.id } };
+    return (async () => {
+      const users = _lsUsers();
+      const u = users.find(x => x.email === body.email);
+      let ok = false;
+      if (u) {
+        if (u._pwdh) {
+          ok = u._pwdh === await _pwdHash(u.id, body.password);
+        } else if (u._pwd !== undefined) {
+          // Compte hérité en clair : on vérifie puis on migre immédiatement.
+          ok = u._pwd === body.password;
+          if (ok) { u._pwdh = await _pwdHash(u.id, body.password); delete u._pwd; _lsSave(users); }
+        }
+      }
+      if (!ok) throw new Error('Email ou mot de passe incorrect');
+      return { user: { ...u, auth_token: 'local_' + u.id } };
+    })();
   }
   if (path === '/api/auth/profile' && method === 'GET') {
     return _lsUsers().find(u => u.id === _uid()) || {};
@@ -11114,7 +11172,7 @@ function vSpectra() {
       ${!localStorage.getItem('stockr_gemini_key') ? `
       <div style="margin-top:8px;padding:10px 12px;background:linear-gradient(135deg,rgba(66,133,244,.08),rgba(124,58,237,.08));border:1px dashed rgba(124,58,237,.35);border-radius:10px;font-size:11px;line-height:1.5;color:var(--text-2)">
         <div style="font-weight:700;color:#7C3AED;margin-bottom:4px">💡 Pour une reconnaissance précise (iPhone, MacBook, Nescafé...)</div>
-        <div>1. Ouvrez <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:#4285F4;font-weight:600;text-decoration:underline">aistudio.google.com/apikey</a> (gratuit)</div>
+        <div>1. Ouvrez <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" style="color:#4285F4;font-weight:600;text-decoration:underline">aistudio.google.com/apikey</a> (gratuit)</div>
         <div>2. Cliquez "Create API Key"</div>
         <div>3. Collez-la dans Spectra AI ci-dessus</div>
         <div style="margin-top:4px;font-style:italic;color:var(--text-3)">Sans clé : Spectra lit uniquement les textes/marques visibles sur l'emballage.</div>
@@ -15235,8 +15293,8 @@ function vBillingSetup() {
     <div class="card" style="margin-bottom:12px;background:linear-gradient(135deg,rgba(16,185,129,.08),transparent);border:1px solid rgba(16,185,129,.25)">
       <div style="font-size:13px;font-weight:800;margin-bottom:6px">🌍 Quel fournisseur choisir ?</div>
       <div style="font-size:12px;color:var(--text-2);line-height:1.7">
-        🇨🇮 <strong>Côte d'Ivoire / Afrique</strong> : <a href="https://cinetpay.com" target="_blank" style="color:var(--accent);font-weight:700">CinetPay</a>, <a href="https://paydunya.com" target="_blank" style="color:var(--accent);font-weight:700">PayDunya</a> ou <a href="https://www.wave.com/fr/business/" target="_blank" style="color:var(--accent);font-weight:700">Wave Business</a> → acceptent Wave, Orange Money, MoMo + cartes.<br>
-        🌐 <strong>International</strong> : <a href="https://dashboard.stripe.com/payment-links" target="_blank" style="color:var(--accent);font-weight:700">Stripe Payment Links</a> (⚠ ne marche pas pour recevoir depuis la CI).
+        🇨🇮 <strong>Côte d'Ivoire / Afrique</strong> : <a href="https://cinetpay.com" target="_blank" rel="noopener noreferrer" style="color:var(--accent);font-weight:700">CinetPay</a>, <a href="https://paydunya.com" target="_blank" rel="noopener noreferrer" style="color:var(--accent);font-weight:700">PayDunya</a> ou <a href="https://www.wave.com/fr/business/" target="_blank" rel="noopener noreferrer" style="color:var(--accent);font-weight:700">Wave Business</a> → acceptent Wave, Orange Money, MoMo + cartes.<br>
+        🌐 <strong>International</strong> : <a href="https://dashboard.stripe.com/payment-links" target="_blank" rel="noopener noreferrer" style="color:var(--accent);font-weight:700">Stripe Payment Links</a> (⚠ ne marche pas pour recevoir depuis la CI).
       </div>
     </div>
 
@@ -15394,7 +15452,7 @@ function vSupplierDetail() {
     </div>
     <div style="display:flex;gap:8px;margin-top:12px">
       ${sup.phone ? `<a href="tel:${sup.phone}" class="btn btn-primary" style="flex:1;text-align:center;text-decoration:none">${IC.phone} &nbsp; ${t('supplierPhone')}</a>` : ''}
-      ${sup.phone ? `<a href="https://wa.me/${sup.phone.replace(/[^0-9]/g,'')}" class="btn" style="flex:1;text-align:center;text-decoration:none;background:#25D366;color:#fff" target="_blank">${IC.whatsapp} &nbsp; WhatsApp</a>` : ''}
+      ${sup.phone ? `<a href="https://wa.me/${sup.phone.replace(/[^0-9]/g,'')}" class="btn" style="flex:1;text-align:center;text-decoration:none;background:#25D366;color:#fff" target="_blank" rel="noopener noreferrer">${IC.whatsapp} &nbsp; WhatsApp</a>` : ''}
     </div>
     ${(() => {
       // Historique réel des commandes passées à CE fournisseur
@@ -17083,7 +17141,7 @@ function vTeam() {
                   ${attendees.slice(0,4).map(n => `<span style="font-size:10px;padding:2px 8px;background:var(--accent-light, rgba(79,70,229,0.08));color:var(--accent);border-radius:10px;font-weight:600">${n}</span>`).join('')}
                   ${attendees.length > 4 ? `<span style="font-size:10px;padding:2px 8px;background:var(--gray-1);color:var(--text-3);border-radius:10px">+${attendees.length-4}</span>` : ''}
                 </div>` : ''}
-                ${mt.link ? `<div style="margin-top:8px"><a href="${mt.link}" target="_blank" style="font-size:11px;color:var(--accent);font-weight:600;text-decoration:none">🔗 Rejoindre</a></div>` : ''}
+                ${mt.link ? `<div style="margin-top:8px"><a href="${mt.link}" target="_blank" rel="noopener noreferrer" style="font-size:11px;color:var(--accent);font-weight:600;text-decoration:none">🔗 Rejoindre</a></div>` : ''}
               </div>`;
             }).join('')}
             ${past.length ? `<div style="font-size:11px;font-weight:700;color:var(--text-3);letter-spacing:.3px;text-transform:uppercase;margin:14px 0 6px">Passées (${past.length})</div>` : ''}
@@ -17544,7 +17602,7 @@ function vSpectraAISetup() {
           <div style="font-size:11px;color:var(--text-3)">${p.sub}</div>
         </div>
       </div>
-      <div style="font-size:11px;color:var(--text-2);margin-bottom:8px">${p.note} · <a href="${p.url}" target="_blank" style="color:${p.color};font-weight:700">Obtenir la clé →</a></div>
+      <div style="font-size:11px;color:var(--text-2);margin-bottom:8px">${p.note} · <a href="${p.url}" target="_blank" rel="noopener noreferrer" style="color:${p.color};font-weight:700">Obtenir la clé →</a></div>
       <input id="aikey-${p.id}" class="input" type="password" placeholder="${p.prefix}" value="${p.key}" autocomplete="off" style="font-family:monospace;font-size:13px !important">
       <div style="display:flex;gap:6px;margin-top:8px">
         <button class="btn btn-primary" style="flex:1;background:${p.color};border-color:${p.color};font-size:12px;padding:9px" onclick="saveAIKey('${p.id}')">💾 Enregistrer</button>
@@ -17665,7 +17723,7 @@ function vOAuthSetup() {
       <details style="margin-bottom:10px">
         <summary style="cursor:pointer;font-size:12px;font-weight:700;color:#4285F4;padding:6px 0">📖 Comment obtenir un Client ID Google (2 min)</summary>
         <div style="font-size:12px;color:var(--text-2);line-height:1.7;padding:8px 0 0 12px;border-left:2px solid #4285F4">
-          1. Ouvrez <a href="https://console.cloud.google.com/apis/credentials" target="_blank" style="color:#4285F4;font-weight:700">console.cloud.google.com/apis/credentials</a><br>
+          1. Ouvrez <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener noreferrer" style="color:#4285F4;font-weight:700">console.cloud.google.com/apis/credentials</a><br>
           2. Créez un projet (ou utilisez un existant)<br>
           3. <strong>Créer des identifiants</strong> → <strong>ID client OAuth</strong><br>
           4. Type : <strong>Application Web</strong><br>
@@ -17701,7 +17759,7 @@ function vOAuthSetup() {
       <details style="margin-bottom:10px">
         <summary style="cursor:pointer;font-size:12px;font-weight:700;color:var(--text-1);padding:6px 0">📖 Comment obtenir un Services ID Apple (compte dev $99/an requis)</summary>
         <div style="font-size:12px;color:var(--text-2);line-height:1.7;padding:8px 0 0 12px;border-left:2px solid var(--border)">
-          1. Ouvrez <a href="https://developer.apple.com/account/resources/identifiers/list/serviceId" target="_blank" style="color:var(--accent);font-weight:700">developer.apple.com/account/resources/identifiers</a><br>
+          1. Ouvrez <a href="https://developer.apple.com/account/resources/identifiers/list/serviceId" target="_blank" rel="noopener noreferrer" style="color:var(--accent);font-weight:700">developer.apple.com/account/resources/identifiers</a><br>
           2. Créez un <strong>Services ID</strong> (ex: <code>com.votreapp.baro.web</code>)<br>
           3. Activez <strong>Sign In with Apple</strong><br>
           4. Ajoutez le domaine : <code style="background:var(--gray-1);padding:2px 6px;border-radius:4px;font-size:11px">${window.location.hostname}</code><br>
@@ -17840,7 +17898,7 @@ function vNotificationsSetup() {
       <details style="margin-bottom:10px">
         <summary style="cursor:pointer;font-size:12px;font-weight:700;color:#0EA5E9;padding:6px 0">📖 Setup (3 min)</summary>
         <div style="font-size:12px;color:var(--text-2);line-height:1.7;padding:8px 0 0 12px;border-left:2px solid #0EA5E9">
-          1. Créez un compte <a href="https://www.emailjs.com/" target="_blank" style="color:#0EA5E9;font-weight:700">emailjs.com</a> (gratuit)<br>
+          1. Créez un compte <a href="https://www.emailjs.com/" target="_blank" rel="noopener noreferrer" style="color:#0EA5E9;font-weight:700">emailjs.com</a> (gratuit)<br>
           2. Ajoutez un <strong>Service</strong> Gmail (connectez votre compte)<br>
           3. Créez un <strong>Template</strong> avec variables <code>{{to_email}}</code>, <code>{{to_name}}</code>, <code>{{code}}</code>, <code>{{purpose}}</code>, <code>{{expires_min}}</code><br>
           4. Copiez les IDs ci-dessous<br>
@@ -17873,8 +17931,8 @@ function vNotificationsSetup() {
         <summary style="cursor:pointer;font-size:12px;font-weight:700;color:#F59E0B;padding:6px 0">📖 Setup (options multiples)</summary>
         <div style="font-size:12px;color:var(--text-2);line-height:1.7;padding:8px 0 0 12px;border-left:2px solid #F59E0B">
           <strong>Option 1 — Twilio Function</strong> : créez une fonction qui reçoit <code>{ to, message }</code> et appelle Twilio Messages API<br>
-          <strong>Option 2 — Africa's Talking</strong> (Côte d'Ivoire) : <a href="https://africastalking.com/" target="_blank" style="color:#F59E0B;font-weight:700">africastalking.com</a><br>
-          <strong>Option 3 — Orange Developer</strong> : <a href="https://developer.orange.com/" target="_blank" style="color:#F59E0B;font-weight:700">developer.orange.com</a><br>
+          <strong>Option 2 — Africa's Talking</strong> (Côte d'Ivoire) : <a href="https://africastalking.com/" target="_blank" rel="noopener noreferrer" style="color:#F59E0B;font-weight:700">africastalking.com</a><br>
+          <strong>Option 3 — Orange Developer</strong> : <a href="https://developer.orange.com/" target="_blank" rel="noopener noreferrer" style="color:#F59E0B;font-weight:700">developer.orange.com</a><br>
           <strong>Payload envoyé</strong> : <code>{ to: "+22507...", message: "...", code: "123456" }</code>
         </div>
       </details>
@@ -20262,7 +20320,7 @@ function generateBoutiqueSite(opts) {
       <div style="font-size:22px;font-weight:800;margin-bottom:10px;line-height:1.2">${activePopup.title}</div>
       <div style="font-size:14px;opacity:.95;margin-bottom:18px;line-height:1.5">${activePopup.message||''}</div>
       ${activePopup.promoCode?`<div style="background:rgba(255,255,255,0.25);padding:10px 18px;border-radius:10px;font-family:monospace;font-weight:800;letter-spacing:3px;display:inline-block;margin-bottom:16px;font-size:16px;cursor:pointer" onclick="navigator.clipboard.writeText('${activePopup.promoCode}');this.innerHTML='✓ Copié !'">${activePopup.promoCode}</div>`:''}
-      <div><a href="${activePopup.ctaUrl||waLink}" target="_blank" onclick="closePopup()" style="display:inline-block;background:rgba(255,255,255,0.25);color:${activePopup.textColor};padding:12px 28px;border-radius:10px;font-weight:700;text-decoration:none;backdrop-filter:blur(4px)">${activePopup.ctaText||'En profiter'}</a></div>
+      <div><a href="${activePopup.ctaUrl||waLink}" target="_blank" rel="noopener noreferrer" onclick="closePopup()" style="display:inline-block;background:rgba(255,255,255,0.25);color:${activePopup.textColor};padding:12px 28px;border-radius:10px;font-weight:700;text-decoration:none;backdrop-filter:blur(4px)">${activePopup.ctaText||'En profiter'}</a></div>
     </div>
   </div>
   <script>
@@ -20350,7 +20408,7 @@ function generateBoutiqueSite(opts) {
         </div>
         ${showCartButton
           ? `<button class="pc-add order-btn" data-id="${esc(String(p.id))}" ${p.qty===0?'disabled':''}>${p.qty===0?'Indisponible':esc(orderText)}</button>`
-          : `<a class="pc-add order-btn" style="text-decoration:none;text-align:center" href="${waLink}?text=${encodeURIComponent('Bonjour, je voudrais commander : '+p.name+' — '+fmt(finalPrice)+' '+sym())}" target="_blank">Commander</a>`}
+          : `<a class="pc-add order-btn" style="text-decoration:none;text-align:center" href="${waLink}?text=${encodeURIComponent('Bonjour, je voudrais commander : '+p.name+' — '+fmt(finalPrice)+' '+sym())}" target="_blank" rel="noopener noreferrer">Commander</a>`}
       </div>
     </div>`;
   }).join('\n');
@@ -20785,7 +20843,7 @@ ${_hasContact?`<div class="sec-eyebrow reveal"><span>Nous joindre</span></div>
     ${_ctPhone?`<a class="contact-row" href="tel:${esc(_ctPhone.replace(/\s/g,''))}"><span>📞</span><span>${esc(_ctPhone)}</span></a>`:''}
     ${_ctEmail?`<a class="contact-row" href="mailto:${esc(_ctEmail)}"><span>✉️</span><span>${esc(_ctEmail)}</span></a>`:''}
     ${_ctAddress?`<div class="contact-row"><span>📍</span><span>${esc(_ctAddress)}</span></div>`:''}
-    ${waNum?`<a class="contact-row" href="${waLink}" target="_blank"><span>💬</span><span>Écrire sur WhatsApp</span></a>`:''}
+    ${waNum?`<a class="contact-row" href="${waLink}" target="_blank" rel="noopener noreferrer"><span>💬</span><span>Écrire sur WhatsApp</span></a>`:''}
   </div>
 </div>`:''}
 ${(bc.deliveryZones||[]).length>0 && !_deliveryOff?`<div class="delivery-info reveal">🏙️ Zones de livraison : ${(bc.deliveryZones||[]).join(' • ')}</div>`:''}
@@ -20807,7 +20865,7 @@ ${popupHTML}
       </div>
       ${bc.description?`<p class="ft-desc">${esc(bc.description)}</p>`:''}
       <div class="ft-socials">
-        ${waNum?`<a class="ft-soc" href="${waLink}" target="_blank" title="WhatsApp"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1 0 12 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-1.7-.1-.4-.1-.9-.3-1.6-.6-2.8-1.2-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.8s.7-2 .9-2.2c.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 1.9c.1.1.1.3 0 .5l-.3.5-.3.3c-.2.2-.3.4-.1.7.2.3.9 1.4 1.9 2.3 1.3 1.1 2.3 1.5 2.6 1.6.3.1.5.1.7-.1l.8-1c.2-.2.4-.2.6-.1l1.8.9c.3.1.5.2.5.3.1.2.1.7-.1 1.3z"/></svg></a>`:''}
+        ${waNum?`<a class="ft-soc" href="${waLink}" target="_blank" rel="noopener noreferrer" title="WhatsApp"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1 0 12 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-1.7-.1-.4-.1-.9-.3-1.6-.6-2.8-1.2-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.8s.7-2 .9-2.2c.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 1.9c.1.1.1.3 0 .5l-.3.5-.3.3c-.2.2-.3.4-.1.7.2.3.9 1.4 1.9 2.3 1.3 1.1 2.3 1.5 2.6 1.6.3.1.5.1.7-.1l.8-1c.2-.2.4-.2.6-.1l1.8.9c.3.1.5.2.5.3.1.2.1.7-.1 1.3z"/></svg></a>`:''}
         ${socialsHTML}
         ${_ctEmail?`<a class="ft-soc" href="mailto:${esc(_ctEmail)}" title="Email"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg></a>`:''}
       </div>
@@ -21309,7 +21367,7 @@ window.BARO_VARSEL=window.BARO_VARSEL||{};
   window.addEventListener('resize',up,{passive:true});
   up();
 })();</script>
-${waNum?`<a href="${waLink}" target="_blank" class="wa-float"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg></a>`:''}
+${waNum?`<a href="${waLink}" target="_blank" rel="noopener noreferrer" class="wa-float"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg></a>`:''}
 ${customJsBody}
 ${cc.js ? `<script>${cc.js}<\/script>` : ''}
 </body></html>`;
@@ -25760,7 +25818,7 @@ function openCapCutFlow() {
         </div>
 
         <div style="display:grid;gap:10px">
-          <a href="https://www.capcut.com/editor" target="_blank" class="btn" style="background:linear-gradient(135deg,#000,#25F4EE);color:#fff;padding:14px;font-weight:700;text-decoration:none;text-align:center;display:block">🌐 Ouvrir CapCut Web</a>
+          <a href="https://www.capcut.com/editor" target="_blank" rel="noopener noreferrer" class="btn" style="background:linear-gradient(135deg,#000,#25F4EE);color:#fff;padding:14px;font-weight:700;text-decoration:none;text-align:center;display:block">🌐 Ouvrir CapCut Web</a>
           <a href="capcut://" class="btn btn-ghost" style="padding:14px;text-align:center;text-decoration:none;display:block" onclick="setTimeout(()=>{if(document.hasFocus())window.open('https://www.capcut.com/','_blank')},500)">📱 Ouvrir app CapCut (mobile)</a>
           <label class="btn btn-primary" style="padding:14px;cursor:pointer;display:block;text-align:center">
             📁 Ré-importer vidéo CapCut
@@ -26505,7 +26563,7 @@ function setupPayment(providerId, providerName) {
       <div style="padding:18px 20px">
         ${urls[providerId] ? `
         <div style="background:var(--accent-light);border-radius:10px;padding:10px;margin-bottom:14px;font-size:12px;color:var(--text-2)">
-          💡 Pas encore de compte marchand ? <a href="${urls[providerId]}" target="_blank" style="color:var(--accent);font-weight:700">Ouvrir ${providerName} →</a>
+          💡 Pas encore de compte marchand ? <a href="${urls[providerId]}" target="_blank" rel="noopener noreferrer" style="color:var(--accent);font-weight:700">Ouvrir ${providerName} →</a>
         </div>` : ''}
         <div class="form-group">
           <label class="form-label">${conf.main} *</label>
@@ -26846,7 +26904,7 @@ function _payReqPreview() {
   const b = _payReqBuild();
   if (!b) { el.innerHTML = `<div class="payreq-hint">Entrez un montant pour générer le lien / l'instruction.</div>`; return; }
   if (b.sh.link) {
-    el.innerHTML = `<div class="payreq-link-box"><div class="payreq-link-lbl">${b.sh.label}</div><a href="${b.sh.link}" target="_blank" class="payreq-link">${b.sh.link}</a></div>`;
+    el.innerHTML = `<div class="payreq-link-box"><div class="payreq-link-lbl">${b.sh.label}</div><a href="${b.sh.link}" target="_blank" rel="noopener noreferrer" class="payreq-link">${b.sh.link}</a></div>`;
   } else if (b.sh.inPerson) {
     el.innerHTML = `<div class="payreq-hint">${b.method.name} : encaissement carte/en personne (pas de lien à distance).</div>`;
   } else {
@@ -28023,7 +28081,7 @@ function vDeliverySetup() {
         <div style="font-size:26px">${meta.logo}</div>
         <div style="flex:1;font-size:12px;color:var(--text-1);line-height:1.5">
           <strong style="color:${meta.accent}">Comment obtenir vos identifiants ?</strong><br>
-          1. Créez un compte partenaire sur <a href="${meta.portal}" target="_blank" style="color:${meta.accent};font-weight:600">${meta.portal}</a><br>
+          1. Créez un compte partenaire sur <a href="${meta.portal}" target="_blank" rel="noopener noreferrer" style="color:${meta.accent};font-weight:600">${meta.portal}</a><br>
           2. Récupérez votre <em>Store ID</em> et votre <em>API Key</em> dans les réglages partenaires<br>
           3. Collez-les ci-dessous — BARO enverra les commandes ${meta.name} automatiquement
         </div>
@@ -30643,7 +30701,7 @@ function vSpectraEnhanced() {
       <div class="spectra-tuto-body">
         <div class="spectra-step">
           <div class="spectra-step-n">1</div>
-          <div><div class="spectra-step-t">Crée ta clé gratuite Groq</div><div class="spectra-step-d">Ouvre <a href="https://console.groq.com/keys" target="_blank" style="color:var(--accent);font-weight:700">console.groq.com/keys</a> → connecte-toi (Google/email) → « Create API Key ». <strong>Gratuit, sans carte, marche en Afrique.</strong></div></div>
+          <div><div class="spectra-step-t">Crée ta clé gratuite Groq</div><div class="spectra-step-d">Ouvre <a href="https://console.groq.com/keys" target="_blank" rel="noopener noreferrer" style="color:var(--accent);font-weight:700">console.groq.com/keys</a> → connecte-toi (Google/email) → « Create API Key ». <strong>Gratuit, sans carte, marche en Afrique.</strong></div></div>
         </div>
         <div class="spectra-step">
           <div class="spectra-step-n">2</div>
