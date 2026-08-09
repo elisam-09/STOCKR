@@ -5279,8 +5279,15 @@ async function confirmMultiSale(opts = {}) {
     S.paymentHistory.unshift({ id:Date.now(), provider:payMethod, amount:total, clientName:client?.name||'Client', date:new Date().toISOString() });
     localStorage.setItem('baro_payment_history', JSON.stringify(S.paymentHistory));
   }
+  // Honnêteté : si aucune ligne n'a pu être vendue (article retiré de la
+  // vitrine entre-temps, panier obsolète), ne pas annoncer un faux succès.
+  if (!newSales.length) {
+    showToast("Aucun article n'a pu être vendu — vérifiez le panier", 'error');
+    render();
+    return;
+  }
   logActivity('sale', `Vente multi: ${newSales.length} article(s) — ${fmt(total)} ${sym()}`);
-  showToast(`✅ ${newSales.length} articles vendus — ${fmt(total)} ${sym()}`, 'success');
+  showToast(`✅ ${newSales.length} article${newSales.length>1?'s':''} vendu${newSales.length>1?'s':''} — ${fmt(total)} ${sym()}`, 'success');
   S.multiCart = {};
   S.multiSearch = '';
   S.multiClientPick = null;
