@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BARO — Aide &amp; support</title>
+<meta name="description" content="Aide et support pour BARO — gestion de stock et de vente.">
+<style>
+  :root{--bg:#F6F7FB;--card:#fff;--ink:#14161F;--ink2:#4A4F63;--ink3:#8A8FA3;--line:#E6E8F2;--accent:#5B4BFF;}
+  @media (prefers-color-scheme:dark){
+    :root{--bg:#0A0C13;--card:#141724;--ink:#F2F4FB;--ink2:#AEB4C8;--ink3:#737A90;--line:#252B3C;--accent:#8C81FF;}
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);line-height:1.65;
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:760px;margin:0 auto;padding:0 20px}
+  header{background:linear-gradient(150deg,#140a3a,#2a2380 55%,#4338ca);color:#fff;padding:52px 0 44px;border-radius:0 0 26px 26px}
+  .eyebrow{font-size:11px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.65)}
+  h1{font-size:clamp(28px,6vw,42px);font-weight:800;letter-spacing:-.03em;margin:10px 0 8px;line-height:1.05}
+  header p{color:rgba(255,255,255,.85);font-size:15px}
+  main{padding:34px 0 60px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px 20px;margin-bottom:14px;
+    box-shadow:0 1px 2px rgba(16,18,28,.04),0 6px 20px -10px rgba(16,18,28,.08)}
+  h2{font-size:19px;font-weight:800;letter-spacing:-.02em;margin-bottom:10px}
+  p,li{color:var(--ink2);font-size:15px}
+  ul{margin:8px 0 0 18px} li{margin-bottom:6px}
+  details{border-bottom:1px solid var(--line);padding:12px 0}
+  details:last-child{border-bottom:0}
+  summary{font-weight:700;color:var(--ink);cursor:pointer;font-size:15px}
+  details p{margin-top:8px}
+  .cta{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:800;
+    padding:13px 22px;border-radius:12px;margin-top:6px}
+  a{color:var(--accent)}
+  footer{padding:26px 0 50px;text-align:center;color:var(--ink3);font-size:13px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="eyebrow">BARO</div>
+    <h1>Aide &amp; support</h1>
+    <p>Une question, un souci ? On vous répond.</p>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div class="card">
+    <h2>Nous écrire</h2>
+    <p>Décrivez votre situation en quelques lignes — si possible avec une capture d'écran. Nous répondons sous 48 heures ouvrées.</p>
+    <a class="cta" href="mailto:koneribaut@gmail.com?subject=Support%20BARO">Écrire au support</a>
+  </div>
+
+  <div class="card">
+    <h2>Questions fréquentes</h2>
+
+    <details>
+      <summary>Mes données sont-elles perdues si je change de téléphone ?</summary>
+      <p>Non. Allez dans <strong>Paramètres → Sauvegarde</strong> et enregistrez le fichier. Sur le nouveau téléphone,
+         installez BARO puis importez ce fichier. Si vous êtes connecté à votre compte, vos données se retrouvent
+         automatiquement.</p>
+    </details>
+
+    <details>
+      <summary>L'application fonctionne-t-elle sans internet ?</summary>
+      <p>Oui. Vous pouvez vendre, ajouter du stock et encaisser hors connexion. Les données se synchronisent
+         dès que le réseau revient.</p>
+    </details>
+
+    <details>
+      <summary>Pourquoi mon bénéfice est-il négatif ?</summary>
+      <p>Le bénéfice affiché est le bénéfice <strong>net</strong> : ventes moins dépenses. Si vous avez enregistré une
+         dépense (loyer, perte de produit périmé) sans vente ce jour-là, le résultat est négatif. Touchez la tuile
+         pour voir le détail dans le Bilan.</p>
+    </details>
+
+    <details>
+      <summary>Comment scanner mes produits ?</summary>
+      <p>Ouvrez le scanner depuis l'écran Stock. Autorisez la caméra quand elle est demandée : elle sert uniquement
+         à lire le code-barres et à photographier le produit. Vous pouvez aussi saisir le code à la main.</p>
+    </details>
+
+    <details>
+      <summary>À quoi sert l'écran Péremptions ?</summary>
+      <p>Il classe vos produits du plus urgent au moins urgent et calcule l'argent immobilisé dans ce qui va périmer.
+         Vous pouvez solder un produit pour l'écouler, ou le retirer en enregistrant la perte dans votre bilan.</p>
+    </details>
+
+    <details>
+      <summary>Comment noter ce qu'un client me doit ?</summary>
+      <p>Écran <strong>Crédits clients</strong> : « Nouveau crédit », le nom et le montant. Quand le client rembourse,
+         même en plusieurs fois, appuyez sur « Encaisser ». « Relancer » envoie un rappel WhatsApp poli.</p>
+    </details>
+
+    <details>
+      <summary>J'ai oublié mon code PIN</summary>
+      <p>Le code PIN protège l'ouverture de l'application sur votre appareil. Si vous l'oubliez, déconnectez-vous puis
+         reconnectez-vous avec votre e-mail et votre mot de passe pour le redéfinir.</p>
+    </details>
+
+    <details>
+      <summary>Comment supprimer mon compte et mes données ?</summary>
+      <p>Écrivez-nous à <a href="mailto:koneribaut@gmail.com">koneribaut@gmail.com</a> depuis l'adresse de votre compte.
+         Tout est effacé sous 30 jours. Pensez à faire une sauvegarde avant si vous souhaitez conserver votre historique.</p>
+    </details>
+  </div>
+
+  <div class="card">
+    <h2>Confidentialité</h2>
+    <p>Consultez notre <a href="confidentialite.html">politique de confidentialité</a> pour savoir exactement
+       quelles données sont traitées, et pourquoi.</p>
+  </div>
+
+</main>
+
+<footer>BARO — Gestion de stock &amp; vente · DakanStudios</footer>
+</body>
+</html>

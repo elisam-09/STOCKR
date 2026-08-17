@@ -1437,6 +1437,16 @@ function _lsData(uid)       { try { return JSON.parse(localStorage.getItem('baro
 function _lsSaveData(uid,d) { localStorage.setItem('baro_data_' + uid, JSON.stringify(d)); }
 function _uid()             { return S.session?.id; }
 
+// ── Fonctions mises en retrait pour le lancement ───────────────────────────
+// Elles exigent une configuration externe payante (clé d'API d'un modèle de
+// langage) : sans budget, elles ne peuvent pas être « 100 % vraies ». Plutôt
+// que d'exposer une fonction creuse — ce qui fait rejeter sur les stores et
+// déçoit l'utilisateur — on les masque partout : menu, accueil et navigation
+// directe. Ce n'est PAS une suppression : vider ce Set les réactive telles
+// quelles, sans rien réécrire.
+const LAUNCH_HIDDEN = new Set(['ai-chat']);
+function _isHidden(id) { return LAUNCH_HIDDEN.has(id); }
+
 // ── Sécurité : toute ouverture d'onglet externe reçoit 'noopener' ──────────
 // Sans cela, la page ouverte accède à window.opener et peut rediriger NOTRE
 // onglet vers une fausse page de connexion (détournement d'onglet inversé).
@@ -6602,6 +6612,8 @@ function _doRender() {
   // Redirect si onglet masqué par businessType
   if (S.view === 'products' && !bt_showProducts()) S.view = 'home';
   if (S.view === 'pantry'   && !bt_showStock())    S.view = 'home';
+  // Fonction mise en retrait pour le lancement → jamais atteignable, même en lien direct
+  if (_isHidden(S.view)) S.view = 'more';
 
   const map = {
     home: vHome, pantry: vPantry, products: vProducts,
@@ -7749,7 +7761,7 @@ function vHome() {
         </div>` : ''}
       </div>
       <div style="display:flex;gap:8px">
-        <button class="hero-btn" onclick="nav('ai-chat')" title="BARO IA — Assistant" style="position:relative;font-size:17px">🤖</button>
+        ${_isHidden('ai-chat') ? '' : `<button class="hero-btn" onclick="nav('ai-chat')" title="BARO IA — Assistant" style="position:relative;font-size:17px">🤖</button>`}
         ${__hasTeam ? `<button class="hero-btn" onclick="openMemberSwitcher()" title="Changer de membre" style="position:relative">👥</button>` : ''}
         <button class="hero-btn" onclick="nav('notifications')" style="position:relative">${IC.bell}${low.length>0?`<span style="position:absolute;top:-2px;right:-2px;width:18px;height:18px;border-radius:50%;background:var(--danger);color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center">${low.length}</span>`:''}</button>
         <button class="hero-btn" onclick="nav('settings')">${IC.settings}</button>
@@ -19152,7 +19164,7 @@ function vMore() {
     { id:'documents',       icon:'📁',          label:'Documents',                     sub:'Devis · factures · rapports · exports', color:'#0d9488' },
     { id:'pricing',         icon:IC.star,       label:t('pricing')||'Tarifs',          sub:t('myPlan')||'Mon plan',    color:'#eab308' },
     { id:'settings',        icon:IC.settings,   label:t('settings')||'Parametres',     sub:t('myAccount')||'Compte',   color:'#64748b' },
-  ];
+  ].filter(it => it && !_isHidden(it.id));
 
   // Alerts / rappels
   const alerts = [];
