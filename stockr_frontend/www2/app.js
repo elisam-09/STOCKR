@@ -1766,6 +1766,24 @@ function _saveArticles() {
     localStorage.setItem('baro_articles', j);
   } catch(_){}
 }
+// Même règle que pour les articles : le démarrage relit `stockr_products` et
+// `stockr_sales`. Écrire uniquement les clés `baro_*` faisait DISPARAÎTRE les
+// produits et l'historique des ventes au redémarrage — le bug historique
+// « je quitte l'app et mes trucs ne sont plus là ». On écrit donc les deux.
+function _saveProducts() {
+  try {
+    const j = JSON.stringify(S.products || []);
+    localStorage.setItem('stockr_products', j);
+    localStorage.setItem('baro_products', j);
+  } catch(_){}
+}
+function _saveSales() {
+  try {
+    const j = JSON.stringify(S.sales || []);
+    localStorage.setItem('stockr_sales', j);
+    localStorage.setItem('baro_sales', j);
+  } catch(_){}
+}
 
 // Normalise les produits venant du stockage local ou du serveur : un produit
 // hérité (ancienne version, import, saisie partielle) peut ne pas avoir de
@@ -4015,9 +4033,9 @@ function loadDemoData() {
     // Double persistance : certains modules lisent stockr_*, d'autres baro_*
     try {
       _saveArticles();
-      localStorage.setItem('baro_products', JSON.stringify(S.products));
+      _saveProducts();
       _saveClients();
-      localStorage.setItem('baro_sales',    JSON.stringify(S.sales));
+      _saveSales();
     } catch(_) {}
     if (typeof render === 'function') render();
     if (typeof showToast === 'function') {
@@ -15901,7 +15919,7 @@ function quickSaleProduct(productId) {
   }
 
   S.sales.unshift(sale);
-  localStorage.setItem('baro_sales', JSON.stringify(S.sales));
+  _saveSales();   // les deux clés : `baro_sales` seul n'est jamais relu au démarrage
   logActivity('sale', `${prod.name} x1 — ${fmt(prod.price)} ${sym}`);
   showToast(`${t('saleConfirmed')}: ${prod.name} — ${fmt(prod.price)} ${sym}`, 'success');
   render();
