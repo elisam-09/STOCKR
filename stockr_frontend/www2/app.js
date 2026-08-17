@@ -1444,7 +1444,7 @@ function _uid()             { return S.session?.id; }
 // déçoit l'utilisateur — on les masque partout : menu, accueil et navigation
 // directe. Ce n'est PAS une suppression : vider ce Set les réactive telles
 // quelles, sans rien réécrire.
-const LAUNCH_HIDDEN = new Set(['ai-chat']);
+const LAUNCH_HIDDEN = new Set(['ai-chat', 'video-library']);
 function _isHidden(id) { return LAUNCH_HIDDEN.has(id); }
 
 // ── Sécurité : toute ouverture d'onglet externe reçoit 'noopener' ──────────
@@ -25315,6 +25315,11 @@ function _vidList() {
 
 // Éditeur vidéo (utilise MediaRecorder + enregistrement d'écran pour créer clips)
 function openVideoEditor(tpl) {
+  // Studio vidéo mis en retrait pour le lancement : c'est la seule fonction qui
+  // demande le MICROPHONE, la permission la plus scrutée en revue de store.
+  // Verrou ici aussi (pas seulement dans l'interface) pour qu'aucun chemin
+  // résiduel ne puisse déclencher une demande d'autorisation.
+  if (_isHidden('video-library')) return;
   const existing = document.getElementById('vid-editor-modal');
   if (existing) existing.remove();
   const modal = document.createElement('div');
@@ -25933,17 +25938,17 @@ function vSocialMedia() {
       <div class="card-title">🎨 Studio création</div>
       <div style="font-size:12px;color:var(--text-3);margin-bottom:10px">Templates pros, images &amp; vidéos modifiables</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-        <button class="btn" style="background:linear-gradient(135deg,#EC4899,#F59E0B);color:#fff;font-weight:700;padding:12px" onclick="openSocialTemplates('image')">🖼️ Templates Image</button>
-        <button class="btn" style="background:linear-gradient(135deg,#000,#25F4EE);color:#fff;font-weight:700;padding:12px" onclick="openSocialTemplates('video')">🎬 Templates Vidéo</button>
+        <button class="btn" style="background:linear-gradient(135deg,#EC4899,#F59E0B);color:#fff;font-weight:700;padding:12px;${_isHidden('video-library')?'grid-column:1/-1':''}" onclick="openSocialTemplates('image')">🖼️ Templates Image</button>
+        ${_isHidden('video-library') ? '' : `<button class="btn" style="background:linear-gradient(135deg,#000,#25F4EE);color:#fff;font-weight:700;padding:12px" onclick="openSocialTemplates('video')">🎬 Templates Vidéo</button>`}
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
-        <button class="btn btn-ghost" style="padding:10px;font-size:12px" onclick="openImageEditor()">✏️ Éditeur image</button>
-        <button class="btn btn-ghost" style="padding:10px;font-size:12px" onclick="openVideoEditor()">🎞️ Éditeur vidéo</button>
+        <button class="btn btn-ghost" style="padding:10px;font-size:12px;${_isHidden('video-library')?'grid-column:1/-1':''}" onclick="openImageEditor()">✏️ Éditeur image</button>
+        ${_isHidden('video-library') ? '' : `<button class="btn btn-ghost" style="padding:10px;font-size:12px" onclick="openVideoEditor()">🎞️ Éditeur vidéo</button>`}
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
+      ${_isHidden('video-library') ? '' : `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
         <button class="btn btn-ghost" style="padding:10px;font-size:12px" onclick="nav('video-library')">📚 Mes vidéos (${_vidList().length})</button>
         <button class="btn btn-ghost" style="padding:10px;font-size:12px;background:linear-gradient(135deg,rgba(0,0,0,.05),rgba(37,244,238,.12))" onclick="openCapCutFlow()">✨ CapCut</button>
-      </div>
+      </div>`}
     </div>
 
     <div class="card" style="margin-bottom:14px">
@@ -27369,7 +27374,7 @@ function openIntegrationDashboard(integrationId) {
         { label:'📹 Uploader via YouTube Studio', url:'https://studio.youtube.com/channel/UC/videos/upload' },
         { label:'📊 Studio (analytics)', url:'https://studio.youtube.com/' },
         { label:'💬 Gérer les commentaires', url:'https://studio.youtube.com/channel/UC/comments' },
-        { label:'🎬 Créer une vidéo', action:()=>openVideoEditor(SOCIAL_TEMPLATES.video.find(t=>t.id==='yt-short')) },
+        ...(_isHidden('video-library') ? [] : [{ label:'🎬 Créer une vidéo', action:()=>openVideoEditor(SOCIAL_TEMPLATES.video.find(t=>t.id==='yt-short')) }]),
       ]
     },
     'whatsapp-business': {
@@ -27786,6 +27791,10 @@ async function __updateEcomProduct(provider, productId, variantId) {
 function __openYTUploadModal() {
   const vids = _vidList();
   if (vids.length === 0) {
+    if (_isHidden('video-library')) {
+      showToast('Aucune vidéo à publier — importez-en une depuis votre téléphone', 'info');
+      return;
+    }
     if (confirm('Aucune vidéo dans votre bibliothèque.\n\nOuvrir l\'éditeur vidéo pour en créer une ?')) {
       openVideoEditor();
     }

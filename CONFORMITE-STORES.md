@@ -30,24 +30,25 @@ Une fois `gh-pages` déployé, ces deux pages sont en ligne :
 | Clé | Texte à utiliser |
 |---|---|
 | `NSCameraUsageDescription` | BARO utilise l'appareil photo pour scanner les codes-barres de vos produits et prendre leurs photos, afin de remplir votre stock sans tout saisir à la main. |
-| `NSMicrophoneUsageDescription` | BARO utilise le microphone uniquement lorsque vous enregistrez une vidéo de présentation de votre commerce dans le studio vidéo. |
 | `NSLocationWhenInUseUsageDescription` | BARO utilise votre position uniquement lorsque vous le demandez, pour pré-remplir l'adresse de retrait de votre boutique ou proposer un itinéraire à vos clients. |
 | `NSPhotoLibraryUsageDescription` | BARO accède à vos photos pour que vous puissiez choisir une image existante comme photo de produit ou logo de boutique. |
+
+> ✅ **`NSMicrophoneUsageDescription` : NE PAS l'ajouter.** Le studio vidéo — seule
+> fonction qui utilisait le microphone — est retiré du lancement. Vérifié au
+> runtime : plus aucun chemin de l'application ne demande le micro.
 
 ### Android — `AndroidManifest.xml`
 
 | Permission | Justification (Play Console) |
 |---|---|
 | `CAMERA` | Scan des codes-barres produits et prise de photo des articles. |
-| `RECORD_AUDIO` | Enregistrement du son des vidéos promotionnelles (studio vidéo). |
 | `ACCESS_FINE_LOCATION` | Pré-remplissage de l'adresse du point de retrait, à la demande de l'utilisateur. |
 | `POST_NOTIFICATIONS` | Alertes de stock bas, de péremption et de nouvelle commande. |
 | `INTERNET` | Synchronisation du compte et boutique en ligne. |
 
-> 💡 **Recommandation forte** : si vous n'utilisez pas le studio vidéo au lancement,
-> **retirez `RECORD_AUDIO` / `NSMicrophoneUsageDescription`**. Le microphone est la
-> permission la plus scrutée par les examinateurs ; ne pas la demander supprime
-> tout un aller-retour possible. (Voir §6.)
+> ✅ **`RECORD_AUDIO` : NE PAS la déclarer.** Le studio vidéo est retiré du
+> lancement, plus rien ne demande le microphone. C'est la permission la plus
+> scrutée en revue : ne pas la demander supprime un aller-retour probable.
 
 ---
 
@@ -100,7 +101,8 @@ Aucune bannière ATT n'est donc requise.
 |---|---|---|
 | **Assistant IA (BARO IA)** | **Masqué** | Nécessite une clé d'API payante. Sans elle, la fonction serait creuse — contraire à la règle « rien de faux ». Réactivable en vidant `LAUNCH_HIDDEN` dans `app.js`, sans réécrire une ligne. |
 | Scan Spectra | **Conservé** | Fonctionne sans clé (lecteur de code-barres natif + modèles chargés localement). |
-| Studio vidéo | **À décider** | Seule fonction qui demande le microphone. Le retirer simplifierait nettement l'examen. |
+| **Studio vidéo** | **Masqué** | Seule fonction qui demandait le microphone. Retiré : modèles vidéo, éditeur, bibliothèque et entrée YouTube. Verrou également posé dans `openVideoEditor()` pour qu'aucun chemin résiduel ne puisse déclencher la demande d'autorisation. Vérifié au runtime avec un espion sur `getUserMedia` : le micro n'est jamais sollicité. Réactivable en retirant `'video-library'` de `LAUNCH_HIDDEN`. |
+| Éditeur d'image, modèles image | **Conservés** | Fonctionnent entièrement hors ligne (canvas local). |
 
 ---
 
