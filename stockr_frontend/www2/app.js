@@ -20687,7 +20687,7 @@ function generateBoutiqueSite(opts) {
     const stockBadge = (showStockCount && p.qty != null)
       ? (p.qty > 0 ? `<span class="pc-stock ok">✓ Stock</span>` : `<span class="pc-stock out">Rupture</span>`)
       : '';
-    return `<div class="pc reveal" data-idx="${idx}" data-cat="${esc(p.category||'Autres')}" data-name="${esc((p.name||'').toLowerCase())}" data-price="${Math.round(finalPrice)||0}">
+    return `<div class="pc reveal${p.qty === 0 ? ' pc-out' : ''}" data-idx="${idx}" data-cat="${esc(p.category||'Autres')}" data-name="${esc((p.name||'').toLowerCase())}" data-price="${Math.round(finalPrice)||0}">
       <div class="pc-imgwrap" onclick="baroQV&&baroQV('${esc(String(p.id))}')" style="cursor:zoom-in">
         ${img}
         ${urgHTML}
@@ -20700,8 +20700,14 @@ function generateBoutiqueSite(opts) {
         ${ratingHTML}
         ${p.description ? `<div class="pc-desc">${esc(p.description)}</div>` : ''}
         <div class="pc-row">
-          <div class="pc-price">${promo ? `<s>${fmt(p.price)}</s> ` : ''}${fmt(finalPrice)} <small>${sym()}</small></div>
-          ${stockBadge}
+          <div class="pc-price">${promo ? `<s>${fmt(p.price)}</s>` : ''}<b>${fmt(finalPrice)}</b><small>${sym()}</small></div>
+          ${(() => {
+            // Remise annoncee en clair : le prix barre seul oblige le client
+            // a faire le calcul de tete.
+            if (!promo || !(p.price > 0) || !(finalPrice < p.price)) return stockBadge;
+            const pct = Math.round((1 - finalPrice / p.price) * 100);
+            return pct >= 1 ? `<span class="pc-save">−${pct}%</span>` : stockBadge;
+          })()}
         </div>
         ${showCartButton
           ? `<button class="pc-add order-btn" data-id="${esc(String(p.id))}" ${p.qty===0?'disabled':''}>${p.qty===0?'Indisponible':esc(orderText)}</button>`
@@ -20976,9 +20982,33 @@ ${hoverCss}
 .pc-name{font-weight:700;font-size:14.5px;line-height:1.3;letter-spacing:-.2px}
 .pc-desc{font-size:11.5px;color:#777;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .pc-row{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-top:auto;padding-top:6px}
-.pc-price{font-weight:900;font-size:17px;color:${tc};letter-spacing:-.4px;font-variant-numeric:tabular-nums}
-.pc-price small{font-size:10px;font-weight:600;color:#999}
-.pc-price s{color:#bbb;font-size:11.5px;font-weight:500;margin-right:3px}
+/* Prix : hierarchie nette entre le montant, la devise et le prix barre */
+.pc-price{display:flex;align-items:baseline;gap:4px;flex-wrap:wrap;
+  font-variant-numeric:tabular-nums;line-height:1.1}
+.pc-price b{font-size:19px;font-weight:800;color:${tc};letter-spacing:-.045em}
+.pc-price small{font-size:11px;font-weight:700;color:var(--tx2);letter-spacing:.01em}
+.pc-price s{order:-1;flex-basis:100%;color:var(--tx2);opacity:.65;font-size:11.5px;font-weight:500;
+  text-decoration-thickness:1px}
+/* Remise chiffree : le client n'a pas a calculer */
+.pc-save{font-size:10.5px;font-weight:800;letter-spacing:.02em;white-space:nowrap;
+  padding:4px 8px;border-radius:7px;color:#fff;
+  background:linear-gradient(135deg,#EF4444,#DC2626);
+  box-shadow:0 3px 10px -3px rgba(220,38,38,.55)}
+
+/* ── Rupture : la carte doit se lire d'un coup d'oeil ─────────────────
+   Auparavant seul un badge minuscule distinguait un article epuise :
+   dans une grille, il semblait achetable jusqu'a lecture du petit texte. */
+.pc-out .pc-imgwrap{filter:grayscale(.82) contrast(.94);opacity:.5}
+.pc-out .pc-imgwrap::before{content:'Épuisé';position:absolute;z-index:3;
+  left:50%;top:50%;transform:translate(-50%,-50%);
+  font-size:10.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
+  color:#fff;background:rgba(20,20,26,.78);backdrop-filter:blur(3px);
+  padding:7px 14px;border-radius:999px;white-space:nowrap}
+.pc-out .pc-name{opacity:.62}
+.pc-out .pc-price b{color:var(--tx2)}
+.pc-out:hover{transform:none}
+.pc-out .pc-imgwrap::after{display:none}
+.pc-out .pc-add{opacity:.55;cursor:not-allowed}
 .order-btn{${orderStyle==='outline'?`background:transparent;color:${tc};border:2px solid ${tc}`:orderStyle==='brand'?`background:linear-gradient(135deg,${tc},${tc}cc);color:#fff;border:none;box-shadow:0 4px 12px -4px ${tc}88`:'background:linear-gradient(135deg,#25D366,#1fb958);color:#fff;border:none;box-shadow:0 4px 12px -4px rgba(37,211,102,.5)'};border-radius:var(--rb);padding:10px 12px;font-weight:700;cursor:pointer;font-size:12.5px;font-family:inherit;transition:transform .15s,box-shadow .15s,filter .15s;margin-top:7px}
 .order-btn:hover{filter:brightness(1.05);transform:translateY(-1px)}
 .order-btn:active{transform:scale(.96)}
