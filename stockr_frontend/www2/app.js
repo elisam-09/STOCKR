@@ -270,6 +270,103 @@ const API_BASE = (location.hostname === 'localhost' || location.hostname === '12
 // ── i18n ─────────────────────────────────────
 const LANGS = {
   fr: {
+    w2_revendeur: "Revendeur",
+    w2_transformateur: "Transformateur",
+    w2_nouveauClient: "+ Nouveau client",
+    w2_ajouter: "Ajouter",
+    w2_reinitialiser: "Réinitialiser",
+    w2_securite: "Sécurité",
+    w2_equipe: "Équipe",
+    w2_entrepot: "Entrepôt",
+    w2_typeActivite: "Type d'activité",
+    w2_aucunArticleBout: "Aucun article en boutique.",
+    w2_aucuneVentePer: "Aucune vente sur la période ·",
+    w2_budgetAchat: "Budget d'achat estimé :",
+    w2_coutMateriaux: "Coût matériaux/charges",
+    w2_ceCahierSuit: "ce cahier suit vos",
+    w2_caClients: "CA CLIENTS",
+    w2_clientsMaj: "CLIENTS",
+    w2_topClient: "TOP CLIENT",
+    w2_valeurStock: "VALEUR STOCK",
+    w2_venteMaj: "VENTE",
+    w2_venteRapide: "⚡ Vente rapide",
+    w2_panierMulti: "🛒 Panier multi-produits",
+    w2_saisieLot: "⚡ Saisie rapide en lot",
+    w2_sauvegardeFichier: "📦 Sauvegarde par fichier",
+    w2_sousTitre2FA: "2FA · Biométrie · Sessions",
+    w2_sousTitreApparence: "Thème · Couleur · Taille · Densité",
+    w2_sousTitreActivite: "Activité · Boutique · 1er produit · WhatsApp",
+    w2_modeRevendeur: "masque l'onglet Produits, ventes directes depuis le stock.",
+    w2_modeTransfo: "onglet Produits activé, recettes depuis le stock.",
+    w1_maJournee: "Ma journée",
+    w1_journee: "Journée",
+    w1_journeeUnEcran: "Votre journée en un écran —",
+    w1_gerer: "Gérer",
+    w1_toutAJour: "Tout est à jour",
+    w1_peremptions: "Péremptions",
+    w1_peremption: "Péremption",
+    w1_PEREMPTION: "PÉREMPTION",
+    w1_datePeremption: "date de péremption",
+    w1_aucuneDatePer: "Aucune date de péremption pour l'instant",
+    w1_nePerdezPlus: "Ne perdez plus jamais d'argent en produits périmés",
+    w1_fefo: "FEFO — le plus urgent d'abord",
+    w1_argentARecuperer: "ARGENT À RÉCUPÉRER AVANT PÉREMPTION",
+    w1_pourPharmacie: "Pour une pharmacie :",
+    w1_rienCategorie: "Rien dans cette catégorie",
+    w1_reassort: "Réassort intelligent",
+    w1_aRecommander: "À RECOMMANDER MAINTENANT",
+    w1_calculeVentes: "Calculé sur vos ventes réelles",
+    w1_coutAchat: "coût d'achat",
+    w1_rythmeSur: "Rythme sur",
+    w1_clotureCaisse: "Clôture de caisse",
+    w1_zFinJournee: "Le « Z » de fin de journée",
+    w1_recettesJour: "RECETTES DU JOUR",
+    w1_especesComptees: "Espèces comptées",
+    w1_ventesEspeces: "+ Ventes espèces",
+    w1_depensesJour: "− Dépenses du jour",
+    w1_especesAttendues: "= Espèces attendues",
+    w1_ecartCaisse: "Écart de caisse",
+    w1_ecart: "écart",
+    w1_comptageTiroir: "💵 Comptage du tiroir",
+    w1_cloturerCaisse: "🔒 Clôturer la caisse",
+    w1_histoClotures: "Historique des clôtures",
+    w1_creditsClients: "Crédits clients",
+    w1_cahierDettes: "Le cahier de dettes, en mieux",
+    w1_ceQuOnVousDoit: "CE QU'ON VOUS DOIT",
+    w1_creances: "créances",
+    w1_beneficeBrut: "Bénéfice brut (ventes)",
+    w1_beneficeNet: "Bénéfice net",
+    w1_benefPotentiel: "BÉNÉF. POTENTIEL",
+    w1_caEquipe: "CA équipe",
+    w1_repartitionCA: "📊 Répartition du CA par catégorie",
+    w1_depensesPeriode: "💸 Dépenses de la période",
+    w1_ventesParVendeur: "👤 Ventes par vendeur",
+    w1_ventesParPaiement: "💳 Ventes par mode de paiement",
+    w1_ajouterDepense: "＋ Ajouter la dépense",
+    w1_commentCalcule: "Comment c'est calculé —",
+    w1_enregistrerVente: "Enregistrer une vente",
+    w1_aucuneVenteJour: "Aucune vente ce jour.",
+    w1_aucunClient: "— Aucun client —",
+    w1_selectionnezPlus: "🛒 Sélectionnez plusieurs articles",
+    w1_toucheProduit: "👆 Touche un produit pour l'ajouter · re-touche pour +1",
+    w1_encaisserPresta: "🧾 Encaisser une prestation",
+    w1_descPrestation: "Description de la prestation",
+    w1_serviceSansStock: "service sans stock",
+    w1_optionnelBenef: "(optionnel — pour un bénéfice juste)",
+    w1_entreeSortie: "⚡ Entrée/Sortie",
+    w1_aucunArticleDispo: "Aucun article disponible",
+    w1_ajouterArticlesBoutique: "Ajouter des articles à ma boutique →",
+    w1_aucunResultat: "Aucun résultat",
+    w1_chargementDonnees: "Chargement de tes données…",
+    w1_chargerExemples: "📚 Charger des exemples (optionnel)",
+    w1_tousExports: "⚙️ Tous les exports (Stock, Clients, Packs...)",
+    w1_equipe: "👥 Équipe",
+    w1_activerNotifs: "Activer les notifications",
+    w1_soisPrevenu: "Sois prévenu des ruptures de stock & objectifs",
+    w1_scannerIA: "Scanner IA · audit automatique du stock",
+    w1_intelligenceStock: "Intelligence de stock · prévisions & alertes",
+    w1_bonASavoir: "Bon à savoir —",
+    w1_commentCaMarche: "Comment ça marche —",
     // Nav
     home:'Accueil', stock:'Stock', products:'Produits', sales:'Ventes', bilan:'Bilan',
     // Auth
@@ -522,6 +619,103 @@ const LANGS = {
     version:'Version',
   },
   en: {
+    w2_revendeur: "Reseller",
+    w2_transformateur: "Maker",
+    w2_nouveauClient: "+ New customer",
+    w2_ajouter: "Add",
+    w2_reinitialiser: "Reset",
+    w2_securite: "Security",
+    w2_equipe: "Team",
+    w2_entrepot: "Warehouse",
+    w2_typeActivite: "Business type",
+    w2_aucunArticleBout: "No items in the shop.",
+    w2_aucuneVentePer: "No sales in this period ·",
+    w2_budgetAchat: "Estimated purchase budget:",
+    w2_coutMateriaux: "Materials / overhead cost",
+    w2_ceCahierSuit: "this book tracks your",
+    w2_caClients: "CUSTOMER REVENUE",
+    w2_clientsMaj: "CUSTOMERS",
+    w2_topClient: "TOP CUSTOMER",
+    w2_valeurStock: "STOCK VALUE",
+    w2_venteMaj: "SALE",
+    w2_venteRapide: "⚡ Quick sale",
+    w2_panierMulti: "🛒 Multi-product cart",
+    w2_saisieLot: "⚡ Quick bulk entry",
+    w2_sauvegardeFichier: "📦 File backup",
+    w2_sousTitre2FA: "2FA · Biometrics · Sessions",
+    w2_sousTitreApparence: "Theme · Color · Size · Density",
+    w2_sousTitreActivite: "Activity · Shop · First product · WhatsApp",
+    w2_modeRevendeur: "hides the Products tab, sell directly from stock.",
+    w2_modeTransfo: "Products tab enabled, recipes built from stock.",
+    w1_maJournee: "My day",
+    w1_journee: "Day",
+    w1_journeeUnEcran: "Your day on one screen —",
+    w1_gerer: "Manage",
+    w1_toutAJour: "Everything is up to date",
+    w1_peremptions: "Expiry dates",
+    w1_peremption: "Expiry",
+    w1_PEREMPTION: "EXPIRY",
+    w1_datePeremption: "expiry date",
+    w1_aucuneDatePer: "No expiry dates yet",
+    w1_nePerdezPlus: "Never lose money on expired stock again",
+    w1_fefo: "FEFO — most urgent first",
+    w1_argentARecuperer: "MONEY TO RECOVER BEFORE EXPIRY",
+    w1_pourPharmacie: "For a pharmacy:",
+    w1_rienCategorie: "Nothing in this category",
+    w1_reassort: "Smart restocking",
+    w1_aRecommander: "REORDER NOW",
+    w1_calculeVentes: "Based on your real sales",
+    w1_coutAchat: "purchase cost",
+    w1_rythmeSur: "Pace over",
+    w1_clotureCaisse: "Cash close",
+    w1_zFinJournee: "The end-of-day Z report",
+    w1_recettesJour: "TODAY TAKINGS",
+    w1_especesComptees: "Cash counted",
+    w1_ventesEspeces: "+ Cash sales",
+    w1_depensesJour: "− Expenses today",
+    w1_especesAttendues: "= Expected cash",
+    w1_ecartCaisse: "Cash difference",
+    w1_ecart: "difference",
+    w1_comptageTiroir: "💵 Drawer count",
+    w1_cloturerCaisse: "🔒 Close the register",
+    w1_histoClotures: "Close history",
+    w1_creditsClients: "Customer credit",
+    w1_cahierDettes: "The debt book, done better",
+    w1_ceQuOnVousDoit: "OWED TO YOU",
+    w1_creances: "receivables",
+    w1_beneficeBrut: "Gross profit (sales)",
+    w1_beneficeNet: "Net profit",
+    w1_benefPotentiel: "POTENTIAL PROFIT",
+    w1_caEquipe: "Team revenue",
+    w1_repartitionCA: "📊 Revenue by category",
+    w1_depensesPeriode: "💸 Expenses for the period",
+    w1_ventesParVendeur: "👤 Sales by seller",
+    w1_ventesParPaiement: "💳 Sales by payment method",
+    w1_ajouterDepense: "＋ Add expense",
+    w1_commentCalcule: "How this is calculated —",
+    w1_enregistrerVente: "Record a sale",
+    w1_aucuneVenteJour: "No sales that day.",
+    w1_aucunClient: "— No customer —",
+    w1_selectionnezPlus: "🛒 Select several items",
+    w1_toucheProduit: "👆 Tap a product to add it · tap again for +1",
+    w1_encaisserPresta: "🧾 Charge for a service",
+    w1_descPrestation: "Service description",
+    w1_serviceSansStock: "service with no stock",
+    w1_optionnelBenef: "(optional — for an accurate profit)",
+    w1_entreeSortie: "⚡ Stock in / out",
+    w1_aucunArticleDispo: "No items available",
+    w1_ajouterArticlesBoutique: "Add items to my shop →",
+    w1_aucunResultat: "No results",
+    w1_chargementDonnees: "Loading your data…",
+    w1_chargerExemples: "📚 Load sample data (optional)",
+    w1_tousExports: "⚙️ All exports (Stock, Customers, Bundles...)",
+    w1_equipe: "👥 Team",
+    w1_activerNotifs: "Turn on notifications",
+    w1_soisPrevenu: "Get alerted on stock-outs and goals",
+    w1_scannerIA: "AI scanner · automatic stock audit",
+    w1_intelligenceStock: "Stock intelligence · forecasts & alerts",
+    w1_bonASavoir: "Good to know —",
+    w1_commentCaMarche: "How it works —",
     home:'Home', stock:'Stock', products:'Products', sales:'Sales', bilan:'Reports',
     login:'Login', register:'Sign up', loginSub:'Access your workspace', registerSub:'Create your account',
     email:'Email', password:'Password', confirmPwd:'Confirm', name:'Full name',
@@ -2826,15 +3020,15 @@ function vExpiry() {
     return `
     <div class="sub-hero">
       <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('home')">${IC.left}</button>
-      <div class="sub-hero-title">Péremptions</div>
-      <div class="sub-hero-sub">Ne perdez plus jamais d'argent en produits périmés</div>
+      <div class="sub-hero-title">${t('w1_peremptions')}</div>
+      <div class="sub-hero-sub">${t('w1_nePerdezPlus')}</div>
     </div>
     <div class="container">
       <div class="card" style="text-align:center;padding:34px 22px">
         <div style="font-size:52px;margin-bottom:12px">⏳</div>
-        <div style="font-size:17px;font-weight:800;margin-bottom:8px">Aucune date de péremption pour l'instant</div>
+        <div style="font-size:17px;font-weight:800;margin-bottom:8px">${t('w1_aucuneDatePer')}</div>
         <div style="font-size:13px;color:var(--text-2);line-height:1.55;max-width:300px;margin:0 auto 18px">
-          Ajoutez une <b>date de péremption</b> à vos produits sensibles (médicaments, aliments, cosmétiques).
+          Ajoutez une <b>${t('w1_datePeremption')}</b> à vos produits sensibles (médicaments, aliments, cosmétiques).
           BARO vous prévient <b>avant</b> qu'ils ne périment, calcule l'argent en jeu et vous aide à agir.
         </div>
         <button class="btn btn-primary" style="width:100%;max-width:280px" onclick="nav('pantry')">${IC.package} Ouvrir mon stock</button>
@@ -2843,7 +3037,7 @@ function vExpiry() {
         <div style="display:flex;gap:11px;align-items:flex-start">
           <div style="font-size:24px">💊</div>
           <div style="font-size:12.5px;color:var(--text-2);line-height:1.55">
-            <b style="color:var(--text)">Pour une pharmacie :</b> chaque médicament a une date d'expiration.
+            <b style="color:var(--text)">${t('w1_pourPharmacie')}</b> chaque médicament a une date d'expiration.
             Cet écran classe vos produits du plus urgent au moins urgent (méthode FEFO) pour vendre en priorité
             ce qui périme bientôt — et ne jamais délivrer un produit expiré.
           </div>
@@ -2900,10 +3094,10 @@ function vExpiry() {
   return `
   <div class="sub-hero">
     <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('home')">${IC.left}</button>
-    <div class="sub-hero-title">Péremptions</div>
-    <div class="sub-hero-sub">FEFO — le plus urgent d'abord</div>
+    <div class="sub-hero-title">${t('w1_peremptions')}</div>
+    <div class="sub-hero-sub">${t('w1_fefo')}</div>
     <div style="margin-top:14px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);border-radius:16px;padding:14px 16px;backdrop-filter:blur(10px)">
-      <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.75);letter-spacing:.4px">ARGENT À RÉCUPÉRER AVANT PÉREMPTION</div>
+      <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.75);letter-spacing:.4px">${t('w1_argentARecuperer')}</div>
       <div style="font-size:30px;font-weight:800;color:#fff;margin-top:3px">${fmt(atRisk)} <span style="font-size:15px;font-weight:600">${sym()}</span></div>
       <div style="font-size:11.5px;color:rgba(255,255,255,.8);margin-top:3px">
         ${dangerItems.length} produit${dangerItems.length>1?'s':''} à écouler sous 30 j${expiredValue>0?` · <span style="color:#FCA5A5;font-weight:700">${fmt(expiredValue)} ${sym()} déjà périmés</span>`:''}
@@ -2921,12 +3115,12 @@ function vExpiry() {
     ${shown.length === 0 ? `
       <div class="card" style="text-align:center;padding:26px 18px;color:var(--text-3)">
         <div style="font-size:34px;margin-bottom:8px">✅</div>
-        <div style="font-size:14px;font-weight:700;color:var(--text-2)">Rien dans cette catégorie</div>
+        <div style="font-size:14px;font-weight:700;color:var(--text-2)">${t('w1_rienCategorie')}</div>
       </div>` :
       shown.map(card).join('')}
     <div class="card" style="margin-top:6px;background:transparent;border:1px dashed var(--border)">
       <div style="font-size:11.5px;color:var(--text-3);line-height:1.55">
-        <b style="color:var(--text-2)">Comment ça marche —</b> « Solder » baisse réellement le prix de vente pour écouler vite.
+        <b style="color:var(--text-2)">${t('w1_commentCaMarche')}</b> « Solder » baisse réellement le prix de vente pour écouler vite.
         « Perte » retire le stock périmé et l'enregistre comme perte dans votre Bilan (bénéfice net).
         « Date » corrige la péremption. Les produits sont classés du plus urgent au moins urgent.
       </div>
@@ -3052,8 +3246,8 @@ function vReorder() {
     return `
     <div class="sub-hero">
       <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('home')">${IC.left}</button>
-      <div class="sub-hero-title">Réassort intelligent</div>
-      <div class="sub-hero-sub">Calculé sur vos ventes réelles</div>
+      <div class="sub-hero-title">${t('w1_reassort')}</div>
+      <div class="sub-hero-sub">${t('w1_calculeVentes')}</div>
     </div>
     <div class="container">
       <div class="card" style="text-align:center;padding:34px 22px">
@@ -3099,7 +3293,7 @@ function vReorder() {
               <span style="font-size:11px;color:var(--text-3);padding:0 10px 0 8px">${a.unit||''}</span>
             </div>
             <div style="text-align:right">
-              ${lineCost>0?`<div style="font-size:13px;font-weight:800">${fmt(lineCost)} ${sym()}</div><div style="font-size:10px;color:var(--text-3)">coût d'achat</div>`:''}
+              ${lineCost>0?`<div style="font-size:13px;font-weight:800">${fmt(lineCost)} ${sym()}</div><div style="font-size:10px;color:var(--text-3)">${t('w1_coutAchat')}</div>`:''}
             </div>
           </div>
         </div>
@@ -3110,23 +3304,23 @@ function vReorder() {
   return `
   <div class="sub-hero">
     <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('home')">${IC.left}</button>
-    <div class="sub-hero-title">Réassort intelligent</div>
-    <div class="sub-hero-sub">Calculé sur vos ventes réelles</div>
+    <div class="sub-hero-title">${t('w1_reassort')}</div>
+    <div class="sub-hero-sub">${t('w1_calculeVentes')}</div>
     <div style="margin-top:14px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);border-radius:16px;padding:14px 16px;backdrop-filter:blur(10px)">
-      <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.75);letter-spacing:.4px">À RECOMMANDER MAINTENANT</div>
+      <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.75);letter-spacing:.4px">${t('w1_aRecommander')}</div>
       <div style="font-size:30px;font-weight:800;color:#fff;margin-top:3px">${items.length} <span style="font-size:15px;font-weight:600">produit${items.length>1?'s':''}</span></div>
-      <div style="font-size:11.5px;color:rgba(255,255,255,.8);margin-top:3px">Budget d'achat estimé : <b style="color:#fff">${fmt(totalCost)} ${sym()}</b></div>
+      <div style="font-size:11.5px;color:rgba(255,255,255,.8);margin-top:3px">${t('w2_budgetAchat')} <b style="color:#fff">${fmt(totalCost)} ${sym()}</b></div>
     </div>
   </div>
   <div class="container" style="padding-bottom:88px">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
-      <span style="font-size:12px;color:var(--text-3);font-weight:600;flex-shrink:0">Rythme sur</span>
+      <span style="font-size:12px;color:var(--text-3);font-weight:600;flex-shrink:0">${t('w1_rythmeSur')}</span>
       <div style="display:flex;gap:6px;flex:1">${winChips}</div>
     </div>
     ${items.map(card).join('')}
     <div class="card" style="margin-top:6px;background:transparent;border:1px dashed var(--border)">
       <div style="font-size:11.5px;color:var(--text-3);line-height:1.55">
-        <b style="color:var(--text-2)">Comment c'est calculé —</b> BARO mesure le rythme de vente réel de chaque produit,
+        <b style="color:var(--text-2)">${t('w1_commentCalcule')}</b> BARO mesure le rythme de vente réel de chaque produit,
         estime en combien de jours le stock sera épuisé, et propose une quantité couvrant le délai fournisseur + ~1 mois.
         Ajustez les quantités, décochez ce que vous ne voulez pas, puis partagez la commande.
       </div>
@@ -3227,17 +3421,17 @@ function vCashClose() {
   return `
   <div class="sub-hero">
     <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('financial')">${IC.left}</button>
-    <div class="sub-hero-title">Clôture de caisse</div>
-    <div class="sub-hero-sub">Le « Z » de fin de journée</div>
+    <div class="sub-hero-title">${t('w1_clotureCaisse')}</div>
+    <div class="sub-hero-sub">${t('w1_zFinJournee')}</div>
     <div style="margin-top:14px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);border-radius:16px;padding:14px 16px;backdrop-filter:blur(10px)">
-      <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.75);letter-spacing:.4px">RECETTES DU JOUR</div>
+      <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.75);letter-spacing:.4px">${t('w1_recettesJour')}</div>
       <div style="font-size:30px;font-weight:800;color:#fff;margin-top:3px">${fmt(d.totalCA)} <span style="font-size:15px;font-weight:600">${sym()}</span></div>
       <div style="font-size:11.5px;color:rgba(255,255,255,.8);margin-top:3px">${d.count} vente${d.count>1?'s':''} · bénéfice ${fmt(d.totalProfit)} ${sym()}</div>
     </div>
   </div>
   <div class="container">
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
-      <span style="font-size:12px;font-weight:700;color:var(--text-2);flex-shrink:0">Journée</span>
+      <span style="font-size:12px;font-weight:700;color:var(--text-2);flex-shrink:0">${t('w1_journee')}</span>
       <input class="input" type="date" value="${S.cashCloseDate}" max="${_todayISO()}" onchange="setCashDate(this.value)" style="flex:1">
       ${isToday?'<span style="font-size:11px;font-weight:700;color:var(--success);background:rgba(16,185,129,.12);padding:4px 10px;border-radius:999px;flex-shrink:0">Aujourd\'hui</span>':''}
     </div>
@@ -3251,7 +3445,7 @@ function vCashClose() {
     </div>` : ''}
 
     <div class="card" style="margin-bottom:12px">
-      <div class="card-title">💳 Ventes par mode de paiement</div>
+      <div class="card-title">${t('w1_ventesParPaiement')}</div>
       ${methods.length ? methods.map((pm,i) => {
         const pct = d.totalCA>0 ? Math.round(d.byMethod[pm]/d.totalCA*100) : 0;
         return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;${i>0?'border-top:1px solid var(--border)':''}">
@@ -3262,30 +3456,30 @@ function vCashClose() {
           </div>
           <div style="text-align:right;flex-shrink:0"><div style="font-size:13px;font-weight:800">${fmt(d.byMethod[pm])}</div><div style="font-size:10px;color:var(--text-3)">${pct}%</div></div>
         </div>`;
-      }).join('') : `<div style="font-size:13px;color:var(--text-3);padding:6px 0">Aucune vente ce jour.</div>`}
+      }).join('') : `<div style="font-size:13px;color:var(--text-3);padding:6px 0">${t('w1_aucuneVenteJour')}</div>`}
     </div>
 
     <div class="card" style="margin-bottom:12px">
-      <div class="card-title">💵 Comptage du tiroir</div>
+      <div class="card-title">${t('w1_comptageTiroir')}</div>
       <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 0">
         <label style="font-size:13px;color:var(--text-2)">Fond d'ouverture</label>
         <input class="input" type="number" inputmode="numeric" min="0" placeholder="0" value="${S.cashOpeningFloat!=null&&S.cashOpeningFloat!==''?S.cashOpeningFloat:''}" oninput="S.cashOpeningFloat=this.value;_cashRecalc()" style="width:130px;text-align:right">
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-top:1px solid var(--border);font-size:13px">
-        <span style="color:var(--text-2)">+ Ventes espèces</span><span style="font-weight:700">${fmt(d.cashSales)} ${sym()}</span>
+        <span style="color:var(--text-2)">${t('w1_ventesEspeces')}</span><span style="font-weight:700">${fmt(d.cashSales)} ${sym()}</span>
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;font-size:13px">
-        <span style="color:var(--text-2)">− Dépenses du jour</span><span style="font-weight:700;color:var(--danger)">${fmt(d.totalExp)} ${sym()}</span>
+        <span style="color:var(--text-2)">${t('w1_depensesJour')}</span><span style="font-weight:700;color:var(--danger)">${fmt(d.totalExp)} ${sym()}</span>
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-top:2px solid var(--border);font-size:14px">
-        <span style="font-weight:700">= Espèces attendues</span><span id="cash-expected" style="font-weight:800">${fmt(d.expectedCash)} ${sym()}</span>
+        <span style="font-weight:700">${t('w1_especesAttendues')}</span><span id="cash-expected" style="font-weight:800">${fmt(d.expectedCash)} ${sym()}</span>
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0;border-top:1px solid var(--border)">
-        <label style="font-size:13px;font-weight:700">Espèces comptées</label>
+        <label style="font-size:13px;font-weight:700">${t('w1_especesComptees')}</label>
         <input class="input" type="number" inputmode="numeric" min="0" placeholder="compter le tiroir" value="${S.cashCounted!=null&&S.cashCounted!==''?S.cashCounted:''}" oninput="S.cashCounted=this.value;_cashRecalc()" style="width:150px;text-align:right">
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 12px;margin-top:6px;background:var(--gray-1);border-radius:10px">
-        <span style="font-size:13px;font-weight:800">Écart de caisse</span>
+        <span style="font-size:13px;font-weight:800">${t('w1_ecartCaisse')}</span>
         <span id="cash-variance" style="font-size:16px;font-weight:800;color:var(--text-3)">—</span>
       </div>
       <div style="font-size:10.5px;color:var(--text-3);margin-top:8px;line-height:1.5">Un écart positif = plus d'espèces que prévu, négatif = il en manque. (On suppose les dépenses payées en espèces.)</div>
@@ -3293,11 +3487,11 @@ function vCashClose() {
 
     <div style="display:flex;gap:8px;margin-bottom:16px">
       <button class="btn" style="flex-shrink:0;padding:13px 16px;font-weight:700;background:var(--gray-1);border:1px solid var(--border)" onclick="shareCashClose()">📤</button>
-      <button class="btn btn-primary" style="flex:1;padding:13px;font-weight:800" onclick="saveCashClose()">🔒 Clôturer la caisse</button>
+      <button class="btn btn-primary" style="flex:1;padding:13px;font-weight:800" onclick="saveCashClose()">${t('w1_cloturerCaisse')}</button>
     </div>
 
     ${(S.cashCloses||[]).length ? `
-    <div class="section-hd"><div class="section-lbl">Historique des clôtures</div></div>
+    <div class="section-hd"><div class="section-lbl">${t('w1_histoClotures')}</div></div>
     ${(S.cashCloses||[]).slice(0,10).map(c => `
       <div class="card" style="margin-bottom:6px;padding:11px 13px">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
@@ -3307,7 +3501,7 @@ function vCashClose() {
           </div>
           <div style="text-align:right;flex-shrink:0">
             <div style="font-size:13px;font-weight:800;color:${c.variance===0?'var(--success)':(c.variance>0?'var(--accent)':'var(--danger)')}">${c.variance>0?'+':''}${fmt(c.variance)} ${sym()}</div>
-            <div style="font-size:10px;color:var(--text-3)">écart</div>
+            <div style="font-size:10px;color:var(--text-3)">${t('w1_ecart')}</div>
           </div>
         </div>
       </div>`).join('')}` : ''}
@@ -3447,10 +3641,10 @@ function vCredits() {
   return `
   <div class="sub-hero">
     <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('clients')">${IC.left}</button>
-    <div class="sub-hero-title">Crédits clients</div>
-    <div class="sub-hero-sub">Le cahier de dettes, en mieux</div>
+    <div class="sub-hero-title">${t('w1_creditsClients')}</div>
+    <div class="sub-hero-sub">${t('w1_cahierDettes')}</div>
     <div style="margin-top:14px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);border-radius:16px;padding:14px 16px;backdrop-filter:blur(10px)">
-      <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.75);letter-spacing:.4px">CE QU'ON VOUS DOIT</div>
+      <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.75);letter-spacing:.4px">${t('w1_ceQuOnVousDoit')}</div>
       <div style="font-size:30px;font-weight:800;color:#fff;margin-top:3px">${fmt(st.totalOwed)} <span style="font-size:15px;font-weight:600">${sym()}</span></div>
       <div style="font-size:11.5px;color:rgba(255,255,255,.8);margin-top:3px">${st.openCount} crédit${st.openCount>1?'s':''} en cours</div>
     </div>
@@ -3469,7 +3663,7 @@ function vCredits() {
       </div>`}
     <div class="card" style="margin-top:6px;background:transparent;border:1px dashed var(--border)">
       <div style="font-size:11.5px;color:var(--text-3);line-height:1.55">
-        <b style="color:var(--text-2)">Bon à savoir —</b> ce cahier suit vos <b>créances</b> (ce que les clients vous doivent).
+        <b style="color:var(--text-2)">${t('w1_bonASavoir')}</b> ${t('w2_ceCahierSuit')} <b>${t('w1_creances')}</b> (ce que les clients vous doivent).
         Il est séparé du Bilan pour ne pas compter l'argent deux fois. « Encaisser » enregistre un remboursement, « Relancer » envoie un rappel WhatsApp.
       </div>
     </div>
@@ -3537,7 +3731,7 @@ function vToday() {
   return `
   <div class="sub-hero">
     <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('home')">${IC.left}</button>
-    <div class="sub-hero-title">Ma journée</div>
+    <div class="sub-hero-title">${t('w1_maJournee')}</div>
     <div class="sub-hero-sub">${greeting}${name ? ' ' + name : ''} — ${acts.length ? acts.length + ' action' + (acts.length>1?'s':'') + ' à traiter' : 'tout est à jour'}</div>
   </div>
   <div class="container">
@@ -3555,10 +3749,10 @@ function vToday() {
       </div>`).join('') : `
       <div class="card" style="text-align:center;padding:40px 22px">
         <div style="font-size:54px;margin-bottom:12px">✨</div>
-        <div style="font-size:18px;font-weight:800;margin-bottom:8px">Tout est à jour</div>
+        <div style="font-size:18px;font-weight:800;margin-bottom:8px">${t('w1_toutAJour')}</div>
         <div style="font-size:13.5px;color:var(--text-2);line-height:1.55;max-width:300px;margin:0 auto">Aucune action urgente : pas de rupture, rien à retirer, caisse clôturée, crédits suivis. Revenez après vos prochaines ventes.</div>
       </div>`}
-    ${acts.length ? `<div class="card" style="margin-top:6px;background:transparent;border:1px dashed var(--border)"><div style="font-size:11.5px;color:var(--text-3);line-height:1.55"><b style="color:var(--text-2)">Votre journée en un écran —</b> BARO réunit ici tout ce qui demande votre attention aujourd'hui, à partir de vos vraies données. Touchez une carte pour agir.</div></div>` : ''}
+    ${acts.length ? `<div class="card" style="margin-top:6px;background:transparent;border:1px dashed var(--border)"><div style="font-size:11.5px;color:var(--text-3);line-height:1.55"><b style="color:var(--text-2)">${t('w1_journeeUnEcran')}</b> BARO réunit ici tout ce qui demande votre attention aujourd'hui, à partir de vos vraies données. Touchez une carte pour agir.</div></div>` : ''}
   </div>`;
 }
 
@@ -8033,7 +8227,7 @@ function vHome() {
           <div style="flex:1"><div class="sk sk-line" style="width:55%"></div><div class="sk sk-line" style="width:35%;margin-top:7px"></div></div>
         </div>
       </div>`).join('')}
-      <div style="text-align:center;padding:14px;font-size:12px;color:var(--text-3)">Chargement de tes données…</div>
+      <div style="text-align:center;padding:14px;font-size:12px;color:var(--text-3)">${t('w1_chargementDonnees')}</div>
     </div>`;
   }
 
@@ -8166,7 +8360,7 @@ function vHome() {
     <div class="card card-tap" style="margin-bottom:14px;padding:0;overflow:hidden;display:flex;background:linear-gradient(135deg,var(--accent),#7C73FF);color:#fff;border:none" onclick="nav('today')">
       <div style="flex:1;padding:15px 16px;display:flex;align-items:center;gap:13px">
         <div style="font-size:26px">☀️</div>
-        <div style="flex:1;min-width:0"><div style="font-size:15px;font-weight:800">Ma journée</div><div style="font-size:12.5px;opacity:.92">${n} action${n>1?'s':''} à traiter aujourd'hui</div></div>
+        <div style="flex:1;min-width:0"><div style="font-size:15px;font-weight:800">${t('w1_maJournee')}</div><div style="font-size:12.5px;opacity:.92">${n} action${n>1?'s':''} à traiter aujourd'hui</div></div>
         <div style="background:rgba(255,255,255,.25);min-width:30px;height:30px;padding:0 8px;border-radius:999px;display:grid;place-items:center;font-weight:800;font-size:14px">${n}</div>
       </div>
     </div>`;})()}
@@ -8175,7 +8369,7 @@ function vHome() {
       <div class="agent-icon agent-icon-sova">${IC.sova}</div>
       <div class="agent-info">
         <div class="agent-name agent-name-sova">SOVA</div>
-        <div class="agent-sub">Intelligence de stock · prévisions & alertes</div>
+        <div class="agent-sub">${t('w1_intelligenceStock')}</div>
       </div>
       <svg class="agent-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c9a96e" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
     </div>
@@ -8183,7 +8377,7 @@ function vHome() {
       <div class="agent-icon agent-icon-spectra">${IC.spectraWhite}</div>
       <div class="agent-info">
         <div class="agent-name agent-name-spectra">Spectra</div>
-        <div class="agent-sub">Scanner IA · audit automatique du stock</div>
+        <div class="agent-sub">${t('w1_scannerIA')}</div>
       </div>
       <svg class="agent-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
     </div>
@@ -8216,8 +8410,8 @@ function vHome() {
       <div class="card anim" style="margin-bottom:12px;display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,rgba(124,115,255,.10),rgba(236,72,153,.04));border:1px solid rgba(124,115,255,.22)">
         <div style="width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#7C73FF);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">🔔</div>
         <div style="flex:1;min-width:0">
-          <div style="font-size:14px;font-weight:800">Activer les notifications</div>
-          <div style="font-size:12px;color:var(--text-3)">Sois prévenu des ruptures de stock & objectifs</div>
+          <div style="font-size:14px;font-weight:800">${t('w1_activerNotifs')}</div>
+          <div style="font-size:12px;color:var(--text-3)">${t('w1_soisPrevenu')}</div>
         </div>
         <button class="btn btn-primary" style="width:auto;padding:8px 14px;font-size:12px" onclick="requestNotifPermission()">Activer</button>
         <button class="btn" style="width:auto;padding:8px;font-size:16px;background:none;border:none;color:var(--text-3);cursor:pointer" onclick="localStorage.setItem('baro_notif_dismissed','1');render()" title="Plus tard">✕</button>
@@ -8291,7 +8485,7 @@ function vHome() {
           <span>📝 <strong style="color:var(--text-1)">${transactionsPeriod}</strong> vente${transactionsPeriod>1?'s':''}</span>
           <span>🛒 Panier moyen <strong style="color:var(--text-1)">${fmt(avgBasket)} ${sym()}</strong></span>
           <span>💰 Profit <strong style="color:var(--success)">+${fmt(todayProfitVal)} ${sym()}</strong></span>
-        </div>` : `<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:11px;color:var(--text-3);text-align:center">Aucune vente sur la période · <a href="#" onclick="nav('sales');return false" style="color:var(--accent);font-weight:600">Enregistrer une vente</a></div>`}
+        </div>` : `<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:11px;color:var(--text-3);text-align:center">${t('w2_aucuneVentePer')} <a href="#" onclick="nav('sales');return false" style="color:var(--accent);font-weight:600">${t('w1_enregistrerVente')}</a></div>`}
       </div>`;
     })()}
 
@@ -8470,8 +8664,8 @@ function vHome() {
       const totalCommissions = members.reduce((s,m) => s + _teamCommission(m), 0);
       return `
       <div class="section-hd">
-        <div class="section-lbl">👥 Équipe</div>
-        <button class="section-act" onclick="nav('team')">Gérer</button>
+        <div class="section-lbl">${t('w1_equipe')}</div>
+        <button class="section-act" onclick="nav('team')">${t('w1_gerer')}</button>
       </div>
       <div class="card anim" style="animation-delay:0.17s;padding:14px;cursor:pointer" onclick="nav('team')">
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:${topMember ? '12px' : '0'}">
@@ -8481,7 +8675,7 @@ function vHome() {
           </div>
           <div style="text-align:center;border-left:1px solid var(--border);border-right:1px solid var(--border)">
             <div style="font-size:20px;font-weight:800;color:var(--accent)">${fmt(totalTeamCA/1000)}K</div>
-            <div style="font-size:10px;color:var(--text-3)">CA équipe</div>
+            <div style="font-size:10px;color:var(--text-3)">${t('w1_caEquipe')}</div>
           </div>
           <div style="text-align:center">
             <div style="font-size:20px;font-weight:800;color:#10B981">${fmt(totalCommissions/1000)}K</div>
@@ -8625,7 +8819,7 @@ function vHome() {
     <div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:8px">
       <button class="quick-sale-chip" style="border:1px dashed var(--accent)" onclick="S.saleMode='service';nav('sales')">
         <span style="font-weight:700;font-size:12px">🧾 Prestation</span>
-        <span style="font-size:11px;color:var(--accent)">service sans stock</span>
+        <span style="font-size:11px;color:var(--accent)">${t('w1_serviceSansStock')}</span>
       </button>
       ${S.products.slice(0,6).map(p => `
       <button class="quick-sale-chip" onclick="quickSaleProduct(${p.id})">
@@ -8726,11 +8920,11 @@ function vPantry() {
     <div class="pantry-kpis" style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:8px 0 10px">
       <div style="text-align:center;padding:8px 4px;background:linear-gradient(135deg,rgba(16,185,129,0.10),rgba(16,185,129,0.02));border-radius:8px;border:1px solid rgba(16,185,129,0.25)">
         <div style="font-size:13px;font-weight:800;color:var(--success)">+${fmt(potentialProfit)}</div>
-        <div style="font-size:9px;color:var(--text-3);margin-top:1px;font-weight:600;letter-spacing:.3px">BÉNÉF. POTENTIEL</div>
+        <div style="font-size:9px;color:var(--text-3);margin-top:1px;font-weight:600;letter-spacing:.3px">${t('w1_benefPotentiel')}</div>
       </div>
       <div style="text-align:center;padding:8px 4px;background:var(--gray-1);border-radius:8px;border:1px solid var(--border)" title="Valeur de vente du stock">
         <div style="font-size:13px;font-weight:800;color:var(--accent)">${fmt(totalValue)}</div>
-        <div style="font-size:9px;color:var(--text-3);margin-top:1px;font-weight:600;letter-spacing:.3px">VALEUR STOCK</div>
+        <div style="font-size:9px;color:var(--text-3);margin-top:1px;font-weight:600;letter-spacing:.3px">${t('w2_valeurStock')}</div>
       </div>
       <div style="text-align:center;padding:8px 4px;background:${outCount>0?'rgba(239,68,68,0.08)':'var(--gray-1)'};border-radius:8px;border:1px solid ${outCount>0?'rgba(239,68,68,0.25)':'var(--border)'};cursor:pointer" onclick="S.filter='out';render()">
         <div style="font-size:13px;font-weight:800;color:${outCount>0?'var(--danger)':'var(--text-3)'}">${outCount}</div>
@@ -8756,7 +8950,7 @@ function vPantry() {
       </div>
       <div style="text-align:center;padding:8px 4px;background:${expCount>0?'rgba(236,72,153,0.08)':'var(--gray-1)'};border-radius:8px;border:1px solid ${expCount>0?'rgba(236,72,153,0.25)':'var(--border)'};cursor:pointer" onclick="nav('peremptions')">
         <div style="font-size:14px;font-weight:800;color:${expCount>0?'#EC4899':'var(--text-3)'}">${expCount}</div>
-        <div style="font-size:9px;color:var(--text-3);margin-top:1px;font-weight:600;letter-spacing:.3px">PÉREMPTION</div>
+        <div style="font-size:9px;color:var(--text-3);margin-top:1px;font-weight:600;letter-spacing:.3px">${t('w1_PEREMPTION')}</div>
       </div>
     </div>`) : ''}
     <div class="search-wrap">
@@ -8780,10 +8974,10 @@ function vPantry() {
         <option value="stock-desc" ${sort==='stock-desc'?'selected':''}>Stock ↓</option>
         <option value="value-desc" ${sort==='value-desc'?'selected':''}>Valeur ↓</option>
         ${isReseller ? `<option value="margin-desc" ${sort==='margin-desc'?'selected':''}>Marge ↓</option>` : ''}
-        <option value="expiry" ${sort==='expiry'?'selected':''}>Péremption</option>
+        <option value="expiry" ${sort==='expiry'?'selected':''}>${t('w1_peremption')}</option>
       </select>
       <button class="filter-chip" onclick="S.stockView=(S.stockView==='grid'?'list':'grid');render()" style="font-size:10px;padding:4px 10px;margin-left:auto" title="Affichage liste / grille">${S.stockView==='grid'?'☰ Liste':'▦ Grille'}</button>
-      <button class="filter-chip" onclick="openQuickStock()" style="font-size:10px;padding:4px 10px;color:var(--accent)" title="Entrée/Sortie en série — enchaînez les articles sans quitter l'écran">⚡ Entrée/Sortie</button>
+      <button class="filter-chip" onclick="openQuickStock()" style="font-size:10px;padding:4px 10px;color:var(--accent)" title="Entrée/Sortie en série — enchaînez les articles sans quitter l'écran">${t('w1_entreeSortie')}</button>
       <button class="filter-chip" onclick="nav('stock-history')" style="font-size:10px;padding:4px 10px" title="Historique des mouvements">${IC.trending} Mouvements</button>
       ${S.locations.length > 1 ? `<button class="filter-chip" onclick="openStockTransfer()" style="font-size:10px;padding:4px 10px" title="Transférer entre emplacements">⇄ Transfert</button>` : ''}
     </div>` : ''}
@@ -8803,7 +8997,7 @@ function vPantry() {
       <div style="display:flex;flex-direction:column;gap:8px;align-items:center">
         <button class="btn btn-primary" style="width:auto;padding:11px 24px" onclick="nav('add')">${isReseller?'🏪 Ajouter un produit':t('addArticle')}</button>
         <button class="btn btn-ghost" style="width:auto;padding:9px 18px;font-size:12.5px;border:1px solid var(--border)" onclick="nav('bulk-add')">⚡ Saisie rapide en lot <span style="color:var(--text-3)">— beaucoup d'articles</span></button>
-        <button class="btn btn-ghost" style="width:auto;padding:8px 16px;font-size:12px" onclick="if(confirm('Charger 5 articles démo pour explorer l&apos;app ?')){loadDemoData();}">📚 Charger des exemples (optionnel)</button>
+        <button class="btn btn-ghost" style="width:auto;padding:8px 16px;font-size:12px" onclick="if(confirm('Charger 5 articles démo pour explorer l&apos;app ?')){loadDemoData();}">${t('w1_chargerExemples')}</button>
       </div>` : ''}
     </div>` : (() => {
       // Affichage progressif : une pharmacie a des centaines de références.
@@ -8848,7 +9042,7 @@ function vPantry() {
                   <div style="font-size:12px;font-weight:700;color:var(--text-2)">${pa>0?fmt(pa):'—'}</div>
                 </div>
                 <div>
-                  <div style="font-size:9px;color:var(--text-3);font-weight:600;letter-spacing:.3px">VENTE</div>
+                  <div style="font-size:9px;color:var(--text-3);font-weight:600;letter-spacing:.3px">${t('w2_venteMaj')}</div>
                   <div style="font-size:12px;font-weight:700;color:var(--accent)">${pv>0?fmt(pv):'—'}</div>
                 </div>
                 <div>
@@ -9152,8 +9346,8 @@ function vSales() {
   </div>
   <div class="container">
     <div class="filter-row" style="margin-bottom:10px">
-      <button class="filter-chip ${mode==='simple'?'active':''}" onclick="setSaleMode('simple')">⚡ Vente rapide</button>
-      <button class="filter-chip ${mode==='multi'?'active':''}" onclick="setSaleMode('multi')">🛒 Panier multi-produits</button>
+      <button class="filter-chip ${mode==='simple'?'active':''}" onclick="setSaleMode('simple')">${t('w2_venteRapide')}</button>
+      <button class="filter-chip ${mode==='multi'?'active':''}" onclick="setSaleMode('multi')">${t('w2_panierMulti')}</button>
       <button class="filter-chip ${mode==='service'?'active':''}" onclick="setSaleMode('service')">🧾 Prestation</button>
     </div>
 
@@ -9165,7 +9359,7 @@ function vSales() {
 
     ${mode === 'service' ? `
     <div class="card" style="margin-bottom:14px">
-      <div class="card-title">🧾 Encaisser une prestation</div>
+      <div class="card-title">${t('w1_encaisserPresta')}</div>
       <div style="font-size:12px;color:var(--text-3);margin-bottom:12px">Service sans stock : coiffure, couture, réparation, livraison, conseil, transport…</div>
       ${(() => {
         // Prestations fréquentes : 1 tap pour re-remplir (description + dernier montant)
@@ -9182,7 +9376,7 @@ function vSales() {
           `<button type="button" class="chip" onclick="_svcPreset(${i})">${f.d.replace(/</g,'&lt;')} · ${fmt(f.a)}</button>`).join('')}</div>` : '';
       })()}
       <div class="form-group">
-        <label class="form-label">Description de la prestation</label>
+        <label class="form-label">${t('w1_descPrestation')}</label>
         <input class="input" type="text" id="svc-desc" placeholder="ex : Coupe + brushing, Réparation écran…" value="${(S.serviceDesc||'').replace(/"/g,'&quot;')}" oninput="S.serviceDesc=this.value">
       </div>
       <div class="form-group">
@@ -9190,21 +9384,21 @@ function vSales() {
         <input class="input" type="number" id="svc-amount" inputmode="numeric" min="0" placeholder="ex : 5000" value="${S.serviceAmount!=null&&S.serviceAmount!==''?S.serviceAmount:''}" oninput="S.serviceAmount=this.value;const b=document.getElementById('svc-pay-btn');if(b){const v=parseFloat(this.value)||0;b.textContent=v>0?'💰 Encaisser — '+fmt(v)+' ${sym()}':'💰 Encaisser';}">
       </div>
       <div class="form-group">
-        <label class="form-label">Coût matériaux/charges <span style="color:var(--text-3);font-weight:400">(optionnel — pour un bénéfice juste)</span></label>
+        <label class="form-label">${t('w2_coutMateriaux')} <span style="color:var(--text-3);font-weight:400">${t('w1_optionnelBenef')}</span></label>
         <input class="input" type="number" id="svc-cost" inputmode="numeric" min="0" placeholder="0" value="${S.serviceCost!=null&&S.serviceCost!==''?S.serviceCost:''}" oninput="S.serviceCost=this.value">
       </div>
       <div class="form-group">
         <label class="form-label">${t('clients')} <span style="color:var(--text-3);font-weight:400">(optionnel)</span></label>
         <div style="display:flex;gap:6px;margin-bottom:8px">
           <button type="button" class="chip ${!S.saleNewClient?'active':''}" onclick="S.saleNewClient=false;render()">Existant</button>
-          <button type="button" class="chip ${S.saleNewClient?'active':''}" onclick="S.saleNewClient=true;render()">+ Nouveau client</button>
+          <button type="button" class="chip ${S.saleNewClient?'active':''}" onclick="S.saleNewClient=true;render()">${t('w2_nouveauClient')}</button>
         </div>
         ${S.saleNewClient ? `
         <input class="input" type="text" id="sale-new-client-name" placeholder="Nom du client" style="margin-bottom:6px" value="${(S.saleNewClientName||'').replace(/"/g,'&quot;')}" oninput="S.saleNewClientName=this.value">
         <input class="input" type="tel" id="sale-new-client-phone" placeholder="Téléphone (optionnel)" value="${(S.saleNewClientPhone||'').replace(/"/g,'&quot;')}" oninput="S.saleNewClientPhone=this.value">
         ` : `
         <select class="input" id="sale-client" onchange="S.saleClientPick=this.value?(parseInt(this.value)||this.value):null">
-          <option value="">— Aucun client —</option>
+          <option value="">${t('w1_aucunClient')}</option>
           ${S.clients.map(c=>`<option value="${c.id}" ${String(S.saleClientPick)===String(c.id)?'selected':''}>${c.name}${c.phone?' · '+c.phone:''}</option>`).join('')}
         </select>`}
       </div>
@@ -9231,7 +9425,7 @@ function vSales() {
             return `<option value="${it.id}">${it.name}${boutiqueTag} — ${priceShown} ${sym()} (${it.stock} ${it.unit})${pr?' PROMO':''}</option>`;
           }).join('')}
         </select>
-        ${sellable.length === 0 && boutiqueFilter ? `<div style="font-size:11px;color:var(--text-3);margin-top:4px">Aucun article en boutique. <a onclick="nav('boutique')" style="color:var(--accent);cursor:pointer;font-weight:700">Ajouter des articles à ma boutique →</a></div>` : ''}
+        ${sellable.length === 0 && boutiqueFilter ? `<div style="font-size:11px;color:var(--text-3);margin-top:4px">${t('w2_aucunArticleBout')} <a onclick="nav('boutique')" style="color:var(--accent);cursor:pointer;font-weight:700">${t('w1_ajouterArticlesBoutique')}</a></div>` : ''}
       </div>
       <div class="form-group">
         <label class="form-label">${t('quantity')}</label>
@@ -9241,14 +9435,14 @@ function vSales() {
         <label class="form-label">${t('clients')} <span style="color:var(--text-3);font-weight:400">(optionnel)</span></label>
         <div style="display:flex;gap:6px;margin-bottom:8px">
           <button type="button" class="chip ${!S.saleNewClient?'active':''}" onclick="S.saleNewClient=false;render()">Existant</button>
-          <button type="button" class="chip ${S.saleNewClient?'active':''}" onclick="S.saleNewClient=true;render()">+ Nouveau client</button>
+          <button type="button" class="chip ${S.saleNewClient?'active':''}" onclick="S.saleNewClient=true;render()">${t('w2_nouveauClient')}</button>
         </div>
         ${S.saleNewClient ? `
         <input class="input" type="text" id="sale-new-client-name" placeholder="Nom du client" style="margin-bottom:6px" value="${(S.saleNewClientName||'').replace(/"/g,'&quot;')}" oninput="S.saleNewClientName=this.value">
         <input class="input" type="tel" id="sale-new-client-phone" placeholder="Téléphone (optionnel)" value="${(S.saleNewClientPhone||'').replace(/"/g,'&quot;')}" oninput="S.saleNewClientPhone=this.value">
         ` : `
         <select class="input" id="sale-client" onchange="S.saleClientPick=this.value?(parseInt(this.value)||this.value):null">
-          <option value="">— Aucun client —</option>
+          <option value="">${t('w1_aucunClient')}</option>
           ${S.clients.map(c=>`<option value="${c.id}" ${String(S.saleClientPick)===String(c.id)?'selected':''}>${c.name}${c.phone?' · '+c.phone:''}</option>`).join('')}
         </select>`}
       </div>
@@ -9286,18 +9480,18 @@ function vSales() {
     <!-- MODE MULTI-PRODUITS -->
     <div class="card" style="margin-bottom:12px;padding:12px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-        <div style="font-size:14px;font-weight:700">🛒 Sélectionnez plusieurs articles</div>
+        <div style="font-size:14px;font-weight:700">${t('w1_selectionnezPlus')}</div>
         <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" onclick="clearMultiCart()">Vider</button>
       </div>
       <div class="search-wrap" style="margin-bottom:10px">
         <span class="search-ico">${IC.search}</span>
         <input class="input input-search" type="text" placeholder="    Rechercher..." value="${multiQ.replace(/"/g,'&quot;')}" oninput="S.multiSearch=this.value;render()">
       </div>
-      <div style="font-size:11px;color:var(--text-3);margin-bottom:8px">👆 Touche un produit pour l'ajouter · re-touche pour +1</div>
+      <div style="font-size:11px;color:var(--text-3);margin-bottom:8px">${t('w1_toucheProduit')}</div>
       ${sellable.length === 0 ? `
-      <div style="text-align:center;padding:16px;color:var(--text-3);font-size:13px">Aucun article disponible</div>` :
+      <div style="text-align:center;padding:16px;color:var(--text-3);font-size:13px">${t('w1_aucunArticleDispo')}</div>` :
       filteredSell.length === 0 ? `
-      <div style="text-align:center;padding:16px;color:var(--text-3);font-size:13px">Aucun résultat</div>` :
+      <div style="text-align:center;padding:16px;color:var(--text-3);font-size:13px">${t('w1_aucunResultat')}</div>` :
       `<div class="pos-grid">
         ${filteredSell.map(it => {
           const inCart = (S.multiCart[it.id]||0);
@@ -9347,14 +9541,14 @@ function vSales() {
         <label class="form-label">${t('clients')} <span style="color:var(--text-3);font-weight:400">(optionnel)</span></label>
         <div style="display:flex;gap:6px;margin-bottom:8px">
           <button type="button" class="chip ${!S.multiNewClient?'active':''}" onclick="S.multiNewClient=false;render()">Existant</button>
-          <button type="button" class="chip ${S.multiNewClient?'active':''}" onclick="S.multiNewClient=true;render()">+ Nouveau client</button>
+          <button type="button" class="chip ${S.multiNewClient?'active':''}" onclick="S.multiNewClient=true;render()">${t('w2_nouveauClient')}</button>
         </div>
         ${S.multiNewClient ? `
         <input class="input" type="text" id="multi-new-client-name" placeholder="Nom du client" style="margin-bottom:6px" value="${(S.multiNewClientName||'').replace(/"/g,'&quot;')}" oninput="S.multiNewClientName=this.value">
         <input class="input" type="tel" id="multi-new-client-phone" placeholder="Téléphone (optionnel)" value="${(S.multiNewClientPhone||'').replace(/"/g,'&quot;')}" oninput="S.multiNewClientPhone=this.value">
         ` : `
         <select class="input" id="multi-client" onchange="S.multiClientPick=this.value?(parseInt(this.value)||this.value):null">
-          <option value="">— Aucun client —</option>
+          <option value="">${t('w1_aucunClient')}</option>
           ${S.clients.map(c=>`<option value="${c.id}" ${String(S.multiClientPick)===String(c.id)?'selected':''}>${c.name}${c.phone?' · '+c.phone:''}</option>`).join('')}
         </select>`}
       </div>
@@ -9588,7 +9782,7 @@ function vFinancial() {
 
     ${_catBreakdown.arr.length > 0 ? `
     <div class="card" style="margin-bottom:14px">
-      <div class="card-title">📊 Répartition du CA par catégorie</div>
+      <div class="card-title">${t('w1_repartitionCA')}</div>
       ${_catBreakdown.arr.map((c,i)=>{
         const pct = _catBreakdown.total>0 ? Math.round((c.rev/_catBreakdown.total)*100) : 0;
         const w = Math.max(4, Math.round((c.rev/_catBreakdown.max)*100));
@@ -9607,7 +9801,7 @@ function vFinancial() {
 
     ${_sellerBreakdown ? `
     <div class="card" style="margin-bottom:14px">
-      <div class="card-title">👤 Ventes par vendeur</div>
+      <div class="card-title">${t('w1_ventesParVendeur')}</div>
       ${_sellerBreakdown.arr.map((m,i)=>{
         const pct = _sellerBreakdown.total>0 ? Math.round((m.rev/_sellerBreakdown.total)*100) : 0;
         const w = Math.max(4, Math.round((m.rev/_sellerBreakdown.max)*100));
@@ -9632,7 +9826,7 @@ function vFinancial() {
       const catIco = { 'Loyer':'🏠','Électricité & eau':'💡','Transport':'🚚','Salaires':'👥','Achats':'📦','Marketing':'📣','Autre':'🧾' };
       return `
     <div class="card" style="margin-bottom:14px">
-      <div class="card-title">💸 Dépenses de la période</div>
+      <div class="card-title">${t('w1_depensesPeriode')}</div>
       <input class="input" type="text" id="exp-label" placeholder="ex : Loyer boutique" style="width:100%;margin-bottom:8px" value="${(S.expLabel||'').replace(/"/g,'&quot;')}" oninput="S.expLabel=this.value">
       <div style="display:flex;gap:8px;margin-bottom:8px">
         <input class="input" type="number" id="exp-amount" inputmode="numeric" min="0" placeholder="Montant ${sym()}" style="flex:1;min-width:0" value="${S.expAmount!=null&&S.expAmount!==''?S.expAmount:''}" oninput="S.expAmount=this.value">
@@ -9640,7 +9834,7 @@ function vFinancial() {
           ${EXP_CATS.map(c=>`<option value="${c}" ${S.expCat===c?'selected':''}>${catIco[c]} ${c}</option>`).join('')}
         </select>
       </div>
-      <button class="btn btn-primary" style="width:100%;margin-bottom:10px" onclick="addExpense()">＋ Ajouter la dépense</button>
+      <button class="btn btn-primary" style="width:100%;margin-bottom:10px" onclick="addExpense()">${t('w1_ajouterDepense')}</button>
       ${exps.length === 0 ? `<div style="font-size:12px;color:var(--text-3);padding:4px 0 10px">Aucune dépense sur la période. Loyer, électricité, transport, salaires… enregistrez-les ici pour connaître votre bénéfice NET réel.</div>` : `
       <div style="display:flex;flex-direction:column;margin-bottom:10px">
         ${exps.slice(0,8).map(e=>`
@@ -9656,9 +9850,9 @@ function vFinancial() {
         ${exps.length>8?`<div style="font-size:11px;color:var(--text-3);padding-top:6px">+ ${exps.length-8} autre(s) dépense(s) sur la période</div>`:''}
       </div>`}
       <div style="display:flex;flex-direction:column;gap:4px;background:var(--gray-1);border-radius:10px;padding:10px 12px">
-        <div style="display:flex;justify-content:space-between;font-size:12.5px;color:var(--text-2)"><span>Bénéfice brut (ventes)</span><b style="color:var(--success)">+${fmt(totalProfit)} ${sym()}</b></div>
+        <div style="display:flex;justify-content:space-between;font-size:12.5px;color:var(--text-2)"><span>${t('w1_beneficeBrut')}</span><b style="color:var(--success)">+${fmt(totalProfit)} ${sym()}</b></div>
         <div style="display:flex;justify-content:space-between;font-size:12.5px;color:var(--text-2)"><span>Dépenses (${exps.length})</span><b style="color:var(--danger)">−${fmt(totalExp)} ${sym()}</b></div>
-        <div style="display:flex;justify-content:space-between;font-size:14px;border-top:1px solid var(--border);padding-top:6px;margin-top:2px"><b>Bénéfice net</b><b style="color:${net>=0?'var(--success)':'var(--danger)'}">${net>=0?'':'−'}${fmt(Math.abs(net))} ${sym()}</b></div>
+        <div style="display:flex;justify-content:space-between;font-size:14px;border-top:1px solid var(--border);padding-top:6px;margin-top:2px"><b>${t('w1_beneficeNet')}</b><b style="color:${net>=0?'var(--success)':'var(--danger)'}">${net>=0?'':'−'}${fmt(Math.abs(net))} ${sym()}</b></div>
       </div>
     </div>`;
     })()}
@@ -9753,7 +9947,7 @@ function vFinancial() {
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
         <button class="btn btn-primary" onclick="generateSalesReportPDF(S.period==='today'?'today':S.period==='7d'?'week':S.period==='30d'?'month':'all')" style="padding:10px;font-size:12px">📑 Rapport PDF</button>
         <button class="btn btn-primary" onclick="exportSalesXLSX()" style="padding:10px;font-size:12px;background:linear-gradient(135deg,#059669,#0d9488)">📗 Excel</button>
-        <button class="btn btn-ghost" onclick="nav('exports')" style="padding:10px;font-size:12px;grid-column:1/-1">⚙️ Tous les exports (Stock, Clients, Packs...)</button>
+        <button class="btn btn-ghost" onclick="nav('exports')" style="padding:10px;font-size:12px;grid-column:1/-1">${t('w1_tousExports')}</button>
       </div>
     </div>
   </div>`;
@@ -10212,7 +10406,7 @@ function vDetail() {
           <div style="font-size:11px;opacity:.9;margin-top:2px">+${fmt(margeFcfa)} ${sym()} / unité</div>
         </div>
         <div style="padding:10px;background:var(--card-bg,#fff);border-radius:8px;border:1px solid var(--border)">
-          <div style="font-size:10px;color:var(--text-3);font-weight:600;letter-spacing:.3px">BÉNÉF. POTENTIEL</div>
+          <div style="font-size:10px;color:var(--text-3);font-weight:600;letter-spacing:.3px">${t('w1_benefPotentiel')}</div>
           <div style="font-size:18px;font-weight:800;color:var(--success);margin-top:2px">+${fmt(benefStock)}</div>
           <div style="font-size:11px;color:var(--text-3);margin-top:2px">si tout le stock est vendu</div>
         </div>
@@ -10368,7 +10562,7 @@ function vBulkAdd() {
   return `
   <div class="sub-hero">
     <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('add')">${IC.left}</button>
-    <div class="sub-hero-title">⚡ Saisie rapide en lot</div>
+    <div class="sub-hero-title">${t('w2_saisieLot')}</div>
     <div class="sub-hero-sub">Collez votre liste — créez des dizaines d'${isReseller?'articles':'articles'} en un clic</div>
   </div>
   <div class="container">
@@ -11120,15 +11314,15 @@ function vClients() {
     <div class="pantry-kpis" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 0 10px">
       <div style="text-align:center;padding:8px 4px;background:var(--gray-1);border-radius:8px;border:1px solid var(--border)">
         <div style="font-size:13px;font-weight:800;color:var(--accent)">${S.clients.length}</div>
-        <div style="font-size:9px;color:var(--text-3);margin-top:1px;font-weight:600;letter-spacing:.3px">CLIENTS</div>
+        <div style="font-size:9px;color:var(--text-3);margin-top:1px;font-weight:600;letter-spacing:.3px">${t('w2_clientsMaj')}</div>
       </div>
       <div style="text-align:center;padding:8px 4px;background:linear-gradient(135deg,rgba(16,185,129,0.10),rgba(16,185,129,0.02));border-radius:8px;border:1px solid rgba(16,185,129,0.25)">
         <div style="font-size:13px;font-weight:800;color:var(--success)">${fmt(totalClientCA)}</div>
-        <div style="font-size:9px;color:var(--text-3);margin-top:1px;font-weight:600;letter-spacing:.3px">CA CLIENTS</div>
+        <div style="font-size:9px;color:var(--text-3);margin-top:1px;font-weight:600;letter-spacing:.3px">${t('w2_caClients')}</div>
       </div>
       <div style="text-align:center;padding:8px 4px;background:var(--gray-1);border-radius:8px;border:1px solid var(--border)" title="${bestClient ? bestClient.name : ''}">
         <div style="font-size:13px;font-weight:800;color:var(--text-1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 4px">${bestClient ? bestClient.name.split(' ')[0] : '—'}</div>
-        <div style="font-size:9px;color:var(--text-3);margin-top:1px;font-weight:600;letter-spacing:.3px">TOP CLIENT</div>
+        <div style="font-size:9px;color:var(--text-3);margin-top:1px;font-weight:600;letter-spacing:.3px">${t('w2_topClient')}</div>
       </div>
     </div>` : ''}
     <div class="search-wrap">
@@ -17003,11 +17197,11 @@ function vSettings() {
         <input class="input" id="set-api-url" type="url" placeholder="https://baro-api-xxxx.onrender.com" value="${(localStorage.getItem('baro_api_url')||'').replace(/"/g,'&quot;')}">
         <div style="display:flex;gap:8px;margin-top:10px">
           <button class="btn btn-primary" style="flex:1 1 auto;width:auto;min-width:0" onclick="saveApiUrl()">Tester & enregistrer</button>
-          ${localStorage.getItem('baro_api_url') ? `<button class="btn btn-ghost" style="flex:0 0 auto;width:auto;padding-left:14px;padding-right:14px;white-space:nowrap" onclick="localStorage.removeItem('baro_api_url');showToast('URL serveur réinitialisée');setTimeout(()=>location.reload(),600)">Réinitialiser</button>` : ''}
+          ${localStorage.getItem('baro_api_url') ? `<button class="btn btn-ghost" style="flex:0 0 auto;width:auto;padding-left:14px;padding-right:14px;white-space:nowrap" onclick="localStorage.removeItem('baro_api_url');showToast('URL serveur réinitialisée');setTimeout(()=>location.reload(),600)">${t('w2_reinitialiser')}</button>` : ''}
         </div>
       </div>
       <div class="card" style="padding:14px;margin-top:10px">
-        <div style="font-weight:800;font-size:13.5px;color:var(--text-1);margin-bottom:4px">📦 Sauvegarde par fichier</div>
+        <div style="font-weight:800;font-size:13.5px;color:var(--text-1);margin-bottom:4px">${t('w2_sauvegardeFichier')}</div>
         <div style="font-size:12px;color:var(--text-3);line-height:1.55;margin-bottom:10px">
           Sans serveur : enregistrez TOUTES vos données (stock, ventes, clients, dépenses, boutique…) dans un fichier, puis restaurez-le sur un autre téléphone. Idéal pour changer d'appareil ou faire une copie de sécurité.
         </div>
@@ -17020,7 +17214,7 @@ function vSettings() {
     </div>
 
     <div class="settings-section">
-      <div class="settings-label">Type d'activité</div>
+      <div class="settings-label">${t('w2_typeActivite')}</div>
       <div class="settings-row-block">
         ${[
           { id:'reseller', icon:'🏪', label:'Revendeur / Boutique', sub:'Boutique, épicerie, cosmétiques… stock uniquement' },
@@ -17039,8 +17233,8 @@ function vSettings() {
         </div>`).join('')}
       </div>
       <div style="font-size:11px;color:var(--text-3);padding:6px 16px;line-height:1.5">
-        💡 <strong>Revendeur :</strong> masque l'onglet Produits, ventes directes depuis le stock.<br>
-        💡 <strong>Transformateur :</strong> onglet Produits activé, recettes depuis le stock.<br>
+        💡 <strong>${t('w2_revendeur')} :</strong> ${t('w2_modeRevendeur')}<br>
+        💡 <strong>${t('w2_transformateur')} :</strong> ${t('w2_modeTransfo')}<br>
         💡 <strong>Mixte :</strong> les deux à la fois — idéal si tu fais les deux.
       </div>
     </div>
@@ -17132,12 +17326,12 @@ function vSettings() {
             <input class="input" id="loc-phone" type="tel" placeholder="Telephone" style="flex:1;font-size:12px">
             <select class="input" id="loc-type" style="flex:1;font-size:12px">
               <option value="store">Boutique</option>
-              <option value="warehouse">Entrepôt</option>
+              <option value="warehouse">${t('w2_entrepot')}</option>
               <option value="popup">Pop-up / Stand</option>
             </select>
           </div>
           <div style="display:flex;gap:4px">
-            <button class="btn btn-primary" style="flex:1;padding:6px;font-size:11px" onclick="addLocation()">Ajouter</button>
+            <button class="btn btn-primary" style="flex:1;padding:6px;font-size:11px" onclick="addLocation()">${t('w2_ajouter')}</button>
             <button class="btn btn-ghost" style="padding:6px 8px;font-size:11px" onclick="S.locationAdd=false;render()">✕</button>
           </div>
         </div>` : `
@@ -17213,7 +17407,7 @@ function vSettings() {
             <span class="settings-row-ico" style="color:#7C73FF">⚡</span>
             <div>
               <div class="settings-row-lbl">Assistant de configuration</div>
-              <div class="settings-row-sub">Activité · Boutique · 1er produit · WhatsApp</div>
+              <div class="settings-row-sub">${t('w2_sousTitreActivite')}</div>
             </div>
           </div>
           ${IC.chevron}
@@ -17223,7 +17417,7 @@ function vSettings() {
             <span class="settings-row-ico" style="color:#EC4899">🎨</span>
             <div>
               <div class="settings-row-lbl">Apparence</div>
-              <div class="settings-row-sub">Thème · Couleur · Taille · Densité</div>
+              <div class="settings-row-sub">${t('w2_sousTitreApparence')}</div>
             </div>
           </div>
           ${IC.chevron}
@@ -17233,8 +17427,8 @@ function vSettings() {
           <div class="settings-row-inner">
             <span class="settings-row-ico" style="color:#EF4444">🔐</span>
             <div>
-              <div class="settings-row-lbl">Sécurité</div>
-              <div class="settings-row-sub">2FA · Biométrie · Sessions</div>
+              <div class="settings-row-lbl">${t('w2_securite')}</div>
+              <div class="settings-row-sub">${t('w2_sousTitre2FA')}</div>
             </div>
           </div>
           ${IC.chevron}
@@ -17243,7 +17437,7 @@ function vSettings() {
           <div class="settings-row-inner">
             <span class="settings-row-ico" style="color:#7C73FF">👥</span>
             <div>
-              <div class="settings-row-lbl">Équipe</div>
+              <div class="settings-row-lbl">${t('w2_equipe')}</div>
               <div class="settings-row-sub">${(S.teamMembers||[]).length} collaborateur(s) · Rôles</div>
             </div>
           </div>
@@ -17339,7 +17533,7 @@ function vTeam() {
     return `
     <div class="page-header"><div class="page-header-row">
       <button class="back-btn" onclick="nav('more')">${IC.left}</button>
-      <div class="page-title">Équipe</div>
+      <div class="page-title">${t('w2_equipe')}</div>
     </div></div>
     <div class="container">
       <div class="card" style="text-align:center;padding:40px 20px">
@@ -18229,7 +18423,7 @@ function vOAuthSetup() {
 
     <div class="card" style="margin-top:14px;background:var(--gray-1);padding:14px">
       <div style="font-size:12px;color:var(--text-2);line-height:1.6">
-        🔒 <strong>Sécurité</strong> : les Client IDs sont publics (pas un secret) et stockés localement sur votre appareil.<br>
+        🔒 <strong>${t('w2_securite')}</strong> : les Client IDs sont publics (pas un secret) et stockés localement sur votre appareil.<br>
         ⚡ <strong>Astuce</strong> : une fois configuré, les connexions s'ouvrent dans une popup/redirection réelle Google/Apple.
       </div>
     </div>
@@ -18999,7 +19193,7 @@ function vSecurity() {
     return `
     <div class="page-header"><div class="page-header-row">
       <button class="back-btn" onclick="nav('settings')">${IC.left}</button>
-      <div class="page-title">Sécurité</div>
+      <div class="page-title">${t('w2_securite')}</div>
     </div></div>
     <div class="container"><div class="card" style="text-align:center;padding:40px 20px">🔒 Seul l'admin peut modifier la sécurité.</div></div>`;
   }
@@ -19485,7 +19679,7 @@ function vMultiStore() {
           <input class="input" id="loc-phone" type="tel" placeholder="Téléphone" style="flex:1;min-width:0">
           <select class="input" id="loc-type" style="flex:1;min-width:0">
             <option value="store">Boutique</option>
-            <option value="warehouse">Entrepôt</option>
+            <option value="warehouse">${t('w2_entrepot')}</option>
             <option value="popup">Pop-up / Stand</option>
           </select>
         </div>
