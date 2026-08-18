@@ -19824,7 +19824,7 @@ function vBoutique() {
     </div>
     <div style="display:flex;gap:8px">
       <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${vitrineCount}</div><div class="hero-stat-lbl">${bt==='reseller'?'Articles':bt==='maker'?'Produits':'En vitrine'}</div></div>
-      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${pendingOrders.length}</div><div class="hero-stat-lbl">Commandes</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${pendingOrders.length}</div><div class="hero-stat-lbl">À traiter</div></div>
       <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${bc.visits || 0}</div><div class="hero-stat-lbl">Visites</div></div>
     </div>
   </div>
