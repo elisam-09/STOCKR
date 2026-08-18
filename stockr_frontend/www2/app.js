@@ -28907,36 +28907,151 @@ function vIntegrations() {
     return _vProLock('🔌', 'Intégrations & API', 'Connecte WhatsApp Business, Shopify, WooCommerce, Glovo, Yango, Wave et plus à ton stock BARO.', ['🔌 10 intégrations (Pro)', '🛒 Shopify, WooCommerce, Jumia', '🚚 Glovo, Yango Delivery', '💳 Wave, Orange Money dashboards', '🔗 API REST (Enterprise)']);
   }
   const integrationsList = [
-    { id:'whatsapp-business', name:'WhatsApp Business', desc:'Notifications clients automatiques', color:'#25D366', icon:IC.whatsapp, category:'communication',
-      setupType:'phone', setupLabel:'Numero WhatsApp Business', setupPlaceholder:'+225 07 XX XX XX XX', url:'https://business.whatsapp.com/' },
-    { id:'sms-api',           name:'SMS API',            desc:'Envoi SMS en masse via API',  color:'#4F46E5', icon:IC.smartphone, category:'communication',
-      setupType:'apikey', setupLabel:'Cle API SMS (ex: Twilio, Vonage)', setupPlaceholder:'sk_live_xxxxx', url:null },
-    { id:'woocommerce',       name:'WooCommerce',        desc:'Synchroniser avec WordPress', color:'#96588A', icon:IC.shop,       category:'ecommerce',
-      setupType:'url+key', setupLabel:'URL boutique WooCommerce', setupPlaceholder:'https://maboutique.com', keyLabel:'Cle API WooCommerce', url:null },
-    { id:'shopify',           name:'Shopify',             desc:'Synchroniser avec Shopify',   color:'#96BF48', icon:IC.shop,       category:'ecommerce',
-      setupType:'url+key', setupLabel:'URL boutique Shopify', setupPlaceholder:'https://maboutique.myshopify.com', keyLabel:'Access Token', url:'https://www.shopify.com/admin' },
-    { id:'jumia',             name:'Jumia Seller',        desc:'Vendre sur Jumia Afrique',    color:'#F68B1E', icon:IC.globe,      category:'ecommerce',
-      setupType:'url', setupLabel:'Lien vendeur Jumia', setupPlaceholder:'https://vendeur.jumia.ci/...', url:'https://vendeur.jumia.ci/' },
-    { id:'glovo',             name:'Glovo Partners',      desc:'Livraison via Glovo',         color:'#FFC244', icon:IC.truck,      category:'delivery',
-      setupType:'account', setupLabel:'ID Partenaire Glovo', setupPlaceholder:'GLV-XXXXX', url:'https://sell.glovoapp.com/' },
-    { id:'yango',             name:'Yango Delivery',      desc:'Livraison colis Yango Pro',   color:'#FF4D00', icon:IC.truck,      category:'delivery',
-      setupType:'account', setupLabel:'ID Partenaire Yango', setupPlaceholder:'YNG-XXXXX', url:'https://delivery.yango.com/' },
-    { id:'yango-deli',        name:'Yango Deli',          desc:'Restaurant / épicerie livrée', color:'#FF4D00', icon:IC.truck,     category:'delivery',
-      setupType:'account', setupLabel:'ID Partenaire Yango Deli', setupPlaceholder:'YDL-XXXXX', url:'https://deli.yango.com/' },
-    { id:'yango-market',      name:'Yango Achat & Vente', desc:'Marketplace Yango',            color:'#FF4D00', icon:IC.shop,      category:'ecommerce',
-      setupType:'account', setupLabel:'ID Vendeur Yango Market', setupPlaceholder:'YMK-XXXXX', url:'https://market.yango.com/' },
-    { id:'wave',              name:'Wave Dashboard',      desc:'Tableau de bord paiements Wave', color:'#1DC3FF', icon:IC.creditCard, category:'finance',
+    // ── Paiement mobile — Afrique de l'Ouest & Centrale ──
+    { id:'wave', name:'Wave', desc:'Paiement mobile · tableau de bord', color:'#1DC3FF', icon:IC.creditCard, category:'finance',
+      pays:['CI','SN','ML','BF','UG'], niveau:'lien',
       setupType:'phone', setupLabel:'Numéro Wave Business', setupPlaceholder:'+225 07 00 00 00 00', url:'https://www.wave.com/fr/business/' },
-    { id:'youtube-studio',    name:'YouTube Studio',      desc:'Upload vidéos & analytics',   color:'#FF0000', icon:IC.youtube,   category:'productivity',
-      setupType:'url', setupLabel:'URL chaîne YouTube', setupPlaceholder:'https://youtube.com/@mashop', url:'https://studio.youtube.com/' },
-    { id:'google-sheets',     name:'Google Sheets',       desc:'Exporter donnees vers Sheets',color:'#0F9D58', icon:IC.layers,     category:'productivity',
-      setupType:'url', setupLabel:'URL Google Sheet', setupPlaceholder:'https://docs.google.com/spreadsheets/d/...', url:null },
-    { id:'excel',             name:'Import/Export Excel',  desc:'Importer et exporter Excel',  color:'#217346', icon:IC.layers,     category:'productivity',
-      setupType:'action', url:null },
-    { id:'comptabilite',      name:'Export Comptable',     desc:'Plan comptable OHADA',        color:'#334155', icon:IC.receipt,     category:'finance',
-      setupType:'action', url:null },
-    { id:'pos',               name:'Caisse (POS)',         desc:'Connecter un terminal de paiement', color:'#059669', icon:IC.creditCard, category:'finance',
+    { id:'orange-money', name:'Orange Money', desc:'Paiement mobile Orange', color:'#FF7900', icon:IC.creditCard, category:'finance',
+      pays:['CI','SN','ML','BF','NE','CM','GN','MG','CD','JO'], niveau:'lien',
+      setupType:'phone', setupLabel:'Numéro marchand Orange Money', setupPlaceholder:'+225 07 00 00 00 00', url:'https://www.orange.ci/omoney' },
+    { id:'mtn-momo', name:'MTN MoMo', desc:'Paiement mobile MTN', color:'#FFCC00', icon:IC.creditCard, category:'finance',
+      pays:['CI','GH','CM','UG','RW','ZM','BJ','NG'], niveau:'lien',
+      setupType:'phone', setupLabel:'Numéro marchand MoMo', setupPlaceholder:'+225 05 00 00 00 00', url:'https://momo.mtn.com/' },
+    { id:'moov-money', name:'Moov Money', desc:'Paiement mobile Moov', color:'#0066B3', icon:IC.creditCard, category:'finance',
+      pays:['CI','BJ','TG','BF','NE'], niveau:'lien',
+      setupType:'phone', setupLabel:'Numéro marchand Moov', setupPlaceholder:'+225 01 00 00 00 00', url:'https://www.moov-africa.ci/' },
+    { id:'free-money', name:'Free Money', desc:'Paiement mobile Free', color:'#CD1719', icon:IC.creditCard, category:'finance',
+      pays:['SN'], niveau:'lien',
+      setupType:'phone', setupLabel:'Numéro Free Money', setupPlaceholder:'+221 76 000 00 00', url:'https://www.free.sn/' },
+    { id:'airtel-money', name:'Airtel Money', desc:'Paiement mobile Airtel', color:'#E4002B', icon:IC.creditCard, category:'finance',
+      pays:['NE','TD','GA','CD','KE','TZ','UG','RW','ZM','MW'], niveau:'lien',
+      setupType:'phone', setupLabel:'Numéro Airtel Money', setupPlaceholder:'+227 90 00 00 00', url:'https://www.airtel.africa/money' },
+    { id:'djamo', name:'Djamo', desc:'Compte & carte pour commerçants', color:'#1B1B3A', icon:IC.creditCard, category:'finance',
+      pays:['CI','SN'], niveau:'lien',
+      setupType:'account', setupLabel:'Identifiant Djamo', setupPlaceholder:'DJ-XXXXX', url:'https://www.djamo.com/' },
+
+    // ── Agrégateurs de paiement ──
+    { id:'cinetpay', name:'CinetPay', desc:'Encaisser toutes les monnaies mobiles', color:'#0F4C81', icon:IC.creditCard, category:'finance',
+      pays:['CI','SN','ML','BF','CM','TG','BJ','NE','GN','CD'], niveau:'cle',
+      setupType:'apikey', setupLabel:'Clé API CinetPay', setupPlaceholder:'API key', url:'https://cinetpay.com/' },
+    { id:'paydunya', name:'PayDunya', desc:'Paiement en ligne Afrique de l\'Ouest', color:'#0B8457', icon:IC.creditCard, category:'finance',
+      pays:['SN','CI','BF','ML','BJ','TG'], niveau:'cle',
+      setupType:'apikey', setupLabel:'Clé maîtresse PayDunya', setupPlaceholder:'live_master_...', url:'https://paydunya.com/' },
+    { id:'flutterwave', name:'Flutterwave', desc:'Paiement panafricain & international', color:'#F5A623', icon:IC.creditCard, category:'finance',
+      pays:['NG','GH','KE','ZA','CI','SN','UG','TZ','RW','CM','EG'], niveau:'cle',
+      setupType:'apikey', setupLabel:'Clé secrète Flutterwave', setupPlaceholder:'FLWSECK-...', url:'https://flutterwave.com/' },
+    { id:'paystack', name:'Paystack', desc:'Paiement carte & mobile', color:'#00C3F7', icon:IC.creditCard, category:'finance',
+      pays:['NG','GH','ZA','KE','CI'], niveau:'cle',
+      setupType:'apikey', setupLabel:'Clé secrète Paystack', setupPlaceholder:'sk_live_...', url:'https://paystack.com/' },
+    { id:'kkiapay', name:'Kkiapay', desc:'Encaissement mobile money', color:'#3B5AFB', icon:IC.creditCard, category:'finance',
+      pays:['BJ','CI','TG','SN'], niveau:'cle',
+      setupType:'apikey', setupLabel:'Clé publique Kkiapay', setupPlaceholder:'pk_...', url:'https://kkiapay.me/' },
+    { id:'stripe', name:'Stripe', desc:'Paiement carte international', color:'#635BFF', icon:IC.creditCard, category:'finance',
+      pays:['*'], niveau:'cle',
+      setupType:'apikey', setupLabel:'Clé secrète Stripe', setupPlaceholder:'sk_live_...', url:'https://dashboard.stripe.com/' },
+    { id:'paypal', name:'PayPal', desc:'Encaissement international', color:'#003087', icon:IC.creditCard, category:'finance',
+      pays:['*'], niveau:'lien',
+      setupType:'account', setupLabel:'E-mail PayPal Business', setupPlaceholder:'vous@boutique.com', url:'https://www.paypal.com/business' },
+
+    // ── Caisse & comptabilité ──
+    { id:'pos', name:'Caisse (POS)', desc:'Terminal de paiement', color:'#059669', icon:IC.creditCard, category:'finance',
+      pays:['*'], niveau:'lien',
       setupType:'serial', setupLabel:'ID Terminal POS', setupPlaceholder:'POS-XXXXXX', url:null },
+    { id:'comptabilite', name:'Export Comptable', desc:'Plan comptable OHADA', color:'#334155', icon:IC.receipt, category:'finance',
+      pays:['CI','SN','ML','BF','BJ','TG','NE','CM','GA','CD','TD','GN'], niveau:'sync',
+      setupType:'action', url:null },
+    { id:'sage', name:'Sage', desc:'Export vers Sage Comptabilité', color:'#00DC06', icon:IC.receipt, category:'finance',
+      pays:['*'], niveau:'lien',
+      setupType:'account', setupLabel:'Référence dossier Sage', setupPlaceholder:'SAGE-XXXX', url:'https://www.sage.com/' },
+    { id:'quickbooks', name:'QuickBooks', desc:'Export vers QuickBooks', color:'#2CA01C', icon:IC.receipt, category:'finance',
+      pays:['*'], niveau:'lien',
+      setupType:'account', setupLabel:'Identifiant société', setupPlaceholder:'QB-XXXX', url:'https://quickbooks.intuit.com/' },
+    { id:'odoo', name:'Odoo', desc:'ERP · stock & ventes', color:'#714B67', icon:IC.layers, category:'finance',
+      pays:['*'], niveau:'cle',
+      setupType:'url+key', setupLabel:'URL de votre Odoo', setupPlaceholder:'https://monentreprise.odoo.com', keyLabel:'Clé API', url:'https://www.odoo.com/' },
+
+    // ── E-commerce & marketplaces ──
+    { id:'shopify', name:'Shopify', desc:'Synchroniser avec Shopify', color:'#96BF48', icon:IC.shop, category:'ecommerce',
+      pays:['*'], niveau:'cle',
+      setupType:'url+key', setupLabel:'URL boutique Shopify', setupPlaceholder:'https://maboutique.myshopify.com', keyLabel:'Access Token', url:'https://www.shopify.com/admin' },
+    { id:'woocommerce', name:'WooCommerce', desc:'Synchroniser avec WordPress', color:'#96588A', icon:IC.shop, category:'ecommerce',
+      pays:['*'], niveau:'cle',
+      setupType:'url+key', setupLabel:'URL boutique WooCommerce', setupPlaceholder:'https://maboutique.com', keyLabel:'Clé API WooCommerce', url:null },
+    { id:'jumia', name:'Jumia Seller', desc:'Vendre sur Jumia', color:'#F68B1E', icon:IC.globe, category:'ecommerce',
+      pays:['CI','SN','NG','GH','KE','EG','MA','TN','UG','DZ'], niveau:'lien',
+      setupType:'url', setupLabel:'Lien vendeur Jumia', setupPlaceholder:'https://vendeur.jumia.ci/...', url:'https://vendeur.jumia.ci/' },
+    { id:'yango-market', name:'Yango Achat & Vente', desc:'Marketplace Yango', color:'#FF4D00', icon:IC.shop, category:'ecommerce',
+      pays:['CI','SN','CM','GH','ZM'], niveau:'lien',
+      setupType:'account', setupLabel:'ID Vendeur Yango Market', setupPlaceholder:'YMK-XXXXX', url:'https://market.yango.com/' },
+    { id:'facebook-shop', name:'Facebook & Instagram Shop', desc:'Vendre depuis vos pages', color:'#0866FF', icon:IC.shop, category:'ecommerce',
+      pays:['*'], niveau:'lien',
+      setupType:'url', setupLabel:'Lien de votre boutique Facebook', setupPlaceholder:'https://facebook.com/maboutique/shop', url:'https://business.facebook.com/commerce' },
+    { id:'tiktok-shop', name:'TikTok Shop', desc:'Vendre sur TikTok', color:'#000000', icon:IC.shop, category:'ecommerce',
+      pays:['NG','ZA','GB','US','FR','MY','TH','VN','ID','SG'], niveau:'lien',
+      setupType:'account', setupLabel:'ID Vendeur TikTok Shop', setupPlaceholder:'TTS-XXXXX', url:'https://seller.tiktokglobalshop.com/' },
+    { id:'etsy', name:'Etsy', desc:'Artisanat & fait-main', color:'#F1641E', icon:IC.shop, category:'ecommerce',
+      pays:['*'], niveau:'lien',
+      setupType:'url', setupLabel:'Lien de votre boutique Etsy', setupPlaceholder:'https://etsy.com/shop/maboutique', url:'https://www.etsy.com/sell' },
+
+    // ── Livraison ──
+    { id:'glovo', name:'Glovo Partners', desc:'Livraison à la demande', color:'#FFC244', icon:IC.truck, category:'delivery',
+      pays:['CI','MA','KE','GH','NG','ES','IT','PT','RO','UA'], niveau:'lien',
+      setupType:'account', setupLabel:'ID Partenaire Glovo', setupPlaceholder:'GLV-XXXXX', url:'https://sell.glovoapp.com/' },
+    { id:'yango', name:'Yango Delivery', desc:'Livraison de colis', color:'#FF4D00', icon:IC.truck, category:'delivery',
+      pays:['CI','SN','CM','GH','ZM','CD','MA'], niveau:'lien',
+      setupType:'account', setupLabel:'ID Partenaire Yango', setupPlaceholder:'YNG-XXXXX', url:'https://delivery.yango.com/' },
+    { id:'yango-deli', name:'Yango Deli', desc:'Restaurant & épicerie livrés', color:'#FF4D00', icon:IC.truck, category:'delivery',
+      pays:['CI','SN','CM','GH'], niveau:'lien',
+      setupType:'account', setupLabel:'ID Partenaire Yango Deli', setupPlaceholder:'YDL-XXXXX', url:'https://deli.yango.com/' },
+    { id:'gozem', name:'Gozem', desc:'Livraison & transport', color:'#00A651', icon:IC.truck, category:'delivery',
+      pays:['TG','BJ','GA','CI','CM'], niveau:'lien',
+      setupType:'account', setupLabel:'ID Partenaire Gozem', setupPlaceholder:'GZM-XXXXX', url:'https://gozem.co/' },
+    { id:'dhl', name:'DHL Express', desc:'Expédition internationale', color:'#FFCC00', icon:IC.truck, category:'delivery',
+      pays:['*'], niveau:'lien',
+      setupType:'account', setupLabel:'Numéro de compte DHL', setupPlaceholder:'DHL-XXXXXXXX', url:'https://mydhl.express.dhl/' },
+
+    // ── Communication ──
+    { id:'whatsapp-business', name:'WhatsApp Business', desc:'Notifications clients', color:'#25D366', icon:IC.whatsapp, category:'communication',
+      pays:['*'], niveau:'lien',
+      setupType:'phone', setupLabel:'Numéro WhatsApp Business', setupPlaceholder:'+225 07 XX XX XX XX', url:'https://business.whatsapp.com/' },
+    { id:'sms-api', name:'SMS API', desc:'SMS en masse (Twilio, Vonage…)', color:'#4F46E5', icon:IC.smartphone, category:'communication',
+      pays:['*'], niveau:'cle',
+      setupType:'apikey', setupLabel:'Clé API SMS', setupPlaceholder:'sk_live_xxxxx', url:null },
+    { id:'telegram', name:'Telegram Bot', desc:'Alertes stock sur Telegram', color:'#26A5E4', icon:IC.smartphone, category:'communication',
+      pays:['*'], niveau:'cle',
+      setupType:'apikey', setupLabel:'Jeton du bot Telegram', setupPlaceholder:'123456:ABC-DEF...', url:'https://core.telegram.org/bots' },
+    { id:'brevo', name:'Brevo', desc:'E-mailing & campagnes', color:'#0B996E', icon:IC.mail, category:'communication',
+      pays:['*'], niveau:'cle',
+      setupType:'apikey', setupLabel:'Clé API Brevo', setupPlaceholder:'xkeysib-...', url:'https://www.brevo.com/' },
+    { id:'mailchimp', name:'Mailchimp', desc:'Newsletters clients', color:'#FFE01B', icon:IC.mail, category:'communication',
+      pays:['*'], niveau:'cle',
+      setupType:'apikey', setupLabel:'Clé API Mailchimp', setupPlaceholder:'xxxxxxxx-us1', url:'https://mailchimp.com/' },
+    { id:'slack', name:'Slack', desc:'Alertes dans votre équipe', color:'#4A154B', icon:IC.smartphone, category:'communication',
+      pays:['*'], niveau:'cle',
+      setupType:'url', setupLabel:'URL du webhook Slack', setupPlaceholder:'https://hooks.slack.com/services/...', url:'https://slack.com/' },
+
+    // ── Productivité & automatisation ──
+    { id:'google-sheets', name:'Google Sheets', desc:'Exporter vers un tableur', color:'#0F9D58', icon:IC.layers, category:'productivity',
+      pays:['*'], niveau:'lien',
+      setupType:'url', setupLabel:'URL Google Sheet', setupPlaceholder:'https://docs.google.com/spreadsheets/d/...', url:null },
+    { id:'excel', name:'Import/Export Excel', desc:'Importer et exporter Excel', color:'#217346', icon:IC.layers, category:'productivity',
+      pays:['*'], niveau:'sync',
+      setupType:'action', url:null },
+    { id:'zapier', name:'Zapier', desc:'Relier BARO à 6 000 outils', color:'#FF4A00', icon:IC.link, category:'productivity',
+      pays:['*'], niveau:'cle',
+      setupType:'url', setupLabel:'URL du webhook Zapier', setupPlaceholder:'https://hooks.zapier.com/hooks/catch/...', url:'https://zapier.com/' },
+    { id:'make', name:'Make', desc:'Automatisations visuelles', color:'#6D00CC', icon:IC.link, category:'productivity',
+      pays:['*'], niveau:'cle',
+      setupType:'url', setupLabel:'URL du webhook Make', setupPlaceholder:'https://hook.eu1.make.com/...', url:'https://www.make.com/' },
+    { id:'n8n', name:'n8n', desc:'Automatisations auto-hébergées', color:'#EA4B71', icon:IC.link, category:'productivity',
+      pays:['*'], niveau:'cle',
+      setupType:'url', setupLabel:'URL du webhook n8n', setupPlaceholder:'https://n8n.mondomaine.com/webhook/...', url:'https://n8n.io/' },
+    { id:'youtube-studio', name:'YouTube Studio', desc:'Vidéos & statistiques', color:'#FF0000', icon:IC.youtube, category:'productivity',
+      pays:['*'], niveau:'lien',
+      setupType:'url', setupLabel:'URL chaîne YouTube', setupPlaceholder:'https://youtube.com/@maboutique', url:'https://studio.youtube.com/' },
+    { id:'api-rest', name:'API REST BARO', desc:'Vos données, vos outils', color:'#1E1B80', icon:IC.link, category:'productivity',
+      pays:['*'], niveau:'sync',
+      setupType:'action', url:null },
   ];
 
   return `
@@ -28956,12 +29071,35 @@ function vIntegrations() {
     </div>
   </div>
   <div class="container">
-    ${['communication','ecommerce','delivery','productivity','finance'].map(cat => {
-      const items = integrationsList.filter(i => i.category === cat);
-      const labels = {communication:'💬 Communication',ecommerce:'🛒 E-commerce',productivity:'📊 Productivité',delivery:'🚚 Livraison',finance:'💰 Finance & POS'};
-      const catIcons = {communication:IC.whatsapp,ecommerce:IC.shop,productivity:IC.layers,delivery:IC.truck,finance:IC.creditCard};
+    ${(() => {
+      // Filtre par pays : un commerçant ivoirien n'a rien à faire de
+      // Free Money (Sénégal) ni de TikTok Shop (indisponible chez lui).
+      const paysActif = S.intPays === undefined ? (S.session?.country || 'CI') : S.intPays;
+      const codes = new Set();
+      integrationsList.forEach(i => (i.pays || []).forEach(p => { if (p !== '*') codes.add(p); }));
+      const nomPays = c => (COUNTRIES.find(x => x.code === c) || {}).label || c;
+      const dispoIci = c => integrationsList.filter(i => (i.pays || []).includes('*') || (i.pays || []).includes(c)).length;
+      const liste = [...codes].sort((a, b) => nomPays(a).localeCompare(nomPays(b)));
       return `
-    <div class="section-hd"><span class="section-lbl">${labels[cat]}</span></div>
+    <div class="int-filter">
+      <label class="form-label" style="margin-bottom:6px">Disponible dans</label>
+      <select class="input" onchange="S.intPays=this.value;render()">
+        <option value="">🌍 Tous les pays (${integrationsList.length})</option>
+        ${liste.map(c => `<option value="${c}" ${paysActif === c ? 'selected' : ''}>${nomPays(c)} (${dispoIci(c)})</option>`).join('')}
+      </select>
+    </div>`;
+    })()}
+    ${['finance','ecommerce','delivery','communication','productivity'].map(cat => {
+      const paysActif = S.intPays === undefined ? (S.session?.country || 'CI') : S.intPays;
+      const items = integrationsList.filter(i => i.category === cat)
+        .filter(i => !paysActif || (i.pays || []).includes('*') || (i.pays || []).includes(paysActif));
+      if (!items.length) return '';
+      const labels = {communication:'💬 Communication',ecommerce:'🛒 E-commerce',productivity:'📊 Productivité & automatisation',delivery:'🚚 Livraison',finance:'💰 Paiement & comptabilité'};
+      const NIV = { lien:['Raccourci','Ouvre le service avec votre identifiant mémorisé'],
+                    cle:['Clé stockée','Votre clé est conservée pour les échanges à venir'],
+                    sync:['Échange réel','Les données circulent vraiment'] };
+      return `
+    <div class="section-hd"><span class="section-lbl">${labels[cat]} · ${items.length}</span></div>
     ${items.map(it => {
       const cfg = (S.integrationsConfig||[]).find(c=>c.id===it.id);
       const connected = cfg?.connected;
@@ -28975,6 +29113,7 @@ function vIntegrations() {
             ${connected ? `<span class="int-dot" style="background:${it.color}"></span>` : ''}
           </div>
           <div style="font-size:11px;color:${connected?it.color:'var(--text-3)'};margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${connected ? '✓ '+(cfg.value||cfg.url||'Connecté') : it.desc}</div>
+          <div class="int-niv int-niv-${it.niveau||'lien'}" title="${(NIV[it.niveau]||NIV.lien)[1]}">${(NIV[it.niveau]||NIV.lien)[0]}</div>
         </div>
         ${connected ? `
           <div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0">

@@ -5396,3 +5396,20 @@ body.vt-active .card { animation: none !important; }
 .pv-conf.ok { background: rgba(22, 163, 74, .12); color: #16A34A; }
 .pv-conf.moy { background: rgba(217, 119, 6, .12); color: #B45309; }
 .pv-conf.bas { background: var(--gray-1); color: var(--text-3); }
+
+/* ── Intégrations : filtre par pays et niveau réel ──────────────────── */
+.int-filter { margin: 4px 0 14px; }
+.int-niv {
+  display: inline-block;
+  margin-top: 5px;
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  padding: 3px 7px;
+  border-radius: 5px;
+  cursor: help;
+}
+.int-niv-lien { background: var(--gray-1); color: var(--text-3); }
+.int-niv-cle  { background: rgba(217, 119, 6, .12); color: #B45309; }
+.int-niv-sync { background: rgba(22, 163, 74, .13); color: #16A34A; }
