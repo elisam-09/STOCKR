@@ -21041,6 +21041,15 @@ ${hoverCss}
 @keyframes goSheen{0%{transform:translateX(-120%)}28%,100%{transform:translateX(120%)}}
 @media(prefers-reduced-motion:reduce){.cartbar{transition:none}.cartbar-go::after{animation:none;opacity:0}}
 /* Checkout */
+/* Champ téléphone du panier : obligatoire, et on dit pourquoi */
+.ck-req{font-size:9.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+  color:#DC2626;background:rgba(220,38,38,.1);padding:2px 6px;border-radius:5px;margin-left:6px}
+.ck-phone-why{font-size:11px;line-height:1.4;color:var(--tx2);margin:-6px 0 12px;opacity:.85}
+.ck-err{border-color:#DC2626!important;box-shadow:0 0 0 3px rgba(220,38,38,.14)!important;
+  animation:ckShake .32s cubic-bezier(.36,.07,.19,.97)}
+@keyframes ckShake{10%,90%{transform:translateX(-2px)}30%,70%{transform:translateX(3px)}50%{transform:translateX(-2px)}}
+@media(prefers-reduced-motion:reduce){.ck-err{animation:none}}
+
 /* Confirmation de commande sur le site — la commande se conclut ici */
 .cfm-ov{position:fixed;inset:0;background:rgba(0,0,0,.58);backdrop-filter:blur(8px);
   -webkit-backdrop-filter:blur(8px);z-index:120;display:none;align-items:center;justify-content:center;padding:20px}
@@ -21552,6 +21561,9 @@ ${showCartButton ? `
     <div class="ck-total"><span>Total</span><span id="ck-total">0 ${sym()}</span></div>
     <label>Votre nom</label>
     <input id="ck-name" type="text" placeholder="ex : Aminata Traoré">
+    <label>Téléphone <span class="ck-req">obligatoire</span></label>
+    <input id="ck-phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="ex : 07 00 00 00 00">
+    <div class="ck-phone-why">Le seul moyen pour ${esc(bc.name||S.session?.business||'la boutique')} de vous joindre pour confirmer.</div>
     ${_pickupEnabled && !_deliveryOff?`<label>Mode de réception</label>
     <div class="ck-mode">
       <button type="button" class="ck-mode-btn on" id="ck-mode-delivery" onclick="baroSetMode('delivery')">🚚 Livraison</button>
@@ -21666,6 +21678,8 @@ var baroMode=BARO_DELOFF?'pickup':'delivery';
       if(b){
         var n=document.getElementById('ck-name');
         if(n&&!n.value&&b.name)n.value=b.name;
+        var t=document.getElementById('ck-phone');
+        if(t&&!t.value&&b.phone)t.value=b.phone;
         var z=document.getElementById('ck-zone');
         if(z&&b.zone){for(var i=0;i<z.options.length;i++){if(z.options[i].value===b.zone||z.options[i].text===b.zone){z.selectedIndex=i;break;}}}
       }
@@ -21675,6 +21689,17 @@ var baroMode=BARO_DELOFF?'pickup':'delivery';
   window.baroSend=function(){
     if(count()===0){alert('Votre panier est vide.');return;}
     var name=(document.getElementById('ck-name')||{}).value||'';
+    // Le telephone est le SEUL moyen de rappel quand la commande se conclut
+    // sur le site : sans lui le vendeur recoit un nom et rien d'autre.
+    var phEl=document.getElementById('ck-phone');
+    var phone=(phEl?phEl.value:'').trim();
+    var phDigits=phone.replace(/[^0-9]/g,'');
+    if(phDigits.length<8){
+      if(phEl){phEl.focus();phEl.classList.add('ck-err');
+        setTimeout(function(){phEl.classList.remove('ck-err');},1800);}
+      if(typeof baroToast==='function')baroToast('Votre téléphone est nécessaire pour vous rappeler');
+      return;
+    }
     var zoneEl=document.getElementById('ck-zone');var zone=zoneEl?zoneEl.value:'';
     var pay=(document.getElementById('ck-pay')||{}).value||'';
     var L=[];
@@ -21693,6 +21718,7 @@ var baroMode=BARO_DELOFF?'pickup':'delivery';
     L.push('*TOTAL : '+fmtn(Math.max(0,total()-disc)+fee)+' '+BARO_SYM+'*');
     L.push('');
     if(name)L.push('👤 '+name);
+    if(phone)L.push('📞 '+phone);
     if(_pickup){if(BARO_PICKUP&&BARO_PICKUP.on){L.push('🏬 Retrait : '+BARO_PICKUP.addr);if(BARO_PICKUP.hours)L.push('🕒 '+BARO_PICKUP.hours);}else{L.push('🏬 Retrait sur place');}}
     else if(zone)L.push('📍 '+zone);
     if(pay)L.push('💳 '+pay);
@@ -21702,7 +21728,7 @@ var baroMode=BARO_DELOFF?'pickup':'delivery';
     // ── EN LIGNE : la commande revient dans l'app du vendeur (impossible hors-ligne) ──
     // et le CLIENT reçoit un code de suivi (statut en direct dans « Mes achats »)
     // Mémorise le profil acheteur pour la prochaine commande (sur l'appareil)
-    try{localStorage.setItem('baro_buyer',JSON.stringify({name:name,zone:zone,pay:pay}));}catch(e){}
+    try{localStorage.setItem('baro_buyer',JSON.stringify({name:name,phone:phone,zone:zone,pay:pay}));}catch(e){}
 
     var _msg=L.join('\\n');
     if(BARO_API&&BARO_SHOP_ID){
@@ -21711,7 +21737,7 @@ var baroMode=BARO_DELOFF?'pickup':'delivery';
       baroShowConfirm('envoi');
       try{
         fetch(BARO_API+'/api/orders/shop/'+BARO_SHOP_ID,{method:'POST',headers:{'Content-Type':'application/json'},
-          body:JSON.stringify({clientName:name,items:_items,total:Math.max(0,total()-disc)+fee,mode:_pickup?'pickup':'delivery',zone:_pickup?'':zone,payment:pay,note:''})})
+          body:JSON.stringify({clientName:name,phone:phone,items:_items,total:Math.max(0,total()-disc)+fee,mode:_pickup?'pickup':'delivery',zone:_pickup?'':zone,payment:pay,note:''})})
           .then(function(r){return r.ok?r.json():null;})
           .then(function(d){
             if(d&&d.id&&d.track_code){
