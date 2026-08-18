@@ -117,7 +117,12 @@ function getSession() {
   try { return JSON.parse(localStorage.getItem(AUTH_KEY)); } catch { return null; }
 }
 function saveSession(user) {
-  localStorage.setItem(AUTH_KEY, JSON.stringify(user));
+  // Les deux familles de clés, toujours ensemble : elles ont diverge en
+  // production (devise en dollars d'un côté, en francs CFA de l'autre)
+  // parce que certains chemins n'en écrivaient qu'une.
+  const brut = JSON.stringify(user);
+  localStorage.setItem(AUTH_KEY, brut);
+  try { localStorage.setItem('stockr_session', brut); } catch (_) {}
 }
 function clearSession() {
   localStorage.removeItem(AUTH_KEY);
@@ -6156,15 +6161,27 @@ function applyTheme() {
   }
 }
 
+// Enregistre la session COMPLÈTE sur les deux familles de clés.
+//
+// L'ancienne façon de faire relisait baro_session puis n'y réécrivait que
+// le champ modifié. Pour un commerçant venu d'une version antérieure — dont
+// la session vit encore dans stockr_session — baro_session n'existait pas :
+// le fichier écrit ne contenait plus que la devise. Jeton, entreprise et
+// e-mail disparaissaient, et l'application le déconnectait au rechargement.
+function _persistSession() {
+  if (!S.session) return;
+  const complet = { ...S.session };
+  if (!complet.token && S.token) complet.token = S.token;   // sans jeton, pas de reprise de session
+  const brut = JSON.stringify(complet);
+  try { localStorage.setItem('baro_session', brut); } catch (_) {}
+  try { localStorage.setItem('stockr_session', brut); } catch (_) {}
+}
+
 function changeCurrency(code) {
   if (!S.session) return;
   S.session.currency = code;
   S.session.currency_symbol = getCurrencySymbol(code);
-  // Save to localStorage
-  const saved = JSON.parse(localStorage.getItem('baro_session') || '{}');
-  saved.currency = code;
-  saved.currency_symbol = S.session.currency_symbol;
-  localStorage.setItem('baro_session', JSON.stringify(saved));
+  _persistSession();
   showToast(t('infoUpdated'));
   render();
 }
@@ -6172,9 +6189,7 @@ function changeCurrency(code) {
 function changeTaxRate(val) {
   if (!S.session) return;
   S.session.tax_rate = parseFloat(val) || 0;
-  const saved = JSON.parse(localStorage.getItem('baro_session') || '{}');
-  saved.tax_rate = S.session.tax_rate;
-  localStorage.setItem('baro_session', JSON.stringify(saved));
+  _persistSession();
   showToast(t('infoUpdated'));
 }
 
@@ -6187,9 +6202,7 @@ function changeBusinessType(type) {
   if (!S.session) S.session = {};
   S.session.businessType = type;
   localStorage.setItem('stockr_business_type', type);
-  const saved = JSON.parse(localStorage.getItem('stockr_session') || '{}');
-  saved.businessType = type;
-  localStorage.setItem('stockr_session', JSON.stringify(saved));
+  _persistSession();
   const labels = { reseller:'🏪 Revendeur', maker:'🏭 Transformateur', mixed:'🔀 Mixte' };
   showToast(`Mode ${labels[type]} activé`);
   render();
@@ -7134,12 +7147,7 @@ function _wizardCommit() {
   }
   if (w.biz) S.session.business = w.biz;
   if (w.city) S.session.city = w.city;
-  try { saveSession({ ...S.session, token: S.token }); } catch(_){}
-  try {
-    const saved = JSON.parse(localStorage.getItem('stockr_session') || '{}');
-    saved.businessType = w.type; if (w.biz) saved.business = w.biz; if (w.city) saved.city = w.city;
-    localStorage.setItem('stockr_session', JSON.stringify(saved));
-  } catch(_){}
+  try { _persistSession(); } catch(_){}
   // Premier produit / article
   const p = w.prod || {};
   if (p.name) {
@@ -20444,6 +20452,10 @@ function generateBoutiqueSite(opts) {
   // Construite avec les vrais produits de la vitrine : aucune vidéo à
   // tourner, aucune image à fournir — un commerçant l'active et elle marche.
   const _cinemaOn = _palAllowed && !!bc.cinema;
+  // Les comptes acheteurs n'ont de sens que si un serveur peut les stocker :
+  // sans backend, proposer « Créer un compte » serait un bouton creux.
+  const shopIdNum = Number(S.session?.id || S.session?.user_id || 0);
+  const BARO_API_OK = !USE_LOCAL && !!S.token && !!shopIdNum;
   const announce   = (bc.announceText || '').trim();
   // ── Sections éditables par le vendeur : À propos / Services / Contact ──
   const _aboutText    = (bc.aboutText || '').trim();
@@ -21041,6 +21053,46 @@ ${hoverCss}
 @keyframes goSheen{0%{transform:translateX(-120%)}28%,100%{transform:translateX(120%)}}
 @media(prefers-reduced-motion:reduce){.cartbar{transition:none}.cartbar-go::after{animation:none;opacity:0}}
 /* Checkout */
+/* ── Compte acheteur ───────────────────────────────────────────────── */
+#acc-btn{position:relative}
+.acc-dot{position:absolute;top:5px;right:5px;width:7px;height:7px;border-radius:50%;
+  background:#16A34A;box-shadow:0 0 0 2px var(--surface)}
+#acc-c h3{font-size:20px;font-weight:800;letter-spacing:-.02em;margin-bottom:4px}
+.acc-sub{font-size:12.5px;color:var(--tx2);margin-bottom:16px;line-height:1.45}
+.acc-lb{display:block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--tx2);margin:12px 0 5px}
+.acc-in{width:100%;padding:12px 14px;font-family:inherit;font-size:15px;
+  background:var(--field);color:var(--tx);border:1px solid var(--bd);border-radius:12px}
+.acc-in:focus{outline:none;border-color:${tc};box-shadow:0 0 0 3px ${tc}22}
+.acc-go{width:100%;margin-top:18px;background:${tc};color:#fff;border:0;border-radius:999px;
+  padding:14px;font-family:inherit;font-size:15px;font-weight:800;cursor:pointer}
+.acc-go:disabled{opacity:.6;cursor:default}
+.acc-alt{width:100%;margin-top:9px;background:none;color:var(--tx2);border:1px solid var(--bd);
+  border-radius:999px;padding:11px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer}
+.acc-err{background:rgba(220,38,38,.1);color:#DC2626;border:1px solid rgba(220,38,38,.22);
+  border-radius:10px;padding:10px 12px;font-size:12.5px;font-weight:600;margin-bottom:4px}
+.acc-sec{margin-top:20px}
+.acc-t{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--tx2);margin-bottom:9px}
+.acc-load{font-size:12.5px;color:var(--tx2);opacity:.7}
+.acc-vide{font-size:12.5px;color:var(--tx2);padding:10px 0}
+.acc-cmd{border:1px solid var(--bd);border-radius:13px;padding:12px 13px;margin-bottom:8px;
+  background:var(--bg)}
+.acc-cmd-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px;
+  font-size:12px;color:var(--tx2)}
+.acc-cmd-h b{font-size:14.5px;font-weight:800;color:var(--tx);font-variant-numeric:tabular-nums}
+.acc-cmd-i{font-size:12.5px;color:var(--tx);margin-top:5px;line-height:1.45}
+.acc-cmd-s{font-size:11.5px;font-weight:700;color:${tc};margin-top:6px}
+.acc-chips{display:flex;flex-wrap:wrap;gap:7px}
+.acc-chip{display:inline-flex;align-items:center;gap:6px;background:var(--pill);color:var(--pillTx);
+  border:1px solid var(--bd);border-radius:999px;padding:8px 13px;
+  font-family:inherit;font-size:12.5px;font-weight:700;cursor:pointer;
+  transition:transform .15s cubic-bezier(.2,0,0,1),border-color .15s}
+.acc-chip:hover{border-color:${tc};transform:translateY(-1px)}
+.acc-chip:active{transform:scale(.96)}
+.acc-chip i{font-style:normal;font-size:10.5px;font-weight:800;opacity:.55}
+@media(prefers-reduced-motion:reduce){.acc-chip{transition:none}.acc-chip:hover{transform:none}}
+
 /* Champ téléphone du panier : obligatoire, et on dit pourquoi */
 .ck-req{font-size:9.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
   color:#DC2626;background:rgba(220,38,38,.1);padding:2px 6px;border-radius:5px;margin-left:6px}
@@ -21326,6 +21378,10 @@ ${bannerHTML(topBanner, 'top')}
   <div class="topbar-name">${esc(bc.name||S.session?.business||'Ma Boutique')}</div>
   <nav class="topnav">${_navLinks.map(l=>`<a href="${l[0]}" onclick="event.preventDefault();(document.querySelector('${l[0]}')||document.body).scrollIntoView({behavior:'smooth',block:'start'})">${l[1]}</a>`).join('')}</nav>
   <span class="cur-badge" title="Devise de la boutique">${_curBadge}</span>
+  ${(BARO_API_OK && shopIdNum) ? `<button class="icon-btn" id="acc-btn" onclick="baroAccount()" title="Mon compte" aria-label="Mon compte">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <span class="acc-dot" id="acc-dot" hidden></span>
+  </button>` : ''}
   <button class="icon-btn" onclick="baroMyOrders()" title="Mes achats" aria-label="Mes achats">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
   </button>
@@ -21512,6 +21568,158 @@ ${popupHTML}
 <div class="legal-ov" id="legal-ov" onclick="if(event.target===this)this.classList.remove('show')">
   <div class="legal-box"><button class="legal-x" onclick="document.getElementById('legal-ov').classList.remove('show')">✕</button><h3 id="legal-t"></h3><div id="legal-c"></div></div>
 </div>
+${(BARO_API_OK && shopIdNum) ? `<div class="legal-ov" id="acc-ov" onclick="if(event.target===this)this.classList.remove('show')">
+  <div class="legal-box"><button class="legal-x" onclick="document.getElementById('acc-ov').classList.remove('show')">✕</button><div id="acc-c"></div></div>
+</div>
+<script>
+(function(){
+  var CLE='baro_shopper_'+${shopIdNum};
+  var API=${JSON.stringify(API_BASE)};
+  var SHOP=${shopIdNum};
+  function lire(){try{return JSON.parse(localStorage.getItem(CLE)||'null');}catch(e){return null;}}
+  function ecrire(v){try{v?localStorage.setItem(CLE,JSON.stringify(v)):localStorage.removeItem(CLE);}catch(e){}}
+  window.baroShopper=lire;
+
+  function pastille(){var d=document.getElementById('acc-dot');if(d)d.hidden=!lire();}
+  pastille();
+
+  function req(chemin,options){
+    var o=options||{};var s=lire();
+    o.headers=o.headers||{};
+    o.headers['Content-Type']='application/json';
+    if(s&&s.token)o.headers['Authorization']='Bearer '+s.token;
+    var ctrl=('AbortController' in window)?new AbortController():null;
+    if(ctrl){o.signal=ctrl.signal;setTimeout(function(){try{ctrl.abort();}catch(e){}},9000);}
+    return fetch(API+chemin,o).then(function(r){
+      return r.json().catch(function(){return {};}).then(function(j){
+        if(r.status===401&&s){ecrire(null);pastille();}      // session expiree
+        return {ok:r.ok,status:r.status,data:j};
+      });
+    });
+  }
+
+  function erreur(msg){
+    var e=document.getElementById('acc-err');
+    if(e){e.textContent=msg;e.hidden=!msg;}
+  }
+  function occupe(v){
+    var b=document.getElementById('acc-submit');
+    if(b){b.disabled=v;b.textContent=v?'Un instant…':b.getAttribute('data-lbl');}
+  }
+
+  window.baroAccMode=function(m){
+    var s=lire();
+    var c=document.getElementById('acc-c');
+    if(s&&s.customer){return baroAccProfil();}
+    var inscription=(m==='register');
+    c.innerHTML=
+      '<h3>'+(inscription?'Créer mon compte':'Me connecter')+'</h3>'
+      +'<p class="acc-sub">'+(inscription
+        ?'Retrouvez vos commandes depuis n’importe quel téléphone.'
+        :'Chez '+BARO_SHOP+'.')+'</p>'
+      +'<div class="acc-err" id="acc-err" hidden></div>'
+      +(inscription?'<label class="acc-lb">Votre nom</label><input class="acc-in" id="acc-name" type="text" autocomplete="name" placeholder="ex : Awa Kouassi">':'')
+      +'<label class="acc-lb">Téléphone</label><input class="acc-in" id="acc-tel" type="tel" inputmode="tel" autocomplete="tel" placeholder="07 00 00 00 00">'
+      +'<label class="acc-lb">Mot de passe</label><input class="acc-in" id="acc-mdp" type="password" autocomplete="'+(inscription?'new-password':'current-password')+'" placeholder="6 caractères minimum">'
+      +'<button class="acc-go" id="acc-submit" data-lbl="'+(inscription?'Créer mon compte':'Me connecter')+'" onclick="baroAccSend('+(inscription?'1':'0')+')">'+(inscription?'Créer mon compte':'Me connecter')+'</button>'
+      +'<button class="acc-alt" onclick="baroAccMode('+(inscription?"'login'":"'register'")+')">'
+        +(inscription?'J’ai déjà un compte':'Créer un compte')+'</button>';
+    var mdp=document.getElementById('acc-mdp');
+    if(mdp)mdp.addEventListener('keydown',function(ev){if(ev.key==='Enter')baroAccSend(inscription?1:0);});
+  };
+
+  window.baroAccSend=function(inscription){
+    erreur('');
+    var tel=(document.getElementById('acc-tel')||{}).value||'';
+    var mdp=(document.getElementById('acc-mdp')||{}).value||'';
+    var nom=(document.getElementById('acc-name')||{}).value||'';
+    if(tel.replace(/[^0-9]/g,'').length<8){return erreur('Numéro de téléphone invalide.');}
+    if(mdp.length<6){return erreur('Le mot de passe doit faire au moins 6 caractères.');}
+    occupe(true);
+    var corps={phone:tel,password:mdp};
+    if(inscription){corps.name=nom;}
+    req('/api/shoppers/shop/'+SHOP+'/'+(inscription?'register':'login'),
+        {method:'POST',body:JSON.stringify(corps)})
+      .then(function(r){
+        occupe(false);
+        if(!r.ok){return erreur((r.data&&r.data.error)||'Connexion impossible. Réessayez.');}
+        ecrire({token:r.data.token,customer:r.data.customer});
+        pastille();
+        baroAccProfil();
+      })
+      .catch(function(){occupe(false);erreur('Boutique injoignable. Vérifiez votre connexion.');});
+  };
+
+  window.baroAccProfil=function(){
+    var s=lire();if(!s){return baroAccMode('login');}
+    var cl=s.customer||{};
+    var c=document.getElementById('acc-c');
+    c.innerHTML='<h3>Bonjour '+((cl.name||'').split(' ')[0]||'👋')+'</h3>'
+      +'<p class="acc-sub">'+(cl.phone||'')+' · client de '+BARO_SHOP+'</p>'
+      +'<div class="acc-sec" id="acc-again"></div>'
+      +'<div class="acc-sec"><div class="acc-t">Mes commandes</div><div id="acc-orders" class="acc-load">Chargement…</div></div>'
+      +'<button class="acc-alt" onclick="baroAccLogout()">Me déconnecter</button>';
+
+    req('/api/shoppers/orders').then(function(r){
+      var el=document.getElementById('acc-orders');if(!el)return;
+      el.classList.remove('acc-load');
+      var a=(r.ok&&Array.isArray(r.data))?r.data:[];
+      if(!a.length){el.innerHTML='<div class="acc-vide">Aucune commande pour l’instant.</div>';return;}
+      el.innerHTML=a.map(function(o){
+        return '<div class="acc-cmd"><div class="acc-cmd-h"><span>'
+          +new Date(o.date).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'})
+          +'</span><b>'+Math.round(o.total).toLocaleString('fr-FR')+' '+BARO_SYM+'</b></div>'
+          +'<div class="acc-cmd-i">'+(o.items||[]).slice(0,4).map(function(x){
+              return String(typeof x==='string'?x:(x&&x.name)||'').replace(/[<>]/g,'');}).join(' · ')
+          +((o.items||[]).length>4?' …':'')+'</div>'
+          +'<div class="acc-cmd-s">'+(o.statusLabel||'')+'</div></div>';
+      }).join('');
+    }).catch(function(){
+      var el=document.getElementById('acc-orders');
+      if(el){el.classList.remove('acc-load');el.innerHTML='<div class="acc-vide">Historique indisponible hors ligne.</div>';}
+    });
+
+    req('/api/shoppers/orders/again').then(function(r){
+      var el=document.getElementById('acc-again');if(!el)return;
+      var a=(r.ok&&Array.isArray(r.data))?r.data:[];
+      if(!a.length){el.innerHTML='';return;}
+      el.innerHTML='<div class="acc-t">Vos habitudes</div><div class="acc-chips">'
+        +a.slice(0,6).map(function(x){
+            var n=String(x.name||'').replace(/[<>"]/g,'');
+            return '<button class="acc-chip" data-n="'+n+'">'+n+'<i>×'+x.times+'</i></button>';
+          }).join('')+'</div>';
+      [].slice.call(el.querySelectorAll('.acc-chip')).forEach(function(b){
+        b.addEventListener('click',function(){baroAccReprendre(b.getAttribute('data-n'));});
+      });
+    }).catch(function(){});
+  };
+
+  // Remettre au panier un article deja commande : on retrouve l'article par
+  // son nom dans la vitrine actuelle. S'il n'y est plus (retire, epuise),
+  // on le dit au lieu d'echouer en silence.
+  window.baroAccReprendre=function(nom){
+    var cible=null;
+    for(var i=0;i<BARO_ITEMS.length;i++){
+      if(String(BARO_ITEMS[i].name||'').toLowerCase()===String(nom||'').toLowerCase()){cible=BARO_ITEMS[i];break;}
+    }
+    if(!cible){if(typeof baroToast==='function')baroToast(nom+' n’est plus en vitrine');return;}
+    var b=document.querySelector('.pc-add.order-btn[data-id="'+cible.id+'"]');
+    if(b&&!b.disabled){b.click();document.getElementById('acc-ov').classList.remove('show');}
+    else if(typeof baroToast==='function')baroToast(nom+' est en rupture');
+  };
+
+  window.baroAccLogout=function(){
+    req('/api/shoppers/logout',{method:'POST'}).catch(function(){});
+    ecrire(null);pastille();baroAccMode('login');
+  };
+
+  window.baroAccount=function(){
+    var s=lire();
+    document.getElementById('acc-ov').classList.add('show');
+    if(s&&s.customer)baroAccProfil();else baroAccMode('login');
+  };
+})();
+</scr`+`ipt>` : ''}
 <div class="legal-ov" id="myorders-ov" onclick="if(event.target===this)this.classList.remove('show')">
   <div class="legal-box"><button class="legal-x" onclick="document.getElementById('myorders-ov').classList.remove('show')">✕</button><h3>🛍️ Mes achats</h3><div id="myorders-c"></div></div>
 </div>
