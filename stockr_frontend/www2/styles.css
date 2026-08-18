@@ -5226,3 +5226,43 @@ body.vt-active .card { animation: none !important; }
 [data-reduce-motion="1"] #view.vt-fwd,
 [data-reduce-motion="1"] #view.vt-back,
 [data-reduce-motion="1"] #view.vt-tab { animation: none !important; }
+
+/* ── Composition d'un produit : ligne d'ingrédient ─────────────────
+   Styles sortis du HTML inline : sur un stock de 400 références,
+   la répétition des attributs style pesait 250 Ko à elle seule.      */
+.comp-input {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.comp-input.comp-hidden { display: none; }
+.comp-name {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-2);
+}
+.comp-stock {
+  color: var(--text-3);
+  font-weight: 400;
+  font-size: 11px;
+}
+.comp-input .comp-qty { width: 76px; text-align: center; }
+.comp-unit { width: 70px; padding: 8px 4px; }
+
+/* Barre de recherche des ingrédients */
+.comp-search-wrap { position: relative; margin-bottom: 10px; }
+.comp-count {
+  font-size: 11px;
+  color: var(--text-3);
+  margin: -4px 0 8px;
+  font-weight: 500;
+}
+.comp-empty {
+  padding: 12px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-3);
+}

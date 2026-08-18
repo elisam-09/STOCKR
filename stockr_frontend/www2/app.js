@@ -79,6 +79,10 @@ const IC = {
   gift:     `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>`,
   percent:  `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="5" x2="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>`,
   share2:   `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>`,
+  share:    `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>`,
+  edit:     `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"/></svg>`,
+  list:     `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>`,
+  calendar: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`,
   map:      `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`,
   layers:   `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>`,
   zap:      `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>`,
@@ -135,6 +139,39 @@ const UNIT_GROUPS  = [['g','kg','t'],['ml','cl','l','m³'],['cm','m'],['h','j','
 function compatibleUnits(unit) {
   const grp = UNIT_GROUPS.find(g => g.includes(unit));
   return grp || [unit];
+}
+// Échappement pour insertion dans un attribut HTML
+function _attrEsc(v) {
+  return String(v == null ? '' : v)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+// Repli sans accents ni casse : « crème » et « CREME » se valent
+function _fold(s) {
+  return String(s == null ? '' : s).toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g, '');
+}
+// Filtre la liste des ingrédients sans re-rendre la vue : les quantités
+// déjà saisies restent dans le DOM, et les lignes remplies restent visibles.
+function filterComposition(q) {
+  const needle = _fold(q).trim();
+  const rows = document.querySelectorAll('.comp-input');
+  let shown = 0;
+  rows.forEach(row => {
+    const filled = !!(row.querySelector('.comp-qty') || {}).value;
+    const match = !needle || _fold(row.dataset.name || '').includes(needle);
+    const visible = filled || match;
+    row.classList.toggle('comp-hidden', !visible);
+    if (visible) shown++;
+  });
+  const empty = document.getElementById('comp-empty');
+  if (empty) empty.style.display = shown ? 'none' : 'block';
+  const count = document.getElementById('comp-count');
+  if (count) {
+    count.textContent = needle
+      ? `${shown} sur ${rows.length} ingrédient${rows.length > 1 ? 's' : ''}`
+      : `${rows.length} ingrédient${rows.length > 1 ? 's' : ''} disponible${rows.length > 1 ? 's' : ''}`;
+  }
 }
 function convertQty(qty, from, to) {
   if (from === to) return qty;
@@ -1027,26 +1064,44 @@ function shareViaWhatsApp(sales) {
 // ── Chart ─────────────────────────────────────
 let _chart = null;
 
+// Renvoie les libellés, le CA ET le bénéfice pour les MÊMES tranches.
+// Le bénéfice était auparavant calculé à part, avec un autre format de
+// libellé : les deux séries ne se rejoignaient jamais (courbe plate à zéro).
+// Un seul passage sur les ventes : O(ventes) au lieu de O(jours × ventes).
 function buildChartData() {
   const now = new Date();
   if (S.period === 'today') {
     const labels = ['0h','3h','6h','9h','12h','15h','18h','21h'];
-    const data = labels.map((_, i) => {
-      const start = i * 3, end = (i + 1) * 3;
-      return S.sales
-        .filter(s => { const d = new Date(s.date); return d.toDateString() === now.toDateString() && d.getHours() >= start && d.getHours() < end; })
-        .reduce((sum, s) => sum + s.total, 0);
-    });
-    return { labels, data };
+    const data = new Array(labels.length).fill(0);
+    const profit = new Array(labels.length).fill(0);
+    const today = now.toDateString();
+    for (const s of (S.sales || [])) {
+      const d = new Date(s.date);
+      if (d.toDateString() !== today) continue;
+      const i = Math.floor(d.getHours() / 3);
+      if (i < 0 || i >= labels.length) continue;
+      data[i]   += (s.total  || 0);
+      profit[i] += (s.profit || 0);
+    }
+    return { labels, data, profit };
   }
   const days = S.period === '30d' ? 30 : 7;
-  const labels = [], data = [];
+  const _lbl = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'short' });
+  const labels = [], data = [], profit = [];
+  const idxByDay = new Map();
   for (let i = days - 1; i >= 0; i--) {
     const d = new Date(now - i * 86400000);
-    labels.push(d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }));
-    data.push(S.sales.filter(s => new Date(s.date).toDateString() === d.toDateString()).reduce((sum, s) => sum + s.total, 0));
+    labels.push(_lbl.format(d));
+    data.push(0); profit.push(0);
+    idxByDay.set(d.toDateString(), labels.length - 1);
   }
-  return { labels, data };
+  for (const s of (S.sales || [])) {
+    const i = idxByDay.get(new Date(s.date).toDateString());
+    if (i === undefined) continue;
+    data[i]   += (s.total  || 0);
+    profit[i] += (s.profit || 0);
+  }
+  return { labels, data, profit };
 }
 
 function renderRevenueChart() {
@@ -1103,20 +1158,9 @@ function renderProfitChart() {
   const canvas = document.getElementById('profit-chart');
   if (!canvas || typeof Chart === 'undefined') return;
   if (_profitChart) { _profitChart.destroy(); _profitChart = null; }
-  const { labels, data: revData } = buildChartData();
-  // Build profit data for same time buckets
-  const filtered = salesForPeriod();
-  const profitByLabel = {};
-  labels.forEach(l => profitByLabel[l] = 0);
-  filtered.forEach(s => {
-    const d = new Date(s.date);
-    let lbl;
-    if (S.period === 'today') { lbl = d.getHours() + 'h'; }
-    else if (S.period === '7d') { lbl = d.toLocaleDateString(_lang, { weekday: 'short' }).slice(0, 3); }
-    else { lbl = d.toLocaleDateString(_lang, { day: '2-digit', month: 'short' }); }
-    if (profitByLabel[lbl] !== undefined) profitByLabel[lbl] += (s.profit || 0);
-  });
-  const profitData = labels.map(l => profitByLabel[l] || 0);
+  // Bénéfice calculé par buildChartData sur exactement les mêmes tranches
+  // que le CA : les deux courbes ne peuvent plus diverger.
+  const { labels, profit: profitData } = buildChartData();
   const isDark = S.darkMode;
   const gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
   const tickColor = isDark ? '#6A6A6A' : '#8A8A8A';
@@ -4954,7 +4998,10 @@ function generateBilanReportPDF() {
 
   // Répartition par catégorie (pie)
   const catColors = [[79,70,229],[124,58,237],[5,150,105],[234,88,12],[8,145,178],[220,38,38]];
-  const catOf = name => { const it=(S.articles||[]).find(a=>a.name===name)||(S.products||[]).find(p=>p.name===name); return (it&&it.category)?it.category:'Autres'; };
+  const _catByName = new Map();
+  for (const p of (S.products || [])) if (p && p.name && !_catByName.has(p.name)) _catByName.set(p.name, p.category);
+  for (const a of (S.articles || [])) if (a && a.name) _catByName.set(a.name, a.category);
+  const catOf = name => _catByName.get(name) || 'Autres';
   const cmap={}; filtered.forEach(s=>{ const c=catOf(s.productName); cmap[c]=(cmap[c]||0)+(s.total||0); });
   const catData = Object.entries(cmap).map(([label,value])=>({label,value})).sort((a,b)=>b.value-a.value).slice(0,6)
     .map((d,i)=>({ ...d, color:catColors[i%catColors.length] }));
@@ -8217,7 +8264,8 @@ function vHome() {
     ${(() => {
       if (_showSearch) return '';
       const cs = {};
-      S.sales.forEach(s => { if (!s.clientId) return; if (!cs[s.clientId]) cs[s.clientId] = { name: s.clientName, total: 0, count: 0 }; cs[s.clientId].total += s.total; cs[s.clientId].count += s.qty; });
+      const _cById = new Map((S.clients || []).map(c => [c.id, c]));
+      S.sales.forEach(s => { if (!s.clientId) return; if (!cs[s.clientId]) cs[s.clientId] = { name: (_cById.get(s.clientId)?.name) || s.clientName || 'Client', total: 0, count: 0 }; cs[s.clientId].total += (s.total || 0); cs[s.clientId].count += (s.qty || 0); });
       const topC = Object.entries(cs).sort((a,b) => b[1].total - a[1].total).slice(0,3);
       const maxC = topC.length > 0 ? topC[0][1].total : 1;
       if (topC.length === 0) return '';
@@ -8470,7 +8518,20 @@ function vPantry() {
         <button class="btn btn-ghost" style="width:auto;padding:9px 18px;font-size:12.5px;border:1px solid var(--border)" onclick="nav('bulk-add')">⚡ Saisie rapide en lot <span style="color:var(--text-3)">— beaucoup d'articles</span></button>
         <button class="btn btn-ghost" style="width:auto;padding:8px 16px;font-size:12px" onclick="if(confirm('Charger 5 articles démo pour explorer l&apos;app ?')){loadDemoData();}">📚 Charger des exemples (optionnel)</button>
       </div>` : ''}
-    </div>` : (S.stockView === 'grid' ? `<div class="stock-grid">${list.map((a,i)=>_stockGridCard(a,i,isReseller)).join('')}</div>` : list.map((a,i) => {
+    </div>` : (() => {
+      // Affichage progressif : une pharmacie a des centaines de références.
+      // Tout injecter d'un coup faisait 1,1 Mo de HTML et 8 400 nœuds — plus
+      // d'une seconde de blocage ici, bien davantage sur un téléphone d'entrée
+      // de gamme. Les compteurs et totaux plus haut portent toujours sur TOUT
+      // le stock ; seule la liste visible est limitée.
+      const _stockLimit = S.stockShown || 60;
+      const _shown = list.slice(0, _stockLimit);
+      const _reste = list.length - _shown.length;
+      const _plus = _reste > 0 ? `
+      <button class="btn" style="width:100%;margin-top:12px;padding:13px;font-weight:700;background:var(--gray-1);border:1px solid var(--border);color:var(--text-2)" onclick="S.stockShown=(S.stockShown||60)+60;render()">
+        Voir ${Math.min(60, _reste)} article${Math.min(60,_reste)>1?'s':''} de plus <span style="color:var(--text-3);font-weight:600">· ${_reste} restant${_reste>1?'s':''}</span>
+      </button>` : '';
+      return (S.stockView === 'grid' ? `<div class="stock-grid">${_shown.map((a,i)=>_stockGridCard(a,i,isReseller)).join('')}</div>` : _shown.map((a,i) => {
       const st  = stockStatus(a.stock, a.min);
       const pct = a.min > 0 ? Math.min(100, Math.round((a.stock / Math.max(a.min*2,1))*100)) : 100;
       const val = a.stock * (a.price || 0);
@@ -8536,7 +8597,8 @@ function vPantry() {
         </div>
         ${_articleSellable(a) ? `<button class="qs-trigger" onclick="event.stopPropagation();openQuickSell(${a.id})">${IC.dollar} Vendre · ${fmt(a.price)} ${sym()}</button>` : ''}
       </div>`;
-    }).join(''))}
+    }).join('')) + _plus;
+    })()}
   </div>`;
 }
 
@@ -9042,18 +9104,36 @@ function vSales() {
         : `<button class="btn btn-primary" onclick="nav('add')">${IC.plus} ${getBusinessType()==='reseller'?'Ajouter un produit':'Ajouter un article'}</button>`}
     </div>`;
       // ── Grouper les paniers (même cartId) ──
+      // Une SEULE passe : l'ancienne version relançait un filter() sur tout
+      // l'historique pour chaque panier — quadratique, et la vue Ventes mettait
+      // plusieurs secondes dès quelques milliers de ventes.
+      const _cartItems = new Map();
+      for (const s of filtered) {
+        if (!s.cartId) continue;
+        const arr = _cartItems.get(s.cartId);
+        if (arr) arr.push(s); else _cartItems.set(s.cartId, [s]);
+      }
       const groups = [];
       const seen = new Set();
       for (const s of filtered) {
         if (s.cartId) {
           if (seen.has(s.cartId)) continue;
           seen.add(s.cartId);
-          const items = filtered.filter(x => x.cartId === s.cartId);
+          const items = _cartItems.get(s.cartId) || [s];
           groups.push({ isCart: true, items, cartId: s.cartId, date: s.date, clientId: s.clientId, clientName: s.clientName, memberName: s.memberName, paymentMethod: s.paymentMethod, total: items.reduce((a,x)=>a+x.total,0), profit: items.reduce((a,x)=>a+(x.profit||0),0) });
         } else {
           groups.push({ isCart: false, ...s });
         }
       }
+      // ── Affichage progressif ──
+      // Tout l'historique était injecté d'un coup (7 Mo de HTML, 30 000 nœuds
+      // pour 3 000 ventes) : plusieurs secondes de blocage sur un téléphone.
+      // On affiche une tranche, le reste à la demande. Aucune donnée n'est
+      // perdue : les totaux plus haut portent toujours sur TOUT l'historique.
+      const _histTotal = groups.length;
+      const _histLimit = S.salesShown || 40;
+      const _histGroups = groups.slice(0, _histLimit);
+      const _histReste = _histTotal - _histGroups.length;
       const pmColor = m => m==='wave'?'#1DC3FF':m==='orange'?'#FF6600':m==='moov'?'#00A651':m==='mtn'?'#FFCC00':'var(--accent)';
       const pmLabel = m => m==='wave'?'Wave':m==='orange'?'OM':m==='moov'?'Moov':m==='mtn'?'MTN':m;
       const pmBadge = m => m&&m!=='cash' ? ` <span style="font-size:10px;padding:1px 6px;border-radius:4px;background:${pmColor(m)}20;color:${pmColor(m)};font-weight:600">${pmLabel(m)}</span>` : '';
@@ -9076,7 +9156,7 @@ function vSales() {
         _prevDay = k;
         return `<div class="day-hd"><span>${_dayLabel(g.date)}</span><span>${fmt(_dayTotals[k])} ${S.session?.currency_symbol||'FCFA'}</span></div>`;
       };
-      return groups.map(g => {
+      return _histGroups.map(g => {
         if (g.isCart) {
           const gid = 'cart_grp_' + g.cartId;
           window[gid] = g.items;
@@ -9120,7 +9200,10 @@ function vSales() {
         <button class="sale-act-btn sale-act-wa" title="WhatsApp" onclick="shareViaWhatsApp(window['${sid}'])">${IC.whatsapp}</button>
       </div>
     </div>`;
-      }).join('');
+      }).join('') + (_histReste > 0 ? `
+      <button class="btn" style="width:100%;margin-top:10px;padding:13px;font-weight:700;background:var(--gray-1);border:1px solid var(--border);color:var(--text-2)" onclick="S.salesShown=(S.salesShown||40)+40;render()">
+        Voir ${Math.min(40, _histReste)} vente${Math.min(40,_histReste)>1?'s':''} de plus <span style="color:var(--text-3);font-weight:600">· ${_histReste} restante${_histReste>1?'s':''}</span>
+      </button>` : '');
     })()}
   </div>`;
 }
@@ -9165,10 +9248,11 @@ function vFinancial() {
 
   // ── Répartition du CA par catégorie ──
   const _catBreakdown = (() => {
-    const catOf = name => {
-      const it = (S.articles||[]).find(a=>a.name===name) || (S.products||[]).find(p=>p.name===name);
-      return (it && it.category) ? it.category : 'Autres';
-    };
+    // Index nom → catégorie construit une seule fois (évite un find() par vente)
+    const _catByName = new Map();
+    for (const p of (S.products || [])) if (p && p.name && !_catByName.has(p.name)) _catByName.set(p.name, p.category);
+    for (const a of (S.articles || [])) if (a && a.name) _catByName.set(a.name, a.category);
+    const catOf = name => _catByName.get(name) || 'Autres';
     const map = {};
     filtered.forEach(s => { const c = catOf(s.productName); map[c] = (map[c]||0) + (s.total||0); });
     const arr = Object.entries(map).map(([cat,rev])=>({cat,rev})).sort((a,b)=>b.rev-a.rev).slice(0,6);
@@ -10421,19 +10505,24 @@ function vAddProduct() {
       ${S.articles.length>0 ? `
       <div class="form-group">
         <label class="form-label">${t('composition')} <span style="font-weight:400;text-transform:none;letter-spacing:0">(${t('perUnit')})</span></label>
+        ${S.articles.length > 12 ? `
+        <div class="comp-search-wrap">
+          <input class="input" type="search" id="comp-search" placeholder="🔎 Chercher un ingrédient…" oninput="filterComposition(this.value)" autocomplete="off">
+        </div>
+        <div class="comp-count" id="comp-count">${S.articles.length} ingrédients disponibles</div>` : ''}
         ${S.articles.map(a=>`
-        <div class="comp-input" data-id="${a.id}" style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
-          <div style="flex:1;font-size:13px;font-weight:600;color:var(--text-2)">${a.name}
-            <span style="color:var(--text-3);font-weight:400;font-size:11px">(${fmtQty(a.stock)} ${a.unit} dispo)</span>
+        <div class="comp-input" data-id="${a.id}" data-name="${_attrEsc(String(a.name||'').toLowerCase())}">
+          <div class="comp-name">${a.name}
+            <span class="comp-stock">(${fmtQty(a.stock)} ${a.unit} dispo)</span>
           </div>
-          <input type="number" class="input comp-qty" placeholder="0" step="0.5" min="0" style="width:76px;text-align:center">
-          <select class="input" style="width:70px;padding:8px 4px"
-            onchange="S.compUnits[${a.id}]=this.value">
+          <input type="number" class="input comp-qty" placeholder="0" step="0.5" min="0">
+          <select class="input comp-unit" onchange="S.compUnits[${a.id}]=this.value">
             ${compatibleUnits(a.unit).map(u =>
               `<option value="${u}" ${(S.compUnits[a.id]||a.unit)===u?'selected':''}>${u}</option>`
             ).join('')}
           </select>
         </div>`).join('')}
+        <div class="comp-empty" id="comp-empty" style="display:none">Aucun ingrédient ne correspond.</div>
       </div>` : `
       <div style="padding:14px;background:var(--gray-1);border-radius:var(--r-md);border:1px solid var(--border);font-size:13px;color:var(--text-3);text-align:center;margin-bottom:14px">
         ${t('addArticlesFirst')}
@@ -10487,22 +10576,30 @@ function vEditProduct() {
       ${S.articles.length > 0 ? `
       <div class="form-group">
         <label class="form-label">${t('composition')} <span style="font-weight:400;text-transform:none;letter-spacing:0">(${t('perUnit')})</span></label>
-        ${S.articles.map(a => {
-          const existing = p.composition.find(c => c.id === a.id);
-          return `
-          <div class="comp-input" data-id="${a.id}" style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
-            <div style="flex:1;font-size:13px;font-weight:600;color:var(--text-2)">${a.name}
-              <span style="color:var(--text-3);font-weight:400;font-size:11px">(${fmtQty(a.stock)} ${a.unit} dispo)</span>
+        ${S.articles.length > 12 ? `
+        <div class="comp-search-wrap">
+          <input class="input" type="search" id="comp-search" placeholder="🔎 Chercher un ingrédient…" oninput="filterComposition(this.value)" autocomplete="off">
+        </div>
+        <div class="comp-count" id="comp-count">${S.articles.length} ingrédients disponibles</div>` : ''}
+        ${(() => {
+          const _compQty = new Map((p.composition || []).map(c => [c.id, c.qty]));
+          return S.articles.map(a => {
+            const existing = _compQty.get(a.id);
+            return `
+          <div class="comp-input" data-id="${a.id}" data-name="${_attrEsc(String(a.name||'').toLowerCase())}">
+            <div class="comp-name">${a.name}
+              <span class="comp-stock">(${fmtQty(a.stock)} ${a.unit} dispo)</span>
             </div>
-            <input type="number" class="input comp-qty" placeholder="0" step="0.5" min="0" style="width:76px;text-align:center" value="${existing ? existing.qty : ''}">
-            <select class="input" style="width:70px;padding:8px 4px"
-              onchange="S.compUnits[${a.id}]=this.value">
+            <input type="number" class="input comp-qty" placeholder="0" step="0.5" min="0" value="${existing !== undefined ? existing : ''}">
+            <select class="input comp-unit" onchange="S.compUnits[${a.id}]=this.value">
               ${compatibleUnits(a.unit).map(u =>
                 `<option value="${u}" ${(S.compUnits[a.id]||a.unit)===u?'selected':''}>${u}</option>`
               ).join('')}
             </select>
           </div>`;
-        }).join('')}
+          }).join('');
+        })()}
+        <div class="comp-empty" id="comp-empty" style="display:none">Aucun ingrédient ne correspond.</div>
       </div>` : ''}
       <button class="btn btn-ghost" style="width:100%;margin-bottom:10px;font-size:13px;border:1px solid var(--border)" onclick="openProductOptions(${p.id})">🛍️ Photos & variantes boutique${(p.images&&p.images.length)||(p.variants&&p.variants.length)?` · ${(p.images||[]).length+1} photo(s)${p.variants&&p.variants.length?` · ${p.variants.length} variante(s)`:''}`:''}</button>
       <button class="btn btn-primary" onclick="saveEditProduct()">${t('update')}</button>
@@ -10756,7 +10853,14 @@ function vClients() {
       <div class="empty-title">${S.clients.length === 0 ? t('noClients') : t('noResults')}</div>
       <div class="empty-text">${S.clients.length === 0 ? t('noClientsSub') : t('noResultsSub')}</div>
       ${S.clients.length === 0 ? `<button class="btn btn-primary" style="width:auto;padding:11px 24px" onclick="nav('add-client')">${t('addClient')}</button>` : ''}
-    </div>` : list.map((c, i) => {
+    </div>` : (() => {
+      // Affichage progressif : un carnet de 250 clients pesait 580 Ko de DOM.
+      // Le filtre ci-dessus s'applique AVANT la découpe, donc une recherche
+      // trouve toujours un client situé au-delà de la tranche affichée.
+      const _limit = S.clientsShown || 50;
+      const _shown = list.slice(0, _limit);
+      const _reste = list.length - _shown.length;
+      return _shown.map((c, i) => {
       const st = clientStats[String(c.id)] || { total: 0, count: 0, last: null };
       const tier = S.loyaltyConfig?.enabled ? _getClientTier(c) : null;
       const showTier = tier && (c.loyaltyPoints > 0 || st.total > 0);
@@ -10778,7 +10882,12 @@ function vClients() {
           <div style="color:var(--gray-4)">${IC.chevron}</div>
         </div>
       </div>`;
-    }).join('')}
+    }).join('') + (_reste > 0 ? `
+      <button class="btn btn-ghost" style="width:100%;margin-top:6px;font-size:13px;border:1px solid var(--border)"
+        onclick="S.clientsShown=(S.clientsShown||50)+50;render()">
+        Voir ${Math.min(50, _reste)} client${Math.min(50, _reste) > 1 ? 's' : ''} de plus · ${_reste} restant${_reste > 1 ? 's' : ''}
+      </button>` : '');
+    })()}
   </div>`;
 }
 
