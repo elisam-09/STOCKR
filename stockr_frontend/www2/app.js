@@ -20756,6 +20756,7 @@ function generateBoutiqueSite(opts) {
     <div class="cn-title"><span>${esc(heroTitle)}</span></div>
     <div class="cn-meta">${_cineMeta.map(m => `<span>${m}</span>`).join('')}</div>
     <a class="cn-go" href="#produits" onclick="event.preventDefault();(document.querySelector('main.grid')||document.body).scrollIntoView({behavior:'smooth',block:'start'})">Entrer dans la boutique</a>
+    <button class="cn-skip" onclick="(document.querySelector('main.grid')||document.body).scrollIntoView({behavior:'smooth',block:'start'})">Passer l'intro</button>
   </div>
 </section>`;
 
@@ -21010,6 +21011,35 @@ ${hoverCss}
 @keyframes goSheen{0%{transform:translateX(-120%)}28%,100%{transform:translateX(120%)}}
 @media(prefers-reduced-motion:reduce){.cartbar{transition:none}.cartbar-go::after{animation:none;opacity:0}}
 /* Checkout */
+/* Confirmation de commande sur le site — la commande se conclut ici */
+.cfm-ov{position:fixed;inset:0;background:rgba(0,0,0,.58);backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);z-index:120;display:none;align-items:center;justify-content:center;padding:20px}
+.cfm-ov.show{display:flex;animation:cfmIn .28s cubic-bezier(.16,1,.3,1)}
+@keyframes cfmIn{from{opacity:0}to{opacity:1}}
+.cfm{background:var(--surface);color:var(--tx);border:1px solid var(--bd);border-radius:22px;
+  padding:30px 24px 22px;max-width:380px;width:100%;text-align:center;
+  box-shadow:0 30px 80px -20px rgba(0,0,0,.55);animation:cfmUp .34s cubic-bezier(.16,1,.3,1) both}
+@keyframes cfmUp{from{opacity:0;transform:translateY(18px) scale(.97)}to{opacity:1;transform:none}}
+.cfm h3{font-size:20px;font-weight:800;letter-spacing:-.02em;margin:14px 0 6px}
+.cfm p{font-size:13.5px;line-height:1.55;color:var(--tx2)}
+.cfm-ico{width:56px;height:56px;border-radius:50%;margin:0 auto;display:grid;place-items:center;
+  font-size:27px;font-weight:800;color:#fff}
+.cfm-ico.ok{background:linear-gradient(135deg,#16A34A,#0E9F6E);box-shadow:0 10px 26px -8px rgba(22,163,74,.6)}
+.cfm-ico.warn{background:linear-gradient(135deg,#F59E0B,#D97706);box-shadow:0 10px 26px -8px rgba(217,119,6,.6)}
+.cfm-spin{width:40px;height:40px;margin:8px auto 0;border-radius:50%;
+  border:3px solid var(--bd);border-top-color:${tc};animation:cfmSpin .8s linear infinite}
+@keyframes cfmSpin{to{transform:rotate(360deg)}}
+.cfm-code{margin:16px 0 4px;padding:12px;border-radius:12px;background:var(--bg);border:1px dashed var(--bd);
+  display:flex;flex-direction:column;gap:3px}
+.cfm-code span{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--tx2)}
+.cfm-code b{font-size:20px;font-weight:800;letter-spacing:.06em;font-variant-numeric:tabular-nums}
+.cfm-go{width:100%;margin-top:16px;background:${tc};color:#fff;border:0;border-radius:999px;
+  padding:14px;font-family:inherit;font-size:15px;font-weight:800;cursor:pointer;
+  transition:transform .15s cubic-bezier(.2,0,0,1)}
+.cfm-go:active{transform:scale(.97)}
+.cfm-alt{width:100%;margin-top:8px;background:none;color:var(--tx2);border:1px solid var(--bd);
+  border-radius:999px;padding:12px;font-family:inherit;font-size:13.5px;font-weight:700;cursor:pointer}
+@media(prefers-reduced-motion:reduce){.cfm,.cfm-ov.show{animation:none}.cfm-spin{animation-duration:1.6s}}
 .ck-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);z-index:100;display:none;align-items:flex-end;justify-content:center}
 .ck-overlay.show{display:flex}
 .ck{position:relative;background:#fff;border-radius:26px 26px 0 0;width:100%;max-width:560px;max-height:88vh;
@@ -21146,7 +21176,19 @@ ${hoverCss}
    --p (0→1) est écrit par le script à chaque frame. Chaque élément en
    déduit sa propre progression locale, décalée par --i pour l'effet de
    cascade. Rien d'autre que transform et opacity n'est anime.          */
-.cinema{position:relative;height:320vh}
+/* 240vh au lieu de 320 : deux ecrans et demi suffisent pour lire la
+   sequence, trois font attendre un client presse sur un reseau lent. */
+.cinema{position:relative;height:240vh}
+/* Echappatoire visible des le premier ecran : personne n'est pris au piege */
+.cn-skip{--pk:clamp(0,(.42 - var(--p))/.12,1);
+  position:absolute;top:calc(14px + env(safe-area-inset-top));right:14px;z-index:4;
+  background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.26);color:#F3EEE0;
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  font-family:inherit;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  padding:8px 14px;border-radius:999px;cursor:pointer;
+  opacity:var(--pk);pointer-events:auto;transition:background .2s}
+.cn-skip:hover{background:rgba(255,255,255,.24)}
+.cn-skip[style*="opacity: 0"]{pointer-events:none}
 .cn-stage{position:sticky;top:0;height:100vh;overflow:hidden;--p:0;
   display:grid;place-items:center;background:var(--bg)}
 .cn-room{position:absolute;inset:0;
@@ -21200,7 +21242,8 @@ ${hoverCss}
   .cn-wall{position:relative;inset:auto;padding:24px 6vw 0}
   .cn-it{opacity:1;transform:none}
   .cn-title{opacity:1;transform:none;color:var(--tx)}
-  .cn-meta,.cn-go{position:relative;bottom:auto;opacity:1;transform:none;margin-top:18px}}
+  .cn-meta,.cn-go{position:relative;bottom:auto;opacity:1;transform:none;margin-top:18px}
+  .cn-skip{display:none}}
 
 /* ── Application de la palette ────────────────────────────────────────
    Place en fin de feuille pour primer sur les couleurs ecrites en dur
@@ -21263,7 +21306,9 @@ ${bannerHTML(topBanner, 'top')}
   <h1>${esc(heroTitle)}</h1>
   ${heroStyle !== 'minimal' ? `<p>${esc(heroSub)}</p>` : ''}
   ${approvedReviews.length > 0 && heroStyle !== 'minimal' ? `<div class="header-rating">⭐ ${avgRating} / 5 · ${approvedReviews.length} avis</div>` : ''}
-  ${heroStyle !== 'minimal' ? `<button class="hero-cta" onclick="(document.querySelector('main.grid')||document.body).scrollIntoView({behavior:'smooth',block:'start'})">Découvrir nos produits</button>` : ''}
+  ${/* Une seule invitation à descendre. Le bouton et le repère de défilement
+        déclenchaient la même action, l'un sous l'autre : le repère seul est
+        plus juste, et c'est le langage des vitrines de reference. */ ''}
   ${heroStyle !== 'minimal' ? `<div class="scroll-explore" role="button" tabindex="0" title="Voir les produits" onclick="(document.querySelector('main.grid')||document.body).scrollIntoView({behavior:'smooth',block:'start'})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}"><span class="se-label">Faites défiler</span><span class="se-rail"><span class="se-dot"></span></span></div>` : ''}
   <div class="hero-grain" aria-hidden="true"></div>
   <div class="hero-fade" aria-hidden="true"></div>
@@ -21458,6 +21503,9 @@ ${showCartButton ? `
   <div class="cartbar-total" id="cartbar-total">0 ${sym()}</div>
   <button class="cartbar-go" onclick="baroOpenCheckout()">Commander →</button>
 </div>
+<div class="cfm-ov" id="cfm-ov" onclick="if(event.target===this)baroCloseConfirm()">
+  <div class="cfm" id="cfm-c"></div>
+</div>
 <div class="ck-overlay" id="ck-overlay" onclick="if(event.target===this)baroCloseCheckout()">
   <div class="ck" style="position:relative">
     <div class="ck-handle"></div>
@@ -21579,7 +21627,20 @@ var baroMode=BARO_DELOFF?'pickup':'delivery';
   });
   window.baroInc=function(id){cart[id]=(cart[id]||0)+1;syncUI();};
   window.baroDec=function(id){if(cart[id]>1)cart[id]--;else delete cart[id];syncUI();};
-  window.baroOpenCheckout=function(){renderCk();document.getElementById('ck-overlay').classList.add('show');document.body.style.overflow='hidden';};
+  window.baroOpenCheckout=function(){
+    renderCk();
+    // Profil memorise lors d'une commande precedente : la deuxieme commande
+    // ne demande plus de retaper son nom ni de rechoisir sa zone.
+    try{
+      var b=JSON.parse(localStorage.getItem('baro_buyer')||'null');
+      if(b){
+        var n=document.getElementById('ck-name');
+        if(n&&!n.value&&b.name)n.value=b.name;
+        var z=document.getElementById('ck-zone');
+        if(z&&b.zone){for(var i=0;i<z.options.length;i++){if(z.options[i].value===b.zone||z.options[i].text===b.zone){z.selectedIndex=i;break;}}}
+      }
+    }catch(e){}
+    document.getElementById('ck-overlay').classList.add('show');document.body.style.overflow='hidden';};
   window.baroCloseCheckout=function(){document.getElementById('ck-overlay').classList.remove('show');document.body.style.overflow='';};
   window.baroSend=function(){
     if(count()===0){alert('Votre panier est vide.');return;}
@@ -21610,14 +21671,78 @@ var baroMode=BARO_DELOFF?'pickup':'delivery';
     try{if(typeof window._baroSaveOrder==='function')window._baroSaveOrder({date:new Date().toISOString(),items:_items,total:fmtn(Math.max(0,total()-disc)+fee)+' '+BARO_SYM});}catch(e){}
     // ── EN LIGNE : la commande revient dans l'app du vendeur (impossible hors-ligne) ──
     // et le CLIENT reçoit un code de suivi (statut en direct dans « Mes achats »)
-    if(BARO_API&&BARO_SHOP_ID){try{
-      fetch(BARO_API+'/api/orders/shop/'+BARO_SHOP_ID,{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({clientName:name,items:_items,total:Math.max(0,total()-disc)+fee,mode:_pickup?'pickup':'delivery',zone:_pickup?'':zone,payment:pay,note:''})})
-        .then(function(r){return r.ok?r.json():null;})
-        .then(function(d){if(d&&d.id&&d.track_code&&typeof window._baroAttachTrack==='function'){window._baroAttachTrack(d.id,d.track_code);if(typeof baroToast==='function')baroToast('📦 Suivi activé — voir « Mes achats »');}})
-        .catch(function(){});
-    }catch(e){}}
-    window.open(BARO_WA+'?text='+encodeURIComponent(L.join('\\n')),'_blank');
+    // Mémorise le profil acheteur pour la prochaine commande (sur l'appareil)
+    try{localStorage.setItem('baro_buyer',JSON.stringify({name:name,zone:zone,pay:pay}));}catch(e){}
+
+    var _msg=L.join('\\n');
+    if(BARO_API&&BARO_SHOP_ID){
+      // La commande part au vendeur : elle se conclut ICI, sur le site.
+      // WhatsApp reste proposé, il n'est plus impose.
+      baroShowConfirm('envoi');
+      try{
+        fetch(BARO_API+'/api/orders/shop/'+BARO_SHOP_ID,{method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({clientName:name,items:_items,total:Math.max(0,total()-disc)+fee,mode:_pickup?'pickup':'delivery',zone:_pickup?'':zone,payment:pay,note:''})})
+          .then(function(r){return r.ok?r.json():null;})
+          .then(function(d){
+            if(d&&d.id&&d.track_code){
+              if(typeof window._baroAttachTrack==='function')window._baroAttachTrack(d.id,d.track_code);
+              baroShowConfirm('ok',d.track_code,_msg);
+            } else {
+              baroShowConfirm('repli',null,_msg);   // serveur joignable mais reponse inattendue
+            }
+          })
+          .catch(function(){baroShowConfirm('repli',null,_msg);});
+      }catch(e){baroShowConfirm('repli',null,_msg);}
+      return;
+    }
+    // Pas de serveur configure : WhatsApp reste le seul canal fiable.
+    // Ouvert dans le geste de clic, sinon le navigateur bloque la fenetre.
+    window.open(BARO_WA+'?text='+encodeURIComponent(_msg),'_blank');
+    baroShowConfirm('whatsapp',null,_msg);
+  };
+
+  // Panneau de confirmation sur le site.
+  // Le message n'est JAMAIS inline dans un attribut onclick : on le garde
+  // dans une variable et les boutons appellent un relais. Cela evite a la
+  // fois les guillemets qui cassent l'attribut et l'echappement en cascade.
+  var _lastMsg='';
+  window.baroWaSend=function(){
+    if(!_lastMsg)return;
+    window.open(BARO_WA+'?text='+encodeURIComponent(_lastMsg),'_blank','noopener');
+  };
+  function _viderPanier(){
+    try{cart={};appliedPromo=null;syncUI();renderCk();baroCloseCheckout();}catch(e){}
+  }
+  window.baroShowConfirm=function(etat,code,msg){
+    var ov=document.getElementById('cfm-ov');if(!ov)return;
+    var c=document.getElementById('cfm-c');
+    if(msg)_lastMsg=msg;
+    if(etat==='envoi'){
+      c.innerHTML='<div class="cfm-spin"></div><h3>Envoi de votre commande…</h3>'
+        +'<p>Un instant, nous prévenons '+BARO_SHOP+'.</p>';
+    } else if(etat==='ok'){
+      c.innerHTML='<div class="cfm-ico ok">✓</div><h3>Commande envoyée</h3>'
+        +'<p>'+BARO_SHOP+' a reçu votre commande. Suivez son avancement dans <b>Mes achats</b>.</p>'
+        +'<div class="cfm-code"><span>Code de suivi</span><b>'+code+'</b></div>'
+        +'<button class="cfm-go" onclick="baroCloseConfirm();baroMyOrders()">Voir mes achats</button>'
+        +'<button class="cfm-alt" onclick="baroCloseConfirm();baroWaSend()">Envoyer aussi sur WhatsApp</button>';
+      _viderPanier();
+    } else if(etat==='repli'){
+      c.innerHTML='<div class="cfm-ico warn">!</div><h3>Envoi impossible</h3>'
+        +'<p>Nous n’avons pas pu joindre la boutique. Votre commande est enregistrée sur cet appareil — envoyez-la sur WhatsApp pour qu’elle soit traitée.</p>'
+        +'<button class="cfm-go" onclick="baroCloseConfirm();baroWaSend()">Envoyer sur WhatsApp</button>'
+        +'<button class="cfm-alt" onclick="baroCloseConfirm()">Plus tard</button>';
+    } else {
+      c.innerHTML='<div class="cfm-ico ok">✓</div><h3>Commande transmise</h3>'
+        +'<p>Elle vous attend dans WhatsApp. Retrouvez-la aussi dans <b>Mes achats</b>.</p>'
+        +'<button class="cfm-go" onclick="baroCloseConfirm();baroMyOrders()">Voir mes achats</button>';
+      _viderPanier();
+    }
+    ov.classList.add('show');document.body.style.overflow='hidden';
+  };
+  window.baroCloseConfirm=function(){
+    var ov=document.getElementById('cfm-ov');if(!ov)return;
+    ov.classList.remove('show');document.body.style.overflow='';
   };
   if(BARO_DELOFF)window.baroSetMode('pickup');
 })();
