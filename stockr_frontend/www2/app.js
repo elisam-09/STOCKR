@@ -20624,10 +20624,22 @@ function generateBoutiqueSite(opts) {
     const _pcRevs = (_pcUnder && Array.isArray(_pcUnder.reviews)) ? _pcUnder.reviews.filter(r => r.author || r.text) : [];
     const _pcAvg = _pcRevs.length ? (_pcRevs.reduce((s, r) => s + (+r.rating || 0), 0) / _pcRevs.length) : 0;
     const ratingHTML = _pcRevs.length ? `<div class="pc-rating">★ ${_pcAvg.toFixed(1)} <span style="opacity:.7">(${_pcRevs.length})</span></div>` : '';
-    const initial = (p._pack ? '🎁' : (p.name||'?').charAt(0).toUpperCase());
+    // Vignette de repli : la plupart des commerçants n'ont pas de photo pour
+    // chaque référence. Plutôt qu'un aplat identique partout, on dérive une
+    // teinte stable du nom — chaque article a sa vignette, toujours la même.
+    let _phHue = 0;
+    { const s = String(p.name || '?'); for (let i = 0; i < s.length; i++) _phHue = (_phHue * 31 + s.charCodeAt(i)) % 360; }
+    // Monogramme lisible : on ignore les dosages et les unités, sinon
+    // « Paracétamol 500 mg » donnerait « P5 » au lieu de « P ».
+    const _MOTS_VIDES = ['des', 'les', 'pour', 'avec', 'sans', 'aux'];
+    const initial = p._pack ? '🎁'
+      : ((p.name || '?').trim().split(/[^A-Za-zÀ-ÿ]+/)
+          .filter(w => w.length >= 3 && !_MOTS_VIDES.includes(w.toLowerCase()))
+          .slice(0, 2).map(w => w.charAt(0).toUpperCase()).join('')
+        || (p.name || '?').trim().charAt(0).toUpperCase() || '?');
     const img = p.image
       ? `<img class="pc-img" src="${p.image}" alt="${esc(p.name)}" loading="lazy">`
-      : `<div class="pc-img pc-ph"><span>${initial}</span></div>`;
+      : `<div class="pc-img pc-ph" style="--ph:${_phHue}"><span>${esc(initial)}</span></div>`;
     const stockBadge = (showStockCount && p.qty != null)
       ? (p.qty > 0 ? `<span class="pc-stock ok">✓ Stock</span>` : `<span class="pc-stock out">Rupture</span>`)
       : '';
@@ -20828,8 +20840,16 @@ ${hoverCss}
 .pc:hover .pc-imgwrap::after{opacity:1;animation:pcSheen 1.1s cubic-bezier(.16,1,.3,1)}
 @keyframes pcSheen{from{transform:translateX(-120%)}to{transform:translateX(120%)}}
 @media(prefers-reduced-motion:reduce){.pc,.pc-img{transition:none}.pc:hover .pc-imgwrap::after{animation:none;opacity:0}}
-.pc-ph{display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,${tc}1c,${tc}08)}
-.pc-ph span{font-size:42px;font-weight:900;color:${tc};opacity:.55}
+.pc-ph{position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;
+  background:
+    radial-gradient(120% 92% at 16% 10%, hsl(var(--ph) 74% 93%) 0%, transparent 62%),
+    radial-gradient(112% 86% at 88% 90%, hsl(calc(var(--ph) + 42) 68% 89%) 0%, transparent 58%),
+    linear-gradient(152deg, hsl(var(--ph) 46% 97%), hsl(calc(var(--ph) + 22) 48% 93%))}
+.pc-ph::before{content:'';position:absolute;left:-44%;top:32%;width:152%;aspect-ratio:1;border-radius:50%;
+  border:1px solid hsl(var(--ph) 58% 70% / .26);
+  box-shadow:0 0 0 15px hsl(var(--ph) 58% 76% / .13), 0 0 0 32px hsl(var(--ph) 58% 82% / .07)}
+.pc-ph span{position:relative;z-index:1;font-size:36px;font-weight:800;letter-spacing:-.03em;
+  color:hsl(var(--ph) 48% 36%);opacity:.74;text-shadow:0 1px 0 hsl(var(--ph) 80% 99% / .85)}
 .pc-promo{position:absolute;top:10px;left:10px;background:#EF4444;color:#fff;font-size:11px;font-weight:800;padding:4px 9px;border-radius:8px;box-shadow:0 4px 10px rgba(239,68,68,.4)}
 .pc-pack{position:absolute;top:10px;right:10px;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);color:#fff;font-size:9px;font-weight:800;letter-spacing:1px;padding:4px 8px;border-radius:6px}
 .pc-stock{font-size:10px;font-weight:700;padding:3px 7px;border-radius:6px;white-space:nowrap}
