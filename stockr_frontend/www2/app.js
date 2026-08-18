@@ -146,10 +146,79 @@ function _attrEsc(v) {
     .replace(/&/g, '&amp;').replace(/</g, '&lt;')
     .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
-// Repli sans accents ni casse : « crème » et « CREME » se valent
+// Repli sans accents ni casse : « crème » et « CREME » se valent.
+// normalize() coûte cher et la plupart des libellés sont en ASCII pur :
+// on ne le déclenche que si la chaîne contient réellement un accent.
 function _fold(s) {
-  return String(s == null ? '' : s).toLowerCase()
-    .normalize('NFD').replace(/[̀-ͯ]/g, '');
+  s = String(s == null ? '' : s).toLowerCase();
+  return /[^\x00-\x7F]/.test(s) ? s.normalize('NFD').replace(/[̀-ͯ]/g, '') : s;
+}
+
+// ── Recherche intelligente ────────────────────────────────────────────
+// Découpe la saisie en mots : l'ordre n'a pas d'importance, et chaque mot
+// doit se retrouver quelque part. « 500 doliprane » trouve « Doliprane 500 ».
+function _searchTokens(q) {
+  return _fold(q).split(/[^a-z0-9]+/).filter(Boolean);
+}
+
+// Vrai si les deux mots sont identiques à une faute près (ajout, oubli,
+// remplacement ou inversion d'une lettre). Sortie anticipée, pas de matrice.
+function _dist1(a, b) {
+  if (a === b) return true;
+  const la = a.length, lb = b.length;
+  if (Math.abs(la - lb) > 1) return false;
+  let i = 0, j = 0, diff = 0;
+  while (i < la && j < lb) {
+    if (a[i] === b[j]) { i++; j++; continue; }
+    if (++diff > 1) return false;
+    if (la > lb) i++;
+    else if (lb > la) j++;
+    else { i++; j++; }
+  }
+  if (i < la || j < lb) diff++;
+  return diff <= 1;
+}
+
+// Note de pertinence d'un enregistrement (0 = ne correspond pas).
+// Un mot entier vaut mieux qu'un début de mot, qui vaut mieux qu'un
+// fragment ; la correspondance approchée passe en dernier.
+function _matchScore(fields, tokens, fuzzy) {
+  if (!tokens.length) return 0;
+  const hay = _fold(fields.filter(Boolean).join(' '));
+  if (!hay) return 0;
+  let words = null, score = 0;
+  for (const tk of tokens) {
+    let best = 0;
+    if (hay.includes(tk)) {
+      if (words === null) words = hay.split(/[^a-z0-9]+/).filter(Boolean);
+      best = words.includes(tk) ? 100 : words.some(w => w.startsWith(tk)) ? 60 : 25;
+    } else if (fuzzy && tk.length >= 4) {
+      if (words === null) words = hay.split(/[^a-z0-9]+/).filter(Boolean);
+      if (words.some(w => _dist1(w, tk))) best = 10;
+    }
+    if (!best) return 0;   // tous les mots saisis doivent correspondre
+    score += best;
+  }
+  return score;
+}
+
+// Classe une liste par pertinence. Second passage tolérant aux fautes
+// uniquement si le premier ne donne rien : une saisie exacte n'est jamais
+// polluée par des à-peu-près.
+function smartSearch(list, fieldsOf, tokens, limit) {
+  if (!tokens.length || !Array.isArray(list)) return [];
+  for (const fuzzy of [false, true]) {
+    const hits = [];
+    for (const o of list) {
+      const s = _matchScore(fieldsOf(o), tokens, fuzzy);
+      if (s > 0) hits.push({ o, s });
+    }
+    if (hits.length) {
+      hits.sort((a, b) => b.s - a.s);
+      return hits.slice(0, limit).map(x => x.o);
+    }
+  }
+  return [];
 }
 // Filtre la liste des ingrédients sans re-rendre la vue : les quantités
 // déjà saisies restent dans le DOM, et les lignes remplies restent visibles.
@@ -7804,10 +7873,14 @@ function vHome() {
   const _showSearch = _gq.length >= 2;
   let _searchHTML = '';
   if (_showSearch) {
-    const ma = S.articles.filter(a => a.name.toLowerCase().includes(_gq)).slice(0,4);
-    const mp = S.products.filter(p => p.name.toLowerCase().includes(_gq)).slice(0,4);
-    const mc = S.clients.filter(c => c.name.toLowerCase().includes(_gq) || (c.phone||'').includes(_gq)).slice(0,4);
-    const ms = S.sales.filter(s => s.productName.toLowerCase().includes(_gq) || (s.clientName||'').toLowerCase().includes(_gq)).slice(0,4);
+    // Recherche tolérante : accents, ordre des mots, une faute de frappe.
+    // Cherche aussi par référence, code-barres et catégorie — on scanne une
+    // étiquette ou on tape « antibiotique » et on trouve.
+    const _tk = _searchTokens(_gq);
+    const ma = smartSearch(S.articles, a => [a.name, a.ref, a.ean, a.barcode, a.category], _tk, 4);
+    const mp = smartSearch(S.products, p => [p.name, p.ref, p.category], _tk, 4);
+    const mc = smartSearch(S.clients,  c => [c.name, c.phone, c.email], _tk, 4);
+    const ms = smartSearch(S.sales,    s => [s.productName, s.clientName], _tk, 4);
     const total = ma.length + mp.length + mc.length + ms.length;
     if (total === 0) {
       _searchHTML = `<div class="card" style="text-align:center;padding:32px 18px;color:var(--text-3)"><div style="font-size:32px;margin-bottom:8px">🔍</div><div style="font-size:13px">${t('noResults')}</div></div>`;
@@ -8398,7 +8471,12 @@ function vPantry() {
   const q = S.search.toLowerCase();
   // Filter by location first
   let baseList = S.currentLocation ? S.articles.filter(a => !a.locationId || a.locationId === S.currentLocation) : S.articles;
-  let list = baseList.filter(a => a.name.toLowerCase().includes(q));
+  // Recherche tolérante (accents, ordre des mots, une faute) et étendue à la
+  // référence, au code-barres et à la catégorie. Sans saisie : liste complète.
+  const _qtk = _searchTokens(q);
+  let list = _qtk.length
+    ? smartSearch(baseList, a => [a.name, a.ref, a.ean, a.barcode, a.category], _qtk, baseList.length)
+    : baseList;
   if (S.filter==='out') list = list.filter(a => a.stock===0);
   else if (S.filter==='low') list = list.filter(a => a.stock>0 && a.stock<a.min && a.min>0);
   else if (S.filter==='ok')  list = list.filter(a => a.stock>=a.min || a.min===0);
@@ -10801,7 +10879,10 @@ function vNotifications() {
 // ── CLIENTS ──────────────────────────────────
 function vClients() {
   const q = S.clientSearch.toLowerCase();
-  const list = S.clients.filter(c => c.name.toLowerCase().includes(q) || (c.phone||'').includes(q) || (c.email||'').toLowerCase().includes(q));
+  const _qtk = _searchTokens(q);
+  const list = _qtk.length
+    ? smartSearch(S.clients, c => [c.name, c.phone, c.email], _qtk, S.clients.length)
+    : S.clients;
 
   // Compute stats per client
   const clientStats = {};
