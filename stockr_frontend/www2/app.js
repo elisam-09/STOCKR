@@ -20761,9 +20761,17 @@ h1,h2,.header h1,.pc-name,.cartbar-total,.ck h2{font-family:${headingStack}}
 .header-minimal h1{font-size:clamp(22px,6vw,28px)}
 .header-banner{padding:80px 20px 92px}
 .header-banner h1{font-size:clamp(34px,9vw,52px)}
-.header::before{content:'';position:absolute;top:-60%;right:-20%;width:340px;height:340px;background:radial-gradient(circle,rgba(255,255,255,.16) 0%,transparent 70%);pointer-events:none;animation:blob 9s ease-in-out infinite}
-.header::after{content:'';position:absolute;bottom:-70%;left:-15%;width:300px;height:300px;background:radial-gradient(circle,rgba(255,255,255,.10) 0%,transparent 70%);pointer-events:none;animation:blob 12s ease-in-out infinite reverse}
-@keyframes blob{0%,100%{transform:scale(1)}50%{transform:scale(1.18)}}
+.header::before{content:'';position:absolute;top:-60%;right:-20%;width:340px;height:340px;background:radial-gradient(circle,rgba(255,255,255,.16) 0%,transparent 70%);pointer-events:none;animation:blobA 17s ease-in-out infinite}
+.header::after{content:'';position:absolute;bottom:-70%;left:-15%;width:300px;height:300px;background:radial-gradient(circle,rgba(255,255,255,.10) 0%,transparent 70%);pointer-events:none;animation:blobB 23s ease-in-out infinite}
+/* Deux trajectoires distinctes et des durées premières entre elles : les
+   deux halos ne se resynchronisent jamais, la lumière ne « pulse » pas. */
+@keyframes blobA{0%,100%{transform:translate3d(0,0,0) scale(1)}
+  33%{transform:translate3d(-26px,18px,0) scale(1.14)}
+  66%{transform:translate3d(14px,-22px,0) scale(.94)}}
+@keyframes blobB{0%,100%{transform:translate3d(0,0,0) scale(1.06)}
+  40%{transform:translate3d(30px,-16px,0) scale(.92)}
+  70%{transform:translate3d(-18px,20px,0) scale(1.2)}}
+@media(prefers-reduced-motion:reduce){.header::before,.header::after{animation:none}}
 .header.has-video::before,.header.has-video::after{display:none}
 .hero-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border:none;z-index:0;pointer-events:none}
 .header.has-video iframe.hero-video{width:177.78vh;min-width:100%;height:56.25vw;min-height:100%;left:50%;top:50%;transform:translate(-50%,-50%)}
@@ -20779,16 +20787,41 @@ h1,h2,.header h1,.pc-name,.cartbar-total,.ck h2{font-family:${headingStack}}
 .header p{animation-delay:.26s}
 .header-rating{animation-delay:.36s}
 .hero-cta{animation-delay:.44s}
-.scroll-cue{animation-delay:.9s}
-@media(prefers-reduced-motion:reduce){.header-logo,.header h1,.header p,.header-rating,.hero-cta{animation:none}}
+/* Entrée par l'opacité seule : heroRise anime transform avec fill-mode:both,
+   ce qui figerait le transform et neutraliserait l'effet de survol. */
+@keyframes seFadeIn{from{opacity:0}to{opacity:1}}
+.scroll-explore{animation:seFadeIn .7s ease both;animation-delay:.92s}
+@media(prefers-reduced-motion:reduce){.header-logo,.header h1,.header p,.header-rating,.hero-cta,.scroll-explore{animation:none}}
 .header-rating{display:inline-flex;align-items:center;gap:6px;margin-top:14px;background:rgba(255,255,255,.18);backdrop-filter:blur(8px);padding:7px 16px;border-radius:999px;font-size:13px;font-weight:700;position:relative;z-index:1;border:1px solid rgba(255,255,255,.22)}
 .hero-cta{display:inline-block;margin-top:20px;position:relative;z-index:1;background:#fff;color:${tc};border:none;border-radius:999px;padding:13px 28px;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;box-shadow:0 10px 30px -8px rgba(0,0,0,.35);transition:transform .15s cubic-bezier(.2,0,0,1),box-shadow .15s}
 .hero-cta:hover{transform:translateY(-2px);box-shadow:0 16px 38px -10px rgba(0,0,0,.45)}
 .hero-cta:active{transform:scale(.97)}
-.scroll-cue{position:absolute;bottom:14px;right:14px;z-index:1;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;color:#fff;cursor:pointer;animation:cueBob 1.9s ease-in-out infinite}
-.header-banner .scroll-cue{bottom:22px}
-@keyframes cueBob{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
-@media(prefers-reduced-motion:reduce){.scroll-cue{animation:none}}
+/* Invitation à faire défiler : libellé discret + point qui descend le long
+   d'un rail. Remplace le chevron d'angle, qui se lisait comme un bouton. */
+/* Dans le flux, pas en absolu : la barre d'informations remonte de 28 px
+   par-dessus le bas du hero et recouvrirait un repère ancré en bas. */
+.scroll-explore{position:relative;z-index:2;margin:22px auto 0;width:max-content;
+  display:flex;flex-direction:column;align-items:center;gap:9px;cursor:pointer;
+  color:rgba(255,255,255,.82);background:none;border:0;padding:4px 10px;border-radius:12px;
+  transition:color .25s ease,transform .25s cubic-bezier(.16,1,.3,1)}
+.scroll-explore:hover{color:#fff;transform:translateY(2px)}
+.scroll-explore:focus-visible{outline:2px solid rgba(255,255,255,.75);outline-offset:3px}
+.se-label{font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;white-space:nowrap}
+.se-rail{position:relative;display:block;width:1px;height:38px;background:linear-gradient(to bottom,rgba(255,255,255,.45),rgba(255,255,255,.05))}
+.se-dot{position:absolute;left:50%;top:0;width:4px;height:4px;margin-left:-2px;border-radius:50%;
+  background:#fff;box-shadow:0 0 8px rgba(255,255,255,.85);animation:seFall 2.1s cubic-bezier(.6,0,.35,1) infinite}
+@keyframes seFall{0%{top:0;opacity:0}18%{opacity:1}82%{opacity:1}100%{top:34px;opacity:0}}
+.header-banner .scroll-explore{margin-top:30px}
+@media(prefers-reduced-motion:reduce){.se-dot{animation:none;top:16px}.scroll-explore{transition:none}}
+
+/* Grain : une trame de bruit très fine évite l'aplat numérique des dégradés.
+   Générée en SVG inline — aucune image chargée. */
+.hero-grain{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.055;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:160px 160px}
+/* Fondu du hero vers la page : supprime la coupure nette en bas */
+.hero-fade{position:absolute;left:0;right:0;bottom:0;height:96px;z-index:0;pointer-events:none;
+  background:linear-gradient(to bottom,transparent,rgba(255,255,255,.10) 55%,rgba(255,255,255,.20))}
 .container{max-width:680px;margin:0 auto;padding:${pad}}
 .info-bar{background:#fff;border-radius:16px;padding:14px 18px;margin:-32px 16px 14px;position:relative;z-index:2;box-shadow:0 12px 32px -8px rgba(0,0,0,.10),0 2px 8px rgba(0,0,0,.04);display:flex;gap:14px;justify-content:center;flex-wrap:wrap;font-size:12px;color:#555;font-weight:500}
 .info-item{display:flex;align-items:center;gap:6px}
@@ -21044,7 +21077,9 @@ ${bannerHTML(topBanner, 'top')}
   ${heroStyle !== 'minimal' ? `<p>${esc(heroSub)}</p>` : ''}
   ${approvedReviews.length > 0 && heroStyle !== 'minimal' ? `<div class="header-rating">⭐ ${avgRating} / 5 · ${approvedReviews.length} avis</div>` : ''}
   ${heroStyle !== 'minimal' ? `<button class="hero-cta" onclick="(document.querySelector('main.grid')||document.body).scrollIntoView({behavior:'smooth',block:'start'})">Découvrir nos produits</button>` : ''}
-  ${heroStyle !== 'minimal' ? `<div class="scroll-cue" title="Explorer" aria-hidden="true" onclick="(document.querySelector('main.grid')||document.body).scrollIntoView({behavior:'smooth',block:'start'})"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></div>` : ''}
+  ${heroStyle !== 'minimal' ? `<div class="scroll-explore" role="button" tabindex="0" title="Voir les produits" onclick="(document.querySelector('main.grid')||document.body).scrollIntoView({behavior:'smooth',block:'start'})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}"><span class="se-label">Faites défiler</span><span class="se-rail"><span class="se-dot"></span></span></div>` : ''}
+  <div class="hero-grain" aria-hidden="true"></div>
+  <div class="hero-fade" aria-hidden="true"></div>
 </div>
 <div class="info-bar">
   <div class="info-item" id="shop-status" style="font-weight:800;display:none"></div>
@@ -21593,7 +21628,7 @@ window.BARO_VARSEL=window.BARO_VARSEL||{};
   if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
   var hd=document.querySelector('.header');if(!hd)return;
   var items=[].slice.call(hd.querySelectorAll('.header-logo,h1,p,.header-rating,.hero-cta'));
-  var cue=hd.querySelector('.scroll-cue');
+  var cue=hd.querySelector('.scroll-explore');
   var ticking=false;
   function frame(){
     ticking=false;
@@ -21613,6 +21648,10 @@ window.BARO_VARSEL=window.BARO_VARSEL||{};
   window.addEventListener('scroll',onScroll,{passive:true});
   // L'entree cinematique doit finir avant que le parallax ne prenne la main sur transform
   setTimeout(function(){items.forEach(function(el){el.style.animation='none';});frame();},1000);
+  // Le repère de défilement entre plus tard (delai .92s + .7s). Tant que son
+  // animation tourne, elle prime sur le style inline et le parallax ne peut
+  // pas le faire disparaitre : on la retire une fois l'entree finie.
+  if(cue){setTimeout(function(){cue.style.animation='none';frame();},1700);}
 })();</script>
 <script>(function(){
   // Barre de progression de lecture — independante du parallax (doit marcher partout)
