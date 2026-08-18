@@ -5266,3 +5266,86 @@ body.vt-active .card { animation: none !important; }
   font-size: 13px;
   color: var(--text-3);
 }
+
+/* ── Palettes complètes de la vitrine (option Entreprise) ───────────── */
+.bq-badge-ent {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .04em;
+  color: #fff;
+  background: linear-gradient(135deg, #7C3AED, #4F46E5);
+  vertical-align: middle;
+}
+.bq-hint { font-weight: 500; text-transform: none; letter-spacing: 0; opacity: .7; }
+.bq-pals { display: flex; gap: 8px; flex-wrap: wrap; }
+.bq-pal {
+  flex: 1 1 68px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 6px;
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  background: var(--card);
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color .18s, transform .18s cubic-bezier(.2, 0, 0, 1);
+}
+.bq-pal:active { transform: scale(.96); }
+.bq-pal.sel { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 16%, transparent); }
+.bq-pal-sw {
+  position: relative;
+  width: 100%;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, .10);
+  display: block;
+}
+.bq-pal-sw i {
+  position: absolute;
+  left: 7px;
+  bottom: 6px;
+  width: 26px;
+  height: 4px;
+  border-radius: 2px;
+}
+.bq-pal-none {
+  display: grid;
+  place-items: center;
+  background: var(--gray-1);
+  color: var(--text-3);
+  font-size: 13px;
+  font-weight: 700;
+}
+.bq-pal-nm { font-size: 11px; font-weight: 700; color: var(--text-2); }
+
+/* Aperçu verrouillé pour les plans inférieurs */
+.bq-lock {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  background: var(--gray-1);
+  cursor: pointer;
+}
+.bq-lock-row { display: flex; gap: 4px; flex-shrink: 0; }
+.bq-pal-mini {
+  position: relative;
+  width: 26px;
+  height: 34px;
+  border-radius: 6px;
+  border: 1px solid rgba(0, 0, 0, .10);
+  display: block;
+}
+.bq-pal-mini i { position: absolute; left: 5px; bottom: 5px; width: 14px; height: 3px; border-radius: 2px; }
+.bq-lock-tx { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.bq-lock-tx strong { font-size: 12.5px; font-weight: 800; color: var(--text-1); }
+.bq-lock-tx span { font-size: 11px; line-height: 1.4; color: var(--text-3); }

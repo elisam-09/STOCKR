@@ -20394,6 +20394,46 @@ function generateBoutiqueSite(opts) {
   const density    = bc.density || 'normal';                 // compact | normal | airy
   const cardHover  = bc.cardHover || 'lift';                 // lift | zoom | none
   const pageBg     = bc.pageBg || '#FAFAFC';
+
+  // ── Palettes de la vitrine (option Entreprise) ───────────────────────
+  // Le blanc pur et le gris froid font « gabarit gratuit ». Ces trois
+  // palettes sont construites autour d'un fond teinte et d'un texte chaud.
+  // Chacune est un jeu complet : fond, surface, texte, texte secondaire,
+  // bordure et ombre — jamais une couleur isolee, sinon le contraste casse.
+  const PALETTES = {
+    clair: { bg:'#FAF9F6', surface:'#FFFFFF', text:'#16161C', text2:'#5A5A66',
+             border:'rgba(20,20,28,.075)', shadow:'rgba(16,18,28,.10)',
+             field:'#FFFFFF', pill:'#FFFFFF', pillText:'#3A3A46', sombre:false },
+    creme: { bg:'#F2EDE1', surface:'#FBF8F1', text:'#241C15', text2:'#6B5F52',
+             border:'rgba(36,28,21,.11)', shadow:'rgba(60,45,30,.16)',
+             field:'#FBF8F1', pill:'#FBF8F1', pillText:'#4A3F34', sombre:false },
+    nuit:  { bg:'#141110', surface:'#1F1B19', text:'#F3EEE0', text2:'#A2968A',
+             border:'rgba(243,238,224,.12)', shadow:'rgba(0,0,0,.55)',
+             field:'#262120', pill:'#262120', pillText:'#E7E0D2', sombre:true },
+  };
+  // Le choix de palette est reserve au plan Entreprise ; sinon on garde la
+  // presentation de base, exactement comme avant.
+  const _palAllowed = (typeof _planHasFeature === 'function') ? _planHasFeature('whiteLabel') : false;
+  // Luminance relative : sert a savoir si un fond choisi a la main est sombre.
+  const _lumOf = (hex) => {
+    const c = String(hex || '').replace('#', '');
+    if (c.length !== 6) return 1;
+    const f = v => (v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4));
+    return 0.2126 * f(parseInt(c.slice(0, 2), 16) / 255)
+         + 0.7152 * f(parseInt(c.slice(2, 4), 16) / 255)
+         + 0.0722 * f(parseInt(c.slice(4, 6), 16) / 255);
+  };
+  // Sans plan Entreprise, on deduit la palette du fond choisi. C'est ce qui
+  // repare un defaut livre : la pastille de fond sombre de l'editeur laissait
+  // le texte en #1d1d1f, soit un contraste de 1,01 — boutique illisible.
+  const _bgSombre = _lumOf(pageBg) < 0.18;
+  const _palName = (_palAllowed && PALETTES[bc.palette]) ? bc.palette
+                 : (_bgSombre ? 'nuit' : 'clair');
+  const PAL = PALETTES[_palName];
+  // Le fond reste celui du commercant tant qu'il n'a pas choisi de palette
+  const _bgFinal = (_palAllowed && PALETTES[bc.palette]) ? PAL.bg : pageBg;
+  // Contrepartie pour le bouton clair/sombre offert au visiteur
+  const _palAlt = PAL.sombre ? (_palName === 'nuit' && bc.paletteLight === 'creme' ? 'creme' : 'clair') : 'nuit';
   const headingFont= bc.headingFont || bc.fontFamily || 'Inter';
   const bodyFont   = bc.bodyFont || bc.fontFamily || 'Inter';
   const orderStyle = bc.orderBtnStyle || 'whatsapp';         // whatsapp | brand | outline
@@ -20705,7 +20745,9 @@ ${cc.head || ''}
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--tc:${tc};--r:${cornerR};--rb:${btnRadius}}
-body{font-family:${fontStack};background:${pageBg};color:#1d1d1f;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+:root{--bg:${_bgFinal};--surface:${PAL.surface};--tx:${PAL.text};--tx2:${PAL.text2};
+  --bd:${PAL.border};--sh:${PAL.shadow};--field:${PAL.field};--pill:${PAL.pill};--pillTx:${PAL.pillText}}
+body{font-family:${fontStack};background:var(--bg);color:var(--tx);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
 h1,h2,.header h1,.pc-name,.cartbar-total,.ck h2{font-family:${headingStack}}
 ::selection{background:${tc}33}
 /* Barre de progression de lecture (fine, en haut) */
@@ -21061,6 +21103,38 @@ ${hoverCss}
 .review{background:#fff;border-radius:14px;padding:14px;margin-bottom:10px;box-shadow:0 1px 5px rgba(0,0,0,.05);border:1px solid rgba(0,0,0,.03)}
 .review:last-child{margin-bottom:0}
 @media(max-width:480px){.header{padding:46px 16px 58px}.info-bar{margin:-28px 12px 12px;padding:11px 14px}}
+
+/* ── Application de la palette ────────────────────────────────────────
+   Place en fin de feuille pour primer sur les couleurs ecrites en dur
+   plus haut. Toutes les surfaces passent par les memes jetons, donc le
+   contraste reste coherent quelle que soit la palette choisie.          */
+.info-bar,.pay-section,.about-section,.contact-section,.howto-step,.review,
+.pc,.svc-strip,.faq-item,.delivery-info{background:var(--surface);color:var(--tx);border-color:var(--bd)}
+.pay-section-title,.howto-body strong,.pc-name,.about-section h2,.contact-section h2{color:var(--tx)}
+.howto-body span,.about-text,.pc-cat,.contact-row,.delivery-info,.sec-eyebrow span{color:var(--tx2)}
+.pay-section,.about-section,.contact-section,.howto-step,.review,.info-bar{
+  box-shadow:0 1px 2px var(--sh),0 6px 20px -10px var(--sh)}
+.search-wrap input,.sort-select,input[type=text],input[type=tel],input[type=search],textarea,select{
+  background:var(--field);color:var(--tx);border-color:var(--bd)}
+.search-wrap input::placeholder,textarea::placeholder{color:var(--tx2);opacity:.8}
+.cat-pill{background:var(--pill);color:var(--pillTx);border-color:var(--bd)}
+.navpills{background:color-mix(in srgb,var(--bg) 82%,transparent)}
+.navpills a{color:var(--tx2)}
+.navpills a:hover{color:var(--tx)}
+.footer{background:var(--surface);color:var(--tx);border-top:1px solid var(--bd)}
+.ft-col a,.ft-bottom,.ft-mono{color:var(--tx2)}
+${PAL.sombre ? `
+/* Ajustements propres au fond sombre : les ombres portees ne se voient pas,
+   c'est la bordure lumineuse qui detache les surfaces. */
+.pc,.pay-section,.about-section,.contact-section,.howto-step,.review,.info-bar{
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.045),0 10px 30px -14px rgba(0,0,0,.8)}
+.pc-imgwrap{background:linear-gradient(160deg,#231E1C,#1A1615)}
+.pc-ph{filter:saturate(.72) brightness(.42)}
+.pc-ph span{color:hsl(var(--ph) 34% 78%);text-shadow:none;opacity:.86}
+.hero-fade{background:linear-gradient(to bottom,transparent,color-mix(in srgb,var(--bg) 55%,transparent),var(--bg))}
+.pay-section::before,.about-section::before,.contact-section::before{box-shadow:none}
+.pc-stock.ok{background:rgba(52,199,120,.16);color:#7EE2A8}
+.no-results,#no-results{color:var(--tx2)}` : ''}
 ${btnAnimCss}
 ${cc.css || ''}
 </style></head><body>
@@ -21795,8 +21869,40 @@ function vBoutiqueEditor() {
       <label class="bq-swatch bq-swatch-custom" title="Personnalisée">✎<input type="color" value="${tc}" onchange="boutiqueEditSet('themeColor',this.value)"></label>
     </div>
 
-    <div class="bq-sec-title">Couleur de fond</div>
-    <div class="bq-swatches">
+    ${(() => {
+      // Palettes complètes — option Entreprise. Contrairement à une simple
+      // couleur de fond, chaque palette redéfinit AUSSI le texte, les
+      // surfaces et les bordures : le contraste ne peut pas casser.
+      const _ent = (typeof _planHasFeature === 'function') && _planHasFeature('whiteLabel');
+      const _pals = [
+        ['clair', 'Clair',  '#FAF9F6', '#16161C', 'Blanc chaud, contemporain'],
+        ['creme', 'Crème',  '#F2EDE1', '#241C15', 'Beige éditorial, chaleureux'],
+        ['nuit',  'Nuit',   '#141110', '#F3EEE0', 'Fond profond, texte crème'],
+      ];
+      const _cur = g('palette', '');
+      if (!_ent) {
+        return `<div class="bq-sec-title">Palette complète</div>
+        <div class="bq-lock" onclick="nav('pricing')">
+          <div class="bq-lock-row">
+            ${_pals.map(p => `<span class="bq-pal-mini" style="background:${p[2]}"><i style="background:${p[3]}"></i></span>`).join('')}
+          </div>
+          <div class="bq-lock-tx"><strong>Réservé au plan Entreprise</strong><span>Clair, Crème et Nuit — fond, texte et surfaces accordés. Voir les plans →</span></div>
+        </div>`;
+      }
+      return `<div class="bq-sec-title">Palette complète <span class="bq-badge-ent">Entreprise</span></div>
+      <div class="bq-pals">
+        ${_pals.map(p => `<button class="bq-pal ${_cur === p[0] ? 'sel' : ''}" onclick="boutiqueEditSet('palette','${p[0]}')" title="${p[4]}">
+          <span class="bq-pal-sw" style="background:${p[2]}"><i style="background:${p[3]}"></i></span>
+          <span class="bq-pal-nm">${p[1]}</span>
+        </button>`).join('')}
+        <button class="bq-pal ${!_cur ? 'sel' : ''}" onclick="boutiqueEditSet('palette','')" title="Utiliser la couleur de fond choisie plus bas">
+          <span class="bq-pal-sw bq-pal-none">✕</span><span class="bq-pal-nm">Aucune</span>
+        </button>
+      </div>`;
+    })()}
+
+    <div class="bq-sec-title">Couleur de fond${g('palette','') ? ' <span class="bq-hint">— remplacée par la palette</span>' : ''}</div>
+    <div class="bq-swatches"${g('palette','') ? ' style="opacity:.4;pointer-events:none"' : ''}>
       ${bgColors.map(c => `<button class="bq-swatch bq-swatch-bg ${g('pageBg','#FAFAFC')===c?'sel':''}" style="background:${c};box-shadow:inset 0 0 0 1px rgba(0,0,0,.08);color:#7C3AED" onclick="boutiqueEditSet('pageBg','${c}');document.querySelectorAll('.bq-swatch[data-grp=bg]').forEach(s=>s.classList.remove('sel'));this.classList.add('sel')" data-grp="bg">${g('pageBg','#FAFAFC')===c?'✓':''}</button>`).join('')}
     </div>
 
