@@ -20990,6 +20990,21 @@ ${hoverCss}
 .pay-section::before,.about-section::before,.contact-section::before{content:'';position:absolute;inset:0;
   border-radius:inherit;pointer-events:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.9)}
 .pay-section-title{font-size:19px;letter-spacing:-.03em;color:#16161c;margin-bottom:12px;font-weight:800;line-height:1.15;text-wrap:balance}
+/* Parcours de commande en trois etapes */
+.howto{list-style:none;margin:12px 0 16px;padding:0;display:grid;gap:10px}
+@media(min-width:620px){.howto{grid-template-columns:repeat(3,1fr);gap:14px}}
+.howto-step{position:relative;display:flex;align-items:flex-start;gap:13px;background:#fff;
+  border:1px solid rgba(0,0,0,.045);border-radius:16px;padding:15px 16px;
+  box-shadow:0 1px 2px rgba(16,18,28,.04),0 6px 20px -8px rgba(16,18,28,.08);
+  transition:transform .22s cubic-bezier(.16,1,.3,1),box-shadow .22s}
+.howto-step:hover{transform:translateY(-2px);box-shadow:0 2px 4px rgba(16,18,28,.05),0 14px 30px -12px rgba(16,18,28,.16)}
+.howto-num{flex-shrink:0;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;
+  font-size:13.5px;font-weight:800;color:${tc};background:${tc}14;border:1px solid ${tc}2e;
+  font-variant-numeric:tabular-nums}
+.howto-body{display:flex;flex-direction:column;gap:3px;min-width:0}
+.howto-body strong{font-size:14.5px;font-weight:800;letter-spacing:-.015em;color:#16161c}
+.howto-body span{font-size:12.5px;line-height:1.5;color:#5a5a66}
+@media(prefers-reduced-motion:reduce){.howto-step{transition:none}.howto-step:hover{transform:none}}
 .pay-badges{display:flex;flex-wrap:wrap;justify-content:center;gap:6px}
 .pay-badge{background:${tc}12;color:${tc};padding:7px 15px;border-radius:10px;font-size:12px;font-weight:700}
 .delivery-info{text-align:center;font-size:13px;color:#666;margin:8px 0;padding:14px;background:#fff;border-radius:16px;box-shadow:0 2px 10px rgba(0,0,0,.04);border:1px solid rgba(0,0,0,.04)}
@@ -21120,6 +21135,31 @@ ${cc.body || ''}
 ${prodsHTML}
 </main>
 <div id="no-results">Aucun produit ne correspond à votre recherche 🙁</div>
+${(() => {
+  // Parcours de commande decrit a partir de la configuration reelle de la
+  // boutique. Beaucoup de clients ne devinent pas que la commande part sur
+  // WhatsApp : l'ecrire supprime le principal point de friction.
+  const _z = (bc.deliveryZones || []).filter(Boolean).map(z => esc(z));
+  const _etapes = [
+    ['Choisissez', 'Ajoutez au panier les articles qui vous intéressent.'],
+    waNum
+      ? ['Envoyez', 'Votre panier part sur WhatsApp avec le détail et le total.']
+      : ['Validez', 'Renseignez vos coordonnées et confirmez votre commande.'],
+    (!_deliveryOff && _z.length)
+      ? ['Recevez', `Livraison ${_z.slice(0, 3).join(', ')}${_z.length > 3 ? '…' : ''}`
+          + (_defFee > 0 ? ` · ${fmt(_defFee)} ${sym()}` : ' · offerte')
+          + (bc.deliveryTime ? ` · ${esc(bc.deliveryTime)}` : '')]
+      : (_pickupEnabled
+          ? ['Retirez', `Sur place : ${esc(_pickupAddr)}`]
+          : ['Recevez', 'Nous vous recontactons pour convenir de la remise.'])
+  ];
+  return `<div class="sec-eyebrow reveal"><span>Comment ça marche</span></div>
+<ol class="howto reveal">${_etapes.map((e, i) => `
+  <li class="howto-step">
+    <span class="howto-num">${i + 1}</span>
+    <div class="howto-body"><strong>${e[0]}</strong><span>${e[1]}</span></div>
+  </li>`).join('')}</ol>`;
+})()}
 ${_servicesArr.length>0?`<div class="svc-strip reveal">${_servicesArr.map(s=>`<div class="svc-item">${esc(s)}</div>`).join('')}</div>`:''}
 ${midVideoHTML}
 ${_aboutText?`<div class="sec-eyebrow reveal"><span>La maison</span></div>
