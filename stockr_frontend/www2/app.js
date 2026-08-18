@@ -2808,6 +2808,74 @@ function _showPlanLimitModal(feature, limit, label) {
 // Vérifie l'accès à une fonctionnalité Pro (boutique, marketing…)
 function _planHasFeature(feature) { return !!_planLimit(feature); }
 
+// ── Fonctions réservées : description honnête et plan minimum requis ────
+// Chaque entrée dit ce que la fonction fait vraiment, pas un argument de
+// vente : le commerçant doit pouvoir juger si ça vaut son argent.
+const _FEATURE_INFO = {
+  excel: {
+    icone: '📊', titre: 'Export Excel',
+    quoi: 'Télécharger votre stock, vos ventes et vos clients dans un tableur, pour votre comptable ou votre banque.',
+    minimum: 'starter',
+  },
+  loyalty: {
+    icone: '⭐', titre: 'Programme de fidélité',
+    quoi: 'Attribuer des points à vos clients, définir des paliers et suivre qui revient le plus souvent.',
+    minimum: 'pro',
+  },
+  purchaseOrders: {
+    icone: '📦', titre: 'Bons de commande',
+    quoi: 'Préparer vos commandes fournisseurs, suivre les réceptions et rapprocher ce qui a été livré de ce qui a été commandé.',
+    minimum: 'pro',
+  },
+};
+const _PLAN_ORDRE = ['free', 'starter', 'pro', 'enterprise'];
+const _PLAN_PRIX = { free: 0, starter: 5000, pro: 20000, enterprise: 100000 };
+
+// Écran plein pour une fonction verrouillée, quand elle occupe tout l'onglet
+function _vFeatureLock(feature) {
+  const info = _FEATURE_INFO[feature] || { icone: '🔒', titre: 'Fonction réservée', quoi: '', minimum: 'pro' };
+  const prix = _PLAN_PRIX[info.minimum];
+  return `
+  <div class="container" style="padding-top:22px">
+    <div class="card" style="text-align:center;padding:30px 22px">
+      <div style="font-size:44px;margin-bottom:10px">${info.icone}</div>
+      <div style="font-size:19px;font-weight:800;letter-spacing:-.02em;margin-bottom:8px">${info.titre}</div>
+      <div style="font-size:13.5px;color:var(--text-2);line-height:1.55;max-width:330px;margin:0 auto 18px">${info.quoi}</div>
+      <div style="display:inline-flex;align-items:baseline;gap:6px;background:var(--gray-1);border:1px solid var(--border);border-radius:12px;padding:10px 16px;margin-bottom:18px">
+        <span style="font-size:12px;color:var(--text-3)">À partir de</span>
+        <b style="font-size:16px;font-weight:800">${PLAN_LABELS[info.minimum]}</b>
+        <span style="font-size:12px;color:var(--text-3)">· ${fmt(prix)} ${sym()}/mois</span>
+      </div>
+      <button class="btn btn-primary" style="width:100%;max-width:300px" onclick="nav('pricing')">Voir les plans →</button>
+      <div style="font-size:11.5px;color:var(--text-3);margin-top:12px">Votre plan : <b>${PLAN_LABELS[_currentPlan()] || _currentPlan()}</b></div>
+    </div>
+  </div>`;
+}
+
+// Fenêtre pour une action ponctuelle verrouillée (un export, par exemple)
+function _showPlanFeatureModal(feature) {
+  const info = _FEATURE_INFO[feature] || { icone: '🔒', titre: 'Fonction réservée', quoi: '', minimum: 'pro' };
+  haptic('warn');
+  const old = document.getElementById('__planFeatModal'); if (old) old.remove();
+  const modal = document.createElement('div');
+  modal.id = '__planFeatModal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:10000;display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(6px);animation:fadeIn .2s';
+  modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+  modal.innerHTML = `
+    <div style="background:var(--surface);border-radius:24px 24px 0 0;width:100%;max-width:430px;padding:24px 20px 28px;animation:ckUp .35s cubic-bezier(.2,0,0,1)">
+      <div style="width:40px;height:4px;border-radius:2px;background:var(--gray-3);margin:0 auto 18px"></div>
+      <div style="text-align:center">
+        <div style="font-size:44px;margin-bottom:8px">${info.icone}</div>
+        <div style="font-size:20px;font-weight:900;letter-spacing:-.3px">${info.titre}</div>
+        <div style="font-size:13px;color:var(--text-3);margin-top:8px;line-height:1.55;max-width:330px;margin-left:auto;margin-right:auto">${info.quoi}</div>
+        <div style="font-size:13px;margin-top:14px">Disponible à partir de <b>${PLAN_LABELS[info.minimum]}</b> · ${fmt(_PLAN_PRIX[info.minimum])} ${sym()}/mois</div>
+      </div>
+      <button class="btn btn-primary" style="width:100%;margin-top:18px" onclick="document.getElementById('__planFeatModal').remove();nav('pricing')">Voir les plans →</button>
+      <button class="btn btn-ghost" style="width:100%;margin-top:8px" onclick="document.getElementById('__planFeatModal').remove()">Plus tard</button>
+    </div>`;
+  document.body.appendChild(modal);
+}
+
 function _doActivatePlan(planKey, opts = {}) {
   const { trial = (planKey !== 'free'), paid = false } = opts;
   S.subscription = {
@@ -4780,6 +4848,9 @@ function _buildXlsSheet(title, headers, rows, meta = {}) {
   return `<h2 style="font-family:Arial;color:#4F46E5">${_xlsEscape(title)}</h2><table border="1" cellspacing="0" style="border-collapse:collapse;font-family:Arial;font-size:11px">${header}${body}${footer}</table><br/>`;
 }
 function downloadXLSX(filename, sheets) {
+  // L'export Excel est annonce comme reserve aux plans payants : on
+  // l'applique ici, seul point de sortie de tous les exports .xls.
+  if (!_planHasFeature('excel')) { _showPlanFeatureModal('excel'); return; }
   const html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="UTF-8"><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>${filename.replace('.xls','')}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body>${sheets}</body></html>`;
   const blob = new Blob(['\uFEFF' + html], { type: 'application/vnd.ms-excel;charset=utf-8' });
   const url = URL.createObjectURL(blob);
@@ -16136,6 +16207,9 @@ function vSupplierDetail() {
 function saveSupplier() {
   const name = document.getElementById('sup-name')?.value?.trim();
   if (!name) { showToast(t('nameRequired'), 'error'); return; }
+  // Limite de fournisseurs selon le plan (gratuit 3, starter 10, pro+ illimité).
+  // Elle était annoncée dans la grille tarifaire mais jamais appliquée.
+  if (!_checkPlanLimit('suppliers', (S.suppliers || []).length, 'fournisseurs')) return;
   const sup = {
     id: Date.now(),
     name,
@@ -24407,6 +24481,7 @@ function _renderTierBadge(tier, size='sm') {
 }
 
 function _renderLoyaltyTab() {
+  if (!_planHasFeature('loyalty')) return _vFeatureLock('loyalty');
   const tiers   = S.loyaltyConfig?.tiers || [];
   const mode    = S.loyaltyConfig?.tierMode || 'spent';
   const clients = S.clients || [];
@@ -32185,6 +32260,7 @@ function vSpectraEnhanced() {
 
 // ── COMMANDES D'ACHAT AMÉLIORÉES ─────────────
 function vPurchaseOrdersEnhanced() {
+  if (!_planHasFeature('purchaseOrders')) return _vFeatureLock('purchaseOrders');
   const orders = S.purchaseOrders || [];
   const pending = orders.filter(o => o.status==='pending');
   const shipped = orders.filter(o => o.status==='shipped');
