@@ -270,6 +270,43 @@ const API_BASE = (location.hostname === 'localhost' || location.hostname === '12
 // ── i18n ─────────────────────────────────────
 const LANGS = {
   fr: {
+    w4_collaborateurs: "collaborateur(s)",
+    w4_evenements: "événement(s)",
+    w4_clientsN: "client(s)",
+    w4_actifs: "actif(s)",
+    w4_enAttente: "en attente",
+    w4_emplacements: "emplacement(s)",
+    w4_commandes: "commande(s)",
+    w4_promos: "promo(s)",
+    w4_connectes: "connecte(s)",
+    w4_enregistres: "enregistre(s)",
+    w4_objectifCA: "${t('w4_objectifCA')}",
+    w4_aujourdhui: "AUJOURD'HUI",
+    w4_atteint: "atteint",
+    w4_reste: "Reste",
+    w4_ventesN: "ventes",
+    w4_panierMoyen: "${t('w4_panierMoyen')}",
+    w4_cmdBoutique: "commande boutique à traiter",
+    w4_cmdsBoutique: "commandes boutique à traiter",
+    w3_maJournee: "Ma journée",
+    w3_maJourneeSub: "Vos actions du jour, en un écran",
+    w3_baroMetier: "BARO pour mon métier",
+    w3_multiPoints: "Multi-points de vente",
+    w3_equipe: "Équipe",
+    w3_fidelite: "Fidélité",
+    w3_reassort: "Réassort intelligent",
+    w3_reassortSub: "Quoi recommander · calculé sur vos ventes",
+    w3_prevision: "Prévision de demande",
+    w3_previsionSub: "Ruptures à venir · tendances · rythme",
+    w3_previsionLock: "Entreprise · ruptures anticipées",
+    w3_cloture: "Clôture de caisse",
+    w3_clotureSub: "Le Z du soir · comptage du tiroir",
+    w3_credits: "Crédits clients",
+    w3_creditsSub: "Cahier de dettes · qui vous doit",
+    w3_peremptions: "Péremptions",
+    w3_peremptionsSub: "Périssables · FEFO · pertes",
+    w3_posezQuestions: "Posez des questions sur votre commerce",
+    w3_desactive: "Désactivé",
     w2_revendeur: "Revendeur",
     w2_transformateur: "Transformateur",
     w2_nouveauClient: "+ Nouveau client",
@@ -619,6 +656,43 @@ const LANGS = {
     version:'Version',
   },
   en: {
+    w4_collaborateurs: "member(s)",
+    w4_evenements: "event(s)",
+    w4_clientsN: "customer(s)",
+    w4_actifs: "active",
+    w4_enAttente: "pending",
+    w4_emplacements: "location(s)",
+    w4_commandes: "order(s)",
+    w4_promos: "promo(s)",
+    w4_connectes: "connected",
+    w4_enregistres: "saved",
+    w4_objectifCA: "REVENUE GOAL",
+    w4_aujourdhui: "TODAY",
+    w4_atteint: "reached",
+    w4_reste: "Left",
+    w4_ventesN: "sales",
+    w4_panierMoyen: "Average basket",
+    w4_cmdBoutique: "shop order to process",
+    w4_cmdsBoutique: "shop orders to process",
+    w3_maJournee: "My day",
+    w3_maJourneeSub: "Your day, on one screen",
+    w3_baroMetier: "BARO for my trade",
+    w3_multiPoints: "Multiple locations",
+    w3_equipe: "Team",
+    w3_fidelite: "Loyalty",
+    w3_reassort: "Smart restocking",
+    w3_reassortSub: "What to reorder · from your sales",
+    w3_prevision: "Demand forecast",
+    w3_previsionSub: "Upcoming stock-outs · trends · pace",
+    w3_previsionLock: "Enterprise · anticipated stock-outs",
+    w3_cloture: "Cash close",
+    w3_clotureSub: "Evening Z report · drawer count",
+    w3_credits: "Customer credit",
+    w3_creditsSub: "Debt book · who owes you",
+    w3_peremptions: "Expiry dates",
+    w3_peremptionsSub: "Perishables · FEFO · losses",
+    w3_posezQuestions: "Ask questions about your business",
+    w3_desactive: "Disabled",
     w2_revendeur: "Reseller",
     w2_transformateur: "Maker",
     w2_nouveauClient: "+ New customer",
@@ -3199,6 +3273,187 @@ function vExpiry() {
 // ── RÉASSORT INTELLIGENT ───────────────────────────────────
 // Répond à « j'ai trop de produits » : calcule sur les VRAIES ventes
 // quels articles recommander, combien, et quand — et prépare la commande.
+// ── Prévision de demande (plan Entreprise) ──────────────────────────────
+//
+// Le réassort existant utilise une moyenne plate sur trente jours. Elle
+// rate deux choses qui comptent pour un commerçant : une demande qui monte
+// ou qui s'effondre, et le fait qu'un samedi ne ressemble pas à un mardi.
+//
+// Ici : moyenne mobile pondérée sur huit semaines (les semaines récentes
+// pèsent plus), tendance mesurée en comparant les deux dernières semaines
+// aux deux précédentes, et profil par jour de la semaine. Rien n'est
+// inventé — tout sort des ventes enregistrées. Quand l'historique est trop
+// court, on le DIT au lieu de produire un chiffre rassurant et faux.
+const _PREV_SEMAINES = 8;
+
+function _previsionArticle(article, ventesParArticle, profilJour, joursHistorique) {
+  const DAY = 86400000, now = Date.now();
+  const lignes = ventesParArticle[article.id] || [];
+  const stock = article.stock || 0;
+  const lead = article.lead || 7;
+
+  // Ventes agrégées par semaine (0 = semaine en cours)
+  const semaines = new Array(_PREV_SEMAINES).fill(0);
+  let evenements = 0;
+  for (const l of lignes) {
+    const idx = Math.floor((now - l.ts) / (7 * DAY));
+    if (idx >= 0 && idx < _PREV_SEMAINES) { semaines[idx] += l.qty; evenements++; }
+  }
+
+  // Semaines réellement couvertes par l'historique : sans ce plafond, un
+  // commerce ouvert depuis dix jours verrait sa moyenne divisée par huit.
+  const semainesDispo = Math.max(1, Math.min(_PREV_SEMAINES, Math.ceil(joursHistorique / 7)));
+
+  // Pondération dégressive : la semaine dernière compte huit fois plus que
+  // celle d'il y a deux mois.
+  let sommePond = 0, sommePoids = 0;
+  for (let i = 0; i < semainesDispo; i++) {
+    const poids = _PREV_SEMAINES - i;
+    sommePond += semaines[i] * poids;
+    sommePoids += poids;
+  }
+  const parSemaine = sommePoids ? sommePond / sommePoids : 0;
+  const parJour = parSemaine / 7;
+
+  // Tendance : deux dernières semaines contre les deux précédentes
+  let tendance = null;
+  if (semainesDispo >= 4) {
+    const recent = semaines[0] + semaines[1];
+    const avant = semaines[2] + semaines[3];
+    if (avant > 0) tendance = Math.round(((recent - avant) / avant) * 100);
+    else if (recent > 0) tendance = 100;
+  }
+
+  // Confiance : volume d'évènements et profondeur d'historique.
+  // Un article vendu trois fois en deux mois ne permet aucune prévision.
+  let confiance = 'faible';
+  if (evenements >= 20 && semainesDispo >= 4) confiance = 'bonne';
+  else if (evenements >= 8 && semainesDispo >= 3) confiance = 'moyenne';
+
+  // Projection : la tendance module la vitesse, bornée pour éviter qu'une
+  // semaine exceptionnelle ne produise une commande absurde.
+  const facteur = tendance == null ? 1 : Math.min(1.6, Math.max(0.5, 1 + tendance / 200));
+  const vitesse = parJour * facteur;
+  const joursRestants = vitesse > 0 ? stock / vitesse : Infinity;
+  const dateRupture = isFinite(joursRestants) ? new Date(now + joursRestants * DAY) : null;
+  const couverture = lead + 30;
+  const aCommander = vitesse > 0 ? Math.max(0, Math.ceil(vitesse * couverture - stock)) : 0;
+
+  return {
+    article, parJour, parSemaine, vitesse, tendance, confiance, evenements,
+    semaines, semainesDispo, joursRestants, dateRupture, aCommander, lead,
+    valeurCommande: aCommander * (article.purchasePrice || 0),
+  };
+}
+
+function _previsionsData() {
+  const DAY = 86400000, now = Date.now();
+  const parArticle = {};
+  const profilJour = new Array(7).fill(0);
+  let premier = now;
+  for (const s of (S.sales || [])) {
+    const ts = new Date(s.date).getTime();
+    if (!ts) continue;
+    if (ts < premier) premier = ts;
+    profilJour[(new Date(ts).getDay() + 6) % 7] += (s.qty || 0);
+    if (s.productId == null) continue;
+    (parArticle[s.productId] = parArticle[s.productId] || []).push({ ts, qty: s.qty || 0 });
+  }
+  const joursHistorique = Math.max(1, Math.round((now - premier) / DAY));
+  const liste = (S.articles || [])
+    .map(a => _previsionArticle(a, parArticle, profilJour, joursHistorique))
+    .filter(p => p.parJour > 0)
+    .sort((a, b) => a.joursRestants - b.joursRestants);
+  return { liste, profilJour, joursHistorique, nbVentes: (S.sales || []).length };
+}
+
+function vPrevisions() {
+  if (!_planHasFeature('advancedAnalytics')) {
+    return _vEnterpriseLock('📈', 'Prévision de demande',
+      'Anticipez vos ruptures avant qu’elles arrivent. Calculé sur vos ventes réelles — semaines récentes pondérées, tendance et rythme hebdomadaire.',
+      ['Date de rupture estimée par article',
+       'Tendance : ce qui monte, ce qui s’effondre',
+       'Quantité à commander pour couvrir le délai fournisseur',
+       'Niveau de confiance affiché — jamais de chiffre inventé']);
+  }
+  const d = _previsionsData();
+  const JOURS = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+  const maxJour = Math.max(...d.profilJour, 1);
+  const urgents = d.liste.filter(p => isFinite(p.joursRestants) && p.joursRestants <= 14);
+  const budget = urgents.reduce((s, p) => s + p.valeurCommande, 0);
+  const pastille = c => c === 'bonne' ? '<span class="pv-conf ok">confiance bonne</span>'
+    : c === 'moyenne' ? '<span class="pv-conf moy">confiance moyenne</span>'
+    : '<span class="pv-conf bas">peu de données</span>';
+
+  return `
+  <div class="sub-hero">
+    <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('more')">${IC.left}</button>
+    <h1>Prévision de demande</h1>
+    <p>${d.joursHistorique} jours d’historique · ${fmt(d.nbVentes)} ${t('w4_ventesN')} analysées</p>
+  </div>
+  <div class="container">
+    ${d.liste.length === 0 ? `
+    <div class="card" style="text-align:center;padding:28px 20px">
+      <div style="font-size:36px;margin-bottom:10px">📈</div>
+      <div style="font-size:15px;font-weight:700;margin-bottom:6px">Pas encore assez de ventes</div>
+      <div style="font-size:13px;color:var(--text-3);line-height:1.5">
+        La prévision se construit sur votre historique réel. Enregistrez quelques
+        ventes et cet écran se remplira tout seul.
+      </div>
+    </div>` : `
+    ${urgents.length ? `
+    <div class="card" style="background:linear-gradient(140deg,#7C2D12,#B45309);color:#fff">
+      <div style="font-size:11px;font-weight:800;letter-spacing:.12em;opacity:.85">RUPTURES PRÉVUES SOUS 14 JOURS</div>
+      <div style="font-size:30px;font-weight:900;letter-spacing:-.03em;margin:6px 0 2px">${urgents.length}</div>
+      <div style="font-size:12.5px;opacity:.9">Budget de réassort estimé : <b>${fmt(budget)} ${sym()}</b></div>
+    </div>` : `
+    <div class="card" style="text-align:center;padding:20px">
+      <div style="font-size:15px;font-weight:700">Aucune rupture prévue sous 14 jours</div>
+    </div>`}
+
+    <div class="section-hd"><div class="section-lbl">Rythme par jour de semaine</div></div>
+    <div class="card">
+      <div class="pv-week">
+        ${d.profilJour.map((v, i) => `
+          <div class="pv-day">
+            <div class="pv-bar" style="height:${Math.max(4, Math.round(v / maxJour * 76))}px"></div>
+            <div class="pv-day-lb">${JOURS[i]}</div>
+          </div>`).join('')}
+      </div>
+      <div style="font-size:11.5px;color:var(--text-3);margin-top:10px;line-height:1.45">
+        Unités vendues par jour de semaine, sur tout votre historique.
+        Le jour le plus fort est <b>${JOURS[d.profilJour.indexOf(maxJour)]}</b>.
+      </div>
+    </div>
+
+    <div class="section-hd"><div class="section-lbl">Par article · rupture la plus proche d’abord</div></div>
+    ${d.liste.slice(0, 40).map(p => `
+      <div class="card" style="margin-bottom:8px">
+        <div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start">
+          <div style="min-width:0;flex:1">
+            <div style="font-size:14.5px;font-weight:700">${p.article.name}</div>
+            <div style="font-size:12px;color:var(--text-3);margin-top:2px">
+              ${p.parSemaine.toFixed(1)} / semaine · stock ${fmtQty(p.article.stock)} ${p.article.unit}
+            </div>
+          </div>
+          ${p.tendance == null ? '' : `<div class="pv-trend ${p.tendance >= 0 ? 'up' : 'down'}">${p.tendance >= 0 ? '▲' : '▼'} ${Math.abs(p.tendance)}%</div>`}
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px">
+          ${isFinite(p.joursRestants) ? `<span class="pv-tag ${p.joursRestants <= 7 ? 'danger' : p.joursRestants <= 14 ? 'warn' : ''}">
+            Rupture dans ${Math.max(0, Math.round(p.joursRestants))} j${p.dateRupture ? ` · ${p.dateRupture.toLocaleDateString(_lang === 'en' ? 'en-US' : 'fr-FR', { day: 'numeric', month: 'short' })}` : ''}</span>` : ''}
+          ${p.aCommander > 0 ? `<span class="pv-tag">Commander ${p.aCommander} ${p.article.unit}</span>` : ''}
+          ${pastille(p.confiance)}
+        </div>
+        ${p.confiance === 'faible' ? `<div style="font-size:11.5px;color:var(--text-3);margin-top:8px;line-height:1.4">
+          Seulement ${p.evenements} vente${p.evenements > 1 ? 's' : ''} enregistrée${p.evenements > 1 ? 's' : ''} sur ${p.semainesDispo} semaine${p.semainesDispo > 1 ? 's' : ''} — cette estimation est fragile.
+        </div>` : ''}
+      </div>`).join('')}
+    ${d.liste.length > 40 ? `<div style="text-align:center;font-size:12px;color:var(--text-3);padding:8px">
+      ${d.liste.length - 40} autres articles suivis</div>` : ''}
+    `}
+  </div>`;
+}
+
 function _reorderData(windowDays) {
   windowDays = windowDays || 30;
   const now = Date.now(), DAY = 86400000, since = now - windowDays * DAY;
@@ -6599,7 +6854,7 @@ function vCurrencyConvert() {
     : '';
   return `
   <div class="sub-hero">
-    <button class="back-btn-dark" style="margin-bottom:14px" onclick="S.currencyChange=null;nav('settings')">${IC.back} Annuler</button>
+    <button class="back-btn-dark" style="margin-bottom:14px" onclick="S.currencyChange=null;nav('settings')">${IC.left} Annuler</button>
     <h1>Changer de devise</h1>
     <p>${c.deSym} → ${c.versSym}</p>
   </div>
@@ -7297,6 +7552,7 @@ function _doRender() {
     'pack-form': vPackForm,
     'exports': vExports,
     'currency-convert': vCurrencyConvert,
+    'previsions': vPrevisions,
     // ── BATCH 5 : Équipe, Audit, Apparence, Sécurité, 2FA ──
     'team':             vTeam,
     'add-team-member':  vAddTeamMember,
@@ -8554,7 +8810,7 @@ function vHome() {
         </div>
         ${transactionsPeriod>0 ? `<div style="display:flex;gap:14px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:11px;color:var(--text-3);flex-wrap:wrap">
           <span>📝 <strong style="color:var(--text-1)">${transactionsPeriod}</strong> vente${transactionsPeriod>1?'s':''}</span>
-          <span>🛒 Panier moyen <strong style="color:var(--text-1)">${fmt(avgBasket)} ${sym()}</strong></span>
+          <span>🛒 ${t('w4_panierMoyen')} <strong style="color:var(--text-1)">${fmt(avgBasket)} ${sym()}</strong></span>
           <span>💰 Profit <strong style="color:var(--success)">+${fmt(todayProfitVal)} ${sym()}</strong></span>
         </div>` : `<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:11px;color:var(--text-3);text-align:center">${t('w2_aucuneVentePer')} <a href="#" onclick="nav('sales');return false" style="color:var(--accent);font-weight:600">${t('w1_enregistrerVente')}</a></div>`}
       </div>`;
@@ -8585,7 +8841,7 @@ function vHome() {
         <div class="alert-banner" style="background:rgba(59,130,246,0.08);border-color:rgba(59,130,246,0.22);cursor:pointer" onclick="nav('integrations')">
           <div class="alert-ico" style="background:rgba(59,130,246,0.15);color:#3B82F6;font-size:16px">🚚</div>
           <div style="flex:1;min-width:0">
-            <div class="alert-title" style="color:#3B82F6">${pending.length} livraison${pending.length>1?'s':''} en attente</div>
+            <div class="alert-title" style="color:#3B82F6">${pending.length} livraison${pending.length>1?'s':''} ${t('w4_enAttente')}</div>
             <div class="alert-sub">${pending.slice(0,3).map(p => `${p.provider==='glovo'?'Glovo':'Yango'} · #${String(p.orderId||'').slice(-4)||'—'}`).join(' · ')}</div>
           </div>
           <div class="alert-arrow">${IC.chevron}</div>
@@ -8881,7 +9137,7 @@ function vHome() {
       <button class="quick-btn" onclick="nav('more')">
         <span class="quick-ico">${IC.grid}</span>
         <div class="quick-label">${t('more')||'Plus'}</div>
-        <div class="quick-sub">${(S.integrationsConfig||[]).filter(i=>i.connected).length} connecte(s)</div>
+        <div class="quick-sub">${(S.integrationsConfig||[]).filter(i=>i.connected).length} ${t('w4_connectes')}</div>
       </button>
     </div>
 
@@ -10270,7 +10526,7 @@ function vSova() {
         sleeping.map(a=>({name:a.name, tag:`${a.daysSince>900?'jamais vendu':a.daysSince+'j sans vente'}`}))),
     ].filter(Boolean).join('');
 
-    return `<div class="sova-insights-intro">SOVA a analysé tes <strong>${sales.length} ventes</strong>. Voici tes opportunités :</div>${sections || `<div class="sova-empty"><div class="sova-empty-title">Tout est équilibré 👌</div><div class="sova-empty-sub">Continue à vendre, SOVA affinera ses conseils.</div></div>`}`;
+    return `<div class="sova-insights-intro">SOVA a analysé tes <strong>${sales.length} ${t('w4_ventesN')}</strong>. Voici tes opportunités :</div>${sections || `<div class="sova-empty"><div class="sova-empty-title">Tout est équilibré 👌</div><div class="sova-empty-sub">Continue à vendre, SOVA affinera ses conseils.</div></div>`}`;
   }
 
   function tabAlerts() {
@@ -11570,7 +11826,7 @@ function vClientDetail() {
       </div>
       <div class="metric-card">
         <div class="metric-val">${fmt(avgBasket)}</div>
-        <div class="metric-lbl">Panier moyen</div>
+        <div class="metric-lbl">${t('w4_panierMoyen')}</div>
       </div>
     </div>
 
@@ -17512,7 +17768,7 @@ function vSettings() {
             <span class="settings-row-ico" style="color:#7C73FF">👥</span>
             <div>
               <div class="settings-row-lbl">${t('w2_equipe')}</div>
-              <div class="settings-row-sub">${(S.teamMembers||[]).length} collaborateur(s) · Rôles</div>
+              <div class="settings-row-sub">${(S.teamMembers||[]).length} ${t('w4_collaborateurs')} · Rôles</div>
             </div>
           </div>
           ${IC.chevron}
@@ -17522,7 +17778,7 @@ function vSettings() {
             <span class="settings-row-ico" style="color:#1E293B">📋</span>
             <div>
               <div class="settings-row-lbl">Journal d'audit</div>
-              <div class="settings-row-sub">${(S.auditLog||[]).length} événement(s) enregistré(s)</div>
+              <div class="settings-row-sub">${(S.auditLog||[]).length} ${t('w4_evenements')} enregistré(s)</div>
             </div>
           </div>
           ${IC.chevron}
@@ -17631,7 +17887,7 @@ function vTeam() {
   <div class="sub-hero" style="background:linear-gradient(135deg,var(--accent) 0%,var(--accent-dark,#4F46E5) 100%)">
     <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('more')">${IC.left}</button>
     <div class="sub-hero-title">👥 Équipe & Performances</div>
-    <div class="sub-hero-sub">${members.length} collaborateur(s) · ${fmt(totalCA)} ${sym()} ce mois</div>
+    <div class="sub-hero-sub">${members.length} ${t('w4_collaborateurs')} · ${fmt(totalCA)} ${sym()} ce mois</div>
   </div>
   <div class="container">
 
@@ -17772,7 +18028,7 @@ function vTeam() {
                 <div style="font-size:18px;min-width:28px">${medal}</div>
                 <div style="flex:1">
                   <div style="font-weight:700;font-size:13px;color:var(--text-1)">${m.name}</div>
-                  <div style="font-size:11px;color:var(--text-3)">${roleInfo.name} · ${m._st.nbSales} ventes · ${fmt(m._st.totalCA)} ${sym()}</div>
+                  <div style="font-size:11px;color:var(--text-3)">${roleInfo.name} · ${m._st.nbSales} ${t('w4_ventesN')} · ${fmt(m._st.totalCA)} ${sym()}</div>
                 </div>
                 <div style="font-size:18px;font-weight:800;color:${m._st.perfScore>=70?'#10B981':m._st.perfScore>=40?'#F59E0B':'#EF4444'}">${m._st.perfScore}</div>
               </div>`;
@@ -19572,7 +19828,7 @@ function _aiLocalAnswer(q) {
     return `Ce mois : chiffre d'affaires ${money(ca)}, dépenses ${money(dep)}, **bénéfice net ${money(ca-dep)}**. Ouvre le Bilan pour le détail.`;
   }
   if (/(vend|chiffre|ca |vente|aujour|jour)/.test(t)) {
-    return `Chiffre d'affaires : aujourd'hui ${money(sum(inR(dStart)))}, ce mois ${money(sum(inR(mStart)))} (${inR(mStart).length} ventes).`;
+    return `Chiffre d'affaires : aujourd'hui ${money(sum(inR(dStart)))}, ce mois ${money(sum(inR(mStart)))} (${inR(mStart).length} ${t('w4_ventesN')}).`;
   }
   if (/(stock bas|rupture|réappro|reappro|manqu|faible)/.test(t)) {
     const low=(S.articles||[]).filter(a=>a.min>0&&(a.stock||0)<=a.min);
@@ -19587,7 +19843,7 @@ function _aiLocalAnswer(q) {
     const top=Object.entries(byName).sort((a,b)=>b[1]-a[1]).slice(0,5);
     return top.length?`Tes meilleures ventes ce mois : ${top.map(([n,q])=>n+' ('+q+')').join(', ')}.`:`Pas encore de vente ce mois pour établir un classement.`;
   }
-  if (/(client)/.test(t)) return `Tu as ${(S.clients||[]).length} client(s) enregistré(s). Va dans Clients pour relancer les meilleurs sur WhatsApp.`;
+  if (/(client)/.test(t)) return `Tu as ${(S.clients||[]).length} ${t('w4_clientsN')} enregistré(s). Va dans Clients pour relancer les meilleurs sur WhatsApp.`;
   return null; // pas de réponse locale → on invite à activer l'IA
 }
 function _aiPush(role, content) {
@@ -19741,7 +19997,7 @@ function vMultiStore() {
   <div class="sub-hero" style="background:linear-gradient(135deg,#4F46E5,#7C3AED)">
     <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('more')">${IC.left}</button>
     <div class="sub-hero-title">🏬 Multi-points de vente</div>
-    <div class="sub-hero-sub">${locs.length} emplacement(s) · ${fmt(totCA)} ${sym()} · ${totNb} vente(s)</div>
+    <div class="sub-hero-sub">${locs.length} ${t('w4_emplacements')} · ${fmt(totCA)} ${sym()} · ${totNb} vente(s)</div>
   </div>
   <div class="container">
     ${S.locationAdd ? `
@@ -19845,25 +20101,26 @@ function vMore() {
   const canAudit    = hasPermission('audit') || canAdmin;
 
   const items = [
-    { id:'today',           icon:'☀️',          label:'Ma journée',                     sub:'Vos actions du jour, en un écran', color:'#F59E0B', badge:(()=>{try{return _todayActionsCount()||null;}catch(_){return null;}})() },
-    { id:'ai-chat',         icon:'🤖',          label:'BARO IA — Assistant',            sub:'Posez des questions sur votre commerce', color:'#6366F1' },
-    { id:'metier-guide',    icon:'💡',          label:'BARO pour mon métier',           sub:'Pharmacie · restau · services…', color:'#0EA5E9' },
-    canAdmin ? { id:'multi-store', icon:'🏬',    label:'Multi-points de vente',          sub:`${(S.locations||[]).length} emplacement(s)`, color:'#7C3AED' } : null,
-    canAdmin ? { id:'team',  icon:IC.users,      label:'Équipe',                         sub:`${teamCount} collaborateur(s)`, color:'#7C73FF', badge: teamCount || null } : null,
-    canAudit ? { id:'audit-log', icon:IC.list||IC.grid, label:'Journal d\'audit',          sub:`${auditCount} événement(s)`, color:'#1E293B' } : null,
-    { id:'clients',         icon:IC.users,      label:t('clients')||'Clients',          sub:`${S.clients.length} client(s)${loyaltyClients>0?' · '+loyaltyClients+' fid.':''}`, color:'#0ea5e9' },
-    { id:'boutique',        icon:IC.shop,       label:t('boutique')||'Boutique',        sub:boutiquePending>0?`${boutiquePending} commande(s) !`:'Boutique en ligne',  color:'#4F46E5', badge: S.boutiqueConfig?.published ? '●' : (boutiquePending||null) },
-    { id:'marketing',       icon:IC.megaphone,  label:t('marketing')||'Marketing',     sub:`${activePromos} promo(s)`, color:'#dc2626', badge: activePromos || null },
-    { id:'loyalty',         icon:IC.star,       label:'Fidélité',                       sub:S.loyaltyConfig?.enabled?`${loyaltyClients} clients`:'Désactivé',  color:'#F59E0B', badge: S.loyaltyConfig?.enabled ? '●' : null },
-    { id:'social-media',    icon:IC.share2,     label:t('socialMedia')||'Reseaux',     sub:`${connectedSocial} connecte(s)${scheduledPostsCount>0?' · '+scheduledPostsCount+' prog.':''}`, color:'#e1306c', badge: scheduledPostsCount || null },
-    { id:'payments-setup',  icon:IC.wallet,     label:t('payments')||'Paiements',      sub:`${activePayments} actif(s)`, color:'#ff6600' },
-    { id:'purchase-orders', icon:IC.truck,      label:t('purchaseOrders')||'Commandes', sub:`${pendingOrders} en attente`, color:'#059669', badge: pendingOrders || null },
-    { id:'integrations',    icon:IC.link,       label:t('integrations')||'Integrations', sub:`${(S.integrationsConfig||[]).filter(i=>i.connected).length} actif(s)`,  color:'#7c3aed' },
-    { id:'suppliers',       icon:IC.package,    label:t('suppliers')||'Fournisseurs',  sub:`${S.suppliers.length} enregistre(s)`, color:'#0891b2' },
-    { id:'reassort',        icon:'🔄',          label:'Réassort intelligent',           sub:'Quoi recommander · calculé sur vos ventes', color:'#0EA5E9', badge: (()=>{try{return _reorderData(S.reorderWindow||30).items.length||null;}catch(_){return null;}})() },
-    { id:'caisse',          icon:'🧾',          label:'Clôture de caisse',              sub:'Le Z du soir · comptage du tiroir', color:'#059669' },
-    { id:'credits',         icon:'📒',          label:'Crédits clients',                sub:'Cahier de dettes · qui vous doit', color:'#DC2626', badge: (()=>{try{return _creditsStats().openCount||null;}catch(_){return null;}})() },
-    { id:'peremptions',     icon:'⏳',          label:'Péremptions',                    sub:'Périssables · FEFO · pertes', color:'#EC4899', badge: (S.articles||[]).filter(a=>{const e=getExpiryStatus(a.expiry);return e&&e.days<=30;}).length || null },
+    { id:'today',           icon:'☀️',          label:t('w3_maJournee'),                     sub:t('w3_maJourneeSub'), color:'#F59E0B', badge:(()=>{try{return _todayActionsCount()||null;}catch(_){return null;}})() },
+    { id:'ai-chat',         icon:'🤖',          label:'BARO IA — Assistant',            sub:t('w3_posezQuestions'), color:'#6366F1' },
+    { id:'metier-guide',    icon:'💡',          label:t('w3_baroMetier'),           sub:'Pharmacie · restau · services…', color:'#0EA5E9' },
+    canAdmin ? { id:'multi-store', icon:'🏬',    label:t('w3_multiPoints'),          sub:`${(S.locations||[]).length} ${t('w4_emplacements')}`, color:'#7C3AED' } : null,
+    canAdmin ? { id:'team',  icon:IC.users,      label:t('w3_equipe'),                         sub:`${teamCount} ${t('w4_collaborateurs')}`, color:'#7C73FF', badge: teamCount || null } : null,
+    canAudit ? { id:'audit-log', icon:IC.list||IC.grid, label:'Journal d\'audit',          sub:`${auditCount} ${t('w4_evenements')}`, color:'#1E293B' } : null,
+    { id:'clients',         icon:IC.users,      label:t('clients')||'Clients',          sub:`${S.clients.length} ${t('w4_clientsN')}${loyaltyClients>0?' · '+loyaltyClients+' fid.':''}`, color:'#0ea5e9' },
+    { id:'boutique',        icon:IC.shop,       label:t('boutique')||'Boutique',        sub:boutiquePending>0?`${boutiquePending} ${t('w4_commandes')} !`:'Boutique en ligne',  color:'#4F46E5', badge: S.boutiqueConfig?.published ? '●' : (boutiquePending||null) },
+    { id:'marketing',       icon:IC.megaphone,  label:t('marketing')||'Marketing',     sub:`${activePromos} ${t('w4_promos')}`, color:'#dc2626', badge: activePromos || null },
+    { id:'loyalty',         icon:IC.star,       label:t('w3_fidelite'),                       sub:S.loyaltyConfig?.enabled?`${loyaltyClients} clients`:t('w3_desactive'),  color:'#F59E0B', badge: S.loyaltyConfig?.enabled ? '●' : null },
+    { id:'social-media',    icon:IC.share2,     label:t('socialMedia')||'Reseaux',     sub:`${connectedSocial} ${t('w4_connectes')}${scheduledPostsCount>0?' · '+scheduledPostsCount+' prog.':''}`, color:'#e1306c', badge: scheduledPostsCount || null },
+    { id:'payments-setup',  icon:IC.wallet,     label:t('payments')||'Paiements',      sub:`${activePayments} ${t('w4_actifs')}`, color:'#ff6600' },
+    { id:'purchase-orders', icon:IC.truck,      label:t('purchaseOrders')||'Commandes', sub:`${pendingOrders} ${t('w4_enAttente')}`, color:'#059669', badge: pendingOrders || null },
+    { id:'integrations',    icon:IC.link,       label:t('integrations')||'Integrations', sub:`${(S.integrationsConfig||[]).filter(i=>i.connected).length} ${t('w4_actifs')}`,  color:'#7c3aed' },
+    { id:'suppliers',       icon:IC.package,    label:t('suppliers')||'Fournisseurs',  sub:`${S.suppliers.length} ${t('w4_enregistres')}`, color:'#0891b2' },
+    { id:'reassort',        icon:'🔄',          label:t('w3_reassort'),           sub:t('w3_reassortSub'), color:'#0EA5E9', badge: (()=>{try{return _reorderData(S.reorderWindow||30).items.length||null;}catch(_){return null;}})() },
+    { id:'previsions',      icon:'📈',          label:t('w3_prevision'),           sub:_planHasFeature('advancedAnalytics') ? t('w3_previsionSub') : t('w3_previsionLock'), color:'#8B5CF6', badge: (()=>{try{return _previsionsData().liste.filter(p=>isFinite(p.joursRestants)&&p.joursRestants<=14).length||null;}catch(_){return null;}})() },
+    { id:'caisse',          icon:'🧾',          label:t('w3_cloture'),              sub:t('w3_clotureSub'), color:'#059669' },
+    { id:'credits',         icon:'📒',          label:t('w3_credits'),                sub:t('w3_creditsSub'), color:'#DC2626', badge: (()=>{try{return _creditsStats().openCount||null;}catch(_){return null;}})() },
+    { id:'peremptions',     icon:'⏳',          label:t('w3_peremptions'),                    sub:t('w3_peremptionsSub'), color:'#EC4899', badge: (S.articles||[]).filter(a=>{const e=getExpiryStatus(a.expiry);return e&&e.days<=30;}).length || null },
     { id:'stock-history',   icon:IC.trending,   label:t('stockHistory')||'Mouvements', sub:`${S.stockMovements.length} entrees`, color:'#334155' },
     { id:'spectra',         icon:IC.camera,     label:'Spectra AI',                    sub:'Scanner & compter',        color:'#6366f1' },
     { id:'catalog',         icon:IC.pdf,        label:t('catalog')||'Catalogue',       sub:'WhatsApp & PDF',           color:'#16a34a' },
@@ -20090,7 +20347,7 @@ function vDocuments() {
     ${card('🧮','Bilan financier signé','CA · bénéfice net · marge · top produits',"S.period='30d';generateBilanReportPDF()",'#4F46E5')}
     ${card('📦','Rapport de stock',`${(S.articles||[]).length} article(s) · valeur & alertes`,'generateStockReportPDF()','#0EA5E9')}
     ${card('💰','Rapport de ventes',`${nbSales} vente(s) · période complète`,"generateSalesReportPDF('all')",'#F59E0B')}
-    ${card('👥','Rapport clients (CRM)',`${(S.clients||[]).length} client(s) triés par CA`,'generateClientsReportPDF()','#EC4899')}
+    ${card('👥','Rapport clients (CRM)',`${(S.clients||[]).length} ${t('w4_clientsN')} triés par CA`,'generateClientsReportPDF()','#EC4899')}
 
     <div class="settings-label" style="margin:16px 0 8px">Exports (comptable / tableur)</div>
     ${card('📗','Export Excel complet','Toutes les tables en .xls','exportFullXLSX()','#059669')}
@@ -20135,7 +20392,7 @@ function vExports() {
         </button>
         <button class="btn btn-ghost" onclick="generateSalesReportPDF('all')" style="padding:12px;text-align:left;display:flex;flex-direction:column;align-items:flex-start;gap:2px">
           <div style="font-weight:700;font-size:13px;color:var(--text-1)">💰 Rapport Ventes</div>
-          <div style="font-size:11px;color:var(--text-3)">${S.sales.length} ventes · ${fmt(totalCA)} ${sym()}</div>
+          <div style="font-size:11px;color:var(--text-3)">${S.sales.length} ${t('w4_ventesN')} · ${fmt(totalCA)} ${sym()}</div>
         </button>
         <button class="btn btn-ghost" onclick="generateSalesReportPDF('month')" style="padding:12px;text-align:left;display:flex;flex-direction:column;align-items:flex-start;gap:2px">
           <div style="font-weight:700;font-size:13px;color:var(--text-1)">📆 Ventes 30j</div>
@@ -20361,7 +20618,7 @@ function vBoutique() {
         <div style="display:flex;align-items:flex-end;gap:5px;height:56px">
           ${P.days.map(d => {
             const h = d.rev > 0 ? Math.max(6, Math.round(d.rev / P.maxDay * 46)) : 3;
-            return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;justify-content:flex-end" title="${d.n} commande(s) · ${fmt(d.rev)} ${sym()}">
+            return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;justify-content:flex-end" title="${d.n} ${t('w4_commandes')} · ${fmt(d.rev)} ${sym()}">
               <div style="width:100%;max-width:26px;height:${h}px;border-radius:5px 5px 2px 2px;background:${d.rev>0?'linear-gradient(180deg,var(--accent),#7C73FF)':'var(--gray-2)'}"></div>
               <div style="font-size:9px;color:var(--text-3);font-weight:600">${d.lbl}</div>
             </div>`;
@@ -23361,7 +23618,7 @@ function savePixelConfig() {
   localStorage.setItem('baro_boutique', JSON.stringify(bc));
   const px = bc.pixels || {};
   const count = Object.keys(px).filter(k => !k.endsWith('_enabled') && px[k] && px[k+'_enabled']).length;
-  logActivity('boutique', `Pixels mis à jour (${count} actif(s))`);
+  logActivity('boutique', `Pixels mis à jour (${count} ${t('w4_actifs')})`);
   showToast(`Pixels enregistrés ✓`);
 }
 function resetPixelConfig() {
@@ -24130,7 +24387,7 @@ function vBoutiqueAnalytics() {
     <div class="metric-grid">
       <div class="metric-card"><div class="metric-val">${fmt(caBoutique)}</div><div class="metric-lbl">CA boutique</div></div>
       <div class="metric-card"><div class="metric-val">${nbOrders}</div><div class="metric-lbl">Commandes</div></div>
-      <div class="metric-card"><div class="metric-val">${fmt(panierMoyen)}</div><div class="metric-lbl">Panier moyen</div></div>
+      <div class="metric-card"><div class="metric-val">${fmt(panierMoyen)}</div><div class="metric-lbl">${t('w4_panierMoyen')}</div></div>
       <div class="metric-card"><div class="metric-val">${vitrine.length}</div><div class="metric-lbl">En vitrine</div></div>
     </div>
 
@@ -24140,7 +24397,7 @@ function vBoutiqueAnalytics() {
       <div style="display:flex;align-items:flex-end;gap:6px;height:130px;padding-top:6px">
         ${_days7.map(d => { const h = Math.round((d.rev/_d7max)*100); return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end">
           <div style="font-size:9px;color:var(--text-3);font-weight:700;white-space:nowrap">${d.rev?fmt(d.rev):''}</div>
-          <div title="${d.n} commande(s)" style="width:100%;height:${Math.max(2,h)}%;min-height:3px;background:linear-gradient(180deg,var(--accent),color-mix(in srgb,var(--accent) 70%,#fff));border-radius:6px 6px 0 0;transition:height .5s cubic-bezier(.2,0,0,1)"></div>
+          <div title="${d.n} ${t('w4_commandes')}" style="width:100%;height:${Math.max(2,h)}%;min-height:3px;background:linear-gradient(180deg,var(--accent),color-mix(in srgb,var(--accent) 70%,#fff));border-radius:6px 6px 0 0;transition:height .5s cubic-bezier(.2,0,0,1)"></div>
           <div style="font-size:10px;color:var(--text-3)">${d.label}</div>
         </div>`; }).join('')}
       </div>
@@ -24325,7 +24582,7 @@ function vMarketing() {
     { id:'reviews',   label:'Avis',       icon:'⭐', count: reviews.filter(r=>r.approved).length },
     { id:'campaigns', label:'Campagnes',  icon:'📧', count: campaigns.length },
     { id:'tracking',  label:'Liens',      icon:'🔗', count: tracking.length },
-    { id:'loyalty',   label:'Fidélité',   icon:'🎁', count: (S.loyaltyConfig?.rewards||[]).length },
+    { id:'loyalty',   label:t('w3_fidelite'),   icon:'🎁', count: (S.loyaltyConfig?.rewards||[]).length },
   ];
 
   return `
@@ -31303,7 +31560,7 @@ async function sheetsAppendRow(values) {
 async function sheetsPushAll() {
   const cfg = _getSheetsConfig();
   if (!cfg) { showToast('Connecte d\'abord','error'); return; }
-  if (!confirm(`Push ${S.sales.length} ventes sur Google Sheets ?`)) return;
+  if (!confirm(`Push ${S.sales.length} ${t('w4_ventesN')} sur Google Sheets ?`)) return;
   showToast('🚀 Push...');
   // Header
   await sheetsAppendRow(['Date','Produit','Qté','Total','Profit','Client','Paiement']);
@@ -31715,7 +31972,7 @@ async function comptaPushSale(sale) {
 async function comptaPushAll() {
   const cfg = _getComptaConfig();
   if (!cfg) { showToast('Connecte d\'abord','error'); return; }
-  if (!confirm(`Push ${S.sales.length} ventes vers ${cfg.provider} ?`)) return;
+  if (!confirm(`Push ${S.sales.length} ${t('w4_ventesN')} vers ${cfg.provider} ?`)) return;
   showToast('🚀 Push en cours...');
   let ok = 0, ko = 0;
   for (const s of S.sales) {
@@ -32944,7 +33201,7 @@ function runBootReminders() {
     else if (lowStock.length) reminders.push({ icon:'⚠️', text:`${lowStock.length} article${lowStock.length>1?'s':''} en stock bas`, action:()=>nav('pantry') });
     // 3) Commandes boutique en attente
     const pendingOrders = (S.boutiqueOrders||[]).filter(o => o.status === 'pending' || !o.status);
-    if (pendingOrders.length) reminders.push({ icon:'🛒', text:`${pendingOrders.length} commande${pendingOrders.length>1?'s':''} en attente`, action:()=>nav('boutique-orders') });
+    if (pendingOrders.length) reminders.push({ icon:'🛒', text:`${pendingOrders.length} commande${pendingOrders.length>1?'s':''} ${t('w4_enAttente')}`, action:()=>nav('boutique-orders') });
     // 4) Campagnes programmées échues
     const dueCampaigns = (S.campaigns||[]).filter(c => c.status === 'scheduled' && new Date(c.scheduleDate||c.date).getTime() <= Date.now());
     if (dueCampaigns.length) reminders.push({ icon:'📣', text:`${dueCampaigns.length} campagne${dueCampaigns.length>1?'s':''} prête${dueCampaigns.length>1?'s':''}`, action:()=>nav('marketing') });

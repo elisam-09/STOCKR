@@ -5367,3 +5367,32 @@ body.vt-active .card { animation: none !important; }
 .bq-cine-tx { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
 .bq-cine-tx strong { font-size: 12.5px; font-weight: 800; color: var(--text-1); }
 .bq-cine-tx span { font-size: 11px; line-height: 1.45; color: var(--text-3); }
+
+/* ── Prévision de demande (plan Entreprise) ─────────────────────────── */
+.pv-week { display: flex; align-items: flex-end; gap: 6px; height: 92px; }
+.pv-day { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; justify-content: flex-end; }
+.pv-bar {
+  width: 100%;
+  border-radius: 5px 5px 2px 2px;
+  background: linear-gradient(180deg, var(--accent), color-mix(in srgb, var(--accent) 55%, transparent));
+}
+.pv-day-lb { font-size: 10px; font-weight: 700; color: var(--text-3); }
+.pv-trend { font-size: 12px; font-weight: 800; white-space: nowrap; flex-shrink: 0; }
+.pv-trend.up { color: var(--success); }
+.pv-trend.down { color: var(--danger); }
+.pv-tag {
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 5px 10px;
+  border-radius: 8px;
+  background: var(--gray-1);
+  color: var(--text-2);
+  border: 1px solid var(--border);
+  white-space: nowrap;
+}
+.pv-tag.warn { background: rgba(217, 119, 6, .12); color: #B45309; border-color: rgba(217, 119, 6, .25); }
+.pv-tag.danger { background: rgba(220, 38, 38, .12); color: #DC2626; border-color: rgba(220, 38, 38, .25); }
+.pv-conf { font-size: 10.5px; font-weight: 700; padding: 4px 9px; border-radius: 7px; white-space: nowrap; }
+.pv-conf.ok { background: rgba(22, 163, 74, .12); color: #16A34A; }
+.pv-conf.moy { background: rgba(217, 119, 6, .12); color: #B45309; }
+.pv-conf.bas { background: var(--gray-1); color: var(--text-3); }
