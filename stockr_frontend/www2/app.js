@@ -6177,13 +6177,213 @@ function _persistSession() {
   try { localStorage.setItem('stockr_session', brut); } catch (_) {}
 }
 
+// ── Changement de devise ────────────────────────────────────────────────
+// Changer le symbole sans toucher aux nombres affichait « 700 $ » pour un
+// article à 700 FCFA, soit six cents fois son prix. On demande donc au
+// commerçant ce qu'il veut, avec le taux sous les yeux — et on n'invente
+// jamais un taux du marché qu'on ne peut pas connaître hors ligne.
+
+// Nombre de décimales couramment utilisé par devise.
+const _DECIMALES_DEVISE = { XOF: 0, XAF: 0, NGN: 0, EUR: 2, USD: 2, GBP: 2, MAD: 2, GHS: 2 };
+function _decimalesDe(code) { return _DECIMALES_DEVISE[code] != null ? _DECIMALES_DEVISE[code] : 2; }
+
+// Parités officielles et fixes — pas des cours de marché. Le franc CFA est
+// arrimé à l'euro depuis 1999 à ce taux exact, il ne bouge pas.
+const _PARITES_FIXES = { 'XOF|EUR': 655.957, 'XAF|EUR': 655.957, 'XOF|XAF': 1, 'XAF|XOF': 1 };
+function _pariteFixe(de, vers) {
+  if (_PARITES_FIXES[de + '|' + vers]) return _PARITES_FIXES[de + '|' + vers];
+  const inverse = _PARITES_FIXES[vers + '|' + de];
+  return inverse ? 1 / inverse : null;
+}
+
+// Tous les endroits où vit un montant. Vérifié champ par champ sur les
+// données réelles : oublier une collection laisserait des prix incohérents.
+// Plusieurs collections ne sont chargées qu'à l'ouverture de leur écran.
+// Sans ce réveil, un commerçant qui n'a jamais ouvert « Crédits » verrait
+// ses dettes clients rester en francs pendant que le reste passe en euros.
+function _reveillerCollections() {
+  const charger = (cle, defaut) => { try { return JSON.parse(localStorage.getItem(cle) || defaut); } catch (_) { return JSON.parse(defaut); } };
+  if (!Array.isArray(S.credits))        S.credits        = charger('baro_credits', '[]');
+  if (!Array.isArray(S.expenses))       S.expenses       = charger('baro_expenses', '[]');
+  if (!Array.isArray(S.cashCloses))     S.cashCloses     = charger('baro_cashcloses', '[]');
+  if (!Array.isArray(S.boutiqueOrders)) S.boutiqueOrders = charger('baro_boutique_orders', '[]');
+  if (!Array.isArray(S.promotions))     S.promotions     = charger('baro_promotions', '[]');
+  if (!Array.isArray(S.packs))          S.packs          = charger('stockr_packs', '[]');
+  if (!Array.isArray(S.devis))          S.devis          = charger('baro_devis', '[]');
+}
+
+function _collectionsMonetaires() {
+  _reveillerCollections();
+  const bc = S.boutiqueConfig || {};
+  return [
+    { liste: S.articles,       champs: ['price', 'purchasePrice'] },
+    { liste: S.products,       champs: ['price', 'cost', 'costPrice'] },
+    { liste: S.sales,          champs: ['total', 'profit'] },
+    { liste: S.credits,        champs: ['amount', 'paid'] },
+    { liste: S.expenses,       champs: ['amount'] },
+    { liste: S.cashCloses,     champs: ['expected', 'counted', 'diff'] },
+    { liste: S.boutiqueOrders, champs: ['total'] },
+    { liste: S.packs,          champs: ['price'] },
+    { liste: S.devis,          champs: ['total', 'amount'] },
+    { liste: [bc],             champs: ['deliveryFees', 'freeDeliveryFrom', 'freeDeliveryThreshold'] },
+  ];
+}
+
+function _compterMontants() {
+  let n = 0;
+  for (const c of _collectionsMonetaires()) {
+    for (const o of (c.liste || [])) {
+      if (!o) continue;
+      for (const ch of c.champs) if (typeof o[ch] === 'number' && o[ch] !== 0) n++;
+    }
+  }
+  // Les promotions à montant fixe sont aussi de l'argent
+  for (const p of (S.promotions || [])) if (p && p.type === 'fixed' && typeof p.value === 'number') n++;
+  return n;
+}
+
 function changeCurrency(code) {
   if (!S.session) return;
-  S.session.currency = code;
-  S.session.currency_symbol = getCurrencySymbol(code);
+  const avant = S.session.currency || 'XOF';
+  if (avant === code) return;
+  const nb = _compterMontants();
+  if (!nb) {                       // aucune donnée : rien à convertir
+    S.session.currency = code;
+    S.session.currency_symbol = getCurrencySymbol(code);
+    _persistSession();
+    showToast(t('infoUpdated'));
+    render();
+    return;
+  }
+  const parite = _pariteFixe(avant, code);
+  S.currencyChange = {
+    de: avant, deSym: getCurrencySymbol(avant),
+    vers: code, versSym: getCurrencySymbol(code),
+    taux: parite ? String(parite) : '',
+    fixe: !!parite,
+    nbMontants: nb,
+  };
+  nav('currency-convert');
+}
+
+// Applique la conversion. Une sauvegarde complète est écrite avant : une
+// erreur de taux ne doit pas être irrattrapable.
+async function applyCurrencyConversion(convertir) {
+  const c = S.currencyChange;
+  if (!c) return;
+  let taux = 1;
+  if (convertir) {
+    taux = parseFloat(String(c.taux).replace(',', '.'));
+    if (!isFinite(taux) || taux <= 0) { showToast('Entrez un taux valide', 'error'); return; }
+  }
+  if (convertir) {
+    try {
+      const sauvegarde = {};
+      for (const k of Object.keys(localStorage)) {
+        if (/^(baro|stockr)_/.test(k)) sauvegarde[k] = localStorage.getItem(k);
+      }
+      localStorage.setItem('baro_avant_conversion', JSON.stringify({
+        date: new Date().toISOString(), de: c.de, vers: c.vers, taux, data: sauvegarde,
+      }));
+    } catch (_) { /* quota plein : on continue, la conversion reste demandée */ }
+
+    const dec = _decimalesDe(c.vers);
+    const arrondi = v => {
+      const r = v / taux;
+      const f = Math.pow(10, dec);
+      return Math.round(r * f) / f;
+    };
+    for (const col of _collectionsMonetaires()) {
+      for (const o of (col.liste || [])) {
+        if (!o) continue;
+        for (const ch of col.champs) if (typeof o[ch] === 'number') o[ch] = arrondi(o[ch]);
+      }
+    }
+    for (const p of (S.promotions || [])) {
+      if (p && p.type === 'fixed' && typeof p.value === 'number') p.value = arrondi(p.value);
+    }
+    try { _saveArticles(); } catch (_) {}
+    try { _saveProducts(); } catch (_) {}
+    try { _saveSales(); } catch (_) {}
+    try { localStorage.setItem('baro_credits', JSON.stringify(S.credits || [])); } catch (_) {}
+    try { localStorage.setItem('baro_expenses', JSON.stringify(S.expenses || [])); } catch (_) {}
+    try { localStorage.setItem('baro_cashcloses', JSON.stringify(S.cashCloses || [])); } catch (_) {}
+    try { localStorage.setItem('baro_boutique_orders', JSON.stringify(S.boutiqueOrders || [])); } catch (_) {}
+    try { localStorage.setItem('baro_boutique', JSON.stringify(S.boutiqueConfig || {})); } catch (_) {}
+    try { localStorage.setItem('baro_promotions', JSON.stringify(S.promotions || [])); } catch (_) {}
+  }
+
+  S.session.currency = c.vers;
+  S.session.currency_symbol = getCurrencySymbol(c.vers);
   _persistSession();
-  showToast(t('infoUpdated'));
-  render();
+  S.currencyChange = null;
+  showToast(convertir
+    ? `${c.nbMontants} montants convertis en ${getCurrencySymbol(c.vers)}`
+    : `Devise changée — montants inchangés`);
+  nav('settings');
+}
+
+function vCurrencyConvert() {
+  const c = S.currencyChange;
+  if (!c) { nav('settings'); return ''; }
+  const exemple = (S.articles || []).find(a => a.price > 0);
+  const taux = parseFloat(String(c.taux).replace(',', '.'));
+  const valide = isFinite(taux) && taux > 0;
+  const apercu = (exemple && valide)
+    ? `${fmt(exemple.price)} ${c.deSym} → <b>${(exemple.price / taux).toFixed(_decimalesDe(c.vers))} ${c.versSym}</b>`
+    : '';
+  return `
+  <div class="sub-hero">
+    <button class="back-btn-dark" style="margin-bottom:14px" onclick="S.currencyChange=null;nav('settings')">${IC.back} Annuler</button>
+    <h1>Changer de devise</h1>
+    <p>${c.deSym} → ${c.versSym}</p>
+  </div>
+  <div class="container">
+    <div class="card">
+      <div style="font-size:14px;line-height:1.55;color:var(--text-2)">
+        Vous avez <b>${c.nbMontants} montants</b> enregistrés en ${c.deSym} — prix, ventes, dépenses, crédits.
+        Sans conversion, un article à ${exemple ? fmt(exemple.price) : '700'} ${c.deSym}
+        s'affichera <b>${exemple ? fmt(exemple.price) : '700'} ${c.versSym}</b>.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="form-group">
+        <label class="form-label">Taux de conversion</label>
+        <div style="display:flex;align-items:center;gap:9px">
+          <span style="font-size:15px;font-weight:700;white-space:nowrap">1 ${c.versSym} =</span>
+          <input class="input" type="number" step="any" inputmode="decimal" value="${c.taux}"
+                 style="flex:1;min-width:0" placeholder="ex : 655,957"
+                 oninput="S.currencyChange.taux=this.value;render()">
+          <span style="font-size:15px;font-weight:700;white-space:nowrap">${c.deSym}</span>
+        </div>
+        ${c.fixe
+          ? `<div style="font-size:11.5px;color:var(--success);margin-top:7px;font-weight:600">
+               ✓ Parité officielle et fixe — ${c.deSym} et ${c.versSym} sont arrimés depuis 1999.
+             </div>`
+          : `<div style="font-size:11.5px;color:var(--text-3);margin-top:7px;line-height:1.45">
+               Ce taux varie chaque jour et l'application ne peut pas le connaître hors ligne.
+               Entrez celui de votre banque ou de votre bureau de change.
+             </div>`}
+        ${apercu ? `<div style="margin-top:12px;padding:11px;border-radius:10px;background:var(--gray-1);font-size:13.5px">
+          Aperçu : ${apercu}</div>` : ''}
+      </div>
+      <button class="btn btn-primary" style="width:100%" ${valide ? '' : 'disabled'}
+              onclick="applyCurrencyConversion(true)">Convertir les ${c.nbMontants} montants</button>
+      <div style="font-size:11px;color:var(--text-3);text-align:center;margin-top:8px">
+        Une sauvegarde est enregistrée avant la conversion.
+      </div>
+    </div>
+
+    <div class="card">
+      <div style="font-size:13px;color:var(--text-2);line-height:1.5;margin-bottom:10px">
+        Ou gardez les nombres tels quels — à choisir uniquement si vos prix
+        sont déjà exprimés dans la nouvelle devise.
+      </div>
+      <button class="btn btn-ghost" style="width:100%" onclick="applyCurrencyConversion(false)">
+        Garder les nombres, changer seulement le symbole</button>
+    </div>
+  </div>`;
 }
 
 function changeTaxRate(val) {
@@ -6831,6 +7031,7 @@ function _doRender() {
     'boutique-orders': () => { S.view = 'boutique'; return vBoutique(); },
     'pack-form': vPackForm,
     'exports': vExports,
+    'currency-convert': vCurrencyConvert,
     // ── BATCH 5 : Équipe, Audit, Apparence, Sécurité, 2FA ──
     'team':             vTeam,
     'add-team-member':  vAddTeamMember,
