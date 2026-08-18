@@ -1659,17 +1659,32 @@ function _frError(msg) {
   return msg;
 }
 
+// Délai maximum d'un appel réseau. Sans lui, sur une connexion mobile qui
+// « pend » (courant en Afrique de l'Ouest), le navigateur attend sa valeur par
+// défaut — jusqu'à plusieurs dizaines de secondes — et l'utilisateur reste
+// devant un écran figé après avoir touché « S'inscrire » ou « Vendre ».
+// Passé ce délai on abandonne et on bascule en local : l'app répond toujours.
+const API_TIMEOUT_MS = 7000;
+const API_TIMEOUT_LONG_MS = 30000;   // analyses d'image : légitimement plus lentes
+function _apiTimeoutFor(path) {
+  return /\/spectra\/|\/analyze|\/upload/i.test(path || '') ? API_TIMEOUT_LONG_MS : API_TIMEOUT_MS;
+}
+
 async function api(method, path, body) {
   if (USE_LOCAL) {
     try { return _localApi(method, path, body); }
     catch(e) { throw new Error(_frError(e.message)); }
   }
+  const _ctrl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+  const _timer = _ctrl ? setTimeout(() => _ctrl.abort(), _apiTimeoutFor(path)) : null;
   try {
     const res = await fetch(API_BASE + path, {
       method,
       headers: { 'Content-Type': 'application/json', ...(S.token ? { 'Authorization': `Bearer ${S.token}` } : {}) },
-      body: body ? JSON.stringify(body) : undefined
+      body: body ? JSON.stringify(body) : undefined,
+      ...(_ctrl ? { signal: _ctrl.signal } : {})
     });
+    if (_timer) clearTimeout(_timer);
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
       const raw = typeof err.error === 'string' ? err.error : (err.error?.error || err.message || `Erreur ${res.status}`);
@@ -1685,7 +1700,13 @@ async function api(method, path, body) {
     }
     return res.json();
   } catch(e) {
-    if (e.message === 'Failed to fetch' || e.name === 'TypeError' || e.message.includes('503') || e.message.includes('Load failed') || e.message.includes('NetworkError')) {
+    if (_timer) clearTimeout(_timer);
+    // AbortError = notre délai maximum a expiré (réseau qui pend) → même
+    // traitement qu'une panne réseau : bascule locale, l'app reste utilisable.
+    const estReseau = e.name === 'AbortError' || e.message === 'Failed to fetch' ||
+                      e.name === 'TypeError' || e.message.includes('503') ||
+                      e.message.includes('Load failed') || e.message.includes('NetworkError');
+    if (estReseau) {
       USE_LOCAL = true;
       showToast(t('offlineMode'), '');
       return _localApi(method, path, body);
