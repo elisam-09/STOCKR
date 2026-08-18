@@ -5349,3 +5349,21 @@ body.vt-active .card { animation: none !important; }
 .bq-lock-tx { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .bq-lock-tx strong { font-size: 12.5px; font-weight: 800; color: var(--text-1); }
 .bq-lock-tx span { font-size: 11px; line-height: 1.4; color: var(--text-3); }
+
+/* Interrupteur de la séquence d'ouverture (éditeur boutique) */
+.bq-cine {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  padding: 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  background: var(--card);
+  cursor: pointer;
+  transition: border-color .18s, background .18s;
+}
+.bq-cine.on { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 6%, var(--card)); }
+.bq-cine input { margin-top: 2px; width: 17px; height: 17px; flex-shrink: 0; accent-color: var(--accent); }
+.bq-cine-tx { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.bq-cine-tx strong { font-size: 12.5px; font-weight: 800; color: var(--text-1); }
+.bq-cine-tx span { font-size: 11px; line-height: 1.45; color: var(--text-3); }

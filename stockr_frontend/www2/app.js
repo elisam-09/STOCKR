@@ -20440,6 +20440,10 @@ function generateBoutiqueSite(opts) {
   const orderText  = bc.orderBtnText || '+ Ajouter au panier';
   const heroTitle  = bc.heroTitle || bc.name || S.session?.business || 'Ma Boutique';
   const heroSub    = bc.heroSubtitle || bc.description || 'Bienvenue ! Découvrez nos produits et commandez en un clic';
+  // Séquence d'ouverture pilotée au défilement (option Entreprise).
+  // Construite avec les vrais produits de la vitrine : aucune vidéo à
+  // tourner, aucune image à fournir — un commerçant l'active et elle marche.
+  const _cinemaOn = _palAllowed && !!bc.cinema;
   const announce   = (bc.announceText || '').trim();
   // ── Sections éditables par le vendeur : À propos / Services / Contact ──
   const _aboutText    = (bc.aboutText || '').trim();
@@ -20721,6 +20725,40 @@ function generateBoutiqueSite(opts) {
       imgs: imgs, variants: variants, reviews: reviews,
     };
   })).replace(/</g, '\\u003c');
+  // ── Séquence d'ouverture au défilement ────────────────────────────────
+  // Un bloc de trois hauteurs d'écran dont la scène reste épinglée. Le
+  // défilement ne fait pas jouer une vidéo : il pilote directement une
+  // progression 0→1 qui ouvre le rideau, révèle le mur de produits et
+  // fait monter les informations. Tout est en transform/opacity, donc
+  // le travail reste sur le compositeur.
+  const _cineItems = shopProds.slice(0, 8).map((p, _ci) => {
+    let hue = 0;
+    { const s = String(p.name || '?'); for (let i = 0; i < s.length; i++) hue = (hue * 31 + s.charCodeAt(i)) % 360; }
+    const mono = (p.name || '?').trim().split(/[^A-Za-zÀ-ÿ]+/)
+      .filter(w => w.length >= 3).slice(0, 2).map(w => w.charAt(0).toUpperCase()).join('')
+      || (p.name || '?').trim().charAt(0).toUpperCase();
+    return p.image
+      ? `<figure class="cn-it" style="--i:${_ci}"><img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy"></figure>`
+      : `<figure class="cn-it cn-ph" style="--i:${_ci};--ph:${hue}"><span>${esc(mono)}</span></figure>`;
+  }).join('');
+  const _cineMeta = [
+    (bc.businessHours || []).length ? 'Horaires affichés en direct' : '',
+    _deliveryOff ? (_pickupAddr ? 'Retrait sur place' : '') :
+      ((bc.deliveryZones || []).length ? `Livraison ${(bc.deliveryZones || []).slice(0, 2).map(z => esc(z)).join(' · ')}` : ''),
+    `${shopProds.length} référence${shopProds.length > 1 ? 's' : ''} en vitrine`,
+  ].filter(Boolean);
+  const _cinemaHTML = (!_cinemaOn || shopProds.length < 3) ? '' : `
+<section class="cinema" id="cinema" aria-label="Ouverture de la boutique">
+  <div class="cn-stage">
+    <div class="cn-room" aria-hidden="true"></div>
+    <div class="cn-wall">${_cineItems}</div>
+    <div class="cn-shutter" aria-hidden="true"><span class="cn-slat"></span></div>
+    <div class="cn-title"><span>${esc(heroTitle)}</span></div>
+    <div class="cn-meta">${_cineMeta.map(m => `<span>${m}</span>`).join('')}</div>
+    <a class="cn-go" href="#produits" onclick="event.preventDefault();(document.querySelector('main.grid')||document.body).scrollIntoView({behavior:'smooth',block:'start'})">Entrer dans la boutique</a>
+  </div>
+</section>`;
+
   const _catCount = {};
   shopProds.forEach(p => { const c = p.category || 'Autres'; _catCount[c] = (_catCount[c]||0) + 1; });
   const chipsHTML = categories.length > 1
@@ -21104,6 +21142,66 @@ ${hoverCss}
 .review:last-child{margin-bottom:0}
 @media(max-width:480px){.header{padding:46px 16px 58px}.info-bar{margin:-28px 12px 12px;padding:11px 14px}}
 
+/* ── Séquence d'ouverture au défilement ───────────────────────────────
+   --p (0→1) est écrit par le script à chaque frame. Chaque élément en
+   déduit sa propre progression locale, décalée par --i pour l'effet de
+   cascade. Rien d'autre que transform et opacity n'est anime.          */
+.cinema{position:relative;height:320vh}
+.cn-stage{position:sticky;top:0;height:100vh;overflow:hidden;--p:0;
+  display:grid;place-items:center;background:var(--bg)}
+.cn-room{position:absolute;inset:0;
+  background:radial-gradient(120% 80% at 50% 112%, ${tc}26, transparent 62%),
+             radial-gradient(90% 60% at 50% -12%, ${tc}1c, transparent 56%)}
+.cn-wall{position:absolute;inset:0;display:grid;grid-template-columns:repeat(4,1fr);
+  gap:12px;padding:14vh 6vw;align-content:center;pointer-events:none}
+@media(max-width:640px){.cn-wall{grid-template-columns:repeat(2,1fr);gap:9px;padding:16vh 7vw}}
+.cn-it{--pi:clamp(0,(var(--p) - .36 - var(--i)*.035)/.2,1);
+  position:relative;aspect-ratio:1/1;border-radius:16px;overflow:hidden;margin:0;
+  border:1px solid var(--bd);background:var(--surface);
+  opacity:var(--pi);
+  transform:translateY(calc((1 - var(--pi)) * 54px)) scale(calc(.9 + var(--pi) * .1))}
+.cn-it img{width:100%;height:100%;object-fit:cover;display:block}
+.cn-it.cn-ph{display:grid;place-items:center;
+  background:radial-gradient(120% 92% at 16% 10%, hsl(var(--ph) 74% 93%) 0%, transparent 62%),
+             linear-gradient(152deg, hsl(var(--ph) 46% 97%), hsl(calc(var(--ph) + 22) 48% 93%))}
+.cn-it.cn-ph span{font-size:clamp(18px,4.5vw,30px);font-weight:800;letter-spacing:-.03em;
+  color:hsl(var(--ph) 48% 36%);opacity:.72}
+/* Le rideau : il remonte, il ne disparaît pas en fondu */
+.cn-shutter{--po:clamp(0,(var(--p) - .04)/.32,1);
+  position:absolute;left:0;right:0;top:0;height:100%;z-index:2;
+  background:repeating-linear-gradient(180deg,#26262C 0 7px,#1D1D22 7px 14px);
+  box-shadow:0 20px 46px rgba(0,0,0,.5);
+  transform:translateY(calc(var(--po) * -101%))}
+.cn-slat{position:absolute;left:0;right:0;bottom:0;height:10px;
+  background:linear-gradient(180deg,#3A3A44,#15151A);
+  box-shadow:0 4px 16px rgba(0,0,0,.55)}
+.cn-title{--pt:clamp(0,(var(--p) - .26)/.18,1);
+  position:relative;z-index:3;text-align:center;padding:0 6vw;
+  font-size:clamp(30px,9vw,74px);font-weight:900;letter-spacing:-.04em;line-height:.96;
+  color:#F3EEE0;text-wrap:balance;
+  opacity:calc(1 - var(--pt));
+  transform:translateY(calc(var(--pt) * -46px)) scale(calc(1 - var(--pt) * .06))}
+.cn-meta{--pm:clamp(0,(var(--p) - .74)/.16,1);
+  position:absolute;bottom:17vh;z-index:3;display:flex;gap:8px;flex-wrap:wrap;
+  justify-content:center;padding:0 6vw;
+  opacity:var(--pm);transform:translateY(calc((1 - var(--pm)) * 20px))}
+.cn-meta span{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--tx2);background:var(--surface);border:1px solid var(--bd);
+  padding:7px 13px;border-radius:999px}
+.cn-go{--pm:clamp(0,(var(--p) - .8)/.14,1);
+  position:absolute;bottom:8vh;z-index:3;text-decoration:none;
+  background:${tc};color:#fff;font-weight:800;font-size:15px;
+  padding:13px 28px;border-radius:999px;box-shadow:0 12px 30px -10px ${tc}99;
+  opacity:var(--pm);transform:translateY(calc((1 - var(--pm)) * 20px))}
+@media(prefers-reduced-motion:reduce){
+  .cinema{height:auto}
+  .cn-stage{position:relative;height:auto;padding:56px 0 72px}
+  .cn-shutter{display:none}
+  .cn-wall{position:relative;inset:auto;padding:24px 6vw 0}
+  .cn-it{opacity:1;transform:none}
+  .cn-title{opacity:1;transform:none;color:var(--tx)}
+  .cn-meta,.cn-go{position:relative;bottom:auto;opacity:1;transform:none;margin-top:18px}}
+
 /* ── Application de la palette ────────────────────────────────────────
    Place en fin de feuille pour primer sur les couleurs ecrites en dur
    plus haut. Toutes les surfaces passent par les memes jetons, donc le
@@ -21178,6 +21276,35 @@ ${bannerHTML(topBanner, 'top')}
   ${bc.deliveryFees>0?`<div class="info-item">🚚 Livraison : ${fmt(bc.deliveryFees)} ${sym()}</div>`:'<div class="info-item">🚚 Livraison disponible</div>'}`}
   <div class="info-item">💬 Commande WhatsApp</div>
 </div>
+${_cinemaHTML}
+${_cinemaHTML ? `<script>(function(){
+  // Pilote de la sequence : convertit la position de defilement en une
+  // progression 0→1 ecrite dans --p. Aucune video, aucune bibliotheque.
+  var sec=document.getElementById('cinema');if(!sec)return;
+  var stage=sec.querySelector('.cn-stage');if(!stage)return;
+  if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    stage.style.setProperty('--p','1');return;               // etat final, sans mouvement
+  }
+  var raf=0,filet=0;
+  function up(){
+    raf=0;clearTimeout(filet);
+    var course=sec.offsetHeight-window.innerHeight;
+    if(course<=0){stage.style.setProperty('--p','1');return;}
+    var p=-sec.getBoundingClientRect().top/course;
+    stage.style.setProperty('--p',(p<0?0:p>1?1:p).toFixed(4));
+  }
+  // Un simple drapeau « une frame demandee » se bloque definitivement si la
+  // frame n'arrive jamais (onglet en arriere-plan, rendu suspendu) : la
+  // sequence resterait figee. Le minuteur sert de filet.
+  function demande(){
+    if(raf)return;
+    raf=requestAnimationFrame(up);
+    clearTimeout(filet);filet=setTimeout(function(){raf=0;up();},140);
+  }
+  window.addEventListener('scroll',demande,{passive:true});
+  window.addEventListener('resize',demande,{passive:true});
+  up();
+})();</scr`+`ipt>` : ''}
 <script>(function(){
   var H=${hoursJSON};var el=document.getElementById('shop-status');
   if(!el||!H.length){return;}
@@ -21889,7 +22016,16 @@ function vBoutiqueEditor() {
           <div class="bq-lock-tx"><strong>Réservé au plan Entreprise</strong><span>Clair, Crème et Nuit — fond, texte et surfaces accordés. Voir les plans →</span></div>
         </div>`;
       }
-      return `<div class="bq-sec-title">Palette complète <span class="bq-badge-ent">Entreprise</span></div>
+      return `<div class="bq-sec-title">Séquence d'ouverture <span class="bq-badge-ent">Entreprise</span></div>
+      <label class="bq-cine ${g('cinema', false) ? 'on' : ''}">
+        <input type="checkbox" ${g('cinema', false) ? 'checked' : ''} onchange="boutiqueEditSet('cinema', this.checked)">
+        <span class="bq-cine-tx">
+          <strong>Ouverture au défilement</strong>
+          <span>Un rideau se lève sur vos produits pendant que le visiteur fait défiler. Construit avec vos articles — aucune vidéo à fournir.</span>
+        </span>
+      </label>
+
+      <div class="bq-sec-title">Palette complète <span class="bq-badge-ent">Entreprise</span></div>
       <div class="bq-pals">
         ${_pals.map(p => `<button class="bq-pal ${_cur === p[0] ? 'sel' : ''}" onclick="boutiqueEditSet('palette','${p[0]}')" title="${p[4]}">
           <span class="bq-pal-sw" style="background:${p[2]}"><i style="background:${p[3]}"></i></span>
