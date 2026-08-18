@@ -75,6 +75,7 @@ def create_app():
     from routes.order_routes import order_bp
     from routes.team_routes import team_bp
     from routes.push_routes import push_bp
+    from routes.shopper_routes import shopper_bp
 
     app.register_blueprint(article_bp, url_prefix='/api/articles')
     app.register_blueprint(product_bp, url_prefix='/api/products')
@@ -90,6 +91,7 @@ def create_app():
     app.register_blueprint(order_bp, url_prefix='/api/orders')
     app.register_blueprint(team_bp, url_prefix='/api/team')
     app.register_blueprint(push_bp, url_prefix='/api/push')
+    app.register_blueprint(shopper_bp, url_prefix='/api/shoppers')
     
     
     @app.route('/api/health')
