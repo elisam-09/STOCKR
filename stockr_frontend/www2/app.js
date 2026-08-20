@@ -270,6 +270,123 @@ const API_BASE = (location.hostname === 'localhost' || location.hostname === '12
 // ── i18n ─────────────────────────────────────
 const LANGS = {
   fr: {
+    w9_quelMetier: "Quel est votre métier ?",
+    w9_baroMetier: "💡 BARO pour mon métier",
+    w9_concretement: "Concrètement, qu'est-ce que ça m'apporte ?",
+    w9_commentCaMarche2: "💡 Comment ça marche ?",
+    w9_nomCommerce: "Nom du commerce *",
+    w9_ignorerEtape: "Ignorer cette étape",
+    w9_toutEstPret: "Tout est prêt !",
+    w9_infosCompl: "Informations complémentaires",
+    w9_pasAssezDonnees: "Pas encore assez de données",
+    w9_pasDonnees: "Pas encore de données",
+    w9_enregistreVentes: "Enregistre des ventes pour que SOVA commence à prédire.",
+    w9_premieresVentes: "Enregistre tes premières ventes pour voir les analyses.",
+    w9_sovaQuelquesJours: "SOVA a besoin de quelques jours de ventes pour planifier.",
+    w9_continueVendre: "Continue à vendre, SOVA affinera ses conseils.",
+    w9_toutApprovisionne: "Tout est bien approvisionné. SOVA veille.",
+    w9_toutEquilibre: "Tout est équilibré 👌",
+    w9_planProduction: "Plan de production suggéré",
+    w9_aCommander: "À commander",
+    w9_reseauxSociaux: "Réseaux sociaux",
+    w9_reseauxPublics: "🔗 Réseaux sociaux publics",
+    w9_publierProduit: "Publier un produit",
+    w9_publieUnClic: "Publie un produit sur tes réseaux en un clic",
+    w9_programmerPub: "Programmer une publication",
+    w9_aucunePubProg: "Aucune publication programmee",
+    w9_studioCreation: "🎨 Studio création",
+    w9_editeurImage: "✏️ Éditeur image",
+    w9_editeurVideo: "🎞️ Éditeur vidéo",
+    w9_templatesVideo: "🎬 Templates Vidéo",
+    w9_templatesPros: "Templates pros, images &amp; vidéos modifiables",
+    w9_createurVisuel: "Créateur visuel",
+    w9_connectes: "Connectés",
+    w9_publie: "Publié",
+    w9_publiee: "Publiée",
+    w9_publiees: "Publiées",
+    w9_programmee: "Programmée",
+    w9_programmees: "Programmées",
+    w9_emailGroupe: "📧 Email groupé",
+    w9_smsGroupe: "📨 SMS groupé",
+    w9_nomCampagne: "Nom de la campagne",
+    w9_nomCourtCamp: "Nom court campagne (optionnel)",
+    w9_votreMessage: "✍️ Votre message",
+    w9_messageIcone: "✍️ Message",
+    w9_message: "Message",
+    w9_envoyes: "Envoyés",
+    w9_echecs: "Échecs",
+    w9_aucunClientEmail: "Aucun client avec email",
+    w9_aucunClientNum: "Aucun client avec numéro",
+    w9_envoyezUnParUn: "Envoyez votre message à vos clients, un par un",
+    w9_envoiBcc: "Envoi en copie cachée (BCC) via votre messagerie",
+    w9_gardezSmsCourt: "💡 Gardez le SMS court (~160 car. = 1 message).",
+    w9_configPasserelle: "Configurez une passerelle SMS",
+    w9_configurerSms: "⚙️ Configurer la passerelle SMS",
+    w9_ajouterClient: "+ Ajouter un client",
+    w9_annonceHaut: "📣 Annonce en haut du site",
+    w9_messageAffiche: "Message affiché sur votre boutique",
+    w9_visiteurMasquer: "Le visiteur peut masquer",
+    w9_emojiIcone: "Emoji / Icône",
+    w9_texteBouton: "Texte du bouton",
+    w9_declencheur: "Déclencheur",
+    w9_afficherUneFois: "Afficher une seule fois",
+    w9_parVisiteur: "Par visiteur (via cookie)",
+    w9_offreMiseAvant: "Offre mise en avant pour vos visiteurs",
+    w9_nomClient: "Nom du client",
+    w9_clientVerifie: "Client vérifié",
+    w9_badgeVerifie: "Badge \"✓ Vérifié\" visible",
+    w9_temoignageAff: "Témoignage affiché sur votre boutique",
+    w9_produitConcerne: "Produit concerné (optionnel)",
+    w9_codePromoAssoc: "Code promo associé (optionnel)",
+    w9_choisirProduit: "— Choisir un produit —",
+    w9_generalTout: "— Général (tout produit) —",
+    w9_sourceClic: "Source (d'où vient le clic)",
+    w9_sourceTrafic: "Source du trafic",
+    w9_identifierOrigine: "Pour identifier l'origine de vos clients",
+    w9_visibleImmediat: "Visible immédiatement sur votre boutique",
+    w9_visibleBoutique: "Visible sur votre boutique",
+    w9_visibleSurBout: "Visible sur la boutique",
+    w9_domainePerso: "🌐 Domaine personnalisé (pro)",
+    w9_votreDomaine: "Votre domaine",
+    w9_votreBoutique: "Votre boutique",
+    w9_boutiqueGratuite: "Votre boutique est accessible gratuitement sur baro.shop",
+    w9_personnalisezUrl: "Personnalisez votre URL",
+    w9_ajoutezDns: "Ajoutez ces enregistrements DNS chez votre registrar :",
+    w9_seoGoogle: "🔍 Référencement Google (SEO)",
+    w9_apercuGoogle: "APERÇU GOOGLE",
+    w9_motsCles: "Mots-clés (virgules)",
+    w9_partageSocial: "Affichée lors du partage WhatsApp/Facebook",
+    w9_seoBanniere: "Référencement Google · bannière promo",
+    w9_paramPixels: "Paramètres des pixels",
+    w9_codeJsPerso: "Code JavaScript personnalisé",
+    w9_evenementsCustom: "Pour événements custom et tracking avancé",
+    w9_apercuTempsReel: "Aperçu en temps réel",
+    w9_ferme: "Fermé",
+    w9_laissezVideFerme: "Laissez vide pour \"fermé\" — affichés sur votre boutique",
+    w9_delaiLivraison: "Délai de livraison",
+    w9_liensBasBoutique: "Liens affichés en bas de votre boutique",
+    w9_nomPack: "Nom du pack *",
+    w9_compositionPack: "Composition du pack",
+    w9_ajouterProduitPack: "+ Ajouter un produit au pack",
+    w9_prixCumule: "Prix cumulé des produits :",
+    w9_coutTotalMatiere: "Coût total (matière) :",
+    w9_packActif: "Pack actif (visible à la vente & boutique)",
+    w9_tousProduitsPack: "Tous les produits sont dans le pack ✓",
+    w9_ajoutezElements: "Ajoutez des éléments ci-dessous",
+    w9_quantiteStock: "Quantité en stock",
+    w9_role: "Rôle *",
+    w9_telephone: "Téléphone",
+    w9_seulAdminEquipe2: "🔒 Seul l'admin peut gérer l'équipe.",
+    w9_accesRefuse: "Accès refusé",
+    w9_numWhatsappIntl: "Numéro WhatsApp (format international)",
+    w9_nonVerifie: "⚠ Non vérifié",
+    w9_verifie: "✓ Vérifié",
+    w9_configure: "✓ Configuré",
+    w9_aucun: "Aucun",
+    w9_debut: "Début",
+    w9_reinit: "↺ Réinit.",
+    w9_toutReinit: "🗑 Tout réinitialiser",
+    w9_tout: "🚀 Tout",
     w8_zonesLivraison: "Zones de livraison",
     w8_livraisonDom: "🚚 Livraison à domicile",
     w8_retraitSurPlace: "🏬 Retrait sur place (Click & Collect)",
@@ -875,6 +992,123 @@ const LANGS = {
     version:'Version',
   },
   en: {
+    w9_quelMetier: "What is your line of business?",
+    w9_baroMetier: "💡 BARO for my business",
+    w9_concretement: "What does this actually give me?",
+    w9_commentCaMarche2: "💡 How does it work?",
+    w9_nomCommerce: "Business name *",
+    w9_ignorerEtape: "Skip this step",
+    w9_toutEstPret: "Everything is ready!",
+    w9_infosCompl: "Additional information",
+    w9_pasAssezDonnees: "Not enough data yet",
+    w9_pasDonnees: "No data yet",
+    w9_enregistreVentes: "Record sales so SOVA can start forecasting.",
+    w9_premieresVentes: "Record your first sales to see the analysis.",
+    w9_sovaQuelquesJours: "SOVA needs a few days of sales to plan ahead.",
+    w9_continueVendre: "Keep selling — SOVA will refine its advice.",
+    w9_toutApprovisionne: "Everything is well stocked. SOVA is watching.",
+    w9_toutEquilibre: "Everything is balanced 👌",
+    w9_planProduction: "Suggested production plan",
+    w9_aCommander: "To order",
+    w9_reseauxSociaux: "Social media",
+    w9_reseauxPublics: "🔗 Public social profiles",
+    w9_publierProduit: "Publish a product",
+    w9_publieUnClic: "Publish a product to your networks in one tap",
+    w9_programmerPub: "Schedule a post",
+    w9_aucunePubProg: "No scheduled posts",
+    w9_studioCreation: "🎨 Creative studio",
+    w9_editeurImage: "✏️ Image editor",
+    w9_editeurVideo: "🎞️ Video editor",
+    w9_templatesVideo: "🎬 Video templates",
+    w9_templatesPros: "Pro templates, editable images &amp; videos",
+    w9_createurVisuel: "Visual creator",
+    w9_connectes: "Connected",
+    w9_publie: "Published",
+    w9_publiee: "Published",
+    w9_publiees: "Published",
+    w9_programmee: "Scheduled",
+    w9_programmees: "Scheduled",
+    w9_emailGroupe: "📧 Bulk email",
+    w9_smsGroupe: "📨 Bulk SMS",
+    w9_nomCampagne: "Campaign name",
+    w9_nomCourtCamp: "Short campaign name (optional)",
+    w9_votreMessage: "✍️ Your message",
+    w9_messageIcone: "✍️ Message",
+    w9_message: "Message",
+    w9_envoyes: "Sent",
+    w9_echecs: "Failed",
+    w9_aucunClientEmail: "No customer with an email address",
+    w9_aucunClientNum: "No customer with a phone number",
+    w9_envoyezUnParUn: "Send your message to your customers, one by one",
+    w9_envoiBcc: "Sent as blind copy (BCC) through your mail app",
+    w9_gardezSmsCourt: "💡 Keep the SMS short (~160 chars = 1 message).",
+    w9_configPasserelle: "Set up an SMS gateway",
+    w9_configurerSms: "⚙️ Configure the SMS gateway",
+    w9_ajouterClient: "+ Add a customer",
+    w9_annonceHaut: "📣 Banner at the top of the site",
+    w9_messageAffiche: "Message shown on your shop",
+    w9_visiteurMasquer: "Visitors can dismiss it",
+    w9_emojiIcone: "Emoji / icon",
+    w9_texteBouton: "Button text",
+    w9_declencheur: "Trigger",
+    w9_afficherUneFois: "Show only once",
+    w9_parVisiteur: "Per visitor (via cookie)",
+    w9_offreMiseAvant: "Offer highlighted for your visitors",
+    w9_nomClient: "Customer name",
+    w9_clientVerifie: "Verified customer",
+    w9_badgeVerifie: "\"✓ Verified\" badge shown",
+    w9_temoignageAff: "Testimonial shown on your shop",
+    w9_produitConcerne: "Related product (optional)",
+    w9_codePromoAssoc: "Linked promo code (optional)",
+    w9_choisirProduit: "— Choose a product —",
+    w9_generalTout: "— General (any product) —",
+    w9_sourceClic: "Source (where the click comes from)",
+    w9_sourceTrafic: "Traffic source",
+    w9_identifierOrigine: "To identify where your customers come from",
+    w9_visibleImmediat: "Visible immediately on your shop",
+    w9_visibleBoutique: "Visible on your shop",
+    w9_visibleSurBout: "Visible on the shop",
+    w9_domainePerso: "🌐 Custom domain (pro)",
+    w9_votreDomaine: "Your domain",
+    w9_votreBoutique: "Your shop",
+    w9_boutiqueGratuite: "Your shop is available free of charge on baro.shop",
+    w9_personnalisezUrl: "Customise your URL",
+    w9_ajoutezDns: "Add these DNS records at your registrar:",
+    w9_seoGoogle: "🔍 Google search (SEO)",
+    w9_apercuGoogle: "GOOGLE PREVIEW",
+    w9_motsCles: "Keywords (comma-separated)",
+    w9_partageSocial: "Shown when shared on WhatsApp/Facebook",
+    w9_seoBanniere: "Google search · promo banner",
+    w9_paramPixels: "Pixel settings",
+    w9_codeJsPerso: "Custom JavaScript code",
+    w9_evenementsCustom: "For custom events and advanced tracking",
+    w9_apercuTempsReel: "Live preview",
+    w9_ferme: "Closed",
+    w9_laissezVideFerme: "Leave empty for \"closed\" — shown on your shop",
+    w9_delaiLivraison: "Delivery time",
+    w9_liensBasBoutique: "Links shown at the bottom of your shop",
+    w9_nomPack: "Bundle name *",
+    w9_compositionPack: "Bundle contents",
+    w9_ajouterProduitPack: "+ Add a product to the bundle",
+    w9_prixCumule: "Combined product price:",
+    w9_coutTotalMatiere: "Total cost (materials):",
+    w9_packActif: "Bundle active (visible in sales & shop)",
+    w9_tousProduitsPack: "All products are in the bundle ✓",
+    w9_ajoutezElements: "Add items below",
+    w9_quantiteStock: "Quantity in stock",
+    w9_role: "Role *",
+    w9_telephone: "Phone",
+    w9_seulAdminEquipe2: "🔒 Only the admin can manage the team.",
+    w9_accesRefuse: "Access denied",
+    w9_numWhatsappIntl: "WhatsApp number (international format)",
+    w9_nonVerifie: "⚠ Not verified",
+    w9_verifie: "✓ Verified",
+    w9_configure: "✓ Configured",
+    w9_aucun: "None",
+    w9_debut: "Start",
+    w9_reinit: "↺ Reset",
+    w9_toutReinit: "🗑 Reset everything",
+    w9_tout: "🚀 All",
     w8_zonesLivraison: "Delivery zones",
     w8_livraisonDom: "🚚 Home delivery",
     w8_retraitSurPlace: "🏬 Click & Collect",
@@ -8239,7 +8473,7 @@ function vSetupWizard() {
       ['mixed','🔀','Les deux','Je vends ET je fabrique (ex : boutique avec atelier)'],
     ];
     body = `
-      <div class="wiz-h1">Quel est votre métier ?</div>
+      <div class="wiz-h1">${t('w9_quelMetier')}</div>
       <div class="wiz-sub">BARO s'adapte à votre activité — vous pourrez changer plus tard.</div>
       <div class="wiz-choices">
         ${choices.map(([id,ic,ti,de]) => `
@@ -8253,9 +8487,9 @@ function vSetupWizard() {
       <button class="btn btn-primary wiz-cta" onclick="wizardNext()">Continuer</button>`;
   } else if (w.step === 1) {
     body = `
-      <div class="wiz-h1">Votre boutique</div>
+      <div class="wiz-h1">${t('w9_votreBoutique')}</div>
       <div class="wiz-sub">Apparaît sur vos reçus, factures et votre boutique en ligne.</div>
-      <label class="wiz-label">Nom du commerce *</label>
+      <label class="wiz-label">${t('w9_nomCommerce')}</label>
       <input id="wiz-biz" class="input" value="${(w.biz||'').replace(/"/g,'&quot;')}" placeholder="Ex : Boutique Awa">
       <label class="wiz-label">Ville</label>
       <input id="wiz-city" class="input" value="${(w.city||'').replace(/"/g,'&quot;')}" placeholder="Ex : Abidjan">
@@ -8271,15 +8505,15 @@ function vSetupWizard() {
         <div><label class="wiz-label">Prix de vente (${sym()})</label><input id="wiz-prod-price" class="input" type="number" inputmode="numeric" value="${p.price||''}" placeholder="15000"></div>
         <div><label class="wiz-label">Prix d'achat (${sym()})</label><input id="wiz-prod-cost" class="input" type="number" inputmode="numeric" value="${p.cost||''}" placeholder="12000"></div>
       </div>
-      <label class="wiz-label">Quantité en stock</label>
+      <label class="wiz-label">${t('w9_quantiteStock')}</label>
       <input id="wiz-prod-stock" class="input" type="number" inputmode="numeric" value="${p.stock||''}" placeholder="10">
       <button class="btn btn-primary wiz-cta" onclick="wizardNext()">Continuer</button>
-      <button class="btn btn-ghost wiz-skip2" onclick="wizardSkipStep()">Ignorer cette étape</button>`;
+      <button class="btn btn-ghost wiz-skip2" onclick="wizardSkipStep()">${t('w9_ignorerEtape')}</button>`;
   } else if (w.step === 3) {
     body = `
       <div class="wiz-h1">${IC.whatsapp} WhatsApp Business</div>
       <div class="wiz-sub">Pour envoyer reçus &amp; relances et recevoir les commandes de votre boutique en ligne.</div>
-      <label class="wiz-label">Numéro WhatsApp (format international)</label>
+      <label class="wiz-label">${t('w9_numWhatsappIntl')}</label>
       <input id="wiz-wa" class="input" value="${(w.wa||'').replace(/"/g,'&quot;')}" placeholder="+225 07 XX XX XX XX">
       <button class="btn btn-primary wiz-cta" onclick="wizardNext()">Continuer</button>
       <button class="btn btn-ghost wiz-skip2" onclick="wizardSkipStep()">Ignorer</button>`;
@@ -8293,7 +8527,7 @@ function vSetupWizard() {
     ].filter(Boolean);
     body = `
       <div class="wiz-done-ic">🎉</div>
-      <div class="wiz-h1" style="text-align:center">Tout est prêt !</div>
+      <div class="wiz-h1" style="text-align:center">${t('w9_toutEstPret')}</div>
       <div class="wiz-sub" style="text-align:center">Votre BARO est configuré. Vous pouvez tout modifier plus tard dans les Paramètres.</div>
       <div class="wiz-recap">
         ${recap.map(([ic,txt]) => `<div class="wiz-recap-row"><span class="wiz-recap-ic">${ic}</span><span>${String(txt).replace(/</g,'&lt;')}</span><span class="wiz-recap-ok">✓</span></div>`).join('')}
@@ -10935,7 +11169,7 @@ function vSova() {
         ${warningPreds.length>0?`<div class="sova-score-detail sova-warning-dot">${warningPreds.length} article${warningPreds.length>1?'s':''} à surveiller</div>`:''}
       </div>
     </div>
-    ${preds.length>0?sovaChartCoverage(preds):`<div class="sova-empty"><div class="sova-empty-title">SOVA observe</div><div class="sova-empty-sub">Enregistre des ventes pour que SOVA commence à prédire.</div></div>`}`;
+    ${preds.length>0?sovaChartCoverage(preds):`<div class="sova-empty"><div class="sova-empty-title">SOVA observe</div><div class="sova-empty-sub">${t('w9_enregistreVentes')}</div></div>`}`;
   }
 
   // ── Onglet IDÉES : recommandations business calculées sur les vraies ventes ──
@@ -11001,22 +11235,22 @@ function vSova() {
         sleeping.map(a=>({name:a.name, tag:`${a.daysSince>900?'jamais vendu':a.daysSince+'j sans vente'}`}))),
     ].filter(Boolean).join('');
 
-    return `<div class="sova-insights-intro">SOVA a analysé tes <strong>${sales.length} ${t('w4_ventesN')}</strong>. Voici tes opportunités :</div>${sections || `<div class="sova-empty"><div class="sova-empty-title">Tout est équilibré 👌</div><div class="sova-empty-sub">Continue à vendre, SOVA affinera ses conseils.</div></div>`}`;
+    return `<div class="sova-insights-intro">SOVA a analysé tes <strong>${sales.length} ${t('w4_ventesN')}</strong>. Voici tes opportunités :</div>${sections || `<div class="sova-empty"><div class="sova-empty-title">${t('w9_toutEquilibre')}</div><div class="sova-empty-sub">${t('w9_continueVendre')}</div></div>`}`;
   }
 
   function tabAlerts() {
-    if(alertPreds.length===0) return `<div class="sova-empty"><div class="sova-empty-title">Pas d'alerte</div><div class="sova-empty-sub">Tout est bien approvisionné. SOVA veille.</div></div>`;
-    return alertPreds.map((p,i)=>{const isCrit=p.status==='critical';const probColor=p.rupture_probability>=70?'#ef4444':p.rupture_probability>=40?'#f59e0b':'#22c55e';return `<div class="sova-alert-card ${isCrit?'sova-alert-critical':'sova-alert-warning'}" style="animation-delay:${i*0.05}s"><div class="sova-alert-top"><div><div class="sova-alert-name">${p.article_name}</div><div class="sova-alert-msg">${p.action?`${p.action.verb} — ${p.action.quantity} ${p.action.unit} avant le ${p.action.before}`:p.message||''}</div></div><div class="sova-alert-risk" style="color:${probColor}">${p.rupture_probability?.toFixed(0)||'—'}%</div></div><div class="sova-alert-stats"><div class="sova-alert-stat"><div class="sova-alert-stat-label">Stock</div><div class="sova-alert-stat-val">${p.current_stock} ${p.unit}</div></div>${p.days_remaining!=null?`<div class="sova-alert-stat"><div class="sova-alert-stat-label">Jours restants</div><div class="sova-alert-stat-val">${p.days_remaining}j</div></div>`:''}<div class="sova-alert-stat"><div class="sova-alert-stat-label">À commander</div><div class="sova-alert-stat-val">${p.order_quantity} ${p.unit}</div></div></div><div class="sova-conf-bar"><div class="sova-conf-fill" style="width:${p.confidence}%"></div></div></div>`;}).join('');
+    if(alertPreds.length===0) return `<div class="sova-empty"><div class="sova-empty-title">Pas d'alerte</div><div class="sova-empty-sub">${t('w9_toutApprovisionne')}</div></div>`;
+    return alertPreds.map((p,i)=>{const isCrit=p.status==='critical';const probColor=p.rupture_probability>=70?'#ef4444':p.rupture_probability>=40?'#f59e0b':'#22c55e';return `<div class="sova-alert-card ${isCrit?'sova-alert-critical':'sova-alert-warning'}" style="animation-delay:${i*0.05}s"><div class="sova-alert-top"><div><div class="sova-alert-name">${p.article_name}</div><div class="sova-alert-msg">${p.action?`${p.action.verb} — ${p.action.quantity} ${p.action.unit} avant le ${p.action.before}`:p.message||''}</div></div><div class="sova-alert-risk" style="color:${probColor}">${p.rupture_probability?.toFixed(0)||'—'}%</div></div><div class="sova-alert-stats"><div class="sova-alert-stat"><div class="sova-alert-stat-label">Stock</div><div class="sova-alert-stat-val">${p.current_stock} ${p.unit}</div></div>${p.days_remaining!=null?`<div class="sova-alert-stat"><div class="sova-alert-stat-label">Jours restants</div><div class="sova-alert-stat-val">${p.days_remaining}j</div></div>`:''}<div class="sova-alert-stat"><div class="sova-alert-stat-label">${t('w9_aCommander')}</div><div class="sova-alert-stat-val">${p.order_quantity} ${p.unit}</div></div></div><div class="sova-conf-bar"><div class="sova-conf-fill" style="width:${p.confidence}%"></div></div></div>`;}).join('');
   }
 
   function tabTomorrow() {
-    if(!tomorrow||!tomorrow.plan||tomorrow.plan.length===0) return `<div class="sova-empty"><div class="sova-empty-title">Pas encore assez de données</div><div class="sova-empty-sub">SOVA a besoin de quelques jours de ventes pour planifier.</div></div>`;
-    return `<div class="sova-tomorrow-header"><div class="sova-tomorrow-day">${tomorrow.weekday}</div><div class="sova-tomorrow-sub">Plan de production suggéré</div></div>${tomorrow.plan.map((item,i)=>`<div class="sova-plan-card" style="animation-delay:${i*0.06}s"><div class="sova-plan-top"><div class="sova-plan-name">${item.product_name}</div><div class="sova-plan-qty">${item.expected_qty} unités</div></div><div class="sova-plan-ingredients">${(item.ingredients||[]).map(ing=>`<div class="sova-plan-ing ${ing.sufficient?'':'sova-ing-warn'}"><span class="sova-ing-name">${ing.article_name}</span><span class="sova-ing-need">${ing.needed.toFixed(2)} ${ing.unit}</span><span class="sova-ing-avail">${ing.sufficient?'✓':'!'} ${ing.available.toFixed(2)} dispo</span></div>`).join('')}</div></div>`).join('')}`;
+    if(!tomorrow||!tomorrow.plan||tomorrow.plan.length===0) return `<div class="sova-empty"><div class="sova-empty-title">${t('w9_pasAssezDonnees')}</div><div class="sova-empty-sub">${t('w9_sovaQuelquesJours')}</div></div>`;
+    return `<div class="sova-tomorrow-header"><div class="sova-tomorrow-day">${tomorrow.weekday}</div><div class="sova-tomorrow-sub">${t('w9_planProduction')}</div></div>${tomorrow.plan.map((item,i)=>`<div class="sova-plan-card" style="animation-delay:${i*0.06}s"><div class="sova-plan-top"><div class="sova-plan-name">${item.product_name}</div><div class="sova-plan-qty">${item.expected_qty} unités</div></div><div class="sova-plan-ingredients">${(item.ingredients||[]).map(ing=>`<div class="sova-plan-ing ${ing.sufficient?'':'sova-ing-warn'}"><span class="sova-ing-name">${ing.article_name}</span><span class="sova-ing-need">${ing.needed.toFixed(2)} ${ing.unit}</span><span class="sova-ing-avail">${ing.sufficient?'✓':'!'} ${ing.available.toFixed(2)} dispo</span></div>`).join('')}</div></div>`).join('')}`;
   }
 
   function tabArticles() {
     const filtered=preds.filter(p=>p.status!=='no_data');
-    if(filtered.length===0) return `<div class="sova-empty"><div class="sova-empty-title">Pas encore de données</div><div class="sova-empty-sub">Enregistre tes premières ventes pour voir les analyses.</div></div>`;
+    if(filtered.length===0) return `<div class="sova-empty"><div class="sova-empty-title">${t('w9_pasDonnees')}</div><div class="sova-empty-sub">${t('w9_premieresVentes')}</div></div>`;
     const sel=S.sovaArticle?filtered.find(p=>p.article_id===S.sovaArticle)||filtered[0]:filtered[0];
     return `<div class="sova-art-selector">${filtered.map(p=>`<button class="sova-art-chip ${sel&&sel.article_id===p.article_id?'active':''}" onclick="S.sovaArticle=${p.article_id};render()"><span class="sova-art-dot sova-dot-${p.status}"></span>${p.article_name}</button>`).join('')}</div>${sel?`<div class="sova-detail-card"><div class="sova-detail-name">${sel.article_name}</div><div class="sova-detail-grid"><div class="sova-detail-kpi"><div class="sova-detail-kpi-val">${sel.current_stock} <span style="font-size:14px">${sel.unit}</span></div><div class="sova-detail-kpi-label">En stock</div></div><div class="sova-detail-kpi"><div class="sova-detail-kpi-val">${sel.daily_demand>0.01?sel.daily_demand?.toFixed(2):'—'}</div><div class="sova-detail-kpi-label">Demande/j</div></div><div class="sova-detail-kpi"><div class="sova-detail-kpi-val" style="color:${sel.trend_pct>0?'#22c55e':sel.trend_pct<0?'#ef4444':'#9ca3af'}">${sel.daily_demand>0.01&&sel.trend_pct!==0?(sel.trend_pct>=0?'+':'')+sel.trend_pct+'%':'—'}</div><div class="sova-detail-kpi-label">Tendance</div></div><div class="sova-detail-kpi"><div class="sova-detail-kpi-val">${sel.days_remaining!==null&&sel.daily_demand>0.01?sel.days_remaining+'j':'∞'}</div><div class="sova-detail-kpi-label">Jours restants</div></div></div>${sovaChartForecast(sel)}${sel.action?`<div class="sova-action-banner sova-action-${sel.action.urgency}"><div class="sova-action-verb">${sel.action.verb}</div><div class="sova-action-detail">${sel.action.quantity} ${sel.action.unit} · avant le ${sel.action.before}</div></div>`:''}</div>`:''}`;
   }
@@ -11922,7 +12156,7 @@ function vPackForm() {
   <div class="container">
     <div class="card">
       <div class="form-group">
-        <label class="form-label">Nom du pack *</label>
+        <label class="form-label">${t('w9_nomPack')}</label>
         <input class="input" type="text" placeholder="ex: Pack Famille, Pack Démarrage..." value="${(f.name||'').replace(/"/g,'&quot;')}" oninput="S.packForm.name=this.value">
       </div>
       <div class="form-group">
@@ -11931,7 +12165,7 @@ function vPackForm() {
       </div>
 
       <div class="form-group">
-        <label class="form-label">Composition du pack</label>
+        <label class="form-label">${t('w9_compositionPack')}</label>
         ${f.items.length === 0 ? `
         <div style="padding:14px;background:var(--gray-1);border:1px dashed var(--border);border-radius:var(--r-md);font-size:12px;color:var(--text-3);text-align:center;margin-bottom:10px">
           Aucun produit dans le pack. Ajoutez-en ci-dessous.
@@ -11959,12 +12193,12 @@ function vPackForm() {
         ${availProducts.length > 0 ? `
         <div style="display:flex;gap:6px">
           <select class="input" id="pack-product-sel" style="flex:1">
-            <option value="">+ Ajouter un produit au pack</option>
+            <option value="">${t('w9_ajouterProduitPack')}</option>
             ${availProducts.map(p => `<option value="${p.id}">${p.name} — ${fmt(p.price)} ${sym()}</option>`).join('')}
           </select>
           <button class="btn btn-primary" style="width:auto;padding:8px 16px" onclick="addPackComponent($('pack-product-sel').value)">+</button>
         </div>` : `
-        <div style="font-size:11px;color:var(--text-3);text-align:center;padding:8px">Tous les produits sont dans le pack ✓</div>`}
+        <div style="font-size:11px;color:var(--text-3);text-align:center;padding:8px">${t('w9_tousProduitsPack')}</div>`}
       </div>
 
       ${f.items.length > 0 ? `
@@ -11972,11 +12206,11 @@ function vPackForm() {
         <label class="form-label">Tarification</label>
         <div style="background:var(--gray-1);border:1px solid var(--border);border-radius:var(--r-md);padding:12px;margin-bottom:10px">
           <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">
-            <span>Prix cumulé des produits :</span>
+            <span>${t('w9_prixCumule')}</span>
             <strong>${fmt(orig)} ${sym()}</strong>
           </div>
           <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text-3)">
-            <span>Coût total (matière) :</span>
+            <span>${t('w9_coutTotalMatiere')}</span>
             <span>${fmt(cost)} ${sym()}</span>
           </div>
         </div>
@@ -12008,7 +12242,7 @@ function vPackForm() {
 
       <label style="display:flex;align-items:center;gap:8px;margin-bottom:14px;cursor:pointer">
         <input type="checkbox" ${f.active!==false?'checked':''} onchange="updatePackFormField('active',this.checked)" style="width:16px;height:16px;accent-color:var(--accent)">
-        <span style="font-size:13px;font-weight:600">Pack actif (visible à la vente & boutique)</span>
+        <span style="font-size:13px;font-weight:600">${t('w9_packActif')}</span>
       </label>
 
       <div style="display:flex;gap:8px">
@@ -18905,10 +19139,10 @@ function vAddTeamMember() {
     return `
     <div class="page-header"><div class="page-header-row">
       <button class="back-btn" onclick="nav('team')">${IC.left}</button>
-      <div class="page-title">Accès refusé</div>
+      <div class="page-title">${t('w9_accesRefuse')}</div>
     </div></div>
     <div class="container">
-      <div class="card" style="text-align:center;padding:40px 20px">🔒 Seul l'admin peut gérer l'équipe.</div>
+      <div class="card" style="text-align:center;padding:40px 20px">${t('w9_seulAdminEquipe2')}</div>
     </div>`;
   }
   const f = S.teamForm;
@@ -18931,11 +19165,11 @@ function vAddTeamMember() {
         <input class="input" type="email" placeholder="ex: fatou@stockr.com" value="${f.email || ''}" oninput="S.teamForm.email=this.value">
       </div>
       <div class="form-group">
-        <label class="form-label">Téléphone</label>
+        <label class="form-label">${t('w9_telephone')}</label>
         <input class="input" type="tel" placeholder="ex: +225 07 12 34 56 78" value="${f.phone || ''}" oninput="S.teamForm.phone=this.value">
       </div>
       <div class="form-group">
-        <label class="form-label">Rôle *</label>
+        <label class="form-label">${t('w9_role')}</label>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
           ${Object.entries(ROLE_LABELS).filter(([k]) => k !== 'admin').map(([k, v]) => `
             <button type="button" onclick="S.teamForm.role='${k}';render()" style="padding:12px 8px;border-radius:10px;border:2px solid ${f.role===k?v.color:'var(--border)'};background:${f.role===k?v.color+'15':'var(--card-bg)'};cursor:pointer;text-align:left;display:flex;align-items:center;gap:8px">
@@ -20205,8 +20439,8 @@ function vMetierGuide() {
   return `
   <div class="sub-hero" style="background:linear-gradient(135deg,#0EA5E9,#4F46E5)">
     <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('more')">${IC.left}</button>
-    <div class="sub-hero-title">💡 BARO pour mon métier</div>
-    <div class="sub-hero-sub">Concrètement, qu'est-ce que ça m'apporte ?</div>
+    <div class="sub-hero-title">${t('w9_baroMetier')}</div>
+    <div class="sub-hero-sub">${t('w9_concretement')}</div>
   </div>
   <div class="container">
     <div class="filter-row" style="margin-bottom:12px">
@@ -22820,7 +23054,7 @@ ${(BARO_API_OK && shopIdNum) ? `<div class="legal-ov" id="acc-ov" onclick="if(ev
         :'Chez '+BARO_SHOP+'.')+'</p>'
       +'<div class="acc-err" id="acc-err" hidden></div>'
       +(inscription?'<label class="acc-lb">Votre nom</label><input class="acc-in" id="acc-name" type="text" autocomplete="name" placeholder="ex : Awa Kouassi">':'')
-      +'<label class="acc-lb">Téléphone</label><input class="acc-in" id="acc-tel" type="tel" inputmode="tel" autocomplete="tel" placeholder="07 00 00 00 00">'
+      +'<label class="acc-lb">${t('w9_telephone')}</label><input class="acc-in" id="acc-tel" type="tel" inputmode="tel" autocomplete="tel" placeholder="07 00 00 00 00">'
       +'<label class="acc-lb">Mot de passe</label><input class="acc-in" id="acc-mdp" type="password" autocomplete="'+(inscription?'new-password':'current-password')+'" placeholder="6 caractères minimum">'
       +'<button class="acc-go" id="acc-submit" data-lbl="'+(inscription?'Créer mon compte':'Me connecter')+'" onclick="baroAccSend('+(inscription?'1':'0')+')">'+(inscription?'Créer mon compte':'Me connecter')+'</button>'
       +'<button class="acc-alt" onclick="baroAccMode('+(inscription?"'login'":"'register'")+')">'
@@ -22970,7 +23204,7 @@ ${showCartButton ? `
     <div class="ck-total"><span>Total</span><span id="ck-total">0 ${sym()}</span></div>
     <label>Votre nom</label>
     <input id="ck-name" type="text" placeholder="ex : Aminata Traoré">
-    <label>Téléphone <span class="ck-req">obligatoire</span></label>
+    <label>${t('w9_telephone')} <span class="ck-req">obligatoire</span></label>
     <input id="ck-phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="ex : 07 00 00 00 00">
     <div class="ck-phone-why">Le seul moyen pour ${esc(bc.name||S.session?.business||'la boutique')} de vous joindre pour confirmer.</div>
     ${_pickupEnabled && !_deliveryOff?`<label>Mode de réception</label>
@@ -23924,14 +24158,14 @@ function vBoutiqueDomain() {
       <button class="back-btn-dark" onclick="nav('boutique')">${IC.left}</button>
       <div style="flex:1">
         <div class="sub-hero-title">Nom de domaine</div>
-        <div class="sub-hero-sub">Personnalisez votre URL</div>
+        <div class="sub-hero-sub">${t('w9_personnalisezUrl')}</div>
       </div>
     </div>
   </div>
   <div class="container">
     <div class="card" style="margin-bottom:10px">
       <div class="card-title">🔗 URL BARO (gratuite)</div>
-      <div style="font-size:11px;color:var(--text-3);margin-bottom:8px">Votre boutique est accessible gratuitement sur baro.shop</div>
+      <div style="font-size:11px;color:var(--text-3);margin-bottom:8px">${t('w9_boutiqueGratuite')}</div>
       <div class="form-group">
         <label class="form-label">Nom de sous-domaine</label>
         <div style="display:flex;gap:6px;align-items:center">
@@ -23947,10 +24181,10 @@ function vBoutiqueDomain() {
     </div>
 
     <div class="card" style="margin-bottom:10px;border:2px solid var(--accent);background:var(--accent-light)">
-      <div class="card-title">🌐 Domaine personnalisé (pro)</div>
+      <div class="card-title">${t('w9_domainePerso')}</div>
       <div style="font-size:12px;color:var(--text-2);margin-bottom:12px">Instaurez la confiance avec votre propre nom de domaine (ex: <strong>maboutique.com</strong>). Un domaine professionnel permet aux clients de vous trouver plus facilement.</div>
       <div class="form-group">
-        <label class="form-label">Votre domaine</label>
+        <label class="form-label">${t('w9_votreDomaine')}</label>
         <input class="input" value="${bc.customDomain||''}" placeholder="maboutique.com" oninput="updateBoutiqueConfig('customDomain',this.value.toLowerCase().trim())">
       </div>
       ${bc.customDomain ? `
@@ -23959,7 +24193,7 @@ function vBoutiqueDomain() {
           <strong style="font-size:14px">${bc.customDomain}</strong>
           ${verified ? '<span style="background:#10B98120;color:#10B981;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700">✓ Vérifié</span>' : '<span style="background:#F59E0B20;color:#F59E0B;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700">⚠ Non vérifié</span>'}
         </div>
-        <div style="font-size:11px;color:var(--text-3);margin-bottom:8px;font-weight:600">Ajoutez ces enregistrements DNS chez votre registrar :</div>
+        <div style="font-size:11px;color:var(--text-3);margin-bottom:8px;font-weight:600">${t('w9_ajoutezDns')}</div>
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden">
           <div style="display:grid;grid-template-columns:60px 1fr 1fr 32px;padding:8px 10px;background:var(--gray-1);font-size:10px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:1px">
             <div>Type</div><div>Nom</div><div>Valeur</div><div></div>
@@ -23981,7 +24215,7 @@ function vBoutiqueDomain() {
     </div>
 
     <div class="card" style="font-size:11px;color:var(--text-3);line-height:1.6">
-      <strong style="color:var(--text-1);display:block;margin-bottom:6px">💡 Comment ça marche ?</strong>
+      <strong style="color:var(--text-1);display:block;margin-bottom:6px">${t('w9_commentCaMarche2')}</strong>
       1. Achetez votre nom de domaine chez un registrar (Namecheap, OVH, GoDaddy...)<br>
       2. Configurez les enregistrements DNS ci-dessus<br>
       3. Cliquez sur "Vérifier" — la propagation peut prendre 24-48h<br>
@@ -24021,7 +24255,7 @@ function vBoutiquePixels() {
     <div class="page-header-row" style="margin-bottom:10px">
       <button class="back-btn-dark" onclick="nav('boutique')">${IC.left}</button>
       <div style="flex:1">
-        <div class="sub-hero-title">Paramètres des pixels</div>
+        <div class="sub-hero-title">${t('w9_paramPixels')}</div>
         <div class="sub-hero-sub">${activeCount>0?activeCount+' pixel'+(activeCount>1?'s':'')+' actif'+(activeCount>1?'s':''):'Suivez vos conversions publicitaires'}</div>
       </div>
     </div>
@@ -24046,7 +24280,7 @@ function vBoutiquePixels() {
       <div class="form-group" style="margin-bottom:0">
         <label class="form-label" style="font-size:11px">${p.name}</label>
         <input class="input" value="${(px[p.key]||'').replace(/"/g,'&quot;')}" placeholder="${p.placeholder}" oninput="updatePixelConfig('${p.key}',this.value)" style="font-family:monospace;font-size:12px">
-        ${px[p.key] ? `<div style="font-size:10px;color:#10B981;margin-top:4px;font-weight:600">✓ Configuré</div>` : ''}
+        ${px[p.key] ? `<div style="font-size:10px;color:#10B981;margin-top:4px;font-weight:600">${t('w9_configure')}</div>` : ''}
       </div>` : ''}
     </div>`;}).join('')}
 
@@ -24055,8 +24289,8 @@ function vBoutiquePixels() {
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:${px.customJs_enabled?'10px':'0'}">
         <div style="width:36px;height:36px;border-radius:10px;background:#FCD34D15;color:#92400E;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0">JS</div>
         <div style="flex:1;min-width:0">
-          <div style="font-weight:700;font-size:13px;color:var(--text-1)">Code JavaScript personnalisé</div>
-          <div style="font-size:10px;color:var(--text-3)">Pour événements custom et tracking avancé</div>
+          <div style="font-weight:700;font-size:13px;color:var(--text-1)">${t('w9_codeJsPerso')}</div>
+          <div style="font-size:10px;color:var(--text-3)">${t('w9_evenementsCustom')}</div>
         </div>
         <label class="toggle-switch" style="flex-shrink:0">
           <input type="checkbox" ${px.customJs_enabled?'checked':''} onchange="updatePixelConfig('customJs_enabled',this.checked);render()">
@@ -24065,7 +24299,7 @@ function vBoutiquePixels() {
       </div>
       ${px.customJs_enabled ? `
       <div class="form-group" style="margin-bottom:0">
-        <label class="form-label" style="font-size:11px">Code JavaScript personnalisé</label>
+        <label class="form-label" style="font-size:11px">${t('w9_codeJsPerso')}</label>
         <textarea class="input" rows="8" style="font-family:'SF Mono',Consolas,monospace;font-size:11px;line-height:1.5" placeholder="/* Votre JS personnalisé — ex: ga('send','event','boutique','view'); */" oninput="updatePixelConfig('customJs',this.value)">${px.customJs||''}</textarea>
         <div style="font-size:10px;color:var(--warning);margin-top:6px">⚠ Injecté avant &lt;/body&gt; — n'insérez que du code de confiance</div>
       </div>` : ''}
@@ -24074,7 +24308,7 @@ function vBoutiquePixels() {
     <!-- ── Actions bas de page ── -->
     <div style="display:flex;gap:8px;margin-top:14px">
       <button class="btn btn-primary" style="flex:1" onclick="savePixelConfig()">${IC.check} Enregistrer</button>
-      <button class="btn btn-ghost" onclick="resetPixelConfig()" style="color:var(--danger)">🗑 Tout réinitialiser</button>
+      <button class="btn btn-ghost" onclick="resetPixelConfig()" style="color:var(--danger)">${t('w9_toutReinit')}</button>
     </div>
 
     <div class="card" style="background:#EFF6FF;border-color:#3B82F640;margin-top:14px;font-size:11px;color:#1E40AF;line-height:1.6">
@@ -24223,13 +24457,13 @@ function vBoutiqueSEO() {
       <button class="back-btn-dark" onclick="nav('boutique')">${IC.left}</button>
       <div style="flex:1">
         <div class="sub-hero-title">🔍 SEO & Annonces</div>
-        <div class="sub-hero-sub">Référencement Google · bannière promo</div>
+        <div class="sub-hero-sub">${t('w9_seoBanniere')}</div>
       </div>
     </div>
   </div>
   <div class="container">
     <div class="card" style="margin-bottom:10px">
-      <div class="card-title">📣 Annonce en haut du site</div>
+      <div class="card-title">${t('w9_annonceHaut')}</div>
       <div style="font-size:12px;color:var(--text-3);margin-bottom:10px">Affichée sur toutes les pages (ex. "Livraison gratuite dès 10 000 ${sym()} !")</div>
       <div class="form-group">
         <label class="form-label">Texte de l'annonce</label>
@@ -24244,7 +24478,7 @@ function vBoutiqueSEO() {
     </div>
 
     <div class="card" style="margin-bottom:10px">
-      <div class="card-title">🔍 Référencement Google (SEO)</div>
+      <div class="card-title">${t('w9_seoGoogle')}</div>
       <div class="form-group">
         <label class="form-label">Titre SEO (55-60 car.)</label>
         <input class="input" value="${(bc.seoTitle||'').replace(/"/g,'&quot;')}" oninput="updateBoutiqueConfig('seoTitle',this.value)" placeholder="Ex: ${bc.name||'Ma Boutique'} — Livraison Abidjan">
@@ -24256,17 +24490,17 @@ function vBoutiqueSEO() {
         <div style="font-size:10px;color:${(bc.seoDescription||'').length>160?'var(--danger)':'var(--text-3)'};margin-top:2px">${(bc.seoDescription||'').length}/160</div>
       </div>
       <div class="form-group">
-        <label class="form-label">Mots-clés (virgules)</label>
+        <label class="form-label">${t('w9_motsCles')}</label>
         <input class="input" value="${(bc.seoKeywords||'').replace(/"/g,'&quot;')}" oninput="updateBoutiqueConfig('seoKeywords',this.value)" placeholder="boutique abidjan, livraison côte ivoire...">
       </div>
       <div class="form-group">
         <label class="form-label">Image de partage (URL)</label>
         <input class="input" value="${(bc.ogImage||'').replace(/"/g,'&quot;')}" oninput="updateBoutiqueConfig('ogImage',this.value)" placeholder="https://... (1200x630px recommandé)">
-        <div style="font-size:10px;color:var(--text-3);margin-top:2px">Affichée lors du partage WhatsApp/Facebook</div>
+        <div style="font-size:10px;color:var(--text-3);margin-top:2px">${t('w9_partageSocial')}</div>
       </div>
 
       <div style="margin-top:14px;padding:12px;background:var(--gray-1);border-radius:8px">
-        <div style="font-size:10px;color:var(--text-3);margin-bottom:6px">APERÇU GOOGLE</div>
+        <div style="font-size:10px;color:var(--text-3);margin-bottom:6px">${t('w9_apercuGoogle')}</div>
         <div style="color:#1a0dab;font-size:16px;font-weight:400">${bc.seoTitle || bc.name || 'Ma Boutique'}</div>
         <div style="color:#006621;font-size:12px">${bc.publicUrl || (bc.domain||'maboutique')+'.stockr.shop'}</div>
         <div style="color:#4d5156;font-size:12px;line-height:1.4;margin-top:2px">${bc.seoDescription || bc.description || 'Description de votre boutique...'}</div>
@@ -24274,8 +24508,8 @@ function vBoutiqueSEO() {
     </div>
 
     <div class="card" style="margin-bottom:14px">
-      <div class="card-title">🔗 Réseaux sociaux publics</div>
-      <div style="font-size:12px;color:var(--text-3);margin-bottom:10px">Liens affichés en bas de votre boutique</div>
+      <div class="card-title">${t('w9_reseauxPublics')}</div>
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:10px">${t('w9_liensBasBoutique')}</div>
       ${[
         {k:'whatsapp',  icon:'💬', label:'WhatsApp',  ph:'+225 07 XX XX XX XX'},
         {k:'facebook',  icon:'📘', label:'Facebook',  ph:'facebook.com/...'},
@@ -24321,12 +24555,12 @@ function vBoutiqueHours() {
   <div class="container">
     <div class="card" style="margin-bottom:10px">
       <div class="card-title">🕒 Horaires d'ouverture</div>
-      <div style="font-size:12px;color:var(--text-3);margin-bottom:10px">Laissez vide pour "fermé" — affichés sur votre boutique</div>
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:10px">${t('w9_laissezVideFerme')}</div>
       ${hours.map((h,i) => `
       <div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)">
         <div style="width:80px;font-weight:600;font-size:13px">${h.day}</div>
         ${h.closed ? `
-          <div style="flex:1;color:var(--text-3);font-size:12px;font-style:italic">Fermé</div>
+          <div style="flex:1;color:var(--text-3);font-size:12px;font-style:italic">${t('w9_ferme')}</div>
           <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" onclick="toggleHourClosed(${i})">Ouvrir</button>
         ` : `
           <input type="time" class="input" value="${h.open||''}" oninput="updateHour(${i},'open',this.value)" style="width:90px;padding:6px 8px">
@@ -24340,7 +24574,7 @@ function vBoutiqueHours() {
     <div class="card" style="margin-bottom:10px">
       <div class="card-title">🚚 Livraison</div>
       <div class="form-group">
-        <label class="form-label">Délai de livraison</label>
+        <label class="form-label">${t('w9_delaiLivraison')}</label>
         <input class="input" value="${(bc.deliveryTime||'').replace(/"/g,'&quot;')}" oninput="updateBoutiqueConfig('deliveryTime',this.value)" placeholder="Ex: 24-48h, 2-3 jours">
       </div>
       <div class="form-group">
@@ -24348,7 +24582,7 @@ function vBoutiqueHours() {
         <input class="input" type="number" value="${bc.freeDeliveryFrom||0}" oninput="updateBoutiqueConfig('freeDeliveryFrom',parseFloat(this.value)||0)" placeholder="0 = désactivé">
       </div>
       <div class="form-group">
-        <label class="form-label">Informations complémentaires</label>
+        <label class="form-label">${t('w9_infosCompl')}</label>
         <textarea class="input" rows="3" oninput="updateBoutiqueConfig('deliveryInfo',this.value)" placeholder="Ex: Livraison le lendemain avant 18h pour toute commande avant 14h...">${bc.deliveryInfo||''}</textarea>
       </div>
     </div>
@@ -25899,7 +26133,7 @@ function vBannerForm() {
       <button class="back-btn-dark" onclick="S.editingBannerId=null;nav('marketing')">${IC.left}</button>
       <div style="flex:1">
         <div class="sub-hero-title">${isEdit?'Modifier bannière':'Nouvelle bannière'}</div>
-        <div class="sub-hero-sub">Message affiché sur votre boutique</div>
+        <div class="sub-hero-sub">${t('w9_messageAffiche')}</div>
       </div>
     </div>
   </div>
@@ -25910,7 +26144,7 @@ function vBannerForm() {
         <div id="bn-prev-text" style="flex:1">${draft.text}</div>
         ${draft.linkText?`<span id="bn-prev-link" style="background:rgba(255,255,255,0.25);padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700">${draft.linkText}</span>`:''}
       </div>
-      <div style="padding:8px 14px;font-size:10px;color:var(--text-3);background:var(--gray-1)">Aperçu en temps réel</div>
+      <div style="padding:8px 14px;font-size:10px;color:var(--text-3);background:var(--gray-1)">${t('w9_apercuTempsReel')}</div>
     </div>
 
     <div class="card" style="margin-bottom:10px">
@@ -25941,7 +26175,7 @@ function vBannerForm() {
     <div class="card" style="margin-bottom:10px">
       <div class="card-title">Action (optionnel)</div>
       <div class="form-group">
-        <label class="form-label">Texte du bouton</label>
+        <label class="form-label">${t('w9_texteBouton')}</label>
         <input class="input" id="bn-linktext" value="${draft.linkText||''}" placeholder="Voir les offres">
       </div>
       <div class="form-group">
@@ -25966,15 +26200,15 @@ function vBannerForm() {
         </div>
       </div>
       <div style="display:flex;gap:8px">
-        <div class="form-group" style="flex:1"><label class="form-label">Début</label><input class="input" type="date" id="bn-start" value="${draft.startDate||today}"></div>
+        <div class="form-group" style="flex:1"><label class="form-label">${t('w9_debut')}</label><input class="input" type="date" id="bn-start" value="${draft.startDate||today}"></div>
         <div class="form-group" style="flex:1"><label class="form-label">Fin</label><input class="input" type="date" id="bn-end" value="${draft.endDate||plus30}"></div>
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px">
-        <div><div style="font-weight:700;font-size:13px">Bouton fermer</div><div style="font-size:11px;color:var(--text-3)">Le visiteur peut masquer</div></div>
+        <div><div style="font-weight:700;font-size:13px">Bouton fermer</div><div style="font-size:11px;color:var(--text-3)">${t('w9_visiteurMasquer')}</div></div>
         <label class="toggle-switch"><input type="checkbox" id="bn-dismiss" ${draft.dismissible!==false?'checked':''}><span class="toggle-track"></span></label>
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px">
-        <div><div style="font-weight:700;font-size:13px">Activer</div><div style="font-size:11px;color:var(--text-3)">Visible immédiatement sur votre boutique</div></div>
+        <div><div style="font-weight:700;font-size:13px">Activer</div><div style="font-size:11px;color:var(--text-3)">${t('w9_visibleImmediat')}</div></div>
         <label class="toggle-switch"><input type="checkbox" id="bn-active" ${draft.active!==false?'checked':''}><span class="toggle-track"></span></label>
       </div>
     </div>
@@ -26058,7 +26292,7 @@ function vPopupForm() {
       <button class="back-btn-dark" onclick="S.editingPopupId=null;nav('marketing')">${IC.left}</button>
       <div style="flex:1">
         <div class="sub-hero-title">${isEdit?'Modifier popup':'Nouveau popup'}</div>
-        <div class="sub-hero-sub">Offre mise en avant pour vos visiteurs</div>
+        <div class="sub-hero-sub">${t('w9_offreMiseAvant')}</div>
       </div>
     </div>
   </div>
@@ -26071,13 +26305,13 @@ function vPopupForm() {
         ${draft.promoCode?`<div id="pp-prev-code" style="background:rgba(255,255,255,0.25);padding:8px 14px;border-radius:8px;font-family:monospace;font-weight:800;letter-spacing:2px;display:inline-block;margin-bottom:10px">${draft.promoCode}</div>`:''}
         <div><button style="background:rgba(255,255,255,0.25);color:${draft.textColor};padding:10px 24px;border:none;border-radius:8px;font-weight:700;cursor:pointer;backdrop-filter:blur(4px)" id="pp-prev-cta">${draft.ctaText}</button></div>
       </div>
-      <div style="padding:8px 14px;font-size:10px;color:var(--text-3);background:var(--gray-1)">Aperçu en temps réel</div>
+      <div style="padding:8px 14px;font-size:10px;color:var(--text-3);background:var(--gray-1)">${t('w9_apercuTempsReel')}</div>
     </div>
 
     <div class="card" style="margin-bottom:10px">
       <div class="card-title">Contenu</div>
       <div class="form-group">
-        <label class="form-label">Emoji / Icône</label>
+        <label class="form-label">${t('w9_emojiIcone')}</label>
         <input class="input" id="pp-emoji" value="${draft.emoji||''}" oninput="$('pp-prev-emoji').textContent=this.value" style="font-size:20px;text-align:center">
         <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:6px">
           ${['🎉','🎁','🔥','💥','⭐','💰','🎊','✨','⚡','🛍️','🏷️','💎'].map(e => `<button class="btn btn-ghost" style="font-size:18px;padding:4px 8px" onclick="$('pp-emoji').value='${e}';$('pp-prev-emoji').textContent='${e}'">${e}</button>`).join('')}
@@ -26088,13 +26322,13 @@ function vPopupForm() {
         <input class="input" id="pp-title" value="${draft.title||''}" oninput="$('pp-prev-title').textContent=this.value" placeholder="-10% sur votre première commande !">
       </div>
       <div class="form-group">
-        <label class="form-label">Message</label>
+        <label class="form-label">${t('w9_message')}</label>
         <textarea class="input" id="pp-message" rows="3" oninput="$('pp-prev-message').textContent=this.value" placeholder="Utilisez le code BIENVENUE10...">${draft.message||''}</textarea>
       </div>
     </div>
 
     <div class="card" style="margin-bottom:10px">
-      <div class="card-title">Déclencheur</div>
+      <div class="card-title">${t('w9_declencheur')}</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
         ${[
           {id:'entry',label:"À l'entrée",ico:'👋',desc:"Dès l'ouverture"},
@@ -26118,13 +26352,13 @@ function vPopupForm() {
     <div class="card" style="margin-bottom:10px">
       <div class="card-title">Action</div>
       <div class="form-group">
-        <label class="form-label">Texte du bouton</label>
+        <label class="form-label">${t('w9_texteBouton')}</label>
         <input class="input" id="pp-cta-text" value="${draft.ctaText||''}" oninput="$('pp-prev-cta').textContent=this.value" placeholder="En profiter">
       </div>
       <div class="form-group">
-        <label class="form-label">Code promo associé (optionnel)</label>
+        <label class="form-label">${t('w9_codePromoAssoc')}</label>
         <select class="input" id="pp-promo">
-          <option value="">Aucun</option>
+          <option value="">${t('w9_aucun')}</option>
           ${promos.map(pr => `<option value="${pr.code}" ${draft.promoCode===pr.code?'selected':''}>${pr.code} — ${pr.name}</option>`).join('')}
         </select>
       </div>
@@ -26146,15 +26380,15 @@ function vPopupForm() {
 
     <div class="card" style="margin-bottom:10px">
       <div style="display:flex;gap:8px">
-        <div class="form-group" style="flex:1"><label class="form-label">Début</label><input class="input" type="date" id="pp-start" value="${draft.startDate||today}"></div>
+        <div class="form-group" style="flex:1"><label class="form-label">${t('w9_debut')}</label><input class="input" type="date" id="pp-start" value="${draft.startDate||today}"></div>
         <div class="form-group" style="flex:1"><label class="form-label">Fin</label><input class="input" type="date" id="pp-end" value="${draft.endDate||plus30}"></div>
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px">
-        <div><div style="font-weight:700;font-size:13px">Afficher une seule fois</div><div style="font-size:11px;color:var(--text-3)">Par visiteur (via cookie)</div></div>
+        <div><div style="font-weight:700;font-size:13px">${t('w9_afficherUneFois')}</div><div style="font-size:11px;color:var(--text-3)">${t('w9_parVisiteur')}</div></div>
         <label class="toggle-switch"><input type="checkbox" id="pp-once" ${draft.showOnce!==false?'checked':''}><span class="toggle-track"></span></label>
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px">
-        <div><div style="font-weight:700;font-size:13px">Activer</div><div style="font-size:11px;color:var(--text-3)">Visible sur votre boutique</div></div>
+        <div><div style="font-weight:700;font-size:13px">Activer</div><div style="font-size:11px;color:var(--text-3)">${t('w9_visibleBoutique')}</div></div>
         <label class="toggle-switch"><input type="checkbox" id="pp-active" ${draft.active!==false?'checked':''}><span class="toggle-track"></span></label>
       </div>
     </div>
@@ -26238,14 +26472,14 @@ function vReviewForm() {
       <button class="back-btn-dark" onclick="S.editingReviewId=null;nav('marketing')">${IC.left}</button>
       <div style="flex:1">
         <div class="sub-hero-title">${isEdit?'Modifier avis':'Nouvel avis client'}</div>
-        <div class="sub-hero-sub">Témoignage affiché sur votre boutique</div>
+        <div class="sub-hero-sub">${t('w9_temoignageAff')}</div>
       </div>
     </div>
   </div>
   <div class="container">
     <div class="card" style="margin-bottom:10px">
       <div class="form-group">
-        <label class="form-label">Nom du client <span style="color:var(--danger)">*</span></label>
+        <label class="form-label">${t('w9_nomClient')} <span style="color:var(--danger)">*</span></label>
         <input class="input" id="rv-name" value="${draft.clientName||''}" placeholder="Ex: Aminata K.">
       </div>
       <div class="form-group">
@@ -26260,18 +26494,18 @@ function vReviewForm() {
         <textarea class="input" id="rv-comment" rows="4" placeholder="Excellent service, livraison rapide...">${draft.comment||''}</textarea>
       </div>
       <div class="form-group">
-        <label class="form-label">Produit concerné (optionnel)</label>
+        <label class="form-label">${t('w9_produitConcerne')}</label>
         <select class="input" id="rv-product">
-          <option value="">— Général (tout produit) —</option>
+          <option value="">${t('w9_generalTout')}</option>
           ${(S.products||[]).map(p => `<option value="${p.id}" ${draft.productId==p.id?'selected':''}>${p.name}</option>`).join('')}
         </select>
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px">
-        <div><div style="font-weight:700;font-size:13px">Client vérifié</div><div style="font-size:11px;color:var(--text-3)">Badge "✓ Vérifié" visible</div></div>
+        <div><div style="font-weight:700;font-size:13px">${t('w9_clientVerifie')}</div><div style="font-size:11px;color:var(--text-3)">${t('w9_badgeVerifie')}</div></div>
         <label class="toggle-switch"><input type="checkbox" id="rv-verified" ${draft.verified?'checked':''}><span class="toggle-track"></span></label>
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px">
-        <div><div style="font-weight:700;font-size:13px">Publié</div><div style="font-size:11px;color:var(--text-3)">Visible sur la boutique</div></div>
+        <div><div style="font-weight:700;font-size:13px">${t('w9_publie')}</div><div style="font-size:11px;color:var(--text-3)">${t('w9_visibleSurBout')}</div></div>
         <label class="toggle-switch"><input type="checkbox" id="rv-approved" ${draft.approved!==false?'checked':''}><span class="toggle-track"></span></label>
       </div>
     </div>
@@ -26349,16 +26583,17 @@ function editTrackingLink(id) {
 }
 function vTrackingForm() {
   const isEdit = !!S.editingTrackingId;
-  const t = isEdit ? S.trackingLinks.find(x => x.id === S.editingTrackingId) : null;
+  // Renomme : « t » masquait la fonction de traduction globale t().
+  const lien = isEdit ? S.trackingLinks.find(x => x.id === S.editingTrackingId) : null;
   const domain = S.boutiqueConfig?.domain || 'maboutique';
-  const draft = t || { name:'', destUrl:`https://${domain}.baro.shop/`, source:'facebook', medium:'social', campaign:'', clicks:0, active:true };
+  const draft = lien || { name:'', destUrl:`https://${domain}.baro.shop/`, source:'facebook', medium:'social', campaign:'', clicks:0, active:true };
   return `
   <div class="sub-hero">
     <div class="page-header-row" style="margin-bottom:10px">
       <button class="back-btn-dark" onclick="S.editingTrackingId=null;nav('marketing')">${IC.left}</button>
       <div style="flex:1">
         <div class="sub-hero-title">${isEdit?'Modifier lien':'Nouveau lien tracé'}</div>
-        <div class="sub-hero-sub">Pour identifier l'origine de vos clients</div>
+        <div class="sub-hero-sub">${t('w9_identifierOrigine')}</div>
       </div>
     </div>
   </div>
@@ -26366,7 +26601,7 @@ function vTrackingForm() {
     <div class="card" style="margin-bottom:10px">
       <div class="card-title">Informations</div>
       <div class="form-group">
-        <label class="form-label">Nom de la campagne <span style="color:var(--danger)">*</span></label>
+        <label class="form-label">${t('w9_nomCampagne')} <span style="color:var(--danger)">*</span></label>
         <input class="input" id="tk-name" value="${draft.name||''}" placeholder="Ex: Pub Facebook Soldes Janvier">
       </div>
       <div class="form-group">
@@ -26375,9 +26610,9 @@ function vTrackingForm() {
       </div>
     </div>
     <div class="card" style="margin-bottom:10px">
-      <div class="card-title">Source du trafic</div>
+      <div class="card-title">${t('w9_sourceTrafic')}</div>
       <div class="form-group">
-        <label class="form-label">Source (d'où vient le clic)</label>
+        <label class="form-label">${t('w9_sourceClic')}</label>
         <select class="input" id="tk-source">
           ${['facebook','instagram','tiktok','whatsapp','twitter','google','youtube','email','sms','affiche','autre'].map(s => `<option value="${s}" ${draft.source===s?'selected':''}>${s}</option>`).join('')}
         </select>
@@ -26389,7 +26624,7 @@ function vTrackingForm() {
         </select>
       </div>
       <div class="form-group">
-        <label class="form-label">Nom court campagne (optionnel)</label>
+        <label class="form-label">${t('w9_nomCourtCamp')}</label>
         <input class="input" id="tk-campaign" value="${draft.campaign||''}" placeholder="soldes_janvier">
       </div>
     </div>
@@ -27002,7 +27237,7 @@ function vCreator() {
   <div class="ce-wrap">
     <div class="ce-topbar">
       <button class="ce-top-btn" onclick="nav('social-media')">${IC.left}</button>
-      <div class="ce-title">Créateur visuel</div>
+      <div class="ce-title">${t('w9_createurVisuel')}</div>
       <button class="ce-top-btn ce-export" onclick="_ceExport()">${IC.download}</button>
     </div>
 
@@ -27013,7 +27248,7 @@ function vCreator() {
     <div class="ce-stage-wrap">
       <div class="ce-stage" id="ce-stage" style="width:${SW}px;height:${SH}px;${_ceBgStyle(cr.bg)}" onpointerdown="_ceStageTap(event)">
         ${cr.elements.map(e => _ceEl(e, SW, SH, e.id===cr.selected)).join('')}
-        ${cr.elements.length===0 ? `<div class="ce-empty">Ajoutez des éléments ci-dessous<br>puis glissez-les pour les placer</div>` : ''}
+        ${cr.elements.length===0 ? `<div class="ce-empty">${t('w9_ajoutezElements')}<br>puis glissez-les pour les placer</div>` : ''}
       </div>
     </div>
 
@@ -27052,7 +27287,7 @@ function _cePropsPanel(el) {
       </div>
       <div class="ce-row"><span class="ce-row-l">Couleur</span><div class="ce-swatches">${swatches.map(c=>`<button class="ce-sw" style="background:${c}" onclick="_ceSetR('color','${c}')"></button>`).join('')}<input type="color" value="${el.color}" oninput="_ceLive('color',this.value)" class="ce-cp"></div></div>
       <div class="ce-row"><span class="ce-row-l">Fond texte</span>
-        <div class="ce-seg"><button class="${!el.bg?'on':''}" onclick="_ceSetR('bg','')">Aucun</button>${['#EF4444','#10B981','#111827'].map(c=>`<button style="background:${c};color:#fff" class="${el.bg===c?'on':''}" onclick="_ceSetR('bg','${c}')">A</button>`).join('')}</div>
+        <div class="ce-seg"><button class="${!el.bg?'on':''}" onclick="_ceSetR('bg','')">${t('w9_aucun')}</button>${['#EF4444','#10B981','#111827'].map(c=>`<button style="background:${c};color:#fff" class="${el.bg===c?'on':''}" onclick="_ceSetR('bg','${c}')">A</button>`).join('')}</div>
       </div>
       <div class="ce-row"><span class="ce-row-l">Ombre</span><button class="ce-toggle ${el.shadow?'on':''}" onclick="_ceSetR('shadow',${el.shadow?'false':'true'})">${el.shadow?'Activée':'Désactivée'}</button></div>`;
   } else if (el.type === 'shape') {
@@ -27290,7 +27525,7 @@ function openImageEditor(preset) {
   modal.innerHTML = `
     <div style="background:var(--surface);border-radius:16px;max-width:520px;width:100%;max-height:94vh;overflow-y:auto;box-shadow:0 25px 60px rgba(0,0,0,.5);animation:slideUp .25s ease">
       <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
-        <div style="font-size:16px;font-weight:800;color:var(--text-1)">✏️ Éditeur image</div>
+        <div style="font-size:16px;font-weight:800;color:var(--text-1)">${t('w9_editeurImage')}</div>
         <button style="width:30px;height:30px;border-radius:50%;border:none;background:var(--gray-1);color:var(--text-2);font-size:16px;cursor:pointer" onclick="document.getElementById('img-editor-modal').remove()">×</button>
       </div>
       <div style="padding:16px 18px">
@@ -28089,22 +28324,22 @@ function vSocialMedia() {
   <div class="page-header">
     <div class="page-header-row">
       <button class="back-btn" onclick="nav('more')">${IC.left}</button>
-      <div class="page-title">Réseaux sociaux</div>
+      <div class="page-title">${t('w9_reseauxSociaux')}</div>
     </div>
   </div>
   <div class="container">
 
     <!-- ─── Templates & Studio création ─── -->
     <div class="card" style="margin-bottom:14px;background:linear-gradient(135deg,rgba(236,72,153,0.08),rgba(79,70,229,0.08));border:1px solid rgba(236,72,153,0.25)">
-      <div class="card-title">🎨 Studio création</div>
-      <div style="font-size:12px;color:var(--text-3);margin-bottom:10px">Templates pros, images &amp; vidéos modifiables</div>
+      <div class="card-title">${t('w9_studioCreation')}</div>
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:10px">${t('w9_templatesPros')}</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
         <button class="btn" style="background:linear-gradient(135deg,#EC4899,#F59E0B);color:#fff;font-weight:700;padding:12px;${_isHidden('video-library')?'grid-column:1/-1':''}" onclick="openSocialTemplates('image')">🖼️ Templates Image</button>
-        ${_isHidden('video-library') ? '' : `<button class="btn" style="background:linear-gradient(135deg,#000,#25F4EE);color:#fff;font-weight:700;padding:12px" onclick="openSocialTemplates('video')">🎬 Templates Vidéo</button>`}
+        ${_isHidden('video-library') ? '' : `<button class="btn" style="background:linear-gradient(135deg,#000,#25F4EE);color:#fff;font-weight:700;padding:12px" onclick="openSocialTemplates('video')">${t('w9_templatesVideo')}</button>`}
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
-        <button class="btn btn-ghost" style="padding:10px;font-size:12px;${_isHidden('video-library')?'grid-column:1/-1':''}" onclick="openImageEditor()">✏️ Éditeur image</button>
-        ${_isHidden('video-library') ? '' : `<button class="btn btn-ghost" style="padding:10px;font-size:12px" onclick="openVideoEditor()">🎞️ Éditeur vidéo</button>`}
+        <button class="btn btn-ghost" style="padding:10px;font-size:12px;${_isHidden('video-library')?'grid-column:1/-1':''}" onclick="openImageEditor()">${t('w9_editeurImage')}</button>
+        ${_isHidden('video-library') ? '' : `<button class="btn btn-ghost" style="padding:10px;font-size:12px" onclick="openVideoEditor()">${t('w9_editeurVideo')}</button>`}
       </div>
       ${_isHidden('video-library') ? '' : `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
         <button class="btn btn-ghost" style="padding:10px;font-size:12px" onclick="nav('video-library')">📚 Mes vidéos (${_vidList().length})</button>
@@ -28113,10 +28348,10 @@ function vSocialMedia() {
     </div>
 
     <div class="card" style="margin-bottom:14px">
-      <div class="card-title">Publier un produit</div>
-      <div style="font-size:12px;color:var(--text-3);margin-bottom:12px">Publie un produit sur tes réseaux en un clic</div>
+      <div class="card-title">${t('w9_publierProduit')}</div>
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:12px">${t('w9_publieUnClic')}</div>
       <select class="input" id="social-product-select" style="margin-bottom:10px">
-        <option value="">— Choisir un produit —</option>
+        <option value="">${t('w9_choisirProduit')}</option>
         ${bt_sellableItems().filter(it => (it.price||0) > 0).map(it => `<option value="${it.id}">${it.name} — ${fmt(it.price)} ${sym()}</option>`).join('')}
       </select>
       <div style="display:flex;gap:6px;flex-wrap:wrap">
@@ -28131,7 +28366,7 @@ function vSocialMedia() {
       <div style="display:flex;gap:6px;margin-top:6px">
         <button class="btn btn-ghost" style="flex:1" onclick="postProductSocial('copy')">📋 Copier</button>
         <button class="btn btn-ghost" style="flex:1" onclick="postProductSocial('sms')">SMS</button>
-        <button class="btn btn-ghost" style="flex:1" onclick="postAllNetworks()">🚀 Tout</button>
+        <button class="btn btn-ghost" style="flex:1" onclick="postAllNetworks()">${t('w9_tout')}</button>
       </div>
     </div>
 
@@ -28185,15 +28420,15 @@ function vSocialMedia() {
           }).join('')}
         </div>
         <div style="display:flex;gap:12px;justify-content:center;margin-top:8px">
-          <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text-3)"><div style="width:6px;height:6px;border-radius:50%;background:var(--warning)"></div>Programmée</div>
-          <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text-3)"><div style="width:6px;height:6px;border-radius:50%;background:var(--success)"></div>Publiée</div>
+          <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text-3)"><div style="width:6px;height:6px;border-radius:50%;background:var(--warning)"></div>${t('w9_programmee')}</div>
+          <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text-3)"><div style="width:6px;height:6px;border-radius:50%;background:var(--success)"></div>${t('w9_publiee')}</div>
         </div>
       </div>`;
       return `
     <div class="stats-row" style="margin-bottom:10px">
-      <div class="stat-box"><div class="stat-val">${accounts.filter(a=>a.connected).length}/4</div><div class="stat-lbl">Connectés</div></div>
-      <div class="stat-box"><div class="stat-val">${scheduled.length}</div><div class="stat-lbl">Programmées</div></div>
-      <div class="stat-box"><div class="stat-val">${published.length}</div><div class="stat-lbl">Publiées</div></div>
+      <div class="stat-box"><div class="stat-val">${accounts.filter(a=>a.connected).length}/4</div><div class="stat-lbl">${t('w9_connectes')}</div></div>
+      <div class="stat-box"><div class="stat-val">${scheduled.length}</div><div class="stat-lbl">${t('w9_programmees')}</div></div>
+      <div class="stat-box"><div class="stat-val">${published.length}</div><div class="stat-lbl">${t('w9_publiees')}</div></div>
     </div>
     ${calHTML}
     ${scheduled.length > 0 ? `
@@ -28213,8 +28448,8 @@ function vSocialMedia() {
       </div>
     </div>`).join('')}` : `
     <div class="card" style="text-align:center;padding:16px;margin-bottom:10px">
-      <div style="font-size:12px;color:var(--text-3);margin-bottom:8px">Aucune publication programmee</div>
-      <button class="btn btn-primary" style="font-size:12px" onclick="schedulePost()">Programmer une publication</button>
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:8px">${t('w9_aucunePubProg')}</div>
+      <button class="btn btn-primary" style="font-size:12px" onclick="schedulePost()">${t('w9_programmerPub')}</button>
     </div>`}
     ${published.length > 0 ? `
     <div class="section-hd"><span class="section-lbl">Historique (${published.length})</span></div>
@@ -31393,12 +31628,12 @@ function vWhatsappBroadcast() {
       <button class="back-btn-dark" onclick="nav('integrations')">${IC.left}</button>
       <div style="flex:1">
         <div class="sub-hero-title">${IC.whatsapp} Broadcast WhatsApp</div>
-        <div class="sub-hero-sub">Envoyez votre message à vos clients, un par un</div>
+        <div class="sub-hero-sub">${t('w9_envoyezUnParUn')}</div>
       </div>
     </div>
     <div style="display:flex;gap:8px">
       <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${clients.length}</div><div class="hero-stat-lbl">Clients</div></div>
-      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${sentCount}</div><div class="hero-stat-lbl">Envoyés</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${sentCount}</div><div class="hero-stat-lbl">${t('w9_envoyes')}</div></div>
       <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${pct}%</div><div class="hero-stat-lbl">Progression</div></div>
     </div>
   </div>
@@ -31406,12 +31641,12 @@ function vWhatsappBroadcast() {
     ${clients.length === 0 ? `
       <div class="card" style="text-align:center;padding:30px 18px">
         <div style="font-size:34px;margin-bottom:8px">📇</div>
-        <div style="font-weight:800;margin-bottom:4px">Aucun client avec numéro</div>
+        <div style="font-weight:800;margin-bottom:4px">${t('w9_aucunClientNum')}</div>
         <div style="font-size:12px;color:var(--text-3);margin-bottom:14px">Ajoutez des clients (avec téléphone) pour leur envoyer un message groupé.</div>
-        <button class="btn btn-primary" onclick="nav('add-client')">+ Ajouter un client</button>
+        <button class="btn btn-primary" onclick="nav('add-client')">${t('w9_ajouterClient')}</button>
       </div>` : `
       <div class="card" style="margin-bottom:10px">
-        <div class="card-title">✍️ Votre message</div>
+        <div class="card-title">${t('w9_votreMessage')}</div>
         <textarea id="wa-bcast-msg" class="input" rows="5" style="font-size:13px;line-height:1.5" oninput="S._waBcast.msg=this.value">${st.msg.replace(/</g,'&lt;')}</textarea>
         <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">
           <button class="btn btn-ghost" style="font-size:11px;padding:5px 10px" onclick="_waBcastInsert('{nom}')">+ {nom}</button>
@@ -31422,7 +31657,7 @@ function vWhatsappBroadcast() {
       </div>
       <div style="display:flex;gap:8px;margin-bottom:10px">
         <button class="btn btn-primary" style="flex:1;background:#25D366" onclick="_waBcastNext()">${IC.whatsapp} Ouvrir le suivant (${clients.length - sentCount})</button>
-        ${sentCount ? `<button class="btn btn-ghost" onclick="_waBcastReset()">↺ Réinit.</button>` : ''}
+        ${sentCount ? `<button class="btn btn-ghost" onclick="_waBcastReset()">${t('w9_reinit')}</button>` : ''}
       </div>
       <div class="card" style="padding:6px 0">
         ${clients.map(c => {
@@ -31518,14 +31753,14 @@ function vSmsBroadcast() {
     <div class="page-header-row" style="margin-bottom:10px">
       <button class="back-btn-dark" onclick="nav('integrations')">${IC.left}</button>
       <div style="flex:1">
-        <div class="sub-hero-title">📨 SMS groupé</div>
+        <div class="sub-hero-title">${t('w9_smsGroupe')}</div>
         <div class="sub-hero-sub">${cfg ? 'Envoi automatique via votre passerelle' : 'Passerelle SMS non configurée'}</div>
       </div>
     </div>
     <div style="display:flex;gap:8px">
       <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${clients.length}</div><div class="hero-stat-lbl">Clients</div></div>
-      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${okCount}</div><div class="hero-stat-lbl">Envoyés</div></div>
-      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${failCount}</div><div class="hero-stat-lbl">Échecs</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${okCount}</div><div class="hero-stat-lbl">${t('w9_envoyes')}</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${failCount}</div><div class="hero-stat-lbl">${t('w9_echecs')}</div></div>
     </div>
   </div>
   <div class="container">
@@ -31534,27 +31769,27 @@ function vSmsBroadcast() {
         <div style="display:flex;gap:10px;align-items:flex-start">
           <div style="font-size:24px">⚙️</div>
           <div style="flex:1;font-size:12px;color:var(--text-1);line-height:1.5">
-            <strong style="color:#4338CA">Configurez une passerelle SMS</strong><br>
+            <strong style="color:#4338CA">${t('w9_configPasserelle')}</strong><br>
             Pour l'envoi <b>automatique</b> de masse, connectez Twilio, Vonage, Africa's Talking ou Orange CI. Sans passerelle, vous pouvez quand même ouvrir l'app SMS de votre téléphone avec tous les numéros pré-remplis.
           </div>
         </div>
-        <button class="btn btn-primary" style="width:100%;margin-top:10px" onclick="nav('sms-setup')">⚙️ Configurer la passerelle SMS</button>
+        <button class="btn btn-primary" style="width:100%;margin-top:10px" onclick="nav('sms-setup')">${t('w9_configurerSms')}</button>
       </div>` : ''}
     ${clients.length === 0 ? `
       <div class="card" style="text-align:center;padding:30px 18px">
         <div style="font-size:34px;margin-bottom:8px">📇</div>
-        <div style="font-weight:800;margin-bottom:4px">Aucun client avec numéro</div>
+        <div style="font-weight:800;margin-bottom:4px">${t('w9_aucunClientNum')}</div>
         <div style="font-size:12px;color:var(--text-3);margin-bottom:14px">Ajoutez des clients avec téléphone pour leur envoyer un SMS.</div>
-        <button class="btn btn-primary" onclick="nav('add-client')">+ Ajouter un client</button>
+        <button class="btn btn-primary" onclick="nav('add-client')">${t('w9_ajouterClient')}</button>
       </div>` : `
       <div class="card" style="margin-bottom:10px">
-        <div class="card-title">✍️ Votre message <span style="font-weight:500;color:var(--text-3);font-size:11px">(${st.msg.length} car.)</span></div>
+        <div class="card-title">${t('w9_votreMessage')} <span style="font-weight:500;color:var(--text-3);font-size:11px">(${st.msg.length} car.)</span></div>
         <textarea id="sms-bcast-msg" class="input" rows="4" maxlength="320" style="font-size:13px;line-height:1.5" oninput="S._smsBcast.msg=this.value;render()">${st.msg.replace(/</g,'&lt;')}</textarea>
         <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">
           <button class="btn btn-ghost" style="font-size:11px;padding:5px 10px" onclick="_smsBcastInsert('{nom}')">+ {nom}</button>
           <button class="btn btn-ghost" style="font-size:11px;padding:5px 10px" onclick="_smsBcastInsert('{business}')">+ {business}</button>
         </div>
-        <div style="font-size:11px;color:var(--text-3);margin-top:8px;line-height:1.4">💡 Gardez le SMS court (~160 car. = 1 message). <b>{nom}</b> est personnalisé par client.</div>
+        <div style="font-size:11px;color:var(--text-3);margin-top:8px;line-height:1.4">${t('w9_gardezSmsCourt')} <b>{nom}</b> est personnalisé par client.</div>
       </div>
       ${cfg ? `
       <button class="btn btn-primary" style="width:100%;margin-bottom:10px;background:#4F46E5" onclick="sendSmsBroadcast()" ${st.running?'disabled':''}>
@@ -31659,8 +31894,8 @@ function vEmailBroadcast() {
     <div class="page-header-row" style="margin-bottom:10px">
       <button class="back-btn-dark" onclick="nav('marketing')">${IC.left}</button>
       <div style="flex:1">
-        <div class="sub-hero-title">📧 Email groupé</div>
-        <div class="sub-hero-sub">Envoi en copie cachée (BCC) via votre messagerie</div>
+        <div class="sub-hero-title">${t('w9_emailGroupe')}</div>
+        <div class="sub-hero-sub">${t('w9_envoiBcc')}</div>
       </div>
     </div>
     <div style="display:flex;gap:8px">
@@ -31672,16 +31907,16 @@ function vEmailBroadcast() {
     ${clients.length === 0 ? `
       <div class="card" style="text-align:center;padding:30px 18px">
         <div style="font-size:34px;margin-bottom:8px">📭</div>
-        <div style="font-weight:800;margin-bottom:4px">Aucun client avec email</div>
+        <div style="font-weight:800;margin-bottom:4px">${t('w9_aucunClientEmail')}</div>
         <div style="font-size:12px;color:var(--text-3);margin-bottom:14px">Ajoutez l'adresse email de vos clients pour leur écrire en groupe.</div>
-        <button class="btn btn-primary" onclick="nav('add-client')">+ Ajouter un client</button>
+        <button class="btn btn-primary" onclick="nav('add-client')">${t('w9_ajouterClient')}</button>
       </div>` : `
       <div class="card" style="margin-bottom:10px">
         <div class="card-title">✉️ Objet</div>
         <input id="email-bcast-subject" class="input" value="${st.subject.replace(/"/g,'&quot;')}" oninput="S._emailBcast.subject=this.value" placeholder="Objet de l'email">
       </div>
       <div class="card" style="margin-bottom:10px">
-        <div class="card-title">✍️ Message</div>
+        <div class="card-title">${t('w9_messageIcone')}</div>
         <textarea id="email-bcast-msg" class="input" rows="7" style="font-size:13px;line-height:1.5" oninput="S._emailBcast.msg=this.value">${st.msg.replace(/</g,'&lt;')}</textarea>
         <div style="font-size:11px;color:var(--text-3);margin-top:8px;line-height:1.4">💡 Les destinataires sont mis en <b>copie cachée (BCC)</b> : personne ne voit les emails des autres. Votre application mail s'ouvre — vérifiez puis envoyez.</div>
       </div>
