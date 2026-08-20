@@ -270,6 +270,76 @@ const API_BASE = (location.hostname === 'localhost' || location.hostname === '12
 // ── i18n ─────────────────────────────────────
 const LANGS = {
   fr: {
+    w7_apparenceSub: "Personnalisez l'expérience visuelle",
+    w7_theme: "🌓 Thème",
+    w7_couleurPrinc: "🎨 Couleur principale",
+    w7_tailleTexte: "🔠 Taille du texte",
+    w7_densite: "📐 Densité d'affichage",
+    w7_rayonCoins: "⬜ Rayon des coins",
+    w7_reduireAnim: "🎬 Réduire les animations",
+    w7_reinitReglages: "🔄 Réinitialiser les réglages",
+    w7_securite: "🔐 Sécurité",
+    w7_codePinDemar: "🔐 Code PIN au démarrage",
+    w7_activerPin: "Activer un code PIN",
+    w7_pinActive: "🟢 Code PIN activé",
+    w7_modifierCode: "Modifier le code",
+    w7_biometrie: "👆 Biométrie",
+    w7_activerBio: "Activer la biométrie",
+    w7_activerSurApp: "Activé sur cet appareil",
+    w7_desactiverApp: "Désactiver sur cet appareil",
+    w7_httpsRequis: "⚠ HTTPS requis : la biométrie ne fonctionne qu'en HTTPS",
+    w7_webauthnNon: "⚠ WebAuthn non supporté sur cet appareil.",
+    w7_activer2FA: "Activer la 2FA",
+    w7_codeChaqueCo: "Un code sera demandé à chaque connexion.",
+    w7_deconnexionAuto: "Déconnexion automatique après inactivité.",
+    w7_connexionsRec: "📊 Connexions récentes",
+    w7_aucuneTentative: "Aucune tentative enregistrée",
+    w7_voirJournal: "📋 Voir le journal d’audit complet",
+    w7_seulAdminSecu: "🔒 Seul l’admin peut modifier la sécurité.",
+    w7_equipePerf: "👥 Équipe & Performances",
+    w7_aucunCollab: "Aucun collaborateur",
+    w7_ajoutezMembres: "Ajoutez des membres pour voir le classement",
+    w7_codeEquipe: "Code d’équipe — vendeurs en ligne",
+    w7_vendeurComptoir: "🛒 Vendeur au comptoir",
+    w7_ventesAttribuees: "Ses ventes lui sont attribuées (CA, commission, score)",
+    w7_seulAdminEquipe: "Seul l’administrateur peut gérer l’équipe.",
+    w7_accesReserve: "Accès réservé",
+    w7_tachesObjectifs: "✅ Tâches & objectifs",
+    w7_aucuneTache: "Aucune tâche en cours",
+    w7_reunions: "🤝 Réunions d’équipe",
+    w7_aucuneReunion: "Aucune réunion planifiée",
+    w7_aucuneAnnonce: "Aucune annonce",
+    w7_conseilsEquipe: "💡 Conseils pour l’équipe",
+    w7_formationReco: "Formation recommandée",
+    w7_chargementCode: "⏳ Chargement du code…",
+    w7_regenerer: "Régénérer",
+    w7_notifsReelles: "📧 Notifications réelles",
+    w7_activerCetApp: "🔔 Activer sur cet appareil",
+    w7_memeAppFermee: "même app fermée",
+    w7_emailVerif: "📧 Email de vérification",
+    w7_emailjs: "📧 EmailJS (envoi d’emails réel)",
+    w7_gmail: "Gmail (connectez votre compte)",
+    w7_numeroSms: "📱 Numéro SMS",
+    w7_methode: "Méthode",
+    w7_cleApiOpt: "Clé API (optionnel — envoyée en Bearer)",
+    w7_payloadEnvoye: "Payload envoyé",
+    w7_avecVariables: "avec variables",
+    w7_testerEnreg: "Tester & enregistrer",
+    w7_necessiteLigne: "Nécessite le mode en ligne (compte connecté au serveur).",
+    w7_paramServeur: "Paramètres → Serveur (API)",
+    w7_toutCsv: "Tout en CSV",
+    w7_formatUniversel: "Format universel (comptable, base de données)",
+    w7_exportComplet: "📚 Export complet (toutes les tables)",
+    w7_ouvrablesExcel: "ouvrables directement dans Excel, LibreOffice, Numbers",
+    w7_bilanSigne: "🧾 Bilan financier signé",
+    w7_comptaEcom: "Comptabilité & e-commerce",
+    w7_modifier: "Modifier",
+    w7_desactiver: "Désactiver",
+    w7_supprimer: "🗑️ Supprimer",
+    w7_enregistrer: "💾 Enregistrer",
+    w7_telecharger: "⬇️ Enregistrer",
+    w7_ajouterPlus: "＋ Ajouter",
+    w7_recommande: "· recommandé",
     w6_disponibles: "Disponibles",
     w6_tousPays: "Tous les pays",
     w6_joursHisto: "jours d’historique",
@@ -718,6 +788,76 @@ const LANGS = {
     version:'Version',
   },
   en: {
+    w7_apparenceSub: "Personalise the look and feel",
+    w7_theme: "🌓 Theme",
+    w7_couleurPrinc: "🎨 Main colour",
+    w7_tailleTexte: "🔠 Text size",
+    w7_densite: "📐 Display density",
+    w7_rayonCoins: "⬜ Corner radius",
+    w7_reduireAnim: "🎬 Reduce motion",
+    w7_reinitReglages: "🔄 Reset settings",
+    w7_securite: "🔐 Security",
+    w7_codePinDemar: "🔐 PIN at startup",
+    w7_activerPin: "Turn on a PIN",
+    w7_pinActive: "🟢 PIN enabled",
+    w7_modifierCode: "Change the code",
+    w7_biometrie: "👆 Biometrics",
+    w7_activerBio: "Turn on biometrics",
+    w7_activerSurApp: "Enabled on this device",
+    w7_desactiverApp: "Disable on this device",
+    w7_httpsRequis: "⚠ HTTPS required: biometrics only works over HTTPS",
+    w7_webauthnNon: "⚠ WebAuthn is not supported on this device.",
+    w7_activer2FA: "Turn on 2FA",
+    w7_codeChaqueCo: "A code will be required at every sign-in.",
+    w7_deconnexionAuto: "Automatic sign-out after inactivity.",
+    w7_connexionsRec: "📊 Recent sign-ins",
+    w7_aucuneTentative: "No attempts recorded",
+    w7_voirJournal: "📋 View the full audit log",
+    w7_seulAdminSecu: "🔒 Only the admin can change security settings.",
+    w7_equipePerf: "👥 Team & performance",
+    w7_aucunCollab: "No team members",
+    w7_ajoutezMembres: "Add members to see the ranking",
+    w7_codeEquipe: "Team code — online sellers",
+    w7_vendeurComptoir: "🛒 Counter seller",
+    w7_ventesAttribuees: "Their sales are credited to them (revenue, commission, score)",
+    w7_seulAdminEquipe: "Only the administrator can manage the team.",
+    w7_accesReserve: "Restricted access",
+    w7_tachesObjectifs: "✅ Tasks & goals",
+    w7_aucuneTache: "No tasks in progress",
+    w7_reunions: "🤝 Team meetings",
+    w7_aucuneReunion: "No meetings scheduled",
+    w7_aucuneAnnonce: "No announcements",
+    w7_conseilsEquipe: "💡 Tips for the team",
+    w7_formationReco: "Training recommended",
+    w7_chargementCode: "⏳ Loading the code…",
+    w7_regenerer: "Regenerate",
+    w7_notifsReelles: "📧 Real notifications",
+    w7_activerCetApp: "🔔 Turn on for this device",
+    w7_memeAppFermee: "even when the app is closed",
+    w7_emailVerif: "📧 Verification email",
+    w7_emailjs: "📧 EmailJS (real email sending)",
+    w7_gmail: "Gmail (connect your account)",
+    w7_numeroSms: "📱 SMS number",
+    w7_methode: "Method",
+    w7_cleApiOpt: "API key (optional — sent as Bearer)",
+    w7_payloadEnvoye: "Payload sent",
+    w7_avecVariables: "with variables",
+    w7_testerEnreg: "Test & save",
+    w7_necessiteLigne: "Requires online mode (account connected to the server).",
+    w7_paramServeur: "Settings → Server (API)",
+    w7_toutCsv: "Everything as CSV",
+    w7_formatUniversel: "Universal format (accounting, databases)",
+    w7_exportComplet: "📚 Full export (all tables)",
+    w7_ouvrablesExcel: "open directly in Excel, LibreOffice, Numbers",
+    w7_bilanSigne: "🧾 Signed financial report",
+    w7_comptaEcom: "Accounting & e-commerce",
+    w7_modifier: "Edit",
+    w7_desactiver: "Disable",
+    w7_supprimer: "🗑️ Delete",
+    w7_enregistrer: "💾 Save",
+    w7_telecharger: "⬇️ Save",
+    w7_ajouterPlus: "＋ Add",
+    w7_recommande: "· recommended",
     w6_disponibles: "Available",
     w6_tousPays: "All countries",
     w6_joursHisto: "days of history",
@@ -17687,7 +17827,7 @@ function vSettings() {
         </div>
         <input class="input" id="set-api-url" type="url" placeholder="https://baro-api-xxxx.onrender.com" value="${(localStorage.getItem('baro_api_url')||'').replace(/"/g,'&quot;')}">
         <div style="display:flex;gap:8px;margin-top:10px">
-          <button class="btn btn-primary" style="flex:1 1 auto;width:auto;min-width:0" onclick="saveApiUrl()">Tester & enregistrer</button>
+          <button class="btn btn-primary" style="flex:1 1 auto;width:auto;min-width:0" onclick="saveApiUrl()">${t('w7_testerEnreg')}</button>
           ${localStorage.getItem('baro_api_url') ? `<button class="btn btn-ghost" style="flex:0 0 auto;width:auto;padding-left:14px;padding-right:14px;white-space:nowrap" onclick="localStorage.removeItem('baro_api_url');showToast('URL serveur réinitialisée');setTimeout(()=>location.reload(),600)">${t('w2_reinitialiser')}</button>` : ''}
         </div>
       </div>
@@ -17697,7 +17837,7 @@ function vSettings() {
           Sans serveur : enregistrez TOUTES vos données (stock, ventes, clients, dépenses, boutique…) dans un fichier, puis restaurez-le sur un autre téléphone. Idéal pour changer d'appareil ou faire une copie de sécurité.
         </div>
         <div style="display:flex;gap:8px">
-          <button class="btn btn-primary" style="flex:1" onclick="exportBackupFile()">⬇️ Enregistrer</button>
+          <button class="btn btn-primary" style="flex:1" onclick="exportBackupFile()">${t('w7_telecharger')}</button>
           <button class="btn btn-ghost" style="flex:1" onclick="document.getElementById('baro-restore-inp').click()">⬆️ Restaurer</button>
         </div>
         <input type="file" id="baro-restore-inp" accept="application/json,.json,.baro" style="display:none" onchange="importBackupFile(this.files[0])">
@@ -18029,7 +18169,7 @@ function vTeam() {
     <div class="container">
       <div class="card" style="text-align:center;padding:40px 20px">
         <div style="font-size:48px;margin-bottom:10px">🔒</div>
-        <div style="font-size:16px;font-weight:700;color:var(--text-1);margin-bottom:6px">Accès réservé</div>
+        <div style="font-size:16px;font-weight:700;color:var(--text-1);margin-bottom:6px">${t('w7_accesReserve')}</div>
         <div style="font-size:13px;color:var(--text-3)">Seul l'administrateur peut gérer l'équipe.</div>
       </div>
     </div>`;
@@ -18047,7 +18187,7 @@ function vTeam() {
   return `
   <div class="sub-hero" style="background:linear-gradient(135deg,var(--accent) 0%,var(--accent-dark,#4F46E5) 100%)">
     <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('more')">${IC.left}</button>
-    <div class="sub-hero-title">👥 Équipe & Performances</div>
+    <div class="sub-hero-title">${t('w7_equipePerf')}</div>
     <div class="sub-hero-sub">${members.length} ${t('w4_collaborateurs')} · ${fmt(totalCA)} ${sym()} ce mois</div>
   </div>
   <div class="container">
@@ -18093,12 +18233,12 @@ function vTeam() {
         const info = ROLE_LABELS[cur.role] || ROLE_LABELS.vendor;
         return `
         <div class="card" style="margin-bottom:12px;padding:12px 14px;background:linear-gradient(135deg,rgba(124,115,255,.10),transparent);border:1px solid rgba(124,115,255,.28)">
-          <div style="font-size:11px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.3px;margin-bottom:8px">🛒 Vendeur au comptoir</div>
+          <div style="font-size:11px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.3px;margin-bottom:8px">${t('w7_vendeurComptoir')}</div>
           <div style="display:flex;align-items:center;gap:10px">
             <div style="width:40px;height:40px;border-radius:20px;flex-shrink:0;background:${info.color}20;color:${info.color};display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800">${info.icon}</div>
             <div style="flex:1;min-width:0">
               <div style="font-weight:800;font-size:14px;color:var(--text-1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${cur.name}${isAdmin?' (vous)':''}</div>
-              <div style="font-size:11px;color:var(--text-3)">Ses ventes lui sont attribuées (CA, commission, score)</div>
+              <div style="font-size:11px;color:var(--text-3)">${t('w7_ventesAttribuees')}</div>
             </div>
             <button class="btn btn-primary" style="flex:0 0 auto;width:auto;padding:9px 14px;font-size:12.5px;white-space:nowrap" onclick="openMemberSwitcher()">Changer</button>
           </div>
@@ -18116,9 +18256,9 @@ function vTeam() {
         </div>
         <div style="display:flex;gap:8px">
           <button class="btn btn-primary" style="flex:1 1 auto;width:auto;min-width:0;background:#25D366" onclick="shareTeamCode()">${IC.whatsapp||''} Partager</button>
-          <button class="btn btn-ghost" style="flex:0 0 auto;width:auto;padding-left:16px;padding-right:16px;white-space:nowrap" onclick="resetTeamCode()">Régénérer</button>
+          <button class="btn btn-ghost" style="flex:0 0 auto;width:auto;padding-left:16px;padding-right:16px;white-space:nowrap" onclick="resetTeamCode()">${t('w7_regenerer')}</button>
         </div>
-        ` : `<button class="btn btn-primary" style="width:100%" onclick="loadTeamCode()">⏳ Chargement du code…</button>`) : `
+        ` : `<button class="btn btn-primary" style="width:100%" onclick="loadTeamCode()">${t('w7_chargementCode')}</button>`) : `
         <div style="font-size:12px;color:var(--text-3);background:var(--gray-1);border-radius:10px;padding:10px 12px;margin-bottom:10px">Nécessite le mode <strong>en ligne</strong> : connectez-vous avec un compte serveur (ou créez-en un — vos données locales sont conservées et envoyées au serveur).</div>
         <div style="display:flex;gap:8px">
           <button class="btn btn-primary" style="flex:1 1 auto;width:auto;min-width:0" onclick="doLogout()">Se connecter en ligne</button>
@@ -18133,7 +18273,7 @@ function vTeam() {
       ${members.length === 0 ? `
         <div class="card" style="text-align:center;padding:40px 20px">
           <div style="font-size:48px;margin-bottom:10px">👥</div>
-          <div style="font-size:16px;font-weight:700;color:var(--text-1);margin-bottom:6px">Aucun collaborateur</div>
+          <div style="font-size:16px;font-weight:700;color:var(--text-1);margin-bottom:6px">${t('w7_aucunCollab')}</div>
           <div style="font-size:13px;color:var(--text-3);margin-bottom:16px">Ajoutez votre premier membre d'équipe pour suivre ses ventes, commissions et performances.</div>
         </div>
       ` : members.map((m, i) => {
@@ -18177,7 +18317,7 @@ function vTeam() {
     ${tab === 'performance' ? `
       <div class="card" style="margin-bottom:12px">
         <div class="card-title">🏆 Top performers</div>
-        ${members.length === 0 ? `<div style="text-align:center;padding:20px;color:var(--text-3);font-size:12px">Ajoutez des membres pour voir le classement</div>` :
+        ${members.length === 0 ? `<div style="text-align:center;padding:20px;color:var(--text-3);font-size:12px">${t('w7_ajoutezMembres')}</div>` :
           [...members].map(m => ({...m, _st: _teamMemberStats(m.id)}))
             .sort((a,b) => b._st.perfScore - a._st.perfScore)
             .slice(0, 10)
@@ -18205,7 +18345,7 @@ function vTeam() {
             <span style="color:var(--text-2)">Accordez 5% de commission supplémentaire aux membres au-dessus de 70/100.</span>
           </div>
           <div style="padding:10px;background:#F59E0B10;border-left:3px solid #F59E0B;border-radius:8px;font-size:12px">
-            <strong style="color:#F59E0B">Formation recommandée</strong><br>
+            <strong style="color:#F59E0B">${t('w7_formationReco')}</strong><br>
             <span style="color:var(--text-2)">Membres sous 40/100 : organisez un atelier sur les techniques de vente.</span>
           </div>
         </div>
@@ -18217,7 +18357,7 @@ function vTeam() {
       <div class="card" style="margin-bottom:12px">
         <div class="card-title">📅 Planning hebdomadaire</div>
         <div style="font-size:12px;color:var(--text-3);margin-bottom:12px">Horaires de travail de chaque membre.</div>
-        ${members.length === 0 ? `<div style="text-align:center;padding:20px;color:var(--text-3);font-size:12px">Aucun collaborateur</div>` :
+        ${members.length === 0 ? `<div style="text-align:center;padding:20px;color:var(--text-3);font-size:12px">${t('w7_aucunCollab')}</div>` :
           members.map(m => {
             const roleInfo = ROLE_LABELS[m.role] || ROLE_LABELS.vendor;
             return `
@@ -18227,7 +18367,7 @@ function vTeam() {
                 <div style="font-weight:700;font-size:13px;color:var(--text-1)">${m.name}</div>
                 <div style="font-size:11px;color:var(--text-3)">${m.schedule || 'Aucun horaire défini'}</div>
               </div>
-              <button class="btn btn-ghost" style="padding:6px 10px;font-size:11px" onclick="openTeamMember('${String(m.id).replace(/[^\w-]/g,'')}')">Modifier</button>
+              <button class="btn btn-ghost" style="padding:6px 10px;font-size:11px" onclick="openTeamMember('${String(m.id).replace(/[^\w-]/g,'')}')">${t('w7_modifier')}</button>
             </div>`;
           }).join('')
         }
@@ -18247,7 +18387,7 @@ function vTeam() {
           if (meetings.length === 0) return `
             <div style="text-align:center;padding:30px 16px;color:var(--text-3)">
               <div style="font-size:36px;margin-bottom:8px">📅</div>
-              <div style="font-size:13px;font-weight:600;color:var(--text-2);margin-bottom:4px">Aucune réunion planifiée</div>
+              <div style="font-size:13px;font-weight:600;color:var(--text-2);margin-bottom:4px">${t('w7_aucuneReunion')}</div>
               <div style="font-size:11px">Planifiez votre première réunion d'équipe pour aligner tout le monde.</div>
             </div>`;
           return `
@@ -18300,12 +18440,12 @@ function vTeam() {
       <!-- ── Tâches & objectifs équipe ──────────────── -->
       <div class="card" style="margin-bottom:12px">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-          <div class="card-title" style="margin:0">✅ Tâches & objectifs</div>
-          <button class="btn btn-primary" style="padding:8px 12px;font-size:12px" onclick="createTeamTask()">＋ Ajouter</button>
+          <div class="card-title" style="margin:0">${t('w7_tachesObjectifs')}</div>
+          <button class="btn btn-primary" style="padding:8px 12px;font-size:12px" onclick="createTeamTask()">${t('w7_ajouterPlus')}</button>
         </div>
         ${(() => {
           const tasks = S.teamTasks || [];
-          if (tasks.length === 0) return `<div style="text-align:center;padding:20px;color:var(--text-3);font-size:12px">Aucune tâche en cours</div>`;
+          if (tasks.length === 0) return `<div style="text-align:center;padding:20px;color:var(--text-3);font-size:12px">${t('w7_aucuneTache')}</div>`;
           return tasks.slice().sort((a,b) => (a.done?1:0) - (b.done?1:0) || new Date(a.due||0) - new Date(b.due||0)).map(tk => {
             const assignee = S.teamMembers.find(m => m.id === tk.assigneeId);
             const overdue = tk.due && !tk.done && new Date(tk.due) < new Date();
@@ -18333,7 +18473,7 @@ function vTeam() {
         </div>
         ${(() => {
           const anns = (S.teamAnnouncements || []).slice().sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
-          if (anns.length === 0) return `<div style="text-align:center;padding:20px;color:var(--text-3);font-size:12px">Aucune annonce</div>`;
+          if (anns.length === 0) return `<div style="text-align:center;padding:20px;color:var(--text-3);font-size:12px">${t('w7_aucuneAnnonce')}</div>`;
           return anns.slice(0, 5).map(a => `
             <div style="padding:10px;background:var(--accent-light, rgba(79,70,229,0.06));border-radius:10px;margin-bottom:6px;border-left:3px solid var(--accent)">
               <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
@@ -18740,7 +18880,7 @@ function vSpectraAISetup() {
       <div style="font-size:11px;color:var(--text-2);margin-bottom:8px">${p.note} · <a href="${p.url}" target="_blank" rel="noopener noreferrer" style="color:${p.color};font-weight:700">Obtenir la clé →</a></div>
       <input id="aikey-${p.id}" class="input" type="password" placeholder="${p.prefix}" value="${p.key}" autocomplete="off" style="font-family:monospace;font-size:13px !important">
       <div style="display:flex;gap:6px;margin-top:8px">
-        <button class="btn btn-primary" style="flex:1;background:${p.color};border-color:${p.color};font-size:12px;padding:9px" onclick="saveAIKey('${p.id}')">💾 Enregistrer</button>
+        <button class="btn btn-primary" style="flex:1;background:${p.color};border-color:${p.color};font-size:12px;padding:9px" onclick="saveAIKey('${p.id}')">${t('w7_enregistrer')}</button>
         ${p.key?`<button class="btn btn-ghost" style="font-size:12px;padding:9px" onclick="testAIKey('${p.id}')">🧪 Tester</button>
         <button class="btn btn-ghost" style="font-size:12px;padding:9px;color:var(--danger)" onclick="if(confirm('Supprimer cette clé ?')){localStorage.removeItem('stockr_${p.id}_key');showToast('Clé supprimée');render()}">🗑️</button>`:''}
       </div>
@@ -18873,10 +19013,10 @@ function vOAuthSetup() {
       <label class="form-label">Client ID Google</label>
       <input id="google-client-id-input" class="input" type="text" placeholder="123456789-xxx.apps.googleusercontent.com" value="${googleId}" style="font-family:monospace;font-size:13px !important">
       <div style="display:flex;gap:8px;margin-top:10px">
-        <button class="btn btn-ghost" style="flex:1" onclick="saveGoogleClientId()">💾 Enregistrer</button>
+        <button class="btn btn-ghost" style="flex:1" onclick="saveGoogleClientId()">${t('w7_enregistrer')}</button>
         ${googleId ? `<button class="btn btn-primary" style="flex:1;background:#4285F4;border-color:#4285F4" onclick="loginGoogle()">🧪 Tester</button>` : ''}
       </div>
-      ${googleId ? `<button class="btn btn-ghost" style="width:100%;margin-top:8px;color:var(--danger);border-color:var(--danger)" onclick="if(confirm('Supprimer le Client ID Google ?')){localStorage.removeItem('stockr_google_client_id');showToast('Supprimé','info');render()}">🗑️ Supprimer</button>` : ''}
+      ${googleId ? `<button class="btn btn-ghost" style="width:100%;margin-top:8px;color:var(--danger);border-color:var(--danger)" onclick="if(confirm('Supprimer le Client ID Google ?')){localStorage.removeItem('stockr_google_client_id');showToast('Supprimé','info');render()}">${t('w7_supprimer')}</button>` : ''}
     </div>
 
     <!-- ── Apple ── -->
@@ -18906,10 +19046,10 @@ function vOAuthSetup() {
       <label class="form-label">Services ID Apple</label>
       <input id="apple-service-id-input" class="input" type="text" placeholder="com.votreapp.baro.web" value="${appleId}" style="font-family:monospace;font-size:13px !important">
       <div style="display:flex;gap:8px;margin-top:10px">
-        <button class="btn btn-ghost" style="flex:1" onclick="saveAppleServiceId()">💾 Enregistrer</button>
+        <button class="btn btn-ghost" style="flex:1" onclick="saveAppleServiceId()">${t('w7_enregistrer')}</button>
         ${appleId ? `<button class="btn btn-primary" style="flex:1;background:#000;border-color:#000" onclick="loginApple()">🧪 Tester</button>` : ''}
       </div>
-      ${appleId ? `<button class="btn btn-ghost" style="width:100%;margin-top:8px;color:var(--danger);border-color:var(--danger)" onclick="if(confirm('Supprimer le Services ID Apple ?')){localStorage.removeItem('stockr_apple_service_id');showToast('Supprimé','info');render()}">🗑️ Supprimer</button>` : ''}
+      ${appleId ? `<button class="btn btn-ghost" style="width:100%;margin-top:8px;color:var(--danger);border-color:var(--danger)" onclick="if(confirm('Supprimer le Services ID Apple ?')){localStorage.removeItem('stockr_apple_service_id');showToast('Supprimé','info');render()}">${t('w7_supprimer')}</button>` : ''}
     </div>
 
     <div class="card" style="margin-top:14px;background:var(--gray-1);padding:14px">
@@ -18999,7 +19139,7 @@ function vNotificationsSetup() {
   return `
   <div class="sub-hero" style="background:linear-gradient(135deg,#10B981,#0EA5E9)">
     <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('security')">${IC.left}</button>
-    <div class="sub-hero-title">📧 Notifications réelles</div>
+    <div class="sub-hero-title">${t('w7_notifsReelles')}</div>
     <div class="sub-hero-sub">${pushOn ? '🟢' : '⚪'} Push · ${emailActive ? '🟢' : '⚪'} Email · ${smsActive ? '🟢' : '⚪'} SMS</div>
   </div>
   <div class="container">
@@ -19008,18 +19148,18 @@ function vNotificationsSetup() {
     <div class="card" style="margin-bottom:12px;border-left:4px solid ${pushOn?'var(--success)':'#8B5CF6'};background:linear-gradient(135deg,rgba(139,92,246,.06),transparent)">
       <div style="font-size:15px;font-weight:800;color:var(--text-1);margin-bottom:6px">🔔 Push nouvelle commande</div>
       <div style="font-size:12px;color:var(--text-2);line-height:1.6;margin-bottom:10px">
-        Quand un client commande sur votre <strong>boutique en ligne</strong>, ce téléphone reçoit une vraie notification système — <strong>même app fermée</strong>. Chaque appareil s'active séparément.
+        Quand un client commande sur votre <strong>boutique en ligne</strong>, ce téléphone reçoit une vraie notification système — <strong>${t('w7_memeAppFermee')}</strong>. Chaque appareil s'active séparément.
       </div>
       ${!_pushSupported() ? `
         <div style="font-size:12px;color:var(--text-3);background:var(--gray-1);border-radius:10px;padding:10px 12px">Ce navigateur ne supporte pas le push. Sur iPhone : installez d'abord BARO sur l'écran d'accueil (iOS 16.4+).</div>
       ` : !pushOnline ? `
-        <div style="font-size:12px;color:var(--text-3);background:var(--gray-1);border-radius:10px;padding:10px 12px;margin-bottom:10px">Nécessite le mode en ligne (compte connecté au serveur).</div>
-        <button class="btn btn-ghost" style="width:100%" onclick="nav('settings')">Paramètres → Serveur (API)</button>
+        <div style="font-size:12px;color:var(--text-3);background:var(--gray-1);border-radius:10px;padding:10px 12px;margin-bottom:10px">${t('w7_necessiteLigne')}</div>
+        <button class="btn btn-ghost" style="width:100%" onclick="nav('settings')">${t('w7_paramServeur')}</button>
       ` : pushOn ? `
-        <div style="display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;color:var(--success);margin-bottom:10px"><span style="width:9px;height:9px;border-radius:50%;background:var(--success);box-shadow:0 0 8px rgba(16,185,129,.6)"></span>Activé sur cet appareil</div>
-        <button class="btn btn-ghost" style="width:100%;color:var(--danger);border-color:var(--danger)" onclick="disableOrderPush()">Désactiver sur cet appareil</button>
+        <div style="display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;color:var(--success);margin-bottom:10px"><span style="width:9px;height:9px;border-radius:50%;background:var(--success);box-shadow:0 0 8px rgba(16,185,129,.6)"></span>${t('w7_activerSurApp')}</div>
+        <button class="btn btn-ghost" style="width:100%;color:var(--danger);border-color:var(--danger)" onclick="disableOrderPush()">${t('w7_desactiverApp')}</button>
       ` : `
-        <button class="btn btn-primary" style="width:100%;background:linear-gradient(135deg,#8B5CF6,#6366F1)" onclick="enableOrderPush()">🔔 Activer sur cet appareil</button>
+        <button class="btn btn-primary" style="width:100%;background:linear-gradient(135deg,#8B5CF6,#6366F1)" onclick="enableOrderPush()">${t('w7_activerCetApp')}</button>
       `}
     </div>
 
@@ -19049,10 +19189,10 @@ function vNotificationsSetup() {
       <input id="emailjs-public" class="input" type="text" placeholder="AbCdEfGhIjKlMn123" value="${pub}" style="font-family:monospace;font-size:13px !important">
 
       <div style="display:flex;gap:8px;margin-top:12px">
-        <button class="btn btn-ghost" style="flex:1" onclick="saveEmailJSConfig()">💾 Enregistrer</button>
+        <button class="btn btn-ghost" style="flex:1" onclick="saveEmailJSConfig()">${t('w7_enregistrer')}</button>
         ${emailActive ? `<button class="btn btn-primary" style="flex:1;background:#0EA5E9" onclick="testVerificationEmail()">🧪 Tester</button>` : ''}
       </div>
-      ${emailActive ? `<button class="btn btn-ghost" style="width:100%;margin-top:8px;color:var(--danger);border-color:var(--danger)" onclick="if(confirm('Supprimer la config EmailJS ?')){['stockr_emailjs_service','stockr_emailjs_template','stockr_emailjs_public'].forEach(k=>localStorage.removeItem(k));showToast('Supprimé','info');render()}">🗑️ Supprimer</button>` : ''}
+      ${emailActive ? `<button class="btn btn-ghost" style="width:100%;margin-top:8px;color:var(--danger);border-color:var(--danger)" onclick="if(confirm('Supprimer la config EmailJS ?')){['stockr_emailjs_service','stockr_emailjs_template','stockr_emailjs_public'].forEach(k=>localStorage.removeItem(k));showToast('Supprimé','info');render()}">${t('w7_supprimer')}</button>` : ''}
     </div>
 
     <!-- ── SMS Webhook ── -->
@@ -19068,20 +19208,20 @@ function vNotificationsSetup() {
           <strong>Option 1 — Twilio Function</strong> : créez une fonction qui reçoit <code>{ to, message }</code> et appelle Twilio Messages API<br>
           <strong>Option 2 — Africa's Talking</strong> (Côte d'Ivoire) : <a href="https://africastalking.com/" target="_blank" rel="noopener noreferrer" style="color:#F59E0B;font-weight:700">africastalking.com</a><br>
           <strong>Option 3 — Orange Developer</strong> : <a href="https://developer.orange.com/" target="_blank" rel="noopener noreferrer" style="color:#F59E0B;font-weight:700">developer.orange.com</a><br>
-          <strong>Payload envoyé</strong> : <code>{ to: "+22507...", message: "...", code: "123456" }</code>
+          <strong>${t('w7_payloadEnvoye')}</strong> : <code>{ to: "+22507...", message: "...", code: "123456" }</code>
         </div>
       </details>
 
       <label class="form-label">URL Webhook</label>
       <input id="sms-webhook" class="input" type="url" placeholder="https://api.example.com/send-sms" value="${smsHook}" style="font-family:monospace;font-size:13px !important">
-      <label class="form-label" style="margin-top:8px">Clé API (optionnel — envoyée en Bearer)</label>
+      <label class="form-label" style="margin-top:8px">${t('w7_cleApiOpt')}</label>
       <input id="sms-apikey" class="input" type="password" placeholder="sk_xxx..." value="${smsKey}" style="font-family:monospace;font-size:13px !important">
 
       <div style="display:flex;gap:8px;margin-top:12px">
-        <button class="btn btn-ghost" style="flex:1" onclick="saveSMSConfig()">💾 Enregistrer</button>
+        <button class="btn btn-ghost" style="flex:1" onclick="saveSMSConfig()">${t('w7_enregistrer')}</button>
         ${smsActive ? `<button class="btn btn-primary" style="flex:1;background:#F59E0B" onclick="testVerificationSMS()">🧪 Tester</button>` : ''}
       </div>
-      ${smsActive ? `<button class="btn btn-ghost" style="width:100%;margin-top:8px;color:var(--danger);border-color:var(--danger)" onclick="if(confirm('Supprimer la config SMS ?')){['stockr_sms_webhook','stockr_sms_apikey'].forEach(k=>localStorage.removeItem(k));showToast('Supprimé','info');render()}">🗑️ Supprimer</button>` : ''}
+      ${smsActive ? `<button class="btn btn-ghost" style="width:100%;margin-top:8px;color:var(--danger);border-color:var(--danger)" onclick="if(confirm('Supprimer la config SMS ?')){['stockr_sms_webhook','stockr_sms_apikey'].forEach(k=>localStorage.removeItem(k));showToast('Supprimé','info');render()}">${t('w7_supprimer')}</button>` : ''}
     </div>
 
     <div class="card" style="background:var(--gray-1);padding:14px">
@@ -19393,13 +19533,13 @@ function vAppearance() {
   <div class="sub-hero" style="background:linear-gradient(135deg,${a.accentColor},${a.accentColor}CC)">
     <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('settings')">${IC.left}</button>
     <div class="sub-hero-title">🎨 Apparence</div>
-    <div class="sub-hero-sub">Personnalisez l'expérience visuelle</div>
+    <div class="sub-hero-sub">${t('w7_apparenceSub')}</div>
   </div>
   <div class="container">
 
     <!-- Thème -->
     <div class="card" style="margin-bottom:12px">
-      <div class="card-title">🌓 Thème</div>
+      <div class="card-title">${t('w7_theme')}</div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
         ${[['light','☀️ Clair'],['dark','🌙 Sombre'],['auto','🔄 Auto']].map(([v,lbl]) => `
           <button onclick="setAppearance('theme','${v}')" style="padding:16px 8px;border-radius:10px;border:2px solid ${a.theme===v?'var(--accent)':'var(--border)'};background:${a.theme===v?'var(--accent-light)':'var(--card-bg)'};cursor:pointer;font-size:13px;font-weight:700;color:${a.theme===v?'var(--accent)':'var(--text-1)'}">${lbl}</button>
@@ -19409,7 +19549,7 @@ function vAppearance() {
 
     <!-- Couleur principale -->
     <div class="card" style="margin-bottom:12px">
-      <div class="card-title">🎨 Couleur principale</div>
+      <div class="card-title">${t('w7_couleurPrinc')}</div>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
         ${COLORS.map(c => `
           <button onclick="setAppearance('accentColor','${c.id}')" style="padding:18px 4px;border-radius:10px;border:2px solid ${a.accentColor===c.id?c.id:'var(--border)'};background:${a.accentColor===c.id?c.id+'15':'var(--card-bg)'};cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px">
@@ -19422,7 +19562,7 @@ function vAppearance() {
 
     <!-- Taille police -->
     <div class="card" style="margin-bottom:12px">
-      <div class="card-title">🔠 Taille du texte</div>
+      <div class="card-title">${t('w7_tailleTexte')}</div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
         ${[['small','Petit','12px'],['medium','Moyen','14px'],['large','Grand','16px']].map(([v,lbl,sz]) => `
           <button onclick="setAppearance('fontSize','${v}')" style="padding:12px 8px;border-radius:10px;border:2px solid ${a.fontSize===v?'var(--accent)':'var(--border)'};background:${a.fontSize===v?'var(--accent-light)':'var(--card-bg)'};cursor:pointer;font-weight:700;color:${a.fontSize===v?'var(--accent)':'var(--text-1)'}">
@@ -19445,7 +19585,7 @@ function vAppearance() {
 
     <!-- Densité -->
     <div class="card" style="margin-bottom:12px">
-      <div class="card-title">📐 Densité d'affichage</div>
+      <div class="card-title">${t('w7_densite')}</div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
         ${[['compact','🔽 Compact'],['normal','⏸ Normal'],['spacious','🔼 Spacieux']].map(([v,lbl]) => `
           <button onclick="setAppearance('density','${v}')" style="padding:14px 4px;border-radius:10px;border:2px solid ${a.density===v?'var(--accent)':'var(--border)'};background:${a.density===v?'var(--accent-light)':'var(--card-bg)'};cursor:pointer;font-size:11px;font-weight:700;color:${a.density===v?'var(--accent)':'var(--text-1)'}">${lbl}</button>
@@ -19473,7 +19613,7 @@ function vAppearance() {
 
     <!-- Rayon des coins -->
     <div class="card" style="margin-bottom:12px">
-      <div class="card-title">⬜ Rayon des coins</div>
+      <div class="card-title">${t('w7_rayonCoins')}</div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
         ${[['soft','Doux','18px'],['standard','Standard','12px'],['sharp','Net','6px']].map(([v,lbl,r]) => `
           <button onclick="setAppearance('radius','${v}')" style="padding:12px 6px;border-radius:${r};border:2px solid ${(a.radius||'standard')===v?'var(--accent)':'var(--border)'};background:${(a.radius||'standard')===v?'var(--accent-light)':'var(--card-bg)'};cursor:pointer;font-size:12.5px;font-weight:700;color:${(a.radius||'standard')===v?'var(--accent)':'var(--text-1)'};display:flex;flex-direction:column;align-items:center;gap:6px">
@@ -19487,7 +19627,7 @@ function vAppearance() {
     <div class="card" style="margin-bottom:12px">
       <label style="display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer">
         <div style="flex:1;min-width:0">
-          <div style="font-weight:800;font-size:13.5px;color:var(--text-1)">🎬 Réduire les animations</div>
+          <div style="font-weight:800;font-size:13.5px;color:var(--text-1)">${t('w7_reduireAnim')}</div>
           <div style="font-size:12px;color:var(--text-3);margin-top:2px;line-height:1.5">Coupe les glissés et transitions — plus rapide, plus sobre, idéal sur téléphones modestes.</div>
         </div>
         <span class="toggle-switch"><input type="checkbox" ${a.reduceMotion?'checked':''} onchange="setAppearance('reduceMotion',this.checked)"><span class="toggle-track"></span></span>
@@ -19496,7 +19636,7 @@ function vAppearance() {
 
     <!-- Reset -->
     <div style="margin-top:14px">
-      <button class="btn btn-ghost" style="width:100%" onclick="resetAppearance()">🔄 Réinitialiser les réglages</button>
+      <button class="btn btn-ghost" style="width:100%" onclick="resetAppearance()">${t('w7_reinitReglages')}</button>
     </div>
 
   </div>`;
@@ -19694,37 +19834,37 @@ function vSecurity() {
   return `
   <div class="sub-hero" style="background:linear-gradient(135deg,#EF4444,#B91C1C)">
     <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('settings')">${IC.left}</button>
-    <div class="sub-hero-title">🔐 Sécurité</div>
+    <div class="sub-hero-title">${t('w7_securite')}</div>
     <div class="sub-hero-sub">Dernière connexion · ${lastLogin}</div>
   </div>
   <div class="container">
 
     <!-- PIN de démarrage -->
     <div class="card" style="margin-bottom:12px">
-      <div class="card-title">🔐 Code PIN au démarrage</div>
+      <div class="card-title">${t('w7_codePinDemar')}</div>
       <div style="font-size:12px;color:var(--text-3);margin-bottom:10px">La protection la plus simple : un code à 4-6 chiffres demandé à chaque ouverture de l'app. Idéal si votre téléphone est partagé au comptoir.</div>
       ${localStorage.getItem('stockr_app_pin') ? `
-        <div style="display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--success);font-weight:700;margin-bottom:10px">🟢 Code PIN activé</div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--success);font-weight:700;margin-bottom:10px">${t('w7_pinActive')}</div>
         <div style="display:flex;gap:8px">
-          <button class="btn btn-ghost" style="flex:1" onclick="setupAppPin()">Modifier le code</button>
-          <button class="btn btn-ghost" style="flex:1;color:var(--danger);border-color:var(--danger)" onclick="removeAppPin()">Désactiver</button>
+          <button class="btn btn-ghost" style="flex:1" onclick="setupAppPin()">${t('w7_modifierCode')}</button>
+          <button class="btn btn-ghost" style="flex:1;color:var(--danger);border-color:var(--danger)" onclick="removeAppPin()">${t('w7_desactiver')}</button>
         </div>
       ` : `
-        <button class="btn btn-primary" style="width:100%" onclick="setupAppPin()">Activer un code PIN</button>
+        <button class="btn btn-primary" style="width:100%" onclick="setupAppPin()">${t('w7_activerPin')}</button>
       `}
     </div>
 
     <!-- 2FA -->
     <div class="card" style="margin-bottom:12px">
       <div class="card-title">🔑 Double authentification (2FA)</div>
-      <div style="font-size:12px;color:var(--text-3);margin-bottom:10px">Un code sera demandé à chaque connexion.</div>
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:10px">${t('w7_codeChaqueCo')}</div>
       <label style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 0;cursor:pointer">
-        <span style="font-size:13px;color:var(--text-1);font-weight:600">Activer la 2FA</span>
+        <span style="font-size:13px;color:var(--text-1);font-weight:600">${t('w7_activer2FA')}</span>
         <input type="checkbox" ${s.twoFactorEnabled ? 'checked' : ''} onchange="setSecurity('twoFactorEnabled',this.checked)" style="transform:scale(1.5)">
       </label>
       ${s.twoFactorEnabled ? `
         <div style="margin-top:10px">
-          <label class="form-label">Méthode</label>
+          <label class="form-label">${t('w7_methode')}</label>
           <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
             ${[['email','📧 Email'],['sms','📱 SMS'],['app','🔐 App']].map(([v,lbl]) => `
               <button onclick="setSecurity('twoFactorMethod','${v}')" style="padding:10px 4px;border-radius:8px;border:2px solid ${s.twoFactorMethod===v?'var(--accent)':'var(--border)'};background:${s.twoFactorMethod===v?'var(--accent-light)':'var(--card-bg)'};font-size:12px;font-weight:700;color:${s.twoFactorMethod===v?'var(--accent)':'var(--text-1)'};cursor:pointer">${lbl}</button>
@@ -19733,7 +19873,7 @@ function vSecurity() {
 
           ${s.twoFactorMethod === 'email' ? `
             <div style="margin-top:14px;padding:12px;background:var(--gray-1);border-radius:10px">
-              <div style="font-size:13px;font-weight:700;color:var(--text-1);margin-bottom:6px">📧 Email de vérification</div>
+              <div style="font-size:13px;font-weight:700;color:var(--text-1);margin-bottom:6px">${t('w7_emailVerif')}</div>
               <input class="input" type="email" placeholder="ex: vous@gmail.com" value="${s.twoFactorEmail || S.session?.email || ''}" oninput="setSecurity('twoFactorEmail', this.value)" style="font-size:14px !important">
               <div style="display:flex;gap:6px;margin-top:8px;align-items:center">
                 <button class="btn btn-ghost" style="flex:1;font-size:12px" onclick="nav('notifications-setup')">⚙️ Configurer EmailJS</button>
@@ -19747,7 +19887,7 @@ function vSecurity() {
 
           ${s.twoFactorMethod === 'sms' ? `
             <div style="margin-top:14px;padding:12px;background:var(--gray-1);border-radius:10px">
-              <div style="font-size:13px;font-weight:700;color:var(--text-1);margin-bottom:6px">📱 Numéro SMS</div>
+              <div style="font-size:13px;font-weight:700;color:var(--text-1);margin-bottom:6px">${t('w7_numeroSms')}</div>
               <input class="input" type="tel" placeholder="+225 07 XX XX XX" value="${s.twoFactorPhone || ''}" oninput="setSecurity('twoFactorPhone', this.value)" style="font-size:14px !important">
               <div style="display:flex;gap:6px;margin-top:8px">
                 <button class="btn btn-ghost" style="flex:1;font-size:12px" onclick="nav('notifications-setup')">⚙️ Config SMS</button>
@@ -19773,21 +19913,21 @@ function vSecurity() {
 
     <!-- Biométrie -->
     <div class="card" style="margin-bottom:12px">
-      <div class="card-title">👆 Biométrie</div>
+      <div class="card-title">${t('w7_biometrie')}</div>
       <div style="font-size:12px;color:var(--text-3);margin-bottom:10px">Empreinte digitale, reconnaissance faciale (TouchID / FaceID / Windows Hello).</div>
       <label style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 0;cursor:pointer">
-        <span style="font-size:13px;color:var(--text-1);font-weight:600">Activer la biométrie</span>
+        <span style="font-size:13px;color:var(--text-1);font-weight:600">${t('w7_activerBio')}</span>
         <input type="checkbox" ${s.biometricEnabled ? 'checked' : ''} onchange="setSecurity('biometricEnabled',this.checked)" style="transform:scale(1.5)">
       </label>
-      ${!window.PublicKeyCredential ? `<div style="font-size:11px;color:#F59E0B;margin-top:6px">⚠ WebAuthn non supporté sur cet appareil.</div>` : ''}
+      ${!window.PublicKeyCredential ? `<div style="font-size:11px;color:#F59E0B;margin-top:6px">${t('w7_webauthnNon')}</div>` : ''}
       ${s.biometricEnabled && localStorage.getItem('stockr_webauthn_cred') ? `<div style="font-size:11px;color:#10B981;margin-top:6px">✅ Capteur biométrique enrôlé — vous pouvez vous connecter par biométrie</div>` : ''}
-      ${window.PublicKeyCredential && window.location.protocol !== 'https:' && window.location.hostname !== 'localhost' ? `<div style="font-size:11px;color:#F59E0B;margin-top:6px">⚠ HTTPS requis : la biométrie ne fonctionne qu'en HTTPS</div>` : ''}
+      ${window.PublicKeyCredential && window.location.protocol !== 'https:' && window.location.hostname !== 'localhost' ? `<div style="font-size:11px;color:#F59E0B;margin-top:6px">${t('w7_httpsRequis')}</div>` : ''}
     </div>
 
     <!-- Timeout session -->
     <div class="card" style="margin-bottom:12px">
       <div class="card-title">⏱ Expiration de session</div>
-      <div style="font-size:12px;color:var(--text-3);margin-bottom:10px">Déconnexion automatique après inactivité.</div>
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:10px">${t('w7_deconnexionAuto')}</div>
       <select class="input" onchange="setSecurity('sessionTimeoutMin',parseInt(this.value))">
         ${[[15,'15 minutes'],[30,'30 minutes'],[60,'1 heure'],[120,'2 heures'],[0,'Jamais']].map(([v,lbl]) => `
           <option value="${v}" ${s.sessionTimeoutMin===v?'selected':''}>${lbl}</option>
@@ -19797,8 +19937,8 @@ function vSecurity() {
 
     <!-- Tentatives récentes -->
     <div class="card" style="margin-bottom:12px">
-      <div class="card-title">📊 Connexions récentes</div>
-      ${recentAttempts.length === 0 ? `<div style="font-size:12px;color:var(--text-3);padding:10px 0">Aucune tentative enregistrée</div>` :
+      <div class="card-title">${t('w7_connexionsRec')}</div>
+      ${recentAttempts.length === 0 ? `<div style="font-size:12px;color:var(--text-3);padding:10px 0">${t('w7_aucuneTentative')}</div>` :
         recentAttempts.map(at => `
           <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:12px">
             <div style="font-size:16px">${at.success ? '✅' : '❌'}</div>
@@ -20544,7 +20684,7 @@ function vExports() {
       <div style="font-size:12px;color:var(--text-3);margin-bottom:10px">Rapports professionnels imprimables (A4, en-tête coloré, stats)</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
         <button class="btn btn-ghost" onclick="S.period='30d';generateBilanReportPDF()" style="padding:12px;text-align:left;display:flex;flex-direction:column;align-items:flex-start;gap:2px;grid-column:1/-1;border:1.5px solid var(--accent);background:linear-gradient(135deg,rgba(124,115,255,.07),transparent)">
-          <div style="font-weight:800;font-size:13px;color:var(--text-1)">🧾 Bilan financier signé <span style="font-size:10px;color:var(--accent);font-weight:700">· recommandé</span></div>
+          <div style="font-weight:800;font-size:13px;color:var(--text-1)">${t('w7_bilanSigne')} <span style="font-size:10px;color:var(--accent);font-weight:700">${t('w7_recommande')}</span></div>
           <div style="font-size:11px;color:var(--text-3)">CA, bénéfice, marge, évolution, catégories, top produits — 30 derniers jours</div>
         </button>
         <button class="btn btn-ghost" onclick="generateStockReportPDF()" style="padding:12px;text-align:left;display:flex;flex-direction:column;align-items:flex-start;gap:2px">
@@ -20580,18 +20720,18 @@ function vExports() {
         <button class="btn btn-primary" onclick="exportSalesXLSX()" style="padding:11px">💰 Ventes</button>
         <button class="btn btn-primary" onclick="exportClientsXLSX()" style="padding:11px">👥 Clients</button>
       </div>
-      <button class="btn btn-primary" onclick="exportFullXLSX()" style="margin-top:10px;background:linear-gradient(135deg,#059669,#0d9488);width:100%">📚 Export complet (toutes les tables)</button>
+      <button class="btn btn-primary" onclick="exportFullXLSX()" style="margin-top:10px;background:linear-gradient(135deg,#059669,#0d9488);width:100%">${t('w7_exportComplet')}</button>
     </div>
 
     <!-- CSV -->
     <div class="card" style="margin-bottom:12px">
       <div class="card-title" style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">📄</span> Exports CSV</div>
-      <div style="font-size:12px;color:var(--text-3);margin-bottom:10px">Format universel (comptable, base de données)</div>
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:10px">${t('w7_formatUniversel')}</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
         <button class="btn btn-ghost" onclick="exportArticlesCSV()">Articles CSV</button>
         <button class="btn btn-ghost" onclick="exportProductsCSV()">Produits CSV</button>
         <button class="btn btn-ghost" onclick="exportSalesCSV()">Ventes CSV</button>
-        <button class="btn btn-ghost" onclick="exportAllCSV()">Tout en CSV</button>
+        <button class="btn btn-ghost" onclick="exportAllCSV()">${t('w7_toutCsv')}</button>
       </div>
     </div>
 
@@ -28082,7 +28222,7 @@ function vSocialSetup() {
 
     <div style="display:flex;gap:8px;margin-bottom:12px">
       <button class="btn btn-ghost" style="flex:1" onclick="testSocialConnection('${pid}')">🧪 Tester</button>
-      <button class="btn btn-primary" style="flex:1" onclick="saveSocialSetup('${pid}')">💾 Enregistrer</button>
+      <button class="btn btn-primary" style="flex:1" onclick="saveSocialSetup('${pid}')">${t('w7_enregistrer')}</button>
     </div>
     ${connected ? `<button class="btn" style="width:100%;color:var(--danger);border:1px solid var(--danger);background:transparent" onclick="toggleSocialAccount('${pid}','${meta.name}')">🔌 Déconnecter ${meta.name}</button>` : ''}
   </div>`;
@@ -30622,7 +30762,7 @@ function vWhatsAppSetup() {
 
     <div style="display:flex;gap:8px;margin-bottom:12px">
       <button class="btn btn-ghost" style="flex:1" onclick="testWhatsAppConnection()">🧪 Tester l'envoi</button>
-      <button class="btn btn-primary" style="flex:1" onclick="saveWhatsAppSetup()">💾 Enregistrer</button>
+      <button class="btn btn-primary" style="flex:1" onclick="saveWhatsAppSetup()">${t('w7_enregistrer')}</button>
     </div>
     ${connected ? `<button class="btn" style="width:100%;color:var(--danger);border:1px solid var(--danger);background:transparent" onclick="disconnectIntegration('whatsapp-business','WhatsApp Business')">🔌 Déconnecter WhatsApp</button>` : ''}
   </div>
@@ -30917,7 +31057,7 @@ function vSmsSetup() {
 
     <div style="display:flex;gap:8px;margin-bottom:12px">
       <button class="btn btn-ghost" style="flex:1" onclick="testSmsConnection()">🧪 Envoyer SMS test</button>
-      <button class="btn btn-primary" style="flex:1" onclick="saveSmsSetup()">💾 Enregistrer</button>
+      <button class="btn btn-primary" style="flex:1" onclick="saveSmsSetup()">${t('w7_enregistrer')}</button>
     </div>
     ${connected ? `<button class="btn" style="width:100%;color:var(--danger);border:1px solid var(--danger);background:transparent" onclick="disconnectIntegration('sms-api','SMS API')">🔌 Déconnecter SMS</button>` : ''}
   </div>`;
@@ -31505,7 +31645,7 @@ function vEcommerceSetup() {
 
     <div style="display:flex;gap:8px;margin-bottom:12px">
       <button class="btn btn-ghost" style="flex:1" onclick="testEcommerceConnection('${provider}')">🧪 Tester connexion</button>
-      <button class="btn btn-primary" style="flex:1" onclick="saveEcommerceSetup('${provider}')">💾 Enregistrer</button>
+      <button class="btn btn-primary" style="flex:1" onclick="saveEcommerceSetup('${provider}')">${t('w7_enregistrer')}</button>
     </div>
     ${connected ? `<button class="btn" style="width:100%;color:var(--danger);border:1px solid var(--danger);background:transparent" onclick="disconnectIntegration('${provider}','${meta.name}')">🔌 Déconnecter ${meta.name}</button>` : ''}
   </div>`;
@@ -31796,7 +31936,7 @@ function vSheetsSetup() {
 
     <div style="display:flex;gap:8px;margin-bottom:12px">
       <button class="btn btn-ghost" style="flex:1" onclick="testSheetsConnection()">🧪 Tester</button>
-      <button class="btn btn-primary" style="flex:1" onclick="saveSheetsSetup()">💾 Enregistrer</button>
+      <button class="btn btn-primary" style="flex:1" onclick="saveSheetsSetup()">${t('w7_enregistrer')}</button>
     </div>
     ${connected ? `<button class="btn" style="width:100%;color:var(--danger);border:1px solid var(--danger);background:transparent" onclick="disconnectIntegration('google-sheets','Google Sheets')">🔌 Déconnecter</button>` : ''}
   </div>`;
@@ -31964,7 +32104,7 @@ function vPosSetup() {
 
     <div style="display:flex;gap:8px;margin-bottom:12px">
       <button class="btn btn-ghost" style="flex:1" onclick="testPosConnection()">🧪 Tester connexion</button>
-      <button class="btn btn-primary" style="flex:1" onclick="savePosSetup()">💾 Enregistrer</button>
+      <button class="btn btn-primary" style="flex:1" onclick="savePosSetup()">${t('w7_enregistrer')}</button>
     </div>
     ${connected ? `<button class="btn" style="width:100%;color:var(--danger);border:1px solid var(--danger);background:transparent" onclick="disconnectIntegration('pos','Caisse POS')">🔌 Déconnecter</button>` : ''}
   </div>`;
@@ -32188,7 +32328,7 @@ function vComptaSetup() {
 
     <div style="display:flex;gap:8px;margin-bottom:12px">
       <button class="btn btn-ghost" style="flex:1" onclick="testComptaConnection()">🧪 Tester</button>
-      <button class="btn btn-primary" style="flex:1" onclick="saveComptaSetup()">💾 Enregistrer</button>
+      <button class="btn btn-primary" style="flex:1" onclick="saveComptaSetup()">${t('w7_enregistrer')}</button>
     </div>
     ${connected ? `<button class="btn" style="width:100%;color:var(--danger);border:1px solid var(--danger);background:transparent" onclick="disconnectIntegration('comptabilite','Comptabilité OHADA')">🔌 Déconnecter</button>` : ''}
   </div>`;
