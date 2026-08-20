@@ -270,6 +270,93 @@ const API_BASE = (location.hostname === 'localhost' || location.hostname === '12
 // ── i18n ─────────────────────────────────────
 const LANGS = {
   fr: {
+    w8_zonesLivraison: "Zones de livraison",
+    w8_livraisonDom: "🚚 Livraison à domicile",
+    w8_retraitSurPlace: "🏬 Retrait sur place (Click & Collect)",
+    w8_pointRetrait: "🏪 Point de retrait (votre boutique)",
+    w8_adresseRetrait: "Adresse de retrait précise",
+    w8_tarifParZone: "🚚 Tarif par zone (optionnel)",
+    w8_laissezVideTarif: "Laissez vide pour utiliser le tarif par défaut.",
+    w8_appliqueZones: "Appliqué aux zones sans tarif spécifique.",
+    w8_tempsPrepa: "Temps de préparation (min)",
+    w8_telResponsable: "Téléphone responsable",
+    w8_notifierCoursier: "Notifier le coursier par SMS",
+    w8_emailLivraison: "Email notifications livraison",
+    w8_envoiAutoCmd: "Envoi automatique des commandes",
+    w8_affectCoursier: "Affectation coursier instantanée",
+    w8_lienSuivi: "Lien de suivi + message pré-rempli au client",
+    w8_paramApparence: "Paramètres d'apparence",
+    w8_personnalisez: "Personnalisez le look de votre site",
+    w8_couleurMarque: "🎨 Couleur de la marque",
+    w8_couleurTheme: "Couleur du thème",
+    w8_couleurPrincBout: "La couleur principale de votre boutique",
+    w8_logoBoutique: "Logo de la boutique",
+    w8_changerLogo: "Changer le logo",
+    w8_nomBoutique: "Nom de la boutique",
+    w8_nomStore: "Nom du store (tel qu'affiché côté client)",
+    w8_utiliseSiteFact: "Utilisé dans le site et les factures",
+    w8_orgPage: "📦 Organisation de la page",
+    w8_animBoutonAchat: "Animation du bouton d'achat",
+    w8_themeCouleursOrg: "Thème, couleurs, organisation",
+    w8_editeurDirect: "Éditeur visuel en direct",
+    w8_couleursPolice: "Couleurs, police, sections — aperçu instantané",
+    w8_faqTemoignages: "FAQ & Témoignages",
+    w8_horairesLivr: "Horaires & Livraison",
+    w8_outilsAvances: "Outils avancés du site",
+    w8_codePersonnalise: "Code personnalisé",
+    w8_cssHtmlJs: "CSS, HTML, JS avancé",
+    w8_generationSite: "Génération du site",
+    w8_copierLien: "Copier le lien",
+    w8_voirProduits: "Voir produits",
+    w8_revenusBoutique: "REVENUS BOUTIQUE",
+    w8_aTraiterMaj: "À TRAITER",
+    w8_aTraiter: "À traiter",
+    w8_honorees: "HONORÉES",
+    w8_details: "Détails →",
+    w8_aucuneCommande: "Aucune commande pour le moment",
+    w8_caBoutique: "CA boutique, commandes, top produits, visiteurs",
+    w8_aucunArticleStock: "Aucun article en stock.",
+    w8_ajouterAuStock: "Ajouter au stock",
+    w8_codePromo: "Code promo",
+    w8_valeurReduction: "Valeur de la réduction",
+    w8_dateDebut: "Date de début",
+    w8_utilisationsMax: "Utilisations max par client",
+    w8_clientsPourront: "Les clients pourront utiliser le code",
+    w8_aucunProduitRed: "Aucun produit — la réduction s'appliquera à tout",
+    w8_laissezDecoche: "Laissez tout décoché pour appliquer à tous les produits",
+    w8_toutCocher: "Tout cocher",
+    w8_toutDecocher: "Tout décocher",
+    w8_aucunProduitCree: "Aucun produit. Crée des produits d'abord.",
+    w8_activerImmediat: "Activer immédiatement",
+    w8_toutOutilsVente: "Tous vos outils de vente au même endroit",
+    w8_moyensPaiement: "Moyens de paiement",
+    w8_moyensAcceptes: "Moyens de paiement acceptés",
+    w8_methodesPaiement: "Méthodes de paiement",
+    w8_gererPaiements: "Gérer les paiements →",
+    w8_aucunPaiementRecu: "Aucun paiement reçu",
+    w8_aucunConfigPaie: "Aucun — configurez dans Paiements",
+    w8_demanderPaiement: "💰 Demander un paiement",
+    w8_encaisserAbos: "💰 Encaisser les abonnements",
+    w8_activationAuto: "🔁 Activation automatique après paiement",
+    w8_enregistrerLiens: "💾 Enregistrer les liens",
+    w8_numWhatsappBiz: "Numéro WhatsApp Business",
+    w8_clientsCommandent: "Les clients commanderont via ce numéro",
+    w8_numVerifie: "● Numéro vérifié SMS",
+    w8_connectezSystemes: "Connectez BARO à vos systèmes externes",
+    w8_aucunWebhook: "Aucun webhook configuré",
+    w8_aucunEvenement: "Aucun événement sélectionné",
+    w8_urlRedirection: "URL de redirection / succès",
+    w8_stockeeChiffree: "🔒 Stockée localement et chiffrée lors des appels API",
+    w8_regenerer: "🔄 Régénérer",
+    w8_revoquer: "🗑 Révoquer",
+    w8_testerConnexion: "🧪 Tester la connexion",
+    w8_commentIdents: "Comment obtenir vos identifiants ?",
+    w8_epEtatStock: "— État du stock",
+    w8_epListeProduits: "— Liste des produits",
+    w8_epListeClients: "— Liste des clients",
+    w8_epEnregVente: "— Enregistrer une vente",
+    w8_epCreerCommande: "— Créer une commande",
+    w8_ajouterManuel: "Ajouter manuellement",
     w7_apparenceSub: "Personnalisez l'expérience visuelle",
     w7_theme: "🌓 Thème",
     w7_couleurPrinc: "🎨 Couleur principale",
@@ -788,6 +875,93 @@ const LANGS = {
     version:'Version',
   },
   en: {
+    w8_zonesLivraison: "Delivery zones",
+    w8_livraisonDom: "🚚 Home delivery",
+    w8_retraitSurPlace: "🏬 Click & Collect",
+    w8_pointRetrait: "🏪 Pickup point (your shop)",
+    w8_adresseRetrait: "Exact pickup address",
+    w8_tarifParZone: "🚚 Rate per zone (optional)",
+    w8_laissezVideTarif: "Leave empty to use the default rate.",
+    w8_appliqueZones: "Applied to zones with no specific rate.",
+    w8_tempsPrepa: "Preparation time (min)",
+    w8_telResponsable: "Manager phone",
+    w8_notifierCoursier: "Notify the courier by SMS",
+    w8_emailLivraison: "Delivery notification email",
+    w8_envoiAutoCmd: "Automatic order dispatch",
+    w8_affectCoursier: "Instant courier assignment",
+    w8_lienSuivi: "Tracking link + pre-filled customer message",
+    w8_paramApparence: "Appearance settings",
+    w8_personnalisez: "Customise the look of your site",
+    w8_couleurMarque: "🎨 Brand colour",
+    w8_couleurTheme: "Theme colour",
+    w8_couleurPrincBout: "The main colour of your shop",
+    w8_logoBoutique: "Shop logo",
+    w8_changerLogo: "Change the logo",
+    w8_nomBoutique: "Shop name",
+    w8_nomStore: "Store name (as shown to customers)",
+    w8_utiliseSiteFact: "Used on the site and on invoices",
+    w8_orgPage: "📦 Page layout",
+    w8_animBoutonAchat: "Buy button animation",
+    w8_themeCouleursOrg: "Theme, colours, layout",
+    w8_editeurDirect: "Live visual editor",
+    w8_couleursPolice: "Colours, font, sections — instant preview",
+    w8_faqTemoignages: "FAQ & testimonials",
+    w8_horairesLivr: "Opening hours & delivery",
+    w8_outilsAvances: "Advanced site tools",
+    w8_codePersonnalise: "Custom code",
+    w8_cssHtmlJs: "Advanced CSS, HTML, JS",
+    w8_generationSite: "Site generation",
+    w8_copierLien: "Copy the link",
+    w8_voirProduits: "View products",
+    w8_revenusBoutique: "SHOP REVENUE",
+    w8_aTraiterMaj: "TO PROCESS",
+    w8_aTraiter: "To process",
+    w8_honorees: "FULFILLED",
+    w8_details: "Details →",
+    w8_aucuneCommande: "No orders yet",
+    w8_caBoutique: "Shop revenue, orders, top products, visitors",
+    w8_aucunArticleStock: "No items in stock.",
+    w8_ajouterAuStock: "Add to stock",
+    w8_codePromo: "Promo code",
+    w8_valeurReduction: "Discount value",
+    w8_dateDebut: "Start date",
+    w8_utilisationsMax: "Max uses per customer",
+    w8_clientsPourront: "Customers will be able to use the code",
+    w8_aucunProduitRed: "No product — the discount will apply to everything",
+    w8_laissezDecoche: "Leave everything unchecked to apply to all products",
+    w8_toutCocher: "Check all",
+    w8_toutDecocher: "Uncheck all",
+    w8_aucunProduitCree: "No products. Create products first.",
+    w8_activerImmediat: "Activate immediately",
+    w8_toutOutilsVente: "All your sales tools in one place",
+    w8_moyensPaiement: "Payment methods",
+    w8_moyensAcceptes: "Accepted payment methods",
+    w8_methodesPaiement: "Payment methods",
+    w8_gererPaiements: "Manage payments →",
+    w8_aucunPaiementRecu: "No payments received",
+    w8_aucunConfigPaie: "None — set up in Payments",
+    w8_demanderPaiement: "💰 Request a payment",
+    w8_encaisserAbos: "💰 Collect subscriptions",
+    w8_activationAuto: "🔁 Automatic activation after payment",
+    w8_enregistrerLiens: "💾 Save the links",
+    w8_numWhatsappBiz: "WhatsApp Business number",
+    w8_clientsCommandent: "Customers will order through this number",
+    w8_numVerifie: "● Number verified by SMS",
+    w8_connectezSystemes: "Connect BARO to your external systems",
+    w8_aucunWebhook: "No webhook configured",
+    w8_aucunEvenement: "No event selected",
+    w8_urlRedirection: "Redirect / success URL",
+    w8_stockeeChiffree: "🔒 Stored locally and encrypted during API calls",
+    w8_regenerer: "🔄 Regenerate",
+    w8_revoquer: "🗑 Revoke",
+    w8_testerConnexion: "🧪 Test the connection",
+    w8_commentIdents: "How do I get my credentials?",
+    w8_epEtatStock: "— Stock status",
+    w8_epListeProduits: "— Product list",
+    w8_epListeClients: "— Customer list",
+    w8_epEnregVente: "— Record a sale",
+    w8_epCreerCommande: "— Create an order",
+    w8_ajouterManuel: "Add manually",
     w7_apparenceSub: "Personalise the look and feel",
     w7_theme: "🌓 Theme",
     w7_couleurPrinc: "🎨 Main colour",
@@ -16552,7 +16726,7 @@ function vBillingSetup() {
   return `
   <div class="sub-hero">
     <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('pricing')">${IC.left}</button>
-    <div class="sub-hero-title">💰 Encaisser les abonnements</div>
+    <div class="sub-hero-title">${t('w8_encaisserAbos')}</div>
     <div class="sub-hero-sub">Colle tes liens de paiement — l'argent arrive sur ton compte</div>
   </div>
   <div class="container">
@@ -16579,12 +16753,12 @@ function vBillingSetup() {
       <input id="bl-${p.id}-yearly" class="input" type="url" placeholder="Lien paiement annuel" value="${(links[p.id].yearly||'').replace(/"/g,'&quot;')}" style="font-size:12px !important;font-family:monospace">
     </div>`).join('')}
 
-    <button class="btn btn-primary" style="margin-top:6px" onclick="saveBillingLinks()">💾 Enregistrer les liens</button>
+    <button class="btn btn-primary" style="margin-top:6px" onclick="saveBillingLinks()">${t('w8_enregistrerLiens')}</button>
 
     <div class="card" style="margin-top:14px;background:var(--gray-1)">
-      <div style="font-size:13px;font-weight:800;margin-bottom:6px">🔁 Activation automatique après paiement</div>
+      <div style="font-size:13px;font-weight:800;margin-bottom:6px">${t('w8_activationAuto')}</div>
       <div style="font-size:12px;color:var(--text-2);line-height:1.6">
-        Dans ton fournisseur, mets l'<strong>URL de redirection / succès</strong> sur :<br>
+        Dans ton fournisseur, mets l'<strong>${t('w8_urlRedirection')}</strong> sur :<br>
         <code style="background:var(--surface);padding:3px 8px;border-radius:6px;font-size:11px;display:inline-block;margin-top:4px;word-break:break-all">${location.origin}${location.pathname}?baro_paid=pro</code><br>
         <span style="font-size:11px;color:var(--text-3)">(remplace <strong>pro</strong> par starter/enterprise selon le lien). Le plan s'activera tout seul au retour.</span>
       </div>
@@ -20859,7 +21033,7 @@ function vBoutique() {
     </div>
     <div style="display:flex;gap:8px">
       <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${vitrineCount}</div><div class="hero-stat-lbl">${bt==='reseller'?'Articles':bt==='maker'?'Produits':'En vitrine'}</div></div>
-      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${pendingOrders.length}</div><div class="hero-stat-lbl">À traiter</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${pendingOrders.length}</div><div class="hero-stat-lbl">${t('w8_aTraiter')}</div></div>
       <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${bc.visits || 0}</div><div class="hero-stat-lbl">Visites</div></div>
     </div>
   </div>
@@ -20868,8 +21042,8 @@ function vBoutique() {
       <div style="display:flex;align-items:center;gap:13px">
         <div style="width:46px;height:46px;border-radius:13px;background:linear-gradient(135deg,#7C73FF,#4F46E5);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;box-shadow:0 6px 16px -6px rgba(79,70,229,.6)">🎨</div>
         <div style="flex:1;min-width:0">
-          <div style="font-size:15px;font-weight:800;color:var(--text-1)">Éditeur visuel en direct</div>
-          <div style="font-size:12px;color:var(--text-3);margin-top:1px">Couleurs, police, sections — aperçu instantané</div>
+          <div style="font-size:15px;font-weight:800;color:var(--text-1)">${t('w8_editeurDirect')}</div>
+          <div style="font-size:12px;color:var(--text-3);margin-top:1px">${t('w8_couleursPolice')}</div>
         </div>
         <div style="color:var(--accent)">${IC.chevron}</div>
       </div>
@@ -20894,8 +21068,8 @@ function vBoutique() {
     <div class="card" style="margin-bottom:10px;padding:0;overflow:hidden">
       <div style="padding:14px 15px 12px;background:linear-gradient(135deg,rgba(16,185,129,.12),transparent)">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
-          <div style="font-size:11px;font-weight:800;letter-spacing:.5px;color:var(--text-3)">REVENUS BOUTIQUE</div>
-          <button class="btn" style="padding:5px 11px;font-size:11px;font-weight:700;background:var(--gray-1);border:1px solid var(--border);color:var(--text-2)" onclick="nav('boutique-analytics')">Détails →</button>
+          <div style="font-size:11px;font-weight:800;letter-spacing:.5px;color:var(--text-3)">${t('w8_revenusBoutique')}</div>
+          <button class="btn" style="padding:5px 11px;font-size:11px;font-weight:700;background:var(--gray-1);border:1px solid var(--border);color:var(--text-2)" onclick="nav('boutique-analytics')">${t('w8_details')}</button>
         </div>
         <div style="font-size:27px;font-weight:800;margin-top:3px;letter-spacing:-.02em">${fmt(P.ca)} <span style="font-size:14px;font-weight:600;color:var(--text-3)">${sym()}</span></div>
         <div style="font-size:12px;color:var(--text-3);margin-top:2px">${fmt(P.caMonth)} ${sym()} ce mois · ${P.count} commande${P.count>1?'s':''}</div>
@@ -20907,11 +21081,11 @@ function vBoutique() {
         </div>
         <div style="padding:11px 8px;text-align:center;border-right:1px solid var(--border);cursor:pointer" onclick="document.getElementById('bq-orders')?.scrollIntoView({behavior:'smooth'})">
           <div style="font-size:15px;font-weight:800;color:${P.pending.length?'var(--warning)':'var(--text-1)'}">${P.pending.length}</div>
-          <div style="font-size:9.5px;color:var(--text-3);font-weight:600;letter-spacing:.3px;margin-top:1px">À TRAITER</div>
+          <div style="font-size:9.5px;color:var(--text-3);font-weight:600;letter-spacing:.3px;margin-top:1px">${t('w8_aTraiterMaj')}</div>
         </div>
         <div style="padding:11px 8px;text-align:center">
           <div style="font-size:15px;font-weight:800;color:var(--success)">${P.paid.length}</div>
-          <div style="font-size:9.5px;color:var(--text-3);font-weight:600;letter-spacing:.3px;margin-top:1px">HONORÉES</div>
+          <div style="font-size:9.5px;color:var(--text-3);font-weight:600;letter-spacing:.3px;margin-top:1px">${t('w8_honorees')}</div>
         </div>
       </div>
       <div style="padding:13px 15px;border-top:1px solid var(--border)">
@@ -20992,7 +21166,7 @@ function vBoutique() {
     <div class="card" style="margin-bottom:10px">
       <div class="card-title">Configuration</div>
       <div class="form-group">
-        <label class="form-label">Nom de la boutique</label>
+        <label class="form-label">${t('w8_nomBoutique')}</label>
         <input class="input" value="${bc.name || S.session?.business || ''}" oninput="updateBoutiqueConfig('name',this.value)" placeholder="${S.session?.business || 'Ma Boutique'}">
       </div>
       <div class="form-group">
@@ -21001,7 +21175,7 @@ function vBoutique() {
       </div>
       <div class="form-group" style="border-top:1px solid var(--border);padding-top:12px;margin-top:4px">
         <label class="form-label" style="display:flex;align-items:center;justify-content:space-between">
-          <span>🚚 Livraison à domicile</span>
+          <span>${t('w8_livraisonDom')}</span>
           <label class="toggle-switch"><input type="checkbox" ${bc.deliveryDisabled?'':'checked'} onchange="updateBoutiqueConfig('deliveryDisabled',!this.checked);render()"><span class="toggle-track"></span></label>
         </label>
         <div style="font-size:11px;color:var(--text-3);margin-top:2px">Désactivez pour un commerce en <strong>retrait uniquement</strong> (restaurant, atelier, comptoir) : la boutique n'affiche plus ni frais, ni zones, ni choix de livraison.</div>
@@ -21011,11 +21185,11 @@ function vBoutique() {
       <div class="form-group">
         <label class="form-label">Frais de livraison par défaut (${sym()})</label>
         <input class="input" type="number" value="${bc.deliveryFees || 0}" oninput="updateBoutiqueConfig('deliveryFees',parseFloat(this.value)||0)">
-        <div style="font-size:11px;color:var(--text-3);margin-top:4px">Appliqué aux zones sans tarif spécifique.</div>
+        <div style="font-size:11px;color:var(--text-3);margin-top:4px">${t('w8_appliqueZones')}</div>
       </div>`}
       <div class="form-group" style="border-top:1px solid var(--border);padding-top:12px;margin-top:4px">
         <label class="form-label" style="display:flex;align-items:center;justify-content:space-between">
-          <span>🏬 Retrait sur place (Click & Collect)</span>
+          <span>${t('w8_retraitSurPlace')}</span>
           <label class="toggle-switch"><input type="checkbox" ${bc.pickupEnabled?'checked':''} onchange="updateBoutiqueConfig('pickupEnabled',this.checked);render()"><span class="toggle-track"></span></label>
         </label>
         <div style="font-size:11px;color:var(--text-3);margin:2px 0 8px">Le client choisit de venir chercher sa commande (gratuit, sans livraison).</div>
@@ -21032,32 +21206,32 @@ function vBoutique() {
         <div style="font-size:11px;color:var(--text-3);margin-top:4px">Incite le client à remplir son panier pour la livraison gratuite.</div>
       </div>
       <div class="form-group">
-        <label class="form-label">Zones de livraison</label>
+        <label class="form-label">${t('w8_zonesLivraison')}</label>
         <div class="zone-chips">
           ${['Abidjan','Cocody','Plateau','Yopougon','Marcory','Treichville','Adjamé','Abobo','Bouaké','San-Pédro','Yamoussoukro','Daloa','Man','Korhogo'].map(z => `
           <span class="zone-chip ${(bc.deliveryZones||[]).includes(z)?'active':''}" onclick="toggleDeliveryZone('${z}')">${z}</span>`).join('')}
         </div>
       </div>
       ${(bc.deliveryZones||[]).length ? `<div class="form-group">
-        <label class="form-label">🚚 Tarif par zone (optionnel)</label>
+        <label class="form-label">${t('w8_tarifParZone')}</label>
         ${(bc.deliveryZones||[]).map(z => `<div style="display:flex;align-items:center;gap:8px;margin-bottom:7px">
           <span style="flex:1;font-size:13px;font-weight:600">${z}</span>
           <input class="input" type="number" inputmode="numeric" style="width:120px;text-align:right" placeholder="déf. ${bc.deliveryFees||0}" value="${(bc.zoneFees&&bc.zoneFees[z]!=null)?bc.zoneFees[z]:''}" oninput="updateBoutiqueZoneFee('${z.replace(/'/g,"\\'")}',this.value)">
           <span style="font-size:12px;color:var(--text-3)">${sym()}</span>
         </div>`).join('')}
-        <div style="font-size:11px;color:var(--text-3);margin-top:2px">Laissez vide pour utiliser le tarif par défaut.</div>
+        <div style="font-size:11px;color:var(--text-3);margin-top:2px">${t('w8_laissezVideTarif')}</div>
       </div>` : ''}`}
     </div>
 
     <div class="card" style="margin-bottom:10px">
       <div class="card-title">${IC.phone} Contact & Apparence</div>
       <div class="form-group">
-        <label class="form-label">Numéro WhatsApp Business</label>
+        <label class="form-label">${t('w8_numWhatsappBiz')}</label>
         <input class="input" type="tel" value="${bc.whatsappNumber || ''}" oninput="updateBoutiqueConfig('whatsappNumber',this.value)" placeholder="+225 07 XX XX XX XX">
-        <div style="font-size:10px;color:var(--text-3);margin-top:2px">Les clients commanderont via ce numéro</div>
+        <div style="font-size:10px;color:var(--text-3);margin-top:2px">${t('w8_clientsCommandent')}</div>
       </div>
       <div class="form-group">
-        <label class="form-label">Couleur du thème</label>
+        <label class="form-label">${t('w8_couleurTheme')}</label>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
           ${[
             {id:'indigo',  color:'#4F46E5', name:'Indigo'},
@@ -21076,39 +21250,39 @@ function vBoutique() {
         </div>
       </div>
       <div class="form-group">
-        <label class="form-label">Logo de la boutique</label>
+        <label class="form-label">${t('w8_logoBoutique')}</label>
         <div style="display:flex;align-items:center;gap:10px">
           ${localStorage.getItem('baro_logo') ? `<img src="${localStorage.getItem('baro_logo')}" style="width:48px;height:48px;border-radius:10px;object-fit:cover">` : `<div style="width:48px;height:48px;border-radius:10px;background:var(--gray-1);display:flex;align-items:center;justify-content:center;color:var(--text-3)">${IC.camera}</div>`}
           <div>
-            <div style="font-size:11px;color:var(--text-3)">Utilisé dans le site et les factures</div>
-            <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px;margin-top:4px" onclick="uploadLogo()">Changer le logo</button>
+            <div style="font-size:11px;color:var(--text-3)">${t('w8_utiliseSiteFact')}</div>
+            <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px;margin-top:4px" onclick="uploadLogo()">${t('w8_changerLogo')}</button>
           </div>
         </div>
       </div>
       <div class="form-group">
-        <label class="form-label">Moyens de paiement acceptés</label>
+        <label class="form-label">${t('w8_moyensAcceptes')}</label>
         <div style="display:flex;flex-wrap:wrap;gap:6px">
           ${(S.paymentMethods||[]).filter(m=>m.active).map(m => `
           <span style="background:var(--accent-light);color:var(--accent);padding:4px 10px;border-radius:8px;font-size:11px;font-weight:600">${m.name}</span>`).join('') || '<span style="font-size:12px;color:var(--text-3)">Aucun — configurez dans Paiements</span>'}
         </div>
-        <button class="btn btn-ghost" style="font-size:11px;margin-top:6px" onclick="nav('payments')">Gérer les paiements →</button>
+        <button class="btn btn-ghost" style="font-size:11px;margin-top:6px" onclick="nav('payments')">${t('w8_gererPaiements')}</button>
       </div>
     </div>
 
-    <div class="section-hd"><span class="section-lbl">Outils avancés du site</span></div>
+    <div class="section-hd"><span class="section-lbl">${t('w8_outilsAvances')}</span></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
       <button class="boutique-tool-card" onclick="nav('boutique-analytics')" style="grid-column:1/-1;background:linear-gradient(135deg,rgba(16,185,129,.10),rgba(5,150,105,.04));border:1px solid rgba(16,185,129,.22)">
         <div class="btc-ico" style="background:#10B98110;color:#059669">📈</div>
         <div class="btc-txt">
           <div class="btc-title">Analytics & Revenus</div>
-          <div class="btc-sub">CA boutique, commandes, top produits, visiteurs</div>
+          <div class="btc-sub">${t('w8_caBoutique')}</div>
         </div>
       </button>
       <button class="boutique-tool-card" onclick="nav('boutique-appearance')">
         <div class="btc-ico" style="background:#4F46E510;color:#4F46E5">🎨</div>
         <div class="btc-txt">
           <div class="btc-title">Apparence</div>
-          <div class="btc-sub">Thème, couleurs, organisation</div>
+          <div class="btc-sub">${t('w8_themeCouleursOrg')}</div>
         </div>
       </button>
       <button class="boutique-tool-card" onclick="nav('boutique-domain')">
@@ -21128,7 +21302,7 @@ function vBoutique() {
       <button class="boutique-tool-card" onclick="nav('boutique-hours')">
         <div class="btc-ico" style="background:#F59E0B10;color:#F59E0B">🕒</div>
         <div class="btc-txt">
-          <div class="btc-title">Horaires & Livraison</div>
+          <div class="btc-title">${t('w8_horairesLivr')}</div>
           <div class="btc-sub">${(bc.businessHours||[]).filter(h=>!h.closed).length}j/7 · ${bc.deliveryTime||'24-48h'}</div>
         </div>
       </button>
@@ -21142,7 +21316,7 @@ function vBoutique() {
       <button class="boutique-tool-card" onclick="nav('boutique-faq')">
         <div class="btc-ico" style="background:#A855F710;color:#A855F7">❓</div>
         <div class="btc-txt">
-          <div class="btc-title">FAQ & Témoignages</div>
+          <div class="btc-title">${t('w8_faqTemoignages')}</div>
           <div class="btc-sub">${(bc.faqs||[]).length} FAQ · ${(bc.testimonials||[]).length} avis</div>
         </div>
       </button>
@@ -21156,8 +21330,8 @@ function vBoutique() {
       <button class="boutique-tool-card" onclick="nav('boutique-code')">
         <div class="btc-ico" style="background:#F59E0B10;color:#F59E0B">&lt;/&gt;</div>
         <div class="btc-txt">
-          <div class="btc-title">Code personnalisé</div>
-          <div class="btc-sub">CSS, HTML, JS avancé</div>
+          <div class="btc-title">${t('w8_codePersonnalise')}</div>
+          <div class="btc-sub">${t('w8_cssHtmlJs')}</div>
         </div>
       </button>
     </div>
@@ -21172,7 +21346,7 @@ function vBoutique() {
       <div class="bgen-header">
         <div class="bgen-ico">${IC.globe}</div>
         <div class="bgen-head-txt">
-          <div class="bgen-title">Génération du site</div>
+          <div class="bgen-title">${t('w8_generationSite')}</div>
           <div class="bgen-sub">Générez votre site en un clic — toutes vos promos, bannières et avis seront inclus</div>
         </div>
       </div>
@@ -21193,13 +21367,13 @@ function vBoutique() {
     ${bt_showProducts() ? `
     <div class="section-hd">
       <span class="section-lbl">🏭 Produits finis en vitrine (${shopProducts.length})</span>
-      <button class="btn btn-ghost" style="font-size:11px;padding:4px 8px" onclick="selectAllBoutique('products')">Tout cocher</button>
+      <button class="btn btn-ghost" style="font-size:11px;padding:4px 8px" onclick="selectAllBoutique('products')">${t('w8_toutCocher')}</button>
     </div>
     ${S.products.length === 0 ? `
     <div class="empty" style="padding:24px">
       <div class="empty-ico">${IC.inbox}</div>
-      <div class="empty-text">Aucun produit. Crée des produits d'abord.</div>
-      <button class="btn btn-primary" style="max-width:200px" onclick="nav('products')">Voir produits</button>
+      <div class="empty-text">${t('w8_aucunProduitCree')}</div>
+      <button class="btn btn-primary" style="max-width:200px" onclick="nav('products')">${t('w8_voirProduits')}</button>
     </div>` : `
     ${_bqPickerChips('products', S.products)}
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
@@ -21218,7 +21392,7 @@ function vBoutique() {
     ${bt_showProducts() && (S.packs||[]).length > 0 ? `
     <div class="section-hd" style="margin-top:14px">
       <span class="section-lbl">🎁 Packs en vitrine (${shopPacks.length})</span>
-      <button class="btn btn-ghost" style="font-size:11px;padding:4px 8px" onclick="selectAllBoutique('packs')">Tout cocher</button>
+      <button class="btn btn-ghost" style="font-size:11px;padding:4px 8px" onclick="selectAllBoutique('packs')">${t('w8_toutCocher')}</button>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
       ${(S.packs||[]).filter(pk => pk.active !== false).map(pk => {
@@ -21239,13 +21413,13 @@ function vBoutique() {
     ${bt_showStock() && bt !== 'maker' ? `
     <div class="section-hd" style="margin-top:14px">
       <span class="section-lbl">📦 Articles en vitrine (${shopArticles.length})</span>
-      <button class="btn btn-ghost" style="font-size:11px;padding:4px 8px" onclick="selectAllBoutique('articles')">Tout cocher</button>
+      <button class="btn btn-ghost" style="font-size:11px;padding:4px 8px" onclick="selectAllBoutique('articles')">${t('w8_toutCocher')}</button>
     </div>
     ${(S.articles||[]).length === 0 ? `
     <div class="empty" style="padding:24px">
       <div class="empty-ico">${IC.box}</div>
-      <div class="empty-text">Aucun article en stock.</div>
-      <button class="btn btn-primary" style="max-width:200px" onclick="nav('pantry')">Ajouter au stock</button>
+      <div class="empty-text">${t('w8_aucunArticleStock')}</div>
+      <button class="btn btn-primary" style="max-width:200px" onclick="nav('pantry')">${t('w8_ajouterAuStock')}</button>
     </div>` : `
     ${_bqPickerChips('articles', (S.articles||[]).filter(a => (a.qty||0) > 0 || (bc.articles||[]).includes(a.id)))}
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
@@ -21267,7 +21441,7 @@ function vBoutique() {
     <div class="card" style="margin-bottom:14px">
       <div style="display:flex;gap:8px">
         <button class="btn btn-primary" style="flex:1" onclick="shareBoutiqueWhatsApp()">${IC.whatsapp} WhatsApp</button>
-        <button class="btn btn-ghost" style="flex:1" onclick="copyBoutiqueLink()">Copier le lien</button>
+        <button class="btn btn-ghost" style="flex:1" onclick="copyBoutiqueLink()">${t('w8_copierLien')}</button>
       </div>
     </div>
 
@@ -21277,8 +21451,8 @@ function vBoutique() {
     </div>
     ${orders.length === 0 ? `
     <div class="card" style="text-align:center;padding:20px">
-      <div style="color:var(--text-3);font-size:13px;margin-bottom:8px">Aucune commande pour le moment</div>
-      <button class="btn btn-ghost" style="font-size:12px" onclick="addBoutiqueOrder()">Ajouter manuellement</button>
+      <div style="color:var(--text-3);font-size:13px;margin-bottom:8px">${t('w8_aucuneCommande')}</div>
+      <button class="btn btn-ghost" style="font-size:12px" onclick="addBoutiqueOrder()">${t('w8_ajouterManuel')}</button>
     </div>` : orders.slice(0,20).map(o => `
     <div class="card" style="margin-bottom:8px;border-left:4px solid ${o.status==='pending'?'var(--warning)':o.status==='confirmed'?'var(--accent)':o.status==='delivered'?'var(--success)':'var(--gray-4)'}">
       <div style="display:flex;justify-content:space-between;align-items:flex-start">
@@ -22537,7 +22711,7 @@ ${_aboutText?`<div class="sec-eyebrow reveal"><span>La maison</span></div>
 </div>`:''}
 ${showReviews ? reviewsHTML : ''}
 <div class="pay-section reveal">
-  <div class="pay-section-title">Moyens de paiement acceptés</div>
+  <div class="pay-section-title">${t('w8_moyensAcceptes')}</div>
   <div class="pay-badges">${payHTML}</div>
 </div>
 ${_hasContact?`<div class="sec-eyebrow reveal"><span>Nous joindre</span></div>
@@ -23617,8 +23791,8 @@ function vBoutiqueAppearance() {
     <div class="page-header-row" style="margin-bottom:10px">
       <button class="back-btn-dark" onclick="nav('boutique')">${IC.left}</button>
       <div style="flex:1">
-        <div class="sub-hero-title">Paramètres d'apparence</div>
-        <div class="sub-hero-sub">Personnalisez le look de votre site</div>
+        <div class="sub-hero-title">${t('w8_paramApparence')}</div>
+        <div class="sub-hero-sub">${t('w8_personnalisez')}</div>
       </div>
       <button class="btn btn-primary" style="padding:6px 14px;font-size:12px" onclick="previewBoutiqueSite()">${IC.globe} Aperçu</button>
     </div>
@@ -23647,8 +23821,8 @@ function vBoutiqueAppearance() {
     </div>
 
     <div class="card" style="margin-bottom:10px">
-      <div class="card-title">🎨 Couleur de la marque</div>
-      <div style="font-size:11px;color:var(--text-3);margin-bottom:8px">La couleur principale de votre boutique</div>
+      <div class="card-title">${t('w8_couleurMarque')}</div>
+      <div style="font-size:11px;color:var(--text-3);margin-bottom:8px">${t('w8_couleurPrincBout')}</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         ${[
           {color:'#FCD34D',name:'Jaune'},
@@ -23683,7 +23857,7 @@ function vBoutiqueAppearance() {
     </div>
 
     <div class="card" style="margin-bottom:10px">
-      <div class="card-title">Animation du bouton d'achat</div>
+      <div class="card-title">${t('w8_animBoutonAchat')}</div>
       <div style="display:flex;gap:8px">
         <select class="input" style="flex:1" onchange="updateBoutiqueConfig('buttonAnimation',this.value)">
           ${[
@@ -23698,7 +23872,7 @@ function vBoutiqueAppearance() {
     </div>
 
     <div class="card" style="margin-bottom:10px">
-      <div class="card-title">📦 Organisation de la page</div>
+      <div class="card-title">${t('w8_orgPage')}</div>
       ${[
         {key:'showFeatured',label:'Afficher les produits en vedette',sub:'Mettez en avant vos meilleures ventes'},
         {key:'showCartButton',label:"Afficher le bouton d'achat sur la carte produit",sub:'Achat direct depuis la liste'},
@@ -23957,7 +24131,7 @@ function vBoutiqueCode() {
     <div class="page-header-row" style="margin-bottom:10px">
       <button class="back-btn-dark" onclick="nav('boutique')">${IC.left}</button>
       <div style="flex:1">
-        <div class="sub-hero-title">Code personnalisé</div>
+        <div class="sub-hero-title">${t('w8_codePersonnalise')}</div>
         <div class="sub-hero-sub">CSS, HTML, JavaScript avancés</div>
       </div>
     </div>
@@ -24892,7 +25066,7 @@ function vMarketing() {
       <button class="back-btn-dark" onclick="nav('more')">${IC.left}</button>
       <div style="flex:1">
         <div class="sub-hero-title">Centre Marketing</div>
-        <div class="sub-hero-sub">Tous vos outils de vente au même endroit</div>
+        <div class="sub-hero-sub">${t('w8_toutOutilsVente')}</div>
       </div>
     </div>
     <div style="display:flex;gap:8px">
@@ -25359,7 +25533,7 @@ function vPromoForm() {
         <div style="font-size:10px;color:var(--text-3);margin-top:2px">Nom interne visible uniquement par vous</div>
       </div>
       <div class="form-group">
-        <label class="form-label">Code promo <span style="color:var(--danger)">*</span></label>
+        <label class="form-label">${t('w8_codePromo')} <span style="color:var(--danger)">*</span></label>
         <div style="display:flex;gap:8px;align-items:stretch">
           <input class="input" id="promo-code" value="${draft.code||''}" placeholder="Ex: NOEL25" style="flex:1 1 auto;text-transform:uppercase;font-family:monospace;font-weight:700;letter-spacing:1px;font-size:18px !important" oninput="this.dataset.manual='1';this.value=this.value.toUpperCase()">
           <button type="button" class="btn btn-ghost" style="flex:0 0 56px;width:56px;min-height:48px;padding:0;font-size:20px;display:flex;align-items:center;justify-content:center" title="Générer un code aléatoire" onclick="$('promo-code').value=_genPromoCode($('promo-name').value||'CODE');$('promo-code').dataset.manual=''">🎲</button>
@@ -25384,7 +25558,7 @@ function vPromoForm() {
       </div>
       <input type="hidden" id="promo-type" value="${draft.type}">
       <div class="form-group" style="margin-top:12px">
-        <label class="form-label">Valeur de la réduction</label>
+        <label class="form-label">${t('w8_valeurReduction')}</label>
         <div style="display:flex;gap:6px;align-items:center">
           <input class="input" id="promo-value" type="number" min="0" value="${draft.value||10}" style="flex:1">
           <span id="promo-value-unit" style="font-weight:800;font-size:18px;color:var(--accent);min-width:40px;text-align:center">${draft.type==='percent'?'%':sym()}</span>
@@ -25394,8 +25568,8 @@ function vPromoForm() {
 
     <div class="card" style="margin-bottom:10px">
       <div class="card-title">${IC.package} Produits concernés</div>
-      <div style="font-size:11px;color:var(--text-3);margin-bottom:8px">Laissez tout décoché pour appliquer à tous les produits</div>
-      ${(S.products||[]).length === 0 ? `<div style="font-size:12px;color:var(--text-3);padding:8px 0">Aucun produit — la réduction s'appliquera à tout</div>` : `
+      <div style="font-size:11px;color:var(--text-3);margin-bottom:8px">${t('w8_laissezDecoche')}</div>
+      ${(S.products||[]).length === 0 ? `<div style="font-size:12px;color:var(--text-3);padding:8px 0">${t('w8_aucunProduitRed')}</div>` : `
       <div style="max-height:200px;overflow-y:auto;border:1px solid var(--border);border-radius:8px;padding:4px">
         ${S.products.map(pr => `
         <label style="display:flex;align-items:center;gap:10px;padding:8px;cursor:pointer;border-radius:6px" onmouseover="this.style.background='var(--gray-1)'" onmouseout="this.style.background='transparent'">
@@ -25405,8 +25579,8 @@ function vPromoForm() {
         </label>`).join('')}
       </div>
       <div style="display:flex;gap:6px;margin-top:8px">
-        <button class="btn btn-ghost" style="flex:1;font-size:11px;padding:6px" onclick="document.querySelectorAll('.promo-prod-check').forEach(c=>c.checked=true)">Tout cocher</button>
-        <button class="btn btn-ghost" style="flex:1;font-size:11px;padding:6px" onclick="document.querySelectorAll('.promo-prod-check').forEach(c=>c.checked=false)">Tout décocher</button>
+        <button class="btn btn-ghost" style="flex:1;font-size:11px;padding:6px" onclick="document.querySelectorAll('.promo-prod-check').forEach(c=>c.checked=true)">${t('w8_toutCocher')}</button>
+        <button class="btn btn-ghost" style="flex:1;font-size:11px;padding:6px" onclick="document.querySelectorAll('.promo-prod-check').forEach(c=>c.checked=false)">${t('w8_toutDecocher')}</button>
       </div>`}
     </div>
 
@@ -25418,7 +25592,7 @@ function vPromoForm() {
         <div style="font-size:10px;color:var(--text-3);margin-top:2px">La réduction se désactive une fois cette limite atteinte. 0 = aucune limite</div>
       </div>
       <div class="form-group">
-        <label class="form-label">Utilisations max par client</label>
+        <label class="form-label">${t('w8_utilisationsMax')}</label>
         <input class="input" id="promo-maxperclient" type="number" min="0" value="${draft.maxUsesPerClient||0}" placeholder="0 = illimité">
         <div style="font-size:10px;color:var(--text-3);margin-top:2px">Combien de fois un même client peut utiliser ce code. 0 = illimité</div>
       </div>
@@ -25427,7 +25601,7 @@ function vPromoForm() {
     <div class="card" style="margin-bottom:10px">
       <div class="card-title">${IC.calendar} Période de validité</div>
       <div class="form-group">
-        <label class="form-label">Date de début</label>
+        <label class="form-label">${t('w8_dateDebut')}</label>
         <input class="input" id="promo-start" type="date" value="${draft.startDate||today}">
       </div>
       <div class="form-group">
@@ -25443,8 +25617,8 @@ function vPromoForm() {
     <div class="card" style="margin-bottom:14px">
       <div style="display:flex;align-items:center;justify-content:space-between">
         <div>
-          <div style="font-weight:700;font-size:13px">Activer immédiatement</div>
-          <div style="font-size:11px;color:var(--text-3)">Les clients pourront utiliser le code</div>
+          <div style="font-weight:700;font-size:13px">${t('w8_activerImmediat')}</div>
+          <div style="font-size:11px;color:var(--text-3)">${t('w8_clientsPourront')}</div>
         </div>
         <label class="toggle-switch">
           <input type="checkbox" id="promo-active" ${draft.active!==false?'checked':''}>
@@ -28473,7 +28647,7 @@ function vPayments() {
     <div class="page-header-row" style="margin-bottom:14px">
       <button class="back-btn-dark" onclick="nav('more')">${IC.left}</button>
       <div style="flex:1">
-        <div class="sub-hero-title">Moyens de paiement</div>
+        <div class="sub-hero-title">${t('w8_moyensPaiement')}</div>
         <div class="sub-hero-sub">Wave, Orange Money, Moov, PayPal…</div>
       </div>
     </div>
@@ -28484,8 +28658,8 @@ function vPayments() {
     </div>
   </div>
   <div class="container">
-    <button class="btn btn-primary" style="width:100%;margin:4px 0 16px;padding:15px;font-size:15px;font-weight:800;background:linear-gradient(135deg,#16A34A,#059669);box-shadow:0 6px 20px rgba(5,150,105,.3)" onclick="requestPaymentModal()">💰 Demander un paiement</button>
-    <div class="section-hd"><span class="section-lbl">Méthodes de paiement</span></div>
+    <button class="btn btn-primary" style="width:100%;margin:4px 0 16px;padding:15px;font-size:15px;font-weight:800;background:linear-gradient(135deg,#16A34A,#059669);box-shadow:0 6px 20px rgba(5,150,105,.3)" onclick="requestPaymentModal()">${t('w8_demanderPaiement')}</button>
+    <div class="section-hd"><span class="section-lbl">${t('w8_methodesPaiement')}</span></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
     ${providers.map(prov => {
       const method = methods.find(m => m.provider === prov.id);
@@ -28502,7 +28676,7 @@ function vPayments() {
       <div style="font-size:10px;color:${isActive?prov.color:'var(--text-3)'};font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
         ${isActive ? '✓ '+(method.phone||method.email||'Configuré') : prov.desc}
       </div>
-      ${isActive && method.verified && method.verifiedPhone === method.phone ? `<div style="font-size:9px;color:var(--success);font-weight:800;margin-top:2px">● Numéro vérifié SMS</div>` : ''}
+      ${isActive && method.verified && method.verifiedPhone === method.phone ? `<div style="font-size:9px;color:var(--success);font-weight:800;margin-top:2px">${t('w8_numVerifie')}</div>` : ''}
       <div style="margin-top:8px;text-align:center">
         <span style="font-size:10px;padding:3px 10px;border-radius:6px;font-weight:700;${isActive?`background:${prov.color}15;color:${prov.color}`:'background:var(--gray-1);color:var(--text-3)'}">${isActive?'Actif — Retirer':'Configurer'}</span>
       </div>
@@ -28511,7 +28685,7 @@ function vPayments() {
 
     <div class="section-hd"><span class="section-lbl">Historique</span></div>
     ${S.paymentHistory.length === 0 ? `
-    <div class="card" style="text-align:center;padding:20px"><div style="color:var(--text-3);font-size:13px">Aucun paiement reçu</div></div>
+    <div class="card" style="text-align:center;padding:20px"><div style="color:var(--text-3);font-size:13px">${t('w8_aucunPaiementRecu')}</div></div>
     ` : S.paymentHistory.slice(0,10).map(ph => `
     <div class="sale-item" style="margin-bottom:6px">
       <div class="sale-dot" style="background:${ph.provider==='wave'?'#1DC3FF':ph.provider==='orange'?'#FF6600':'var(--success)'}"></div>
@@ -28857,7 +29031,7 @@ function requestPaymentModal(clientId) {
   modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:10000;display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(6px);animation:fadeIn .2s ease';
   modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
   if (!active.length) {
-    modal.innerHTML = `<div class="payreq-sheet"><div class="payreq-hd"><div style="font-size:17px;font-weight:800">💰 Demander un paiement</div><button class="qs-x" onclick="document.getElementById('payreq-modal').remove()">✕</button></div>
+    modal.innerHTML = `<div class="payreq-sheet"><div class="payreq-hd"><div style="font-size:17px;font-weight:800">${t('w8_demanderPaiement')}</div><button class="qs-x" onclick="document.getElementById('payreq-modal').remove()">✕</button></div>
       <div style="text-align:center;padding:24px 8px"><div style="font-size:38px;margin-bottom:8px">💳</div><div style="font-weight:700;margin-bottom:4px">Aucun moyen de paiement actif</div><div style="font-size:12px;color:var(--text-3);margin-bottom:16px">Configurez Wave, Orange Money, PayPal… pour demander des paiements.</div><button class="btn btn-primary" onclick="document.getElementById('payreq-modal').remove()">Configurer un moyen</button></div></div>`;
     document.body.appendChild(modal);
     return;
@@ -28865,7 +29039,7 @@ function requestPaymentModal(clientId) {
   const clientsWithPhone = (S.clients || []).filter(c => c.phone);
   modal.innerHTML = `
     <div class="payreq-sheet">
-      <div class="payreq-hd"><div style="font-size:17px;font-weight:800">💰 Demander un paiement</div><button class="qs-x" onclick="document.getElementById('payreq-modal').remove()">✕</button></div>
+      <div class="payreq-hd"><div style="font-size:17px;font-weight:800">${t('w8_demanderPaiement')}</div><button class="qs-x" onclick="document.getElementById('payreq-modal').remove()">✕</button></div>
       <label class="qs-label">Montant (${sym()})</label>
       <input id="payreq-amount" class="input" type="number" inputmode="numeric" placeholder="5000" value="${st.amount}" oninput="S._payReq.amount=this.value;_payReqPreview()" style="font-size:18px;font-weight:800">
       <label class="qs-label">Description (optionnel)</label>
@@ -28968,7 +29142,7 @@ function vApiSettings() {
       <button class="back-btn-dark" onclick="nav('integrations')">${IC.left}</button>
       <div style="flex:1">
         <div class="sub-hero-title">API & Webhooks</div>
-        <div class="sub-hero-sub">Connectez BARO à vos systèmes externes</div>
+        <div class="sub-hero-sub">${t('w8_connectezSystemes')}</div>
       </div>
     </div>
     <div style="display:flex;gap:8px">
@@ -28992,8 +29166,8 @@ function vApiSettings() {
         <button class="btn btn-ghost" style="font-size:11px;padding:6px 10px;flex-shrink:0" onclick="copyApiToken()">📋 Copier</button>
       </div>
       <div style="display:flex;gap:6px;margin-top:10px">
-        <button class="btn btn-ghost" style="flex:1" onclick="generateApiToken()">🔄 Régénérer</button>
-        <button class="btn btn-ghost" style="color:var(--danger);border-color:var(--danger)40" onclick="revokeApiToken()">🗑 Révoquer</button>
+        <button class="btn btn-ghost" style="flex:1" onclick="generateApiToken()">${t('w8_regenerer')}</button>
+        <button class="btn btn-ghost" style="color:var(--danger);border-color:var(--danger)40" onclick="revokeApiToken()">${t('w8_revoquer')}</button>
       </div>
       ` : `
       <button class="btn btn-primary" style="width:100%" onclick="generateApiToken()">${IC.plus} Générer un token API</button>
@@ -29012,7 +29186,7 @@ function vApiSettings() {
       ${webhooks.length === 0 ? `
       <div class="empty" style="padding:26px 10px">
         <div class="empty-ico" style="font-size:36px">🪝</div>
-        <div class="empty-text" style="margin-top:6px">Aucun webhook configuré</div>
+        <div class="empty-text" style="margin-top:6px">${t('w8_aucunWebhook')}</div>
         <div style="font-size:11px;color:var(--text-3);margin-top:4px">Créez votre premier webhook pour recevoir des événements en temps réel.</div>
       </div>
       ` : webhooks.map(w => `
@@ -30226,7 +30400,7 @@ function vDeliverySetup() {
       <div style="display:flex;gap:10px;align-items:flex-start">
         <div style="font-size:26px">${meta.logo}</div>
         <div style="flex:1;font-size:12px;color:var(--text-1);line-height:1.5">
-          <strong style="color:${meta.accent}">Comment obtenir vos identifiants ?</strong><br>
+          <strong style="color:${meta.accent}">${t('w8_commentIdents')}</strong><br>
           1. Créez un compte partenaire sur <a href="${meta.portal}" target="_blank" rel="noopener noreferrer" style="color:${meta.accent};font-weight:600">${meta.portal}</a><br>
           2. Récupérez votre <em>Store ID</em> et votre <em>API Key</em> dans les réglages partenaires<br>
           3. Collez-les ci-dessous — BARO enverra les commandes ${meta.name} automatiquement
@@ -30239,9 +30413,9 @@ function vDeliverySetup() {
     </div>
 
     <div class="card" style="margin-bottom:10px">
-      <div class="card-title">🏪 Point de retrait (votre boutique)</div>
+      <div class="card-title">${t('w8_pointRetrait')}</div>
       <div style="margin-bottom:10px">
-        <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">Nom du store (tel qu'affiché côté client)</label>
+        <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">${t('w8_nomStore')}</label>
         <input id="ds-storeName" class="input" value="${(defaults.storeName||'').replace(/"/g,'&quot;')}" placeholder="Ex: ${biz||'Mon Enseigne'}">
       </div>
       <div style="margin-bottom:10px">
@@ -30251,7 +30425,7 @@ function vDeliverySetup() {
       <div style="margin-bottom:10px">
         <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">${meta.keyLabel} <span style="color:var(--danger)">•</span></label>
         <input id="ds-apiKey" class="input" type="password" value="${(defaults.apiKey||'').replace(/"/g,'&quot;')}" placeholder="${meta.keyPlaceholder}" style="font-family:monospace">
-        <div style="font-size:10px;color:var(--text-3);margin-top:3px">🔒 Stockée localement et chiffrée lors des appels API</div>
+        <div style="font-size:10px;color:var(--text-3);margin-top:3px">${t('w8_stockeeChiffree')}</div>
       </div>
       <div style="display:flex;gap:8px;margin-bottom:10px">
         <div style="flex:1">
@@ -30261,17 +30435,17 @@ function vDeliverySetup() {
           </select>
         </div>
         <div style="flex:1">
-          <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">Temps de préparation (min)</label>
+          <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">${t('w8_tempsPrepa')}</label>
           <input id="ds-prepTime" class="input" type="number" min="5" max="120" value="${defaults.prepTime}">
         </div>
       </div>
       <div style="margin-bottom:10px">
-        <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">Adresse de retrait précise</label>
+        <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">${t('w8_adresseRetrait')}</label>
         <input id="ds-address" class="input" value="${(defaults.address||'').replace(/"/g,'&quot;')}" placeholder="Rue, quartier, repère visuel">
       </div>
       <div style="display:flex;gap:8px;margin-bottom:10px">
         <div style="flex:1">
-          <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">Téléphone responsable</label>
+          <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">${t('w8_telResponsable')}</label>
           <input id="ds-phone" class="input" type="tel" value="${(defaults.phone||'').replace(/"/g,'&quot;')}" placeholder="+225 07 XX XX XX XX">
         </div>
         <div style="flex:1">
@@ -30280,7 +30454,7 @@ function vDeliverySetup() {
         </div>
       </div>
       <div>
-        <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">Email notifications livraison</label>
+        <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">${t('w8_emailLivraison')}</label>
         <input id="ds-email" class="input" type="email" value="${(defaults.email||'').replace(/"/g,'&quot;')}" placeholder="livraison@monenseigne.com">
       </div>
     </div>
@@ -30289,22 +30463,22 @@ function vDeliverySetup() {
       <div class="card-title">⚙️ Automatisation</div>
       <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)">
         <div style="flex:1">
-          <div style="font-weight:600;font-size:13px">Envoi automatique des commandes</div>
+          <div style="font-weight:600;font-size:13px">${t('w8_envoiAutoCmd')}</div>
           <div style="font-size:11px;color:var(--text-3)">Dès qu'une commande boutique est prête, un coursier est demandé</div>
         </div>
         <label class="toggle-switch"><input type="checkbox" id="ds-autoSync" ${defaults.autoSync?'checked':''}><span class="toggle-track"></span></label>
       </div>
       <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)">
         <div style="flex:1">
-          <div style="font-weight:600;font-size:13px">Affectation coursier instantanée</div>
+          <div style="font-weight:600;font-size:13px">${t('w8_affectCoursier')}</div>
           <div style="font-size:11px;color:var(--text-3)">Laisser ${meta.name} assigner automatiquement le livreur le plus proche</div>
         </div>
         <label class="toggle-switch"><input type="checkbox" id="ds-autoAssign" ${defaults.autoAssign?'checked':''}><span class="toggle-track"></span></label>
       </div>
       <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)">
         <div style="flex:1">
-          <div style="font-weight:600;font-size:13px">Notifier le coursier par SMS</div>
-          <div style="font-size:11px;color:var(--text-3)">Lien de suivi + message pré-rempli au client</div>
+          <div style="font-weight:600;font-size:13px">${t('w8_notifierCoursier')}</div>
+          <div style="font-size:11px;color:var(--text-3)">${t('w8_lienSuivi')}</div>
         </div>
         <label class="toggle-switch"><input type="checkbox" id="ds-notifyDriver" ${defaults.notifyDriver?'checked':''}><span class="toggle-track"></span></label>
       </div>
@@ -30318,7 +30492,7 @@ function vDeliverySetup() {
     </div>
 
     <div style="display:flex;gap:8px;margin-bottom:10px">
-      <button class="btn btn-ghost" style="flex:1" onclick="testDeliveryConnection('${provider}')">🧪 Tester la connexion</button>
+      <button class="btn btn-ghost" style="flex:1" onclick="testDeliveryConnection('${provider}')">${t('w8_testerConnexion')}</button>
       <button class="btn btn-primary" style="flex:2;background:${meta.color};border-color:${meta.color}" onclick="saveDeliverySetup('${provider}')">${connected?'💾 Mettre à jour':'🔌 Connecter '+meta.name}</button>
     </div>
     ${connected ? `
@@ -32668,7 +32842,7 @@ function vSpectraEnhanced() {
         <div style="font-size:13px;color:var(--text-2);line-height:1.55">L'IA n'a pas reconnu ce produit (image floue, sous un angle difficile, ou produit rare). Réessaie avec une photo plus nette et bien éclairée.</div>
       </div>`}`}
       <div class="card" style="margin-bottom:12px">
-        <div class="card-title">Ajouter manuellement</div>
+        <div class="card-title">${t('w8_ajouterManuel')}</div>
         <div style="font-size:12px;color:var(--text-3);margin-bottom:10px">Tu peux créer l'article toi-même en quelques secondes.</div>
         <button class="btn btn-ghost" onclick="spectraToAddForm()">${IC.plus} Créer l'article${S.spectra.capturedImage?' (avec la photo scannée)':''}</button>
       </div>
