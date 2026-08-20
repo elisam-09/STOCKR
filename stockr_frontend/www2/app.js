@@ -4570,26 +4570,63 @@ const CURRENCIES = [
 ];
 
 const COUNTRIES = [
-  { code:'SN', label:'Sénégal'      },
-  { code:'CI', label:"Côte d'Ivoire"},
-  { code:'ML', label:'Mali'         },
-  { code:'BF', label:'Burkina Faso' },
-  { code:'GN', label:'Guinée'       },
-  { code:'BJ', label:'Bénin'        },
-  { code:'TG', label:'Togo'         },
-  { code:'CM', label:'Cameroun'     },
-  { code:'CD', label:'RD Congo'     },
-  { code:'MG', label:'Madagascar'   },
-  { code:'MA', label:'Maroc'        },
-  { code:'DZ', label:'Algérie'      },
-  { code:'TN', label:'Tunisie'      },
-  { code:'FR', label:'France'       },
-  { code:'BE', label:'Belgique'     },
-  { code:'CH', label:'Suisse'       },
-  { code:'CA', label:'Canada'       },
-  { code:'US', label:'États-Unis'   },
-  { code:'GB', label:'Royaume-Uni'  },
+  // Afrique de l'Ouest francophone — marches d'origine
+  { code:'SN', label:'Sénégal',        en:'Senegal'        },
+  { code:'CI', label:"Côte d'Ivoire",  en:'Ivory Coast'    },
+  { code:'ML', label:'Mali',           en:'Mali'           },
+  { code:'BF', label:'Burkina Faso',   en:'Burkina Faso'   },
+  { code:'GN', label:'Guinée',         en:'Guinea'         },
+  { code:'BJ', label:'Bénin',          en:'Benin'          },
+  { code:'TG', label:'Togo',           en:'Togo'           },
+  { code:'NE', label:'Niger',          en:'Niger'          },
+  // Afrique centrale
+  { code:'CM', label:'Cameroun',       en:'Cameroon'       },
+  { code:'GA', label:'Gabon',          en:'Gabon'          },
+  { code:'TD', label:'Tchad',          en:'Chad'           },
+  { code:'CD', label:'RD Congo',       en:'DR Congo'       },
+  // Afrique anglophone & australe
+  { code:'NG', label:'Nigeria',        en:'Nigeria'        },
+  { code:'GH', label:'Ghana',          en:'Ghana'          },
+  { code:'KE', label:'Kenya',          en:'Kenya'          },
+  { code:'TZ', label:'Tanzanie',       en:'Tanzania'       },
+  { code:'UG', label:'Ouganda',        en:'Uganda'         },
+  { code:'RW', label:'Rwanda',         en:'Rwanda'         },
+  { code:'ZM', label:'Zambie',         en:'Zambia'         },
+  { code:'MW', label:'Malawi',         en:'Malawi'         },
+  { code:'ZA', label:'Afrique du Sud', en:'South Africa'   },
+  { code:'MG', label:'Madagascar',     en:'Madagascar'     },
+  // Afrique du Nord
+  { code:'MA', label:'Maroc',          en:'Morocco'        },
+  { code:'DZ', label:'Algérie',        en:'Algeria'        },
+  { code:'TN', label:'Tunisie',        en:'Tunisia'        },
+  { code:'EG', label:'Égypte',         en:'Egypt'          },
+  // Europe & Amerique du Nord
+  { code:'FR', label:'France',         en:'France'         },
+  { code:'BE', label:'Belgique',       en:'Belgium'        },
+  { code:'CH', label:'Suisse',         en:'Switzerland'    },
+  { code:'ES', label:'Espagne',        en:'Spain'          },
+  { code:'IT', label:'Italie',         en:'Italy'          },
+  { code:'PT', label:'Portugal',       en:'Portugal'       },
+  { code:'RO', label:'Roumanie',       en:'Romania'        },
+  { code:'UA', label:'Ukraine',        en:'Ukraine'        },
+  { code:'GB', label:'Royaume-Uni',    en:'United Kingdom' },
+  { code:'CA', label:'Canada',         en:'Canada'         },
+  { code:'US', label:'États-Unis',     en:'United States'  },
+  // Moyen-Orient & Asie du Sud-Est
+  { code:'JO', label:'Jordanie',       en:'Jordan'         },
+  { code:'MY', label:'Malaisie',       en:'Malaysia'       },
+  { code:'TH', label:'Thaïlande',      en:'Thailand'       },
+  { code:'VN', label:'Viêt Nam',       en:'Vietnam'        },
+  { code:'ID', label:'Indonésie',      en:'Indonesia'      },
+  { code:'SG', label:'Singapour',      en:'Singapore'      },
 ];
+
+// Nom du pays dans la langue courante
+function nomPays(code) {
+  const p = COUNTRIES.find(c => c.code === code);
+  if (!p) return code;
+  return (_lang === 'en' && p.en) ? p.en : p.label;
+}
 
 function getCurrencySymbol(code) {
   return CURRENCIES.find(c => c.code === code)?.symbol || code;
@@ -8611,7 +8648,7 @@ function vAuthStep2() {
       <div class="form-group">
         <label class="form-label">Pays</label>
         <select class="input" onchange="S.authCountry=this.value">
-          ${COUNTRIES.map(c => `<option value="${c.code}" ${S.authCountry===c.code?'selected':''}>${c.label}</option>`).join('')}
+          ${COUNTRIES.slice().sort((x,y)=>nomPays(x.code).localeCompare(nomPays(y.code))).map(c => `<option value="${c.code}" ${S.authCountry===c.code?'selected':''}>${nomPays(c.code)}</option>`).join('')}
         </select>
       </div>
 
@@ -29201,7 +29238,6 @@ function vIntegrations() {
       const paysActif = S.intPays === undefined ? (S.session?.country || 'CI') : S.intPays;
       const codes = new Set();
       integrationsList.forEach(i => (i.pays || []).forEach(p => { if (p !== '*') codes.add(p); }));
-      const nomPays = c => (COUNTRIES.find(x => x.code === c) || {}).label || c;
       const dispoIci = c => integrationsList.filter(i => (i.pays || []).includes('*') || (i.pays || []).includes(c)).length;
       const liste = [...codes].sort((a, b) => nomPays(a).localeCompare(nomPays(b)));
       return `
