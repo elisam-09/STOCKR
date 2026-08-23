@@ -270,6 +270,149 @@ const API_BASE = (location.hostname === 'localhost' || location.hostname === '12
 // ── i18n ─────────────────────────────────────
 const LANGS = {
   fr: {
+    x2_epuise: "Épuisé",
+    x2_gererVitrine: "Gérer ma vitrine",
+    x2_editeurBoutique: "Éditeur boutique",
+    x2_editeurVisuel: "Éditeur visuel",
+    x2_commandesRecues: "Commandes reçues",
+    x2_aucuneCommandeEnr: "Aucune commande enregistrée",
+    x2_enregistrerCommande: "+ Enregistrer une commande",
+    x2_etatCommandes: "État des commandes",
+    x2_livrees: "Livrées",
+    x2_revenusDetailles: "Revenus détaillés",
+    x2_evolution7j: "Évolution · 7 derniers jours",
+    x2_visiteursBoutique: "👁️ Visiteurs de la boutique",
+    x2_suiviVisiteurs: "Suivi des visiteurs",
+    x2_analyticsAvances: "◆ Analytics avancés",
+    x2_creezPointsVente: "Créez des points de vente pour comparer leurs revenus ici.",
+    x2_parPointVente: "par point de vente",
+    x2_debloquer: "Débloquer",
+    x2_couleurMarque: "Couleur de la marque",
+    x2_paletteComplete: "Palette complète",
+    x2_remplaceeParPalette: "— remplacée par la palette",
+    x2_policeTitres: "Police des titres",
+    x2_policeTexte: "Police du texte",
+    x2_styleEntete: "Style de l'en-tête",
+    x2_coinsCartes: "Coins des cartes",
+    x2_effetSurvol: "Effet au survol",
+    x2_animationBouton: "Animation du bouton",
+    x2_texteBoutonCmd: "Texte du bouton commander",
+    x2_sectionsAffichees: "Sections affichées",
+    x2_reorganisezFleches: "· réorganisez avec les flèches",
+    x2_sequenceOuverture: "Séquence d'ouverture",
+    x2_ouvertureDefilement: "Ouverture au défilement",
+    x2_videoAccroche: "🎬 Vidéo d'accroche",
+    x2_sectionVideo: "🎥 Section vidéo (milieu de page)",
+    x2_reseauxSociauxEd: "🔗 Réseaux sociaux",
+    x2_unParLigne: "· un par ligne",
+    x2_zeroDesactive: "— 0 = désactivé",
+    x2_desactivezPour: "Désactivez pour un commerce en",
+    x2_aproposBoutique: "À propos de la boutique",
+    x2_aucunPaiement: "Aucun — configurez dans Paiements",
+    x2_aucune: "Aucune",
+    x2_votreCommande: "🛒 Votre commande",
+    x2_panierVide: "Votre panier est vide",
+    x2_parcourezProduits: "Parcourez les produits et ajoutez vos favoris ✨",
+    x2_votreNom: "Votre nom",
+    x2_modeReception: "Mode de réception",
+    x2_retraitSurPlace: "🏬 Retrait sur place",
+    x2_paiementSouhaite: "Paiement souhaité",
+    x2_reduction: "Réduction",
+    x2_envoyerCommandeWa: "Envoyer la commande sur WhatsApp",
+    x2_envoyerSurWa: "Envoyer sur WhatsApp",
+    x2_envoyerAussiWa: "Envoyer aussi sur WhatsApp",
+    x2_commandeEnvoyee: "Commande envoyée",
+    x2_codeSuivi: "Code de suivi",
+    x2_voirMesAchats: "Voir mes achats",
+    x2_plusTard: "Plus tard",
+    x2_aucunAchat: "Aucun achat pour le moment.",
+    x2_commandesIci: "Vos commandes passées ici apparaîtront ici. 🛍️",
+    x2_aucuneCommandeInstant: "Aucune commande pour l’instant.",
+    x2_vosHabitudes: "Vos habitudes",
+    x2_meDeconnecter: "Me déconnecter",
+    x2_motDePasseSimple: "Mot de passe",
+    x2_aucunProduitRech: "Aucun produit ne correspond à votre recherche 🙁",
+    x2_faitesDefiler: "Faites défiler",
+    x2_entrerBoutique: "Entrer dans la boutique",
+    x2_voirLesProduits: "Voir les produits",
+    x2_commentCaMarche3: "Comment ça marche",
+    x2_laMaison: "La maison",
+    x2_apropos: "À propos",
+    x2_questionsFreq: "Questions fréquentes",
+    x2_ecrireSurWa: "Écrire sur WhatsApp",
+    x2_itineraire: "🗺️ Itinéraire",
+    x2_itineraire2: "Itinéraire 🗺️",
+    x2_legales: "Légales",
+    x2_confidentialite: "Confidentialité",
+    x2_propulsePar: "Propulsé par",
+    x2_verifie2: "✓ Vérifié",
+    x1_prenomNom: "Prénom / Nom *",
+    x1_email: "Email *",
+    x1_motDePasse: "Mot de passe *",
+    x1_confirmerMdp: "Confirmer le mot de passe *",
+    x1_nomCommerce2: "Nom du commerce",
+    x1_connexionSsl: "Connexion sécurisée SSL",
+    x1_donneesLocales: "🔒 Vos données restent sur votre appareil (stockage local)",
+    x1_jeSuisVendeur: "👥 Je suis vendeur — rejoindre avec un code",
+    x1_rejoindreEquipe: "👥 Rejoindre l’équipe d’une boutique",
+    x1_rejoindreBoutique: "Rejoindre la boutique",
+    x1_verifiezEmail: "✉️ Vérifiez votre email",
+    x1_codeEnvoyeA: "Un code à 6 chiffres a été envoyé à",
+    x1_codeVerif: "Code de vérification",
+    x1_renvoyerCode: "🔄 Renvoyer le code",
+    x1_renvoyerCode2: "↻ Renvoyer le code",
+    x1_ouvrirEmail: "📧 Ouvrir mon email",
+    x1_modifierInfos: "← Modifier mes informations",
+    x1_validerCreer: "✓ Valider et créer mon compte",
+    x1_emailNonConfig: "⚠️ Email automatique non configuré — Votre code :",
+    x1_configEmailjs: "Configurez EmailJS dans Paramètres pour l'envoi automatique",
+    x1_aucunMoyenActif: "Aucun moyen de paiement actif",
+    x1_configurerMoyen: "Configurer un moyen",
+    x1_entrezMontant: "Entrez un montant pour générer le lien / l'instruction.",
+    x1_confirmerVente: "✓ Confirmer la vente",
+    x1_quantite: "Quantité",
+    x1_benefice: "Bénéfice",
+    x1_margeParUnite: "MARGE PAR UNITÉ",
+    x1_renseignezPrix: "Renseignez les deux prix pour voir la marge",
+    x1_numWaBusiness: "Numéro WhatsApp Business (format international)",
+    x1_numConfirmeWa: "✓ Numéro confirmé — joignable sur WhatsApp",
+    x1_deconnecterWa: "🔌 Déconnecter WhatsApp",
+    x1_deconnecter: "🔌 Déconnecter",
+    x1_modelesMessages: "📝 Modèles de messages",
+    x1_modeles: "Modèles",
+    x1_activezModeles: "Activez les modèles automatiques. Variables :",
+    x1_clientPourWa: "Client (pour envoyer sur WhatsApp)",
+    x1_permetPlusieurs: "Permet d'envoyer à plusieurs clients depuis Marketing",
+    x1_choisissezPasserelle: "Choisissez votre passerelle SMS",
+    x1_tarifsBas: "(tarifs CI/Afrique très bas) et",
+    x1_tokenCleApi: "Token / Clé API",
+    x1_cleApiSecret: "Clé API / Secret (optionnel)",
+    x1_clesRestentApp: "Les clés restent sur votre appareil",
+    x1_stockeeChiffree: "🔒 Stockée chiffrée localement, jamais transmise",
+    x1_nomSignature: "Nom affiché dans la signature",
+    x1_baroIdentite: "BARO utilisera cette identité",
+    x1_numVerifieSms: "✓ Numéro vérifié par SMS",
+    x1_verifierParSms: "📲 Vérifier ce numéro par SMS",
+    x1_envoyerSmsTest: "🧪 Envoyer SMS test",
+    x1_deconnecterSms: "🔌 Déconnecter SMS",
+    x1_modelesSms: "📝 Modèles SMS (max ~160 car.)",
+    x1_campagnesSms: "Campagnes SMS groupées",
+    x1_alertesStaff: "Alertes stock au staff",
+    x1_declencheursAuto: "🔔 Déclencheurs automatiques",
+    x1_smsAutoVente: "SMS auto à la vente",
+    x1_envoiAutoVente: "Envoi auto à la vente",
+    x1_pushAutoVente: "Push auto à chaque vente",
+    x1_pushToutesVentes: "⬆️ Push toutes les ventes",
+    x1_confirmationApres: "Confirmation envoyée après chaque vente client",
+    x1_comptaOhada: "📊 Comptabilité OHADA",
+    x1_compteClient411: "Compte client par défaut (411 OHADA)",
+    x1_ecritureSyscohada: "Crée une écriture SYSCOHADA dès la vente",
+    x1_eclateTva: "Éclate HT/TVA/TTC dans les écritures",
+    x1_ecritures: "Écritures",
+    x1_exportBalance: "Export Balance + Grand Livre à 23h",
+    x1_aucunPartage: "— Aucun (partage libre) —",
+    x1_aucunTiret: "— Aucun —",
+    x1_coordonnees: "📱 Coordonnées",
     w9_quelMetier: "Quel est votre métier ?",
     w9_baroMetier: "💡 BARO pour mon métier",
     w9_concretement: "Concrètement, qu'est-ce que ça m'apporte ?",
@@ -992,6 +1135,149 @@ const LANGS = {
     version:'Version',
   },
   en: {
+    x2_epuise: "Sold out",
+    x2_gererVitrine: "Manage my shop",
+    x2_editeurBoutique: "Shop editor",
+    x2_editeurVisuel: "Visual editor",
+    x2_commandesRecues: "Orders received",
+    x2_aucuneCommandeEnr: "No orders recorded",
+    x2_enregistrerCommande: "+ Record an order",
+    x2_etatCommandes: "Order status",
+    x2_livrees: "Delivered",
+    x2_revenusDetailles: "Revenue breakdown",
+    x2_evolution7j: "Trend · last 7 days",
+    x2_visiteursBoutique: "👁️ Shop visitors",
+    x2_suiviVisiteurs: "Visitor tracking",
+    x2_analyticsAvances: "◆ Advanced analytics",
+    x2_creezPointsVente: "Create sales locations to compare their revenue here.",
+    x2_parPointVente: "per sales location",
+    x2_debloquer: "Unlock",
+    x2_couleurMarque: "Brand colour",
+    x2_paletteComplete: "Full palette",
+    x2_remplaceeParPalette: "— replaced by the palette",
+    x2_policeTitres: "Heading font",
+    x2_policeTexte: "Body font",
+    x2_styleEntete: "Header style",
+    x2_coinsCartes: "Card corners",
+    x2_effetSurvol: "Hover effect",
+    x2_animationBouton: "Button animation",
+    x2_texteBoutonCmd: "Order button text",
+    x2_sectionsAffichees: "Sections shown",
+    x2_reorganisezFleches: "· reorder with the arrows",
+    x2_sequenceOuverture: "Opening sequence",
+    x2_ouvertureDefilement: "Scroll-driven opening",
+    x2_videoAccroche: "🎬 Hero video",
+    x2_sectionVideo: "🎥 Video section (mid-page)",
+    x2_reseauxSociauxEd: "🔗 Social networks",
+    x2_unParLigne: "· one per line",
+    x2_zeroDesactive: "— 0 = disabled",
+    x2_desactivezPour: "Turn off for a business in",
+    x2_aproposBoutique: "About the shop",
+    x2_aucunPaiement: "None — set up in Payments",
+    x2_aucune: "None",
+    x2_votreCommande: "🛒 Your order",
+    x2_panierVide: "Your basket is empty",
+    x2_parcourezProduits: "Browse the products and add your favourites ✨",
+    x2_votreNom: "Your name",
+    x2_modeReception: "Collection method",
+    x2_retraitSurPlace: "🏬 Collect in store",
+    x2_paiementSouhaite: "Preferred payment",
+    x2_reduction: "Discount",
+    x2_envoyerCommandeWa: "Send the order on WhatsApp",
+    x2_envoyerSurWa: "Send on WhatsApp",
+    x2_envoyerAussiWa: "Also send on WhatsApp",
+    x2_commandeEnvoyee: "Order sent",
+    x2_codeSuivi: "Tracking code",
+    x2_voirMesAchats: "View my purchases",
+    x2_plusTard: "Later",
+    x2_aucunAchat: "No purchases yet.",
+    x2_commandesIci: "Orders you place here will show up here. 🛍️",
+    x2_aucuneCommandeInstant: "No orders yet.",
+    x2_vosHabitudes: "Your usual items",
+    x2_meDeconnecter: "Sign out",
+    x2_motDePasseSimple: "Password",
+    x2_aucunProduitRech: "No product matches your search 🙁",
+    x2_faitesDefiler: "Scroll down",
+    x2_entrerBoutique: "Enter the shop",
+    x2_voirLesProduits: "View the products",
+    x2_commentCaMarche3: "How it works",
+    x2_laMaison: "The house",
+    x2_apropos: "About",
+    x2_questionsFreq: "Frequently asked questions",
+    x2_ecrireSurWa: "Message on WhatsApp",
+    x2_itineraire: "🗺️ Directions",
+    x2_itineraire2: "Directions 🗺️",
+    x2_legales: "Legal",
+    x2_confidentialite: "Privacy",
+    x2_propulsePar: "Powered by",
+    x2_verifie2: "✓ Verified",
+    x1_prenomNom: "First / last name *",
+    x1_email: "Email *",
+    x1_motDePasse: "Password *",
+    x1_confirmerMdp: "Confirm password *",
+    x1_nomCommerce2: "Business name",
+    x1_connexionSsl: "Secure SSL connection",
+    x1_donneesLocales: "🔒 Your data stays on your device (local storage)",
+    x1_jeSuisVendeur: "👥 I am a seller — join with a code",
+    x1_rejoindreEquipe: "👥 Join a shop’s team",
+    x1_rejoindreBoutique: "Join the shop",
+    x1_verifiezEmail: "✉️ Check your email",
+    x1_codeEnvoyeA: "A 6-digit code has been sent to",
+    x1_codeVerif: "Verification code",
+    x1_renvoyerCode: "🔄 Resend the code",
+    x1_renvoyerCode2: "↻ Resend the code",
+    x1_ouvrirEmail: "📧 Open my email",
+    x1_modifierInfos: "← Change my details",
+    x1_validerCreer: "✓ Confirm and create my account",
+    x1_emailNonConfig: "⚠️ Automatic email not set up — your code:",
+    x1_configEmailjs: "Set up EmailJS in Settings for automatic sending",
+    x1_aucunMoyenActif: "No active payment method",
+    x1_configurerMoyen: "Set up a method",
+    x1_entrezMontant: "Enter an amount to generate the link / instructions.",
+    x1_confirmerVente: "✓ Confirm the sale",
+    x1_quantite: "Quantity",
+    x1_benefice: "Profit",
+    x1_margeParUnite: "MARGIN PER UNIT",
+    x1_renseignezPrix: "Enter both prices to see the margin",
+    x1_numWaBusiness: "WhatsApp Business number (international format)",
+    x1_numConfirmeWa: "✓ Number confirmed — reachable on WhatsApp",
+    x1_deconnecterWa: "🔌 Disconnect WhatsApp",
+    x1_deconnecter: "🔌 Disconnect",
+    x1_modelesMessages: "📝 Message templates",
+    x1_modeles: "Templates",
+    x1_activezModeles: "Turn on automatic templates. Variables:",
+    x1_clientPourWa: "Customer (to send on WhatsApp)",
+    x1_permetPlusieurs: "Lets you send to several customers from Marketing",
+    x1_choisissezPasserelle: "Choose your SMS gateway",
+    x1_tarifsBas: "(very low rates in Ivory Coast / Africa) and",
+    x1_tokenCleApi: "Token / API key",
+    x1_cleApiSecret: "API key / secret (optional)",
+    x1_clesRestentApp: "The keys stay on your device",
+    x1_stockeeChiffree: "🔒 Stored encrypted locally, never transmitted",
+    x1_nomSignature: "Name shown in the signature",
+    x1_baroIdentite: "BARO will use this identity",
+    x1_numVerifieSms: "✓ Number verified by SMS",
+    x1_verifierParSms: "📲 Verify this number by SMS",
+    x1_envoyerSmsTest: "🧪 Send a test SMS",
+    x1_deconnecterSms: "🔌 Disconnect SMS",
+    x1_modelesSms: "📝 SMS templates (max ~160 chars)",
+    x1_campagnesSms: "Bulk SMS campaigns",
+    x1_alertesStaff: "Stock alerts to staff",
+    x1_declencheursAuto: "🔔 Automatic triggers",
+    x1_smsAutoVente: "Automatic SMS on sale",
+    x1_envoiAutoVente: "Automatic sending on sale",
+    x1_pushAutoVente: "Automatic push on every sale",
+    x1_pushToutesVentes: "⬆️ Push all sales",
+    x1_confirmationApres: "Confirmation sent after each customer sale",
+    x1_comptaOhada: "📊 OHADA accounting",
+    x1_compteClient411: "Default customer account (OHADA 411)",
+    x1_ecritureSyscohada: "Creates a SYSCOHADA entry as soon as a sale is made",
+    x1_eclateTva: "Splits net / VAT / gross in the entries",
+    x1_ecritures: "Entries",
+    x1_exportBalance: "Trial balance + general ledger export at 11 pm",
+    x1_aucunPartage: "— None (open sharing) —",
+    x1_aucunTiret: "— None —",
+    x1_coordonnees: "📱 Contact details",
     w9_quelMetier: "What is your line of business?",
     w9_baroMetier: "💡 BARO for my business",
     w9_concretement: "What does this actually give me?",
@@ -3547,7 +3833,7 @@ function _showPlanLimitModal(feature, limit, label) {
         ${['♾️ Articles & ventes illimités (Pro)','📍 Plus d\'emplacements','🔍 Spectra IA illimité','🏪 Boutique en ligne + marketing'].map(f=>`<div style="display:flex;gap:8px;font-size:13px;padding:3px 0;color:var(--text-2)"><span style="color:var(--accent)">✓</span>${f}</div>`).join('')}
       </div>
       <button class="btn btn-primary" style="width:100%" onclick="document.getElementById('__planLimitModal').remove();nav('pricing')">Voir les plans →</button>
-      <button class="btn btn-ghost" style="width:100%;margin-top:8px" onclick="document.getElementById('__planLimitModal').remove()">Plus tard</button>
+      <button class="btn btn-ghost" style="width:100%;margin-top:8px" onclick="document.getElementById('__planLimitModal').remove()">${t('x2_plusTard')}</button>
     </div>`;
   document.body.appendChild(modal);
 }
@@ -3617,7 +3903,7 @@ function _showPlanFeatureModal(feature) {
         <div style="font-size:13px;margin-top:14px">Disponible à partir de <b>${PLAN_LABELS[info.minimum]}</b> · ${fmt(_PLAN_PRIX[info.minimum])} ${sym()}/mois</div>
       </div>
       <button class="btn btn-primary" style="width:100%;margin-top:18px" onclick="document.getElementById('__planFeatModal').remove();nav('pricing')">Voir les plans →</button>
-      <button class="btn btn-ghost" style="width:100%;margin-top:8px" onclick="document.getElementById('__planFeatModal').remove()">Plus tard</button>
+      <button class="btn btn-ghost" style="width:100%;margin-top:8px" onclick="document.getElementById('__planFeatModal').remove()">${t('x2_plusTard')}</button>
     </div>`;
   document.body.appendChild(modal);
 }
@@ -4939,7 +5225,7 @@ function v2FAVerify() {
       <button class="btn btn-primary" style="width:100%;margin-top:10px" onclick="verify2FA()">Vérifier</button>
 
       <div style="text-align:center;margin-top:14px;display:flex;flex-direction:column;gap:8px">
-        <button class="btn-link" onclick="resend2FA()" style="background:none;border:none;color:var(--accent);font-size:13px;cursor:pointer">🔄 Renvoyer le code</button>
+        <button class="btn-link" onclick="resend2FA()" style="background:none;border:none;color:var(--accent);font-size:13px;cursor:pointer">${t('x1_renvoyerCode')}</button>
         <button class="btn-link" onclick="cancel2FA()" style="background:none;border:none;color:var(--text-3);font-size:12px;cursor:pointer">← Retour</button>
       </div>
 
@@ -5272,33 +5558,33 @@ function vSignupVerify() {
   <div class="auth-wrap">
     <div class="auth-card">
       <div class="auth-logo">${IC.baro}<span>BARO</span></div>
-      <div class="auth-title">✉️ Vérifiez votre email</div>
-      <div class="auth-sub">Un code à 6 chiffres a été envoyé à<br><strong>${maskedEmail}</strong></div>
+      <div class="auth-title">${t('x1_verifiezEmail')}</div>
+      <div class="auth-sub">${t('x1_codeEnvoyeA')}<br><strong>${maskedEmail}</strong></div>
 
       ${showFallbackCode ? `
       <div style="margin-top:16px;padding:14px;background:linear-gradient(135deg,#FEF3C7,#FDE68A);border-radius:12px;border:2px solid #F59E0B">
-        <div style="font-size:11px;color:#92400E;font-weight:700;margin-bottom:6px;text-align:center">⚠️ Email automatique non configuré — Votre code :</div>
+        <div style="font-size:11px;color:#92400E;font-weight:700;margin-bottom:6px;text-align:center">${t('x1_emailNonConfig')}</div>
         <div style="font-size:28px;font-weight:900;letter-spacing:6px;text-align:center;font-family:monospace;color:#78350F;user-select:all;cursor:copy" onclick="navigator.clipboard.writeText('${p.code}').then(()=>showToast('Code copié','success'))">${p.code}</div>
         <div style="display:flex;gap:6px;margin-top:8px">
-          <button class="btn btn-ghost" style="flex:1;font-size:11px;padding:6px" onclick="_openMailtoVerification('${p.data.email}','${p.code}')">📧 Ouvrir mon email</button>
+          <button class="btn btn-ghost" style="flex:1;font-size:11px;padding:6px" onclick="_openMailtoVerification('${p.data.email}','${p.code}')">${t('x1_ouvrirEmail')}</button>
           <button class="btn btn-primary" style="flex:1;font-size:11px;padding:6px" onclick="S.signupCodeInput='${p.code}';render()">⚡ Auto-remplir</button>
         </div>
-        <div style="font-size:10px;color:#78350F;margin-top:6px;text-align:center">Configurez EmailJS dans Paramètres pour l'envoi automatique</div>
+        <div style="font-size:10px;color:#78350F;margin-top:6px;text-align:center">${t('x1_configEmailjs')}</div>
       </div>` : ''}
 
       <div class="form-group" style="margin-top:20px">
-        <label class="form-label">Code de vérification</label>
+        <label class="form-label">${t('x1_codeVerif')}</label>
         <input class="input" id="signup-code" type="text" inputmode="numeric" maxlength="6" placeholder="000000"
           style="letter-spacing:8px;text-align:center;font-size:24px;font-weight:700;font-family:monospace"
           value="${S.signupCodeInput || ''}"
           oninput="S.signupCodeInput=this.value.replace(/\\D/g,'').slice(0,6);if(this.value.length===6)confirmSignupVerification()">
       </div>
 
-      <button class="btn btn-primary" style="width:100%;margin-top:10px" onclick="confirmSignupVerification()">✓ Valider et créer mon compte</button>
+      <button class="btn btn-primary" style="width:100%;margin-top:10px" onclick="confirmSignupVerification()">${t('x1_validerCreer')}</button>
 
       <div style="text-align:center;margin-top:14px;display:flex;flex-direction:column;gap:8px">
-        <button class="btn-link" onclick="resendSignupVerification()" style="background:none;border:none;color:var(--accent);font-size:13px;cursor:pointer">🔄 Renvoyer le code</button>
-        <button class="btn-link" onclick="cancelSignupVerification()" style="background:none;border:none;color:var(--text-3);font-size:12px;cursor:pointer">← Modifier mes informations</button>
+        <button class="btn-link" onclick="resendSignupVerification()" style="background:none;border:none;color:var(--accent);font-size:13px;cursor:pointer">${t('x1_renvoyerCode')}</button>
+        <button class="btn-link" onclick="cancelSignupVerification()" style="background:none;border:none;color:var(--text-3);font-size:12px;cursor:pointer">${t('x1_modifierInfos')}</button>
       </div>
 
       <div style="margin-top:20px;padding:10px;background:var(--accent-light);border-radius:8px;font-size:11px;color:var(--text-2);text-align:center">
@@ -6448,7 +6734,7 @@ function updateArticleMarginPreview() {
     const pctColor  = margePct >= 30 ? 'var(--success)' : margePct >= 15 ? 'var(--warning)' : 'var(--danger)';
     box.innerHTML = `<div style="padding:10px;background:var(--bg);border-radius:var(--r-sm);display:flex;justify-content:space-between;align-items:center;gap:8px">
       <div>
-        <div style="font-size:10px;color:var(--text-3)">MARGE PAR UNITÉ</div>
+        <div style="font-size:10px;color:var(--text-3)">${t('x1_margeParUnite')}</div>
         <div id="art-marge-fcfa" style="font-size:16px;font-weight:800;color:${fcfaColor}">${fmt(margeFcfa)} ${sym()}</div>
       </div>
       <div style="text-align:right">
@@ -6814,7 +7100,7 @@ function _qsBody() {
       </div>
       <button class="qs-x" onclick="closeQuickSell()" aria-label="Fermer">✕</button>
     </div>
-    <div class="qs-label">Quantité</div>
+    <div class="qs-label">${t('x1_quantite')}</div>
     <div class="qs-qtyrow">
       <button class="qs-step" onclick="_qsSetQty(-1)">−</button>
       <input class="qs-qty" type="number" inputmode="numeric" value="${qs.qty}" min="1" max="${max}" onchange="_qsSetQtyVal(this.value)">
@@ -6827,12 +7113,12 @@ function _qsBody() {
     </div>
     ${(S.clients||[]).length ? `
     <div class="qs-label">Client (optionnel)</div>
-    <select class="input qs-client" onchange="_qsSetClient(this.value)"><option value="">— Aucun —</option>${clientsOpts}</select>` : ''}
+    <select class="input qs-client" onchange="_qsSetClient(this.value)"><option value="">${t('x1_aucunTiret')}</option>${clientsOpts}</select>` : ''}
     <div class="qs-totals">
       <div class="qs-trow"><span>Total</span><b>${fmt(total)} ${sym()}</b></div>
-      ${cost>0?`<div class="qs-trow qs-profit"><span>Bénéfice</span><b>+${fmt(profit)} ${sym()}</b></div>`:''}
+      ${cost>0?`<div class="qs-trow qs-profit"><span>${t('x1_benefice')}</span><b>+${fmt(profit)} ${sym()}</b></div>`:''}
     </div>
-    <button class="btn btn-primary qs-confirm" onclick="quickSellConfirm()">✓ Confirmer la vente</button>
+    <button class="btn btn-primary qs-confirm" onclick="quickSellConfirm()">${t('x1_confirmerVente')}</button>
   `;
 }
 function _qsRender() {
@@ -8628,20 +8914,20 @@ function vAuth() {
 
       ${!isLogin ? `
       <div class="form-group">
-        <label class="form-label">Prénom / Nom *</label>
+        <label class="form-label">${t('x1_prenomNom')}</label>
         <input class="input" id="auth-name" type="text" placeholder="ex: Fatou Diallo" autocomplete="name" value="${S.authName}" oninput="S.authName=this.value">
       </div>
       <div class="form-group">
-        <label class="form-label">Nom du commerce</label>
+        <label class="form-label">${t('x1_nomCommerce2')}</label>
         <input class="input" id="auth-biz" type="text" placeholder="ex: Boutique Wax de Fatou" value="${S.authBiz||''}" oninput="S.authBiz=this.value">
       </div>` : ''}
 
       <div class="form-group">
-        <label class="form-label">Email *</label>
+        <label class="form-label">${t('x1_email')}</label>
         <input class="input" id="auth-email" type="email" placeholder="ton@email.com" autocomplete="email" value="${S.authEmail}" oninput="S.authEmail=this.value">
       </div>
       <div class="form-group">
-        <label class="form-label">Mot de passe *</label>
+        <label class="form-label">${t('x1_motDePasse')}</label>
         <div class="pwd-wrap">
           <input class="input ${S.authShowPwd?'':'pwd-masked'}" id="auth-pwd" type="text" placeholder="••••••••" autocomplete="${isLogin?'current-password':'new-password'}" value="${S.authPwd}" oninput="S.authPwd=this.value">
           <button class="pwd-eye" onclick="toggleAuthPwd(event)" type="button">${S.authShowPwd?IC.eyeOff:IC.eye}</button>
@@ -8649,7 +8935,7 @@ function vAuth() {
       </div>
       ${!isLogin ? `
       <div class="form-group">
-        <label class="form-label">Confirmer le mot de passe *</label>
+        <label class="form-label">${t('x1_confirmerMdp')}</label>
         <div class="pwd-wrap">
           <input class="input ${S.authShowPwd?'':'pwd-masked'}" id="auth-pwd2" type="text" placeholder="••••••••" autocomplete="new-password" value="${S.authPwd2}" oninput="S.authPwd2=this.value">
         </div>
@@ -8675,7 +8961,7 @@ function vAuth() {
       ` : ''}
       ${isLogin ? `
       <div style="margin-top:12px;text-align:center;display:flex;align-items:center;justify-content:center;gap:6px;font-size:10px;color:var(--text-3)">
-        <span>🔒</span><span>Connexion sécurisée SSL</span>
+        <span>🔒</span><span>${t('x1_connexionSsl')}</span>
       </div>
       <!-- Rejoindre une équipe avec un code (vendeur) -->
       ${S.authJoinOpen ? `
@@ -8683,11 +8969,11 @@ function vAuth() {
         <div style="font-weight:800;font-size:13.5px;color:var(--text-1);margin-bottom:8px">👥 Rejoindre l'équipe d'une boutique</div>
         <input class="input" id="join-code" type="text" placeholder="Code (ex : BARO-XXXXXX)" style="text-transform:uppercase;margin-bottom:8px" value="${(S.joinCode||'').replace(/"/g,'&quot;')}" oninput="S.joinCode=this.value">
         <input class="input" id="join-name" type="text" placeholder="Votre nom (vendeur)" style="margin-bottom:10px" value="${(S.joinName||'').replace(/"/g,'&quot;')}" oninput="S.joinName=this.value">
-        <button class="btn btn-primary" style="width:100%" onclick="joinTeamWithCode()">Rejoindre la boutique</button>
+        <button class="btn btn-primary" style="width:100%" onclick="joinTeamWithCode()">${t('x1_rejoindreBoutique')}</button>
         <div style="font-size:11px;color:var(--text-3);margin-top:6px;line-height:1.5">Le patron vous donne ce code. Vos ventes seront enregistrées à son compte, à votre nom. Nécessite une connexion internet.</div>
       </div>
       ` : `
-      <button class="btn btn-ghost" style="width:100%;margin-top:10px;font-size:13px" onclick="S.authJoinOpen=true;render()">👥 Je suis vendeur — rejoindre avec un code</button>
+      <button class="btn btn-ghost" style="width:100%;margin-top:10px;font-size:13px" onclick="S.authJoinOpen=true;render()">${t('x1_jeSuisVendeur')}</button>
       `}
       ` : ''}
 
@@ -8763,7 +9049,7 @@ function __showSocialModal(provider) {
         <div style="width:40px;height:40px;background:rgba(255,255,255,${provider==='apple'?0.15:0.95});border-radius:50%;display:flex;align-items:center;justify-content:center">${brand.logo}</div>
         <div style="flex:1">
           <div style="font-size:17px;font-weight:800">${brand.title}</div>
-          <div style="font-size:12px;opacity:.85;margin-top:2px">BARO utilisera cette identité</div>
+          <div style="font-size:12px;opacity:.85;margin-top:2px">${t('x1_baroIdentite')}</div>
         </div>
         <button style="width:32px;height:32px;border-radius:50%;border:none;background:rgba(255,255,255,.2);color:#fff;font-size:18px;cursor:pointer" onclick="document.getElementById('social-login-modal').remove()">×</button>
       </div>
@@ -8780,7 +9066,7 @@ function __showSocialModal(provider) {
           <button class="btn btn-ghost" style="flex:1" onclick="document.getElementById('social-login-modal').remove()">Annuler</button>
           <button class="btn btn-primary" style="flex:2;background:${brand.color};border-color:${brand.color}" onclick="__submitSocialLogin('${provider}')">${brand.icon} Se connecter</button>
         </div>
-        <div style="text-align:center;margin-top:12px;font-size:11px;color:var(--text-3)">🔒 Vos données restent sur votre appareil (stockage local)</div>
+        <div style="text-align:center;margin-top:12px;font-size:11px;color:var(--text-3)">${t('x1_donneesLocales')}</div>
       </div>
     </div>`;
   document.body.appendChild(modal);
@@ -11929,7 +12215,7 @@ function vAdd() {
           ha > 0 && pv > 0
             ? `<div style="padding:10px;background:var(--bg);border-radius:var(--r-sm);display:flex;justify-content:space-between;align-items:center;gap:8px">
                 <div>
-                  <div style="font-size:10px;color:var(--text-3)">MARGE PAR UNITÉ</div>
+                  <div style="font-size:10px;color:var(--text-3)">${t('x1_margeParUnite')}</div>
                   <div id="art-marge-fcfa" style="font-size:16px;font-weight:800;color:${margeFcfa>=0?'var(--success)':'var(--danger)'}">${fmt(margeFcfa)} ${sym()}</div>
                 </div>
                 <div style="text-align:right">
@@ -11937,7 +12223,7 @@ function vAdd() {
                   <div id="art-marge-pct" style="font-size:16px;font-weight:800;color:${margePct>=30?'var(--success)':margePct>=15?'var(--warning)':'var(--danger)'}">${margePct}%</div>
                 </div>
               </div>`
-            : `<div style="font-size:11px;color:var(--text-3)">Renseignez les deux prix pour voir la marge</div>`
+            : `<div style="font-size:11px;color:var(--text-3)">${t('x1_renseignezPrix')}</div>`
         }</div>
       </div>` : `
       <div class="input-row form-group">
@@ -17437,7 +17723,7 @@ function editDailyGoal() {
             </button>
             <button type="button" class="goal-type-btn ${type==='profit'?'active':''}" style="padding:10px 6px;border-radius:8px;border:1.5px solid ${type==='profit'?'var(--success)':'var(--border)'};background:${type==='profit'?'rgba(16,185,129,0.08)':'var(--surface)'};cursor:pointer;text-align:center" onclick="__goalSetType('profit')">
               <div style="font-size:20px;margin-bottom:2px">📈</div>
-              <div style="font-size:11px;font-weight:700;color:${type==='profit'?'var(--success)':'var(--text-2)'}">Bénéfice</div>
+              <div style="font-size:11px;font-weight:700;color:${type==='profit'?'var(--success)':'var(--text-2)'}">${t('x1_benefice')}</div>
             </button>
             <button type="button" class="goal-type-btn ${type==='sales'?'active':''}" style="padding:10px 6px;border-radius:8px;border:1.5px solid ${type==='sales'?'#EC4899':'var(--border)'};background:${type==='sales'?'rgba(236,72,153,0.08)':'var(--surface)'};cursor:pointer;text-align:center" onclick="__goalSetType('sales')">
               <div style="font-size:20px;margin-bottom:2px">🛒</div>
@@ -20783,7 +21069,7 @@ function vMultiStore() {
             <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,#4F46E5,#7C3AED);transition:width .3s"></div>
           </div>
           <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;font-size:11px">
-            <div><div style="color:var(--text-3)">Bénéfice</div><div style="font-weight:700;color:#10B981">${fmt(r.profit)}</div></div>
+            <div><div style="color:var(--text-3)">${t('x1_benefice')}</div><div style="font-weight:700;color:#10B981">${fmt(r.profit)}</div></div>
             <div><div style="color:var(--text-3)">Articles</div><div style="font-weight:700;color:var(--text-1)">${r.nbArts}</div></div>
             <div><div style="color:var(--text-3)">Stock bas</div><div style="font-weight:700;color:${r.lowCount>0?'#F59E0B':'var(--text-1)'}">${r.lowCount}</div></div>
           </div>
@@ -21412,7 +21698,7 @@ function vBoutique() {
           <span>${t('w8_livraisonDom')}</span>
           <label class="toggle-switch"><input type="checkbox" ${bc.deliveryDisabled?'':'checked'} onchange="updateBoutiqueConfig('deliveryDisabled',!this.checked);render()"><span class="toggle-track"></span></label>
         </label>
-        <div style="font-size:11px;color:var(--text-3);margin-top:2px">Désactivez pour un commerce en <strong>retrait uniquement</strong> (restaurant, atelier, comptoir) : la boutique n'affiche plus ni frais, ni zones, ni choix de livraison.</div>
+        <div style="font-size:11px;color:var(--text-3);margin-top:2px">${t('x2_desactivezPour')} <strong>retrait uniquement</strong> (restaurant, atelier, comptoir) : la boutique n'affiche plus ni frais, ni zones, ni choix de livraison.</div>
         ${bc.deliveryDisabled && !bc.pickupEnabled ? `<div style="font-size:11.5px;font-weight:600;color:#B45309;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);border-radius:8px;padding:8px 10px;margin-top:8px">⚠️ Livraison désactivée sans retrait sur place : activez « 🏬 Retrait sur place » ci-dessous et renseignez l'adresse, pour que vos clients sachent où récupérer leur commande.</div>` : ''}
       </div>
       ${bc.deliveryDisabled ? '' : `
@@ -21435,7 +21721,7 @@ function vBoutique() {
       </div>
       ${bc.deliveryDisabled ? '' : `
       <div class="form-group">
-        <label class="form-label">🎁 Livraison offerte dès (${sym()}) <span style="font-weight:500;color:var(--text-3)">— 0 = désactivé</span></label>
+        <label class="form-label">🎁 Livraison offerte dès (${sym()}) <span style="font-weight:500;color:var(--text-3)">${t('x2_zeroDesactive')}</span></label>
         <input class="input" type="number" inputmode="numeric" value="${bc.freeDeliveryThreshold || 0}" oninput="updateBoutiqueConfig('freeDeliveryThreshold',parseFloat(this.value)||0)" placeholder="ex : 25000">
         <div style="font-size:11px;color:var(--text-3);margin-top:4px">Incite le client à remplir son panier pour la livraison gratuite.</div>
       </div>
@@ -22208,7 +22494,7 @@ function generateBoutiqueSite(opts) {
     <div class="cn-shutter" aria-hidden="true"><span class="cn-slat"></span></div>
     <div class="cn-title"><span>${esc(heroTitle)}</span></div>
     <div class="cn-meta">${_cineMeta.map(m => `<span>${m}</span>`).join('')}</div>
-    <a class="cn-go" href="#produits" onclick="event.preventDefault();(document.querySelector('main.grid')||document.body).scrollIntoView({behavior:'smooth',block:'start'})">Entrer dans la boutique</a>
+    <a class="cn-go" href="#produits" onclick="event.preventDefault();(document.querySelector('main.grid')||document.body).scrollIntoView({behavior:'smooth',block:'start'})">${t('x2_entrerBoutique')}</a>
     <button class="cn-skip" onclick="(document.querySelector('main.grid')||document.body).scrollIntoView({behavior:'smooth',block:'start'})">Passer l'intro</button>
   </div>
 </section>`;
@@ -22446,7 +22732,7 @@ ${hoverCss}
    Auparavant seul un badge minuscule distinguait un article epuise :
    dans une grille, il semblait achetable jusqu'a lecture du petit texte. */
 .pc-out .pc-imgwrap{filter:grayscale(.82) contrast(.94);opacity:.5}
-.pc-out .pc-imgwrap::before{content:'Épuisé';position:absolute;z-index:3;
+.pc-out .pc-imgwrap::before{content:'${t('x2_epuise')}';position:absolute;z-index:3;
   left:50%;top:50%;transform:translate(-50%,-50%);
   font-size:10.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
   color:#fff;background:rgba(20,20,26,.78);backdrop-filter:blur(3px);
@@ -22839,7 +23125,7 @@ ${bannerHTML(topBanner, 'top')}
   ${/* Une seule invitation à descendre. Le bouton et le repère de défilement
         déclenchaient la même action, l'un sous l'autre : le repère seul est
         plus juste, et c'est le langage des vitrines de reference. */ ''}
-  ${heroStyle !== 'minimal' ? `<div class="scroll-explore" role="button" tabindex="0" title="Voir les produits" onclick="(document.querySelector('main.grid')||document.body).scrollIntoView({behavior:'smooth',block:'start'})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}"><span class="se-label">Faites défiler</span><span class="se-rail"><span class="se-dot"></span></span></div>` : ''}
+  ${heroStyle !== 'minimal' ? `<div class="scroll-explore" role="button" tabindex="0" title="Voir les produits" onclick="(document.querySelector('main.grid')||document.body).scrollIntoView({behavior:'smooth',block:'start'})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}"><span class="se-label">${t('x2_faitesDefiler')}</span><span class="se-rail"><span class="se-dot"></span></span></div>` : ''}
   <div class="hero-grain" aria-hidden="true"></div>
   <div class="hero-fade" aria-hidden="true"></div>
 </div>
@@ -22910,7 +23196,7 @@ ${cc.body || ''}
 <main class="grid" id="produits">
 ${prodsHTML}
 </main>
-<div id="no-results">Aucun produit ne correspond à votre recherche 🙁</div>
+<div id="no-results">${t('x2_aucunProduitRech')}</div>
 ${(() => {
   // Parcours de commande decrit a partir de la configuration reelle de la
   // boutique. Beaucoup de clients ne devinent pas que la commande part sur
@@ -22929,7 +23215,7 @@ ${(() => {
           ? ['Retirez', `Sur place : ${esc(_pickupAddr)}`]
           : ['Recevez', 'Nous vous recontactons pour convenir de la remise.'])
   ];
-  return `<div class="sec-eyebrow reveal"><span>Comment ça marche</span></div>
+  return `<div class="sec-eyebrow reveal"><span>${t('x2_commentCaMarche3')}</span></div>
 <ol class="howto reveal">${_etapes.map((e, i) => `
   <li class="howto-step">
     <span class="howto-num">${i + 1}</span>
@@ -22938,9 +23224,9 @@ ${(() => {
 })()}
 ${_servicesArr.length>0?`<div class="svc-strip reveal">${_servicesArr.map(s=>`<div class="svc-item">${esc(s)}</div>`).join('')}</div>`:''}
 ${midVideoHTML}
-${_aboutText?`<div class="sec-eyebrow reveal"><span>La maison</span></div>
+${_aboutText?`<div class="sec-eyebrow reveal"><span>${t('x2_laMaison')}</span></div>
 <div class="about-section reveal" id="apropos">
-  <div class="pay-section-title">À propos</div>
+  <div class="pay-section-title">${t('x2_apropos')}</div>
   <p class="about-text">${esc(_aboutText).replace(/\n/g,'<br>')}</p>
 </div>`:''}
 ${showReviews ? reviewsHTML : ''}
@@ -22955,13 +23241,13 @@ ${_hasContact?`<div class="sec-eyebrow reveal"><span>Nous joindre</span></div>
     ${_ctPhone?`<a class="contact-row" href="tel:${esc(_ctPhone.replace(/\s/g,''))}"><span>📞</span><span>${esc(_ctPhone)}</span></a>`:''}
     ${_ctEmail?`<a class="contact-row" href="mailto:${esc(_ctEmail)}"><span>✉️</span><span>${esc(_ctEmail)}</span></a>`:''}
     ${_ctAddress?`<div class="contact-row"><span>📍</span><span>${esc(_ctAddress)}</span></div>`:''}
-    ${waNum?`<a class="contact-row" href="${waLink}" target="_blank" rel="noopener noreferrer"><span>💬</span><span>Écrire sur WhatsApp</span></a>`:''}
+    ${waNum?`<a class="contact-row" href="${waLink}" target="_blank" rel="noopener noreferrer"><span>💬</span><span>${t('x2_ecrireSurWa')}</span></a>`:''}
   </div>
 </div>`:''}
 ${(bc.deliveryZones||[]).length>0 && !_deliveryOff?`<div class="delivery-info reveal">🏙️ Zones de livraison : ${(bc.deliveryZones||[]).join(' • ')}</div>`:''}
-${_deliveryOff && _pickupEnabled?`<div class="delivery-info reveal">🏬 Retrait sur place uniquement — 📍 ${esc(_pickupAddr)}${_pickupHours?` · 🕒 ${esc(_pickupHours)}`:''} · <a href="${esc(_pickupMap)}" target="_blank" rel="noopener" style="font-weight:700">Itinéraire 🗺️</a></div>`:''}
+${_deliveryOff && _pickupEnabled?`<div class="delivery-info reveal">🏬 Retrait sur place uniquement — 📍 ${esc(_pickupAddr)}${_pickupHours?` · 🕒 ${esc(_pickupHours)}`:''} · <a href="${esc(_pickupMap)}" target="_blank" rel="noopener" style="font-weight:700">${t('x2_itineraire2')}</a></div>`:''}
 ${(bc.faqs||[]).length>0?`<div class="pay-section reveal" style="text-align:left">
-  <div class="pay-section-title" style="text-align:center">Questions fréquentes</div>
+  <div class="pay-section-title" style="text-align:center">${t('x2_questionsFreq')}</div>
   ${(bc.faqs||[]).map(f=>`<details style="padding:10px 4px;border-bottom:1px solid #F2F2F5"><summary style="font-weight:700;font-size:13.5px;cursor:pointer">${esc(f.q||f.question||'')}</summary><div style="font-size:13px;color:#666;line-height:1.6;padding:8px 2px 2px">${esc(f.a||f.answer||'')}</div></details>`).join('')}
 </div>`:''}
 </div>
@@ -22989,15 +23275,15 @@ ${popupHTML}
       <a onclick="baroMyOrders()">Mes achats</a>
     </div>
     <div class="ft-col">
-      <h4>Légales</h4>
+      <h4>${t('x2_legales')}</h4>
       ${bc.conditions?`<a onclick="baroLegal('cgv')">Conditions de vente</a>`:''}
       ${bc.returnPolicy?`<a onclick="baroLegal('ret')">Politique de retour</a>`:''}
-      <a onclick="baroLegal('conf')">Confidentialité</a>
+      <a onclick="baroLegal('conf')">${t('x2_confidentialite')}</a>
     </div>
   </div>
   <div class="ft-bottom">
     <span>© ${new Date().getFullYear()} ${esc(bc.name||S.session?.business||'Ma Boutique')} — Tous droits réservés</span>
-    ${(_planHasFeature('whiteLabel') && bc.hideBaroBranding) ? '' : `<span>Propulsé par <a href="#" style="font-weight:700">BARO</a></span>`}
+    ${(_planHasFeature('whiteLabel') && bc.hideBaroBranding) ? '' : `<span>${t('x2_propulsePar')} <a href="#" style="font-weight:700">BARO</a></span>`}
   </div>
 </footer>
 <div class="legal-ov" id="legal-ov" onclick="if(event.target===this)this.classList.remove('show')">
@@ -23053,9 +23339,9 @@ ${(BARO_API_OK && shopIdNum) ? `<div class="legal-ov" id="acc-ov" onclick="if(ev
         ?'Retrouvez vos commandes depuis n’importe quel téléphone.'
         :'Chez '+BARO_SHOP+'.')+'</p>'
       +'<div class="acc-err" id="acc-err" hidden></div>'
-      +(inscription?'<label class="acc-lb">Votre nom</label><input class="acc-in" id="acc-name" type="text" autocomplete="name" placeholder="ex : Awa Kouassi">':'')
+      +(inscription?'<label class="acc-lb">${t('x2_votreNom')}</label><input class="acc-in" id="acc-name" type="text" autocomplete="name" placeholder="ex : Awa Kouassi">':'')
       +'<label class="acc-lb">${t('w9_telephone')}</label><input class="acc-in" id="acc-tel" type="tel" inputmode="tel" autocomplete="tel" placeholder="07 00 00 00 00">'
-      +'<label class="acc-lb">Mot de passe</label><input class="acc-in" id="acc-mdp" type="password" autocomplete="'+(inscription?'new-password':'current-password')+'" placeholder="6 caractères minimum">'
+      +'<label class="acc-lb">${t('x2_motDePasseSimple')}</label><input class="acc-in" id="acc-mdp" type="password" autocomplete="'+(inscription?'new-password':'current-password')+'" placeholder="6 caractères minimum">'
       +'<button class="acc-go" id="acc-submit" data-lbl="'+(inscription?'Créer mon compte':'Me connecter')+'" onclick="baroAccSend('+(inscription?'1':'0')+')">'+(inscription?'Créer mon compte':'Me connecter')+'</button>'
       +'<button class="acc-alt" onclick="baroAccMode('+(inscription?"'login'":"'register'")+')">'
         +(inscription?'J’ai déjà un compte':'Créer un compte')+'</button>';
@@ -23093,13 +23379,13 @@ ${(BARO_API_OK && shopIdNum) ? `<div class="legal-ov" id="acc-ov" onclick="if(ev
       +'<p class="acc-sub">'+(cl.phone||'')+' · client de '+BARO_SHOP+'</p>'
       +'<div class="acc-sec" id="acc-again"></div>'
       +'<div class="acc-sec"><div class="acc-t">Mes commandes</div><div id="acc-orders" class="acc-load">Chargement…</div></div>'
-      +'<button class="acc-alt" onclick="baroAccLogout()">Me déconnecter</button>';
+      +'<button class="acc-alt" onclick="baroAccLogout()">${t('x2_meDeconnecter')}</button>';
 
     req('/api/shoppers/orders').then(function(r){
       var el=document.getElementById('acc-orders');if(!el)return;
       el.classList.remove('acc-load');
       var a=(r.ok&&Array.isArray(r.data))?r.data:[];
-      if(!a.length){el.innerHTML='<div class="acc-vide">Aucune commande pour l’instant.</div>';return;}
+      if(!a.length){el.innerHTML='<div class="acc-vide">${t('x2_aucuneCommandeInstant')}</div>';return;}
       el.innerHTML=a.map(function(o){
         return '<div class="acc-cmd"><div class="acc-cmd-h"><span>'
           +new Date(o.date).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'})
@@ -23118,7 +23404,7 @@ ${(BARO_API_OK && shopIdNum) ? `<div class="legal-ov" id="acc-ov" onclick="if(ev
       var el=document.getElementById('acc-again');if(!el)return;
       var a=(r.ok&&Array.isArray(r.data))?r.data:[];
       if(!a.length){el.innerHTML='';return;}
-      el.innerHTML='<div class="acc-t">Vos habitudes</div><div class="acc-chips">'
+      el.innerHTML='<div class="acc-t">${t('x2_vosHabitudes')}</div><div class="acc-chips">'
         +a.slice(0,6).map(function(x){
             var n=String(x.name||'').replace(/[<>"]/g,'');
             return '<button class="acc-chip" data-n="'+n+'">'+n+'<i>×'+x.times+'</i></button>';
@@ -23167,7 +23453,7 @@ ${(BARO_API_OK && shopIdNum) ? `<div class="legal-ov" id="acc-ov" onclick="if(ev
   window._baroSaveOrder=function(o){try{var a=JSON.parse(localStorage.getItem(MYO_KEY)||'[]');a.unshift(o);localStorage.setItem(MYO_KEY,JSON.stringify(a.slice(0,50)));}catch(e){}};
   window._baroAttachTrack=function(srv,tc){try{var a=JSON.parse(localStorage.getItem(MYO_KEY)||'[]');if(a[0]){a[0].srv=srv;a[0].tc=tc;localStorage.setItem(MYO_KEY,JSON.stringify(a));}}catch(e){}};
   window.baroMyOrders=function(){var c=document.getElementById('myorders-c');if(!c)return;var a=[];try{a=JSON.parse(localStorage.getItem(MYO_KEY)||'[]');}catch(e){}
-    if(!a.length){c.innerHTML='<div style="text-align:center;color:#999;padding:24px 8px;font-size:13px">Aucun achat pour le moment.<br>Vos commandes passées ici apparaîtront ici. 🛍️</div>';}
+    if(!a.length){c.innerHTML='<div style="text-align:center;color:#999;padding:24px 8px;font-size:13px">${t('x2_aucunAchat')}<br>${t('x2_commandesIci')}</div>';}
     else{c.innerHTML=a.map(function(o,i){var st=(o.srv&&o.tc)?'<div class="myo-track" id="myo-st-'+i+'" style="margin-top:6px;font-size:12px;font-weight:700;color:#4F46E5">⏳ Statut en cours de chargement…</div>':'';
       return '<div class="myo-item"><div class="myo-top"><span>'+new Date(o.date).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'})+'</span><b>'+o.total+'</b></div><div class="myo-items">'+(o.items||[]).map(function(x){return x;}).join('<br>')+'</div>'+st+'</div>';}).join('');
       // Suivi EN DIRECT : interroge le serveur de la boutique (code secret par commande)
@@ -23192,32 +23478,32 @@ ${showCartButton ? `
   <div class="ck" style="position:relative">
     <div class="ck-handle"></div>
     <button class="ck-close" onclick="baroCloseCheckout()">✕</button>
-    <h2>🛒 Votre commande</h2>
+    <h2>${t('x2_votreCommande')}</h2>
     <div id="ck-items"></div>
     ${(Number(bc.freeDeliveryThreshold)>0 && _bqHasAnyFee && !_deliveryOff)?`<div id="ck-freeship" style="display:none;margin:8px 0 4px;padding:9px 12px;border-radius:10px;font-size:12.5px;font-weight:700;text-align:center"></div>`:''}
     ${_bqHasPromos?`<div style="display:flex;gap:8px;margin:8px 0 4px">
       <input id="ck-promo-inp" type="text" autocomplete="off" placeholder="Code promo" style="flex:1;text-transform:uppercase;border:1.5px solid rgba(0,0,0,.12);border-radius:10px;padding:11px 12px;font-size:14px;font-weight:700;letter-spacing:1px;outline:none">
       <button type="button" onclick="baroPromo()" style="border:none;border-radius:10px;padding:0 16px;font-weight:800;font-size:13px;cursor:pointer;background:#111827;color:#fff">Appliquer</button>
     </div>
-    <div class="ck-fees" id="ck-discrow" style="display:none;color:#16A34A;font-weight:700"><span id="ck-disc-label">Réduction</span><span id="ck-disc">0</span></div>`:''}
+    <div class="ck-fees" id="ck-discrow" style="display:none;color:#16A34A;font-weight:700"><span id="ck-disc-label">${t('x2_reduction')}</span><span id="ck-disc">0</span></div>`:''}
     ${_bqHasAnyFee && !_deliveryOff?`<div class="ck-fees" id="ck-feerow"><span>Livraison</span><span id="ck-fee">${fmt(Number(bc.deliveryFees)||0)} ${sym()}</span></div>`:''}
     <div class="ck-total"><span>Total</span><span id="ck-total">0 ${sym()}</span></div>
-    <label>Votre nom</label>
+    <label>${t('x2_votreNom')}</label>
     <input id="ck-name" type="text" placeholder="ex : Aminata Traoré">
     <label>${t('w9_telephone')} <span class="ck-req">obligatoire</span></label>
     <input id="ck-phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="ex : 07 00 00 00 00">
     <div class="ck-phone-why">Le seul moyen pour ${esc(bc.name||S.session?.business||'la boutique')} de vous joindre pour confirmer.</div>
-    ${_pickupEnabled && !_deliveryOff?`<label>Mode de réception</label>
+    ${_pickupEnabled && !_deliveryOff?`<label>${t('x2_modeReception')}</label>
     <div class="ck-mode">
       <button type="button" class="ck-mode-btn on" id="ck-mode-delivery" onclick="baroSetMode('delivery')">🚚 Livraison</button>
-      <button type="button" class="ck-mode-btn" id="ck-mode-pickup" onclick="baroSetMode('pickup')">🏬 Retrait sur place</button>
+      <button type="button" class="ck-mode-btn" id="ck-mode-pickup" onclick="baroSetMode('pickup')">${t('x2_retraitSurPlace')}</button>
     </div>`:''}
     ${_pickupEnabled || _deliveryOff?`<div id="ck-pickup-info" style="display:none"></div>`:''}
     ${_deliveryOff?'':`<div id="ck-zone-wrap">${(bc.deliveryZones||[]).length>0?`<label>Zone de livraison</label>
     <select id="ck-zone" onchange="baroZone&&baroZone()">${(bc.deliveryZones||[]).map(z=>`<option>${esc(z)}</option>`).join('')}</select>`:''}</div>`}
-    <label>Paiement souhaité</label>
+    <label>${t('x2_paiementSouhaite')}</label>
     <select id="ck-pay"><option>Espèces</option>${payments.map(m=>`<option>${esc(m.name)}</option>`).join('')}</select>
-    <button class="ck-send" onclick="baroSend()">Envoyer la commande sur WhatsApp</button>
+    <button class="ck-send" onclick="baroSend()">${t('x2_envoyerCommandeWa')}</button>
   </div>
 </div>
 <script>
@@ -23252,7 +23538,7 @@ var baroMode=BARO_DELOFF?'pickup':'delivery';
     var zw=document.getElementById('ck-zone-wrap'),pi=document.getElementById('ck-pickup-info');
     if(zw)zw.style.display=(m==='pickup')?'none':'';
     if(pi){if(m==='pickup'){pi.style.display='';pi.innerHTML=BARO_PICKUP.on
-      ?'<div class="ck-pickup-card"><div class="ck-pickup-addr">📍 '+BARO_PICKUP.addr+'</div>'+(BARO_PICKUP.hours?'<div class="ck-pickup-h">🕒 '+BARO_PICKUP.hours+'</div>':'')+'<a class="ck-pickup-itin" href="'+BARO_PICKUP.map+'" target="_blank" rel="noopener">🗺️ Itinéraire</a></div>'
+      ?'<div class="ck-pickup-card"><div class="ck-pickup-addr">📍 '+BARO_PICKUP.addr+'</div>'+(BARO_PICKUP.hours?'<div class="ck-pickup-h">🕒 '+BARO_PICKUP.hours+'</div>':'')+'<a class="ck-pickup-itin" href="'+BARO_PICKUP.map+'" target="_blank" rel="noopener">${t('x2_itineraire')}</a></div>'
       :'<div class="ck-pickup-card"><div class="ck-pickup-addr">🏬 Retrait sur place — l\\'adresse vous sera confirmée sur WhatsApp</div></div>';}else{pi.style.display='none';}}
     var fr=document.getElementById('ck-feerow');if(fr)fr.style.display=(m==='pickup')?'none':'';
     if(navigator.vibrate)navigator.vibrate(8);renderCk();};
@@ -23292,7 +23578,7 @@ var baroMode=BARO_DELOFF?'pickup':'delivery';
         +'<div class="ck-qty"><button onclick="baroDec(\\''+k+'\\')">−</button><span>'+cart[k]+'</span><button onclick="baroInc(\\''+k+'\\')">+</button></div>'
         +'<div class="ck-item-price">'+fmtn(it.price*cart[k])+' '+BARO_SYM+'</div></div>';
     }
-    box.innerHTML=h||'<div class="ck-empty"><div class="ck-empty-ic"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></div><div class="ck-empty-t">Votre panier est vide</div><div class="ck-empty-s">Parcourez les produits et ajoutez vos favoris ✨</div><button class="ck-empty-btn" onclick="baroCloseCheckout()">Voir les produits</button></div>';
+    box.innerHTML=h||'<div class="ck-empty"><div class="ck-empty-ic"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></div><div class="ck-empty-t">${t('x2_panierVide')}</div><div class="ck-empty-s">${t('x2_parcourezProduits')}</div><button class="ck-empty-btn" onclick="baroCloseCheckout()">${t('x2_voirLesProduits')}</button></div>';
     var fee=curFee();var disc=discount();
     var fr=document.getElementById('ck-fee');if(fr)fr.textContent=(fee===0&&BARO_FREESHIP>0&&total()>=BARO_FREESHIP)?'Offerte 🎉':(fmtn(fee)+' '+BARO_SYM);
     var dr=document.getElementById('ck-discrow');
@@ -23420,21 +23706,21 @@ var baroMode=BARO_DELOFF?'pickup':'delivery';
       c.innerHTML='<div class="cfm-spin"></div><h3>Envoi de votre commande…</h3>'
         +'<p>Un instant, nous prévenons '+BARO_SHOP+'.</p>';
     } else if(etat==='ok'){
-      c.innerHTML='<div class="cfm-ico ok">✓</div><h3>Commande envoyée</h3>'
+      c.innerHTML='<div class="cfm-ico ok">✓</div><h3>${t('x2_commandeEnvoyee')}</h3>'
         +'<p>'+BARO_SHOP+' a reçu votre commande. Suivez son avancement dans <b>Mes achats</b>.</p>'
-        +'<div class="cfm-code"><span>Code de suivi</span><b>'+code+'</b></div>'
-        +'<button class="cfm-go" onclick="baroCloseConfirm();baroMyOrders()">Voir mes achats</button>'
-        +'<button class="cfm-alt" onclick="baroCloseConfirm();baroWaSend()">Envoyer aussi sur WhatsApp</button>';
+        +'<div class="cfm-code"><span>${t('x2_codeSuivi')}</span><b>'+code+'</b></div>'
+        +'<button class="cfm-go" onclick="baroCloseConfirm();baroMyOrders()">${t('x2_voirMesAchats')}</button>'
+        +'<button class="cfm-alt" onclick="baroCloseConfirm();baroWaSend()">${t('x2_envoyerAussiWa')}</button>';
       _viderPanier();
     } else if(etat==='repli'){
       c.innerHTML='<div class="cfm-ico warn">!</div><h3>Envoi impossible</h3>'
         +'<p>Nous n’avons pas pu joindre la boutique. Votre commande est enregistrée sur cet appareil — envoyez-la sur WhatsApp pour qu’elle soit traitée.</p>'
-        +'<button class="cfm-go" onclick="baroCloseConfirm();baroWaSend()">Envoyer sur WhatsApp</button>'
-        +'<button class="cfm-alt" onclick="baroCloseConfirm()">Plus tard</button>';
+        +'<button class="cfm-go" onclick="baroCloseConfirm();baroWaSend()">${t('x2_envoyerSurWa')}</button>'
+        +'<button class="cfm-alt" onclick="baroCloseConfirm()">${t('x2_plusTard')}</button>';
     } else {
       c.innerHTML='<div class="cfm-ico ok">✓</div><h3>Commande transmise</h3>'
         +'<p>Elle vous attend dans WhatsApp. Retrouvez-la aussi dans <b>Mes achats</b>.</p>'
-        +'<button class="cfm-go" onclick="baroCloseConfirm();baroMyOrders()">Voir mes achats</button>';
+        +'<button class="cfm-go" onclick="baroCloseConfirm();baroMyOrders()">${t('x2_voirMesAchats')}</button>';
       _viderPanier();
     }
     ov.classList.add('show');document.body.style.overflow='hidden';
@@ -23566,7 +23852,7 @@ var baroMode=BARO_DELOFF?'pickup':'delivery';
       <div class="qv-stock" id="qv-stock"></div>
       <div class="qv-desc" id="qv-desc"></div>
       <div class="qv-variants" id="qv-variants"></div>
-      <div class="qv-qtyrow" id="qv-qtyrow"><span>Quantité</span><div class="qv-qtybox"><button onclick="baroQVQty(-1)">−</button><span id="qv-qty">1</span><button onclick="baroQVQty(1)">+</button></div></div>
+      <div class="qv-qtyrow" id="qv-qtyrow"><span>${t('x1_quantite')}</span><div class="qv-qtybox"><button onclick="baroQVQty(-1)">−</button><span id="qv-qty">1</span><button onclick="baroQVQty(1)">+</button></div></div>
       <div class="qv-rev" id="qv-rev" style="display:none"></div>
       <div class="qv-related" id="qv-related" style="display:none"></div>
     </div>
@@ -23765,13 +24051,13 @@ function vBoutiqueEditor() {
     return `
     <div class="page-header"><div class="page-header-row">
       <button class="back-btn" onclick="nav('boutique')">${IC.left}</button>
-      <div class="page-title">Éditeur boutique</div>
+      <div class="page-title">${t('x2_editeurBoutique')}</div>
     </div></div>
     <div class="container"><div class="empty">
       <div class="empty-ico">🎨</div>
       <div class="empty-title">Vitrine vide</div>
       <div class="empty-text">Ajoutez au moins un produit à votre vitrine pour ouvrir l'éditeur visuel.</div>
-      <button class="btn btn-primary" style="width:auto;padding:11px 24px" onclick="nav('boutique')">Gérer ma vitrine</button>
+      <button class="btn btn-primary" style="width:auto;padding:11px 24px" onclick="nav('boutique')">${t('x2_gererVitrine')}</button>
     </div></div>`;
   }
   const colors = [
@@ -23814,7 +24100,7 @@ function vBoutiqueEditor() {
   })();
 
   const styleTab = `
-    <div class="bq-sec-title">Couleur de la marque</div>
+    <div class="bq-sec-title">${t('x2_couleurMarque')}</div>
     <div class="bq-swatches">
       ${colors.map(c => `<button class="bq-swatch ${tc===c.color?'sel':''}" style="background:${c.color}" title="${c.name}" onclick="boutiqueEditSet('themeColor','${c.color}');document.querySelectorAll('.bq-swatch[data-grp=brand]').forEach(s=>s.classList.remove('sel'));this.classList.add('sel')" data-grp="brand">${tc===c.color?'✓':''}</button>`).join('')}
       <label class="bq-swatch bq-swatch-custom" title="Personnalisée">✎<input type="color" value="${tc}" onchange="boutiqueEditSet('themeColor',this.value)"></label>
@@ -23832,7 +24118,7 @@ function vBoutiqueEditor() {
       ];
       const _cur = g('palette', '');
       if (!_ent) {
-        return `<div class="bq-sec-title">Palette complète</div>
+        return `<div class="bq-sec-title">${t('x2_paletteComplete')}</div>
         <div class="bq-lock" onclick="nav('pricing')">
           <div class="bq-lock-row">
             ${_pals.map(p => `<span class="bq-pal-mini" style="background:${p[2]}"><i style="background:${p[3]}"></i></span>`).join('')}
@@ -23840,23 +24126,23 @@ function vBoutiqueEditor() {
           <div class="bq-lock-tx"><strong>Réservé au plan Entreprise</strong><span>Clair, Crème et Nuit — fond, texte et surfaces accordés. Voir les plans →</span></div>
         </div>`;
       }
-      return `<div class="bq-sec-title">Séquence d'ouverture <span class="bq-badge-ent">Entreprise</span></div>
+      return `<div class="bq-sec-title">${t('x2_sequenceOuverture')} <span class="bq-badge-ent">Entreprise</span></div>
       <label class="bq-cine ${g('cinema', false) ? 'on' : ''}">
         <input type="checkbox" ${g('cinema', false) ? 'checked' : ''} onchange="boutiqueEditSet('cinema', this.checked)">
         <span class="bq-cine-tx">
-          <strong>Ouverture au défilement</strong>
+          <strong>${t('x2_ouvertureDefilement')}</strong>
           <span>Un rideau se lève sur vos produits pendant que le visiteur fait défiler. Construit avec vos articles — aucune vidéo à fournir.</span>
         </span>
       </label>
 
-      <div class="bq-sec-title">Palette complète <span class="bq-badge-ent">Entreprise</span></div>
+      <div class="bq-sec-title">${t('x2_paletteComplete')} <span class="bq-badge-ent">Entreprise</span></div>
       <div class="bq-pals">
         ${_pals.map(p => `<button class="bq-pal ${_cur === p[0] ? 'sel' : ''}" onclick="boutiqueEditSet('palette','${p[0]}')" title="${p[4]}">
           <span class="bq-pal-sw" style="background:${p[2]}"><i style="background:${p[3]}"></i></span>
           <span class="bq-pal-nm">${p[1]}</span>
         </button>`).join('')}
         <button class="bq-pal ${!_cur ? 'sel' : ''}" onclick="boutiqueEditSet('palette','')" title="Utiliser la couleur de fond choisie plus bas">
-          <span class="bq-pal-sw bq-pal-none">✕</span><span class="bq-pal-nm">Aucune</span>
+          <span class="bq-pal-sw bq-pal-none">✕</span><span class="bq-pal-nm">${t('x2_aucune')}</span>
         </button>
       </div>`;
     })()}
@@ -23866,13 +24152,13 @@ function vBoutiqueEditor() {
       ${bgColors.map(c => `<button class="bq-swatch bq-swatch-bg ${g('pageBg','#FAFAFC')===c?'sel':''}" style="background:${c};box-shadow:inset 0 0 0 1px rgba(0,0,0,.08);color:#7C3AED" onclick="boutiqueEditSet('pageBg','${c}');document.querySelectorAll('.bq-swatch[data-grp=bg]').forEach(s=>s.classList.remove('sel'));this.classList.add('sel')" data-grp="bg">${g('pageBg','#FAFAFC')===c?'✓':''}</button>`).join('')}
     </div>
 
-    <div class="bq-sec-title">Police des titres</div>
+    <div class="bq-sec-title">${t('x2_policeTitres')}</div>
     <div class="bq-opts">${fonts.map(f => optBtn('headingFont', f.id, f.name, g('headingFont', g('fontFamily','Inter'))===f.id)).join('')}</div>
 
-    <div class="bq-sec-title">Police du texte</div>
+    <div class="bq-sec-title">${t('x2_policeTexte')}</div>
     <div class="bq-opts">${fonts.map(f => optBtn('bodyFont', f.id, f.name, g('bodyFont', g('fontFamily','Inter'))===f.id)).join('')}</div>
 
-    <div class="bq-sec-title">Coins des cartes</div>
+    <div class="bq-sec-title">${t('x2_coinsCartes')}</div>
     <div class="bq-opts">
       ${optBtn('borderStyle','rounded','Arrondis', g('borderStyle','rounded')==='rounded')}
       ${optBtn('borderStyle','xl','Très arrondis', g('borderStyle','rounded')==='xl')}
@@ -23886,12 +24172,12 @@ function vBoutiqueEditor() {
       ${optBtn('orderBtnStyle','outline','Contour', g('orderBtnStyle','whatsapp')==='outline')}
     </div>
 
-    <div class="bq-sec-title">Animation du bouton</div>
+    <div class="bq-sec-title">${t('x2_animationBouton')}</div>
     <div class="bq-opts">
       ${[['rebond','Rebond'],['pulse','Pulse'],['glow','Lueur'],['shake','Secousse'],['none','Aucune']].map(([v,l])=>optBtn('buttonAnimation',v,l,g('buttonAnimation','rebond')===v)).join('')}
     </div>
 
-    <div class="bq-sec-title">Effet au survol</div>
+    <div class="bq-sec-title">${t('x2_effetSurvol')}</div>
     <div class="bq-opts">
       ${optBtn('cardHover','lift','Élévation', g('cardHover','lift')==='lift')}
       ${optBtn('cardHover','zoom','Zoom photo', g('cardHover','lift')==='zoom')}
@@ -23906,7 +24192,7 @@ function vBoutiqueEditor() {
       ${optBtn('gridCols','3','3 colonnes', String(g('gridCols',2))==='3')}
     </div>
 
-    <div class="bq-sec-title">Style de l'en-tête</div>
+    <div class="bq-sec-title">${t('x2_styleEntete')}</div>
     <div class="bq-opts">
       ${optBtn('heroStyle','classic','Classique', g('heroStyle','classic')==='classic')}
       ${optBtn('heroStyle','banner','Grande bannière', g('heroStyle','classic')==='banner')}
@@ -23920,7 +24206,7 @@ function vBoutiqueEditor() {
       ${optBtn('density','airy','Aéré', g('density','normal')==='airy')}
     </div>
 
-    <div class="bq-sec-title">Sections affichées</div>
+    <div class="bq-sec-title">${t('x2_sectionsAffichees')}</div>
     <div class="settings-row-block" style="margin-top:4px">
       ${[
         {key:'showCartButton', label:'🛒 Panier & commande', def:true},
@@ -23944,24 +24230,24 @@ function vBoutiqueEditor() {
     <input class="input" value="${(bc.heroSubtitle||'').replace(/"/g,'&quot;')}" placeholder="Bienvenue ! Découvrez nos produits…" oninput="boutiqueEditText('heroSubtitle',this.value)">
     <div class="bq-sec-title">Bandeau d'annonce (haut de page)</div>
     <input class="input" value="${(bc.announceText||'').replace(/"/g,'&quot;')}" placeholder="ex : 🚚 Livraison gratuite dès 25 000 FCFA" oninput="boutiqueEditText('announceText',this.value)">
-    <div class="bq-sec-title">Texte du bouton commander</div>
+    <div class="bq-sec-title">${t('x2_texteBoutonCmd')}</div>
     <input class="input" value="${(bc.orderBtnText||'').replace(/"/g,'&quot;')}" placeholder="+ Ajouter au panier" oninput="boutiqueEditText('orderBtnText',this.value)">
-    <div class="bq-sec-title" style="margin-top:18px">🎬 Vidéo d'accroche <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--text-3)">· lien MP4 ou YouTube</span></div>
+    <div class="bq-sec-title" style="margin-top:18px">${t('x2_videoAccroche')} <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--text-3)">· lien MP4 ou YouTube</span></div>
     <input class="input" value="${(bc.heroVideo||'').replace(/"/g,'&quot;')}" placeholder="https://… .mp4  ou  https://youtu.be/…" oninput="boutiqueEditText('heroVideo',this.value)">
     <div style="font-size:11px;color:var(--text-3);margin-top:4px">Animation façon Apple : la vidéo se joue en fond du hero (muette, en boucle). Laissez vide pour un hero classique.</div>
-    <div class="bq-sec-title" style="margin-top:18px">🎥 Section vidéo (milieu de page) <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--text-3)">· lien MP4 ou YouTube</span></div>
+    <div class="bq-sec-title" style="margin-top:18px">${t('x2_sectionVideo')} <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--text-3)">· lien MP4 ou YouTube</span></div>
     <input class="input" value="${(bc.midVideoTitle||'').replace(/"/g,'&quot;')}" placeholder="Titre de la section (ex : Découvrez notre atelier)" oninput="boutiqueEditText('midVideoTitle',this.value)">
     <input class="input" style="margin-top:8px" value="${(bc.midVideo||'').replace(/"/g,'&quot;')}" placeholder="https://… .mp4  ou  https://youtu.be/…" oninput="boutiqueEditText('midVideo',this.value)">
     <div style="font-size:11px;color:var(--text-3);margin-top:4px">Grande vidéo regardable (avec le son) entre les produits et la section À propos — présentation, atelier, démonstration…</div>
-    <div class="bq-sec-title" style="margin-top:18px">À propos de la boutique</div>
+    <div class="bq-sec-title" style="margin-top:18px">${t('x2_aproposBoutique')}</div>
     <textarea class="input" rows="3" style="resize:vertical;font-family:inherit" placeholder="Présentez votre commerce : votre histoire, ce qui vous rend unique…" oninput="boutiqueEditText('aboutText',this.value)">${(bc.aboutText||'').replace(/</g,'&lt;')}</textarea>
-    <div class="bq-sec-title" style="margin-top:18px">Services / Atouts <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--text-3)">· un par ligne</span></div>
+    <div class="bq-sec-title" style="margin-top:18px">Services / Atouts <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--text-3)">${t('x2_unParLigne')}</span></div>
     <textarea class="input" rows="3" style="resize:vertical;font-family:inherit" placeholder="🚚 Livraison rapide&#10;💳 Paiement mobile&#10;✅ Produits garantis" oninput="boutiqueEditText('servicesText',this.value)">${(bc.servicesText||'').replace(/</g,'&lt;')}</textarea>
     <div class="bq-sec-title" style="margin-top:18px">Contact (section bas de page)</div>
     <input class="input" value="${(bc.contactPhone||'').replace(/"/g,'&quot;')}" placeholder="📞 Téléphone (ex : +225 07 00 00 00 00)" oninput="boutiqueEditText('contactPhone',this.value)">
     <input class="input" style="margin-top:8px" value="${(bc.contactEmail||'').replace(/"/g,'&quot;')}" placeholder="✉️ Email (ex : contact@boutique.ci)" oninput="boutiqueEditText('contactEmail',this.value)">
     <input class="input" style="margin-top:8px" value="${(bc.contactAddress||'').replace(/"/g,'&quot;')}" placeholder="📍 Adresse / quartier (ex : Cocody, Abidjan)" oninput="boutiqueEditText('contactAddress',this.value)">
-    <div class="bq-sec-title" style="margin-top:18px">🔗 Réseaux sociaux <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--text-3)">· liens complets</span></div>
+    <div class="bq-sec-title" style="margin-top:18px">${t('x2_reseauxSociauxEd')} <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--text-3)">· liens complets</span></div>
     <input class="input" value="${(bc.socialFacebook||'').replace(/"/g,'&quot;')}" placeholder="📘 Facebook (https://facebook.com/…)" oninput="boutiqueEditText('socialFacebook',this.value)">
     <input class="input" style="margin-top:8px" value="${(bc.socialInstagram||'').replace(/"/g,'&quot;')}" placeholder="📸 Instagram (https://instagram.com/…)" oninput="boutiqueEditText('socialInstagram',this.value)">
     <input class="input" style="margin-top:8px" value="${(bc.socialTiktok||'').replace(/"/g,'&quot;')}" placeholder="🎵 TikTok (https://tiktok.com/@…)" oninput="boutiqueEditText('socialTiktok',this.value)">
@@ -23970,7 +24256,7 @@ function vBoutiqueEditor() {
     <div style="font-size:11px;color:var(--text-3);margin-top:12px;line-height:1.5">💡 Laissez vide pour masquer une section. Le nom et la description de la boutique se modifient dans l'onglet principal Boutique.</div>`;
 
   const productsTab = `
-    <div class="bq-sec-title">Ordre d'affichage <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--text-3)">· réorganisez avec les flèches</span></div>
+    <div class="bq-sec-title">Ordre d'affichage <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--text-3)">${t('x2_reorganisezFleches')}</span></div>
     <div class="bq-prod-list">
       ${ordered.map((p, i) => `
       <div class="bq-prod-row">
@@ -23993,7 +24279,7 @@ function vBoutiqueEditor() {
   <div class="page-header" style="padding-bottom:10px">
     <div class="page-header-row">
       <button class="back-btn" onclick="nav('boutique')">${IC.left}</button>
-      <div class="page-title" style="font-size:17px">Éditeur visuel</div>
+      <div class="page-title" style="font-size:17px">${t('x2_editeurVisuel')}</div>
       <button class="fab" onclick="generateBoutiqueSite()" title="Télécharger le site">${IC.download||'⬇'}</button>
     </div>
   </div>
@@ -25102,7 +25388,7 @@ function vBoutiqueAnalytics() {
 
     ${nbOrders > 0 ? `
     <div class="card" style="margin-bottom:12px">
-      <div class="card-title">Évolution · 7 derniers jours</div>
+      <div class="card-title">${t('x2_evolution7j')}</div>
       <div style="display:flex;align-items:flex-end;gap:6px;height:130px;padding-top:6px">
         ${_days7.map(d => { const h = Math.round((d.rev/_d7max)*100); return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end">
           <div style="font-size:9px;color:var(--text-3);font-weight:700;white-space:nowrap">${d.rev?fmt(d.rev):''}</div>
@@ -25113,10 +25399,10 @@ function vBoutiqueAnalytics() {
     </div>
 
     <div class="card" style="margin-bottom:12px">
-      <div class="card-title">État des commandes</div>
+      <div class="card-title">${t('x2_etatCommandes')}</div>
       <div style="display:flex;gap:10px">
         <div style="flex:1;text-align:center;padding:12px;border-radius:12px;background:var(--warning-light,rgba(245,158,11,.1))"><div style="font-size:22px;font-weight:900;color:var(--warning,#D97706)">${pending}</div><div style="font-size:12px;color:var(--text-3)">En attente</div></div>
-        <div style="flex:1;text-align:center;padding:12px;border-radius:12px;background:var(--success-light,rgba(16,185,129,.1))"><div style="font-size:22px;font-weight:900;color:var(--success,#059669)">${done}</div><div style="font-size:12px;color:var(--text-3)">Livrées</div></div>
+        <div style="flex:1;text-align:center;padding:12px;border-radius:12px;background:var(--success-light,rgba(16,185,129,.1))"><div style="font-size:22px;font-weight:900;color:var(--success,#059669)">${done}</div><div style="font-size:12px;color:var(--text-3)">${t('x2_livrees')}</div></div>
       </div>
     </div>` : ''}
 
@@ -25139,14 +25425,14 @@ function vBoutiqueAnalytics() {
       if (!isEnt) {
         return `
     <div class="card" style="margin-bottom:12px;position:relative;overflow:hidden">
-      <div class="card-title">◆ Analytics avancés</div>
+      <div class="card-title">${t('x2_analyticsAvances')}</div>
       <div style="filter:blur(3px);pointer-events:none;user-select:none" aria-hidden="true">
         ${['Boutique du centre','Comptoir quartier','Entrepôt'].map((n,i)=>`<div style="display:flex;justify-content:space-between;padding:7px 0;font-size:13px"><span>${n}</span><b>${fmt([84000,52000,31000][i])} ${sym()}</b></div>`).join('')}
       </div>
       <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;background:linear-gradient(180deg,rgba(255,255,255,.55),var(--surface) 78%);padding:14px;text-align:center">
         <div style="font-size:10.5px;font-weight:800;color:#fff;background:linear-gradient(135deg,#8B5CF6,#6366F1);padding:4px 11px;border-radius:999px;letter-spacing:.5px">◆ ENTREPRISE</div>
-        <div style="font-size:12.5px;color:var(--text-2);max-width:270px;line-height:1.5">Revenus détaillés <b>par point de vente</b>, comparaison et export.</div>
-        <button class="btn" style="padding:8px 16px;font-size:12px;font-weight:800;background:linear-gradient(135deg,#8B5CF6,#6366F1);color:#fff;border:none" onclick="nav('pricing')">Débloquer</button>
+        <div style="font-size:12.5px;color:var(--text-2);max-width:270px;line-height:1.5">${t('x2_revenusDetailles')} <b>${t('x2_parPointVente')}</b>, comparaison et export.</div>
+        <button class="btn" style="padding:8px 16px;font-size:12px;font-weight:800;background:linear-gradient(135deg,#8B5CF6,#6366F1);color:#fff;border:none" onclick="nav('pricing')">${t('x2_debloquer')}</button>
       </div>
     </div>`;
       }
@@ -25162,7 +25448,7 @@ function vBoutiqueAnalytics() {
       return `
     <div class="card" style="margin-bottom:12px">
       <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px">
-        <div class="card-title" style="margin:0">◆ Analytics avancés</div>
+        <div class="card-title" style="margin:0">${t('x2_analyticsAvances')}</div>
         <span style="font-size:9.5px;font-weight:800;color:#fff;background:linear-gradient(135deg,#8B5CF6,#6366F1);padding:3px 9px;border-radius:999px;letter-spacing:.4px">ENTREPRISE</span>
       </div>
       ${rows.length ? rows.map(r => `<div style="margin-bottom:9px">
@@ -25172,14 +25458,14 @@ function vBoutiqueAnalytics() {
         </div>
         <div style="height:8px;background:var(--gray-2);border-radius:5px;overflow:hidden"><div style="height:100%;width:${Math.max(4,Math.round(r.ca/mx*100))}%;background:linear-gradient(90deg,#8B5CF6,#6366F1);border-radius:5px"></div></div>
       </div>`).join('')
-      : `<div style="font-size:12.5px;color:var(--text-3)">Créez des points de vente pour comparer leurs revenus ici.</div>`}
+      : `<div style="font-size:12.5px;color:var(--text-3)">${t('x2_creezPointsVente')}</div>`}
     </div>`;
     })()}
 
     <div class="card" style="margin-bottom:12px">
-      <div class="card-title">👁️ Visiteurs de la boutique</div>
+      <div class="card-title">${t('x2_visiteursBoutique')}</div>
       ${trackers.length > 0 ? `
-        <div style="font-size:13px;color:var(--text-2);line-height:1.6;margin-bottom:10px">Suivi des visiteurs <b style="color:var(--success)">actif</b> via :</div>
+        <div style="font-size:13px;color:var(--text-2);line-height:1.6;margin-bottom:10px">${t('x2_suiviVisiteurs')} <b style="color:var(--success)">actif</b> via :</div>
         ${trackers.map(t => `<a href="${t[2]}" target="_blank" rel="noopener" class="card card-tap" style="display:flex;align-items:center;gap:10px;margin-bottom:8px;text-decoration:none">
           <span style="font-size:18px">📊</span>
           <div style="flex:1"><div style="font-weight:700;font-size:13.5px;color:var(--text-1)">${t[0]}</div><div style="font-size:11px;color:var(--text-3)">ID ${t[1]} · voir le tableau de bord →</div></div>
@@ -25191,13 +25477,13 @@ function vBoutiqueAnalytics() {
       `}
     </div>
 
-    <div class="section-hd" id="bq-orders"><span class="section-lbl">Commandes reçues</span><button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" onclick="addBoutiqueOrder()">+ Ajouter</button></div>
+    <div class="section-hd" id="bq-orders"><span class="section-lbl">${t('x2_commandesRecues')}</span><button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" onclick="addBoutiqueOrder()">+ Ajouter</button></div>
     ${nbOrders === 0 ? `
     <div class="empty" style="padding:28px 16px">
       <div class="empty-ico">🧾</div>
-      <div class="empty-title">Aucune commande enregistrée</div>
+      <div class="empty-title">${t('x2_aucuneCommandeEnr')}</div>
       <div class="empty-text">Les commandes boutique arrivent via WhatsApp. Enregistrez-les ici pour suivre votre CA, vos best-sellers et vos livraisons.</div>
-      <button class="btn btn-primary" style="max-width:240px" onclick="addBoutiqueOrder()">+ Enregistrer une commande</button>
+      <button class="btn btn-primary" style="max-width:240px" onclick="addBoutiqueOrder()">${t('x2_enregistrerCommande')}</button>
     </div>` : orders.slice(0,12).map(o => `
     <div class="card" style="margin-bottom:6px;padding:12px 14px">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
@@ -25933,7 +26219,7 @@ function vPromoDetail() {
       <span style="font-size:11px;padding:4px 10px;border-radius:8px;background:${statusColor}20;color:${statusColor};font-weight:700">${status}</span>
     </div>
     <div style="display:flex;gap:8px">
-      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${valueDisp}</div><div class="hero-stat-lbl">Réduction</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${valueDisp}</div><div class="hero-stat-lbl">${t('x2_reduction')}</div></div>
       <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${p.usageCount||0}</div><div class="hero-stat-lbl">Utilisations</div></div>
       <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${nbClients}</div><div class="hero-stat-lbl">Clients</div></div>
     </div>
@@ -28969,7 +29255,7 @@ function setupPayment(providerId, providerName) {
       <div style="padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
         <div>
           <div style="font-size:17px;font-weight:800;color:var(--text-1)">💳 Configurer ${providerName}</div>
-          <div style="font-size:11px;color:var(--text-3);margin-top:2px">Les clés restent sur votre appareil</div>
+          <div style="font-size:11px;color:var(--text-3);margin-top:2px">${t('x1_clesRestentApp')}</div>
         </div>
         <button style="width:32px;height:32px;border-radius:50%;border:none;background:var(--gray-1);color:var(--text-2);font-size:18px;cursor:pointer" onclick="document.getElementById('pay-setup-modal').remove()">×</button>
       </div>
@@ -28984,15 +29270,15 @@ function setupPayment(providerId, providerName) {
           <div style="font-size:11px;color:var(--text-3);margin-top:4px">${conf.hint}</div>
           ${['wave','orange','moov','mtn'].includes(providerId) ? `<div id="pay-verify-zone">${
             (currentMethod.verified && currentMethod.verifiedPhone === currentMethod.phone)
-              ? `<div class="pay-verified-badge">✓ Numéro vérifié par SMS</div>`
-              : `<button class="btn btn-ghost pay-verify-btn" onclick="verifyPaymentNumber('${providerId}')">📲 Vérifier ce numéro par SMS</button>`
+              ? `<div class="pay-verified-badge">${t('x1_numVerifieSms')}</div>`
+              : `<button class="btn btn-ghost pay-verify-btn" onclick="verifyPaymentNumber('${providerId}')">${t('x1_verifierParSms')}</button>`
           }</div>` : ''}
         </div>
         ${['paypal','visa','stripe','gpay','applepay'].includes(providerId) ? `
         <div class="form-group">
-          <label class="form-label">Clé API / Secret (optionnel)</label>
+          <label class="form-label">${t('x1_cleApiSecret')}</label>
           <input class="input" id="pay-key-inp" type="text" placeholder="${providerId==='stripe'?'sk_live_...':providerId==='paypal'?'Client ID':'Clé gateway'}" value="${(currentMethod.apiKey||'').replace(/"/g,'&quot;')}" style="font-size:16px;font-family:monospace">
-          <div style="font-size:11px;color:var(--text-3);margin-top:4px">🔒 Stockée chiffrée localement, jamais transmise</div>
+          <div style="font-size:11px;color:var(--text-3);margin-top:4px">${t('x1_stockeeChiffree')}</div>
         </div>` : ''}
         <div style="display:flex;gap:8px;margin-top:16px">
           <button class="btn btn-ghost" style="flex:1" onclick="document.getElementById('pay-setup-modal').remove()">Annuler</button>
@@ -29045,7 +29331,7 @@ async function verifyPaymentNumber(providerId) {
         <input id="pay-code-inp" class="input pay-code-inp" inputmode="numeric" maxlength="6" placeholder="Code à 6 chiffres" autocomplete="one-time-code">
         <button class="btn btn-primary" style="flex:0 0 auto;width:auto;padding:11px 16px;white-space:nowrap" onclick="confirmPaymentCode('${providerId}')">Valider</button>
       </div>
-      <button class="pay-resend" onclick="verifyPaymentNumber('${providerId}')">↻ Renvoyer le code</button>`;
+      <button class="pay-resend" onclick="verifyPaymentNumber('${providerId}')">${t('x1_renvoyerCode2')}</button>`;
     setTimeout(() => document.getElementById('pay-code-inp')?.focus(), 120);
   }
 }
@@ -29059,7 +29345,7 @@ function confirmPaymentCode(providerId) {
     const m = (S.paymentMethods || []).find(x => x.provider === providerId);
     if (m && m.phone === p.num) { m.verified = true; m.verifiedPhone = p.num; localStorage.setItem('baro_payments', JSON.stringify(S.paymentMethods)); }
     const zone = document.getElementById('pay-verify-zone');
-    if (zone) zone.innerHTML = `<div class="pay-verified-badge">✓ Numéro vérifié par SMS</div>`;
+    if (zone) zone.innerHTML = `<div class="pay-verified-badge">${t('x1_numVerifieSms')}</div>`;
     if (typeof haptic === 'function') haptic('success');
     showToast('✓ Numéro vérifié', 'success');
   } else {
@@ -29267,7 +29553,7 @@ function requestPaymentModal(clientId) {
   modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
   if (!active.length) {
     modal.innerHTML = `<div class="payreq-sheet"><div class="payreq-hd"><div style="font-size:17px;font-weight:800">${t('w8_demanderPaiement')}</div><button class="qs-x" onclick="document.getElementById('payreq-modal').remove()">✕</button></div>
-      <div style="text-align:center;padding:24px 8px"><div style="font-size:38px;margin-bottom:8px">💳</div><div style="font-weight:700;margin-bottom:4px">Aucun moyen de paiement actif</div><div style="font-size:12px;color:var(--text-3);margin-bottom:16px">Configurez Wave, Orange Money, PayPal… pour demander des paiements.</div><button class="btn btn-primary" onclick="document.getElementById('payreq-modal').remove()">Configurer un moyen</button></div></div>`;
+      <div style="text-align:center;padding:24px 8px"><div style="font-size:38px;margin-bottom:8px">💳</div><div style="font-weight:700;margin-bottom:4px">${t('x1_aucunMoyenActif')}</div><div style="font-size:12px;color:var(--text-3);margin-bottom:16px">Configurez Wave, Orange Money, PayPal… pour demander des paiements.</div><button class="btn btn-primary" onclick="document.getElementById('payreq-modal').remove()">${t('x1_configurerMoyen')}</button></div></div>`;
     document.body.appendChild(modal);
     return;
   }
@@ -29279,9 +29565,9 @@ function requestPaymentModal(clientId) {
       <input id="payreq-amount" class="input" type="number" inputmode="numeric" placeholder="5000" value="${st.amount}" oninput="S._payReq.amount=this.value;_payReqPreview()" style="font-size:18px;font-weight:800">
       <label class="qs-label">Description (optionnel)</label>
       <input id="payreq-desc" class="input" placeholder="Ex : Commande riz" value="${(st.desc||'').replace(/"/g,'&quot;')}" oninput="S._payReq.desc=this.value">
-      ${clientsWithPhone.length ? `<label class="qs-label">Client (pour envoyer sur WhatsApp)</label>
+      ${clientsWithPhone.length ? `<label class="qs-label">${t('x1_clientPourWa')}</label>
       <select id="payreq-client" class="input" onchange="S._payReq.clientId=this.value?parseInt(this.value):null">
-        <option value="">— Aucun (partage libre) —</option>
+        <option value="">${t('x1_aucunPartage')}</option>
         ${clientsWithPhone.map(c=>`<option value="${c.id}" ${st.clientId===c.id?'selected':''}>${(c.name||'Client').replace(/</g,'&lt;')}</option>`).join('')}
       </select>` : ''}
       <label class="qs-label">Encaisser via</label>
@@ -29315,7 +29601,7 @@ function _payReqPreview() {
   const el = document.getElementById('payreq-preview');
   if (!el) return;
   const b = _payReqBuild();
-  if (!b) { el.innerHTML = `<div class="payreq-hint">Entrez un montant pour générer le lien / l'instruction.</div>`; return; }
+  if (!b) { el.innerHTML = `<div class="payreq-hint">${t('x1_entrezMontant')}</div>`; return; }
   if (b.sh.link) {
     el.innerHTML = `<div class="payreq-link-box"><div class="payreq-link-lbl">${b.sh.label}</div><a href="${b.sh.link}" target="_blank" rel="noopener noreferrer" class="payreq-link">${b.sh.link}</a></div>`;
   } else if (b.sh.inPerson) {
@@ -30020,7 +30306,7 @@ function openIntegrationDashboard(integrationId) {
             <span style="color:var(--text-3);font-size:14px">${item.url?'↗':'→'}</span>
           </button>
         `).join('')}
-        <button class="btn btn-ghost" style="width:100%;color:var(--danger);font-size:12px;margin-top:6px" onclick="document.getElementById('integ-dash-modal').remove();disconnectIntegration('${integrationId}','${d.title}')">🔌 Déconnecter</button>
+        <button class="btn btn-ghost" style="width:100%;color:var(--danger);font-size:12px;margin-top:6px" onclick="document.getElementById('integ-dash-modal').remove();disconnectIntegration('${integrationId}','${d.title}')">${t('x1_deconnecter')}</button>
       </div>
     </div>`;
   document.body.appendChild(modal);
@@ -31065,7 +31351,7 @@ function vWhatsAppSetup() {
     </div>
     <div style="display:flex;gap:8px">
       <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${connected?'✓':'—'}</div><div class="hero-stat-lbl">Statut</div></div>
-      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${tpls.filter(x=>x.enabled).length}</div><div class="hero-stat-lbl">Modèles</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${tpls.filter(x=>x.enabled).length}</div><div class="hero-stat-lbl">${t('x1_modeles')}</div></div>
       <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${d.mode==='business'?'META':'wa.me'}</div><div class="hero-stat-lbl">Mode</div></div>
     </div>
   </div>
@@ -31104,15 +31390,15 @@ function vWhatsAppSetup() {
     </div>
 
     <div class="card" style="margin-bottom:10px">
-      <div class="card-title">📱 Coordonnées</div>
+      <div class="card-title">${t('x1_coordonnees')}</div>
       <div style="margin-bottom:10px">
-        <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">Numéro WhatsApp Business (format international)</label>
+        <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">${t('x1_numWaBusiness')}</label>
         <input id="wa-phone" class="input" value="${(d.phone||'').replace(/"/g,'&quot;')}" placeholder="+225 07 XX XX XX XX">
-        ${(d.confirmed && d.confirmedPhone === d.phone) ? `<div style="display:flex;align-items:center;gap:6px;margin-top:7px;font-size:12px;color:#128C7E;font-weight:700">✓ Numéro confirmé — joignable sur WhatsApp</div>`
+        ${(d.confirmed && d.confirmedPhone === d.phone) ? `<div style="display:flex;align-items:center;gap:6px;margin-top:7px;font-size:12px;color:#128C7E;font-weight:700">${t('x1_numConfirmeWa')}</div>`
           : `<button class="btn btn-ghost" style="width:100%;margin-top:7px;font-size:12px;padding:8px;border:1px solid #25D36660;color:#128C7E" onclick="confirmWhatsAppNumber()">${IC.whatsapp} Confirmer ce numéro (envoi d'un test)</button>`}
       </div>
       <div style="margin-bottom:10px">
-        <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">Nom affiché dans la signature</label>
+        <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">${t('x1_nomSignature')}</label>
         <input id="wa-sig" class="input" value="${(d.signature||biz).replace(/"/g,'&quot;')}" placeholder="${biz}">
       </div>
     </div>
@@ -31137,8 +31423,8 @@ function vWhatsAppSetup() {
     </div>
 
     <div class="card" style="margin-bottom:10px">
-      <div class="card-title">📝 Modèles de messages</div>
-      <div style="font-size:11px;color:var(--text-3);margin-bottom:10px">Activez les modèles automatiques. Variables : <code>{{client}} {{ref}} {{total}} {{sym}} {{business}} {{tracking}} {{eta}} {{payment_link}}</code></div>
+      <div class="card-title">${t('x1_modelesMessages')}</div>
+      <div style="font-size:11px;color:var(--text-3);margin-bottom:10px">${t('x1_activezModeles')} <code>{{client}} {{ref}} {{total}} {{sym}} {{business}} {{tracking}} {{eta}} {{payment_link}}</code></div>
       ${tpls.map((tpl,i) => `
         <div class="card" style="margin-bottom:8px;padding:10px;background:var(--gray-1);border-radius:8px">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
@@ -31154,9 +31440,9 @@ function vWhatsAppSetup() {
     </div>
 
     <div class="card" style="margin-bottom:10px">
-      <div class="card-title">🔔 Déclencheurs automatiques</div>
+      <div class="card-title">${t('x1_declencheursAuto')}</div>
       <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
-        <div><div style="font-weight:700;font-size:13px">Envoi auto à la vente</div><div style="font-size:11px;color:var(--text-3)">Envoie le modèle "Confirmation commande" après chaque vente avec client</div></div>
+        <div><div style="font-weight:700;font-size:13px">${t('x1_envoiAutoVente')}</div><div style="font-size:11px;color:var(--text-3)">Envoie le modèle "Confirmation commande" après chaque vente avec client</div></div>
         <input type="checkbox" id="wa-auto-sale" ${d.autoSale?'checked':''}>
       </label>
       <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
@@ -31164,7 +31450,7 @@ function vWhatsAppSetup() {
         <input type="checkbox" id="wa-auto-ship" ${d.autoShip?'checked':''}>
       </label>
       <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 0">
-        <div><div style="font-weight:700;font-size:13px">Alertes stock au staff</div><div style="font-size:11px;color:var(--text-3)">Envoie "Alerte stock faible" sur le numéro admin quand stock &lt; seuil</div></div>
+        <div><div style="font-weight:700;font-size:13px">${t('x1_alertesStaff')}</div><div style="font-size:11px;color:var(--text-3)">Envoie "Alerte stock faible" sur le numéro admin quand stock &lt; seuil</div></div>
         <input type="checkbox" id="wa-auto-stock" ${d.autoStock?'checked':''}>
       </label>
     </div>
@@ -31173,7 +31459,7 @@ function vWhatsAppSetup() {
       <button class="btn btn-ghost" style="flex:1" onclick="testWhatsAppConnection()">🧪 Tester l'envoi</button>
       <button class="btn btn-primary" style="flex:1" onclick="saveWhatsAppSetup()">${t('w7_enregistrer')}</button>
     </div>
-    ${connected ? `<button class="btn" style="width:100%;color:var(--danger);border:1px solid var(--danger);background:transparent" onclick="disconnectIntegration('whatsapp-business','WhatsApp Business')">🔌 Déconnecter WhatsApp</button>` : ''}
+    ${connected ? `<button class="btn" style="width:100%;color:var(--danger);border:1px solid var(--danger);background:transparent" onclick="disconnectIntegration('whatsapp-business','WhatsApp Business')">${t('x1_deconnecterWa')}</button>` : ''}
   </div>
   <script>
     (function(){
@@ -31399,7 +31685,7 @@ function vSmsSetup() {
     <div style="display:flex;gap:8px">
       <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${connected?'✓':'—'}</div><div class="hero-stat-lbl">Statut</div></div>
       <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${provider.name.split(' ')[0]}</div><div class="hero-stat-lbl">Fournisseur</div></div>
-      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${tpls.filter(t=>t.enabled).length}</div><div class="hero-stat-lbl">Modèles</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${tpls.filter(t=>t.enabled).length}</div><div class="hero-stat-lbl">${t('x1_modeles')}</div></div>
     </div>
   </div>
   <div class="container">
@@ -31407,7 +31693,7 @@ function vSmsSetup() {
       <div style="display:flex;gap:10px;align-items:flex-start">
         <div style="font-size:24px">💡</div>
         <div style="flex:1;font-size:12px;color:var(--text-1);line-height:1.5">
-          <strong style="color:#D97706">Choisissez votre passerelle SMS</strong><br>
+          <strong style="color:#D97706">${t('x1_choisissezPasserelle')}</strong><br>
           BARO supporte <b>Twilio</b>, <b>Vonage</b>, <b>Africa's Talking</b> (tarifs CI/Afrique très bas) et <b>Orange CI Pro</b>. Créez un compte, récupérez vos identifiants puis collez-les ci-dessous.
         </div>
       </div>
@@ -31436,7 +31722,7 @@ function vSmsSetup() {
     </div>
 
     <div class="card" style="margin-bottom:10px">
-      <div class="card-title">📝 Modèles SMS (max ~160 car.)</div>
+      <div class="card-title">${t('x1_modelesSms')}</div>
       ${tpls.map(tpl => `
         <div class="card" style="margin-bottom:8px;padding:10px;background:var(--gray-1);border-radius:8px">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
@@ -31453,22 +31739,22 @@ function vSmsSetup() {
     </div>
 
     <div class="card" style="margin-bottom:10px">
-      <div class="card-title">🔔 Déclencheurs automatiques</div>
+      <div class="card-title">${t('x1_declencheursAuto')}</div>
       <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
-        <div><div style="font-weight:700;font-size:13px">SMS auto à la vente</div><div style="font-size:11px;color:var(--text-3)">Confirmation envoyée après chaque vente client</div></div>
+        <div><div style="font-weight:700;font-size:13px">${t('x1_smsAutoVente')}</div><div style="font-size:11px;color:var(--text-3)">${t('x1_confirmationApres')}</div></div>
         <input type="checkbox" id="sms-auto-sale" ${d.autoSale?'checked':''}>
       </label>
       <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 0">
-        <div><div style="font-weight:700;font-size:13px">Campagnes SMS groupées</div><div style="font-size:11px;color:var(--text-3)">Permet d'envoyer à plusieurs clients depuis Marketing</div></div>
+        <div><div style="font-weight:700;font-size:13px">${t('x1_campagnesSms')}</div><div style="font-size:11px;color:var(--text-3)">${t('x1_permetPlusieurs')}</div></div>
         <input type="checkbox" id="sms-auto-campaign" ${d.autoCampaign!==false?'checked':''}>
       </label>
     </div>
 
     <div style="display:flex;gap:8px;margin-bottom:12px">
-      <button class="btn btn-ghost" style="flex:1" onclick="testSmsConnection()">🧪 Envoyer SMS test</button>
+      <button class="btn btn-ghost" style="flex:1" onclick="testSmsConnection()">${t('x1_envoyerSmsTest')}</button>
       <button class="btn btn-primary" style="flex:1" onclick="saveSmsSetup()">${t('w7_enregistrer')}</button>
     </div>
-    ${connected ? `<button class="btn" style="width:100%;color:var(--danger);border:1px solid var(--danger);background:transparent" onclick="disconnectIntegration('sms-api','SMS API')">🔌 Déconnecter SMS</button>` : ''}
+    ${connected ? `<button class="btn" style="width:100%;color:var(--danger);border:1px solid var(--danger);background:transparent" onclick="disconnectIntegration('sms-api','SMS API')">${t('x1_deconnecterSms')}</button>` : ''}
   </div>`;
 }
 
@@ -32338,7 +32624,7 @@ function vSheetsSetup() {
     <div class="card" style="margin-bottom:10px">
       <div class="card-title">🚀 Actions</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
-        <button class="btn btn-primary" style="font-size:12px;padding:10px" onclick="sheetsPushAll()">⬆️ Push toutes les ventes</button>
+        <button class="btn btn-primary" style="font-size:12px;padding:10px" onclick="sheetsPushAll()">${t('x1_pushToutesVentes')}</button>
         <button class="btn btn-ghost" style="font-size:12px;padding:10px" onclick="window.open('https://docs.google.com/spreadsheets/d/'+(document.getElementById('sh-id')?.value||'')+'/edit','_blank')">📊 Ouvrir sheet</button>
       </div>
     </div>
@@ -32347,7 +32633,7 @@ function vSheetsSetup() {
       <button class="btn btn-ghost" style="flex:1" onclick="testSheetsConnection()">🧪 Tester</button>
       <button class="btn btn-primary" style="flex:1" onclick="saveSheetsSetup()">${t('w7_enregistrer')}</button>
     </div>
-    ${connected ? `<button class="btn" style="width:100%;color:var(--danger);border:1px solid var(--danger);background:transparent" onclick="disconnectIntegration('google-sheets','Google Sheets')">🔌 Déconnecter</button>` : ''}
+    ${connected ? `<button class="btn" style="width:100%;color:var(--danger);border:1px solid var(--danger);background:transparent" onclick="disconnectIntegration('google-sheets','Google Sheets')">${t('x1_deconnecter')}</button>` : ''}
   </div>`;
 }
 
@@ -32515,7 +32801,7 @@ function vPosSetup() {
       <button class="btn btn-ghost" style="flex:1" onclick="testPosConnection()">🧪 Tester connexion</button>
       <button class="btn btn-primary" style="flex:1" onclick="savePosSetup()">${t('w7_enregistrer')}</button>
     </div>
-    ${connected ? `<button class="btn" style="width:100%;color:var(--danger);border:1px solid var(--danger);background:transparent" onclick="disconnectIntegration('pos','Caisse POS')">🔌 Déconnecter</button>` : ''}
+    ${connected ? `<button class="btn" style="width:100%;color:var(--danger);border:1px solid var(--danger);background:transparent" onclick="disconnectIntegration('pos','Caisse POS')">${t('x1_deconnecter')}</button>` : ''}
   </div>`;
 }
 
@@ -32673,13 +32959,13 @@ function vComptaSetup() {
     <div class="page-header-row" style="margin-bottom:10px">
       <button class="back-btn-dark" onclick="nav('integrations')">${IC.left}</button>
       <div style="flex:1">
-        <div class="sub-hero-title">📊 Comptabilité OHADA</div>
+        <div class="sub-hero-title">${t('x1_comptaOhada')}</div>
         <div class="sub-hero-sub">${connected?'✓ Push temps réel actif':'Export SYSCOHADA + push auto vers logiciel compta'}</div>
       </div>
     </div>
     <div style="display:flex;gap:8px">
       <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${connected?'✓':'—'}</div><div class="hero-stat-lbl">Statut</div></div>
-      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${d.pushedCount||0}</div><div class="hero-stat-lbl">Écritures</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${d.pushedCount||0}</div><div class="hero-stat-lbl">${t('x1_ecritures')}</div></div>
       <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${d.provider||'—'}</div><div class="hero-stat-lbl">Logiciel</div></div>
     </div>
   </div>
@@ -32698,7 +32984,7 @@ function vComptaSetup() {
         <input id="cp-endpoint" class="input" value="${(d.endpoint||'').replace(/"/g,'&quot;')}" placeholder="https://api.sage.com/...">
       </div>
       <div style="margin-bottom:10px">
-        <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">Token / Clé API</label>
+        <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">${t('x1_tokenCleApi')}</label>
         <input id="cp-token" class="input" type="password" value="${(d.apiKey||'').replace(/"/g,'&quot;')}" placeholder="Bearer token ou clé">
       </div>
       <div style="margin-bottom:10px">
@@ -32706,7 +32992,7 @@ function vComptaSetup() {
         <input id="cp-fiscal" class="input" value="${(d.fiscalId||'').replace(/"/g,'&quot;')}" placeholder="CI-ABJ-2024-B-00000">
       </div>
       <div>
-        <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">Compte client par défaut (411 OHADA)</label>
+        <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">${t('x1_compteClient411')}</label>
         <input id="cp-client-account" class="input" value="${(d.clientAccount||'411100').replace(/"/g,'&quot;')}">
       </div>
     </div>
@@ -32714,15 +33000,15 @@ function vComptaSetup() {
     <div class="card" style="margin-bottom:10px">
       <div class="card-title">⚙️ Automatisations</div>
       <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
-        <div><div style="font-weight:700;font-size:13px">Push auto à chaque vente</div><div style="font-size:11px;color:var(--text-3)">Crée une écriture SYSCOHADA dès la vente</div></div>
+        <div><div style="font-weight:700;font-size:13px">${t('x1_pushAutoVente')}</div><div style="font-size:11px;color:var(--text-3)">${t('x1_ecritureSyscohada')}</div></div>
         <input type="checkbox" id="cp-auto-sale" ${d.autoSale?'checked':''}>
       </label>
       <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
-        <div><div style="font-weight:700;font-size:13px">Journal quotidien</div><div style="font-size:11px;color:var(--text-3)">Export Balance + Grand Livre à 23h</div></div>
+        <div><div style="font-weight:700;font-size:13px">Journal quotidien</div><div style="font-size:11px;color:var(--text-3)">${t('x1_exportBalance')}</div></div>
         <input type="checkbox" id="cp-auto-daily" ${d.autoDaily?'checked':''}>
       </label>
       <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 0">
-        <div><div style="font-weight:700;font-size:13px">TVA 18% incluse</div><div style="font-size:11px;color:var(--text-3)">Éclate HT/TVA/TTC dans les écritures</div></div>
+        <div><div style="font-weight:700;font-size:13px">TVA 18% incluse</div><div style="font-size:11px;color:var(--text-3)">${t('x1_eclateTva')}</div></div>
         <input type="checkbox" id="cp-tva" ${d.tva?'checked':''}>
       </label>
     </div>
@@ -32730,7 +33016,7 @@ function vComptaSetup() {
     <div class="card" style="margin-bottom:10px">
       <div class="card-title">🚀 Actions</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px">
-        <button class="btn btn-primary" style="font-size:12px;padding:10px" onclick="comptaPushAll()">⬆️ Push toutes les ventes</button>
+        <button class="btn btn-primary" style="font-size:12px;padding:10px" onclick="comptaPushAll()">${t('x1_pushToutesVentes')}</button>
         <button class="btn btn-ghost" style="font-size:12px;padding:10px" onclick="_exportComptable()">📄 Export CSV SYSCOHADA</button>
       </div>
     </div>
@@ -32739,7 +33025,7 @@ function vComptaSetup() {
       <button class="btn btn-ghost" style="flex:1" onclick="testComptaConnection()">🧪 Tester</button>
       <button class="btn btn-primary" style="flex:1" onclick="saveComptaSetup()">${t('w7_enregistrer')}</button>
     </div>
-    ${connected ? `<button class="btn" style="width:100%;color:var(--danger);border:1px solid var(--danger);background:transparent" onclick="disconnectIntegration('comptabilite','Comptabilité OHADA')">🔌 Déconnecter</button>` : ''}
+    ${connected ? `<button class="btn" style="width:100%;color:var(--danger);border:1px solid var(--danger);background:transparent" onclick="disconnectIntegration('comptabilite','Comptabilité OHADA')">${t('x1_deconnecter')}</button>` : ''}
   </div>`;
 }
 
