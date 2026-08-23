@@ -270,6 +270,232 @@ const API_BASE = (location.hostname === 'localhost' || location.hostname === '12
 // ── i18n ─────────────────────────────────────
 const LANGS = {
   fr: {
+    x5_codesPromo: "Codes promo & réductions",
+    x5_aucuneReduction: "Aucune réduction",
+    x5_creerReduction: "+ Créer une réduction",
+    x5_bannieresPromo: "Bannières promotionnelles",
+    x5_aucuneBanniere: "Aucune bannière",
+    x5_affichezAnnonce: "Affichez une annonce importante en haut de votre boutique",
+    x5_creerBanniere: "+ Créer une bannière",
+    x5_popupsDeclenches: "Popups déclenchés",
+    x5_aucunPopup: "Aucun popup",
+    x5_offrezCodePromo: "Offrez un code promo aux nouveaux visiteurs",
+    x5_creerPopup: "+ Créer un popup",
+    x5_aucunAvis: "Aucun avis",
+    x5_ajoutezAvisClients: "Ajoutez les avis de vos clients satisfaits",
+    x5_ajouterAvis: "+ Ajouter un avis",
+    x5_ajouterAvisPlus: "＋ Ajouter un avis",
+    x5_aucunLienTrace: "Aucun lien tracé",
+    x5_sachezPublicites: "Sachez quelles publicités ramènent des clients",
+    x5_creerLienTrace: "+ Créer un lien tracé",
+    x5_nomInterne: "Nom interne visible uniquement par vous",
+    x5_codeSaisiClients: "Ce code sera saisi par vos clients pour obtenir la réduction",
+    x5_publie2: "✓ Publié",
+    x5_supprimerIcone: "🗑 Supprimer",
+    x5_historiqueEnvois: "Historique des envois",
+    x5_aucunEnvoi: "Aucun envoi pour l'instant",
+    x5_broadcastsIci: "Vos broadcasts envoyés apparaîtront ici",
+    x5_envoyesDeuxPoints: "Envoyés:",
+    x5_cgv: "📜 Conditions générales de vente",
+    x5_cgvSub: "Conditions générales · politique de retour",
+    x5_modele2: "📋 Modèle",
+    x5_faqTemoignages: "❓ FAQ & Témoignages",
+    x5_aucuneFaq: "Aucune FAQ encore",
+    x5_ajouterQuestion: "+ Ajouter une question",
+    x5_packFaq: "📋 Pack FAQ pré-rempli",
+    x5_aucunTemoignage: "Aucun témoignage",
+    x5_cssHtmlJs: "CSS, HTML, JavaScript avancés",
+    x5_ouInjecte: "📖 Où est injecté ce code ?",
+    x5_telechargerIcone: "⬇ Télécharger",
+    x5_photosPremiere: "Photos (la 1ʳᵉ est la principale)",
+    x5_ajouterVariante: "＋ Ajouter une variante",
+    x5_ajouterPlus2: "+ Ajouter",
+    x5_programmerPub2: "📅 Programmer une publication",
+    x5_plateformes: "Plateformes * (cochez une ou plusieurs)",
+    x5_legende: "Légende",
+    x5_cliquezPerso: "Cliquez pour personnaliser",
+    x5_opacite: "Opacité",
+    x5_glissezCoins: "Glissez les coins pour redimensionner.",
+    x5_terminerSelection: "✓ Terminer la sélection",
+    x5_arrierePlan: "🎨 Arrière-plan",
+    x5_ajouterPhotoProduit: "📦 Ajouter une photo produit",
+    x5_telechargerDisq: "💾 Télécharger",
+    x5_studioVideo: "🎬 Studio vidéo BARO",
+    x5_texteIncruste: "texte incrusté",
+    x5_filmerAvecTexte: "🔴 Filmer avec texte incrusté",
+    x5_cameraSimple: "📹 Caméra simple",
+    x5_ecran: "🖥️ Écran",
+    x5_arreter: "⏹ Arrêter",
+    x5_publierVideo: "📤 Publier la vidéo",
+    x5_partagerSysteme: "📤 Partager (système)",
+    x4_aPartirDe: "À partir de",
+    x4_votrePlan: "Votre plan :",
+    x4_disponibleAPartir: "Disponible à partir de",
+    x4_fonctionnaliteePro: "Fonctionnalité incluse dans le plan Pro",
+    x4_avecBaroPro: "💎 Avec BARO Pro (20 000 FCFA/mois)",
+    x4_voirTousPlans: "Voir tous les plans",
+    x4_fonctionnalitesIncluses: "Fonctionnalités incluses",
+    x4_resilier: "Résilier",
+    x4_aVie: "✨ À vie",
+    x4_nouveauCredit: "Nouveau crédit",
+    x4_notezCeQuDoit: "Notez ce qu'un client vous doit",
+    x4_telRappels: "Téléphone (pour les rappels)",
+    x4_enregistrerCredit: "📒 Enregistrer le crédit",
+    x4_verification: "🔐 Vérification",
+    x4_code6Chiffres: "Code à 6 chiffres",
+    x4_verifier: "Vérifier",
+    x4_codeIncorrect: "Code incorrect, réessayez",
+    x4_deverrouiller: "Déverrouiller",
+    x4_envoyerTest: "🧪 Envoyer test",
+    x4_pageNonAffichee: "La page n'a pas pu s'afficher.",
+    x4_reessaieReinit: "Réessaie ou réinitialise la session locale.",
+    x4_detailsTech: "Détails techniques",
+    x4_previsionsAlertes: "Prévisions & alertes stock",
+    x4_scanCamera: "Scan caméra de l'inventaire",
+    x4_explorerExemples: "📚 Explorer avec des exemples",
+    x4_apparaitRecus: "Apparaît sur vos reçus, factures et votre boutique en ligne.",
+    x4_etape2sur2: "Étape 2 sur 2 — Ces paramètres sont modifiables plus tard",
+    x4_utilisePourFactures: "Utilisé pour le calcul des factures. 0 si non applicable.",
+    x4_historiqueStock: "📈 Historique du stock",
+    x4_entrees: "Entrées",
+    x4_voirMouvements: "Voir tous les mouvements →",
+    x4_rentabilite: "💰 Rentabilité",
+    x4_siToutVendu: "si tout le stock est vendu",
+    x4_ajoutezDeuxPrix: "Ajoutez les deux prix pour voir la marge",
+    x4_renseignezDeuxPrix: "Renseignez les deux prix pour voir la marge",
+    x4_categorieIcone: "🏷️ Catégorie",
+    x4_categorie: "Catégorie",
+    x4_nonAssigne: "— Non assigné —",
+    x4_produitPerissable: "Produit périssable (date d'expiration)",
+    x4_photoProduit: "Photo du produit",
+    x4_recommandeBoutique: "(recommandé pour la boutique)",
+    x4_aucunIngredient: "Aucun ingrédient ne correspond.",
+    x4_unArticleParLigne: "Un article par ligne",
+    x4_champsSepares: ", champs séparés par",
+    x4_colonnesLot: "Nom ; Prix ; Quantité ; Référence ; Catégorie",
+    x4_seulNomObligatoire: "Seul le nom est obligatoire. Ex :",
+    x4_apercu: "Aperçu",
+    x4_creer: "✓ Créer",
+    x4_ajouterPhotos: "📸 Ajouter les photos",
+    x4_termine: "Terminé →",
+    x4_entreeSortieSerie: "⚡ Entrée / Sortie en série",
+    x4_entree: "📥 Entrée",
+    x4_aucunArticleTrouve: "Aucun article trouvé",
+    x4_tapezPourChercher: "Tapez pour chercher un article",
+    x4_beaucoupArticles: "Beaucoup d'articles ? Collez une liste, créez tout d'un coup",
+    x4_depenses6mois: "📈 Dépenses (6 derniers mois)",
+    x4_produitsPreferes: "❤️ Produits préférés",
+    x4_relanceClient: "Relance ce client",
+    x4_histoEchanges: "HISTORIQUE ÉCHANGES",
+    x4_aucunPack: "Aucun pack",
+    x4_creerPack: "➕ Créer un pack",
+    x4_caGenere: "CA GÉNÉRÉ",
+    x4_beneficeMaj: "BÉNÉFICE",
+    x4_economies: "ÉCONOMIES",
+    x4_validiteJours: "Validité (jours)",
+    x4_lignesDevis: "Lignes du devis",
+    x4_ajouterLigne: "＋ Ajouter une ligne",
+    x4_totalEstime: "Total estimé",
+    x4_genererDevisPdf: "📄 Générer le devis PDF",
+    x4_facturesDevis: "Factures · devis · reçus · rapports · exports",
+    x4_creerDocument: "Créer un document",
+    x4_devisRecents: "Devis récents",
+    x4_creerEmplacement: "Créer l'emplacement",
+    x4_ajouterEmplacement: "＋ Ajouter un emplacement",
+    x4_creerEmplacement2: "＋ Créer un emplacement",
+    x4_gerezPointsVente: "Gérez plusieurs points de vente",
+    x4_dureeMin: "Durée (min)",
+    x4_lienReunion: "Lien réunion (Zoom, Meet…)",
+    x4_ordreDuJour: "Ordre du jour",
+    x4_aucunMembreDispo: "Aucun membre disponible",
+    x4_selectionnezMembre: "Sélectionnez le membre qui utilise l'appareil maintenant.",
+    x4_supprimer2: "Supprimer",
+    x4_desactiverIcone: "🗑️ Désactiver",
+    x4_suivezPerformances: "Suivez vos performances en temps réel",
+    x4_periode: "Période",
+    x4_statsReelles: "📊 Vos stats réelles (30j)",
+    x4_suggere: "💡 Suggéré",
+    x4_aucuneCommandeFournisseur: "Aucune commande passée à ce fournisseur.",
+    x4_colleLiens: "Colle tes liens de paiement — l'argent arrive sur ton compte",
+    x4_ciAfrique: "Côte d'Ivoire / Afrique",
+    x4_clesRestentApp2: "🔒 Les clés restent uniquement sur ton appareil.",
+    x4_uneSeuleCle: "une seule clé",
+    x4_obtenirCle: "Obtenir la clé →",
+    x4_sansCle: "Sans clé",
+    x4_avecUneIA: "Avec une IA",
+    x4_collezDansSpectra: "3. Collez-la dans Spectra AI ci-dessus",
+    x4_pointezCamera: "Pointez la caméra vers vos produits…",
+    x4_scannerCodeBarres: "Scanner un code-barres",
+    x3_reserveEntreprise: "Réservé au plan Entreprise",
+    x3_voirPlanEntreprise: "Voir le plan Entreprise →",
+    x3_voirPlansPro: "Voir les plans Pro →",
+    x3_voirPlans: "Voir les plans →",
+    x3_planActuel: "Votre plan actuel :",
+    x3_pourAugmenter: "pour augmenter (ou illimité).",
+    x3_scanTempsReel: "Scan temps réel IA",
+    x3_scanCodeBarres: "Scan code-barres",
+    x3_codeBarres: "📊 Code-barres",
+    x3_ean13: "EAN-13 / UPC / QR / Code 128",
+    x3_reconnaitProduit: "Spectra reconnaît n’importe quel produit photographié",
+    x3_commeGoogleLens: "Reconnaît n’importe quel produit, comme Google Lens",
+    x3_reconnaissanceMax: "Reconnaissance maximale de n’importe quel produit · Gérer",
+    x3_ps5Iphone: "PS5, iPhone, cosmétiques, n’importe quoi",
+    x3_iaVisionActive: "IA vision activée (ta clé)",
+    x3_precisionIA: "Précision IA",
+    x3_cocoSsd: "COCO-SSD + OCR + mémoire produit",
+    x3_codeBarresDico: "code-barres + dictionnaire",
+    x3_openFoodFacts: "🌐 OpenFoodFacts (code-barres)",
+    x3_sansCleSpectra: "💡 Sans clé, Spectra reconnaît quand même via",
+    x3_creeCleGroq: "Crée ta clé gratuite Groq",
+    x3_gratuitSansCarte: "Gratuit, sans carte, marche en Afrique.",
+    x3_colleDansSpectra: "Colle-la dans Spectra",
+    x3_connecteToi: "→ connecte-toi (Google/email) → « Create API Key ».",
+    x3_verifierMaCle: "Vérifier ma clé →",
+    x3_verifieTaCle: "Vérifie ta clé dans Spectra AI, ou réessaie.",
+    x3_pasIdentifie: "Spectra n’a pas pu l’identifier avec certitude",
+    x3_creerToiMeme: "Tu peux créer l’article toi-même en quelques secondes.",
+    x3_nomArticleIA: "Nom de l’article (l’IA apprend à partir de ce que tu saisis)",
+    x3_nomDetecte: "Nom détecté",
+    x3_nombreDetecte: "Nombre détecté",
+    x3_ocrDetecte: "📝 OCR détecté :",
+    x3_trouveEnStock: "✓ Trouvé en stock",
+    x3_aVerifier: "⚠ À vérifier",
+    x3_effacerMemoire: "Effacer mémoire",
+    x3_demoAudit: "Démo Audit",
+    x3_demoReception: "Démo Réception",
+    x3_scansIllimites: "♾️ Scans illimités · Plan Pro",
+    x3_spectraIllimite: "Spectra illimité + tout débloqué",
+    x3_passeEnPro: "passe en Pro pour l’illimité",
+    x3_compteurMinuit: "💡 Le compteur se remet à zéro chaque jour à minuit.",
+    x3_rapportPdfSigne: "📄 Rapport PDF signé",
+    x3_rapportsAudit: "📄 Rapports d’audit signés",
+    x3_signe: "✓ Signé",
+    x3_bientotEpuises: "Bientôt épuisés —",
+    x3_programmeFidelite: "Programme de fidélité",
+    x3_reglesProgramme: "⚙️ Règles du programme",
+    x3_recompenses: "🎁 Récompenses",
+    x3_ajouterRecompense: "+ Récompense",
+    x3_aucuneRecompense: "Aucune récompense · vos clients ne peuvent rien échanger",
+    x3_creerIdentifiants: "Créer des identifiants",
+    x3_originesJs: "Origines JavaScript autorisées",
+    x3_uriRedirection: "URI de redirection autorisés",
+    x3_commentClientId: "📖 Comment obtenir un Client ID Google (2 min)",
+    x3_vraiGoogle: "le vrai accounts.google.com",
+    x3_vraiApple: "le vrai Sign in with Apple",
+    x3_securite: "Sécurité :",
+    x3_modeleTerminal: "📟 Modèle de terminal",
+    x3_modele: "Modèle",
+    x3_enteteTicket: "En-tête du ticket (nom enseigne)",
+    x3_ticketDuplique: "Ticket dupliqué (client + copie)",
+    x3_impressionAuto: "Impression auto à la vente",
+    x3_imprimeTicket: "Imprime un ticket dès qu’une vente est enregistrée",
+    x3_commandeOuverture: "Commande d’ouverture au paiement espèces",
+    x3_aucunEvenement: "Aucun événement sélectionné",
+    x3_creerCommande: "— Créer une commande",
+    x3_enregistrerVente2: "— Enregistrer une vente",
+    x3_listeClients: "— Liste des clients",
+    x3_listeProduits: "— Liste des produits",
+    x3_etatStock: "— État du stock",
     x2_epuise: "Épuisé",
     x2_gererVitrine: "Gérer ma vitrine",
     x2_editeurBoutique: "Éditeur boutique",
@@ -1135,6 +1361,232 @@ const LANGS = {
     version:'Version',
   },
   en: {
+    x5_codesPromo: "Promo codes & discounts",
+    x5_aucuneReduction: "No discounts",
+    x5_creerReduction: "+ Create a discount",
+    x5_bannieresPromo: "Promotional banners",
+    x5_aucuneBanniere: "No banners",
+    x5_affichezAnnonce: "Show an important notice at the top of your shop",
+    x5_creerBanniere: "+ Create a banner",
+    x5_popupsDeclenches: "Triggered pop-ups",
+    x5_aucunPopup: "No pop-ups",
+    x5_offrezCodePromo: "Offer a promo code to new visitors",
+    x5_creerPopup: "+ Create a pop-up",
+    x5_aucunAvis: "No reviews",
+    x5_ajoutezAvisClients: "Add reviews from your happy customers",
+    x5_ajouterAvis: "+ Add a review",
+    x5_ajouterAvisPlus: "＋ Add a review",
+    x5_aucunLienTrace: "No tracked links",
+    x5_sachezPublicites: "Find out which ads bring in customers",
+    x5_creerLienTrace: "+ Create a tracked link",
+    x5_nomInterne: "Internal name, visible only to you",
+    x5_codeSaisiClients: "Your customers will type this code to get the discount",
+    x5_publie2: "✓ Published",
+    x5_supprimerIcone: "🗑 Delete",
+    x5_historiqueEnvois: "Sending history",
+    x5_aucunEnvoi: "Nothing sent yet",
+    x5_broadcastsIci: "Your sent broadcasts will appear here",
+    x5_envoyesDeuxPoints: "Sent:",
+    x5_cgv: "📜 Terms and conditions of sale",
+    x5_cgvSub: "Terms & conditions · returns policy",
+    x5_modele2: "📋 Template",
+    x5_faqTemoignages: "❓ FAQ & testimonials",
+    x5_aucuneFaq: "No FAQ yet",
+    x5_ajouterQuestion: "+ Add a question",
+    x5_packFaq: "📋 Pre-filled FAQ pack",
+    x5_aucunTemoignage: "No testimonials",
+    x5_cssHtmlJs: "Advanced CSS, HTML, JavaScript",
+    x5_ouInjecte: "📖 Where is this code injected?",
+    x5_telechargerIcone: "⬇ Download",
+    x5_photosPremiere: "Photos (the first is the main one)",
+    x5_ajouterVariante: "＋ Add a variant",
+    x5_ajouterPlus2: "+ Add",
+    x5_programmerPub2: "📅 Schedule a post",
+    x5_plateformes: "Platforms * (tick one or more)",
+    x5_legende: "Caption",
+    x5_cliquezPerso: "Click to customise",
+    x5_opacite: "Opacity",
+    x5_glissezCoins: "Drag the corners to resize.",
+    x5_terminerSelection: "✓ Finish the selection",
+    x5_arrierePlan: "🎨 Background",
+    x5_ajouterPhotoProduit: "📦 Add a product photo",
+    x5_telechargerDisq: "💾 Download",
+    x5_studioVideo: "🎬 BARO video studio",
+    x5_texteIncruste: "overlaid text",
+    x5_filmerAvecTexte: "🔴 Record with overlaid text",
+    x5_cameraSimple: "📹 Simple camera",
+    x5_ecran: "🖥️ Screen",
+    x5_arreter: "⏹ Stop",
+    x5_publierVideo: "📤 Publish the video",
+    x5_partagerSysteme: "📤 Share (system)",
+    x4_aPartirDe: "From",
+    x4_votrePlan: "Your plan:",
+    x4_disponibleAPartir: "Available from",
+    x4_fonctionnaliteePro: "Feature included in the Pro plan",
+    x4_avecBaroPro: "💎 With BARO Pro (20,000 FCFA/month)",
+    x4_voirTousPlans: "See all plans",
+    x4_fonctionnalitesIncluses: "Included features",
+    x4_resilier: "Cancel",
+    x4_aVie: "✨ Lifetime",
+    x4_nouveauCredit: "New credit",
+    x4_notezCeQuDoit: "Record what a customer owes you",
+    x4_telRappels: "Phone (for reminders)",
+    x4_enregistrerCredit: "📒 Save the credit",
+    x4_verification: "🔐 Verification",
+    x4_code6Chiffres: "6-digit code",
+    x4_verifier: "Verify",
+    x4_codeIncorrect: "Wrong code, try again",
+    x4_deverrouiller: "Unlock",
+    x4_envoyerTest: "🧪 Send a test",
+    x4_pageNonAffichee: "The page could not be displayed.",
+    x4_reessaieReinit: "Try again or reset the local session.",
+    x4_detailsTech: "Technical details",
+    x4_previsionsAlertes: "Forecasts & stock alerts",
+    x4_scanCamera: "Camera scan of your inventory",
+    x4_explorerExemples: "📚 Explore with sample data",
+    x4_apparaitRecus: "Appears on your receipts, invoices and online shop.",
+    x4_etape2sur2: "Step 2 of 2 — these settings can be changed later",
+    x4_utilisePourFactures: "Used to calculate invoices. 0 if not applicable.",
+    x4_historiqueStock: "📈 Stock history",
+    x4_entrees: "Stock in",
+    x4_voirMouvements: "See all movements →",
+    x4_rentabilite: "💰 Profitability",
+    x4_siToutVendu: "if all stock is sold",
+    x4_ajoutezDeuxPrix: "Enter both prices to see the margin",
+    x4_renseignezDeuxPrix: "Enter both prices to see the margin",
+    x4_categorieIcone: "🏷️ Category",
+    x4_categorie: "Category",
+    x4_nonAssigne: "— Unassigned —",
+    x4_produitPerissable: "Perishable product (expiry date)",
+    x4_photoProduit: "Product photo",
+    x4_recommandeBoutique: "(recommended for the shop)",
+    x4_aucunIngredient: "No ingredient matches.",
+    x4_unArticleParLigne: "One item per line",
+    x4_champsSepares: ", fields separated by",
+    x4_colonnesLot: "Name ; Price ; Quantity ; Reference ; Category",
+    x4_seulNomObligatoire: "Only the name is required. E.g.:",
+    x4_apercu: "Preview",
+    x4_creer: "✓ Create",
+    x4_ajouterPhotos: "📸 Add the photos",
+    x4_termine: "Done →",
+    x4_entreeSortieSerie: "⚡ Bulk stock in / out",
+    x4_entree: "📥 Stock in",
+    x4_aucunArticleTrouve: "No item found",
+    x4_tapezPourChercher: "Type to search for an item",
+    x4_beaucoupArticles: "Lots of items? Paste a list and create them all at once",
+    x4_depenses6mois: "📈 Spending (last 6 months)",
+    x4_produitsPreferes: "❤️ Favourite products",
+    x4_relanceClient: "Follow up with this customer",
+    x4_histoEchanges: "REDEMPTION HISTORY",
+    x4_aucunPack: "No bundles",
+    x4_creerPack: "➕ Create a bundle",
+    x4_caGenere: "REVENUE GENERATED",
+    x4_beneficeMaj: "PROFIT",
+    x4_economies: "SAVINGS",
+    x4_validiteJours: "Validity (days)",
+    x4_lignesDevis: "Quote lines",
+    x4_ajouterLigne: "＋ Add a line",
+    x4_totalEstime: "Estimated total",
+    x4_genererDevisPdf: "📄 Generate the PDF quote",
+    x4_facturesDevis: "Invoices · quotes · receipts · reports · exports",
+    x4_creerDocument: "Create a document",
+    x4_devisRecents: "Recent quotes",
+    x4_creerEmplacement: "Create the location",
+    x4_ajouterEmplacement: "＋ Add a location",
+    x4_creerEmplacement2: "＋ Create a location",
+    x4_gerezPointsVente: "Manage several sales locations",
+    x4_dureeMin: "Duration (min)",
+    x4_lienReunion: "Meeting link (Zoom, Meet…)",
+    x4_ordreDuJour: "Agenda",
+    x4_aucunMembreDispo: "No member available",
+    x4_selectionnezMembre: "Select the member using this device right now.",
+    x4_supprimer2: "Delete",
+    x4_desactiverIcone: "🗑️ Disable",
+    x4_suivezPerformances: "Track your performance in real time",
+    x4_periode: "Period",
+    x4_statsReelles: "📊 Your real stats (30d)",
+    x4_suggere: "💡 Suggested",
+    x4_aucuneCommandeFournisseur: "No orders placed with this supplier.",
+    x4_colleLiens: "Paste your payment links — the money lands in your account",
+    x4_ciAfrique: "Ivory Coast / Africa",
+    x4_clesRestentApp2: "🔒 The keys stay on your device only.",
+    x4_uneSeuleCle: "a single key",
+    x4_obtenirCle: "Get the key →",
+    x4_sansCle: "Without a key",
+    x4_avecUneIA: "With an AI",
+    x4_collezDansSpectra: "3. Paste it into Spectra AI above",
+    x4_pointezCamera: "Point the camera at your products…",
+    x4_scannerCodeBarres: "Scan a barcode",
+    x3_reserveEntreprise: "Enterprise plan only",
+    x3_voirPlanEntreprise: "See the Enterprise plan →",
+    x3_voirPlansPro: "See the Pro plans →",
+    x3_voirPlans: "See the plans →",
+    x3_planActuel: "Your current plan:",
+    x3_pourAugmenter: "to raise it (or go unlimited).",
+    x3_scanTempsReel: "Real-time AI scan",
+    x3_scanCodeBarres: "Barcode scan",
+    x3_codeBarres: "📊 Barcode",
+    x3_ean13: "EAN-13 / UPC / QR / Code 128",
+    x3_reconnaitProduit: "Spectra recognises any product you photograph",
+    x3_commeGoogleLens: "Recognises any product, like Google Lens",
+    x3_reconnaissanceMax: "Maximum recognition of any product · Manage",
+    x3_ps5Iphone: "PS5, iPhone, cosmetics, anything",
+    x3_iaVisionActive: "Vision AI enabled (your key)",
+    x3_precisionIA: "AI accuracy",
+    x3_cocoSsd: "COCO-SSD + OCR + product memory",
+    x3_codeBarresDico: "barcode + dictionary",
+    x3_openFoodFacts: "🌐 OpenFoodFacts (barcode)",
+    x3_sansCleSpectra: "💡 Without a key, Spectra still recognises via",
+    x3_creeCleGroq: "Create your free Groq key",
+    x3_gratuitSansCarte: "Free, no card, works in Africa.",
+    x3_colleDansSpectra: "Paste it into Spectra",
+    x3_connecteToi: "→ sign in (Google/email) → \"Create API Key\".",
+    x3_verifierMaCle: "Check my key →",
+    x3_verifieTaCle: "Check your key in Spectra AI, or try again.",
+    x3_pasIdentifie: "Spectra could not identify it with confidence",
+    x3_creerToiMeme: "You can create the item yourself in a few seconds.",
+    x3_nomArticleIA: "Item name (the AI learns from what you type)",
+    x3_nomDetecte: "Detected name",
+    x3_nombreDetecte: "Detected count",
+    x3_ocrDetecte: "📝 OCR detected:",
+    x3_trouveEnStock: "✓ Found in stock",
+    x3_aVerifier: "⚠ To check",
+    x3_effacerMemoire: "Clear memory",
+    x3_demoAudit: "Audit demo",
+    x3_demoReception: "Receiving demo",
+    x3_scansIllimites: "♾️ Unlimited scans · Pro plan",
+    x3_spectraIllimite: "Unlimited Spectra + everything unlocked",
+    x3_passeEnPro: "switch to Pro for unlimited",
+    x3_compteurMinuit: "💡 The counter resets to zero every day at midnight.",
+    x3_rapportPdfSigne: "📄 Signed PDF report",
+    x3_rapportsAudit: "📄 Signed audit reports",
+    x3_signe: "✓ Signed",
+    x3_bientotEpuises: "Running out soon —",
+    x3_programmeFidelite: "Loyalty programme",
+    x3_reglesProgramme: "⚙️ Programme rules",
+    x3_recompenses: "🎁 Rewards",
+    x3_ajouterRecompense: "+ Reward",
+    x3_aucuneRecompense: "No rewards · your customers have nothing to redeem",
+    x3_creerIdentifiants: "Create credentials",
+    x3_originesJs: "Authorised JavaScript origins",
+    x3_uriRedirection: "Authorised redirect URIs",
+    x3_commentClientId: "📖 How to get a Google Client ID (2 min)",
+    x3_vraiGoogle: "the real accounts.google.com",
+    x3_vraiApple: "the real Sign in with Apple",
+    x3_securite: "Security:",
+    x3_modeleTerminal: "📟 Terminal model",
+    x3_modele: "Model",
+    x3_enteteTicket: "Receipt header (shop name)",
+    x3_ticketDuplique: "Duplicate receipt (customer + copy)",
+    x3_impressionAuto: "Automatic printing on sale",
+    x3_imprimeTicket: "Prints a receipt as soon as a sale is recorded",
+    x3_commandeOuverture: "Drawer-open command on cash payment",
+    x3_aucunEvenement: "No event selected",
+    x3_creerCommande: "— Create an order",
+    x3_enregistrerVente2: "— Record a sale",
+    x3_listeClients: "— Customer list",
+    x3_listeProduits: "— Product list",
+    x3_etatStock: "— Stock status",
     x2_epuise: "Sold out",
     x2_gererVitrine: "Manage my shop",
     x2_editeurBoutique: "Shop editor",
@@ -3779,7 +4231,7 @@ function _vEnterpriseLock(icon, title, desc, perks) {
   <div class="sub-hero" style="background:linear-gradient(140deg,#0b0a1f,#1b1650 55%,#3b2fa8)">
     <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('boutique')">${IC.left}</button>
     <div class="sub-hero-title">${icon} ${title}</div>
-    <div class="sub-hero-sub">Réservé au plan Entreprise</div>
+    <div class="sub-hero-sub">${t('x3_reserveEntreprise')}</div>
   </div>
   <div class="container">
     <div class="card" style="text-align:center;padding:30px 22px">
@@ -3789,8 +4241,8 @@ function _vEnterpriseLock(icon, title, desc, perks) {
       <div style="text-align:left;max-width:320px;margin:0 auto 20px">
         ${perks.map(p => `<div style="display:flex;gap:9px;font-size:13px;padding:5px 0;color:var(--text-2)"><span style="color:#8B5CF6;font-weight:800">✓</span>${p}</div>`).join('')}
       </div>
-      <button class="btn btn-primary" style="width:100%;max-width:300px;background:linear-gradient(135deg,#8B5CF6,#6366F1)" onclick="nav('pricing')">Voir le plan Entreprise →</button>
-      <div style="font-size:11.5px;color:var(--text-3);margin-top:12px">Votre plan actuel : <b>${PLAN_LABELS[_currentPlan()]||_currentPlan()}</b></div>
+      <button class="btn btn-primary" style="width:100%;max-width:300px;background:linear-gradient(135deg,#8B5CF6,#6366F1)" onclick="nav('pricing')">${t('x3_voirPlanEntreprise')}</button>
+      <div style="font-size:11.5px;color:var(--text-3);margin-top:12px">${t('x3_planActuel')} <b>${PLAN_LABELS[_currentPlan()]||_currentPlan()}</b></div>
     </div>
   </div>`;
 }
@@ -3832,7 +4284,7 @@ function _showPlanLimitModal(feature, limit, label) {
       <div class="card" style="border:2px solid var(--accent);background:linear-gradient(135deg,rgba(124,115,255,.08),transparent);margin:18px 0 12px">
         ${['♾️ Articles & ventes illimités (Pro)','📍 Plus d\'emplacements','🔍 Spectra IA illimité','🏪 Boutique en ligne + marketing'].map(f=>`<div style="display:flex;gap:8px;font-size:13px;padding:3px 0;color:var(--text-2)"><span style="color:var(--accent)">✓</span>${f}</div>`).join('')}
       </div>
-      <button class="btn btn-primary" style="width:100%" onclick="document.getElementById('__planLimitModal').remove();nav('pricing')">Voir les plans →</button>
+      <button class="btn btn-primary" style="width:100%" onclick="document.getElementById('__planLimitModal').remove();nav('pricing')">${t('x3_voirPlans')}</button>
       <button class="btn btn-ghost" style="width:100%;margin-top:8px" onclick="document.getElementById('__planLimitModal').remove()">${t('x2_plusTard')}</button>
     </div>`;
   document.body.appendChild(modal);
@@ -3874,12 +4326,12 @@ function _vFeatureLock(feature) {
       <div style="font-size:19px;font-weight:800;letter-spacing:-.02em;margin-bottom:8px">${info.titre}</div>
       <div style="font-size:13.5px;color:var(--text-2);line-height:1.55;max-width:330px;margin:0 auto 18px">${info.quoi}</div>
       <div style="display:inline-flex;align-items:baseline;gap:6px;background:var(--gray-1);border:1px solid var(--border);border-radius:12px;padding:10px 16px;margin-bottom:18px">
-        <span style="font-size:12px;color:var(--text-3)">À partir de</span>
+        <span style="font-size:12px;color:var(--text-3)">${t('x4_aPartirDe')}</span>
         <b style="font-size:16px;font-weight:800">${PLAN_LABELS[info.minimum]}</b>
         <span style="font-size:12px;color:var(--text-3)">· ${fmt(prix)} ${sym()}/mois</span>
       </div>
-      <button class="btn btn-primary" style="width:100%;max-width:300px" onclick="nav('pricing')">Voir les plans →</button>
-      <div style="font-size:11.5px;color:var(--text-3);margin-top:12px">Votre plan : <b>${PLAN_LABELS[_currentPlan()] || _currentPlan()}</b></div>
+      <button class="btn btn-primary" style="width:100%;max-width:300px" onclick="nav('pricing')">${t('x3_voirPlans')}</button>
+      <div style="font-size:11.5px;color:var(--text-3);margin-top:12px">${t('x4_votrePlan')} <b>${PLAN_LABELS[_currentPlan()] || _currentPlan()}</b></div>
     </div>
   </div>`;
 }
@@ -3900,9 +4352,9 @@ function _showPlanFeatureModal(feature) {
         <div style="font-size:44px;margin-bottom:8px">${info.icone}</div>
         <div style="font-size:20px;font-weight:900;letter-spacing:-.3px">${info.titre}</div>
         <div style="font-size:13px;color:var(--text-3);margin-top:8px;line-height:1.55;max-width:330px;margin-left:auto;margin-right:auto">${info.quoi}</div>
-        <div style="font-size:13px;margin-top:14px">Disponible à partir de <b>${PLAN_LABELS[info.minimum]}</b> · ${fmt(_PLAN_PRIX[info.minimum])} ${sym()}/mois</div>
+        <div style="font-size:13px;margin-top:14px">${t('x4_disponibleAPartir')} <b>${PLAN_LABELS[info.minimum]}</b> · ${fmt(_PLAN_PRIX[info.minimum])} ${sym()}/mois</div>
       </div>
-      <button class="btn btn-primary" style="width:100%;margin-top:18px" onclick="document.getElementById('__planFeatModal').remove();nav('pricing')">Voir les plans →</button>
+      <button class="btn btn-primary" style="width:100%;margin-top:18px" onclick="document.getElementById('__planFeatModal').remove();nav('pricing')">${t('x3_voirPlans')}</button>
       <button class="btn btn-ghost" style="width:100%;margin-top:8px" onclick="document.getElementById('__planFeatModal').remove()">${t('x2_plusTard')}</button>
     </div>`;
   document.body.appendChild(modal);
@@ -4860,8 +5312,8 @@ function vCreditForm() {
   return `
   <div class="sub-hero">
     <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('credits')">${IC.left}</button>
-    <div class="sub-hero-title">Nouveau crédit</div>
-    <div class="sub-hero-sub">Notez ce qu'un client vous doit</div>
+    <div class="sub-hero-title">${t('x4_nouveauCredit')}</div>
+    <div class="sub-hero-sub">${t('x4_notezCeQuDoit')}</div>
   </div>
   <div class="container">
     <div class="card">
@@ -4871,7 +5323,7 @@ function vCreditForm() {
         <datalist id="credit-clients">${names}</datalist>
       </div>
       <div class="form-group">
-        <label class="form-label">Téléphone (pour les rappels)</label>
+        <label class="form-label">${t('x4_telRappels')}</label>
         <input class="input" type="tel" inputmode="tel" placeholder="ex : 07 00 00 00 00" value="${(f.phone||'').replace(/"/g,'&quot;')}" oninput="S.creditForm.phone=this.value">
       </div>
       <div class="form-group">
@@ -4882,7 +5334,7 @@ function vCreditForm() {
         <label class="form-label">Note (facultatif)</label>
         <input class="input" placeholder="ex : 2 boîtes Doliprane" value="${(f.note||'').replace(/"/g,'&quot;')}" oninput="S.creditForm.note=this.value">
       </div>
-      <button class="btn btn-primary" style="width:100%;padding:13px;font-weight:800" onclick="saveCredit()">📒 Enregistrer le crédit</button>
+      <button class="btn btn-primary" style="width:100%;padding:13px;font-weight:800" onclick="saveCredit()">${t('x4_enregistrerCredit')}</button>
     </div>
   </div>`;
 }
@@ -5200,7 +5652,7 @@ function v2FAVerify() {
   <div class="auth-wrap">
     <div class="auth-card">
       <div class="auth-logo">${IC.baro}<span>BARO</span></div>
-      <div class="auth-title">🔐 Vérification</div>
+      <div class="auth-title">${t('x4_verification')}</div>
       <div class="auth-sub">${methodLbl} · ${method==='sms'?('SMS envoyé à '+(S.security?.twoFactorPhone||'')):'Code envoyé à '+maskedEmail}</div>
 
       ${showFallbackCode ? `
@@ -5215,14 +5667,14 @@ function v2FAVerify() {
       </div>` : ''}
 
       <div class="form-group" style="margin-top:20px">
-        <label class="form-label">Code à 6 chiffres</label>
+        <label class="form-label">${t('x4_code6Chiffres')}</label>
         <input class="input" id="tfa-code" type="text" inputmode="numeric" maxlength="6" placeholder="000000"
           style="letter-spacing:8px;text-align:center;font-size:24px;font-weight:700;font-family:monospace"
           value="${S.twoFACodeInput || ''}"
           oninput="S.twoFACodeInput=this.value.replace(/\\D/g,'').slice(0,6);if(this.value.length===6)verify2FA()">
       </div>
 
-      <button class="btn btn-primary" style="width:100%;margin-top:10px" onclick="verify2FA()">Vérifier</button>
+      <button class="btn btn-primary" style="width:100%;margin-top:10px" onclick="verify2FA()">${t('x4_verifier')}</button>
 
       <div style="text-align:center;margin-top:14px;display:flex;flex-direction:column;gap:8px">
         <button class="btn-link" onclick="resend2FA()" style="background:none;border:none;color:var(--accent);font-size:13px;cursor:pointer">${t('x1_renvoyerCode')}</button>
@@ -8579,9 +9031,9 @@ function _doRender() {
       viewEl.innerHTML = `
         <div class="container" style="padding:32px 20px;text-align:center;color:var(--text)">
           <div style="font-size:18px;font-weight:800;margin-bottom:10px">Erreur d'affichage</div>
-          <div style="font-size:13px;color:var(--text-3);margin-bottom:14px;line-height:1.5">La page n'a pas pu s'afficher.<br>Réessaie ou réinitialise la session locale.</div>
+          <div style="font-size:13px;color:var(--text-3);margin-bottom:14px;line-height:1.5">${t('x4_pageNonAffichee')}<br>${t('x4_reessaieReinit')}</div>
           <details style="text-align:left;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin:0 auto 16px;max-width:440px;font-size:11px;color:var(--text-3)">
-            <summary style="cursor:pointer;font-weight:700;color:var(--text);margin-bottom:6px">Détails techniques</summary>
+            <summary style="cursor:pointer;font-weight:700;color:var(--text);margin-bottom:6px">${t('x4_detailsTech')}</summary>
             <div style="margin-top:8px"><b>Vue :</b> ${String(__viewErr).replace(/[<>&]/g,'')}</div>
             <div style="margin-top:4px"><b>Home :</b> ${String(__homeErr).replace(/[<>&]/g,'')}</div>
             ${__stack ? `<div style="margin-top:4px;font-family:monospace;font-size:10px;opacity:.7">${__stack.replace(/[<>&]/g,'')}</div>` : ''}
@@ -8666,8 +9118,8 @@ function vOnboarding() {
       text: 'SOVA surveille ton stock et prédit les ruptures avant qu\'elles arrivent. Spectra compte tes produits avec la caméra de ton téléphone.',
       visual: `
         <div class="ob-visual-col">
-          <div class="ob-agent-pill" style="animation-delay:.12s;border-color:rgba(201,169,110,.4)"><span style="color:#c9a96e;font-weight:800">SOVA</span><span>Prévisions & alertes stock</span></div>
-          <div class="ob-agent-pill" style="animation-delay:.26s;border-color:rgba(167,139,250,.4)"><span style="color:#a78bfa;font-weight:800">Spectra</span><span>Scan caméra de l'inventaire</span></div>
+          <div class="ob-agent-pill" style="animation-delay:.12s;border-color:rgba(201,169,110,.4)"><span style="color:#c9a96e;font-weight:800">SOVA</span><span>${t('x4_previsionsAlertes')}</span></div>
+          <div class="ob-agent-pill" style="animation-delay:.26s;border-color:rgba(167,139,250,.4)"><span style="color:#a78bfa;font-weight:800">Spectra</span><span>${t('x4_scanCamera')}</span></div>
         </div>`,
     },
     {
@@ -8680,7 +9132,7 @@ function vOnboarding() {
       visual: `
         <div class="ob-visual-col">
           <button class="btn btn-primary" style="animation:fadeUp .4s var(--ease-out) .15s both" onclick="finishOnboarding('wizard')">⚡ Configurer ma boutique</button>
-          <button class="btn btn-ghost" style="animation:fadeUp .4s var(--ease-out) .28s both" onclick="finishOnboarding('demo')">📚 Explorer avec des exemples</button>
+          <button class="btn btn-ghost" style="animation:fadeUp .4s var(--ease-out) .28s both" onclick="finishOnboarding('demo')">${t('x4_explorerExemples')}</button>
         </div>`,
     },
   ];
@@ -8774,7 +9226,7 @@ function vSetupWizard() {
   } else if (w.step === 1) {
     body = `
       <div class="wiz-h1">${t('w9_votreBoutique')}</div>
-      <div class="wiz-sub">Apparaît sur vos reçus, factures et votre boutique en ligne.</div>
+      <div class="wiz-sub">${t('x4_apparaitRecus')}</div>
       <label class="wiz-label">${t('w9_nomCommerce')}</label>
       <input id="wiz-biz" class="input" value="${(w.biz||'').replace(/"/g,'&quot;')}" placeholder="Ex : Boutique Awa">
       <label class="wiz-label">Ville</label>
@@ -9465,7 +9917,7 @@ function vAuthStep2() {
     <div class="auth-card">
       <button class="back-btn" style="margin-bottom:12px" onclick="S.authStep=1;render()">${IC.left}</button>
       <div class="auth-title">Ton profil</div>
-      <div class="auth-sub">Étape 2 sur 2 — Ces paramètres sont modifiables plus tard</div>
+      <div class="auth-sub">${t('x4_etape2sur2')}</div>
 
       <div class="form-group" style="margin-top:16px">
         <label class="form-label">Type de commerce *</label>
@@ -9507,7 +9959,7 @@ function vAuthStep2() {
         <input class="input" type="number" min="0" max="100" step="0.5"
                placeholder="ex: 18" value="${S.authTax||''}"
                oninput="S.authTax=this.value">
-        <div class="form-hint">Utilisé pour le calcul des factures. 0 si non applicable.</div>
+        <div class="form-hint">${t('x4_utilisePourFactures')}</div>
       </div>
 
       <button class="btn btn-primary" style="margin-top:8px" onclick="doRegister()">
@@ -10500,11 +10952,11 @@ function vProducts() {
     <div class="pantry-kpis" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:4px 0 10px">
       <div style="text-align:center;padding:8px 4px;background:var(--gray-1);border-radius:8px;border:1px solid var(--border)">
         <div style="font-size:13px;font-weight:800;color:var(--accent)">${fmt(prodCA)}</div>
-        <div style="font-size:9px;color:var(--text-3);margin-top:1px;font-weight:600;letter-spacing:.3px">CA GÉNÉRÉ</div>
+        <div style="font-size:9px;color:var(--text-3);margin-top:1px;font-weight:600;letter-spacing:.3px">${t('x4_caGenere')}</div>
       </div>
       <div style="text-align:center;padding:8px 4px;background:var(--gray-1);border-radius:8px;border:1px solid var(--border)">
         <div style="font-size:13px;font-weight:800;color:var(--success)">+${fmt(prodProfit)}</div>
-        <div style="font-size:9px;color:var(--text-3);margin-top:1px;font-weight:600;letter-spacing:.3px">BÉNÉFICE</div>
+        <div style="font-size:9px;color:var(--text-3);margin-top:1px;font-weight:600;letter-spacing:.3px">${t('x4_beneficeMaj')}</div>
       </div>
       <div style="text-align:center;padding:8px 4px;background:var(--gray-1);border-radius:8px;border:1px solid var(--border)">
         <div style="font-size:13px;font-weight:800;color:${avgProdMargin>=20?'var(--success)':avgProdMargin>=10?'var(--warning)':'var(--danger)'}">${avgProdMargin}%</div>
@@ -10544,7 +10996,7 @@ function vProducts() {
       </div>
       <div style="text-align:center;padding:8px 4px;background:var(--gray-1);border-radius:8px;border:1px solid var(--border)">
         <div style="font-size:13px;font-weight:800;color:${totalPackSavings>0?'#EC4899':'var(--text-3)'}">-${fmt(totalPackSavings)}</div>
-        <div style="font-size:9px;color:var(--text-3);margin-top:1px;font-weight:600;letter-spacing:.3px">ÉCONOMIES</div>
+        <div style="font-size:9px;color:var(--text-3);margin-top:1px;font-weight:600;letter-spacing:.3px">${t('x4_economies')}</div>
       </div>
     </div>
     <div class="search-wrap">
@@ -10556,13 +11008,13 @@ function vProducts() {
     ${tab === 'packs' ? (packs.length === 0 ? `
     <div class="empty">
       <div class="empty-ico" style="font-size:48px">📦</div>
-      <div class="empty-title">Aucun pack</div>
+      <div class="empty-title">${t('x4_aucunPack')}</div>
       <div class="empty-text">Créez un pack de plusieurs produits vendu à un prix groupé avantageux.</div>
       ${S.products.length < 2 ? `
       <div style="margin-top:12px;padding:10px 14px;background:var(--warning)15;border:1px solid var(--warning);border-radius:var(--r-md);font-size:12px;color:var(--warning)">
         Ajoutez d'abord au moins 2 produits avant de créer un pack.
       </div>` : `
-      <button class="btn btn-primary" style="width:auto;padding:11px 24px" onclick="startNewPack()">➕ Créer un pack</button>`}
+      <button class="btn btn-primary" style="width:auto;padding:11px 24px" onclick="startNewPack()">${t('x4_creerPack')}</button>`}
     </div>` : packsFiltered.length === 0 ? `
     <div class="empty" style="padding:30px 18px">
       <div style="font-size:32px;margin-bottom:8px">🔍</div>
@@ -11571,7 +12023,7 @@ function _stockHistoryCard(art) {
   if (all.length < 2) {
     return `
     <div class="card" style="margin-top:8px">
-      <div class="card-title">📈 Historique du stock</div>
+      <div class="card-title">${t('x4_historiqueStock')}</div>
       <div style="display:flex;align-items:center;gap:10px;padding:8px 0">
         <div style="flex:1">
           <div style="font-size:12px;color:var(--text-3);line-height:1.5">Pas encore assez de mouvements pour tracer une courbe. Les réceptions et retraits apparaîtront ici au fil du temps.</div>
@@ -11606,7 +12058,7 @@ function _stockHistoryCard(art) {
 
   return `
     <div class="card" style="margin-top:8px">
-      <div class="card-title">📈 Historique du stock <span style="font-size:11px;font-weight:500;color:var(--text-3)">· ${all.length} mouvement${all.length>1?'s':''}</span></div>
+      <div class="card-title">${t('x4_historiqueStock')} <span style="font-size:11px;font-weight:500;color:var(--text-3)">· ${all.length} mouvement${all.length>1?'s':''}</span></div>
       <svg viewBox="0 0 ${W} ${H}" width="100%" height="92" preserveAspectRatio="none" style="display:block;margin:4px 0 10px">
         <defs><linearGradient id="stockArea" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stop-color="var(--accent)" stop-opacity="0.28"/>
@@ -11618,11 +12070,11 @@ function _stockHistoryCard(art) {
         ${xy.map(p => `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="2.4" fill="var(--accent)"/>`).join('')}
       </svg>
       <div style="display:flex;gap:8px">
-        <div class="metric-card" style="flex:1"><div class="metric-val" style="color:var(--success)">+${fmtQty(entries)}</div><div class="metric-lbl">Entrées</div></div>
+        <div class="metric-card" style="flex:1"><div class="metric-val" style="color:var(--success)">+${fmtQty(entries)}</div><div class="metric-lbl">${t('x4_entrees')}</div></div>
         <div class="metric-card" style="flex:1"><div class="metric-val" style="color:var(--danger)">−${fmtQty(exits)}</div><div class="metric-lbl">Sorties</div></div>
         ${soldTotal > 0 ? `<div class="metric-card" style="flex:1"><div class="metric-val">${soldTotal}</div><div class="metric-lbl">Vendus</div></div>` : ''}
       </div>
-      <button class="btn btn-ghost" style="margin-top:8px;font-size:12px" onclick="nav('stock-history')">Voir tous les mouvements →</button>
+      <button class="btn btn-ghost" style="margin-top:8px;font-size:12px" onclick="nav('stock-history')">${t('x4_voirMouvements')}</button>
     </div>`;
 }
 
@@ -11709,7 +12161,7 @@ function vDetail() {
 
     ${isReseller && (pa > 0 || pv > 0) ? `
     <div class="card" style="margin-top:8px;background:linear-gradient(135deg,rgba(79,70,229,0.06),rgba(16,185,129,0.04));border:1px solid rgba(79,70,229,0.15)">
-      <div class="card-title" style="display:flex;align-items:center;gap:6px">💰 Rentabilité</div>
+      <div class="card-title" style="display:flex;align-items:center;gap:6px">${t('x4_rentabilite')}</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
         <div style="padding:10px;background:var(--card-bg,#fff);border-radius:8px;border:1px solid var(--border)">
           <div style="font-size:10px;color:var(--text-3);font-weight:600;letter-spacing:.3px">PRIX D'ACHAT</div>
@@ -11730,7 +12182,7 @@ function vDetail() {
         <div style="padding:10px;background:var(--card-bg,#fff);border-radius:8px;border:1px solid var(--border)">
           <div style="font-size:10px;color:var(--text-3);font-weight:600;letter-spacing:.3px">${t('w1_benefPotentiel')}</div>
           <div style="font-size:18px;font-weight:800;color:var(--success);margin-top:2px">+${fmt(benefStock)}</div>
-          <div style="font-size:11px;color:var(--text-3);margin-top:2px">si tout le stock est vendu</div>
+          <div style="font-size:11px;color:var(--text-3);margin-top:2px">${t('x4_siToutVendu')}</div>
         </div>
       </div>` : '<div style="font-size:12px;color:var(--text-3);text-align:center;padding:8px;background:var(--gray-1);border-radius:8px">Ajoutez les deux prix pour voir la marge</div>'}
     </div>` : ''}
@@ -11742,7 +12194,7 @@ function vDetail() {
         <span class="info-val" style="font-family:monospace;font-weight:700;letter-spacing:1px">${art.ref}</span>
       </div>` : ''}
       ${art.category ? `<div class="info-row">
-        <span class="info-lbl">🏷️ Catégorie</span>
+        <span class="info-lbl">${t('x4_categorieIcone')}</span>
         <span class="info-val">${art.category}</span>
       </div>` : ''}
       ${!isReseller && art.price ? `<div class="info-row">
@@ -11757,7 +12209,7 @@ function vDetail() {
         <span class="info-lbl" style="flex-shrink:0">${IC.home} Emplacement</span>
         <span class="info-val" style="min-width:0;flex:1 1 auto;text-align:right">
           <select class="input" style="font-size:11px;padding:4px 8px;width:auto;max-width:100%;min-width:0;border-radius:6px" onchange="setArticleLocation(${art.id},parseInt(this.value)||null)">
-            <option value="">— Non assigné —</option>
+            <option value="">${t('x4_nonAssigne')}</option>
             ${S.locations.map(l => `<option value="${l.id}" ${art.locationId===l.id?'selected':''}>${l.name}${l.type?' ('+({'store':'Boutique','warehouse':'Entrepôt','popup':'Pop-up'}[l.type]||l.type)+')':''}</option>`).join('')}
           </select>
         </span>
@@ -11808,7 +12260,7 @@ function vDetail() {
         </div>
       </div>
       <div class="form-group">
-        <label class="form-label">🏷️ Catégorie</label>
+        <label class="form-label">${t('x4_categorieIcone')}</label>
         <input class="input" type="text" placeholder="Chaussures, Téléphones…" value="${(art.category||'').replace(/"/g,'&quot;')}" onchange="updateArticleField(${art.id},'category',this.value)">
       </div>
       <div class="form-group">
@@ -11890,18 +12342,18 @@ function vBulkAdd() {
   <div class="container">
     <div class="card" style="margin-bottom:10px">
       <div style="font-size:12.5px;color:var(--text-2);line-height:1.6;margin-bottom:10px">
-        <b>Un article par ligne</b>, champs séparés par <code style="background:var(--gray-1);padding:1px 5px;border-radius:4px">;</code> (ou tabulation) :<br>
-        <span style="color:var(--text-3)">Nom ; Prix ; Quantité ; Référence ; Catégorie</span><br>
-        <span style="font-size:11px;color:var(--text-3)">Seul le nom est obligatoire. Ex : <i>Carton vis M6 ; 4500 ; 30 ; REF-VIS-M6 ; Quincaillerie</i></span>
+        <b>${t('x4_unArticleParLigne')}</b>${t('x4_champsSepares')} <code style="background:var(--gray-1);padding:1px 5px;border-radius:4px">;</code> (ou tabulation) :<br>
+        <span style="color:var(--text-3)">${t('x4_colonnesLot')}</span><br>
+        <span style="font-size:11px;color:var(--text-3)">${t('x4_seulNomObligatoire')} <i>Carton vis M6 ; 4500 ; 30 ; REF-VIS-M6 ; Quincaillerie</i></span>
       </div>
       <textarea class="input" id="bulk-text" rows="9" style="resize:vertical;font-family:ui-monospace,monospace;font-size:13px;line-height:1.6" placeholder="Sac à dos ; 12000 ; 8 ; SAC-01 ; Bagagerie&#10;Stylo bleu ; 250 ; 200 ; STY-BL&#10;Carton lait ; 9000 ; 15 ; LAIT-1L ; Alimentaire" oninput="S.bulkText=this.value;_bulkRefresh()">${(S.bulkText||'').replace(/</g,'&lt;')}</textarea>
       <div id="bulk-count" style="font-size:12px;color:var(--text-3);margin-top:6px">${rows.length} ligne(s) détectée(s)</div>
     </div>
     <div class="card" id="bulk-preview-card" style="margin-bottom:10px;${rows.length?'':'display:none'}">
-      <div class="card-title">Aperçu <span id="bulk-prev-n">(${rows.length})</span></div>
+      <div class="card-title">${t('x4_apercu')} <span id="bulk-prev-n">(${rows.length})</span></div>
       <div id="bulk-preview" style="max-height:260px;overflow-y:auto">${_bulkPreviewHTML(rows)}</div>
     </div>
-    <button class="btn btn-primary" id="bulk-create-btn" style="width:100%;${rows.length?'':'opacity:.5;pointer-events:none'}" onclick="saveBulkArticles()">✓ Créer <span id="bulk-btn-n">${rows.length}</span> article(s)</button>
+    <button class="btn btn-primary" id="bulk-create-btn" style="width:100%;${rows.length?'':'opacity:.5;pointer-events:none'}" onclick="saveBulkArticles()">${t('x4_creer')} <span id="bulk-btn-n">${rows.length}</span> article(s)</button>
   </div>`;
 }
 function _bulkPreviewHTML(rows) {
@@ -11962,7 +12414,7 @@ function vBulkPhotos() {
   return `
   <div class="sub-hero">
     <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('pantry')">${IC.left}</button>
-    <div class="sub-hero-title">📸 Ajouter les photos</div>
+    <div class="sub-hero-title">${t('x4_ajouterPhotos')}</div>
     <div class="sub-hero-sub">${items.length} article(s) créé(s) · ${withPhoto} avec photo · facultatif</div>
   </div>
   <div class="container">
@@ -11978,7 +12430,7 @@ function vBulkPhotos() {
         </div>
         <button class="btn ${a.image?'btn-ghost':'btn-primary'}" style="width:auto;padding:9px 14px;font-size:12.5px;flex-shrink:0" onclick="_bulkSetPhoto(${a.id})">${a.image?'Changer':'📷 Photo'}</button>
       </div>`).join('')}
-    <button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="S.bulkCreatedIds=[];nav('pantry')">Terminé →</button>
+    <button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="S.bulkCreatedIds=[];nav('pantry')">${t('x4_termine')}</button>
   </div>`;
 }
 function _bulkSetPhoto(id) {
@@ -12014,9 +12466,9 @@ function _qkRender() {
   modal.className = 'qs-overlay';
   modal.onclick = (e) => { if (e.target === modal) _qkClose(); };
   modal.innerHTML = `<div class="qs-sheet">
-    <div class="qs-head"><div style="flex:1;min-width:0"><div class="qs-title">⚡ Entrée / Sortie en série</div><div class="qs-sub">${st.done ? `${st.done} mouvement(s) enregistré(s)` : 'Enchaînez les articles sans quitter l’écran'}</div></div><button class="qs-x" onclick="_qkClose()">✕</button></div>
+    <div class="qs-head"><div style="flex:1;min-width:0"><div class="qs-title">${t('x4_entreeSortieSerie')}</div><div class="qs-sub">${st.done ? `${st.done} mouvement(s) enregistré(s)` : 'Enchaînez les articles sans quitter l’écran'}</div></div><button class="qs-x" onclick="_qkClose()">✕</button></div>
     <div style="display:flex;gap:8px;margin-bottom:10px">
-      <button class="toggle-btn ${st.mode==='add'?'t-active':''}" style="flex:1;padding:10px" onclick="S._qk.mode='add';_qkRender()">📥 Entrée</button>
+      <button class="toggle-btn ${st.mode==='add'?'t-active':''}" style="flex:1;padding:10px" onclick="S._qk.mode='add';_qkRender()">${t('x4_entree')}</button>
       <button class="toggle-btn ${st.mode==='remove'?'t-active':''}" style="flex:1;padding:10px" onclick="S._qk.mode='remove';_qkRender()">📤 Sortie</button>
     </div>
     ${sel ? `
@@ -12038,7 +12490,7 @@ function _qkRender() {
         <div style="width:36px;height:36px;border-radius:9px;flex-shrink:0;background:var(--gray-1);overflow:hidden;display:flex;align-items:center;justify-content:center">${a.image?`<img src="${a.image}" alt="" style="width:100%;height:100%;object-fit:cover">`:'📦'}</div>
         <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:13.5px;color:var(--text-1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${(a.name||'').replace(/</g,'&lt;')}</div>
         <div style="font-size:11px;color:var(--text-3)">${fmtQty(a.stock)} ${a.unit||''}${a.ref?' · '+(a.ref).replace(/</g,'&lt;'):''}</div></div>
-      </button>`).join('') : (q ? `<div style="text-align:center;color:var(--text-3);font-size:12.5px;padding:14px">Aucun article trouvé</div>` : `<div style="text-align:center;color:var(--text-3);font-size:12.5px;padding:14px">Tapez pour chercher un article</div>`)}`}
+      </button>`).join('') : (q ? `<div style="text-align:center;color:var(--text-3);font-size:12.5px;padding:14px">${t('x4_aucunArticleTrouve')}</div>` : `<div style="text-align:center;color:var(--text-3);font-size:12.5px;padding:14px">${t('x4_tapezPourChercher')}</div>`)}`}
   </div>`;
   document.body.appendChild(modal);
 }
@@ -12128,12 +12580,12 @@ function vAdd() {
   <div class="container">
     <button class="card card-tap" style="width:100%;margin-bottom:10px;display:flex;align-items:center;gap:12px;text-align:left;background:linear-gradient(135deg,rgba(124,115,255,.10),rgba(79,70,229,.04));border:1px solid rgba(124,115,255,.22);cursor:pointer" onclick="nav('bulk-add')">
       <div style="width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#7C73FF,#4F46E5);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">⚡</div>
-      <div style="flex:1"><div style="font-weight:800;font-size:14px;color:var(--text-1)">Saisie rapide en lot</div><div style="font-size:12px;color:var(--text-3)">Beaucoup d'articles ? Collez une liste, créez tout d'un coup</div></div>
+      <div style="flex:1"><div style="font-weight:800;font-size:14px;color:var(--text-1)">Saisie rapide en lot</div><div style="font-size:12px;color:var(--text-3)">${t('x4_beaucoupArticles')}</div></div>
       <div style="color:var(--accent)">${IC.chevron}</div>
     </button>
     <div class="card">
       <div class="form-group">
-        <label class="form-label">Photo ${isReseller?'du produit':'de l\'article'} <span style="color:var(--text-3);font-weight:400;text-transform:none">(recommandé pour la boutique)</span></label>
+        <label class="form-label">Photo ${isReseller?'du produit':'de l\'article'} <span style="color:var(--text-3);font-weight:400;text-transform:none">${t('x4_recommandeBoutique')}</span></label>
         <div style="display:flex;align-items:center;gap:12px">
           ${f.image
             ? `<img src="${f.image}" alt="" style="width:72px;height:72px;border-radius:14px;object-fit:cover;border:2px solid var(--border);box-shadow:var(--shadow-sm)">`
@@ -12150,7 +12602,7 @@ function vAdd() {
       </div>
 
       <div class="form-group">
-        <label class="form-label">Catégorie</label>
+        <label class="form-label">${t('x4_categorie')}</label>
         <div class="chip-row" style="flex-wrap:wrap;gap:6px">
           ${cats.map(c => `<button type="button" class="chip ${f.category===c?'active':''}" onclick="S.form.category='${c}';render()">${c}</button>`).join('')}
         </div>
@@ -12248,7 +12700,7 @@ function vAdd() {
       <div class="form-group">
         <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px">
           <input type="checkbox" ${f.perishable?'checked':''} onchange="S.form.perishable=this.checked;render()">
-          <span>Produit périssable (date d'expiration)</span>
+          <span>${t('x4_produitPerissable')}</span>
         </label>
         ${f.perishable ? `
         <input class="input" type="date" style="margin-top:8px" value="${f.expiry||''}" oninput="S.form.expiry=this.value">` : ''}
@@ -12277,7 +12729,7 @@ function vAddProduct() {
   <div class="container">
     <div class="card">
       <div class="form-group">
-        <label class="form-label">Photo du produit <span style="color:var(--text-3);font-weight:400;text-transform:none">(recommandé pour la boutique)</span></label>
+        <label class="form-label">${t('x4_photoProduit')} <span style="color:var(--text-3);font-weight:400;text-transform:none">${t('x4_recommandeBoutique')}</span></label>
         <div style="display:flex;align-items:center;gap:12px">
           ${(S.productForm?.image)
             ? `<img src="${S.productForm.image}" alt="" style="width:72px;height:72px;border-radius:14px;object-fit:cover;border:2px solid var(--border);box-shadow:var(--shadow-sm)">`
@@ -12325,7 +12777,7 @@ function vAddProduct() {
             ).join('')}
           </select>
         </div>`).join('')}
-        <div class="comp-empty" id="comp-empty" style="display:none">Aucun ingrédient ne correspond.</div>
+        <div class="comp-empty" id="comp-empty" style="display:none">${t('x4_aucunIngredient')}</div>
       </div>` : `
       <div style="padding:14px;background:var(--gray-1);border-radius:var(--r-md);border:1px solid var(--border);font-size:13px;color:var(--text-3);text-align:center;margin-bottom:14px">
         ${t('addArticlesFirst')}
@@ -12348,7 +12800,7 @@ function vEditProduct() {
   <div class="container">
     <div class="card">
       <div class="form-group">
-        <label class="form-label">Photo du produit</label>
+        <label class="form-label">${t('x4_photoProduit')}</label>
         <div style="display:flex;align-items:center;gap:12px">
           ${(S.productForm?.image || p.image)
             ? `<img src="${S.productForm?.image || p.image}" alt="" style="width:72px;height:72px;border-radius:14px;object-fit:cover;border:2px solid var(--border);box-shadow:var(--shadow-sm)">`
@@ -12402,7 +12854,7 @@ function vEditProduct() {
           </div>`;
           }).join('');
         })()}
-        <div class="comp-empty" id="comp-empty" style="display:none">Aucun ingrédient ne correspond.</div>
+        <div class="comp-empty" id="comp-empty" style="display:none">${t('x4_aucunIngredient')}</div>
       </div>` : ''}
       <button class="btn btn-ghost" style="width:100%;margin-bottom:10px;font-size:13px;border:1px solid var(--border)" onclick="openProductOptions(${p.id})">🛍️ Photos & variantes boutique${(p.images&&p.images.length)||(p.variants&&p.variants.length)?` · ${(p.images||[]).length+1} photo(s)${p.variants&&p.variants.length?` · ${p.variants.length} variante(s)`:''}`:''}</button>
       <button class="btn btn-primary" onclick="saveEditProduct()">${t('update')}</button>
@@ -12829,7 +13281,7 @@ function vClientDetail() {
 
     ${clientSales.length > 0 ? `
     <div class="card" style="margin-bottom:14px">
-      <div class="card-title">📈 Dépenses (6 derniers mois)</div>
+      <div class="card-title">${t('x4_depenses6mois')}</div>
       <div style="display:flex;align-items:flex-end;gap:6px;height:90px;padding:6px 0">
         ${months.map(m => {
           const h = Math.max(3, Math.round((m.total/maxMonth)*78));
@@ -12844,7 +13296,7 @@ function vClientDetail() {
 
     ${favProds.length > 0 ? `
     <div class="card" style="margin-bottom:14px">
-      <div class="card-title">❤️ Produits préférés</div>
+      <div class="card-title">${t('x4_produitsPreferes')}</div>
       ${favProds.map((p,i)=>`<div style="display:flex;align-items:center;gap:10px;padding:6px 0;${i>0?'border-top:1px solid var(--border)':''}">
         <div style="width:24px;height:24px;border-radius:7px;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0">${i+1}</div>
         <div style="flex:1;font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.name}</div>
@@ -12857,7 +13309,7 @@ function vClientDetail() {
       <div style="display:flex;align-items:center;gap:11px">
         <div style="font-size:26px;flex-shrink:0">${statut.icon}</div>
         <div style="flex:1;min-width:0">
-          <div style="font-size:14px;font-weight:800">Relance ce client</div>
+          <div style="font-size:14px;font-weight:800">${t('x4_relanceClient')}</div>
           <div style="font-size:12px;color:var(--text-3)">Pas d'achat depuis ${daysSince} jours — propose-lui une offre</div>
         </div>
       </div>
@@ -12904,7 +13356,7 @@ function vClientDetail() {
       </div>` : ''}
       ${(client.redeemedRewards||[]).length > 0 ? `
       <div style="margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.2)">
-        <div style="font-size:10px;opacity:0.85;margin-bottom:4px;font-weight:600">HISTORIQUE ÉCHANGES</div>
+        <div style="font-size:10px;opacity:0.85;margin-bottom:4px;font-weight:600">${t('x4_histoEchanges')}</div>
         ${(client.redeemedRewards||[]).slice(0,3).map(r => `
         <div style="font-size:10px;opacity:0.9">✓ ${r.name} — ${new Date(r.date).toLocaleDateString('fr')}</div>`).join('')}
       </div>` : ''}
@@ -13140,7 +13592,7 @@ function vSpectra() {
         <div style="font-weight:700;color:#7C3AED;margin-bottom:4px">💡 Pour une reconnaissance précise (iPhone, MacBook, Nescafé...)</div>
         <div>1. Ouvrez <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" style="color:#4285F4;font-weight:600;text-decoration:underline">aistudio.google.com/apikey</a> (gratuit)</div>
         <div>2. Cliquez "Create API Key"</div>
-        <div>3. Collez-la dans Spectra AI ci-dessus</div>
+        <div>${t('x4_collezDansSpectra')}</div>
         <div style="margin-top:4px;font-style:italic;color:var(--text-3)">Sans clé : Spectra lit uniquement les textes/marques visibles sur l'emballage.</div>
       </div>` : ''}
     </div>
@@ -16781,7 +17233,7 @@ async function _grabBarcode(onCode){
   const modal = document.createElement('div');
   modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px';
   modal.innerHTML = `
-    <div style="color:#fff;font-weight:700;margin-bottom:12px">Scanner un code-barres</div>
+    <div style="color:#fff;font-weight:700;margin-bottom:12px">${t('x4_scannerCodeBarres')}</div>
     <div style="position:relative;width:100%;max-width:420px;background:#000;border-radius:12px;overflow:hidden;aspect-ratio:4/3">
       <video id="_bcscan-video" playsinline muted autoplay style="width:100%;height:100%;object-fit:cover"></video>
       <div style="position:absolute;inset:25% 10%;border:3px solid #E11D48;border-radius:8px"></div>
@@ -17173,14 +17625,14 @@ function vSubscription() {
           <div style="font-size:11px;color:var(--text-3)">Renouvellement le ${new Date(sub.expires).toLocaleDateString(_lang==='en'?'en-US':'fr-FR')}</div>
         </div>
       </div>` : ''}
-      <div style="font-size:13px;font-weight:700;margin-bottom:10px;color:var(--text-1)">Fonctionnalités incluses</div>
+      <div style="font-size:13px;font-weight:700;margin-bottom:10px;color:var(--text-1)">${t('x4_fonctionnalitesIncluses')}</div>
       ${_planFeatures(sub.plan).map(f => `
       <div style="display:flex;align-items:center;gap:8px;padding:5px 0;font-size:13px">
         <span style="color:var(--success)">${IC.check}</span>
         <span style="color:var(--text-2)">${f}</span>
       </div>`).join('')}
       <div style="display:flex;gap:8px;margin-top:16px">
-        <button class="btn btn-ghost" style="flex:1;color:var(--danger);border-color:var(--danger)" onclick="cancelPlan()">Résilier</button>
+        <button class="btn btn-ghost" style="flex:1;color:var(--danger);border-color:var(--danger)" onclick="cancelPlan()">${t('x4_resilier')}</button>
       </div>
     </div>` : ''}
 
@@ -17206,7 +17658,7 @@ function vSubscription() {
         <div style="font-size:12px;color:var(--text-3);margin-bottom:10px">${meta.desc}</div>
         <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:12px">
           ${price === 0
-            ? `<span style="font-size:28px;font-weight:900;color:${meta.color}">Gratuit</span><span style="font-size:12px;color:var(--success);font-weight:700">✨ À vie</span>`
+            ? `<span style="font-size:28px;font-weight:900;color:${meta.color}">Gratuit</span><span style="font-size:12px;color:var(--success);font-weight:700">${t('x4_aVie')}</span>`
             : `<span style="font-size:28px;font-weight:900;color:${meta.color}">${fmt(price)}</span><span style="font-size:13px;color:var(--text-3)">${sym()}/${billing==='yearly'?'an':'mois'}</span>`}
         </div>
         ${_planFeatures(pk).map(f => `
@@ -17247,7 +17699,7 @@ function vBillingSetup() {
   <div class="sub-hero">
     <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('pricing')">${IC.left}</button>
     <div class="sub-hero-title">${t('w8_encaisserAbos')}</div>
-    <div class="sub-hero-sub">Colle tes liens de paiement — l'argent arrive sur ton compte</div>
+    <div class="sub-hero-sub">${t('x4_colleLiens')}</div>
   </div>
   <div class="container">
     <div class="card" style="margin-bottom:12px;border-left:4px solid var(--accent)">
@@ -17259,7 +17711,7 @@ function vBillingSetup() {
     <div class="card" style="margin-bottom:12px;background:linear-gradient(135deg,rgba(16,185,129,.08),transparent);border:1px solid rgba(16,185,129,.25)">
       <div style="font-size:13px;font-weight:800;margin-bottom:6px">🌍 Quel fournisseur choisir ?</div>
       <div style="font-size:12px;color:var(--text-2);line-height:1.7">
-        🇨🇮 <strong>Côte d'Ivoire / Afrique</strong> : <a href="https://cinetpay.com" target="_blank" rel="noopener noreferrer" style="color:var(--accent);font-weight:700">CinetPay</a>, <a href="https://paydunya.com" target="_blank" rel="noopener noreferrer" style="color:var(--accent);font-weight:700">PayDunya</a> ou <a href="https://www.wave.com/fr/business/" target="_blank" rel="noopener noreferrer" style="color:var(--accent);font-weight:700">Wave Business</a> → acceptent Wave, Orange Money, MoMo + cartes.<br>
+        🇨🇮 <strong>${t('x4_ciAfrique')}</strong> : <a href="https://cinetpay.com" target="_blank" rel="noopener noreferrer" style="color:var(--accent);font-weight:700">CinetPay</a>, <a href="https://paydunya.com" target="_blank" rel="noopener noreferrer" style="color:var(--accent);font-weight:700">PayDunya</a> ou <a href="https://www.wave.com/fr/business/" target="_blank" rel="noopener noreferrer" style="color:var(--accent);font-weight:700">Wave Business</a> → acceptent Wave, Orange Money, MoMo + cartes.<br>
         🌐 <strong>International</strong> : <a href="https://dashboard.stripe.com/payment-links" target="_blank" rel="noopener noreferrer" style="color:var(--accent);font-weight:700">Stripe Payment Links</a> (⚠ ne marche pas pour recevoir depuis la CI).
       </div>
     </div>
@@ -17426,7 +17878,7 @@ function vSupplierDetail() {
       const totalSpent = ords.filter(o => o.status !== 'cancelled').reduce((s,o) => s + (o.total || 0), 0);
       if (!ords.length) return `
     <div class="card" style="margin-top:12px;text-align:center;padding:18px">
-      <div style="font-size:13px;color:var(--text-3);margin-bottom:10px">Aucune commande passée à ce fournisseur.</div>
+      <div style="font-size:13px;color:var(--text-3);margin-bottom:10px">${t('x4_aucuneCommandeFournisseur')}</div>
       <button class="btn btn-ghost" style="width:auto;padding:9px 18px;font-size:13px" onclick="nav('add-order')">${IC.plus} Passer une commande</button>
     </div>`;
       const stLbl = { pending:'⏳ En attente', received:'✓ Reçue', cancelled:'✕ Annulée' };
@@ -17709,7 +18161,7 @@ function editDailyGoal() {
       <div style="padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
         <div>
           <div style="font-size:18px;font-weight:800;color:var(--text-1)">🎯 Configurer l'objectif</div>
-          <div style="font-size:11px;color:var(--text-3);margin-top:2px">Suivez vos performances en temps réel</div>
+          <div style="font-size:11px;color:var(--text-3);margin-top:2px">${t('x4_suivezPerformances')}</div>
         </div>
         <button type="button" style="width:32px;height:32px;border-radius:50%;border:none;background:var(--gray-1);color:var(--text-2);font-size:18px;cursor:pointer" onclick="document.getElementById('goal-modal').remove()">×</button>
       </div>
@@ -17733,7 +18185,7 @@ function editDailyGoal() {
         </div>
 
         <div style="margin-bottom:14px">
-          <label style="font-size:11px;color:var(--text-3);font-weight:700;letter-spacing:.3px;text-transform:uppercase;margin-bottom:6px;display:block">Période</label>
+          <label style="font-size:11px;color:var(--text-3);font-weight:700;letter-spacing:.3px;text-transform:uppercase;margin-bottom:6px;display:block">${t('x4_periode')}</label>
           <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
             ${['day','week','month','year'].map(p => `
               <button type="button" style="padding:8px 4px;border-radius:8px;border:1.5px solid ${period===p?'var(--accent)':'var(--border)'};background:${period===p?'rgba(79,70,229,0.08)':'var(--surface)'};cursor:pointer;font-size:11px;font-weight:600;color:${period===p?'var(--accent)':'var(--text-2)'}" onclick="__goalSetPeriod('${p}')">
@@ -17744,7 +18196,7 @@ function editDailyGoal() {
         </div>
 
         <div style="background:var(--gray-1);border-radius:10px;padding:12px;margin-bottom:14px;border:1px solid var(--border)">
-          <div style="font-size:11px;color:var(--text-3);font-weight:600;margin-bottom:4px">📊 Vos stats réelles (30j)</div>
+          <div style="font-size:11px;color:var(--text-3);font-weight:600;margin-bottom:4px">${t('x4_statsReelles')}</div>
           <div style="font-size:13px;color:var(--text-2)">Moyenne / ${periodLabel} : <b style="color:var(--text-1)">${fmt(avg)} ${unit}</b></div>
           <div style="font-size:11px;color:var(--text-3);margin-top:2px">💡 Suggestion : <b style="color:var(--accent)">${fmt(sug)} ${unit}</b> (<em>+20% vs moyenne</em>)</div>
         </div>
@@ -17753,14 +18205,14 @@ function editDailyGoal() {
           <label style="font-size:11px;color:var(--text-3);font-weight:700;letter-spacing:.3px;text-transform:uppercase;margin-bottom:6px;display:block">Mon objectif / ${periodLabel} (${unit})</label>
           <input id="goal-value-input" class="input" type="number" min="0" step="${type==='sales'?1:500}" value="${valueInput !== undefined ? valueInput : (current > 0 ? current : sug)}" style="font-size:18px;font-weight:700;text-align:center;min-height:50px" oninput="document.getElementById('goal-modal').dataset.value=this.value">
           <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
-            <button type="button" class="chip" onclick="__goalSetValue(${sug})">💡 Suggéré</button>
+            <button type="button" class="chip" onclick="__goalSetValue(${sug})">${t('x4_suggere')}</button>
             <button type="button" class="chip" onclick="__goalSetValue(${Math.round(sug*1.5)})">🚀 Ambitieux (+50%)</button>
             <button type="button" class="chip" onclick="__goalSetValue(${Math.round(sug*2)})">💪 Agressif (×2)</button>
           </div>
         </div>
 
         <div style="display:flex;gap:8px;margin-top:18px">
-          <button type="button" class="btn btn-ghost" style="flex:1" onclick="saveGoalConfig('', '', '')">🗑️ Désactiver</button>
+          <button type="button" class="btn btn-ghost" style="flex:1" onclick="saveGoalConfig('', '', '')">${t('x4_desactiverIcone')}</button>
           <button type="button" class="btn btn-primary" style="flex:2" onclick="saveGoalConfig(document.getElementById('goal-value-input').value, document.getElementById('goal-modal').dataset.type||'${type}', document.getElementById('goal-modal').dataset.period||'${period}')">✓ Enregistrer</button>
         </div>
       </div>
@@ -19221,10 +19673,10 @@ function createMeeting(existingId) {
         <div class="form-group"><label class="form-label">Date *</label><input class="input" type="date" id="meet-date" value="${existing ? new Date(existing.datetime).toISOString().slice(0,10) : dStr}"></div>
         <div class="form-group"><label class="form-label">Heure *</label><input class="input" type="time" id="meet-time" value="${existing ? new Date(existing.datetime).toTimeString().slice(0,5) : tStr}"></div>
       </div>
-      <div class="form-group"><label class="form-label">Durée (min)</label><input class="input" type="number" id="meet-duration" min="15" step="15" value="${existing?.durationMin || 60}"></div>
+      <div class="form-group"><label class="form-label">${t('x4_dureeMin')}</label><input class="input" type="number" id="meet-duration" min="15" step="15" value="${existing?.durationMin || 60}"></div>
       <div class="form-group"><label class="form-label">Lieu / Lien visio</label><input class="input" id="meet-location" placeholder="Bureau / Salle 1" value="${existing?.location || ''}"></div>
-      <div class="form-group"><label class="form-label">Lien réunion (Zoom, Meet…)</label><input class="input" type="url" id="meet-link" placeholder="https://meet.google.com/..." value="${existing?.link || ''}"></div>
-      <div class="form-group"><label class="form-label">Ordre du jour</label><textarea class="input" id="meet-agenda" rows="3" placeholder="Points à aborder">${existing?.agenda || ''}</textarea></div>
+      <div class="form-group"><label class="form-label">${t('x4_lienReunion')}</label><input class="input" type="url" id="meet-link" placeholder="https://meet.google.com/..." value="${existing?.link || ''}"></div>
+      <div class="form-group"><label class="form-label">${t('x4_ordreDuJour')}</label><textarea class="input" id="meet-agenda" rows="3" placeholder="Points à aborder">${existing?.agenda || ''}</textarea></div>
       <div class="form-group">
         <label class="form-label">Participants</label>
         <div id="meet-attendees" style="display:flex;flex-wrap:wrap;gap:6px">
@@ -19369,7 +19821,7 @@ function openMemberSwitcher() {
         <div style="font-size:17px;font-weight:800;color:var(--text-1)">👥 Changer de membre</div>
         <button onclick="document.getElementById('member-switcher-modal').remove()" style="background:none;border:none;font-size:22px;color:var(--text-3);cursor:pointer">×</button>
       </div>
-      <div style="font-size:12px;color:var(--text-3);margin-bottom:12px">Sélectionnez le membre qui utilise l'appareil maintenant.</div>
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:12px">${t('x4_selectionnezMembre')}</div>
       <div style="display:flex;flex-direction:column;gap:8px">
         ${choices.map(m => {
           const info = ROLE_LABELS[m.role] || ROLE_LABELS.vendor;
@@ -19495,7 +19947,7 @@ function vAddTeamMember() {
     <div style="display:flex;gap:8px;margin-top:14px">
       <button class="btn btn-ghost" style="flex:1" onclick="nav('team')">Annuler</button>
       <button class="btn btn-primary" style="flex:2" onclick="saveTeamMember()">${isEdit ? 'Enregistrer' : 'Créer le compte'}</button>
-      ${isEdit ? `<button class="btn" style="flex:1;background:#EF4444;color:#fff" onclick="deleteTeamMember(${f.id})">Supprimer</button>` : ''}
+      ${isEdit ? `<button class="btn" style="flex:1;background:#EF4444;color:#fff" onclick="deleteTeamMember(${f.id})">${t('x4_supprimer2')}</button>` : ''}
     </div>
   </div>`;
 }
@@ -19558,7 +20010,7 @@ function vSpectraAISetup() {
     <div class="card" style="margin-bottom:12px;border-left:4px solid ${isActive?'var(--success)':'var(--accent)'}">
       <div style="font-size:14px;font-weight:800;margin-bottom:6px">${isActive ? '✅ IA vision active' : '🚀 Active une IA pour reconnaître TOUT produit'}</div>
       <div style="font-size:12.5px;color:var(--text-2);line-height:1.55">
-        Colle <strong>une seule clé</strong> (n'importe laquelle ci-dessous) — Spectra détecte automatiquement le fournisseur. Tu pourras alors scanner PS5, iPhone, cosmétiques, n'importe quoi par photo ou vidéo.
+        Colle <strong>${t('x4_uneSeuleCle')}</strong> (n'importe laquelle ci-dessous) — Spectra détecte automatiquement le fournisseur. Tu pourras alors scanner PS5, iPhone, cosmétiques, n'importe quoi par photo ou vidéo.
       </div>
     </div>
 
@@ -19571,7 +20023,7 @@ function vSpectraAISetup() {
           <div style="font-size:11px;color:var(--text-3)">${p.sub}</div>
         </div>
       </div>
-      <div style="font-size:11px;color:var(--text-2);margin-bottom:8px">${p.note} · <a href="${p.url}" target="_blank" rel="noopener noreferrer" style="color:${p.color};font-weight:700">Obtenir la clé →</a></div>
+      <div style="font-size:11px;color:var(--text-2);margin-bottom:8px">${p.note} · <a href="${p.url}" target="_blank" rel="noopener noreferrer" style="color:${p.color};font-weight:700">${t('x4_obtenirCle')}</a></div>
       <input id="aikey-${p.id}" class="input" type="password" placeholder="${p.prefix}" value="${p.key}" autocomplete="off" style="font-family:monospace;font-size:13px !important">
       <div style="display:flex;gap:6px;margin-top:8px">
         <button class="btn btn-primary" style="flex:1;background:${p.color};border-color:${p.color};font-size:12px;padding:9px" onclick="saveAIKey('${p.id}')">${t('w7_enregistrer')}</button>
@@ -19582,10 +20034,10 @@ function vSpectraAISetup() {
 
     <div class="card" style="margin-top:6px;background:var(--gray-1);text-align:center;padding:16px">
       <div style="font-size:12px;color:var(--text-2);line-height:1.6">
-        💡 <strong>Sans clé</strong>, Spectra reconnaît hors-ligne via codes-barres + dictionnaire de 300+ produits locaux.<br>
-        <strong>Avec une IA</strong>, reconnaissance de n'importe quel produit comme Google Lens.
+        💡 <strong>${t('x4_sansCle')}</strong>, Spectra reconnaît hors-ligne via codes-barres + dictionnaire de 300+ produits locaux.<br>
+        <strong>${t('x4_avecUneIA')}</strong>, reconnaissance de n'importe quel produit comme Google Lens.
       </div>
-      <div style="font-size:11px;color:var(--text-3);margin-top:8px">🔒 Les clés restent uniquement sur ton appareil.</div>
+      <div style="font-size:11px;color:var(--text-3);margin-top:8px">${t('x4_clesRestentApp2')}</div>
     </div>
   </div>`;
 }
@@ -19670,7 +20122,7 @@ function vOAuthSetup() {
     <div class="card" style="margin-bottom:12px;background:linear-gradient(135deg,#EFF6FF,#F3E8FF);border:1.5px solid #4285F4">
       <div style="font-size:14px;font-weight:800;color:#1E3A8A;margin-bottom:6px">ℹ️ Pourquoi configurer ?</div>
       <div style="font-size:12px;color:#3730A3;line-height:1.6">
-        BARO ouvre <strong>le vrai accounts.google.com</strong> et <strong>le vrai Sign in with Apple</strong>.
+        BARO ouvre <strong>${t('x3_vraiGoogle')}</strong> et <strong>${t('x3_vraiApple')}</strong>.
         Pour activer ces flux OAuth 2.0, vous devez créer vos propres identifiants gratuits chez Google/Apple et les coller ci-dessous.
         <br><br>
         Sans config : mode "connexion simplifiée" (saisie manuelle email+nom).
@@ -19690,15 +20142,15 @@ function vOAuthSetup() {
       </div>
 
       <details style="margin-bottom:10px">
-        <summary style="cursor:pointer;font-size:12px;font-weight:700;color:#4285F4;padding:6px 0">📖 Comment obtenir un Client ID Google (2 min)</summary>
+        <summary style="cursor:pointer;font-size:12px;font-weight:700;color:#4285F4;padding:6px 0">${t('x3_commentClientId')}</summary>
         <div style="font-size:12px;color:var(--text-2);line-height:1.7;padding:8px 0 0 12px;border-left:2px solid #4285F4">
           1. Ouvrez <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener noreferrer" style="color:#4285F4;font-weight:700">console.cloud.google.com/apis/credentials</a><br>
           2. Créez un projet (ou utilisez un existant)<br>
-          3. <strong>Créer des identifiants</strong> → <strong>ID client OAuth</strong><br>
+          3. <strong>${t('x3_creerIdentifiants')}</strong> → <strong>ID client OAuth</strong><br>
           4. Type : <strong>Application Web</strong><br>
-          5. <strong>Origines JavaScript autorisées</strong> : <code style="background:var(--gray-1);padding:2px 6px;border-radius:4px;font-size:11px;word-break:break-all">${origin}</code>
+          5. <strong>${t('x3_originesJs')}</strong> : <code style="background:var(--gray-1);padding:2px 6px;border-radius:4px;font-size:11px;word-break:break-all">${origin}</code>
           <button class="btn btn-ghost" style="padding:4px 8px;font-size:11px;margin-left:6px" onclick="navigator.clipboard.writeText('${origin}');showToast('Copié','success')">📋</button><br>
-          6. <strong>URI de redirection autorisés</strong> : <code style="background:var(--gray-1);padding:2px 6px;border-radius:4px;font-size:11px;word-break:break-all">${redirect}</code>
+          6. <strong>${t('x3_uriRedirection')}</strong> : <code style="background:var(--gray-1);padding:2px 6px;border-radius:4px;font-size:11px;word-break:break-all">${redirect}</code>
           <button class="btn btn-ghost" style="padding:4px 8px;font-size:11px;margin-left:6px" onclick="navigator.clipboard.writeText('${redirect}');showToast('Copié','success')">📋</button><br>
           7. Copiez le <strong>Client ID</strong> (finit par <code>.apps.googleusercontent.com</code>) ci-dessous
         </div>
@@ -20466,7 +20918,7 @@ function vPinLock() {
           k === '⌫' ? `<button class="pin-key pin-key-fn" onclick="pinDelete()">⌫</button>` :
           `<button class="pin-key" onclick="pinPad('${k}')">${k}</button>`).join('')}
       </div>
-      ${entry.length >= 4 ? `<button class="btn btn-primary" style="width:180px;margin-top:8px" onclick="pinSubmit()">Déverrouiller</button>` : ''}
+      ${entry.length >= 4 ? `<button class="btn btn-primary" style="width:180px;margin-top:8px" onclick="pinSubmit()">${t('x4_deverrouiller')}</button>` : ''}
     </div>
   </div>`;
 }
@@ -20571,7 +21023,7 @@ function vSecurity() {
               <input class="input" type="email" placeholder="ex: vous@gmail.com" value="${s.twoFactorEmail || S.session?.email || ''}" oninput="setSecurity('twoFactorEmail', this.value)" style="font-size:14px !important">
               <div style="display:flex;gap:6px;margin-top:8px;align-items:center">
                 <button class="btn btn-ghost" style="flex:1;font-size:12px" onclick="nav('notifications-setup')">⚙️ Configurer EmailJS</button>
-                <button class="btn btn-primary" style="flex:1;font-size:12px" onclick="testVerificationEmail()">🧪 Envoyer test</button>
+                <button class="btn btn-primary" style="flex:1;font-size:12px" onclick="testVerificationEmail()">${t('x4_envoyerTest')}</button>
               </div>
               <div style="font-size:11px;color:${localStorage.getItem('stockr_emailjs_public') ? 'var(--success)' : 'var(--text-3)'};margin-top:6px">
                 ${localStorage.getItem('stockr_emailjs_public') ? '🟢 EmailJS configuré — envoi réel activé' : '⚪ EmailJS non configuré — codes affichés localement'}
@@ -20585,7 +21037,7 @@ function vSecurity() {
               <input class="input" type="tel" placeholder="+225 07 XX XX XX" value="${s.twoFactorPhone || ''}" oninput="setSecurity('twoFactorPhone', this.value)" style="font-size:14px !important">
               <div style="display:flex;gap:6px;margin-top:8px">
                 <button class="btn btn-ghost" style="flex:1;font-size:12px" onclick="nav('notifications-setup')">⚙️ Config SMS</button>
-                <button class="btn btn-primary" style="flex:1;font-size:12px" onclick="testVerificationSMS()">🧪 Envoyer test</button>
+                <button class="btn btn-primary" style="flex:1;font-size:12px" onclick="testVerificationSMS()">${t('x4_envoyerTest')}</button>
               </div>
               <div style="font-size:11px;color:${localStorage.getItem('stockr_sms_webhook') ? 'var(--success)' : 'var(--text-3)'};margin-top:6px">
                 ${localStorage.getItem('stockr_sms_webhook') ? '🟢 SMS gateway configurée — envoi réel activé' : '⚪ Pas de webhook SMS — codes affichés localement'}
@@ -21010,16 +21462,16 @@ function vMultiStore() {
         </div>
         <div style="display:flex;gap:8px">
           <button class="btn btn-ghost" style="flex:1;min-width:0;white-space:nowrap" onclick="S.locationAdd=false;render()">Annuler</button>
-          <button class="btn btn-primary" style="flex:2;min-width:0;font-weight:700;white-space:nowrap" onclick="addLocation()">Créer l'emplacement</button>
+          <button class="btn btn-primary" style="flex:2;min-width:0;font-weight:700;white-space:nowrap" onclick="addLocation()">${t('x4_creerEmplacement')}</button>
         </div>
       </div>` : ''}
-    ${locs.length > 0 && !S.locationAdd ? `<button class="btn btn-primary" style="width:100%;margin-bottom:12px;font-weight:700" onclick="S.locationAdd=true;render()">＋ Ajouter un emplacement</button>` : ''}
+    ${locs.length > 0 && !S.locationAdd ? `<button class="btn btn-primary" style="width:100%;margin-bottom:12px;font-weight:700" onclick="S.locationAdd=true;render()">${t('x4_ajouterEmplacement')}</button>` : ''}
     ${locs.length === 0 && !S.locationAdd ? `
       <div class="card" style="text-align:center;padding:36px 20px">
         <div style="font-size:46px;margin-bottom:10px">🏬</div>
-        <div style="font-size:16px;font-weight:800;color:var(--text-1);margin-bottom:6px">Gérez plusieurs points de vente</div>
+        <div style="font-size:16px;font-weight:800;color:var(--text-1);margin-bottom:6px">${t('x4_gerezPointsVente')}</div>
         <div style="font-size:13px;color:var(--text-3);line-height:1.55;margin-bottom:16px">Boutique du centre, comptoir du quartier, entrepôt… Créez vos emplacements : BARO compare leur chiffre d'affaires, leur stock et leurs meilleures ventes, ici, en un coup d'œil.</div>
-        <button class="btn btn-primary" style="width:auto;padding:11px 22px" onclick="S.locationAdd=true;render()">＋ Créer un emplacement</button>
+        <button class="btn btn-primary" style="width:auto;padding:11px 22px" onclick="S.locationAdd=true;render()">${t('x4_creerEmplacement2')}</button>
       </div>
     ` : locs.length === 0 ? '' : `
       <div class="filter-row" style="margin-bottom:12px">
@@ -21267,12 +21719,12 @@ function vDevisForm() {
       <label class="form-label">Client (nom)</label>
       <input class="input" id="dv-client" type="text" placeholder="ex : Pharmacie du Plateau" value="${(f.client||'').replace(/"/g,'&quot;')}" oninput="S.devisForm.client=this.value">
       <div style="display:flex;gap:8px;margin-top:10px">
-        <div style="flex:1"><label class="form-label">Validité (jours)</label>
+        <div style="flex:1"><label class="form-label">${t('x4_validiteJours')}</label>
           <input class="input" id="dv-valid" type="number" min="1" value="${f.validDays}" oninput="S.devisForm.validDays=parseInt(this.value)||15"></div>
       </div>
     </div>
     <div class="card" style="margin-bottom:12px">
-      <div class="card-title">Lignes du devis</div>
+      <div class="card-title">${t('x4_lignesDevis')}</div>
       <div id="dv-lines">
         ${f.items.map((it,i)=>`
         <div style="display:flex;gap:6px;margin-bottom:8px;align-items:center">
@@ -21282,17 +21734,17 @@ function vDevisForm() {
           ${f.items.length>1?`<button class="btn btn-ghost" style="flex:0 0 auto;width:auto;padding:0 10px;color:var(--danger)" onclick="S.devisForm.items.splice(${i},1);render()">✕</button>`:''}
         </div>`).join('')}
       </div>
-      <button class="btn btn-ghost" style="width:100%;font-size:13px" onclick="S.devisForm.items.push({name:'',qty:1,price:0});render()">＋ Ajouter une ligne</button>
+      <button class="btn btn-ghost" style="width:100%;font-size:13px" onclick="S.devisForm.items.push({name:'',qty:1,price:0});render()">${t('x4_ajouterLigne')}</button>
     </div>
     <div class="card" style="margin-bottom:12px">
       <label class="form-label">Note (optionnel)</label>
       <textarea class="input" id="dv-note" rows="2" placeholder="ex : Livraison sous 5 jours, acompte 50%…" style="resize:none" oninput="S.devisForm.note=this.value">${(f.note||'').replace(/</g,'&lt;')}</textarea>
     </div>
     <div style="display:flex;align-items:center;justify-content:space-between;padding:0 4px 12px">
-      <span style="font-size:13px;color:var(--text-3)">Total estimé</span>
+      <span style="font-size:13px;color:var(--text-3)">${t('x4_totalEstime')}</span>
       <span id="dv-total" style="font-size:20px;font-weight:800;color:var(--accent)">${fmt(total)} ${sym()}</span>
     </div>
-    <button class="btn btn-primary" style="width:100%" onclick="submitDevis()">📄 Générer le devis PDF</button>
+    <button class="btn btn-primary" style="width:100%" onclick="submitDevis()">${t('x4_genererDevisPdf')}</button>
   </div>`;
 }
 function _dvTotal() {
@@ -21330,10 +21782,10 @@ function vDocuments() {
   <div class="sub-hero" style="background:linear-gradient(135deg,#0d9488,#4F46E5)">
     <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('more')">${IC.left}</button>
     <div class="sub-hero-title">📁 Documents</div>
-    <div class="sub-hero-sub">Factures · devis · reçus · rapports · exports</div>
+    <div class="sub-hero-sub">${t('x4_facturesDevis')}</div>
   </div>
   <div class="container">
-    <div class="settings-label" style="margin-bottom:8px">Créer un document</div>
+    <div class="settings-label" style="margin-bottom:8px">${t('x4_creerDocument')}</div>
     ${card('📄','Nouveau devis','Estimation PDF pour un client'+(devisHist.length?` · ${devisHist.length} créé(s)`:''),"nav('devis-form')",'#7C3AED')}
     ${card('🧾','Facture / reçu','Depuis une vente — bouton Facture PDF','nav(\'sales\')','#4F46E5')}
     ${card('🛍️','Catalogue produits','Partager votre catalogue (PDF / image)','nav(\'catalog\')','#16A34A')}
@@ -21350,7 +21802,7 @@ function vDocuments() {
     ${card('📚','Plus d\'exports & options','OHADA, par table, intégrations','nav(\'exports\')','#64748B')}
 
     ${devisHist.length ? `
-    <div class="settings-label" style="margin:16px 0 8px">Devis récents</div>
+    <div class="settings-label" style="margin:16px 0 8px">${t('x4_devisRecents')}</div>
     ${devisHist.slice(0,5).map(d => `
       <div class="card" style="padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:10px">
         <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:13.5px;color:var(--text-1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${d.client? (d.client).replace(/</g,'&lt;') : d.num}</div>
@@ -21455,7 +21907,7 @@ function _vProLock(emoji, title, desc, features) {
   <div class="sub-hero" style="background:linear-gradient(135deg,var(--accent),#7C3AED)">
     <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('more')">${IC.left}</button>
     <div class="sub-hero-title">${emoji} ${title}</div>
-    <div class="sub-hero-sub">Fonctionnalité incluse dans le plan Pro</div>
+    <div class="sub-hero-sub">${t('x4_fonctionnaliteePro')}</div>
   </div>
   <div class="container" style="padding:20px">
     <div style="text-align:center;padding:18px 0">
@@ -21464,10 +21916,10 @@ function _vProLock(emoji, title, desc, features) {
       <div style="font-size:13px;color:var(--text-3);margin-top:8px;line-height:1.55;max-width:320px;margin-left:auto;margin-right:auto">${desc}</div>
     </div>
     <div class="card" style="border:2px solid var(--accent);background:linear-gradient(135deg,rgba(124,115,255,.08),transparent);margin-bottom:12px">
-      <div style="font-size:14px;font-weight:800;margin-bottom:10px">💎 Avec BARO Pro (20 000 FCFA/mois)</div>
+      <div style="font-size:14px;font-weight:800;margin-bottom:10px">${t('x4_avecBaroPro')}</div>
       ${features.map(f=>`<div style="display:flex;gap:8px;font-size:13px;padding:3px 0;color:var(--text-2)"><span style="color:var(--accent)">✓</span>${f}</div>`).join('')}
       <button class="btn btn-primary" style="margin-top:14px" onclick="nav('pricing')">Passer en Pro →</button>
-      <button class="btn btn-ghost" style="margin-top:8px" onclick="nav('pricing')">Voir tous les plans</button>
+      <button class="btn btn-ghost" style="margin-top:8px" onclick="nav('pricing')">${t('x4_voirTousPlans')}</button>
     </div>
     <div style="font-size:11px;color:var(--text-3);text-align:center;line-height:1.5">💡 Essai 14 jours offert · Sans engagement · Résiliable à tout moment</div>
   </div>`;
@@ -21658,7 +22110,7 @@ function vBoutique() {
         <div style="font-size:20px">◆</div>
         <div style="flex:1;min-width:0">
           <div style="font-size:14.5px;font-weight:800">Pro &amp; Entreprise</div>
-          <div style="font-size:11.5px;color:var(--text-3)">Votre plan : <b style="color:${isEnt?'#8B5CF6':'var(--text-2)'}">${planNm}</b></div>
+          <div style="font-size:11.5px;color:var(--text-3)">${t('x4_votrePlan')} <b style="color:${isEnt?'#8B5CF6':'var(--text-2)'}">${planNm}</b></div>
         </div>
         ${!isEnt ? `<button class="btn" style="flex-shrink:0;padding:7px 13px;font-size:11.5px;font-weight:800;background:linear-gradient(135deg,#8B5CF6,#6366F1);color:#fff;border:none" onclick="nav('pricing')">Passer</button>` : `<span style="flex-shrink:0;font-size:10.5px;font-weight:800;color:#fff;background:linear-gradient(135deg,#8B5CF6,#6366F1);padding:5px 11px;border-radius:999px">ACTIF</span>`}
       </div>
@@ -24123,7 +24575,7 @@ function vBoutiqueEditor() {
           <div class="bq-lock-row">
             ${_pals.map(p => `<span class="bq-pal-mini" style="background:${p[2]}"><i style="background:${p[3]}"></i></span>`).join('')}
           </div>
-          <div class="bq-lock-tx"><strong>Réservé au plan Entreprise</strong><span>Clair, Crème et Nuit — fond, texte et surfaces accordés. Voir les plans →</span></div>
+          <div class="bq-lock-tx"><strong>${t('x3_reserveEntreprise')}</strong><span>Clair, Crème et Nuit — fond, texte et surfaces accordés. Voir les plans →</span></div>
         </div>`;
       }
       return `<div class="bq-sec-title">${t('x2_sequenceOuverture')} <span class="bq-badge-ent">Entreprise</span></div>
@@ -24652,7 +25104,7 @@ function vBoutiqueCode() {
       <button class="back-btn-dark" onclick="nav('boutique')">${IC.left}</button>
       <div style="flex:1">
         <div class="sub-hero-title">${t('w8_codePersonnalise')}</div>
-        <div class="sub-hero-sub">CSS, HTML, JavaScript avancés</div>
+        <div class="sub-hero-sub">${t('x5_cssHtmlJs')}</div>
       </div>
     </div>
   </div>
@@ -24689,7 +25141,7 @@ function vBoutiqueCode() {
     </div>
 
     <div class="card" style="margin-bottom:10px">
-      <div class="card-title">📖 Où est injecté ce code ?</div>
+      <div class="card-title">${t('x5_ouInjecte')}</div>
       <div style="font-size:12px;color:var(--text-2);line-height:1.6">
         ${tabInjectMsg[tab]||''}
       </div>
@@ -24898,15 +25350,15 @@ function vBoutiquePolicies() {
       <button class="back-btn-dark" onclick="nav('boutique')">${IC.left}</button>
       <div style="flex:1">
         <div class="sub-hero-title">📋 CGV & Retours</div>
-        <div class="sub-hero-sub">Conditions générales · politique de retour</div>
+        <div class="sub-hero-sub">${t('x5_cgvSub')}</div>
       </div>
     </div>
   </div>
   <div class="container">
     <div class="card" style="margin-bottom:10px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-        <div class="card-title" style="margin-bottom:0">📜 Conditions générales de vente</div>
-        <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" onclick="loadCgvTemplate()">📋 Modèle</button>
+        <div class="card-title" style="margin-bottom:0">${t('x5_cgv')}</div>
+        <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" onclick="loadCgvTemplate()">${t('x5_modele2')}</button>
       </div>
       <textarea class="input" rows="10" oninput="updateBoutiqueConfig('conditions',this.value)" placeholder="Rédigez vos CGV — ou chargez un modèle...">${bc.conditions||''}</textarea>
       <div style="font-size:10px;color:var(--text-3);margin-top:4px">${(bc.conditions||'').length} caractères</div>
@@ -24915,7 +25367,7 @@ function vBoutiquePolicies() {
     <div class="card" style="margin-bottom:10px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
         <div class="card-title" style="margin-bottom:0">🔄 Politique de retour / remboursement</div>
-        <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" onclick="loadReturnTemplate()">📋 Modèle</button>
+        <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" onclick="loadReturnTemplate()">${t('x5_modele2')}</button>
       </div>
       <textarea class="input" rows="6" oninput="updateBoutiqueConfig('returnPolicy',this.value)" placeholder="Ex: Vous disposez de 7 jours pour retourner un produit...">${bc.returnPolicy||''}</textarea>
     </div>
@@ -24981,7 +25433,7 @@ function vBoutiqueFAQ() {
     <div class="page-header-row">
       <button class="back-btn-dark" onclick="nav('boutique')">${IC.left}</button>
       <div style="flex:1">
-        <div class="sub-hero-title">❓ FAQ & Témoignages</div>
+        <div class="sub-hero-title">${t('x5_faqTemoignages')}</div>
         <div class="sub-hero-sub">${faqs.length} FAQ · ${testimonials.length} avis</div>
       </div>
     </div>
@@ -24993,9 +25445,9 @@ function vBoutiqueFAQ() {
     </div>
     ${faqs.length === 0 ? `
     <div class="card" style="text-align:center;padding:20px">
-      <div style="color:var(--text-3);font-size:13px;margin-bottom:10px">Aucune FAQ encore</div>
-      <button class="btn btn-ghost" style="font-size:12px" onclick="addBoutiqueFAQ()">+ Ajouter une question</button>
-      <button class="btn btn-ghost" style="font-size:12px;margin-left:6px" onclick="loadFAQPreset()">📋 Pack FAQ pré-rempli</button>
+      <div style="color:var(--text-3);font-size:13px;margin-bottom:10px">${t('x5_aucuneFaq')}</div>
+      <button class="btn btn-ghost" style="font-size:12px" onclick="addBoutiqueFAQ()">${t('x5_ajouterQuestion')}</button>
+      <button class="btn btn-ghost" style="font-size:12px;margin-left:6px" onclick="loadFAQPreset()">${t('x5_packFaq')}</button>
     </div>` : faqs.map((f,i) => `
     <div class="card" style="margin-bottom:8px">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
@@ -25014,8 +25466,8 @@ function vBoutiqueFAQ() {
     </div>
     ${testimonials.length === 0 ? `
     <div class="card" style="text-align:center;padding:20px">
-      <div style="color:var(--text-3);font-size:13px;margin-bottom:10px">Aucun témoignage</div>
-      <button class="btn btn-ghost" style="font-size:12px" onclick="addBoutiqueTestimonial()">+ Ajouter un avis</button>
+      <div style="color:var(--text-3);font-size:13px;margin-bottom:10px">${t('x5_aucunTemoignage')}</div>
+      <button class="btn btn-ghost" style="font-size:12px" onclick="addBoutiqueTestimonial()">${t('x5_ajouterAvis')}</button>
     </div>` : testimonials.map((tt,i) => `
     <div class="card" style="margin-bottom:8px">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
@@ -25219,7 +25671,7 @@ function showBoutiqueQR() {
     <div style="font-size:12px;color:var(--accent);font-weight:600;margin:12px 0;word-break:break-all">${url}</div>
     <div style="display:flex;gap:8px">
       <button class="btn btn-ghost" style="flex:1" onclick="navigator.clipboard&&navigator.clipboard.writeText('${safeUrl}');showToast('Lien copié !')">📋 Copier</button>
-      <button class="btn btn-primary" style="flex:1" onclick="window.open('${qrSrc}','_blank')">⬇ Télécharger</button>
+      <button class="btn btn-primary" style="flex:1" onclick="window.open('${qrSrc}','_blank')">${t('x5_telechargerIcone')}</button>
     </div>
     <button class="btn" style="width:100%;margin-top:8px;background:#25D366;color:#fff" onclick="window.open('https://wa.me/?text='+encodeURIComponent('Découvrez ma boutique en ligne 🛍️ : ${safeUrl}'),'_blank')">${IC.whatsapp} Partager le lien</button>
     <button class="btn btn-ghost" style="width:100%;margin-top:6px;font-size:12px" onclick="document.getElementById('bq-qr-modal').remove()">Fermer</button>
@@ -25279,7 +25731,7 @@ function _poBody(a) {
   const imgs = a.images || [], variants = a.variants || [], reviews = a.reviews || [];
   return `
     <div class="qs-head"><div style="flex:1;min-width:0"><div class="qs-title">🛍️ Options boutique</div><div class="qs-sub">${(a.name||'').replace(/</g,'&lt;')}</div></div><button class="qs-x" onclick="document.getElementById('po-modal').remove()">✕</button></div>
-    <div class="qs-label">Photos (la 1ʳᵉ est la principale)</div>
+    <div class="qs-label">${t('x5_photosPremiere')}</div>
     <div class="po-imgs">
       ${a.image ? `<div class="po-img" style="background-image:url('${a.image}')"><span class="po-main">Principale</span></div>` : ''}
       ${imgs.map((u,i) => `<div class="po-img" style="background-image:url('${u}')"><button class="po-del" onclick="_poDelImg(${i})">×</button></div>`).join('')}
@@ -25291,7 +25743,7 @@ function _poBody(a) {
       <input class="input po-var-opts" value="${(v.options||[]).join(', ').replace(/"/g,'&quot;')}" placeholder="S, M, L, XL" oninput="_poVarOpts(${i},this.value)">
       <button class="po-del2" onclick="_poDelVar(${i})">🗑</button>
     </div>`).join('')}
-    <button class="btn btn-ghost" style="width:100%;font-size:13px;margin-top:4px" onclick="_poAddVar()">＋ Ajouter une variante</button>
+    <button class="btn btn-ghost" style="width:100%;font-size:13px;margin-top:4px" onclick="_poAddVar()">${t('x5_ajouterVariante')}</button>
     <div class="qs-label" style="margin-top:14px">Avis clients ⭐</div>
     ${reviews.map((r,i) => `<div class="po-rev">
       <div style="display:flex;gap:6px;align-items:center">
@@ -25301,7 +25753,7 @@ function _poBody(a) {
       </div>
       <textarea class="input" rows="2" placeholder="Commentaire (ex: Très bon produit, conforme…)" oninput="_poRevField(${i},'text',this.value)" style="margin-top:6px;font-size:13px;resize:none">${(r.text||'').replace(/</g,'&lt;')}</textarea>
     </div>`).join('')}
-    <button class="btn btn-ghost" style="width:100%;font-size:13px;margin-top:4px" onclick="_poAddReview()">＋ Ajouter un avis</button>
+    <button class="btn btn-ghost" style="width:100%;font-size:13px;margin-top:4px" onclick="_poAddReview()">${t('x5_ajouterAvisPlus')}</button>
     <button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="_poSave()">✓ Enregistrer</button>`;
 }
 function _poAddImg() { pickItemImage(d => { const a = _optItem(); if (!a) return; if (!a.images) a.images = []; a.images.push(d); _renderProductOptions(); }); }
@@ -25477,7 +25929,7 @@ function vBoutiqueAnalytics() {
       `}
     </div>
 
-    <div class="section-hd" id="bq-orders"><span class="section-lbl">${t('x2_commandesRecues')}</span><button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" onclick="addBoutiqueOrder()">+ Ajouter</button></div>
+    <div class="section-hd" id="bq-orders"><span class="section-lbl">${t('x2_commandesRecues')}</span><button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" onclick="addBoutiqueOrder()">${t('x5_ajouterPlus2')}</button></div>
     ${nbOrders === 0 ? `
     <div class="empty" style="padding:28px 16px">
       <div class="empty-ico">🧾</div>
@@ -25624,15 +26076,15 @@ function setMarketingTab(id) {
 function _renderPromosTab(promos) {
   return `
     <div class="section-hd">
-      <span class="section-lbl">Codes promo & réductions</span>
+      <span class="section-lbl">${t('x5_codesPromo')}</span>
       <button class="fab" style="width:32px;height:32px" onclick="addPromotion()">${IC.plus}</button>
     </div>
     ${promos.length === 0 ? `
     <div class="card" style="text-align:center;padding:24px">
       <div style="color:var(--text-3);margin-bottom:8px;font-size:32px">%</div>
-      <div style="font-size:14px;font-weight:700;margin-bottom:4px">Aucune réduction</div>
+      <div style="font-size:14px;font-weight:700;margin-bottom:4px">${t('x5_aucuneReduction')}</div>
       <div style="font-size:12px;color:var(--text-3);margin-bottom:12px">Offrez des codes promo pour déclencher l'achat et stimuler vos ventes</div>
-      <button class="btn btn-primary" style="max-width:220px;margin:0 auto" onclick="addPromotion()">+ Créer une réduction</button>
+      <button class="btn btn-primary" style="max-width:220px;margin:0 auto" onclick="addPromotion()">${t('x5_creerReduction')}</button>
     </div>` : promos.map(p => {
       const now = new Date().toISOString().slice(0,10);
       const expired = (p.endDate||'9999') < now;
@@ -25681,12 +26133,12 @@ function _renderCampaignsTab(campaigns) {
         <span style="font-size:10px;color:var(--text-3)">${withEmail} contacts</span>
       </button>
     </div>
-    <div class="section-hd"><span class="section-lbl">Historique des envois</span></div>
+    <div class="section-hd"><span class="section-lbl">${t('x5_historiqueEnvois')}</span></div>
     ${campaigns.length === 0 ? `
     <div class="card" style="text-align:center;padding:24px">
       <div style="color:var(--text-3);margin-bottom:8px;font-size:32px">📭</div>
-      <div style="font-size:14px;font-weight:700;margin-bottom:4px">Aucun envoi pour l'instant</div>
-      <div style="font-size:12px;color:var(--text-3)">Vos broadcasts envoyés apparaîtront ici</div>
+      <div style="font-size:14px;font-weight:700;margin-bottom:4px">${t('x5_aucunEnvoi')}</div>
+      <div style="font-size:12px;color:var(--text-3)">${t('x5_broadcastsIci')}</div>
     </div>` : campaigns.map(c => `
     <div class="campaign-card">
       <div class="campaign-top">
@@ -25696,14 +26148,14 @@ function _renderCampaignsTab(campaigns) {
       <div class="campaign-stats">
         <div class="campaign-stat">Destinataires: <span>${c.recipients||0}</span></div>
         <div class="campaign-stat">Status: <span style="color:${c.sent?'var(--success)':'var(--warning)'}">${c.sent?'Envoyée':'Prête'}</span></div>
-        ${c.sentCount ? `<div class="campaign-stat">Envoyés: <span>${c.sentCount}</span></div>` : ''}
+        ${c.sentCount ? `<div class="campaign-stat">${t('x5_envoyesDeuxPoints')} <span>${c.sentCount}</span></div>` : ''}
       </div>
       <div style="font-size:11px;color:var(--text-3);margin-top:6px;padding:6px 8px;background:var(--gray-1);border-radius:6px;line-height:1.4;max-height:48px;overflow:hidden">${(c.message||c.name).substring(0,100)}${(c.message||c.name).length>100?'...':''}</div>
       <div style="display:flex;gap:6px;margin-top:8px">
         ${!c.sent ? `<button class="btn btn-primary" style="flex:1;font-size:12px;padding:8px" onclick="event.stopPropagation();sendCampaign(${c.id})">
           ${c.type==='whatsapp'?IC.whatsapp:c.type==='sms'?IC.phone:IC.mail} Envoyer
         </button>` : `<span style="font-size:11px;color:var(--success);display:flex;align-items:center;gap:4px;flex:1">✓ Envoyée le ${c.sentDate?new Date(c.sentDate).toLocaleDateString('fr'):''}</span>`}
-        <button class="btn btn-ghost" style="font-size:12px;padding:8px" onclick="event.stopPropagation();deleteCampaign(${c.id})">Supprimer</button>
+        <button class="btn btn-ghost" style="font-size:12px;padding:8px" onclick="event.stopPropagation();deleteCampaign(${c.id})">${t('x4_supprimer2')}</button>
       </div>
     </div>`).join('')}`;
 }
@@ -25751,7 +26203,7 @@ function _renderLoyaltyTab() {
   });
   const totalPts = clients.reduce((s,c)=>s+(c.loyaltyPoints||0),0);
   return `
-    <div class="section-hd"><span class="section-lbl">Programme de fidélité</span></div>
+    <div class="section-hd"><span class="section-lbl">${t('x3_programmeFidelite')}</span></div>
     <div class="loyalty-card" onclick="toggleLoyalty()">
       <div class="loyalty-title">${IC.star} Programme fidélité</div>
       <div class="loyalty-sub">${S.loyaltyConfig?.enabled ? 'Activé — cliquez pour désactiver' : 'Cliquez pour activer et fidéliser vos clients'}</div>
@@ -25763,7 +26215,7 @@ function _renderLoyaltyTab() {
     </div>
     ${S.loyaltyConfig?.enabled ? `
     <div class="card" style="margin-top:10px">
-      <div class="card-title">⚙️ Règles du programme</div>
+      <div class="card-title">${t('x3_reglesProgramme')}</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px">
         <button class="btn btn-ghost" style="font-size:11px;padding:8px;flex-direction:column;gap:2px" onclick="editLoyaltyRate()">
           <strong style="font-size:14px;color:var(--accent)">${S.loyaltyConfig.pointsPerFcfa||1} pt / ${sym()}</strong>
@@ -25809,11 +26261,11 @@ function _renderLoyaltyTab() {
 
     <div class="card" style="margin-top:10px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-        <div class="card-title" style="margin:0">🎁 Récompenses</div>
-        <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" onclick="addLoyaltyReward()">+ Récompense</button>
+        <div class="card-title" style="margin:0">${t('x3_recompenses')}</div>
+        <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" onclick="addLoyaltyReward()">${t('x3_ajouterRecompense')}</button>
       </div>
       ${(S.loyaltyConfig.rewards||[]).length === 0 ? `
-      <div style="font-size:12px;color:var(--text-3);padding:8px 0;text-align:center">Aucune récompense · vos clients ne peuvent rien échanger</div>` :
+      <div style="font-size:12px;color:var(--text-3);padding:8px 0;text-align:center">${t('x3_aucuneRecompense')}</div>` :
       (S.loyaltyConfig.rewards||[]).map((r,i) => `
       <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;border:1px solid var(--border);border-radius:10px;margin-bottom:6px">
         <div style="flex:1;min-width:0">
@@ -25856,16 +26308,16 @@ function _renderLoyaltyTab() {
 function _renderBannersTab(banners) {
   return `
     <div class="section-hd">
-      <span class="section-lbl">Bannières promotionnelles</span>
+      <span class="section-lbl">${t('x5_bannieresPromo')}</span>
       <button class="fab" style="width:32px;height:32px" onclick="addBanner()">${IC.plus}</button>
     </div>
     <div style="font-size:11px;color:var(--text-3);margin-bottom:8px">Diffusez un message en haut ou en bas de votre boutique en ligne</div>
     ${banners.length === 0 ? `
     <div class="card" style="text-align:center;padding:24px">
       <div style="color:var(--text-3);margin-bottom:8px;font-size:32px">📢</div>
-      <div style="font-size:14px;font-weight:700;margin-bottom:4px">Aucune bannière</div>
-      <div style="font-size:12px;color:var(--text-3);margin-bottom:12px">Affichez une annonce importante en haut de votre boutique</div>
-      <button class="btn btn-primary" style="max-width:220px;margin:0 auto" onclick="addBanner()">+ Créer une bannière</button>
+      <div style="font-size:14px;font-weight:700;margin-bottom:4px">${t('x5_aucuneBanniere')}</div>
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:12px">${t('x5_affichezAnnonce')}</div>
+      <button class="btn btn-primary" style="max-width:220px;margin:0 auto" onclick="addBanner()">${t('x5_creerBanniere')}</button>
     </div>` : banners.map(b => `
     <div class="card" style="margin-bottom:8px;padding:0;overflow:hidden;cursor:pointer" onclick="editBanner(${b.id})">
       <div style="background:${b.bgColor||'#4F46E5'};color:${b.textColor||'#fff'};padding:12px 14px;display:flex;align-items:center;gap:10px;font-weight:600;font-size:13px">
@@ -25890,16 +26342,16 @@ function _renderBannersTab(banners) {
 function _renderPopupsTab(popups) {
   return `
     <div class="section-hd">
-      <span class="section-lbl">Popups déclenchés</span>
+      <span class="section-lbl">${t('x5_popupsDeclenches')}</span>
       <button class="fab" style="width:32px;height:32px" onclick="addPopup()">${IC.plus}</button>
     </div>
     <div style="font-size:11px;color:var(--text-3);margin-bottom:8px">Affichez un message clé pour inciter à l'action (entrée, scroll, temps, sortie)</div>
     ${popups.length === 0 ? `
     <div class="card" style="text-align:center;padding:24px">
       <div style="color:var(--text-3);margin-bottom:8px;font-size:32px">💬</div>
-      <div style="font-size:14px;font-weight:700;margin-bottom:4px">Aucun popup</div>
-      <div style="font-size:12px;color:var(--text-3);margin-bottom:12px">Offrez un code promo aux nouveaux visiteurs</div>
-      <button class="btn btn-primary" style="max-width:220px;margin:0 auto" onclick="addPopup()">+ Créer un popup</button>
+      <div style="font-size:14px;font-weight:700;margin-bottom:4px">${t('x5_aucunPopup')}</div>
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:12px">${t('x5_offrezCodePromo')}</div>
+      <button class="btn btn-primary" style="max-width:220px;margin:0 auto" onclick="addPopup()">${t('x5_creerPopup')}</button>
     </div>` : popups.map(p => {
       const trigLabels = { entry:'À l\'entrée', scroll:`Au scroll ${p.triggerValue||50}%`, time:`Après ${p.triggerValue||5}s`, exit:'À la sortie' };
       return `
@@ -25933,9 +26385,9 @@ function _renderReviewsTab(reviews) {
     ${reviews.length === 0 ? `
     <div class="card" style="text-align:center;padding:24px">
       <div style="color:var(--text-3);margin-bottom:8px;font-size:32px">⭐</div>
-      <div style="font-size:14px;font-weight:700;margin-bottom:4px">Aucun avis</div>
-      <div style="font-size:12px;color:var(--text-3);margin-bottom:12px">Ajoutez les avis de vos clients satisfaits</div>
-      <button class="btn btn-primary" style="max-width:220px;margin:0 auto" onclick="addReview()">+ Ajouter un avis</button>
+      <div style="font-size:14px;font-weight:700;margin-bottom:4px">${t('x5_aucunAvis')}</div>
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:12px">${t('x5_ajoutezAvisClients')}</div>
+      <button class="btn btn-primary" style="max-width:220px;margin:0 auto" onclick="addReview()">${t('x5_ajouterAvis')}</button>
     </div>` : `
     <div class="card" style="margin-bottom:10px;text-align:center;background:linear-gradient(135deg,#FEF3C7,#FFF)">
       <div style="font-size:32px;font-weight:800;color:#F59E0B">${avg} <span style="font-size:14px">/ 5</span></div>
@@ -25960,7 +26412,7 @@ function _renderReviewsTab(reviews) {
       </div>
       <div style="font-size:13px;color:var(--text-1);line-height:1.5">${r.comment||''}</div>
       <div style="display:flex;gap:6px;margin-top:8px">
-        ${!r.approved?`<button class="btn btn-primary" style="flex:1;font-size:11px;padding:6px" onclick="approveReview(${r.id})">${IC.check} Approuver</button>`:`<span style="flex:1;font-size:11px;color:var(--success);padding:6px;display:flex;align-items:center;gap:4px">✓ Publié</span>`}
+        ${!r.approved?`<button class="btn btn-primary" style="flex:1;font-size:11px;padding:6px" onclick="approveReview(${r.id})">${IC.check} Approuver</button>`:`<span style="flex:1;font-size:11px;color:var(--success);padding:6px;display:flex;align-items:center;gap:4px">${t('x5_publie2')}</span>`}
         <button class="btn btn-ghost" style="font-size:11px;padding:6px" onclick="editReview(${r.id})">${IC.edit||'✎'}</button>
         <button class="btn btn-ghost" style="font-size:11px;padding:6px;color:var(--danger)" onclick="deleteReview(${r.id})">🗑</button>
       </div>
@@ -25979,9 +26431,9 @@ function _renderTrackingTab(tracking) {
     ${tracking.length === 0 ? `
     <div class="card" style="text-align:center;padding:24px">
       <div style="color:var(--text-3);margin-bottom:8px;font-size:32px">🔗</div>
-      <div style="font-size:14px;font-weight:700;margin-bottom:4px">Aucun lien tracé</div>
-      <div style="font-size:12px;color:var(--text-3);margin-bottom:12px">Sachez quelles publicités ramènent des clients</div>
-      <button class="btn btn-primary" style="max-width:220px;margin:0 auto" onclick="addTrackingLink()">+ Créer un lien tracé</button>
+      <div style="font-size:14px;font-weight:700;margin-bottom:4px">${t('x5_aucunLienTrace')}</div>
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:12px">${t('x5_sachezPublicites')}</div>
+      <button class="btn btn-primary" style="max-width:220px;margin:0 auto" onclick="addTrackingLink()">${t('x5_creerLienTrace')}</button>
     </div>` : tracking.map(tk => `
     <div class="card" style="margin-bottom:8px">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
@@ -26050,7 +26502,7 @@ function vPromoForm() {
       <div class="form-group">
         <label class="form-label">Nom <span style="color:var(--danger)">*</span></label>
         <input class="input" id="promo-name" value="${draft.name||''}" placeholder="Ex: Soldes de Noël" oninput="if(!$('promo-code').dataset.manual)$('promo-code').value=_genPromoCode(this.value)">
-        <div style="font-size:10px;color:var(--text-3);margin-top:2px">Nom interne visible uniquement par vous</div>
+        <div style="font-size:10px;color:var(--text-3);margin-top:2px">${t('x5_nomInterne')}</div>
       </div>
       <div class="form-group">
         <label class="form-label">${t('w8_codePromo')} <span style="color:var(--danger)">*</span></label>
@@ -26058,7 +26510,7 @@ function vPromoForm() {
           <input class="input" id="promo-code" value="${draft.code||''}" placeholder="Ex: NOEL25" style="flex:1 1 auto;text-transform:uppercase;font-family:monospace;font-weight:700;letter-spacing:1px;font-size:18px !important" oninput="this.dataset.manual='1';this.value=this.value.toUpperCase()">
           <button type="button" class="btn btn-ghost" style="flex:0 0 56px;width:56px;min-height:48px;padding:0;font-size:20px;display:flex;align-items:center;justify-content:center" title="Générer un code aléatoire" onclick="$('promo-code').value=_genPromoCode($('promo-name').value||'CODE');$('promo-code').dataset.manual=''">🎲</button>
         </div>
-        <div style="font-size:11px;color:var(--text-3);margin-top:4px">Ce code sera saisi par vos clients pour obtenir la réduction</div>
+        <div style="font-size:11px;color:var(--text-3);margin-top:4px">${t('x5_codeSaisiClients')}</div>
       </div>
     </div>
 
@@ -26237,7 +26689,7 @@ function vPromoDetail() {
       <div class="card-title">${IC.settings||IC.package} Détails</div>
       <div class="info-row"><span class="info-lbl">Type</span><span class="info-val">${p.type==='fixed'?'Montant fixe':'Pourcentage'}</span></div>
       <div class="info-row"><span class="info-lbl">Valeur</span><span class="info-val" style="color:var(--accent);font-weight:800">${valueDisp}</span></div>
-      <div class="info-row"><span class="info-lbl">Période</span><span class="info-val">${p.startDate} → ${p.endDate}</span></div>
+      <div class="info-row"><span class="info-lbl">${t('x4_periode')}</span><span class="info-val">${p.startDate} → ${p.endDate}</span></div>
       <div class="info-row"><span class="info-lbl">Produits</span><span class="info-val">${(p.products||[]).length===0?'Tous':p.products.length+' spécifique(s)'}</span></div>
       <div class="info-row"><span class="info-lbl">Max total</span><span class="info-val">${p.maxUses>0?p.maxUses:'Illimité'}</span></div>
       <div class="info-row"><span class="info-lbl">Max / client</span><span class="info-val">${p.maxUsesPerClient>0?p.maxUsesPerClient:'Illimité'}</span></div>
@@ -26500,7 +26952,7 @@ function vBannerForm() {
     </div>
 
     <div style="display:flex;gap:8px">
-      ${isEdit?`<button class="btn btn-ghost" style="color:var(--danger);border-color:var(--danger)" onclick="deleteBanner(${draft.id})">🗑 Supprimer</button>`:''}
+      ${isEdit?`<button class="btn btn-ghost" style="color:var(--danger);border-color:var(--danger)" onclick="deleteBanner(${draft.id})">${t('x5_supprimerIcone')}</button>`:''}
       <button class="btn btn-primary" style="flex:1" onclick="saveBanner()">${IC.check} ${isEdit?'Mettre à jour':'Créer la bannière'}</button>
     </div>
   </div>`;
@@ -26680,7 +27132,7 @@ function vPopupForm() {
     </div>
 
     <div style="display:flex;gap:8px">
-      ${isEdit?`<button class="btn btn-ghost" style="color:var(--danger);border-color:var(--danger)" onclick="deletePopup(${draft.id})">🗑 Supprimer</button>`:''}
+      ${isEdit?`<button class="btn btn-ghost" style="color:var(--danger);border-color:var(--danger)" onclick="deletePopup(${draft.id})">${t('x5_supprimerIcone')}</button>`:''}
       <button class="btn btn-primary" style="flex:1" onclick="savePopup()">${IC.check} ${isEdit?'Mettre à jour':'Créer le popup'}</button>
     </div>
   </div>`;
@@ -26796,7 +27248,7 @@ function vReviewForm() {
       </div>
     </div>
     <div style="display:flex;gap:8px">
-      ${isEdit?`<button class="btn btn-ghost" style="color:var(--danger);border-color:var(--danger)" onclick="deleteReview(${draft.id})">🗑 Supprimer</button>`:''}
+      ${isEdit?`<button class="btn btn-ghost" style="color:var(--danger);border-color:var(--danger)" onclick="deleteReview(${draft.id})">${t('x5_supprimerIcone')}</button>`:''}
       <button class="btn btn-primary" style="flex:1" onclick="saveReview()">${IC.check} ${isEdit?'Mettre à jour':"Créer l'avis"}</button>
     </div>
   </div>`;
@@ -26915,7 +27367,7 @@ function vTrackingForm() {
       </div>
     </div>
     <div style="display:flex;gap:8px">
-      ${isEdit?`<button class="btn btn-ghost" style="color:var(--danger);border-color:var(--danger)" onclick="deleteTrackingLink(${draft.id})">🗑 Supprimer</button>`:''}
+      ${isEdit?`<button class="btn btn-ghost" style="color:var(--danger);border-color:var(--danger)" onclick="deleteTrackingLink(${draft.id})">${t('x5_supprimerIcone')}</button>`:''}
       <button class="btn btn-primary" style="flex:1" onclick="saveTrackingLink()">${IC.check} ${isEdit?'Mettre à jour':'Créer le lien'}</button>
     </div>
   </div>`;
@@ -27260,7 +27712,7 @@ function schedulePost() {
   modal.innerHTML = `
     <div style="background:var(--surface);border-radius:16px;max-width:430px;width:100%;max-height:92vh;overflow-y:auto;box-shadow:0 25px 60px rgba(0,0,0,.35);animation:slideUp .25s ease">
       <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
-        <div style="font-size:17px;font-weight:800;color:var(--text-1)">📅 Programmer une publication</div>
+        <div style="font-size:17px;font-weight:800;color:var(--text-1)">${t('x5_programmerPub2')}</div>
         <button style="width:30px;height:30px;border-radius:50%;border:none;background:var(--gray-1);color:var(--text-2);font-size:16px;cursor:pointer" onclick="document.getElementById('sched-modal').remove()">×</button>
       </div>
       <div style="padding:16px 20px">
@@ -27271,7 +27723,7 @@ function schedulePost() {
           </select>
         </div>
         <div class="form-group">
-          <label class="form-label">Plateformes * (cochez une ou plusieurs)</label>
+          <label class="form-label">${t('x5_plateformes')}</label>
           <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
             ${[
               {id:'instagram',n:'Instagram',c:'#E1306C'},
@@ -27299,7 +27751,7 @@ function schedulePost() {
           </div>
         </div>
         <div class="form-group">
-          <label class="form-label">Légende</label>
+          <label class="form-label">${t('x5_legende')}</label>
           <textarea class="input" id="sched-caption" rows="3" style="font-size:16px" placeholder="Votre message..."></textarea>
         </div>
         <div style="display:flex;gap:8px;margin-top:12px">
@@ -27416,7 +27868,7 @@ function openSocialTemplates(type) {
       <div style="padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
         <div>
           <div style="font-size:17px;font-weight:800;color:var(--text-1)">${type==='image'?'🖼️ Templates Image':'🎬 Templates Vidéo'}</div>
-          <div style="font-size:11px;color:var(--text-3);margin-top:2px">Cliquez pour personnaliser</div>
+          <div style="font-size:11px;color:var(--text-3);margin-top:2px">${t('x5_cliquezPerso')}</div>
         </div>
         <button style="width:32px;height:32px;border-radius:50%;border:none;background:var(--gray-1);color:var(--text-2);font-size:18px;cursor:pointer" onclick="document.getElementById('tpl-modal').remove()">×</button>
       </div>
@@ -27579,24 +28031,24 @@ function _cePropsPanel(el) {
   } else if (el.type === 'shape') {
     body += `
       <div class="ce-row"><span class="ce-row-l">Couleur</span><div class="ce-swatches">${swatches.map(c=>`<button class="ce-sw" style="background:${c}" onclick="_ceSetR('color','${c}')"></button>`).join('')}<input type="color" value="${el.color}" oninput="_ceLive('color',this.value)" class="ce-cp"></div></div>
-      <div class="ce-row"><span class="ce-row-l">Opacité</span><input type="range" min="0.1" max="1" step="0.05" value="${el.opacity!=null?el.opacity:1}" oninput="_ceLive('opacity',this.value)"></div>
+      <div class="ce-row"><span class="ce-row-l">${t('x5_opacite')}</span><input type="range" min="0.1" max="1" step="0.05" value="${el.opacity!=null?el.opacity:1}" oninput="_ceLive('opacity',this.value)"></div>
       ${el.shape!=='circle'?`<div class="ce-row"><span class="ce-row-l">Arrondi</span><input type="range" min="0" max="0.3" step="0.01" value="${el.radius||0}" oninput="_ceLive('radius',this.value)"></div>`:''}`;
   } else if (el.type === 'image') {
     body += `<div class="ce-row"><span class="ce-row-l">Arrondi</span><input type="range" min="0" max="0.5" step="0.02" value="${el.radius||0}" oninput="_ceLive('radius',this.value)"></div>
-      <div class="ce-hint">Glissez les coins pour redimensionner.</div>`;
+      <div class="ce-hint">${t('x5_glissezCoins')}</div>`;
   }
-  body += `<button class="btn btn-ghost" style="width:100%;margin-top:10px;font-size:12px" onclick="_ceDeselect()">✓ Terminer la sélection</button>`;
+  body += `<button class="btn btn-ghost" style="width:100%;margin-top:10px;font-size:12px" onclick="_ceDeselect()">${t('x5_terminerSelection')}</button>`;
   return body;
 }
 function _ceBgPanel(cr, itemsWithImg) {
   const grads = [['#4F46E5','#9333EA'],['#F97316','#EF4444'],['#10B981','#059669'],['#EC4899','#8B5CF6'],['#0EA5E9','#2563EB'],['#111827','#374151']];
   return `
-    <div class="ce-panel-hd"><span>🎨 Arrière-plan</span></div>
+    <div class="ce-panel-hd"><span>${t('x5_arrierePlan')}</span></div>
     <div class="ce-grads">${grads.map(([a,b])=>`<button class="ce-grad" style="background:linear-gradient(135deg,${a},${b})" onclick="_ceSetBg('gradient','${a}','${b}')"></button>`).join('')}</div>
     <div class="ce-row"><span class="ce-row-l">Couleur unie</span><input type="color" value="${cr.bg.c1}" oninput="_ceSetBg('solid',this.value)" class="ce-cp"></div>
     <label class="btn btn-ghost" style="width:100%;margin-top:6px;font-size:12px;cursor:pointer">🖼️ Photo de fond<input type="file" accept="image/*" style="display:none" onchange="_ceUploadBg(event)"></label>
     ${itemsWithImg.length ? `
-      <div class="ce-panel-hd" style="margin-top:14px"><span>📦 Ajouter une photo produit</span></div>
+      <div class="ce-panel-hd" style="margin-top:14px"><span>${t('x5_ajouterPhotoProduit')}</span></div>
       <div class="ce-prodrow">${itemsWithImg.slice(0,12).map(p=>`<button class="ce-prod" style="background-image:url('${p.img}')" title="${p.name.replace(/"/g,'&quot;')}" onclick="_ceAddProductImg('${p.img}')"></button>`).join('')}</div>` : ''}
     <div class="ce-hint" style="margin-top:12px">Astuce : touchez un élément sur l'image pour le modifier, glissez-le pour le déplacer.</div>`;
 }
@@ -27828,7 +28280,7 @@ function openImageEditor(preset) {
           <input class="input" id="img-ed-upload" type="file" accept="image/*" onchange="__imgEdUpload(event)" style="font-size:14px;padding:10px">
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px">
-          <button class="btn btn-ghost" onclick="__imgEdDownload()">💾 Télécharger</button>
+          <button class="btn btn-ghost" onclick="__imgEdDownload()">${t('x5_telechargerDisq')}</button>
           <button class="btn btn-primary" onclick="__imgEdShare()">📤 Partager</button>
         </div>
       </div>
@@ -28021,16 +28473,16 @@ function openVideoEditor(tpl) {
           <div style="font-size:12px;opacity:.7;margin-top:4px">${tpl?.fmt || 'Format libre'}</div>
         </div>
         <div style="font-size:12px;color:var(--text-3);line-height:1.6;margin-bottom:14px">
-          <b>🎬 Studio vidéo BARO</b><br>
-          • Filmez caméra/écran avec votre <b>texte incrusté</b> en direct<br>
+          <b>${t('x5_studioVideo')}</b><br>
+          • Filmez caméra/écran avec votre <b>${t('x5_texteIncruste')}</b> en direct<br>
           • Importez vos clips (galerie ou CapCut), stockés dans l'app<br>
           • Partagez vers TikTok, YouTube, IG, Facebook, X
         </div>
         <input id="vid-overlay-text" class="input" placeholder="Texte à incruster (ex : -20% ce week-end)" maxlength="60" style="font-size:14px;margin-bottom:8px">
-        <button class="btn" style="width:100%;background:linear-gradient(135deg,#DC2626,#7C3AED);color:#fff;padding:12px;font-size:13px;font-weight:700;margin-bottom:8px" onclick="__vidRecordOverlay()">🔴 Filmer avec texte incrusté</button>
+        <button class="btn" style="width:100%;background:linear-gradient(135deg,#DC2626,#7C3AED);color:#fff;padding:12px;font-size:13px;font-weight:700;margin-bottom:8px" onclick="__vidRecordOverlay()">${t('x5_filmerAvecTexte')}</button>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-          <button class="btn" style="background:#DC2626;color:#fff;padding:12px;font-size:12px" onclick="__vidRecordCamera()">📹 Caméra simple</button>
-          <button class="btn" style="background:#4F46E5;color:#fff;padding:12px;font-size:12px" onclick="__vidRecordScreen()">🖥️ Écran</button>
+          <button class="btn" style="background:#DC2626;color:#fff;padding:12px;font-size:12px" onclick="__vidRecordCamera()">${t('x5_cameraSimple')}</button>
+          <button class="btn" style="background:#4F46E5;color:#fff;padding:12px;font-size:12px" onclick="__vidRecordScreen()">${t('x5_ecran')}</button>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
           <label class="btn btn-ghost" style="padding:12px;font-size:12px;cursor:pointer;text-align:center;margin:0">
@@ -28090,7 +28542,7 @@ function __vidStartRecord(stream, mode) {
       <video src="${url}" controls style="width:100%;border-radius:10px;background:#000"></video>
       <div style="font-size:11px;color:var(--text-3);text-align:center;margin-top:6px">✅ Enregistrée automatiquement (${sizeKb} KB) — accessible dans "Mes vidéos"</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
-        <button class="btn btn-ghost" onclick="__vidDownload()">💾 Télécharger</button>
+        <button class="btn btn-ghost" onclick="__vidDownload()">${t('x5_telechargerDisq')}</button>
         <button class="btn btn-primary" onclick="__vidShare()">📤 Publier</button>
       </div>`;
     if (typeof logAudit === 'function') logAudit('settings', 'video_saved', { id, source: mode, size: blob.size });
@@ -28102,7 +28554,7 @@ function __vidStartRecord(stream, mode) {
       <div style="font-size:40px;margin-bottom:10px;animation:pulse 1s infinite">🔴</div>
       <div style="font-size:14px;font-weight:700">Enregistrement ${mode}...</div>
     </div>
-    <button class="btn btn-primary" style="width:100%;margin-top:10px;background:#DC2626" onclick="__vidStop()">⏹ Arrêter</button>`;
+    <button class="btn btn-primary" style="width:100%;margin-top:10px;background:#DC2626" onclick="__vidStop()">${t('x5_arreter')}</button>`;
   window.__vidRec = rec;
 }
 
@@ -28169,7 +28621,7 @@ function __vidStartOverlayRecord(stream, text) {
         <video src="${url}" controls style="width:100%;border-radius:10px;background:#000"></video>
         <div style="font-size:11px;color:var(--success);text-align:center;margin-top:6px">✅ Clip avec texte incrusté enregistré (${sizeKb} KB) — dans « Mes vidéos »</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
-          <button class="btn btn-ghost" onclick="__vidDownload()">💾 Télécharger</button>
+          <button class="btn btn-ghost" onclick="__vidDownload()">${t('x5_telechargerDisq')}</button>
           <button class="btn btn-primary" onclick="__vidShare()">📤 Publier</button>
         </div>`;
       showToast(`🎬 Clip avec texte incrusté prêt (${sizeKb} KB)`, 'success');
@@ -28181,7 +28633,7 @@ function __vidStartOverlayRecord(stream, text) {
         <div style="font-size:40px;margin-bottom:10px;animation:pulse 1s infinite">🔴</div>
         <div style="font-size:14px;font-weight:700">Enregistrement avec « ${text.replace(/</g,'&lt;')} »…</div>
       </div>
-      <button class="btn btn-primary" style="width:100%;margin-top:10px;background:#DC2626" onclick="__vidStop()">⏹ Arrêter</button>`;
+      <button class="btn btn-primary" style="width:100%;margin-top:10px;background:#DC2626" onclick="__vidStop()">${t('x5_arreter')}</button>`;
   };
   video.onloadedmetadata = () => { video.play().then(start).catch(start); };
 }
@@ -28200,7 +28652,7 @@ async function __vidImport(e, source) {
       <video src="${url}" controls style="width:100%;border-radius:10px;background:#000"></video>
       <div style="font-size:11px;color:var(--success);text-align:center;margin-top:6px">✅ ${source==='capcut'?'CapCut':'Vidéo'} importée et enregistrée</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
-        <button class="btn btn-ghost" onclick="__vidDownload()">💾 Télécharger</button>
+        <button class="btn btn-ghost" onclick="__vidDownload()">${t('x5_telechargerDisq')}</button>
         <button class="btn btn-primary" onclick="__vidShare()">📤 Publier</button>
       </div>`;
   }
@@ -28233,12 +28685,12 @@ function __openPublishDialog(blob, vidId) {
   modal.innerHTML = `
     <div style="background:var(--surface);border-radius:16px;max-width:430px;width:100%;max-height:94vh;overflow-y:auto;box-shadow:0 25px 60px rgba(0,0,0,.5);animation:slideUp .25s ease">
       <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
-        <div style="font-size:16px;font-weight:800;color:var(--text-1)">📤 Publier la vidéo</div>
+        <div style="font-size:16px;font-weight:800;color:var(--text-1)">${t('x5_publierVideo')}</div>
         <button style="width:30px;height:30px;border-radius:50%;border:none;background:var(--gray-1);color:var(--text-2);font-size:16px;cursor:pointer" onclick="document.getElementById('publish-modal').remove()">×</button>
       </div>
       <div style="padding:14px 18px">
         <video src="${url}" controls style="width:100%;border-radius:10px;background:#000;max-height:220px;margin-bottom:12px"></video>
-        <label class="form-label">Légende</label>
+        <label class="form-label">${t('x5_legende')}</label>
         <textarea id="publish-caption" class="input" rows="3" placeholder="Décrivez votre vidéo..." style="font-size:14px !important">${S.business?.name ? `🔥 Nouveau chez ${S.business.name} ! ` : ''}#BARO #PME</textarea>
 
         <div style="margin-top:14px;font-size:13px;font-weight:700;color:var(--text-1);margin-bottom:8px">🌐 Partager vers</div>
@@ -28251,7 +28703,7 @@ function __openPublishDialog(blob, vidId) {
           <button class="btn" style="background:#25D366;color:#fff;padding:12px;font-size:12px;font-weight:700" onclick="__publishTo('whatsapp')">💬 WhatsApp</button>
         </div>
 
-        <button class="btn btn-primary" style="width:100%;margin-top:12px;padding:14px;font-weight:800" onclick="__publishTo('share')">📤 Partager (système)</button>
+        <button class="btn btn-primary" style="width:100%;margin-top:12px;padding:14px;font-weight:800" onclick="__publishTo('share')">${t('x5_partagerSysteme')}</button>
         <button class="btn btn-ghost" style="width:100%;margin-top:6px" onclick="__publishTo('download')">💾 Télécharger uniquement</button>
         <div style="background:var(--accent-light);border-radius:10px;padding:10px;margin-top:10px;font-size:11px;color:var(--text-2);line-height:1.5">
           💡 Pour IG/TikTok/YouTube/FB : le partage ouvre l'app native avec la vidéo + la légende copiée. Collez-la dans la description.
@@ -29764,7 +30216,7 @@ function vApiSettings() {
     </div>
 
     <div class="card" style="background:#EFF6FF;border-color:#3B82F640;font-size:11px;color:#1E40AF;line-height:1.6">
-      💡 <strong>Sécurité :</strong> Ne partagez jamais votre token. Chaque webhook possède un secret HMAC distinct pour signer les requêtes.
+      💡 <strong>${t('x3_securite')}</strong> Ne partagez jamais votre token. Chaque webhook possède un secret HMAC distinct pour signer les requêtes.
     </div>
   </div>`;
 }
@@ -32745,12 +33197,12 @@ function vPosSetup() {
     <div style="display:flex;gap:8px">
       <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${connected?'✓':'—'}</div><div class="hero-stat-lbl">Statut</div></div>
       <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${d.printedCount||0}</div><div class="hero-stat-lbl">Tickets</div></div>
-      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${d.model?d.model.slice(0,6):'—'}</div><div class="hero-stat-lbl">Modèle</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${d.model?d.model.slice(0,6):'—'}</div><div class="hero-stat-lbl">${t('x3_modele')}</div></div>
     </div>
   </div>
   <div class="container">
     <div class="card" style="margin-bottom:10px">
-      <div class="card-title">📟 Modèle de terminal</div>
+      <div class="card-title">${t('x3_modeleTerminal')}</div>
       <select class="input" id="pos-model" onchange="const o=this.options[this.selectedIndex];document.getElementById('pos-endpoint').value=o.dataset.endpoint||''">
         ${models.map(m => `<option value="${m.id}" data-endpoint="${m.endpoint}" ${d.model===m.id?'selected':''}>${m.name}</option>`).join('')}
       </select>
@@ -32764,7 +33216,7 @@ function vPosSetup() {
         <div style="font-size:10px;color:var(--text-3);margin-top:4px">Sunmi/WizarPOS : endpoint HTTP local. Ingenico/Verifone : TCP via proxy (app compagnon requise).</div>
       </div>
       <div style="margin-bottom:10px">
-        <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">En-tête du ticket (nom enseigne)</label>
+        <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">${t('x3_enteteTicket')}</label>
         <input id="pos-header" class="input" value="${(d.header||S.session?.business||'').replace(/"/g,'&quot;')}" placeholder="MA BOUTIQUE">
       </div>
       <div style="margin-bottom:10px">
@@ -32776,7 +33228,7 @@ function vPosSetup() {
     <div class="card" style="margin-bottom:10px">
       <div class="card-title">⚙️ Automatisations</div>
       <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
-        <div><div style="font-weight:700;font-size:13px">Impression auto à la vente</div><div style="font-size:11px;color:var(--text-3)">Imprime un ticket dès qu'une vente est enregistrée</div></div>
+        <div><div style="font-weight:700;font-size:13px">${t('x3_impressionAuto')}</div><div style="font-size:11px;color:var(--text-3)">Imprime un ticket dès qu'une vente est enregistrée</div></div>
         <input type="checkbox" id="pos-auto-sale" ${d.autoSale?'checked':''}>
       </label>
       <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
@@ -32784,7 +33236,7 @@ function vPosSetup() {
         <input type="checkbox" id="pos-auto-drawer" ${d.autoDrawer?'checked':''}>
       </label>
       <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 0">
-        <div><div style="font-weight:700;font-size:13px">Ticket dupliqué (client + copie)</div><div style="font-size:11px;color:var(--text-3)">Imprime deux exemplaires</div></div>
+        <div><div style="font-weight:700;font-size:13px">${t('x3_ticketDuplique')}</div><div style="font-size:11px;color:var(--text-3)">Imprime deux exemplaires</div></div>
         <input type="checkbox" id="pos-duplicate" ${d.duplicate?'checked':''}>
       </label>
     </div>
@@ -33326,13 +33778,13 @@ function vSpectraEnhanced() {
       <div class="card" style="border:2px solid var(--accent);background:linear-gradient(135deg,rgba(124,115,255,.08),rgba(124,115,255,.02));margin-bottom:12px">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
           <span style="font-size:24px">💎</span>
-          <div><div style="font-size:16px;font-weight:800">BARO Pro</div><div style="font-size:12px;color:var(--text-3)">Spectra illimité + tout débloqué</div></div>
+          <div><div style="font-size:16px;font-weight:800">BARO Pro</div><div style="font-size:12px;color:var(--text-3)">${t('x3_spectraIllimite')}</div></div>
         </div>
         ${['🔍 Spectra IA vision illimité','🏪 Boutique en ligne','📣 Marketing & campagnes','♾️ Articles & ventes illimités'].map(f=>`<div style="display:flex;gap:8px;font-size:13px;padding:3px 0;color:var(--text-2)"><span style="color:var(--accent)">${IC.check}</span>${f}</div>`).join('')}
-        <button class="btn btn-primary" style="margin-top:14px" onclick="nav('pricing')">Voir les plans Pro →</button>
+        <button class="btn btn-primary" style="margin-top:14px" onclick="nav('pricing')">${t('x3_voirPlansPro')}</button>
       </div>
       <button class="btn btn-ghost" style="width:100%" onclick="spectraReset()">Revenir demain (gratuit)</button>
-      <div style="font-size:11px;color:var(--text-3);text-align:center;margin-top:12px;line-height:1.5">💡 Le compteur se remet à zéro chaque jour à minuit.</div>
+      <div style="font-size:11px;color:var(--text-3);text-align:center;margin-top:12px;line-height:1.5">${t('x3_compteurMinuit')}</div>
     </div>`;
   }
 
@@ -33356,8 +33808,8 @@ function vSpectraEnhanced() {
       ${_spectraLastAiError ? `
       <div class="card" style="margin-bottom:12px;border-left:4px solid var(--danger);background:rgba(239,68,68,.05)">
         <div style="font-size:13px;font-weight:700;color:var(--danger);margin-bottom:4px">⚠️ Spectra AI : ${_spectraLastAiError}</div>
-        <div style="font-size:12px;color:var(--text-2);line-height:1.5">Vérifie ta clé dans Spectra AI, ou réessaie.</div>
-        <button class="btn btn-ghost" style="margin-top:10px;font-size:12px;padding:8px" onclick="nav('spectra-ai-setup')">Vérifier ma clé →</button>
+        <div style="font-size:12px;color:var(--text-2);line-height:1.5">${t('x3_verifieTaCle')}</div>
+        <button class="btn btn-ghost" style="margin-top:10px;font-size:12px;padding:8px" onclick="nav('spectra-ai-setup')">${t('x3_verifierMaCle')}</button>
       </div>` : `
       <div class="card" style="margin-bottom:12px">
         <div style="font-size:13px;color:var(--text-2);line-height:1.55">L'IA n'a pas reconnu ce produit (image floue, sous un angle difficile, ou produit rare). Réessaie avec une photo plus nette et bien éclairée.</div>
@@ -33375,7 +33827,7 @@ function vSpectraEnhanced() {
   if (S.spectra.step === 'continuous') {
     const camCount = (_spectraCameras && _spectraCameras.length) || 0;
     return `
-    <div class="sub-hero spectra-hero-grad"><div class="page-header-row"><button class="back-btn-dark" onclick="spectraReset();nav('more')">${IC.left}</button><div style="flex:1"><div class="sub-hero-title">Scan temps réel IA</div><div class="sub-hero-sub">COCO-SSD + OCR + mémoire produit</div></div>${camCount>1?`<button class="fab" style="background:var(--card);border:1px solid var(--border)" onclick="spectraSwitchCamera()" title="Changer de caméra">🔄</button>`:''}</div></div>
+    <div class="sub-hero spectra-hero-grad"><div class="page-header-row"><button class="back-btn-dark" onclick="spectraReset();nav('more')">${IC.left}</button><div style="flex:1"><div class="sub-hero-title">${t('x3_scanTempsReel')}</div><div class="sub-hero-sub">${t('x3_cocoSsd')}</div></div>${camCount>1?`<button class="fab" style="background:var(--card);border:1px solid var(--border)" onclick="spectraSwitchCamera()" title="Changer de caméra">🔄</button>`:''}</div></div>
     <div class="container" style="padding:12px">
       <div class="spectra-scan-frame">
         <video id="spectra-video" playsinline muted autoplay style="object-fit:cover"></video>
@@ -33400,7 +33852,7 @@ function vSpectraEnhanced() {
   if (S.spectra.step === 'barcode') {
     const camCount = (_spectraCameras && _spectraCameras.length) || 0;
     return `
-    <div class="sub-hero spectra-hero-grad"><div class="page-header-row"><button class="back-btn-dark" onclick="spectraReset();nav('more')">${IC.left}</button><div style="flex:1"><div class="sub-hero-title">Scan code-barres</div><div class="sub-hero-sub">EAN-13 / UPC / QR / Code 128</div></div>${camCount>1?`<button class="fab" style="background:var(--card);border:1px solid var(--border)" onclick="spectraSwitchCamera()" title="Changer de caméra">🔄</button>`:''}</div></div>
+    <div class="sub-hero spectra-hero-grad"><div class="page-header-row"><button class="back-btn-dark" onclick="spectraReset();nav('more')">${IC.left}</button><div style="flex:1"><div class="sub-hero-title">${t('x3_scanCodeBarres')}</div><div class="sub-hero-sub">${t('x3_ean13')}</div></div>${camCount>1?`<button class="fab" style="background:var(--card);border:1px solid var(--border)" onclick="spectraSwitchCamera()" title="Changer de caméra">🔄</button>`:''}</div></div>
     <div class="container" style="padding:12px">
       <div class="spectra-scan-frame">
         <video id="spectra-video" playsinline muted autoplay style="object-fit:cover"></video>
@@ -33428,30 +33880,30 @@ function vSpectraEnhanced() {
       <div class="spectra-count-result" style="margin-bottom:14px">
         <div class="spectra-count-num">${item.quantity}</div>
         <div class="spectra-count-info">
-          <div class="spectra-count-name">${item.detected_name||item.matched_name}${(item._sanitized_from||item._ambiguous)?`<span class="spectra-ambig-badge" title="IA incertaine — vérifie le nom">⚠ À vérifier</span>`:''}</div>
+          <div class="spectra-count-name">${item.detected_name||item.matched_name}${(item._sanitized_from||item._ambiguous)?`<span class="spectra-ambig-badge" title="IA incertaine — vérifie le nom">${t('x3_aVerifier')}</span>`:''}</div>
           <div class="spectra-count-detail">Quantité détectée: ${item.quantity} · Précision: ${item.confidence}%${item.from_memory?' · 🧠 Mémoire':''}${item._sanitized_from==='remote'?' · corrigé téléphone':''}</div>
         </div>
       </div>
       ${S.spectra.naming ? `
       <div class="form-group"><label class="form-label">Nom de l'article (l'IA apprend à partir de ce que tu saisis)</label><input class="input" id="spectra-name" type="text" placeholder="${displayName}" value="${displayName}"></div>
       <div class="form-group"><label class="form-label">${t('quantity')}</label><input class="input" id="spectra-qty" type="number" value="${item.quantity}" min="1"></div>
-      ${item.ocr_text?`<div style="background:var(--accent-light);padding:10px;border-radius:8px;font-size:12px;margin-bottom:12px"><b>📝 OCR détecté :</b> ${item.ocr_text}</div>`:''}
+      ${item.ocr_text?`<div style="background:var(--accent-light);padding:10px;border-radius:8px;font-size:12px;margin-bottom:12px"><b>${t('x3_ocrDetecte')}</b> ${item.ocr_text}</div>`:''}
       <button class="btn btn-primary" onclick="spectraSubmitName()">${t('spectraConfirm')}</button>
       ` : `
       <div class="card" style="margin-bottom:10px">
         ${item.off_image ? `<div style="text-align:center;margin-bottom:10px"><img src="${item.off_image}" alt="" style="max-height:120px;border-radius:8px"></div>` : ''}
-        <div class="info-row"><span class="info-lbl">Nom détecté</span><span class="info-val" style="font-weight:700">${item.detected_name||item.matched_name}</span></div>
+        <div class="info-row"><span class="info-lbl">${t('x3_nomDetecte')}</span><span class="info-val" style="font-weight:700">${item.detected_name||item.matched_name}</span></div>
         ${item.resolved_type?`<div class="info-row"><span class="info-lbl">📦 Type</span><span class="info-val" style="font-size:12px">${item.resolved_type}</span></div>`:''}
         ${item.resolved_brand || item.off_brand?`<div class="info-row"><span class="info-lbl">🏭 Marque</span><span class="info-val" style="font-size:12px">${item.resolved_brand || item.off_brand}</span></div>`:''}
         ${item.off_category?`<div class="info-row"><span class="info-lbl">🗂️ Catégorie</span><span class="info-val" style="font-size:11px;color:var(--text-3)">${item.off_category}</span></div>`:''}
         ${item.ocr_text?`<div class="info-row"><span class="info-lbl">📝 OCR</span><span class="info-val" style="font-size:12px">${item.ocr_text}</span></div>`:''}
-        ${item.barcode?`<div class="info-row"><span class="info-lbl">📊 Code-barres</span><span class="info-val" style="font-size:12px;font-family:monospace">${item.barcode}</span></div>`:''}
+        ${item.barcode?`<div class="info-row"><span class="info-lbl">${t('x3_codeBarres')}</span><span class="info-val" style="font-size:12px;font-family:monospace">${item.barcode}</span></div>`:''}
         ${item.coco_class?`<div class="info-row"><span class="info-lbl">🏷️ Classe IA</span><span class="info-val" style="font-size:12px">${item.coco_class}</span></div>`:''}
-        <div class="info-row"><span class="info-lbl">Nombre détecté</span><span class="info-val" style="font-size:18px;color:var(--accent)">${item.quantity} ${item.matched_unit||'pce'}</span></div>
-        <div class="info-row"><span class="info-lbl">Précision IA</span><span class="info-val" style="color:${item.confidence>=90?'var(--success)':item.confidence>=70?'var(--warning)':'var(--danger)'}">${item.confidence}%</span></div>
-        ${item.from_off?`<div class="info-row"><span class="info-lbl">Source</span><span class="info-val" style="color:var(--success)">🌐 OpenFoodFacts (code-barres)</span></div>`:item.from_memory?`<div class="info-row"><span class="info-lbl">Source</span><span class="info-val" style="color:var(--accent)">🧠 Mémoire produit</span></div>`:item.from_keyword?`<div class="info-row"><span class="info-lbl">Source</span><span class="info-val" style="color:var(--accent)">📖 Dictionnaire (OCR)</span></div>`:''}
+        <div class="info-row"><span class="info-lbl">${t('x3_nombreDetecte')}</span><span class="info-val" style="font-size:18px;color:var(--accent)">${item.quantity} ${item.matched_unit||'pce'}</span></div>
+        <div class="info-row"><span class="info-lbl">${t('x3_precisionIA')}</span><span class="info-val" style="color:${item.confidence>=90?'var(--success)':item.confidence>=70?'var(--warning)':'var(--danger)'}">${item.confidence}%</span></div>
+        ${item.from_off?`<div class="info-row"><span class="info-lbl">Source</span><span class="info-val" style="color:var(--success)">${t('x3_openFoodFacts')}</span></div>`:item.from_memory?`<div class="info-row"><span class="info-lbl">Source</span><span class="info-val" style="color:var(--accent)">🧠 Mémoire produit</span></div>`:item.from_keyword?`<div class="info-row"><span class="info-lbl">Source</span><span class="info-val" style="color:var(--accent)">📖 Dictionnaire (OCR)</span></div>`:''}
         ${typeof item.quality_score === 'number' ? `<div class="info-row"><span class="info-lbl">🔬 Qualité image</span><span class="info-val" style="color:${item.quality_score>=80?'var(--success)':item.quality_score>=50?'var(--warning)':'var(--danger)'}">${item.quality_score}/100${item.damage_flags && item.damage_flags.length ? ' · ⚠ '+item.damage_flags.join(', ') : ''}</span></div>` : ''}
-        ${item.matched_id ? `<div class="info-row"><span class="info-lbl">Correspondance</span><span class="info-val" style="color:var(--success)">✓ Trouvé en stock</span></div>` : `<div class="info-row"><span class="info-lbl">Correspondance</span><span class="info-val" style="color:var(--warning)">Nouvel article</span></div>`}
+        ${item.matched_id ? `<div class="info-row"><span class="info-lbl">Correspondance</span><span class="info-val" style="color:var(--success)">${t('x3_trouveEnStock')}</span></div>` : `<div class="info-row"><span class="info-lbl">Correspondance</span><span class="info-val" style="color:var(--warning)">Nouvel article</span></div>`}
       </div>
       <div style="display:flex;gap:8px">
         <button class="btn btn-primary" style="flex:1" onclick="spectraConfirmYes()">${IC.check} Confirmer</button>
@@ -33480,7 +33932,7 @@ function vSpectraEnhanced() {
       </div>`).join('')}
       <div style="display:flex;gap:8px;margin-top:12px">
         <button class="btn btn-primary" style="flex:1" onclick="spectraReset();nav('pantry')">${t('spectraViewStock')}</button>
-        <button class="btn btn-ghost" style="flex:1" onclick="generateSpectraAuditPDF()">📄 Rapport PDF signé</button>
+        <button class="btn btn-ghost" style="flex:1" onclick="generateSpectraAuditPDF()">${t('x3_rapportPdfSigne')}</button>
       </div>
     </div>`;
   }
@@ -33501,7 +33953,7 @@ function vSpectraEnhanced() {
         <div class="spectra-ai-banner on" onclick="nav('spectra-ai-setup')">
           <div class="spectra-ai-ic">✨</div>
           <div style="flex:1;min-width:0">
-            <div class="spectra-ai-title">IA vision activée (ta clé) <span class="spectra-ai-dot"></span></div>
+            <div class="spectra-ai-title">${t('x3_iaVisionActive')} <span class="spectra-ai-dot"></span></div>
             <div class="spectra-ai-sub">Reconnaissance maximale de n'importe quel produit · Gérer</div>
           </div>
           <div style="color:#34d399">${IC.chevron}</div>
@@ -33520,7 +33972,7 @@ function vSpectraEnhanced() {
     })()}
     ${(() => {
       const limit = _spectraDailyLimit();
-      if (limit === Infinity) return `<div class="spectra-quota unlimited">♾️ Scans illimités · Plan Pro</div>`;
+      if (limit === Infinity) return `<div class="spectra-quota unlimited">${t('x3_scansIllimites')}</div>`;
       const left = Math.max(0, limit - _spectraScansToday());
       const pct = Math.round((left / limit) * 100);
       const col = left === 0 ? 'var(--danger)' : left <= 3 ? 'var(--warning)' : 'var(--success)';
@@ -33530,7 +33982,7 @@ function vSpectraEnhanced() {
           <span style="font-size:11px;font-weight:800;color:${col}">${left}/${limit} restants</span>
         </div>
         <div style="height:5px;background:var(--gray-2);border-radius:3px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${col};border-radius:3px;transition:width .4s"></div></div>
-        ${left <= 3 ? `<div style="font-size:10.5px;color:var(--text-3);margin-top:5px">Bientôt épuisés — <a onclick="nav('pricing')" style="color:var(--accent);font-weight:700;cursor:pointer">passe en Pro pour l'illimité</a></div>` : ''}
+        ${left <= 3 ? `<div style="font-size:10.5px;color:var(--text-3);margin-top:5px">${t('x3_bientotEpuises')} <a onclick="nav('pricing')" style="color:var(--accent);font-weight:700;cursor:pointer">passe en Pro pour l'illimité</a></div>` : ''}
       </div>`;
     })()}
 
@@ -33542,18 +33994,18 @@ function vSpectraEnhanced() {
       <div class="spectra-tuto-body">
         <div class="spectra-step">
           <div class="spectra-step-n">1</div>
-          <div><div class="spectra-step-t">Crée ta clé gratuite Groq</div><div class="spectra-step-d">Ouvre <a href="https://console.groq.com/keys" target="_blank" rel="noopener noreferrer" style="color:var(--accent);font-weight:700">console.groq.com/keys</a> → connecte-toi (Google/email) → « Create API Key ». <strong>Gratuit, sans carte, marche en Afrique.</strong></div></div>
+          <div><div class="spectra-step-t">${t('x3_creeCleGroq')}</div><div class="spectra-step-d">Ouvre <a href="https://console.groq.com/keys" target="_blank" rel="noopener noreferrer" style="color:var(--accent);font-weight:700">console.groq.com/keys</a> → connecte-toi (Google/email) → « Create API Key ». <strong>${t('x3_gratuitSansCarte')}</strong></div></div>
         </div>
         <div class="spectra-step">
           <div class="spectra-step-n">2</div>
-          <div><div class="spectra-step-t">Colle-la dans Spectra</div><div class="spectra-step-d">Touche <strong>« Activer l'IA vision »</strong> ci-dessus → champ Groq → colle (gsk_…) → Enregistrer → Tester.</div></div>
+          <div><div class="spectra-step-t">${t('x3_colleDansSpectra')}</div><div class="spectra-step-d">Touche <strong>« Activer l'IA vision »</strong> ci-dessus → champ Groq → colle (gsk_…) → Enregistrer → Tester.</div></div>
         </div>
         <div class="spectra-step">
           <div class="spectra-step-n">3</div>
           <div><div class="spectra-step-t">Scanne n'importe quel produit</div><div class="spectra-step-d">Photo, vidéo ou live : Spectra reconnaît le nom exact (PS5, iPhone, Riz Maman…) et l'ajoute à ton stock. ✨</div></div>
         </div>
         <button class="btn btn-primary" style="margin-top:6px;background:linear-gradient(135deg,#F55036,#7C3AED)" onclick="event.preventDefault();nav('spectra-ai-setup')">🚀 Activer maintenant</button>
-        <div style="font-size:11px;color:var(--text-3);margin-top:10px;line-height:1.5">💡 Sans clé, Spectra reconnaît quand même via <strong>code-barres + dictionnaire</strong> de 300+ produits locaux (hors-ligne).</div>
+        <div style="font-size:11px;color:var(--text-3);margin-top:10px;line-height:1.5">${t('x3_sansCleSpectra')} <strong>${t('x3_codeBarresDico')}</strong> de 300+ produits locaux (hors-ligne).</div>
       </div>
     </details>
 
@@ -33606,8 +34058,8 @@ function vSpectraEnhanced() {
     </div>
 
     <div style="display:flex;gap:8px">
-      <button class="btn btn-ghost" style="flex:1" onclick="spectraRunDemo()">Démo Audit</button>
-      <button class="btn btn-ghost" style="flex:1" onclick="spectraRunDemoReception()">Démo Réception</button>
+      <button class="btn btn-ghost" style="flex:1" onclick="spectraRunDemo()">${t('x3_demoAudit')}</button>
+      <button class="btn btn-ghost" style="flex:1" onclick="spectraRunDemoReception()">${t('x3_demoReception')}</button>
     </div>
 
     ${(() => {
@@ -33619,7 +34071,7 @@ function vSpectraEnhanced() {
       <div class="card" style="padding:12px">
         <div style="font-size:11px;color:var(--text-3);margin-bottom:8px">L'IA apprend de tes confirmations. Top produits reconnus :</div>
         ${top5.map(m => `<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:12px"><span>${m.finalName}</span><span style="color:var(--accent)">×${m.count}</span></div>`).join('')}
-        <button class="btn btn-ghost" style="width:100%;margin-top:8px;font-size:11px;padding:6px" onclick="if(confirm('Effacer toute la mémoire produit ?')){clearSpectraMemory();render();}">Effacer mémoire</button>
+        <button class="btn btn-ghost" style="width:100%;margin-top:8px;font-size:11px;padding:6px" onclick="if(confirm('Effacer toute la mémoire produit ?')){clearSpectraMemory();render();}">${t('x3_effacerMemoire')}</button>
       </div>`;
     })()}
 
@@ -33642,7 +34094,7 @@ function vSpectraEnhanced() {
       <div class="card" style="margin-bottom:6px;padding:10px 14px">
         <div style="display:flex;justify-content:space-between;align-items:center">
           <div><div style="font-size:12px;font-weight:700">${a.count} articles · ${a.mode||'photo'}</div><div style="font-size:11px;color:var(--text-3)">${fmtDate(a.date)} · ${a.user||''}</div><div style="font-size:10px;color:var(--text-3);font-family:monospace">SIG: ${(a.signature||'').slice(0,16)}…</div></div>
-          <span class="status st-ok" style="font-size:10px">✓ Signé</span>
+          <span class="status st-ok" style="font-size:10px">${t('x3_signe')}</span>
         </div>
       </div>`).join('')}`;
     })()}
