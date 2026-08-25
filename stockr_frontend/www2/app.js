@@ -270,6 +270,142 @@ const API_BASE = (location.hostname === 'localhost' || location.hostname === '12
 // ── i18n ─────────────────────────────────────
 const LANGS = {
   fr: {
+    z1_exBanniereCom: "Bannière annonce",
+    z1_exBanniere: "Livraison gratuite dès 20 000 FCFA !",
+    x2_couleurFond: "Couleur de fond",
+    y5_avecVariables: "{0} avec variables",
+    y5_comptaEcom: "Comptabilité & e-commerce",
+    y5_ouvrablesExcel: "ouvrables directement dans Excel, LibreOffice, Numbers",
+    y5_gmailConnectez: "Gmail (connectez votre compte)",
+    y5_especes: "Espèces",
+    y5_remplaceePalette: "— remplacée par la palette",
+    y5_verifie: "✓ Vérifié",
+    y5_nonVerifie: "⚠ Non vérifié",
+    y5_livraisonGratuite: "🎁 Livraison gratuite dès 20 000 FCFA",
+    y5_aucunEvenement: "Aucun événement sélectionné",
+    y5_aucunProduit: "Aucun produit",
+    y5_listeProduits: "— Liste des produits",
+    y5_enregistrerVente: "— Enregistrer une vente",
+    y5_etatStock: "— État du stock",
+    y5_creerCommande: "— Créer une commande",
+    y5_listeClients: "— Liste des clients",
+    y5_publierYoutube: ". Vous pourrez la publier depuis YouTube Studio.",
+    y5_tarifsBas: "(tarifs CI/Afrique très bas) et",
+    y5_creerMonCompte: "Créer mon compte",
+    y5_meConnecter: "Me connecter",
+    y4_especes: "Espèces",
+    y4_verifie: "✓ Vérifié",
+    y4_nonVerifie: "⚠ Non vérifié",
+    y4_aucunPaiement: "Aucun — configurez dans Paiements",
+    y4_plusQue: "⚡ Plus que {0}",
+    y4_creerMonCompte: "Créer mon compte",
+    y4_meConnecter: "Me connecter",
+    y4_envoiCommande: "Envoi de votre commande…",
+    y4_unInstant: "Un instant, nous prévenons {0}.",
+    y4_attendWhatsApp: "Elle vous attend dans WhatsApp. Retrouvez-la aussi dans {0}.",
+    y4_mesAchats: "Mes achats",
+    y4_livraisonGratuite: "🎁 Livraison gratuite dès 20 000 FCFA",
+    y4_cssInjecte: "🎨 {0} est injecté dans {1} du site généré — modifie l'apparence globale.",
+    y4_destinatairesBcc: "💡 Les destinataires sont mis en {0} : personne ne voit les emails des autres.",
+    y4_copieCachee: "copie cachée (BCC)",
+    y4_recuperezIds: "2. Récupérez votre {0} et votre {1} dans les réglages partenaires",
+    y4_mesVideos: "📚 Mes vidéos",
+    y4_aucuneVideo: "Aucune vidéo enregistrée",
+    y4_creezDepuisEditeur: "Créez-en depuis l'éditeur vidéo",
+    y4_ouvrirEditeur: "🎬 Ouvrir l'éditeur",
+    y4_voir: "▶️ Voir",
+    y4_telechargerSeul: "💾 Télécharger uniquement",
+    y4_telechargerVideo: "💾 Télécharger vidéo actuelle (pour CapCut)",
+    y4_tout: "Tout",
+    y4_comptaEcom: "Comptabilité & e-commerce",
+    y4_ouvrablesExcel: "ouvrables directement dans Excel, LibreOffice, Numbers",
+    y4_gmailConnectez: "Gmail (connectez votre compte)",
+    y4_avecVariables: "avec variables",
+    y4_necessiteMode: "Nécessite le mode",
+    y4_tarifsBas: "(tarifs CI/Afrique très bas) et",
+    y4_imprimeTicket: "Imprime un ticket dès qu'une vente est enregistrée",
+    y4_commandeOuverture: "Commande d'ouverture au paiement espèces",
+    y4_remplaceePalette: "— remplacée par la palette",
+    y4_glissezPlacer: "puis glissez-les pour les placer",
+    y3_scansEpuises: "Tu as utilisé tes {0} du jour. Passe en {1} pour des scans {2} + IA vision, boutique en ligne, marketing…",
+    y3_scansSpectra: "{0} scans Spectra",
+    y3_illimites: "illimités",
+    y3_reconnaissanceLocale: "La reconnaissance locale (hors-ligne) ne couvre pas tous les produits. Avec l'{0} (clé gratuite, 1500 scans/jour), Spectra identifie {1} par photo ou vidéo.",
+    y3_iaVisionGemini: "IA vision Gemini",
+    y3_ps5Iphone: "PS5, iPhone, cosmétiques, n'importe quoi",
+    y3_memoireProduit: "🧠 Mémoire produit",
+    y3_qualiteImage: "🔬 Qualité image",
+    y3_photoALaPlace: "📷 Photo à la place",
+    y3_categorieIcone: "🗂️ Catégorie",
+    y3_rapportsSignes: "📄 Rapports d'audit signés",
+    y3_nomArticleIA: "Nom de l'article (l'IA apprend à partir de ce que tu saisis)",
+    y3_pasIdentifie: "Spectra n'a pas pu l'identifier avec certitude",
+    y3_creerToiMeme: "Tu peux créer l'article toi-même en quelques secondes.",
+    y3_reconnaitTout: "Spectra reconnaît n'importe quel produit photographié",
+    y3_commeGoogleLens: "Reconnaît n'importe quel produit, comme Google Lens",
+    y3_reconnaissanceMax: "Reconnaissance maximale de n'importe quel produit · Gérer",
+    y3_connecteToi: "→ connecte-toi (Google/email) → « Create API Key ».",
+    y3_passeEnPro: "passe en Pro pour l'illimité",
+    y3_ptsDistribues: "pts distribués",
+    y3_clientsFideles: "clients fidèles",
+    y3_echanges: "échanges",
+    y3_personnaliseParClient: "{0} est personnalisé par client.",
+    y3_ajoutezClientsTel: "Ajoutez des clients avec téléphone pour leur envoyer un SMS.",
+    y3_envoye: "envoyé",
+    y3_echec: "échec",
+    y3_commandee: "Commandée",
+    y3_expediee: "Expédiée",
+    y3_expediees: "Expédiées",
+    y3_livree: "Livrée",
+    y3_recues: "Reçues",
+    y3_aucunProduit: "Aucun produit",
+    y3_reappSuggere: "Réapprovisionnement suggéré",
+    y3_nomOnglet: "Nom de l'onglet (par défaut Sheet1)",
+    y3_appendAuto: "Append auto à chaque vente",
+    y3_ajouteLigne: "Ajoute une ligne dès qu'une vente est enregistrée",
+    y3_syncQuotidienne: "Sync quotidienne complète",
+    y3_syncChaqueJour: "Synchronisation complète chaque jour à 03h00",
+    y3_pushToutes23h: "Push toutes les données à 23h00",
+    y3_dejaSync: "Déjà sync.",
+    y3_commentIdentifiants: "Comment obtenir les identifiants ?",
+    y3_postAutoCreation: "Post auto à la création produit",
+    y3_pushAutoCreation: "Push auto à la création produit",
+    y3_publieDesCree: "Publie le produit dès qu'il est créé",
+    y3_publierHeure: "Publier automatiquement à l'heure programmée",
+    y3_programmes: "Programmés",
+    y3_publies: "Publiés",
+    y3_aucunEvenement: "Aucun événement sélectionné",
+    y3_selectionnerVideo: "Sélectionner vidéo",
+    y3_uploaderPrive: "🚀 Uploader en privé",
+    y3_prive: "privé",
+    y3_publierYoutube: ". Vous pourrez la publier depuis YouTube Studio.",
+    y3_creerCommande: "— Créer une commande",
+    y3_enregistrerVente: "— Enregistrer une vente",
+    y3_listeClients: "— Liste des clients",
+    y3_listeProduits: "— Liste des produits",
+    y3_etatStock: "— État du stock",
+    y3_journalAuditComplet: "📋 Voir le journal d'audit complet",
+    y3_ecrit: "✍️ écrit…",
+    y2_aucunMembreDispo: "Aucun membre disponible",
+    y2_codeIncorrect: "Code incorrect, réessayez",
+    y2_entrezPin: "Entrez votre code PIN",
+    y2_copiezClientId: "Copiez le {0} (finit par {1}) ci-dessous",
+    y2_notifBoutique: "Quand un client commande sur votre {0}, ce téléphone reçoit une vraie notification système — {1}. Chaque appareil s'active séparément.",
+    y2_boutiqueEnLigne: "boutique en ligne",
+    y2_twilioFunction: "{0} : créez une fonction qui reçoit {1} et appelle Twilio Messages API",
+    y2_africasTalking: "{0} (Côte d'Ivoire) :",
+    y1_planLimite: "Ton plan {0} est limité à {1}. Passe en {2} pour augmenter (ou illimité).",
+    y1_peuDonnees: "peu de données",
+    y1_renseignezPrix: "Renseignez les deux prix pour voir la marge",
+    y1_ajoutezPrix: "Ajoutez les deux prix pour voir la marge",
+    y1_surtoutServices: "💇 Vous faites surtout des {0} (coiffure, réparation, transport, conseil) ? Choisissez au plus proche — le mode {1} fonctionne dans tous les cas.",
+    y1_services: "services",
+    y1_prestation: "🧾 Prestation",
+    y1_rejoindreEquipe: "👥 Rejoindre l'équipe d'une boutique",
+    y1_especes: "Espèces",
+    y1_sovaAnalyse: "SOVA a analysé tes {0}. Voici tes opportunités :",
+    y1_pointezCamera: "Pointez la caméra vers vos produits…",
+    y1_metsUriSur: "Dans ton fournisseur, mets l'{0} sur :",
     x5_codesPromo: "Codes promo & réductions",
     x5_aucuneReduction: "Aucune réduction",
     x5_creerReduction: "+ Créer une réduction",
@@ -985,12 +1121,12 @@ const LANGS = {
     w4_promos: "promo(s)",
     w4_connectes: "connecte(s)",
     w4_enregistres: "enregistre(s)",
-    w4_objectifCA: "${t('w4_objectifCA')}",
+    w4_objectifCA: "OBJECTIF CHIFFRE D'AFFAIRES",
     w4_aujourdhui: "AUJOURD'HUI",
     w4_atteint: "atteint",
     w4_reste: "Reste",
     w4_ventesN: "ventes",
-    w4_panierMoyen: "${t('w4_panierMoyen')}",
+    w4_panierMoyen: "Panier moyen",
     w4_cmdBoutique: "commande boutique à traiter",
     w4_cmdsBoutique: "commandes boutique à traiter",
     w3_maJournee: "Ma journée",
@@ -1361,6 +1497,142 @@ const LANGS = {
     version:'Version',
   },
   en: {
+    z1_exBanniereCom: "Announcement banner",
+    z1_exBanniere: "Free delivery from 20,000 FCFA!",
+    x2_couleurFond: "Background colour",
+    y5_avecVariables: "{0} with variables",
+    y5_comptaEcom: "Accounting & e-commerce",
+    y5_ouvrablesExcel: "open directly in Excel, LibreOffice, Numbers",
+    y5_gmailConnectez: "Gmail (connect your account)",
+    y5_especes: "Cash",
+    y5_remplaceePalette: "— replaced by the palette",
+    y5_verifie: "✓ Verified",
+    y5_nonVerifie: "⚠ Not verified",
+    y5_livraisonGratuite: "🎁 Free delivery from 20,000 FCFA",
+    y5_aucunEvenement: "No event selected",
+    y5_aucunProduit: "No products",
+    y5_listeProduits: "— Product list",
+    y5_enregistrerVente: "— Record a sale",
+    y5_etatStock: "— Stock status",
+    y5_creerCommande: "— Create an order",
+    y5_listeClients: "— Customer list",
+    y5_publierYoutube: ". You can publish it from YouTube Studio.",
+    y5_tarifsBas: "(very low rates in Ivory Coast / Africa) and",
+    y5_creerMonCompte: "Create my account",
+    y5_meConnecter: "Sign in",
+    y4_especes: "Cash",
+    y4_verifie: "✓ Verified",
+    y4_nonVerifie: "⚠ Not verified",
+    y4_aucunPaiement: "None — set up in Payments",
+    y4_plusQue: "⚡ Only {0} left",
+    y4_creerMonCompte: "Create my account",
+    y4_meConnecter: "Sign in",
+    y4_envoiCommande: "Sending your order…",
+    y4_unInstant: "One moment, we are notifying {0}.",
+    y4_attendWhatsApp: "It is waiting for you in WhatsApp. You can also find it in {0}.",
+    y4_mesAchats: "My purchases",
+    y4_livraisonGratuite: "🎁 Free delivery from 20,000 FCFA",
+    y4_cssInjecte: "🎨 {0} is injected into the {1} of the generated site — it changes the overall look.",
+    y4_destinatairesBcc: "💡 Recipients are placed in {0}: nobody sees anyone else's email address.",
+    y4_copieCachee: "blind copy (BCC)",
+    y4_recuperezIds: "2. Get your {0} and your {1} from the partner settings",
+    y4_mesVideos: "📚 My videos",
+    y4_aucuneVideo: "No videos saved",
+    y4_creezDepuisEditeur: "Create one from the video editor",
+    y4_ouvrirEditeur: "🎬 Open the editor",
+    y4_voir: "▶️ View",
+    y4_telechargerSeul: "💾 Download only",
+    y4_telechargerVideo: "💾 Download current video (for CapCut)",
+    y4_tout: "All",
+    y4_comptaEcom: "Accounting & e-commerce",
+    y4_ouvrablesExcel: "open directly in Excel, LibreOffice, Numbers",
+    y4_gmailConnectez: "Gmail (connect your account)",
+    y4_avecVariables: "with variables",
+    y4_necessiteMode: "Requires mode",
+    y4_tarifsBas: "(very low rates in Ivory Coast / Africa) and",
+    y4_imprimeTicket: "Prints a receipt as soon as a sale is recorded",
+    y4_commandeOuverture: "Drawer-open command on cash payment",
+    y4_remplaceePalette: "— replaced by the palette",
+    y4_glissezPlacer: "then drag them into place",
+    y3_scansEpuises: "You have used your {0} for today. Switch to {1} for {2} scans, plus vision AI, online shop and marketing…",
+    y3_scansSpectra: "{0} Spectra scans",
+    y3_illimites: "unlimited",
+    y3_reconnaissanceLocale: "Local (offline) recognition does not cover every product. With {0} (free key, 1,500 scans/day), Spectra identifies {1} from a photo or video.",
+    y3_iaVisionGemini: "Gemini vision AI",
+    y3_ps5Iphone: "PS5, iPhone, cosmetics, anything",
+    y3_memoireProduit: "🧠 Product memory",
+    y3_qualiteImage: "🔬 Image quality",
+    y3_photoALaPlace: "📷 Photo instead",
+    y3_categorieIcone: "🗂️ Category",
+    y3_rapportsSignes: "📄 Signed audit reports",
+    y3_nomArticleIA: "Item name (the AI learns from what you type)",
+    y3_pasIdentifie: "Spectra could not identify it with confidence",
+    y3_creerToiMeme: "You can create the item yourself in a few seconds.",
+    y3_reconnaitTout: "Spectra recognises any product you photograph",
+    y3_commeGoogleLens: "Recognises any product, like Google Lens",
+    y3_reconnaissanceMax: "Maximum recognition of any product · Manage",
+    y3_connecteToi: "→ sign in (Google/email) → \"Create API Key\".",
+    y3_passeEnPro: "switch to Pro for unlimited",
+    y3_ptsDistribues: "pts issued",
+    y3_clientsFideles: "loyal customers",
+    y3_echanges: "redemptions",
+    y3_personnaliseParClient: "{0} is personalised for each customer.",
+    y3_ajoutezClientsTel: "Add customers with a phone number to send them an SMS.",
+    y3_envoye: "sent",
+    y3_echec: "failed",
+    y3_commandee: "Ordered",
+    y3_expediee: "Shipped",
+    y3_expediees: "Shipped",
+    y3_livree: "Delivered",
+    y3_recues: "Received",
+    y3_aucunProduit: "No products",
+    y3_reappSuggere: "Suggested restocking",
+    y3_nomOnglet: "Tab name (Sheet1 by default)",
+    y3_appendAuto: "Auto-append on every sale",
+    y3_ajouteLigne: "Adds a row as soon as a sale is recorded",
+    y3_syncQuotidienne: "Full daily sync",
+    y3_syncChaqueJour: "Full synchronisation every day at 3 am",
+    y3_pushToutes23h: "Push all data at 11 pm",
+    y3_dejaSync: "Already synced",
+    y3_commentIdentifiants: "How do I get the credentials?",
+    y3_postAutoCreation: "Auto-post when a product is created",
+    y3_pushAutoCreation: "Auto-push when a product is created",
+    y3_publieDesCree: "Publishes the product as soon as it is created",
+    y3_publierHeure: "Publish automatically at the scheduled time",
+    y3_programmes: "Scheduled",
+    y3_publies: "Published",
+    y3_aucunEvenement: "No event selected",
+    y3_selectionnerVideo: "Select video",
+    y3_uploaderPrive: "🚀 Upload privately",
+    y3_prive: "private",
+    y3_publierYoutube: ". You can publish it from YouTube Studio.",
+    y3_creerCommande: "— Create an order",
+    y3_enregistrerVente: "— Record a sale",
+    y3_listeClients: "— Customer list",
+    y3_listeProduits: "— Product list",
+    y3_etatStock: "— Stock status",
+    y3_journalAuditComplet: "📋 View the full audit log",
+    y3_ecrit: "✍️ typing…",
+    y2_aucunMembreDispo: "No member available",
+    y2_codeIncorrect: "Wrong code, try again",
+    y2_entrezPin: "Enter your PIN",
+    y2_copiezClientId: "Copy the {0} (ends with {1}) below",
+    y2_notifBoutique: "When a customer orders from your {0}, this phone gets a real system notification — {1}. Each device is enabled separately.",
+    y2_boutiqueEnLigne: "online shop",
+    y2_twilioFunction: "{0}: create a function that receives {1} and calls the Twilio Messages API",
+    y2_africasTalking: "{0} (Ivory Coast):",
+    y1_planLimite: "Your {0} plan is limited to {1}. Switch to {2} to raise it (or go unlimited).",
+    y1_peuDonnees: "little data",
+    y1_renseignezPrix: "Enter both prices to see the margin",
+    y1_ajoutezPrix: "Enter both prices to see the margin",
+    y1_surtoutServices: "💇 Do you mostly provide {0} (hairdressing, repairs, transport, consulting)? Pick the closest one — the {1} mode works in every case.",
+    y1_services: "services",
+    y1_prestation: "🧾 Service",
+    y1_rejoindreEquipe: "👥 Join a shop's team",
+    y1_especes: "Cash",
+    y1_sovaAnalyse: "SOVA analysed your {0}. Here are your opportunities:",
+    y1_pointezCamera: "Point the camera at your products…",
+    y1_metsUriSur: "In your provider, set the {0} to:",
     x5_codesPromo: "Promo codes & discounts",
     x5_aucuneReduction: "No discounts",
     x5_creerReduction: "+ Create a discount",
@@ -4279,7 +4551,7 @@ function _showPlanLimitModal(feature, limit, label) {
       <div style="text-align:center">
         <div style="font-size:48px;margin-bottom:8px">🚀</div>
         <div style="font-size:20px;font-weight:900;letter-spacing:-.3px">Limite ${label} atteinte</div>
-        <div style="font-size:13px;color:var(--text-3);margin-top:8px;line-height:1.55;max-width:320px;margin-left:auto;margin-right:auto">Ton plan <strong>${plan === 'free' ? 'Gratuit' : plan}</strong> est limité à <strong>${limit} ${label}</strong>. Passe en <strong>${nextPlan}</strong> pour augmenter (ou illimité).</div>
+        <div style="font-size:13px;color:var(--text-3);margin-top:8px;line-height:1.55;max-width:320px;margin-left:auto;margin-right:auto">${t('y1_planLimite').replace('{0}','<strong>'+(plan === 'free' ? PLAN_LABELS.free : PLAN_LABELS[plan] || plan)+'</strong>').replace('{1}','<strong>'+limit+' '+label+'</strong>').replace('{2}','<strong>'+nextPlan+'</strong>')}</div>
       </div>
       <div class="card" style="border:2px solid var(--accent);background:linear-gradient(135deg,rgba(124,115,255,.08),transparent);margin:18px 0 12px">
         ${['♾️ Articles & ventes illimités (Pro)','📍 Plus d\'emplacements','🔍 Spectra IA illimité','🏪 Boutique en ligne + marketing'].map(f=>`<div style="display:flex;gap:8px;font-size:13px;padding:3px 0;color:var(--text-2)"><span style="color:var(--accent)">✓</span>${f}</div>`).join('')}
@@ -4793,7 +5065,7 @@ function vPrevisions() {
   const budget = urgents.reduce((s, p) => s + p.valeurCommande, 0);
   const pastille = c => c === 'bonne' ? '<span class="pv-conf ok">confiance bonne</span>'
     : c === 'moyenne' ? '<span class="pv-conf moy">confiance moyenne</span>'
-    : '<span class="pv-conf bas">peu de données</span>';
+    : `<span class="pv-conf bas">${t('y1_peuDonnees')}</span>`;
 
   return `
   <div class="sub-hero">
@@ -7195,7 +7467,7 @@ function updateArticleMarginPreview() {
       </div>
     </div>`;
   } else {
-    box.innerHTML = '<div style="font-size:11px;color:var(--text-3)">Renseignez les deux prix pour voir la marge</div>';
+    box.innerHTML = `<div style="font-size:11px;color:var(--text-3)">${t('y1_renseignezPrix')}</div>`;
   }
 }
 if (typeof window !== 'undefined') window.updateArticleMarginPreview = updateArticleMarginPreview;
@@ -9221,7 +9493,7 @@ function vSetupWizard() {
             <span class="wiz-choice-check">${w.type===id?'✓':''}</span>
           </button>`).join('')}
       </div>
-      <div style="font-size:11.5px;color:var(--text-3);text-align:center;line-height:1.5;margin:2px 4px 0">💇 Vous faites surtout des <strong>services</strong> (coiffure, réparation, transport, conseil) ? Choisissez au plus proche — le mode <strong>🧾 Prestation</strong> fonctionne dans tous les cas.</div>
+      <div style="font-size:11.5px;color:var(--text-3);text-align:center;line-height:1.5;margin:2px 4px 0">${t('y1_surtoutServices').replace('{0}','<strong>'+t('y1_services')+'</strong>').replace('{1}','<strong>'+t('y1_prestation')+'</strong>')}</div>
       <button class="btn btn-primary wiz-cta" onclick="wizardNext()">Continuer</button>`;
   } else if (w.step === 1) {
     body = `
@@ -9418,7 +9690,7 @@ function vAuth() {
       <!-- Rejoindre une équipe avec un code (vendeur) -->
       ${S.authJoinOpen ? `
       <div style="margin-top:14px;padding:14px;border:1.5px solid var(--accent);border-radius:12px;background:var(--accent-light)">
-        <div style="font-weight:800;font-size:13.5px;color:var(--text-1);margin-bottom:8px">👥 Rejoindre l'équipe d'une boutique</div>
+        <div style="font-weight:800;font-size:13.5px;color:var(--text-1);margin-bottom:8px">${t('y1_rejoindreEquipe')}</div>
         <input class="input" id="join-code" type="text" placeholder="Code (ex : BARO-XXXXXX)" style="text-transform:uppercase;margin-bottom:8px" value="${(S.joinCode||'').replace(/"/g,'&quot;')}" oninput="S.joinCode=this.value">
         <input class="input" id="join-name" type="text" placeholder="Votre nom (vendeur)" style="margin-bottom:10px" value="${(S.joinName||'').replace(/"/g,'&quot;')}" oninput="S.joinName=this.value">
         <button class="btn btn-primary" style="width:100%" onclick="joinTeamWithCode()">${t('x1_rejoindreBoutique')}</button>
@@ -11329,7 +11601,7 @@ function vSales() {
       <div class="form-group">
         <label class="form-label">Mode de paiement</label>
         <select class="input" id="multi-payment">
-          <option value="cash">Espèces</option>
+          <option value="cash">${t('y1_especes')}</option>
           ${(S.paymentMethods||[]).filter(m=>m.active).map(m=>`<option value="${m.provider}">${m.name}</option>`).join('')}
         </select>
       </div>
@@ -11973,7 +12245,7 @@ function vSova() {
         sleeping.map(a=>({name:a.name, tag:`${a.daysSince>900?'jamais vendu':a.daysSince+'j sans vente'}`}))),
     ].filter(Boolean).join('');
 
-    return `<div class="sova-insights-intro">SOVA a analysé tes <strong>${sales.length} ${t('w4_ventesN')}</strong>. Voici tes opportunités :</div>${sections || `<div class="sova-empty"><div class="sova-empty-title">${t('w9_toutEquilibre')}</div><div class="sova-empty-sub">${t('w9_continueVendre')}</div></div>`}`;
+    return `<div class="sova-insights-intro">${t('y1_sovaAnalyse').replace('{0}','<strong>'+sales.length+' '+t('w4_ventesN')+'</strong>')}</div>${sections || `<div class="sova-empty"><div class="sova-empty-title">${t('w9_toutEquilibre')}</div><div class="sova-empty-sub">${t('w9_continueVendre')}</div></div>`}`;
   }
 
   function tabAlerts() {
@@ -12184,7 +12456,7 @@ function vDetail() {
           <div style="font-size:18px;font-weight:800;color:var(--success);margin-top:2px">+${fmt(benefStock)}</div>
           <div style="font-size:11px;color:var(--text-3);margin-top:2px">${t('x4_siToutVendu')}</div>
         </div>
-      </div>` : '<div style="font-size:12px;color:var(--text-3);text-align:center;padding:8px;background:var(--gray-1);border-radius:8px">Ajoutez les deux prix pour voir la marge</div>'}
+      </div>` : `<div style="font-size:12px;color:var(--text-3);text-align:center;padding:8px;background:var(--gray-1);border-radius:8px">${t('y1_ajoutezPrix')}</div>`}
     </div>` : ''}
 
     <div class="card" style="margin-top:8px">
@@ -16627,7 +16899,7 @@ async function _spectraLoop(video, canvas){
       const voteLine = topVote
         ? `<div style="display:flex;justify-content:space-between;gap:10px;${lines?'margin-top:6px;padding-top:6px;border-top:1px solid rgba(167,139,250,.25)':''}"><span>🔍 ${topVote.name}</span><b><span style="opacity:.6;font-size:11px">${topVote.votes} vue${topVote.votes>1?'s':''}</span></b></div>`
         : '';
-      overlay.innerHTML = (lines + voteLine) || '<div style="opacity:.6">Pointez la caméra vers vos produits…</div>';
+      overlay.innerHTML = (lines + voteLine) || `<div style="opacity:.6">${t('y1_pointezCamera')}</div>`;
     }
     // Stocker les dernières détections pour capture
     S.spectra._liveDetections = filtered;
@@ -17730,7 +18002,7 @@ function vBillingSetup() {
     <div class="card" style="margin-top:14px;background:var(--gray-1)">
       <div style="font-size:13px;font-weight:800;margin-bottom:6px">${t('w8_activationAuto')}</div>
       <div style="font-size:12px;color:var(--text-2);line-height:1.6">
-        Dans ton fournisseur, mets l'<strong>${t('w8_urlRedirection')}</strong> sur :<br>
+        ${t('y1_metsUriSur').replace('{0}','<strong>'+t('w8_urlRedirection')+'</strong>')}<br>
         <code style="background:var(--surface);padding:3px 8px;border-radius:6px;font-size:11px;display:inline-block;margin-top:4px;word-break:break-all">${location.origin}${location.pathname}?baro_paid=pro</code><br>
         <span style="font-size:11px;color:var(--text-3)">(remplace <strong>pro</strong> par starter/enterprise selon le lien). Le plan s'activera tout seul au retour.</span>
       </div>
@@ -19316,7 +19588,7 @@ function vTeam() {
       <div class="card" style="text-align:center;padding:40px 20px">
         <div style="font-size:48px;margin-bottom:10px">🔒</div>
         <div style="font-size:16px;font-weight:700;color:var(--text-1);margin-bottom:6px">${t('w7_accesReserve')}</div>
-        <div style="font-size:13px;color:var(--text-3)">Seul l'administrateur peut gérer l'équipe.</div>
+        <div style="font-size:13px;color:var(--text-3)">${t('w7_seulAdminEquipe')}</div>
       </div>
     </div>`;
   }
@@ -19393,7 +19665,7 @@ function vTeam() {
 
       ${!S.session?.isMember ? `
       <div class="card" style="margin-bottom:12px;background:linear-gradient(135deg,rgba(16,185,129,.10),transparent);border:1px solid rgba(16,185,129,.28)">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="font-size:18px">🔑</span><div style="font-weight:800;font-size:14px;color:var(--text-1)">Code d'équipe — vendeurs en ligne</div></div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="font-size:18px">🔑</span><div style="font-weight:800;font-size:14px;color:var(--text-1)">${t('w7_codeEquipe')}</div></div>
         <div style="font-size:12px;color:var(--text-3);line-height:1.55;margin-bottom:10px">Vos vendeurs installent BARO sur leur téléphone, tapent ce code, et vendent depuis votre stock — chaque vente est enregistrée à leur nom, en temps réel.</div>
         ${(!USE_LOCAL && S.token) ? (S.teamCode ? `
         <div style="display:flex;align-items:center;gap:8px;background:var(--surface);border:1.5px dashed var(--accent);border-radius:10px;padding:12px 14px;margin-bottom:10px">
@@ -19405,7 +19677,7 @@ function vTeam() {
           <button class="btn btn-ghost" style="flex:0 0 auto;width:auto;padding-left:16px;padding-right:16px;white-space:nowrap" onclick="resetTeamCode()">${t('w7_regenerer')}</button>
         </div>
         ` : `<button class="btn btn-primary" style="width:100%" onclick="loadTeamCode()">${t('w7_chargementCode')}</button>`) : `
-        <div style="font-size:12px;color:var(--text-3);background:var(--gray-1);border-radius:10px;padding:10px 12px;margin-bottom:10px">Nécessite le mode <strong>en ligne</strong> : connectez-vous avec un compte serveur (ou créez-en un — vos données locales sont conservées et envoyées au serveur).</div>
+        <div style="font-size:12px;color:var(--text-3);background:var(--gray-1);border-radius:10px;padding:10px 12px;margin-bottom:10px">${t('y4_necessiteMode')} <strong>en ligne</strong> : connectez-vous avec un compte serveur (ou créez-en un — vos données locales sont conservées et envoyées au serveur).</div>
         <div style="display:flex;gap:8px">
           <button class="btn btn-primary" style="flex:1 1 auto;width:auto;min-width:0" onclick="doLogout()">Se connecter en ligne</button>
           <button class="btn btn-ghost" style="flex:0 0 auto;width:auto;padding-left:14px;padding-right:14px;white-space:nowrap" onclick="nav('settings')">Serveur</button>
@@ -19484,7 +19756,7 @@ function vTeam() {
       </div>
 
       <div class="card">
-        <div class="card-title">💡 Conseils pour l'équipe</div>
+        <div class="card-title">${t('w7_conseilsEquipe')}</div>
         <div style="display:flex;flex-direction:column;gap:8px">
           <div style="padding:10px;background:#10B98110;border-left:3px solid #10B981;border-radius:8px;font-size:12px">
             <strong style="color:#10B981">Bonus performance</strong><br>
@@ -19522,7 +19794,7 @@ function vTeam() {
       <!-- ── Réunions et événements ────────────────── -->
       <div class="card" style="margin-bottom:12px">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-          <div class="card-title" style="margin:0">🤝 Réunions d'équipe</div>
+          <div class="card-title" style="margin:0">${t('w7_reunions')}</div>
           <button class="btn btn-primary" style="padding:8px 12px;font-size:12px" onclick="createMeeting()">＋ Nouvelle</button>
         </div>
         ${(() => {
@@ -19685,7 +19957,7 @@ function createMeeting(existingId) {
             return `<label style="display:flex;align-items:center;gap:6px;padding:6px 10px;background:var(--gray-1);border:1px solid var(--border);border-radius:16px;cursor:pointer;font-size:12px">
               <input type="checkbox" value="${m.id}" ${checked?'checked':''} style="accent-color:var(--accent)"> ${m.name}
             </label>`;
-          }).join('') || '<div style="font-size:11px;color:var(--text-3)">Aucun membre disponible</div>'}
+          }).join('') || `<div style="font-size:11px;color:var(--text-3)">${t('y2_aucunMembreDispo')}</div>`}
         </div>
       </div>
       <div style="display:flex;gap:8px;margin-top:16px">
@@ -20152,7 +20424,7 @@ function vOAuthSetup() {
           <button class="btn btn-ghost" style="padding:4px 8px;font-size:11px;margin-left:6px" onclick="navigator.clipboard.writeText('${origin}');showToast('Copié','success')">📋</button><br>
           6. <strong>${t('x3_uriRedirection')}</strong> : <code style="background:var(--gray-1);padding:2px 6px;border-radius:4px;font-size:11px;word-break:break-all">${redirect}</code>
           <button class="btn btn-ghost" style="padding:4px 8px;font-size:11px;margin-left:6px" onclick="navigator.clipboard.writeText('${redirect}');showToast('Copié','success')">📋</button><br>
-          7. Copiez le <strong>Client ID</strong> (finit par <code>.apps.googleusercontent.com</code>) ci-dessous
+          7. ${t('y2_copiezClientId').replace('{0}','<strong>Client ID</strong>').replace('{1}','<code>.apps.googleusercontent.com</code>')}
         </div>
       </details>
 
@@ -20294,7 +20566,7 @@ function vNotificationsSetup() {
     <div class="card" style="margin-bottom:12px;border-left:4px solid ${pushOn?'var(--success)':'#8B5CF6'};background:linear-gradient(135deg,rgba(139,92,246,.06),transparent)">
       <div style="font-size:15px;font-weight:800;color:var(--text-1);margin-bottom:6px">🔔 Push nouvelle commande</div>
       <div style="font-size:12px;color:var(--text-2);line-height:1.6;margin-bottom:10px">
-        Quand un client commande sur votre <strong>boutique en ligne</strong>, ce téléphone reçoit une vraie notification système — <strong>${t('w7_memeAppFermee')}</strong>. Chaque appareil s'active séparément.
+        ${t('y2_notifBoutique').replace('{0}','<strong>'+t('y2_boutiqueEnLigne')+'</strong>').replace('{1}','<strong>'+t('w7_memeAppFermee')+'</strong>')}
       </div>
       ${!_pushSupported() ? `
         <div style="font-size:12px;color:var(--text-3);background:var(--gray-1);border-radius:10px;padding:10px 12px">Ce navigateur ne supporte pas le push. Sur iPhone : installez d'abord BARO sur l'écran d'accueil (iOS 16.4+).</div>
@@ -20311,7 +20583,7 @@ function vNotificationsSetup() {
 
     <!-- ── EmailJS ── -->
     <div class="card" style="margin-bottom:12px;border-left:4px solid ${emailActive?'var(--success)':'#0EA5E9'}">
-      <div style="font-size:15px;font-weight:800;color:var(--text-1);margin-bottom:6px">📧 EmailJS (envoi d'emails réel)</div>
+      <div style="font-size:15px;font-weight:800;color:var(--text-1);margin-bottom:6px">${t('w7_emailjs')}</div>
       <div style="font-size:12px;color:var(--text-2);line-height:1.6;margin-bottom:10px">
         Service client-side gratuit <strong>200 emails/mois</strong> — envoie depuis votre Gmail/Outlook sans backend.
       </div>
@@ -20320,8 +20592,8 @@ function vNotificationsSetup() {
         <summary style="cursor:pointer;font-size:12px;font-weight:700;color:#0EA5E9;padding:6px 0">📖 Setup (3 min)</summary>
         <div style="font-size:12px;color:var(--text-2);line-height:1.7;padding:8px 0 0 12px;border-left:2px solid #0EA5E9">
           1. Créez un compte <a href="https://www.emailjs.com/" target="_blank" rel="noopener noreferrer" style="color:#0EA5E9;font-weight:700">emailjs.com</a> (gratuit)<br>
-          2. Ajoutez un <strong>Service</strong> Gmail (connectez votre compte)<br>
-          3. Créez un <strong>Template</strong> avec variables <code>{{to_email}}</code>, <code>{{to_name}}</code>, <code>{{code}}</code>, <code>{{purpose}}</code>, <code>{{expires_min}}</code><br>
+          2. Ajoutez un <strong>Service</strong> ${t('y5_gmailConnectez')}<br>
+          3. ${t('y5_avecVariables').replace('{0}','<strong>Template</strong>')} <code>{{to_email}}</code>, <code>{{to_name}}</code>, <code>{{code}}</code>, <code>{{purpose}}</code>, <code>{{expires_min}}</code><br>
           4. Copiez les IDs ci-dessous<br>
           <strong style="color:var(--success)">Limite gratuite : 200 emails/mois</strong>
         </div>
@@ -20351,8 +20623,8 @@ function vNotificationsSetup() {
       <details style="margin-bottom:10px">
         <summary style="cursor:pointer;font-size:12px;font-weight:700;color:#F59E0B;padding:6px 0">📖 Setup (options multiples)</summary>
         <div style="font-size:12px;color:var(--text-2);line-height:1.7;padding:8px 0 0 12px;border-left:2px solid #F59E0B">
-          <strong>Option 1 — Twilio Function</strong> : créez une fonction qui reçoit <code>{ to, message }</code> et appelle Twilio Messages API<br>
-          <strong>Option 2 — Africa's Talking</strong> (Côte d'Ivoire) : <a href="https://africastalking.com/" target="_blank" rel="noopener noreferrer" style="color:#F59E0B;font-weight:700">africastalking.com</a><br>
+          ${t('y2_twilioFunction').replace('{0}','<strong>Option 1 — Twilio Function</strong>').replace('{1}','<code>{ to, message }</code>')}<br>
+          ${t('y2_africasTalking').replace('{0}',"<strong>Option 2 — Africa's Talking</strong>")} <a href="https://africastalking.com/" target="_blank" rel="noopener noreferrer" style="color:#F59E0B;font-weight:700">africastalking.com</a><br>
           <strong>Option 3 — Orange Developer</strong> : <a href="https://developer.orange.com/" target="_blank" rel="noopener noreferrer" style="color:#F59E0B;font-weight:700">developer.orange.com</a><br>
           <strong>${t('w7_payloadEnvoye')}</strong> : <code>{ to: "+22507...", message: "...", code: "123456" }</code>
         </div>
@@ -20911,7 +21183,7 @@ function vPinLock() {
     <div class="pinlock-inner ${err}">
       <div class="pinlock-logo">🔐</div>
       <div class="pinlock-title">${biz}</div>
-      <div class="pinlock-sub">${S.pinError ? '<span style="color:#fca5a5">Code incorrect, réessayez</span>' : 'Entrez votre code PIN'}</div>
+      <div class="pinlock-sub">${S.pinError ? `<span style="color:#fca5a5">${t('y2_codeIncorrect')}</span>` : t('y2_entrezPin')}</div>
       <div class="pin-dots">${dots}</div>
       <div class="pin-pad">
         ${keys.map(k => k === '' ? `<span></span>` :
@@ -20972,7 +21244,7 @@ function vSecurity() {
       <button class="back-btn" onclick="nav('settings')">${IC.left}</button>
       <div class="page-title">${t('w2_securite')}</div>
     </div></div>
-    <div class="container"><div class="card" style="text-align:center;padding:40px 20px">🔒 Seul l'admin peut modifier la sécurité.</div></div>`;
+    <div class="container"><div class="card" style="text-align:center;padding:40px 20px">${t('w7_seulAdminSecu')}</div></div>`;
   }
   const s = S.security || {};
   const lastLogin = s.lastLogin ? new Date(s.lastLogin).toLocaleString('fr-FR') : 'Première connexion';
@@ -21099,7 +21371,7 @@ function vSecurity() {
     </div>
 
     <div style="margin-top:10px">
-      <button class="btn btn-ghost" style="width:100%" onclick="nav('audit-log')">📋 Voir le journal d'audit complet</button>
+      <button class="btn btn-ghost" style="width:100%" onclick="nav('audit-log')">${t('y3_journalAuditComplet')}</button>
     </div>
 
   </div>`;
@@ -21392,7 +21664,7 @@ function vAiChat() {
           <div style="width:30px;height:30px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,#6366F1,#0EA5E9);display:flex;align-items:center;justify-content:center;font-size:15px">🤖</div>
           <div style="max-width:82%;background:var(--surface);border:1px solid var(--border);color:var(--text-1);padding:10px 14px;border-radius:16px 16px 16px 4px;font-size:13.5px;line-height:1.55">${fmtMsg(m.content)}</div>
         </div>`).join('')}
-      ${S._aiBusy ? `<div style="display:flex;gap:8px;margin-bottom:10px"><div style="width:30px;height:30px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,#6366F1,#0EA5E9);display:flex;align-items:center;justify-content:center;font-size:15px">🤖</div><div style="background:var(--surface);border:1px solid var(--border);padding:12px 16px;border-radius:16px;font-size:13px;color:var(--text-3)">✍️ écrit…</div></div>` : ''}
+      ${S._aiBusy ? `<div style="display:flex;gap:8px;margin-bottom:10px"><div style="width:30px;height:30px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,#6366F1,#0EA5E9);display:flex;align-items:center;justify-content:center;font-size:15px">🤖</div><div style="background:var(--surface);border:1px solid var(--border);padding:12px 16px;border-radius:16px;font-size:13px;color:var(--text-3)">${t('y3_ecrit')}</div></div>` : ''}
     </div>
     <div style="display:flex;gap:8px;padding:8px 0 4px;border-top:1px solid var(--border)">
       <input id="ai-input" class="input" type="text" placeholder="Écrivez votre question…" style="flex:1;min-width:0" onkeydown="if(event.key==='Enter')sendAiMessage()" ${S._aiBusy?'disabled':''}>
@@ -21859,7 +22131,7 @@ function vExports() {
     <!-- Excel / XLSX -->
     <div class="card" style="margin-bottom:12px">
       <div class="card-title" style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">📗</span> Exports Excel</div>
-      <div style="font-size:12px;color:var(--text-3);margin-bottom:10px">Fichiers <strong>.xls</strong> ouvrables directement dans Excel, LibreOffice, Numbers</div>
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:10px">Fichiers <strong>.xls</strong> ${t('y5_ouvrablesExcel')}</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
         <button class="btn btn-primary" onclick="exportArticlesXLSX()" style="padding:11px">📦 Articles</button>
         <button class="btn btn-primary" onclick="exportProductsXLSX()" style="padding:11px">🏷️ Produits</button>
@@ -21883,7 +22155,7 @@ function vExports() {
 
     <!-- Comptabilité / Intégrations -->
     <div class="card" style="margin-bottom:12px">
-      <div class="card-title" style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">🧾</span> Comptabilité & e-commerce</div>
+      <div class="card-title" style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">🧾</span> ${t('y5_comptaEcom')}</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
         <button class="btn btn-ghost" onclick="_exportComptable()" style="padding:11px;font-size:12px">📊 Export Comptable</button>
         <button class="btn btn-ghost" onclick="exportToJumia()" style="padding:11px;font-size:12px">🏪 Jumia</button>
@@ -22235,7 +22507,7 @@ function vBoutique() {
         <label class="form-label">${t('w8_moyensAcceptes')}</label>
         <div style="display:flex;flex-wrap:wrap;gap:6px">
           ${(S.paymentMethods||[]).filter(m=>m.active).map(m => `
-          <span style="background:var(--accent-light);color:var(--accent);padding:4px 10px;border-radius:8px;font-size:11px;font-weight:600">${m.name}</span>`).join('') || '<span style="font-size:12px;color:var(--text-3)">Aucun — configurez dans Paiements</span>'}
+          <span style="background:var(--accent-light);color:var(--accent);padding:4px 10px;border-radius:8px;font-size:11px;font-weight:600">${m.name}</span>`).join('') || `<span style="font-size:12px;color:var(--text-3)">${t('y4_aucunPaiement')}</span>`}
         </div>
         <button class="btn btn-ghost" style="font-size:11px;margin-top:6px" onclick="nav('payments')">${t('w8_gererPaiements')}</button>
       </div>
@@ -22481,7 +22753,7 @@ function _bqPickerChips(kind, items) {
   if (cats.length < 2) return '';
   const cur = _bqCatState()[kind] || '';
   return `<div class="bq-pick-chips">
-    <button class="bq-pick-chip ${cur === '' ? 'on' : ''}" onclick="boutiqueSetPickCat('${kind}','')">Tout <b>${items.length}</b></button>
+    <button class="bq-pick-chip ${cur === '' ? 'on' : ''}" onclick="boutiqueSetPickCat('${kind}','')">${t('y4_tout')} <b>${items.length}</b></button>
     ${cats.map(c => `<button class="bq-pick-chip ${cur === c ? 'on' : ''}" onclick="boutiqueSetPickCat('${kind}','${String(c).replace(/'/g, "\\'")}')">${c} <b>${counts[c]}</b></button>`).join('')}
   </div>`;
 }
@@ -22685,7 +22957,7 @@ function generateBoutiqueSite(opts) {
   const waNum = (bc.whatsappNumber || '').replace(/\s/g, '').replace(/^\+/, '');
   const waLink = waNum ? `https://wa.me/${waNum}` : 'https://wa.me/';
   const payments = (S.paymentMethods||[]).filter(m => m.active);
-  const payHTML = payments.length > 0 ? payments.map(m => `<span class="pay-badge">${m.name}</span>`).join('') : '<span class="pay-badge">Espèces</span>';
+  const payHTML = payments.length > 0 ? payments.map(m => `<span class="pay-badge">${m.name}</span>`).join('') : `<span class="pay-badge">${t('y4_especes')}</span>`;
   // ── Frais de livraison par zone (sinon tarif par défaut) ──
   const _defFee = Number(bc.deliveryFees) || 0;
   const _zoneFeeMap = {};
@@ -22822,7 +23094,7 @@ function generateBoutiqueSite(opts) {
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
         <div style="width:36px;height:36px;border-radius:50%;background:${tc};color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800">${(r.clientName||'?').charAt(0).toUpperCase()}</div>
         <div style="flex:1">
-          <div style="font-weight:700;font-size:13px">${r.clientName} ${r.verified?'<span style="color:#10B981;font-size:11px">✓ Vérifié</span>':''}</div>
+          <div style="font-weight:700;font-size:13px">${r.clientName} ${r.verified?`<span style="color:#10B981;font-size:11px">${t('y4_verifie')}</span>`:''}</div>
           <div style="color:#F59E0B;font-size:13px;letter-spacing:1px">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
         </div>
       </div>
@@ -22846,7 +23118,7 @@ function generateBoutiqueSite(opts) {
     const _urg = [];
     if (_topNames.has(p.name)) _urg.push('<span class="pc-urg" style="background:#EF4444">🔥 Populaire</span>');
     if (_newIds.has(String(p.id))) _urg.push('<span class="pc-urg" style="background:#7C3AED">✨ Nouveau</span>');
-    if (p.qty != null && p.qty > 0 && p.qty <= _LOWQTY) _urg.push('<span class="pc-urg" style="background:#D97706">⚡ Plus que ' + p.qty + '</span>');
+    if (p.qty != null && p.qty > 0 && p.qty <= _LOWQTY) _urg.push(`<span class="pc-urg" style="background:#D97706">${t('y4_plusQue').replace('{0}', p.qty)}</span>`);
     const urgHTML = _urg.length ? `<div class="pc-urgwrap">${_urg.join('')}</div>` : '';
     // Note moyenne (avis produit)
     const _pcUnder = p._pack ? null : ((S.articles||[]).find(a => a.id === p.id) || (S.products||[]).find(x => x.id === p.id));
@@ -22954,7 +23226,7 @@ function generateBoutiqueSite(opts) {
   const _catCount = {};
   shopProds.forEach(p => { const c = p.category || 'Autres'; _catCount[c] = (_catCount[c]||0) + 1; });
   const chipsHTML = categories.length > 1
-    ? `<div class="chips"><button class="chip active" data-cat="" onclick="baroSetCat('',this)">Tout <span class="chip-n">${shopProds.length}</span></button>${categories.map(c => `<button class="chip" data-cat="${esc(c)}" onclick="baroSetCat('${esc(c).replace(/'/g,'&#39;')}',this)">${esc(c)} <span class="chip-n">${_catCount[c]||0}</span></button>`).join('')}</div>`
+    ? `<div class="chips"><button class="chip active" data-cat="" onclick="baroSetCat('',this)">${t('y4_tout')} <span class="chip-n">${shopProds.length}</span></button>${categories.map(c => `<button class="chip" data-cat="${esc(c)}" onclick="baroSetCat('${esc(c).replace(/'/g,'&#39;')}',this)">${esc(c)} <span class="chip-n">${_catCount[c]||0}</span></button>`).join('')}</div>`
     : '';
   const html = `<!DOCTYPE html>
 <html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -23786,7 +24058,7 @@ ${(BARO_API_OK && shopIdNum) ? `<div class="legal-ov" id="acc-ov" onclick="if(ev
     if(s&&s.customer){return baroAccProfil();}
     var inscription=(m==='register');
     c.innerHTML=
-      '<h3>'+(inscription?'Créer mon compte':'Me connecter')+'</h3>'
+      '<h3>'+(inscription?${JSON.stringify(t('y4_creerMonCompte'))}:${JSON.stringify(t('y4_meConnecter'))})+'</h3>'
       +'<p class="acc-sub">'+(inscription
         ?'Retrouvez vos commandes depuis n’importe quel téléphone.'
         :'Chez '+BARO_SHOP+'.')+'</p>'
@@ -23794,7 +24066,7 @@ ${(BARO_API_OK && shopIdNum) ? `<div class="legal-ov" id="acc-ov" onclick="if(ev
       +(inscription?'<label class="acc-lb">${t('x2_votreNom')}</label><input class="acc-in" id="acc-name" type="text" autocomplete="name" placeholder="ex : Awa Kouassi">':'')
       +'<label class="acc-lb">${t('w9_telephone')}</label><input class="acc-in" id="acc-tel" type="tel" inputmode="tel" autocomplete="tel" placeholder="07 00 00 00 00">'
       +'<label class="acc-lb">${t('x2_motDePasseSimple')}</label><input class="acc-in" id="acc-mdp" type="password" autocomplete="'+(inscription?'new-password':'current-password')+'" placeholder="6 caractères minimum">'
-      +'<button class="acc-go" id="acc-submit" data-lbl="'+(inscription?'Créer mon compte':'Me connecter')+'" onclick="baroAccSend('+(inscription?'1':'0')+')">'+(inscription?'Créer mon compte':'Me connecter')+'</button>'
+      +'<button class="acc-go" id="acc-submit" data-lbl="'+(inscription?${JSON.stringify(t('y5_creerMonCompte'))}:${JSON.stringify(t('y5_meConnecter'))})+'" onclick="baroAccSend('+(inscription?'1':'0')+')">'+(inscription?${JSON.stringify(t('y5_creerMonCompte'))}:${JSON.stringify(t('y5_meConnecter'))})+'</button>'
       +'<button class="acc-alt" onclick="baroAccMode('+(inscription?"'login'":"'register'")+')">'
         +(inscription?'J’ai déjà un compte':'Créer un compte')+'</button>';
     var mdp=document.getElementById('acc-mdp');
@@ -23954,7 +24226,7 @@ ${showCartButton ? `
     ${_deliveryOff?'':`<div id="ck-zone-wrap">${(bc.deliveryZones||[]).length>0?`<label>Zone de livraison</label>
     <select id="ck-zone" onchange="baroZone&&baroZone()">${(bc.deliveryZones||[]).map(z=>`<option>${esc(z)}</option>`).join('')}</select>`:''}</div>`}
     <label>${t('x2_paiementSouhaite')}</label>
-    <select id="ck-pay"><option>Espèces</option>${payments.map(m=>`<option>${esc(m.name)}</option>`).join('')}</select>
+    <select id="ck-pay"><option>${t('y5_especes')}</option>${payments.map(m=>`<option>${esc(m.name)}</option>`).join('')}</select>
     <button class="ck-send" onclick="baroSend()">${t('x2_envoyerCommandeWa')}</button>
   </div>
 </div>
@@ -24155,8 +24427,8 @@ var baroMode=BARO_DELOFF?'pickup':'delivery';
     var c=document.getElementById('cfm-c');
     if(msg)_lastMsg=msg;
     if(etat==='envoi'){
-      c.innerHTML='<div class="cfm-spin"></div><h3>Envoi de votre commande…</h3>'
-        +'<p>Un instant, nous prévenons '+BARO_SHOP+'.</p>';
+      c.innerHTML='<div class="cfm-spin"></div><h3>'+${JSON.stringify(t('y4_envoiCommande'))}+'</h3>'
+        +'<p>'+${JSON.stringify(t('y4_unInstant'))}.replace('{0}',BARO_SHOP)+'</p>';
     } else if(etat==='ok'){
       c.innerHTML='<div class="cfm-ico ok">✓</div><h3>${t('x2_commandeEnvoyee')}</h3>'
         +'<p>'+BARO_SHOP+' a reçu votre commande. Suivez son avancement dans <b>Mes achats</b>.</p>'
@@ -24171,7 +24443,7 @@ var baroMode=BARO_DELOFF?'pickup':'delivery';
         +'<button class="cfm-alt" onclick="baroCloseConfirm()">${t('x2_plusTard')}</button>';
     } else {
       c.innerHTML='<div class="cfm-ico ok">✓</div><h3>Commande transmise</h3>'
-        +'<p>Elle vous attend dans WhatsApp. Retrouvez-la aussi dans <b>Mes achats</b>.</p>'
+        +'<p>'+${JSON.stringify(t('y4_attendWhatsApp'))}.replace('{0}','<b>'+${JSON.stringify(t('y4_mesAchats'))}+'</b>')+'</p>'
         +'<button class="cfm-go" onclick="baroCloseConfirm();baroMyOrders()">${t('x2_voirMesAchats')}</button>';
       _viderPanier();
     }
@@ -24599,7 +24871,7 @@ function vBoutiqueEditor() {
       </div>`;
     })()}
 
-    <div class="bq-sec-title">Couleur de fond${g('palette','') ? ' <span class="bq-hint">— remplacée par la palette</span>' : ''}</div>
+    <div class="bq-sec-title">${t('x2_couleurFond')}${g('palette','') ? ` <span class="bq-hint">${t('y4_remplaceePalette')}</span>` : ''}</div>
     <div class="bq-swatches"${g('palette','') ? ' style="opacity:.4;pointer-events:none"' : ''}>
       ${bgColors.map(c => `<button class="bq-swatch bq-swatch-bg ${g('pageBg','#FAFAFC')===c?'sel':''}" style="background:${c};box-shadow:inset 0 0 0 1px rgba(0,0,0,.08);color:#7C3AED" onclick="boutiqueEditSet('pageBg','${c}');document.querySelectorAll('.bq-swatch[data-grp=bg]').forEach(s=>s.classList.remove('sel'));this.classList.add('sel')" data-grp="bg">${g('pageBg','#FAFAFC')===c?'✓':''}</button>`).join('')}
     </div>
@@ -24929,7 +25201,7 @@ function vBoutiqueDomain() {
       <div style="margin-top:10px">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
           <strong style="font-size:14px">${bc.customDomain}</strong>
-          ${verified ? '<span style="background:#10B98120;color:#10B981;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700">✓ Vérifié</span>' : '<span style="background:#F59E0B20;color:#F59E0B;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700">⚠ Non vérifié</span>'}
+          ${verified ? `<span style="background:#10B98120;color:#10B981;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700">${t('y5_verifie')}</span>` : `<span style="background:#F59E0B20;color:#F59E0B;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700">${t('y5_nonVerifie')}</span>`}
         </div>
         <div style="font-size:11px;color:var(--text-3);margin-bottom:8px;font-weight:600">${t('w9_ajoutezDns')}</div>
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden">
@@ -25083,7 +25355,7 @@ function _codeSamples() {
   return {
     css: "/* Arrondir tous les boutons */\n.order-btn, .btn {\n  border-radius: 25px !important;\n}\n\n/* Ajouter ombre aux produits */\n.product {\n  box-shadow: 0 8px 30px rgba(0,0,0,.12);\n}\n\n/* Fond personnalisé */\nbody {\n  background: linear-gradient(135deg, #FEF3C7, #fff);\n}",
     head: '<!-- Meta tags SEO -->\n<meta property="og:image" content="https://...image.jpg">\n<meta name="keywords" content="boutique, vente, CI">\n\n<!-- Preconnect pour perf -->\n<link rel="preconnect" href="https://fonts.googleapis.com">',
-    body: '<!-- Bannière annonce -->\n<div style="position:fixed;bottom:80px;left:20px;background:#000;color:#fff;padding:10px 16px;border-radius:10px;font-size:12px;z-index:999">\n  🎁 Livraison gratuite dès 20 000 FCFA\n</div>',
+    body: '<!-- ' + t('z1_exBanniereCom') + ' -->\n<div style="position:fixed;bottom:80px;left:20px;background:#000;color:#fff;padding:10px 16px;border-radius:10px;font-size:12px;z-index:999">\n  🎁 ' + t('z1_exBanniere') + '\n</div>',
     js: "// Tracker les clics 'Commander'\ndocument.querySelectorAll('.order-btn').forEach(btn => {\n  btn.addEventListener('click', () => {\n    console.log('Commande:', btn.closest('.product')?.querySelector('.product-name')?.textContent);\n    // Envoyer à GA, FB Pixel, etc.\n  });\n});"
   };
 }
@@ -25093,7 +25365,7 @@ function vBoutiqueCode() {
   const tab = S.codeTab || 'css';
   const tabLabels = { css:'CSS', head:'HTML <head>', body:'HTML <body>', js:'JavaScript' };
   const tabInjectMsg = {
-    css: "🎨 <strong>CSS</strong> est injecté dans <code>&lt;style&gt;</code> du site généré — modifie l'apparence globale.",
+    css: t('y4_cssInjecte').replace('{0}','<strong>CSS</strong>').replace('{1}','<code>&lt;style&gt;</code>'),
     head:'📝 <strong>HTML &lt;head&gt;</strong> : balises meta, liens externes, polices, scripts tiers.',
     body:'📄 <strong>HTML &lt;body&gt;</strong> : éléments affichés avant &lt;/body&gt; — widgets, chat, bannières.',
     js:  '⚡ <strong>JavaScript</strong> exécuté à la fin du chargement — tracking custom, interactions.'
@@ -26285,15 +26557,15 @@ function _renderLoyaltyTab() {
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px">
         <div style="text-align:center;background:var(--surface);padding:10px;border-radius:10px">
           <div style="font-size:20px;font-weight:800;color:var(--accent)">${totalPts}</div>
-          <div style="font-size:10px;color:var(--text-3)">pts distribués</div>
+          <div style="font-size:10px;color:var(--text-3)">${t('y3_ptsDistribues')}</div>
         </div>
         <div style="text-align:center;background:var(--surface);padding:10px;border-radius:10px">
           <div style="font-size:20px;font-weight:800;color:var(--success)">${totalActive}</div>
-          <div style="font-size:10px;color:var(--text-3)">clients fidèles</div>
+          <div style="font-size:10px;color:var(--text-3)">${t('y3_clientsFideles')}</div>
         </div>
         <div style="text-align:center;background:var(--surface);padding:10px;border-radius:10px">
           <div style="font-size:20px;font-weight:800;color:var(--warning)">${clients.reduce((s,c)=>s+(c.redeemedRewards||[]).length,0)}</div>
-          <div style="font-size:10px;color:var(--text-3)">échanges</div>
+          <div style="font-size:10px;color:var(--text-3)">${t('y3_echanges')}</div>
         </div>
       </div>
       <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">
@@ -26405,7 +26677,7 @@ function _renderReviewsTab(reviews) {
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
         <div style="width:36px;height:36px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800">${(r.clientName||'?').charAt(0).toUpperCase()}</div>
         <div style="flex:1">
-          <div style="font-weight:700;font-size:13px">${r.clientName||'Anonyme'} ${r.verified?'<span style="color:var(--success);font-size:11px">✓ Vérifié</span>':''}</div>
+          <div style="font-weight:700;font-size:13px">${r.clientName||'Anonyme'} ${r.verified?`<span style="color:var(--success);font-size:11px">${t('y5_verifie')}</span>`:''}</div>
           <div style="font-size:11px;color:var(--text-3)">${fmtDate(r.date)}${prod?' · '+prod.name:''}</div>
         </div>
         <div style="color:#F59E0B;font-size:15px;letter-spacing:1px">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
@@ -26854,7 +27126,7 @@ function vBannerForm() {
   const b = isEdit ? S.banners.find(x => x.id === S.editingBannerId) : null;
   const today = new Date().toISOString().slice(0,10);
   const plus30 = new Date(Date.now()+30*86400000).toISOString().slice(0,10);
-  const draft = b || { text:'Livraison gratuite dès 20 000 FCFA !', subText:'', emoji:'🚚', bgColor:'#4F46E5', textColor:'#FFFFFF', linkUrl:'', linkText:'', active:true, startDate:today, endDate:plus30, position:'top', dismissible:true };
+  const draft = b || { text:t('z1_exBanniere'), subText:'', emoji:'🚚', bgColor:'#4F46E5', textColor:'#FFFFFF', linkUrl:'', linkText:'', active:true, startDate:today, endDate:plus30, position:'top', dismissible:true };
   const colors = [
     {bg:'#4F46E5', fg:'#fff', name:'Indigo'},
     {bg:'#059669', fg:'#fff', name:'Vert'},
@@ -26889,7 +27161,7 @@ function vBannerForm() {
       <div class="card-title">Contenu</div>
       <div class="form-group">
         <label class="form-label">Texte <span style="color:var(--danger)">*</span></label>
-        <input class="input" id="bn-text" value="${draft.text||''}" placeholder="Livraison gratuite dès 20 000 FCFA !" oninput="$('bn-prev-text').textContent=this.value">
+        <input class="input" id="bn-text" value="${draft.text||''}" placeholder="${t('z1_exBanniere')}" oninput="$('bn-prev-text').textContent=this.value">
       </div>
       <div class="form-group">
         <label class="form-label">Emoji (optionnel)</label>
@@ -27986,7 +28258,7 @@ function vCreator() {
     <div class="ce-stage-wrap">
       <div class="ce-stage" id="ce-stage" style="width:${SW}px;height:${SH}px;${_ceBgStyle(cr.bg)}" onpointerdown="_ceStageTap(event)">
         ${cr.elements.map(e => _ceEl(e, SW, SH, e.id===cr.selected)).join('')}
-        ${cr.elements.length===0 ? `<div class="ce-empty">${t('w9_ajoutezElements')}<br>puis glissez-les pour les placer</div>` : ''}
+        ${cr.elements.length===0 ? `<div class="ce-empty">${t('w9_ajoutezElements')}<br>${t('y4_glissezPlacer')}</div>` : ''}
       </div>
     </div>
 
@@ -28704,7 +28976,7 @@ function __openPublishDialog(blob, vidId) {
         </div>
 
         <button class="btn btn-primary" style="width:100%;margin-top:12px;padding:14px;font-weight:800" onclick="__publishTo('share')">${t('x5_partagerSysteme')}</button>
-        <button class="btn btn-ghost" style="width:100%;margin-top:6px" onclick="__publishTo('download')">💾 Télécharger uniquement</button>
+        <button class="btn btn-ghost" style="width:100%;margin-top:6px" onclick="__publishTo('download')">${t('y4_telechargerSeul')}</button>
         <div style="background:var(--accent-light);border-radius:10px;padding:10px;margin-top:10px;font-size:11px;color:var(--text-2);line-height:1.5">
           💡 Pour IG/TikTok/YouTube/FB : le partage ouvre l'app native avec la vidéo + la légende copiée. Collez-la dans la description.
         </div>
@@ -28975,7 +29247,7 @@ function openCapCutFlow() {
             📁 Ré-importer vidéo CapCut
             <input type="file" accept="video/*" style="display:none" onchange="__vidImport(event,'capcut');document.getElementById('capcut-modal').remove()">
           </label>
-          ${window.__lastVidBlob ? `<button class="btn btn-ghost" onclick="__vidDownload()">💾 Télécharger vidéo actuelle (pour CapCut)</button>` : ''}
+          ${window.__lastVidBlob ? `<button class="btn btn-ghost" onclick="__vidDownload()">${t('y4_telechargerVideo')}</button>` : ''}
         </div>
 
         <div style="background:var(--accent-light);border-radius:10px;padding:10px;margin-top:14px;font-size:11px;color:var(--text-2);line-height:1.5">
@@ -28992,16 +29264,16 @@ function vVideoLibrary() {
   return `
   <div class="sub-hero" style="background:linear-gradient(135deg,#000,#25F4EE)">
     <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('social')">${IC.left}</button>
-    <div class="sub-hero-title">📚 Mes vidéos</div>
+    <div class="sub-hero-title">${t('y4_mesVideos')}</div>
     <div class="sub-hero-sub">${vids.length} vidéo(s) enregistrée(s)</div>
   </div>
   <div class="container">
     ${vids.length === 0 ? `
       <div class="card" style="text-align:center;padding:40px 20px">
         <div style="font-size:48px;margin-bottom:12px">🎞️</div>
-        <div style="font-size:15px;font-weight:700;color:var(--text-1);margin-bottom:6px">Aucune vidéo enregistrée</div>
-        <div style="font-size:12px;color:var(--text-3);margin-bottom:16px">Créez-en depuis l'éditeur vidéo</div>
-        <button class="btn btn-primary" onclick="openVideoEditor()">🎬 Ouvrir l'éditeur</button>
+        <div style="font-size:15px;font-weight:700;color:var(--text-1);margin-bottom:6px">${t('y4_aucuneVideo')}</div>
+        <div style="font-size:12px;color:var(--text-3);margin-bottom:16px">${t('y4_creezDepuisEditeur')}</div>
+        <button class="btn btn-primary" onclick="openVideoEditor()">${t('y4_ouvrirEditeur')}</button>
       </div>
     ` : vids.map(v => `
       <div class="card" style="margin-bottom:10px;padding:12px">
@@ -29013,7 +29285,7 @@ function vVideoLibrary() {
             <div style="font-size:13px;font-weight:700;color:var(--text-1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${v.name}</div>
             <div style="font-size:11px;color:var(--text-3);margin-top:2px">${new Date(v.createdAt).toLocaleString('fr-FR')} · ${Math.round(v.size/1024)} KB</div>
             <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
-              <button class="btn btn-ghost" style="padding:6px 10px;font-size:11px" onclick="playVideoFromLibrary('${v.id}')">▶️ Voir</button>
+              <button class="btn btn-ghost" style="padding:6px 10px;font-size:11px" onclick="playVideoFromLibrary('${v.id}')">${t('y4_voir')}</button>
               <button class="btn btn-primary" style="padding:6px 10px;font-size:11px" onclick="publishVideoFromLibrary('${v.id}')">📤 Publier</button>
               <button class="btn btn-ghost" style="padding:6px 10px;font-size:11px;color:var(--danger)" onclick="if(confirm('Supprimer cette vidéo ?')){deleteVideoFromLibrary('${v.id}')}">🗑️</button>
             </div>
@@ -29324,8 +29596,8 @@ function vSocialSetup() {
     </div>
     <div style="display:flex;gap:8px">
       <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${connected?'✓':'—'}</div><div class="hero-stat-lbl">Statut</div></div>
-      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${(S.scheduledPosts||[]).filter(p=>p.channel===pid&&p.status==='published').length}</div><div class="hero-stat-lbl">Publiés</div></div>
-      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${(S.scheduledPosts||[]).filter(p=>p.channel===pid&&p.status==='scheduled').length}</div><div class="hero-stat-lbl">Programmés</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${(S.scheduledPosts||[]).filter(p=>p.channel===pid&&p.status==='published').length}</div><div class="hero-stat-lbl">${t('y3_publies')}</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${(S.scheduledPosts||[]).filter(p=>p.channel===pid&&p.status==='scheduled').length}</div><div class="hero-stat-lbl">${t('y3_programmes')}</div></div>
     </div>
   </div>
   <div class="container">
@@ -29333,7 +29605,7 @@ function vSocialSetup() {
       <div style="display:flex;gap:10px;align-items:flex-start">
         <div style="font-size:26px">${meta.logo}</div>
         <div style="flex:1;font-size:12px;color:var(--text-1);line-height:1.5">
-          <strong style="color:${meta.color}">Comment obtenir les identifiants ?</strong><br>${meta.help}
+          <strong style="color:${meta.color}">${t('y3_commentIdentifiants')}</strong><br>${meta.help}
         </div>
       </div>
       <div style="display:flex;gap:6px;margin-top:10px">
@@ -29354,7 +29626,7 @@ function vSocialSetup() {
     <div class="card" style="margin-bottom:10px">
       <div class="card-title">🤖 Automatisations</div>
       <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
-        <div><div style="font-weight:700;font-size:13px">Post auto à la création produit</div><div style="font-size:11px;color:var(--text-3)">Publie le produit dès qu'il est créé</div></div>
+        <div><div style="font-weight:700;font-size:13px">${t('y3_postAutoCreation')}</div><div style="font-size:11px;color:var(--text-3)">${t('y3_publieDesCree')}</div></div>
         <input type="checkbox" id="soc-auto-product" ${d.autoProduct?'checked':''}>
       </label>
       <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
@@ -29362,7 +29634,7 @@ function vSocialSetup() {
         <input type="checkbox" id="soc-auto-promo" ${d.autoPromo?'checked':''}>
       </label>
       <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 0">
-        <div><div style="font-weight:700;font-size:13px">Scheduler auto</div><div style="font-size:11px;color:var(--text-3)">Publier automatiquement à l'heure programmée</div></div>
+        <div><div style="font-weight:700;font-size:13px">Scheduler auto</div><div style="font-size:11px;color:var(--text-3)">${t('y3_publierHeure')}</div></div>
         <input type="checkbox" id="soc-auto-scheduler" ${d.autoScheduler!==false?'checked':''}>
       </label>
     </div>
@@ -30177,7 +30449,7 @@ function vApiSettings() {
         ${(w.events||[]).length>0 ? `
         <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px">
           ${(w.events||[]).map(e => `<span style="background:var(--accent-light);color:var(--accent);padding:2px 8px;border-radius:6px;font-size:10px;font-weight:600">${evtLabel(e)}</span>`).join('')}
-        </div>` : '<div style="font-size:11px;color:var(--text-3);font-style:italic">Aucun événement sélectionné</div>'}
+        </div>` : `<div style="font-size:11px;color:var(--text-3);font-style:italic">${t('y5_aucunEvenement')}</div>`}
         <div style="display:flex;gap:6px;margin-top:10px">
           <button class="btn btn-ghost" style="flex:1;font-size:11px;padding:6px" onclick="testWebhook('${w.id}')">🧪 Tester</button>
           <button class="btn btn-ghost" style="font-size:11px;padding:6px" onclick="editWebhook('${w.id}')">✏️</button>
@@ -30206,11 +30478,11 @@ function vApiSettings() {
       <div class="card-title">📖 Documentation API</div>
       <div style="font-size:12px;color:var(--text-2);line-height:1.7">
         <strong>Endpoints principaux :</strong><br>
-        <code style="background:var(--gray-1);padding:2px 6px;border-radius:4px;font-size:11px">GET /v1/products</code> — Liste des produits<br>
-        <code style="background:var(--gray-1);padding:2px 6px;border-radius:4px;font-size:11px">POST /v1/sales</code> — Enregistrer une vente<br>
-        <code style="background:var(--gray-1);padding:2px 6px;border-radius:4px;font-size:11px">GET /v1/stock</code> — État du stock<br>
-        <code style="background:var(--gray-1);padding:2px 6px;border-radius:4px;font-size:11px">POST /v1/orders</code> — Créer une commande<br>
-        <code style="background:var(--gray-1);padding:2px 6px;border-radius:4px;font-size:11px">GET /v1/clients</code> — Liste des clients<br><br>
+        <code style="background:var(--gray-1);padding:2px 6px;border-radius:4px;font-size:11px">GET /v1/products</code> ${t('y5_listeProduits')}<br>
+        <code style="background:var(--gray-1);padding:2px 6px;border-radius:4px;font-size:11px">POST /v1/sales</code> ${t('y5_enregistrerVente')}<br>
+        <code style="background:var(--gray-1);padding:2px 6px;border-radius:4px;font-size:11px">GET /v1/stock</code> ${t('y5_etatStock')}<br>
+        <code style="background:var(--gray-1);padding:2px 6px;border-radius:4px;font-size:11px">POST /v1/orders</code> ${t('y5_creerCommande')}<br>
+        <code style="background:var(--gray-1);padding:2px 6px;border-radius:4px;font-size:11px">GET /v1/clients</code> ${t('y5_listeClients')}<br><br>
         <strong>Authentification :</strong> header <code style="background:var(--gray-1);padding:2px 6px;border-radius:4px;font-size:11px">Authorization: Bearer &lt;token&gt;</code>
       </div>
     </div>
@@ -31015,7 +31287,7 @@ async function openEcommerceProductEditor(provider) {
           <button style="width:30px;height:30px;border-radius:50%;border:none;background:rgba(255,255,255,.2);color:#fff;font-size:16px;cursor:pointer" onclick="document.getElementById('ecom-edit-modal').remove()">×</button>
         </div>
         <div style="padding:14px 18px">
-          ${products.length === 0 ? '<div style="text-align:center;padding:20px;color:var(--text-3)">Aucun produit</div>' :
+          ${products.length === 0 ? `<div style="text-align:center;padding:20px;color:var(--text-3)">${t('y5_aucunProduit')}</div>` :
             products.map(p => `
               <div style="padding:10px;border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:center">
                 <div style="flex:1;min-width:0">
@@ -31085,7 +31357,7 @@ function __openYTUploadModal() {
         <button style="width:30px;height:30px;border-radius:50%;border:none;background:rgba(255,255,255,.2);color:#fff;font-size:16px;cursor:pointer" onclick="document.getElementById('yt-upload-modal').remove()">×</button>
       </div>
       <div style="padding:16px 20px">
-        <label class="form-label">Sélectionner vidéo</label>
+        <label class="form-label">${t('y3_selectionnerVideo')}</label>
         <select id="yt-vid-select" class="input" style="font-size:14px !important">
           ${vids.map(v => `<option value="${v.id}">${v.name} (${Math.round(v.size/1024)} KB)</option>`).join('')}
         </select>
@@ -31093,9 +31365,9 @@ function __openYTUploadModal() {
         <input id="yt-title" class="input" type="text" placeholder="Titre YouTube" value="BARO — ${S.session?.business || 'Ma Boutique'}" style="font-size:14px !important">
         <label class="form-label" style="margin-top:10px">Description</label>
         <textarea id="yt-desc" class="input" rows="3" placeholder="Description..." style="font-size:14px !important">🔥 Publié depuis BARO PWA — gestion de stock & vente en ligne</textarea>
-        <button class="btn btn-primary" style="width:100%;margin-top:14px;background:#FF0000;border-color:#FF0000;padding:14px" onclick="__confirmYTUpload()">🚀 Uploader en privé</button>
+        <button class="btn btn-primary" style="width:100%;margin-top:14px;background:#FF0000;border-color:#FF0000;padding:14px" onclick="__confirmYTUpload()">${t('y3_uploaderPrive')}</button>
         <div style="background:var(--accent-light);padding:10px;border-radius:10px;margin-top:10px;font-size:11px;color:var(--text-2);line-height:1.5">
-          ℹ️ La vidéo sera uploadée en <strong>privé</strong>. Vous pourrez la publier depuis YouTube Studio.<br>
+          ℹ️ La vidéo sera uploadée en <strong>${t('y3_prive')}</strong>${t('y5_publierYoutube')}<br>
           Requiert Google OAuth configuré + scope <code>youtube.upload</code>.
         </div>
       </div>
@@ -31375,7 +31647,7 @@ function vDeliverySetup() {
         <div style="flex:1;font-size:12px;color:var(--text-1);line-height:1.5">
           <strong style="color:${meta.accent}">${t('w8_commentIdents')}</strong><br>
           1. Créez un compte partenaire sur <a href="${meta.portal}" target="_blank" rel="noopener noreferrer" style="color:${meta.accent};font-weight:600">${meta.portal}</a><br>
-          2. Récupérez votre <em>Store ID</em> et votre <em>API Key</em> dans les réglages partenaires<br>
+          ${t('y4_recuperezIds').replace('{0}','<em>Store ID</em>').replace('{1}','<em>API Key</em>')}<br>
           3. Collez-les ci-dessous — BARO enverra les commandes ${meta.name} automatiquement
         </div>
       </div>
@@ -32146,7 +32418,7 @@ function vSmsSetup() {
         <div style="font-size:24px">💡</div>
         <div style="flex:1;font-size:12px;color:var(--text-1);line-height:1.5">
           <strong style="color:#D97706">${t('x1_choisissezPasserelle')}</strong><br>
-          BARO supporte <b>Twilio</b>, <b>Vonage</b>, <b>Africa's Talking</b> (tarifs CI/Afrique très bas) et <b>Orange CI Pro</b>. Créez un compte, récupérez vos identifiants puis collez-les ci-dessous.
+          BARO supporte <b>Twilio</b>, <b>Vonage</b>, <b>Africa's Talking</b> ${t('y5_tarifsBas')} <b>Orange CI Pro</b>. Créez un compte, récupérez vos identifiants puis collez-les ci-dessous.
         </div>
       </div>
       ${provider.url ? `<div style="margin-top:10px"><button class="btn btn-ghost" style="width:100%;font-size:11px;padding:7px" onclick="window.open('${provider.url}','_blank')">🌐 Ouvrir console ${provider.name}</button></div>`:''}
@@ -32517,7 +32789,7 @@ function vSmsBroadcast() {
       <div class="card" style="text-align:center;padding:30px 18px">
         <div style="font-size:34px;margin-bottom:8px">📇</div>
         <div style="font-weight:800;margin-bottom:4px">${t('w9_aucunClientNum')}</div>
-        <div style="font-size:12px;color:var(--text-3);margin-bottom:14px">Ajoutez des clients avec téléphone pour leur envoyer un SMS.</div>
+        <div style="font-size:12px;color:var(--text-3);margin-bottom:14px">${t('y3_ajoutezClientsTel')}</div>
         <button class="btn btn-primary" onclick="nav('add-client')">${t('w9_ajouterClient')}</button>
       </div>` : `
       <div class="card" style="margin-bottom:10px">
@@ -32527,7 +32799,7 @@ function vSmsBroadcast() {
           <button class="btn btn-ghost" style="font-size:11px;padding:5px 10px" onclick="_smsBcastInsert('{nom}')">+ {nom}</button>
           <button class="btn btn-ghost" style="font-size:11px;padding:5px 10px" onclick="_smsBcastInsert('{business}')">+ {business}</button>
         </div>
-        <div style="font-size:11px;color:var(--text-3);margin-top:8px;line-height:1.4">${t('w9_gardezSmsCourt')} <b>{nom}</b> est personnalisé par client.</div>
+        <div style="font-size:11px;color:var(--text-3);margin-top:8px;line-height:1.4">${t('w9_gardezSmsCourt')} ${t('y3_personnaliseParClient').replace('{0}','<b>{nom}</b>')}</div>
       </div>
       ${cfg ? `
       <button class="btn btn-primary" style="width:100%;margin-bottom:10px;background:#4F46E5" onclick="sendSmsBroadcast()" ${st.running?'disabled':''}>
@@ -32545,7 +32817,7 @@ function vSmsBroadcast() {
               <div style="font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${(c.name||'Client').replace(/</g,'&lt;')}</div>
               <div style="font-size:11px;color:var(--text-3)">${c.phone}</div>
             </div>
-            ${r==='failed'?`<span style="font-size:10px;color:var(--danger)">échec</span>`:r==='sent'?`<span style="font-size:10px;color:#16A34A">envoyé</span>`:''}
+            ${r==='failed'?`<span style="font-size:10px;color:var(--danger)">${t('y3_echec')}</span>`:r==='sent'?`<span style="font-size:10px;color:#16A34A">${t('y3_envoye')}</span>`:''}
           </div>`;
         }).join('')}
       </div>`}
@@ -32656,7 +32928,7 @@ function vEmailBroadcast() {
       <div class="card" style="margin-bottom:10px">
         <div class="card-title">${t('w9_messageIcone')}</div>
         <textarea id="email-bcast-msg" class="input" rows="7" style="font-size:13px;line-height:1.5" oninput="S._emailBcast.msg=this.value">${st.msg.replace(/</g,'&lt;')}</textarea>
-        <div style="font-size:11px;color:var(--text-3);margin-top:8px;line-height:1.4">💡 Les destinataires sont mis en <b>copie cachée (BCC)</b> : personne ne voit les emails des autres. Votre application mail s'ouvre — vérifiez puis envoyez.</div>
+        <div style="font-size:11px;color:var(--text-3);margin-top:8px;line-height:1.4">${t('y4_destinatairesBcc').replace('{0}','<b>'+t('y4_copieCachee')+'</b>')} Votre application mail s'ouvre — vérifiez puis envoyez.</div>
       </div>
       <button class="btn btn-primary" style="width:100%;margin-bottom:10px;background:#EA4335" onclick="_emailBcastSend()">📧 Ouvrir l'email groupé (${clients.length})</button>
       <div class="card" style="padding:6px 0">
@@ -32728,7 +33000,7 @@ function vEcommerceSetup() {
     <div style="display:flex;gap:8px">
       <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${connected?'✓':'—'}</div><div class="hero-stat-lbl">Statut</div></div>
       <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${productsCount}</div><div class="hero-stat-lbl">Produits</div></div>
-      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${alreadySynced}</div><div class="hero-stat-lbl">Déjà sync.</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${alreadySynced}</div><div class="hero-stat-lbl">${t('y3_dejaSync')}</div></div>
     </div>
   </div>
   <div class="container">
@@ -32761,7 +33033,7 @@ function vEcommerceSetup() {
     <div class="card" style="margin-bottom:10px">
       <div class="card-title">⚙️ Options de synchronisation</div>
       <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
-        <div><div style="font-weight:700;font-size:13px">Push auto à la création produit</div><div style="font-size:11px;color:var(--text-3)">Envoie chaque nouveau produit BARO sur ${meta.name}</div></div>
+        <div><div style="font-weight:700;font-size:13px">${t('y3_pushAutoCreation')}</div><div style="font-size:11px;color:var(--text-3)">Envoie chaque nouveau produit BARO sur ${meta.name}</div></div>
         <input type="checkbox" id="ec-auto-push" ${d.autoPush?'checked':''}>
       </label>
       <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
@@ -32773,7 +33045,7 @@ function vEcommerceSetup() {
         <input type="checkbox" id="ec-pull-orders" ${d.pullOrders?'checked':''}>
       </label>
       <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 0">
-        <div><div style="font-weight:700;font-size:13px">Sync quotidien</div><div style="font-size:11px;color:var(--text-3)">Synchronisation complète chaque jour à 03h00</div></div>
+        <div><div style="font-weight:700;font-size:13px">Sync quotidien</div><div style="font-size:11px;color:var(--text-3)">${t('y3_syncChaqueJour')}</div></div>
         <input type="checkbox" id="ec-daily" ${d.dailySync?'checked':''}>
       </label>
     </div>
@@ -33056,7 +33328,7 @@ function vSheetsSetup() {
         <input id="sh-token" class="input" type="password" value="${(d.accessToken||'').replace(/"/g,'&quot;')}" placeholder="ya29.xxxxxxxxxxxxx">
       </div>
       <div>
-        <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">Nom de l'onglet (par défaut Sheet1)</label>
+        <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">${t('y3_nomOnglet')}</label>
         <input id="sh-sheet" class="input" value="${(d.sheetName||'Sheet1').replace(/"/g,'&quot;')}">
       </div>
     </div>
@@ -33064,11 +33336,11 @@ function vSheetsSetup() {
     <div class="card" style="margin-bottom:10px">
       <div class="card-title">⚙️ Automatisations</div>
       <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
-        <div><div style="font-weight:700;font-size:13px">Append auto à chaque vente</div><div style="font-size:11px;color:var(--text-3)">Ajoute une ligne dès qu'une vente est enregistrée</div></div>
+        <div><div style="font-weight:700;font-size:13px">${t('y3_appendAuto')}</div><div style="font-size:11px;color:var(--text-3)">${t('y3_ajouteLigne')}</div></div>
         <input type="checkbox" id="sh-auto-sale" ${d.autoSale?'checked':''}>
       </label>
       <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 0">
-        <div><div style="font-weight:700;font-size:13px">Sync quotidienne complète</div><div style="font-size:11px;color:var(--text-3)">Push toutes les données à 23h00</div></div>
+        <div><div style="font-weight:700;font-size:13px">${t('y3_syncQuotidienne')}</div><div style="font-size:11px;color:var(--text-3)">${t('y3_pushToutes23h')}</div></div>
         <input type="checkbox" id="sh-auto-daily" ${d.autoDaily?'checked':''}>
       </label>
     </div>
@@ -33228,11 +33500,11 @@ function vPosSetup() {
     <div class="card" style="margin-bottom:10px">
       <div class="card-title">⚙️ Automatisations</div>
       <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
-        <div><div style="font-weight:700;font-size:13px">${t('x3_impressionAuto')}</div><div style="font-size:11px;color:var(--text-3)">Imprime un ticket dès qu'une vente est enregistrée</div></div>
+        <div><div style="font-weight:700;font-size:13px">${t('x3_impressionAuto')}</div><div style="font-size:11px;color:var(--text-3)">${t('y4_imprimeTicket')}</div></div>
         <input type="checkbox" id="pos-auto-sale" ${d.autoSale?'checked':''}>
       </label>
       <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
-        <div><div style="font-weight:700;font-size:13px">Ouvrir tiroir-caisse</div><div style="font-size:11px;color:var(--text-3)">Commande d'ouverture au paiement espèces</div></div>
+        <div><div style="font-weight:700;font-size:13px">Ouvrir tiroir-caisse</div><div style="font-size:11px;color:var(--text-3)">${t('y4_commandeOuverture')}</div></div>
         <input type="checkbox" id="pos-auto-drawer" ${d.autoDrawer?'checked':''}>
       </label>
       <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 0">
@@ -33749,7 +34021,7 @@ function vSpectraEnhanced() {
       </div>
       <div style="text-align:center;margin:18px 0 6px">
         <div style="font-size:17px;font-weight:800;letter-spacing:.2px">${S.spectraMode==='yolo'?'Comptage automatique…':S.spectraMode==='barcode'?'Recherche du code-barres…':'Identification du produit…'}</div>
-        <div style="font-size:12px;color:var(--text-3);margin-top:4px;font-weight:500">Spectra reconnaît n'importe quel produit photographié</div>
+        <div style="font-size:12px;color:var(--text-3);margin-top:4px;font-weight:500">${t('y3_reconnaitTout')}</div>
       </div>
       <div class="spectra-layers">
         ${layers.map((l,i)=>`
@@ -33773,7 +34045,7 @@ function vSpectraEnhanced() {
       <div style="text-align:center;padding:18px 0">
         <div style="font-size:54px;margin-bottom:8px">🚀</div>
         <div style="font-size:19px;font-weight:900;letter-spacing:-.3px">Tu scannes beaucoup — bravo !</div>
-        <div style="font-size:13px;color:var(--text-3);margin-top:6px;line-height:1.55;max-width:300px;margin-left:auto;margin-right:auto">Tu as utilisé tes <strong>${limit} scans Spectra</strong> du jour. Passe en <strong>Pro</strong> pour des scans <strong>illimités</strong> + IA vision, boutique en ligne, marketing…</div>
+        <div style="font-size:13px;color:var(--text-3);margin-top:6px;line-height:1.55;max-width:300px;margin-left:auto;margin-right:auto">${t('y3_scansEpuises').replace('{0}','<strong>'+t('y3_scansSpectra').replace('{0}',limit)+'</strong>').replace('{1}','<strong>Pro</strong>').replace('{2}','<strong>'+t('y3_illimites')+'</strong>')}</div>
       </div>
       <div class="card" style="border:2px solid var(--accent);background:linear-gradient(135deg,rgba(124,115,255,.08),rgba(124,115,255,.02));margin-bottom:12px">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
@@ -33791,17 +34063,17 @@ function vSpectraEnhanced() {
   if (S.spectra.step === 'noresult') {
     const hasAI = _spectraHasAI();
     return `
-    <div class="sub-hero spectra-hero-grad"><div class="page-header-row"><button class="back-btn-dark" onclick="spectraReset();nav('more')">${IC.left}</button><div style="flex:1"><div class="sub-hero-title">Produit non reconnu</div><div class="sub-hero-sub">Spectra n'a pas pu l'identifier avec certitude</div></div></div></div>
+    <div class="sub-hero spectra-hero-grad"><div class="page-header-row"><button class="back-btn-dark" onclick="spectraReset();nav('more')">${IC.left}</button><div style="flex:1"><div class="sub-hero-title">Produit non reconnu</div><div class="sub-hero-sub">${t('y3_pasIdentifie')}</div></div></div></div>
     <div class="container" style="padding:18px">
       ${S.spectra.capturedImage ? `<img src="${S.spectra.capturedImage}" style="width:100%;max-height:200px;object-fit:cover;border-radius:16px;margin-bottom:16px;border:1px solid var(--border)">` : ''}
       ${!hasAI ? `
       <div class="card" style="border:1.5px solid var(--accent);background:linear-gradient(135deg,rgba(124,115,255,.10),rgba(66,133,244,.05));margin-bottom:12px">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
           <div style="width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#4285F4,#7C3AED);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">✨</div>
-          <div><div style="font-size:15px;font-weight:800">Active l'IA vision (gratuit)</div><div style="font-size:12px;color:var(--text-3)">Reconnaît n'importe quel produit, comme Google Lens</div></div>
+          <div><div style="font-size:15px;font-weight:800">Active l'IA vision (gratuit)</div><div style="font-size:12px;color:var(--text-3)">${t('y3_commeGoogleLens')}</div></div>
         </div>
         <div style="font-size:12.5px;color:var(--text-2);line-height:1.55;margin-bottom:12px">
-          La reconnaissance locale (hors-ligne) ne couvre pas tous les produits. Avec l'<strong>IA vision Gemini</strong> (clé gratuite, 1500 scans/jour), Spectra identifie <strong>PS5, iPhone, cosmétiques, n'importe quoi</strong> par photo ou vidéo.
+          ${t('y3_reconnaissanceLocale').replace('{0}','<strong>'+t('y3_iaVisionGemini')+'</strong>').replace('{1}','<strong>'+t('y3_ps5Iphone')+'</strong>')}
         </div>
         <button class="btn btn-primary" style="background:linear-gradient(135deg,#4285F4,#7C3AED)" onclick="nav('spectra-ai-setup')">Activer Spectra AI →</button>
       </div>` : `
@@ -33816,7 +34088,7 @@ function vSpectraEnhanced() {
       </div>`}`}
       <div class="card" style="margin-bottom:12px">
         <div class="card-title">${t('w8_ajouterManuel')}</div>
-        <div style="font-size:12px;color:var(--text-3);margin-bottom:10px">Tu peux créer l'article toi-même en quelques secondes.</div>
+        <div style="font-size:12px;color:var(--text-3);margin-bottom:10px">${t('y3_creerToiMeme')}</div>
         <button class="btn btn-ghost" onclick="spectraToAddForm()">${IC.plus} Créer l'article${S.spectra.capturedImage?' (avec la photo scannée)':''}</button>
       </div>
       <button class="btn btn-ghost" style="width:100%" onclick="spectraReset()">${IC.camera} Réessayer un scan</button>
@@ -33865,7 +34137,7 @@ function vSpectraEnhanced() {
       </div>
       <div style="display:flex;gap:8px;margin-top:12px">
         <input type="file" id="spectra-file" accept="image/*" capture="environment" style="display:none" onchange="spectraOnFile(this)">
-        <button class="btn btn-ghost" style="flex:1" onclick="document.getElementById('spectra-file').click()">📷 Photo à la place</button>
+        <button class="btn btn-ghost" style="flex:1" onclick="document.getElementById('spectra-file').click()">${t('y3_photoALaPlace')}</button>
         <button class="btn btn-ghost" style="flex:1" onclick="spectraReset()">Annuler</button>
       </div>
     </div>`;
@@ -33885,7 +34157,7 @@ function vSpectraEnhanced() {
         </div>
       </div>
       ${S.spectra.naming ? `
-      <div class="form-group"><label class="form-label">Nom de l'article (l'IA apprend à partir de ce que tu saisis)</label><input class="input" id="spectra-name" type="text" placeholder="${displayName}" value="${displayName}"></div>
+      <div class="form-group"><label class="form-label">${t('y3_nomArticleIA')}</label><input class="input" id="spectra-name" type="text" placeholder="${displayName}" value="${displayName}"></div>
       <div class="form-group"><label class="form-label">${t('quantity')}</label><input class="input" id="spectra-qty" type="number" value="${item.quantity}" min="1"></div>
       ${item.ocr_text?`<div style="background:var(--accent-light);padding:10px;border-radius:8px;font-size:12px;margin-bottom:12px"><b>${t('x3_ocrDetecte')}</b> ${item.ocr_text}</div>`:''}
       <button class="btn btn-primary" onclick="spectraSubmitName()">${t('spectraConfirm')}</button>
@@ -33895,14 +34167,14 @@ function vSpectraEnhanced() {
         <div class="info-row"><span class="info-lbl">${t('x3_nomDetecte')}</span><span class="info-val" style="font-weight:700">${item.detected_name||item.matched_name}</span></div>
         ${item.resolved_type?`<div class="info-row"><span class="info-lbl">📦 Type</span><span class="info-val" style="font-size:12px">${item.resolved_type}</span></div>`:''}
         ${item.resolved_brand || item.off_brand?`<div class="info-row"><span class="info-lbl">🏭 Marque</span><span class="info-val" style="font-size:12px">${item.resolved_brand || item.off_brand}</span></div>`:''}
-        ${item.off_category?`<div class="info-row"><span class="info-lbl">🗂️ Catégorie</span><span class="info-val" style="font-size:11px;color:var(--text-3)">${item.off_category}</span></div>`:''}
+        ${item.off_category?`<div class="info-row"><span class="info-lbl">${t('y3_categorieIcone')}</span><span class="info-val" style="font-size:11px;color:var(--text-3)">${item.off_category}</span></div>`:''}
         ${item.ocr_text?`<div class="info-row"><span class="info-lbl">📝 OCR</span><span class="info-val" style="font-size:12px">${item.ocr_text}</span></div>`:''}
         ${item.barcode?`<div class="info-row"><span class="info-lbl">${t('x3_codeBarres')}</span><span class="info-val" style="font-size:12px;font-family:monospace">${item.barcode}</span></div>`:''}
         ${item.coco_class?`<div class="info-row"><span class="info-lbl">🏷️ Classe IA</span><span class="info-val" style="font-size:12px">${item.coco_class}</span></div>`:''}
         <div class="info-row"><span class="info-lbl">${t('x3_nombreDetecte')}</span><span class="info-val" style="font-size:18px;color:var(--accent)">${item.quantity} ${item.matched_unit||'pce'}</span></div>
         <div class="info-row"><span class="info-lbl">${t('x3_precisionIA')}</span><span class="info-val" style="color:${item.confidence>=90?'var(--success)':item.confidence>=70?'var(--warning)':'var(--danger)'}">${item.confidence}%</span></div>
-        ${item.from_off?`<div class="info-row"><span class="info-lbl">Source</span><span class="info-val" style="color:var(--success)">${t('x3_openFoodFacts')}</span></div>`:item.from_memory?`<div class="info-row"><span class="info-lbl">Source</span><span class="info-val" style="color:var(--accent)">🧠 Mémoire produit</span></div>`:item.from_keyword?`<div class="info-row"><span class="info-lbl">Source</span><span class="info-val" style="color:var(--accent)">📖 Dictionnaire (OCR)</span></div>`:''}
-        ${typeof item.quality_score === 'number' ? `<div class="info-row"><span class="info-lbl">🔬 Qualité image</span><span class="info-val" style="color:${item.quality_score>=80?'var(--success)':item.quality_score>=50?'var(--warning)':'var(--danger)'}">${item.quality_score}/100${item.damage_flags && item.damage_flags.length ? ' · ⚠ '+item.damage_flags.join(', ') : ''}</span></div>` : ''}
+        ${item.from_off?`<div class="info-row"><span class="info-lbl">Source</span><span class="info-val" style="color:var(--success)">${t('x3_openFoodFacts')}</span></div>`:item.from_memory?`<div class="info-row"><span class="info-lbl">Source</span><span class="info-val" style="color:var(--accent)">${t('y3_memoireProduit')}</span></div>`:item.from_keyword?`<div class="info-row"><span class="info-lbl">Source</span><span class="info-val" style="color:var(--accent)">📖 Dictionnaire (OCR)</span></div>`:''}
+        ${typeof item.quality_score === 'number' ? `<div class="info-row"><span class="info-lbl">${t('y3_qualiteImage')}</span><span class="info-val" style="color:${item.quality_score>=80?'var(--success)':item.quality_score>=50?'var(--warning)':'var(--danger)'}">${item.quality_score}/100${item.damage_flags && item.damage_flags.length ? ' · ⚠ '+item.damage_flags.join(', ') : ''}</span></div>` : ''}
         ${item.matched_id ? `<div class="info-row"><span class="info-lbl">Correspondance</span><span class="info-val" style="color:var(--success)">${t('x3_trouveEnStock')}</span></div>` : `<div class="info-row"><span class="info-lbl">Correspondance</span><span class="info-val" style="color:var(--warning)">Nouvel article</span></div>`}
       </div>
       <div style="display:flex;gap:8px">
@@ -33954,7 +34226,7 @@ function vSpectraEnhanced() {
           <div class="spectra-ai-ic">✨</div>
           <div style="flex:1;min-width:0">
             <div class="spectra-ai-title">${t('x3_iaVisionActive')} <span class="spectra-ai-dot"></span></div>
-            <div class="spectra-ai-sub">Reconnaissance maximale de n'importe quel produit · Gérer</div>
+            <div class="spectra-ai-sub">${t('y3_reconnaissanceMax')}</div>
           </div>
           <div style="color:#34d399">${IC.chevron}</div>
         </div>`;
@@ -33982,7 +34254,7 @@ function vSpectraEnhanced() {
           <span style="font-size:11px;font-weight:800;color:${col}">${left}/${limit} restants</span>
         </div>
         <div style="height:5px;background:var(--gray-2);border-radius:3px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${col};border-radius:3px;transition:width .4s"></div></div>
-        ${left <= 3 ? `<div style="font-size:10.5px;color:var(--text-3);margin-top:5px">${t('x3_bientotEpuises')} <a onclick="nav('pricing')" style="color:var(--accent);font-weight:700;cursor:pointer">passe en Pro pour l'illimité</a></div>` : ''}
+        ${left <= 3 ? `<div style="font-size:10.5px;color:var(--text-3);margin-top:5px">${t('x3_bientotEpuises')} <a onclick="nav('pricing')" style="color:var(--accent);font-weight:700;cursor:pointer">${t('y3_passeEnPro')}</a></div>` : ''}
       </div>`;
     })()}
 
@@ -34089,7 +34361,7 @@ function vSpectraEnhanced() {
       const audits = (()=>{ try { return JSON.parse(localStorage.getItem('stockr_spectra_audits')||'[]'); } catch(e){ return []; } })();
       if (audits.length === 0) return '';
       return `
-      <div class="section-hd"><span class="section-lbl">📄 Rapports d'audit signés</span></div>
+      <div class="section-hd"><span class="section-lbl">${t('y3_rapportsSignes')}</span></div>
       ${audits.slice(0,3).map(a => `
       <div class="card" style="margin-bottom:6px;padding:10px 14px">
         <div style="display:flex;justify-content:space-between;align-items:center">
@@ -34118,15 +34390,15 @@ function vPurchaseOrdersEnhanced() {
     </div>
     <div style="display:flex;gap:8px">
       <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${pending.length}</div><div class="hero-stat-lbl">En attente</div></div>
-      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${shipped.length}</div><div class="hero-stat-lbl">Expédiées</div></div>
-      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${received.length}</div><div class="hero-stat-lbl">Reçues</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${shipped.length}</div><div class="hero-stat-lbl">${t('y3_expediees')}</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${received.length}</div><div class="hero-stat-lbl">${t('y3_recues')}</div></div>
     </div>
   </div>
   <div class="container">
     ${S.articles.filter(a=>a.stock<a.min&&a.min>0).length>0?`
     <div class="alert-banner" style="margin-bottom:12px" onclick="nav('add-order')">
       <div class="alert-ico">${IC.alert}</div>
-      <div><div class="alert-title">Réapprovisionnement suggéré</div><div class="alert-sub">${S.articles.filter(a=>a.stock<a.min&&a.min>0).length} articles à commander</div></div>
+      <div><div class="alert-title">${t('y3_reappSuggere')}</div><div class="alert-sub">${S.articles.filter(a=>a.stock<a.min&&a.min>0).length} articles à commander</div></div>
       <div class="alert-arrow">${IC.chevron}</div>
     </div>`:''}
 
@@ -34164,7 +34436,7 @@ function vPurchaseOrdersEnhanced() {
         <div style="flex:1;height:2px;background:var(--border)"></div>
         <div style="width:10px;height:10px;border-radius:50%;background:var(--border)"></div>
       </div>
-      <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:9px;color:var(--text-3)"><span>Commandée</span><span>Expédiée</span><span>Livrée</span></div>`:''}
+      <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:9px;color:var(--text-3)"><span>${t('y3_commandee')}</span><span>${t('y3_expediee')}</span><span>${t('y3_livree')}</span></div>`:''}
       ${status==='pending'?`
       <div style="display:flex;gap:6px;margin-top:10px">
         <button class="btn btn-ghost" style="flex:1;padding:8px;font-size:12px" onclick="markOrderShipped(${o.id})">${IC.truck} Expédiée</button>
