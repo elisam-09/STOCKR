@@ -270,6 +270,8 @@ const API_BASE = (location.hostname === 'localhost' || location.hostname === '12
 // ── i18n ─────────────────────────────────────
 const LANGS = {
   fr: {
+    z2_assignezIci: "Ces articles n'ont pas de fournisseur. Choisissez-en un ici : ils rejoindront aussitôt la commande correspondante.",
+    z2_choisir: "Choisir…",
     z2_titre: "Réassort automatique",
     z2_sousTitre: "Vos commandes fournisseurs, préparées",
     z2_pitch: "Regroupe ce qu'il faut recommander par fournisseur et prépare un bon de commande prêt à envoyer. Les quantités viennent de vos ventes réelles.",
@@ -1533,6 +1535,8 @@ const LANGS = {
     version:'Version',
   },
   en: {
+    z2_assignezIci: "These items have no supplier. Pick one here and they will join the matching order straight away.",
+    z2_choisir: "Choose…",
     z2_titre: "Automatic restocking",
     z2_sousTitre: "Your supplier orders, prepared",
     z2_pitch: "Groups what needs reordering by supplier and prepares an order ready to send. Quantities come from your real sales.",
@@ -5275,9 +5279,19 @@ function vReassortAuto() {
 
       ${g.id === null ? `
       <div style="margin-top:12px;padding:11px;border-radius:10px;background:var(--gray-1);font-size:12.5px;color:var(--text-2);line-height:1.5">
-        ${t('z2_assignezFournisseur')}
+        ${t('z2_assignezIci')}
       </div>
-      <button class="btn btn-ghost" style="width:100%;margin-top:8px" onclick="nav('pantry')">${t('z2_ouvrirStock')}</button>
+      <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px">
+        ${g.lignes.map(l => `
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="flex:1;min-width:0;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${l.nom}</span>
+          <select class="input" style="width:150px;flex-shrink:0;padding:8px 10px;font-size:12.5px"
+                  onchange="updateArticleField(${l.articleId},'supplierId',this.value?Number(this.value):null);render()">
+            <option value="">${t('z2_choisir')}</option>
+            ${(S.suppliers || []).map(s => `<option value="${s.id}">${s.name}</option>`).join('')}
+          </select>
+        </div>`).join('')}
+      </div>
       ` : `
       <div style="display:flex;gap:8px;margin-top:14px">
         <button class="btn btn-primary" style="flex:2;min-width:0" onclick="envoyerCommandeFournisseur(${i})">
@@ -12804,6 +12818,14 @@ function vDetail() {
         <label class="form-label">${t('x4_categorieIcone')}</label>
         <input class="input" type="text" placeholder="Chaussures, Téléphones…" value="${(art.category||'').replace(/"/g,'&quot;')}" onchange="updateArticleField(${art.id},'category',this.value)">
       </div>
+      ${(S.suppliers || []).length ? `
+      <div class="form-group">
+        <label class="form-label">${t('z2_fournisseur')} <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text-3)">${t('z2_pourReassort')}</span></label>
+        <select class="input" onchange="updateArticleField(${art.id},'supplierId',this.value?Number(this.value):null)">
+          <option value="">${t('z2_aucunFournisseur')}</option>
+          ${(S.suppliers || []).map(s => `<option value="${s.id}" ${Number(art.supplierId) === s.id ? 'selected' : ''}>${s.name}</option>`).join('')}
+        </select>
+      </div>` : ''}
       <div class="form-group">
         <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;color:var(--text-2)">
           <input type="checkbox" ${art.perishable?'checked':''} onchange="updateArticleField(${art.id},'perishable',this.checked);if(!this.checked) updateArticleField(${art.id},'expiry','');render()"> Ce produit a une date de péremption
