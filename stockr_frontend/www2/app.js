@@ -270,6 +270,194 @@ const API_BASE = (location.hostname === 'localhost' || location.hostname === '12
 // ── i18n ─────────────────────────────────────
 const LANGS = {
   fr: {
+    z5_prixSurDemande: "Prix sur demande",
+    z5_populaire: "Populaire",
+    z5_nouveau: "Nouveau",
+    z5_stock: "Stock",
+    z5_rupture: "Rupture",
+    z5_indisponible: "Indisponible",
+    z5_commander: "Commander",
+    z5_bonjourCommander: "Bonjour, je voudrais commander",
+    z5_cartesProduits: "Cartes produits",
+    z5_typoPrix: "Typographie des prix",
+    z5_prixNormal: "Normale",
+    z5_prixDiscret: "Discrète",
+    z5_prixFort: "Affirmée",
+    z5_prixEditorial: "Éditoriale",
+    z5_etatRupture: "Article épuisé",
+    z5_ruptGrise: "Photo grisée",
+    z5_ruptBandeau: "Bandeau sur la photo",
+    z5_ruptVoile: "Voile rayé",
+    z5_lockTitre: "Studio produit réservé au plan Entreprise",
+    z5_lockTx: "Nom de vitrine, accroche, description propre à la boutique, pastille et couleur, format d'image, mise en avant pleine largeur, prix sur demande — article par article. Voir les plans →",
+    z5_ordreAffichage: "Ordre d'affichage",
+    z5_astuceOrdre: "💡 Le premier produit apparaît en haut de votre boutique. Mettez vos best-sellers en premier !",
+    z5_personnaliser: "Personnaliser",
+    z5_personnalise: "personnalisé",
+    z5_monter: "Monter",
+    z5_descendre: "Descendre",
+    z5_nomVitrine: "Nom en vitrine",
+    z5_accroche: "Accroche",
+    z5_accrochePl: "Le geste qui change tout",
+    z5_descVitrine: "Description en vitrine",
+    z5_descPl: "Remplace la description de la fiche, uniquement sur la boutique.",
+    z5_pastille: "Pastille",
+    z5_pastillePl: "Édition limitée",
+    z5_couleurPastille: "Couleur de la pastille",
+    z5_formatImage: "Format de l'image",
+    z5_carre: "Carré",
+    z5_portrait: "Portrait",
+    z5_paysage: "Paysage",
+    z5_enAvant: "Mettre en avant",
+    z5_enAvantAide: "La carte prend toute la largeur, avec une grande image et un titre plus fort.",
+    z5_prixCache: "Masquer le prix",
+    z5_prixCacheAide: "Affiche « Prix sur demande » au lieu du montant. Le produit reste commandable.",
+    z5_reinitialiser: "Retirer la personnalisation",
+    z5_persoRetiree: "Personnalisation retirée",
+    z4_ajouterPanier: "+ Ajouter au panier",
+    z4_heroSub: "Bienvenue ! Découvrez nos produits et commandez en un clic",
+    z4_navProduits: "Produits",
+    z4_navApropos: "À propos",
+    z4_navContact: "Contact",
+    z4_horairesDirect: "Horaires affichés en direct",
+    z4_deviseBoutique: "Devise de la boutique",
+    z4_mesAchats: "Mes achats",
+    z4_retraitUniquement: "Retrait sur place uniquement",
+    z4_livraisonDispo: "Livraison disponible",
+    z4_trierProduits: "Trier les produits",
+    z4_notreSelection: "Notre sélection",
+    z4_etChoisissez: "Choisissez",
+    z4_etChoisissezTx: "Ajoutez au panier les articles qui vous intéressent.",
+    z4_etEnvoyez: "Envoyez",
+    z4_etEnvoyezTx: "Votre panier part sur WhatsApp avec le détail et le total.",
+    z4_etValidez: "Validez",
+    z4_etValidezTx: "Renseignez vos coordonnées et confirmez votre commande.",
+    z4_etRecevez: "Recevez",
+    z4_etRetirez: "Retirez",
+    z4_etRecontact: "Nous vous recontactons pour convenir de la remise.",
+    z4_surPlace: "Sur place",
+    z4_offerte: "offerte",
+    z4_offerteMaj: "Offerte",
+    z4_nousJoindre: "Nous joindre",
+    z4_droitsReserves: "Tous droits réservés",
+    z4_telPourquoi: "Le seul moyen pour {0} de vous joindre pour confirmer.",
+    z4_laBoutique: "la boutique",
+    z4_ouvertFermeA: "Ouvert · ferme à",
+    z4_aujourdhuiA: "aujourd'hui à",
+    z4_demain: "demain",
+    z4_aMot: "à",
+    z4_ferme: "Fermé",
+    z4_ouvre: "ouvre",
+    z4_livraisonOfferte: "Livraison offerte !",
+    z4_plusQue: "Plus que",
+    z4_pourLivraisonOfferte: "pour la livraison offerte",
+    z4_gratuit: "gratuit",
+    z4_retrait: "Retrait",
+    z4_aRecuCommande: "a reçu votre commande. Suivez son avancement dans",
+    z4_ruptureStock: "Rupture de stock",
+    z4_enStock: "en stock",
+    z3_palClair: "Clair",
+    z3_palClairTx: "Blanc chaud, contemporain",
+    z3_palCreme: "Crème",
+    z3_palCremeTx: "Beige éditorial, chaleureux",
+    z3_palNuit: "Nuit",
+    z3_palNuitTx: "Fond profond, texte crème",
+    z3_arrondis: "Arrondis",
+    z3_tresArrondis: "Très arrondis",
+    z3_carres: "Carrés",
+    z3_elevation: "Élévation",
+    z3_zoomPhoto: "Zoom photo",
+    z3_telechargerSite: "Télécharger mon site",
+    z3_pleinEcran: "Ouvrir en plein écran",
+    z3_finitions: "Finitions",
+    z3_article: "article",
+    z3_articles: "articles",
+    z3_retraitPlace: "Retrait sur place",
+    z3_livraison: "Livraison",
+    z3_commandeWhatsapp: "Commande sur WhatsApp",
+    z3_declenche: "Moment du déclenchement",
+    z3_tot: "Tôt — dès le début",
+    z3_normal: "Normal",
+    z3_tard: "Tard — après un temps",
+    z3_ordre: "Sens de la cascade",
+    z3_ordreNormal: "Du premier au dernier",
+    z3_ordreInverse: "Du dernier au premier",
+    z3_ordreCentre: "Depuis le centre",
+    z3_heroMode: "Comportement de la bannière",
+    z3_heroAucun: "Défile normalement",
+    z3_heroFixe: "Reste en place",
+    z3_heroFondu: "Reste et s'efface",
+    z3_heroZoom: "Reste et zoome",
+    z3_heroAide: "« Reste en place » garde la bannière fixe pendant que le contenu glisse par-dessus.",
+    z3_grille: "Apparition de la grille",
+    z3_grilleColonne: "Colonne par colonne",
+    z3_grilleLigne: "Toute la rangée",
+    z3_grilleDiagonale: "En diagonale",
+    z3_separateur: "Séparateur de sections",
+    z3_sepAucun: "Aucun",
+    z3_sepLigne: "Ligne qui se trace",
+    z3_sepDegrade: "Dégradé qui apparaît",
+    z3_zoomImage: "Zoom de l'image au survol",
+    z3_zoomImageAide: "0 fige l'image, 40 l'agrandit fortement quand le curseur passe dessus.",
+    z3_vignette: "Bords assombris sur la bannière",
+    z3_vignetteAide: "Un dégradé sombre sur les bords : le titre ressort davantage.",
+    z3_spotlight: "Bordure lumineuse sur les cartes",
+    z3_spotlightAide: "Une lueur suit le curseur à l'intérieur de la carte survolée.",
+    z3_magnetique: "Boutons magnétiques",
+    z3_magnetiqueAide: "Le bouton se décale de quelques pixels vers le curseur.",
+    z3_bandeau: "Bandeau défilant",
+    z3_bandeauAide: "Une bande de texte qui défile sous la bannière. Vide, elle reprend vos vraies informations : nombre d'articles, zones de livraison, délai.",
+    z3_bandeauTexte: "Texte du bandeau",
+    z3_bandeauPlaceholder: "Livraison 24 h · Paiement à la livraison · Retours 7 jours",
+    z3_sequence: "Séquence d'ouverture",
+    z3_page: "Page et sections",
+    z3_lockPaletteTx: "Clair, Crème et Nuit — fond, texte et surfaces accordés. Voir les plans →",
+    z3_lockStudioTitre: "22 réglages d'animation réservés au plan Entreprise",
+    z3_lockStudioTx: "Sens du rideau, entrée des produits en 3D, cascade, bannière fixe, séparateurs animés, bordure lumineuse, boutons magnétiques, bandeau défilant, curseur personnalisé. Voir les plans →",
+    z3_cinemaTx: "Un rideau se lève sur vos produits pendant que le visiteur fait défiler. Construit avec vos articles — aucune vidéo à fournir.",
+    z3_studio: "Studio d'animation",
+    z3_rideau: "Sens du rideau",
+    z3_versHaut: "Se lève vers le haut",
+    z3_versBas: "Descend vers le bas",
+    z3_horizontal: "Coulisse sur le côté",
+    z3_iris: "S'ouvre depuis le centre",
+    z3_longueur: "Longueur de la séquence",
+    z3_courte: "Courte — 1,5 écran",
+    z3_moyenne: "Moyenne — 2,5 écrans",
+    z3_ample: "Ample — 4 écrans",
+    z3_entree: "Entrée des produits",
+    z3_montee: "Montée",
+    z3_zoom: "Zoom",
+    z3_rotation3d: "Bascule 3D",
+    z3_lateral: "Alternée latérale",
+    z3_cascade: "Rythme de la cascade",
+    z3_serree: "Serré — presque ensemble",
+    z3_normale: "Normal",
+    z3_ampleCascade: "Ample — un par un",
+    z3_reveal: "Apparition des sections",
+    z3_fondu: "Fondu",
+    z3_glisseBas: "Glissé du bas",
+    z3_glisseCote: "Glissé du côté",
+    z3_zoomLeger: "Zoom léger",
+    z3_bascule3d: "Bascule 3D",
+    z3_progression: "Barre de progression",
+    z3_enHaut: "En haut",
+    z3_enBas: "En bas",
+    z3_aucune: "Aucune",
+    z3_parallaxe: "Intensité du parallaxe",
+    z3_parallaxeAide: "0 fige le hero, 100 accentue la dérive du titre au défilement.",
+    z3_effetsSouris: "Effets liés au pointeur",
+    z3_sourisAide: "Ces effets demandent une souris. Sur téléphone ils ne s'activent pas — c'est voulu : au toucher, ils resteraient collés.",
+    z3_tilt: "Cartes qui suivent la souris",
+    z3_tiltAide: "La fiche produit s'incline légèrement vers le curseur, en 3D.",
+    z3_halo: "Halo lumineux dans le hero",
+    z3_haloAide: "Une lueur douce suit le curseur au-dessus de votre bannière.",
+    z3_curseur: "Curseur personnalisé",
+    z3_curseurAide: "Un cercle remplace le curseur et grossit sur ce qui est cliquable.",
+    z3_grain: "Grain sur la bannière",
+    z3_grainAide: "Une trame très fine qui enlève l'aspect plat des dégradés.",
+    z3_doux: "Défilement doux",
+    z3_douxAide: "Les liens internes glissent au lieu de sauter.",
     z2_assignezIci: "Ces articles n'ont pas de fournisseur. Choisissez-en un ici : ils rejoindront aussitôt la commande correspondante.",
     z2_choisir: "Choisir…",
     z2_titre: "Réassort automatique",
@@ -1535,6 +1723,194 @@ const LANGS = {
     version:'Version',
   },
   en: {
+    z5_prixSurDemande: "Price on request",
+    z5_populaire: "Popular",
+    z5_nouveau: "New",
+    z5_stock: "In stock",
+    z5_rupture: "Out",
+    z5_indisponible: "Unavailable",
+    z5_commander: "Order",
+    z5_bonjourCommander: "Hello, I would like to order",
+    z5_cartesProduits: "Product cards",
+    z5_typoPrix: "Price typography",
+    z5_prixNormal: "Normal",
+    z5_prixDiscret: "Understated",
+    z5_prixFort: "Bold",
+    z5_prixEditorial: "Editorial",
+    z5_etatRupture: "Sold-out items",
+    z5_ruptGrise: "Greyed-out photo",
+    z5_ruptBandeau: "Banner across the photo",
+    z5_ruptVoile: "Striped veil",
+    z5_lockTitre: "Product studio, Enterprise plan only",
+    z5_lockTx: "Shop-facing name, tagline, shop-only description, badge and colour, image format, full-width feature, price on request — item by item. See the plans →",
+    z5_ordreAffichage: "Display order",
+    z5_astuceOrdre: "💡 The first product appears at the top of your shop. Put your best sellers first!",
+    z5_personnaliser: "Customise",
+    z5_personnalise: "customised",
+    z5_monter: "Move up",
+    z5_descendre: "Move down",
+    z5_nomVitrine: "Shop name",
+    z5_accroche: "Tagline",
+    z5_accrochePl: "The one that changes everything",
+    z5_descVitrine: "Shop description",
+    z5_descPl: "Replaces the stock description, on the shop only.",
+    z5_pastille: "Badge",
+    z5_pastillePl: "Limited edition",
+    z5_couleurPastille: "Badge colour",
+    z5_formatImage: "Image format",
+    z5_carre: "Square",
+    z5_portrait: "Portrait",
+    z5_paysage: "Landscape",
+    z5_enAvant: "Feature this item",
+    z5_enAvantAide: "The card spans the full width, with a large image and a stronger title.",
+    z5_prixCache: "Hide the price",
+    z5_prixCacheAide: "Shows “Price on request” instead of the amount. The item stays orderable.",
+    z5_reinitialiser: "Remove customisation",
+    z5_persoRetiree: "Customisation removed",
+    z4_ajouterPanier: "+ Add to cart",
+    z4_heroSub: "Welcome! Browse our products and order in one click",
+    z4_navProduits: "Products",
+    z4_navApropos: "About",
+    z4_navContact: "Contact",
+    z4_horairesDirect: "Opening hours shown live",
+    z4_deviseBoutique: "Shop currency",
+    z4_mesAchats: "My orders",
+    z4_retraitUniquement: "Pickup in store only",
+    z4_livraisonDispo: "Delivery available",
+    z4_trierProduits: "Sort products",
+    z4_notreSelection: "Our selection",
+    z4_etChoisissez: "Choose",
+    z4_etChoisissezTx: "Add the items you like to your cart.",
+    z4_etEnvoyez: "Send",
+    z4_etEnvoyezTx: "Your cart goes to WhatsApp with the details and the total.",
+    z4_etValidez: "Confirm",
+    z4_etValidezTx: "Enter your details and confirm your order.",
+    z4_etRecevez: "Receive",
+    z4_etRetirez: "Pick up",
+    z4_etRecontact: "We will get back to you to arrange the handover.",
+    z4_surPlace: "In store",
+    z4_offerte: "free",
+    z4_offerteMaj: "Free",
+    z4_nousJoindre: "Get in touch",
+    z4_droitsReserves: "All rights reserved",
+    z4_telPourquoi: "The only way for {0} to reach you and confirm.",
+    z4_laBoutique: "the shop",
+    z4_ouvertFermeA: "Open · closes at",
+    z4_aujourdhuiA: "today at",
+    z4_demain: "tomorrow",
+    z4_aMot: "at",
+    z4_ferme: "Closed",
+    z4_ouvre: "opens",
+    z4_livraisonOfferte: "Free delivery!",
+    z4_plusQue: "Only",
+    z4_pourLivraisonOfferte: "more for free delivery",
+    z4_gratuit: "free",
+    z4_retrait: "Pickup",
+    z4_aRecuCommande: "has received your order. Follow its progress in",
+    z4_ruptureStock: "Out of stock",
+    z4_enStock: "left in stock",
+    z3_palClair: "Light",
+    z3_palClairTx: "Warm white, contemporary",
+    z3_palCreme: "Cream",
+    z3_palCremeTx: "Editorial beige, warm",
+    z3_palNuit: "Night",
+    z3_palNuitTx: "Deep background, cream text",
+    z3_arrondis: "Rounded",
+    z3_tresArrondis: "Very rounded",
+    z3_carres: "Square",
+    z3_elevation: "Lift",
+    z3_zoomPhoto: "Photo zoom",
+    z3_telechargerSite: "Download my site",
+    z3_pleinEcran: "Open full screen",
+    z3_finitions: "Finishing touches",
+    z3_article: "item",
+    z3_articles: "items",
+    z3_retraitPlace: "Pickup in store",
+    z3_livraison: "Delivery",
+    z3_commandeWhatsapp: "Order on WhatsApp",
+    z3_declenche: "Trigger point",
+    z3_tot: "Early — right away",
+    z3_normal: "Normal",
+    z3_tard: "Late — after a while",
+    z3_ordre: "Cascade direction",
+    z3_ordreNormal: "First to last",
+    z3_ordreInverse: "Last to first",
+    z3_ordreCentre: "From the centre out",
+    z3_heroMode: "Banner behaviour",
+    z3_heroAucun: "Scrolls normally",
+    z3_heroFixe: "Stays in place",
+    z3_heroFondu: "Stays and fades",
+    z3_heroZoom: "Stays and zooms",
+    z3_heroAide: "“Stays in place” pins the banner while the content slides over it.",
+    z3_grille: "Grid reveal",
+    z3_grilleColonne: "Column by column",
+    z3_grilleLigne: "Whole row at once",
+    z3_grilleDiagonale: "Diagonally",
+    z3_separateur: "Section separator",
+    z3_sepAucun: "None",
+    z3_sepLigne: "Line that draws itself",
+    z3_sepDegrade: "Gradient that fades in",
+    z3_zoomImage: "Image zoom on hover",
+    z3_zoomImageAide: "0 keeps the image still, 40 enlarges it sharply under the cursor.",
+    z3_vignette: "Darkened banner edges",
+    z3_vignetteAide: "A dark gradient around the edges makes the title stand out.",
+    z3_spotlight: "Glowing card border",
+    z3_spotlightAide: "A light follows the cursor inside the hovered card.",
+    z3_magnetique: "Magnetic buttons",
+    z3_magnetiqueAide: "The button shifts a few pixels toward the cursor.",
+    z3_bandeau: "Scrolling banner strip",
+    z3_bandeauAide: "A strip of text scrolling under the banner. Left empty, it uses your real information: item count, delivery areas, lead time.",
+    z3_bandeauTexte: "Strip text",
+    z3_bandeauPlaceholder: "24 h delivery · Pay on delivery · 7-day returns",
+    z3_sequence: "Opening sequence",
+    z3_page: "Page and sections",
+    z3_lockPaletteTx: "Light, Cream and Night — background, text and surfaces in tune. See the plans →",
+    z3_lockStudioTitre: "22 animation settings, Enterprise plan only",
+    z3_lockStudioTx: "Curtain direction, 3D product entrance, cascade, pinned banner, animated separators, glowing borders, magnetic buttons, scrolling strip, custom cursor. See the plans →",
+    z3_cinemaTx: "A curtain lifts over your products as the visitor scrolls. Built from your own items — no video needed.",
+    z3_studio: "Animation studio",
+    z3_rideau: "Curtain direction",
+    z3_versHaut: "Lifts upward",
+    z3_versBas: "Drops downward",
+    z3_horizontal: "Slides sideways",
+    z3_iris: "Opens from the centre",
+    z3_longueur: "Sequence length",
+    z3_courte: "Short — 1.5 screens",
+    z3_moyenne: "Medium — 2.5 screens",
+    z3_ample: "Long — 4 screens",
+    z3_entree: "Product entrance",
+    z3_montee: "Rise",
+    z3_zoom: "Zoom",
+    z3_rotation3d: "3D tilt",
+    z3_lateral: "Alternating sideways",
+    z3_cascade: "Cascade rhythm",
+    z3_serree: "Tight — almost together",
+    z3_normale: "Normal",
+    z3_ampleCascade: "Wide — one by one",
+    z3_reveal: "Section reveal",
+    z3_fondu: "Fade",
+    z3_glisseBas: "Slide from below",
+    z3_glisseCote: "Slide from the side",
+    z3_zoomLeger: "Slight zoom",
+    z3_bascule3d: "3D tilt",
+    z3_progression: "Progress bar",
+    z3_enHaut: "At the top",
+    z3_enBas: "At the bottom",
+    z3_aucune: "None",
+    z3_parallaxe: "Parallax intensity",
+    z3_parallaxeAide: "0 freezes the hero, 100 exaggerates how the title drifts as you scroll.",
+    z3_effetsSouris: "Pointer effects",
+    z3_sourisAide: "These need a mouse. They stay off on phones — deliberately: on touch they would get stuck on.",
+    z3_tilt: "Cards that follow the mouse",
+    z3_tiltAide: "The product card tilts slightly toward the cursor, in 3D.",
+    z3_halo: "Glow in the hero",
+    z3_haloAide: "A soft light follows the cursor across your banner.",
+    z3_curseur: "Custom cursor",
+    z3_curseurAide: "A ring replaces the cursor and grows over anything clickable.",
+    z3_grain: "Grain on the banner",
+    z3_grainAide: "A very fine texture that removes the flatness of gradients.",
+    z3_doux: "Smooth scrolling",
+    z3_douxAide: "Internal links glide instead of jumping.",
     z2_assignezIci: "These items have no supplier. Pick one here and they will join the matching order straight away.",
     z2_choisir: "Choose…",
     z2_titre: "Automatic restocking",
@@ -19419,7 +19795,13 @@ function vSettings() {
   <div class="sub-hero">
     <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('home')">${IC.left}</button>
     <div class="sub-hero-title">${t('settings')}</div>
-    <div class="sub-hero-sub">${S.session.email}</div>
+    ${/* Un compte cree par telephone n'a pas d'e-mail : afficher le champ tel
+         quel ecrivait « undefined » sous le titre. On retombe sur ce que le
+         compte possede vraiment, et sur rien du tout si c'est vide. */''}
+    ${(() => {
+      const id = (S.session?.email || S.session?.phone || S.session?.business || '').trim();
+      return id ? `<div class="sub-hero-sub">${id}</div>` : '';
+    })()}
   </div>
   <div class="container">
     <div class="settings-section">
@@ -19454,15 +19836,22 @@ function vSettings() {
             </div>
           </div>
         </div>
-        <div class="settings-row" style="cursor:default">
+        ${/* Compte cree par telephone : pas d'e-mail. On montre le
+             telephone, sinon on n'affiche pas la ligne du tout. */''}
+        ${(() => {
+          const mail = (S.session?.email || '').trim();
+          const tel  = (S.session?.phone || '').trim();
+          if (!mail && !tel) return '';
+          return `<div class="settings-row" style="cursor:default">
           <div class="settings-row-inner">
             <span class="settings-row-ico">${IC.info}</span>
             <div>
-              <div class="settings-row-lbl">${S.session.email}</div>
-              <div class="settings-row-sub">${t('emailAddr')}</div>
+              <div class="settings-row-lbl">${mail || tel}</div>
+              <div class="settings-row-sub">${mail ? t('emailAddr') : t('phone')}</div>
             </div>
           </div>
-        </div>
+        </div>`;
+        })()}
         <div class="settings-row" onclick="S.settingsEdit=true;render()">
           <div class="settings-row-inner">
             <span class="settings-row-ico">${IC.settings}</span>
@@ -23061,6 +23450,49 @@ function _bqPickerChips(kind, items) {
 function boutiqueSetPickCat(kind, cat) { _bqCatState()[kind] = cat; haptic('tap'); render(); }
 
 // ── Éditeur visuel : applique un réglage + rafraîchit l'aperçu live SANS re-render ──
+// Réglage du studio d'animation. Les valeurs vivent sous bc.anim pour
+// rester groupées et ne pas polluer la configuration de la boutique.
+function boutiqueEditSetAnim(cle, val) {
+  const bc = S.boutiqueConfig;
+  if (!bc.anim || typeof bc.anim !== 'object') bc.anim = {};
+  // Un <select> renvoie toujours une chaîne : « 240 » doit redevenir 240,
+  // sinon la hauteur de la séquence serait écrite « 240vh » en texte.
+  if (typeof val === 'string' && val !== '' && !isNaN(Number(val))) val = Number(val);
+  bc.anim[cle] = val;
+  try { localStorage.setItem('baro_boutique', JSON.stringify(bc)); } catch (_) {}
+  haptic('tap');
+  render();
+  _refreshBoutiqueLivePreview();
+}
+
+// Studio produit : personnalisation d'un article precis pour la vitrine.
+// Rangee sous bc.pmeta[id] — la fiche de gestion n'est jamais modifiee,
+// le commercant garde son nom d'inventaire et sa description interne.
+function boutiqueEditSetPmeta(id, cle, val) {
+  const bc = S.boutiqueConfig;
+  if (!bc.pmeta || typeof bc.pmeta !== 'object') bc.pmeta = {};
+  const m = bc.pmeta[String(id)] || (bc.pmeta[String(id)] = {});
+  if (val === '' || val === false || val == null) delete m[cle]; else m[cle] = val;
+  if (!Object.keys(m).length) delete bc.pmeta[String(id)];
+  try { localStorage.setItem('baro_boutique', JSON.stringify(bc)); } catch (_) {}
+  haptic('tap');
+  render();
+  _refreshBoutiqueLivePreview();
+}
+function boutiqueProdOuvre(id) {
+  S.bqProdOpen = (S.bqProdOpen === String(id)) ? '' : String(id);
+  haptic('tap');
+  render();
+}
+function boutiqueProdReset(id) {
+  const bc = S.boutiqueConfig;
+  if (bc.pmeta) delete bc.pmeta[String(id)];
+  try { localStorage.setItem('baro_boutique', JSON.stringify(bc)); } catch (_) {}
+  showToast(t('z5_persoRetiree'));
+  render();
+  _refreshBoutiqueLivePreview();
+}
+
 function boutiqueEditSet(key, val) {
   S.boutiqueConfig[key] = val;
   localStorage.setItem('baro_boutique', JSON.stringify(S.boutiqueConfig));
@@ -23191,13 +23623,76 @@ function generateBoutiqueSite(opts) {
   const headingFont= bc.headingFont || bc.fontFamily || 'Inter';
   const bodyFont   = bc.bodyFont || bc.fontFamily || 'Inter';
   const orderStyle = bc.orderBtnStyle || 'whatsapp';         // whatsapp | brand | outline
-  const orderText  = bc.orderBtnText || '+ Ajouter au panier';
+  const orderText  = bc.orderBtnText || t('z4_ajouterPanier');
   const heroTitle  = bc.heroTitle || bc.name || S.session?.business || 'Ma Boutique';
-  const heroSub    = bc.heroSubtitle || bc.description || 'Bienvenue ! Découvrez nos produits et commandez en un clic';
+  const heroSub    = bc.heroSubtitle || bc.description || t('z4_heroSub');
   // Séquence d'ouverture pilotée au défilement (option Entreprise).
   // Construite avec les vrais produits de la vitrine : aucune vidéo à
   // tourner, aucune image à fournir — un commerçant l'active et elle marche.
   const _cinemaOn = _palAllowed && !!bc.cinema;
+
+  // ── Studio d'animation (plan Entreprise) ──────────────────────────────
+  // Vingt-deux reglages qui pilotent reellement le rendu. Chacun a un
+  // defaut sobre : une boutique qui n'y touche pas reste lisible et rapide.
+  // Tout est en transform/opacity, sans bibliotheque et sans requete.
+  const A = Object.assign({
+    rideau:     'haut',      // haut | bas | horizontal | iris
+    longueur:   240,         // hauteur de la sequence, en vh
+    declenche:  'normal',    // tot | normal | tard — moment ou la sequence s'active
+    entree:     'montee',    // montee | zoom | rotation | lateral
+    cascade:    'normale',   // serree | normale | ample
+    ordre:      'normal',    // normal | inverse | centre — sens de la cascade
+    parallaxe:  60,          // 0 a 100
+    hero:       'aucun',     // aucun | fixe | fondu | zoom
+    vignette:   false,       // assombrissement des bords du hero
+    reveal:     'fondu',     // fondu | bas | cote | zoom | bascule
+    grille:     'colonne',   // colonne | ligne | diagonale — ordre d'apparition
+    separateur: 'aucun',     // aucun | ligne | degrade
+    progression:'haut',      // haut | bas | aucune
+    zoomImage:  8,           // 0 a 40 — zoom de l'image produit au survol
+    tilt:       true,        // cartes qui suivent la souris (ordinateur)
+    spotlight:  false,       // bordure lumineuse qui suit le curseur
+    magnetique: false,       // boutons qui attirent le curseur
+    halo:       true,        // halo lumineux qui suit le curseur
+    curseur:    false,       // curseur personnalise
+    bandeau:    false,       // bandeau defilant sous le hero
+    bandeauTexte: '',
+    grain:      true,
+    doux:       true,        // defilement doux
+  }, (_palAllowed && bc.anim) ? bc.anim : {});
+
+  // Decalage entre deux produits de la cascade
+  const _casc = { serree: 0.018, normale: 0.035, ample: 0.06 }[A.cascade] ?? 0.035;
+
+  // Transformation d'entree des produits, selon le style choisi
+  const _entreeTf = {
+    montee:   'translateY(calc((1 - var(--pi)) * 54px)) scale(calc(.9 + var(--pi) * .1))',
+    zoom:     'scale(calc(.62 + var(--pi) * .38))',
+    rotation: 'perspective(900px) rotateX(calc((1 - var(--pi)) * -34deg)) translateY(calc((1 - var(--pi)) * 36px))',
+    lateral:  'translateX(calc((1 - var(--pi)) * (var(--sens) * 70px))) scale(calc(.92 + var(--pi) * .08))',
+  }[A.entree] || 'translateY(calc((1 - var(--pi)) * 54px)) scale(calc(.9 + var(--pi) * .1))';
+
+  // Mouvement du rideau
+  const _rideauTf = {
+    haut:       'translateY(calc(var(--po) * -101%))',
+    bas:        'translateY(calc(var(--po) * 101%))',
+    horizontal: 'translateX(calc(var(--po) * -101%))',
+    iris:       'scale(calc(1 - var(--po)))',
+  }[A.rideau] || 'translateY(calc(var(--po) * -101%))';
+
+  // Apparition des sections au defilement
+  const _revealDe = {
+    fondu:   'opacity:0',
+    bas:     'opacity:0;transform:translateY(26px)',
+    cote:    'opacity:0;transform:translateX(-28px)',
+    zoom:    'opacity:0;transform:scale(.94)',
+    bascule: 'opacity:0;transform:perspective(900px) rotateX(-14deg) translateY(20px)',
+  }[A.reveal] || 'opacity:0';
+
+  // Moment ou la sequence s'active : seuil du rideau et des produits
+  const _decl = { tot: { rid: 0.02, prod: 0.20 }, normal: { rid: 0.04, prod: 0.36 },
+                  tard: { rid: 0.12, prod: 0.50 } }[A.declenche] || { rid: 0.04, prod: 0.36 };
+  const _zoomImg = (1 + Math.max(0, Math.min(40, Number(A.zoomImage) || 0)) / 100).toFixed(3);
   // Les comptes acheteurs n'ont de sens que si un serveur peut les stocker :
   // sans backend, proposer « Créer un compte » serait un bouton creux.
   const shopIdNum = Number(S.session?.id || S.session?.user_id || 0);
@@ -23216,7 +23711,7 @@ function generateBoutiqueSite(opts) {
   const _flagEmoji    = cc => (cc && /^[A-Za-z]{2}$/.test(cc)) ? cc.toUpperCase().replace(/./g, c => String.fromCodePoint(127397 + c.charCodeAt(0))) : '🌍';
   const _curBadge     = `${_flagEmoji(_shopCountry)} ${_countryNames[_shopCountry] || _shopCountry} · ${sym()}`;
   // ── Liens de navigation (ancres vers les sections existantes) ──
-  const _navLinks = [['#produits','Produits'], ...(_aboutText?[['#apropos','À propos']]:[]), ...(_hasContact?[['#contact','Contact']]:[])];
+  const _navLinks = [['#produits',t('z4_navProduits')], ...(_aboutText?[['#apropos',t('z4_navApropos')]]:[]), ...(_hasContact?[['#contact',t('z4_navContact')]]:[])];
   // ── Réseaux sociaux (icônes pied de page) ──
   const _socIcon = {
     facebook:'<path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>',
@@ -23253,7 +23748,7 @@ function generateBoutiqueSite(opts) {
   const hoverCss   = cardHover === 'none'
     ? ''
     : cardHover === 'zoom'
-      ? '.pc:hover .pc-img{transform:scale(1.12)}'
+      ? `.pc:hover .pc-img{transform:scale(${(Number(_zoomImg) + .045).toFixed(3)})}`
       : '.pc:hover{transform:translateY(-4px);box-shadow:0 18px 40px -12px rgba(0,0,0,.18)}';
   const waNum = (bc.whatsappNumber || '').replace(/\s/g, '').replace(/^\+/, '');
   const waLink = waNum ? `https://wa.me/${waNum}` : 'https://wa.me/';
@@ -23412,14 +23907,29 @@ function generateBoutiqueSite(opts) {
   const _newIds = new Set();
   [...(S.articles || []), ...(S.products || [])].forEach(it => { if (it && it.createdAt && (_nowU - new Date(it.createdAt).getTime()) < 14 * 86400000) _newIds.add(String(it.id)); });
   const _LOWQTY = 5;
+  // ── Studio produit (plan Entreprise) ─────────────────────────────────
+  // Chaque article peut recevoir un nom de vitrine, une accroche, une
+  // description, une pastille et une mise en avant qui lui sont propres.
+  // Le stock, lui, reste celui de la gestion : on ne le double jamais.
+  const _PM = (_palAllowed && bc.pmeta && typeof bc.pmeta === 'object') ? bc.pmeta : {};
+  const pmeta = (id) => _PM[String(id)] || {};
+  const _prixStyle = (_palAllowed && bc.prixStyle) || 'normal';
+  const _ruptureStyle = (_palAllowed && bc.ruptureStyle) || 'grise';
+  const _ratioCss = { carre: '1/1', portrait: '3/4', paysage: '4/3' };
+
   const prodsHTML = shopProds.map((p, idx) => {
+    const M = pmeta(p.id);
+    const _nom = (M.titre || '').trim() || p.name;
+    const _desc = (M.desc || '').trim() || p.description;
     const promo = _getActivePromo(p.id);
     const promoPrice = promo ? _applyPromoValue(p.price, promo) : null;
     const finalPrice = promoPrice != null ? promoPrice : p.price;
     const _urg = [];
-    if (_topNames.has(p.name)) _urg.push('<span class="pc-urg" style="background:#EF4444">🔥 Populaire</span>');
-    if (_newIds.has(String(p.id))) _urg.push('<span class="pc-urg" style="background:#7C3AED">✨ Nouveau</span>');
+    if (_topNames.has(p.name)) _urg.push(`<span class="pc-urg" style="background:#EF4444">🔥 ${t('z5_populaire')}</span>`);
+    if (_newIds.has(String(p.id))) _urg.push(`<span class="pc-urg" style="background:#7C3AED">✨ ${t('z5_nouveau')}</span>`);
     if (p.qty != null && p.qty > 0 && p.qty <= _LOWQTY) _urg.push(`<span class="pc-urg" style="background:#D97706">${t('y4_plusQue').replace('{0}', p.qty)}</span>`);
+    // Pastille ecrite par le commercant : elle passe en tete, c'est son message
+    if ((M.badge || '').trim()) _urg.unshift(`<span class="pc-urg" style="background:${esc(M.badgeCouleur || '#111827')}">${esc(M.badge.trim())}</span>`);
     const urgHTML = _urg.length ? `<div class="pc-urgwrap">${_urg.join('')}</div>` : '';
     // Note moyenne (avis produit)
     const _pcUnder = p._pack ? null : ((S.articles||[]).find(a => a.id === p.id) || (S.products||[]).find(x => x.id === p.id));
@@ -23440,13 +23950,14 @@ function generateBoutiqueSite(opts) {
           .slice(0, 2).map(w => w.charAt(0).toUpperCase()).join('')
         || (p.name || '?').trim().charAt(0).toUpperCase() || '?');
     const img = p.image
-      ? `<img class="pc-img" src="${p.image}" alt="${esc(p.name)}" loading="lazy">`
+      ? `<img class="pc-img" src="${p.image}" alt="${esc(_nom)}" loading="lazy">`
       : `<div class="pc-img pc-ph" style="--ph:${_phHue}"><span>${esc(initial)}</span></div>`;
     const stockBadge = (showStockCount && p.qty != null)
-      ? (p.qty > 0 ? `<span class="pc-stock ok">✓ Stock</span>` : `<span class="pc-stock out">Rupture</span>`)
+      ? (p.qty > 0 ? `<span class="pc-stock ok">✓ ${t('z5_stock')}</span>` : `<span class="pc-stock out">${t('z5_rupture')}</span>`)
       : '';
-    return `<div class="pc reveal${p.qty === 0 ? ' pc-out' : ''}" data-idx="${idx}" data-cat="${esc(p.category||'Autres')}" data-name="${esc((p.name||'').toLowerCase())}" data-price="${Math.round(finalPrice)||0}">
-      <div class="pc-imgwrap" onclick="baroQV&&baroQV('${esc(String(p.id))}')" style="cursor:zoom-in">
+    const _ratio = _ratioCss[M.ratio] || '';
+    return `<div class="pc reveal${p.qty === 0 ? ' pc-out' : ''}${M.enAvant ? ' pc-hero' : ''}" data-idx="${idx}" data-cat="${esc(p.category||'Autres')}" data-name="${esc((_nom||'').toLowerCase())}" data-price="${Math.round(finalPrice)||0}">
+      <div class="pc-imgwrap" onclick="baroQV&&baroQV('${esc(String(p.id))}')" style="cursor:zoom-in${_ratio ? `;aspect-ratio:${_ratio}` : ''}">
         ${img}
         ${urgHTML}
         ${showPromoBadges && promo ? `<span class="pc-promo">${promo.type==='fixed'?'-'+fmt(promo.value)+' '+sym():'-'+(promo.value||promo.discount)+'%'}</span>` : ''}
@@ -23454,11 +23965,14 @@ function generateBoutiqueSite(opts) {
       </div>
       <div class="pc-body">
         ${showCategories && p.category ? `<div class="pc-cat">${esc(p.category)}</div>` : ''}
-        <div class="pc-name" onclick="baroQV&&baroQV('${esc(String(p.id))}')" style="cursor:pointer">${esc(p.name)}</div>
+        <div class="pc-name" onclick="baroQV&&baroQV('${esc(String(p.id))}')" style="cursor:pointer">${esc(_nom)}</div>
+        ${(M.accroche || '').trim() ? `<div class="pc-tag">${esc(M.accroche.trim())}</div>` : ''}
         ${ratingHTML}
-        ${p.description ? `<div class="pc-desc">${esc(p.description)}</div>` : ''}
+        ${_desc ? `<div class="pc-desc">${esc(_desc)}</div>` : ''}
         <div class="pc-row">
-          <div class="pc-price">${promo ? `<s>${fmt(p.price)}</s>` : ''}<b>${fmt(finalPrice)}</b><small>${sym()}</small></div>
+          <div class="pc-price">${M.prixCache
+            ? `<b class="pc-ask">${t('z5_prixSurDemande')}</b>`
+            : `${promo ? `<s>${fmt(p.price)}</s>` : ''}<b>${fmt(finalPrice)}</b><small>${sym()}</small>`}</div>
           ${(() => {
             // Remise annoncee en clair : le prix barre seul oblige le client
             // a faire le calcul de tete.
@@ -23468,13 +23982,14 @@ function generateBoutiqueSite(opts) {
           })()}
         </div>
         ${showCartButton
-          ? `<button class="pc-add order-btn" data-id="${esc(String(p.id))}" ${p.qty===0?'disabled':''}>${p.qty===0?'Indisponible':esc(orderText)}</button>`
-          : `<a class="pc-add order-btn" style="text-decoration:none;text-align:center" href="${waLink}?text=${encodeURIComponent('Bonjour, je voudrais commander : '+p.name+' — '+fmt(finalPrice)+' '+sym())}" target="_blank" rel="noopener noreferrer">Commander</a>`}
+          ? `<button class="pc-add order-btn" data-id="${esc(String(p.id))}" ${p.qty===0?'disabled':''}>${p.qty===0?t('z5_indisponible'):esc(orderText)}</button>`
+          : `<a class="pc-add order-btn" style="text-decoration:none;text-align:center" href="${waLink}?text=${encodeURIComponent(t('z5_bonjourCommander')+' : '+_nom+' — '+fmt(finalPrice)+' '+sym())}" target="_blank" rel="noopener noreferrer">${t('z5_commander')}</a>`}
       </div>
     </div>`;
   }).join('\n');
   // Données panier embarquées dans la page générée (id, nom, prix après promo)
   const itemsJSON = JSON.stringify(shopProds.map(p => {
+    const M = pmeta(p.id);
     const promo = _getActivePromo(p.id);
     const pp = promo ? _applyPromoValue(p.price, promo) : null;
     const under = p._pack ? null : ((S.articles||[]).find(a => a.id === p.id) || (S.products||[]).find(x => x.id === p.id));
@@ -23482,9 +23997,10 @@ function generateBoutiqueSite(opts) {
     const variants = (under && Array.isArray(under.variants)) ? under.variants.filter(v => v.name && v.options && v.options.length) : [];
     const reviews = (under && Array.isArray(under.reviews)) ? under.reviews.filter(r => (r.author||r.text)).map(r => ({ a: r.author || 'Client', r: +r.rating || 5, t: r.text || '' })) : [];
     return {
-      id: String(p.id), name: p.name, price: (pp != null ? pp : p.price),
+      id: String(p.id), name: (M.titre || '').trim() || p.name, price: (pp != null ? pp : p.price),
       promo: promo ? (promo.code || promo.name || '') : '',
-      oldPrice: (pp != null ? p.price : 0), desc: p.description || '',
+      oldPrice: (pp != null ? p.price : 0), desc: (M.desc || '').trim() || p.description || '',
+      tag: (M.accroche || '').trim(), ask: !!M.prixCache,
       img: p.image || '', cat: p.category || '', qty: (p.qty != null ? p.qty : null),
       imgs: imgs, variants: variants, reviews: reviews,
     };
@@ -23495,7 +24011,14 @@ function generateBoutiqueSite(opts) {
   // progression 0→1 qui ouvre le rideau, révèle le mur de produits et
   // fait monter les informations. Tout est en transform/opacity, donc
   // le travail reste sur le compositeur.
-  const _cineItems = shopProds.slice(0, 8).map((p, _ci) => {
+  // Sens de la cascade : l'ordre d'apparition des produits sur le mur.
+  // « centre » part du milieu et s'ecarte vers les bords.
+  const _cineTotal = Math.min(8, shopProds.length);
+  const _rangCasc = (i) => A.ordre === 'inverse' ? (_cineTotal - 1 - i)
+    : A.ordre === 'centre' ? Math.abs(i - (_cineTotal - 1) / 2)
+    : i;
+  const _cineItems = shopProds.slice(0, 8).map((p, _ci0) => {
+    const _ci = _rangCasc(_ci0);
     let hue = 0;
     { const s = String(p.name || '?'); for (let i = 0; i < s.length; i++) hue = (hue * 31 + s.charCodeAt(i)) % 360; }
     const mono = (p.name || '?').trim().split(/[^A-Za-zÀ-ÿ]+/)
@@ -23506,8 +24029,8 @@ function generateBoutiqueSite(opts) {
       : `<figure class="cn-it cn-ph" style="--i:${_ci};--ph:${hue}"><span>${esc(mono)}</span></figure>`;
   }).join('');
   const _cineMeta = [
-    (bc.businessHours || []).length ? 'Horaires affichés en direct' : '',
-    _deliveryOff ? (_pickupAddr ? 'Retrait sur place' : '') :
+    (bc.businessHours || []).length ? t('z4_horairesDirect') : '',
+    _deliveryOff ? (_pickupAddr ? t('z3_retraitPlace') : '') :
       ((bc.deliveryZones || []).length ? `Livraison ${(bc.deliveryZones || []).slice(0, 2).map(z => esc(z)).join(' · ')}` : ''),
     `${shopProds.length} référence${shopProds.length > 1 ? 's' : ''} en vitrine`,
   ].filter(Boolean);
@@ -23554,7 +24077,7 @@ body{font-family:${fontStack};background:var(--bg);color:var(--tx);-webkit-font-
 h1,h2,.header h1,.pc-name,.cartbar-total,.ck h2{font-family:${headingStack}}
 ::selection{background:${tc}33}
 /* Barre de progression de lecture (fine, en haut) */
-.scroll-prog{position:fixed;top:0;left:0;height:2.5px;width:0;z-index:100;pointer-events:none;
+.scroll-prog{position:fixed;${A.progression==='bas'?'bottom:0':'top:0'};left:0;height:2.5px;width:0;z-index:100;pointer-events:none;${A.progression==='aucune'?'display:none;':''}
   background:linear-gradient(90deg,${tc},${tc}88);box-shadow:0 0 10px ${tc}66;transition:width .1s linear}
 /* Titres de section (rythme éditorial) */
 .sec-eyebrow{display:flex;align-items:center;gap:9px;margin:26px 0 12px}
@@ -23661,7 +24184,7 @@ h1,h2,.header h1,.pc-name,.cartbar-total,.ck h2{font-family:${headingStack}}
 
 /* Grain : une trame de bruit très fine évite l'aplat numérique des dégradés.
    Générée en SVG inline — aucune image chargée. */
-.hero-grain{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.055;mix-blend-mode:overlay;
+.hero-grain{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:${A.grain?'.055':'0'};mix-blend-mode:overlay;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size:160px 160px}
 /* Fondu du hero vers la page : supprime la coupure nette en bas */
@@ -23710,7 +24233,7 @@ ${hoverCss}
 .pc-imgwrap{position:relative;aspect-ratio:1/1;overflow:hidden;background:linear-gradient(160deg,#F7F7FA,#EDEDF3)}
 .pc-img{width:100%;height:100%;object-fit:cover;display:block;
   transition:transform .75s cubic-bezier(.16,1,.3,1),filter .5s ease}
-.pc:hover .pc-img{transform:scale(1.075);filter:saturate(1.08) contrast(1.02)}
+.pc:hover .pc-img{transform:scale(${_zoomImg});filter:saturate(1.08) contrast(1.02)}
 /* Balayage lumineux au survol */
 .pc-imgwrap::after{content:'';position:absolute;inset:0;z-index:2;pointer-events:none;opacity:0;
   background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.42) 50%,transparent 65%);
@@ -23767,6 +24290,44 @@ ${hoverCss}
 .pc-out:hover{transform:none}
 .pc-out .pc-imgwrap::after{display:none}
 .pc-out .pc-add{opacity:.55;cursor:not-allowed}
+
+/* ── Studio produit (plan Entreprise) ───────────────────────────────── */
+/* Accroche : une ligne courte, ecrite par le commercant, entre le nom et
+   la description. Elle porte la promesse, pas la fiche technique. */
+.pc-tag{font-size:11px;font-weight:700;letter-spacing:.01em;color:${tc};
+  display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.pc-ask{font-size:14px!important;font-weight:800;color:var(--tx)!important;letter-spacing:-.01em}
+/* Mise en avant : la carte prend toute la largeur de la grille et son
+   image respire. Sur une grille a une colonne, elle se comporte deja ainsi. */
+.pc-hero{grid-column:1 / -1}
+.pc-hero .pc-imgwrap{aspect-ratio:16/9}
+.pc-hero .pc-name{font-size:19px;letter-spacing:-.3px}
+.pc-hero .pc-desc{-webkit-line-clamp:3}
+.pc-hero .pc-price b{font-size:23px}
+@media(min-width:720px){
+  .pc-hero{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);align-items:stretch}
+  .pc-hero .pc-imgwrap{aspect-ratio:auto;height:100%;min-height:250px}
+  .pc-hero .pc-body{padding:22px 24px;justify-content:center;gap:8px}
+}
+/* Typographie des prix : quatre partis pris assumes, pas quatre nuances */
+${_prixStyle === 'discret' ? `.pc-price b{font-size:15px;font-weight:700;color:var(--tx)}
+.pc-price small{font-size:10px;font-weight:600;opacity:.7}` : ''}
+${_prixStyle === 'fort' ? `.pc-price b{font-size:24px;font-weight:900;letter-spacing:-.055em}
+.pc-price small{font-size:12px}` : ''}
+${_prixStyle === 'editorial' ? `.pc-price{align-items:flex-end}
+.pc-price b{font-family:${headingStack};font-size:26px;font-weight:400;color:var(--tx);letter-spacing:-.03em}
+.pc-price small{font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--tx2);padding-bottom:3px}
+.pc-price s{font-size:11px;opacity:.5}` : ''}
+/* Traitement de la rupture : trois lectures possibles de la meme verite */
+${_ruptureStyle === 'bandeau' ? `.pc-out .pc-imgwrap{filter:none;opacity:1}
+.pc-out .pc-imgwrap::before{left:0;top:14px;transform:none;border-radius:0 999px 999px 0;
+  background:#14141A;letter-spacing:.16em;padding:7px 16px 7px 13px}
+.pc-out{border-color:rgba(0,0,0,.14)}` : ''}
+${_ruptureStyle === 'voile' ? `.pc-out .pc-imgwrap{filter:none;opacity:1}
+.pc-out .pc-imgwrap::after{content:'';display:block!important;position:absolute;inset:0;z-index:2;
+  opacity:1!important;animation:none!important;
+  background:repeating-linear-gradient(135deg,rgba(20,20,26,.30) 0 9px,rgba(20,20,26,.14) 9px 18px)}
+.pc-out .pc-imgwrap::before{background:#fff;color:#14141A}` : ''}
 .order-btn{${orderStyle==='outline'?`background:transparent;color:${tc};border:2px solid ${tc}`:orderStyle==='brand'?`background:linear-gradient(135deg,${tc},${tc}cc);color:#fff;border:none;box-shadow:0 4px 12px -4px ${tc}88`:'background:linear-gradient(135deg,#25D366,#1fb958);color:#fff;border:none;box-shadow:0 4px 12px -4px rgba(37,211,102,.5)'};border-radius:var(--rb);padding:10px 12px;font-weight:700;cursor:pointer;font-size:12.5px;font-family:inherit;transition:transform .15s,box-shadow .15s,filter .15s;margin-top:7px}
 .order-btn:hover{filter:brightness(1.05);transform:translateY(-1px)}
 .order-btn:active{transform:scale(.96)}
@@ -24015,7 +24576,7 @@ ${hoverCss}
    cascade. Rien d'autre que transform et opacity n'est anime.          */
 /* 240vh au lieu de 320 : deux ecrans et demi suffisent pour lire la
    sequence, trois font attendre un client presse sur un reseau lent. */
-.cinema{position:relative;height:240vh}
+.cinema{position:relative;height:${A.longueur}vh}
 /* Echappatoire visible des le premier ecran : personne n'est pris au piege */
 .cn-skip{--pk:clamp(0,(.42 - var(--p))/.12,1);
   position:absolute;top:calc(14px + env(safe-area-inset-top));right:14px;z-index:4;
@@ -24034,11 +24595,12 @@ ${hoverCss}
 .cn-wall{position:absolute;inset:0;display:grid;grid-template-columns:repeat(4,1fr);
   gap:12px;padding:14vh 6vw;align-content:center;pointer-events:none}
 @media(max-width:640px){.cn-wall{grid-template-columns:repeat(2,1fr);gap:9px;padding:16vh 7vw}}
-.cn-it{--pi:clamp(0,(var(--p) - .36 - var(--i)*.035)/.2,1);
+.cn-it{--pi:clamp(0,(var(--p) - ${_decl.prod} - var(--i)*${_casc})/.2,1);--sens:1;
   position:relative;aspect-ratio:1/1;border-radius:16px;overflow:hidden;margin:0;
   border:1px solid var(--bd);background:var(--surface);
   opacity:var(--pi);
-  transform:translateY(calc((1 - var(--pi)) * 54px)) scale(calc(.9 + var(--pi) * .1))}
+  transform:${_entreeTf}}
+.cn-it:nth-child(even){--sens:-1}
 .cn-it img{width:100%;height:100%;object-fit:cover;display:block}
 .cn-it.cn-ph{display:grid;place-items:center;
   background:radial-gradient(120% 92% at 16% 10%, hsl(var(--ph) 74% 93%) 0%, transparent 62%),
@@ -24046,11 +24608,11 @@ ${hoverCss}
 .cn-it.cn-ph span{font-size:clamp(18px,4.5vw,30px);font-weight:800;letter-spacing:-.03em;
   color:hsl(var(--ph) 48% 36%);opacity:.72}
 /* Le rideau : il remonte, il ne disparaît pas en fondu */
-.cn-shutter{--po:clamp(0,(var(--p) - .04)/.32,1);
+.cn-shutter{--po:clamp(0,(var(--p) - ${_decl.rid})/.32,1);
   position:absolute;left:0;right:0;top:0;height:100%;z-index:2;
   background:repeating-linear-gradient(180deg,#26262C 0 7px,#1D1D22 7px 14px);
   box-shadow:0 20px 46px rgba(0,0,0,.5);
-  transform:translateY(calc(var(--po) * -101%))}
+  transform:${_rideauTf}}
 .cn-slat{position:absolute;left:0;right:0;bottom:0;height:10px;
   background:linear-gradient(180deg,#3A3A44,#15151A);
   box-shadow:0 4px 16px rgba(0,0,0,.55)}
@@ -24081,6 +24643,80 @@ ${hoverCss}
   .cn-title{opacity:1;transform:none;color:var(--tx)}
   .cn-meta,.cn-go{position:relative;bottom:auto;opacity:1;transform:none;margin-top:18px}
   .cn-skip{display:none}}
+
+/* ── Studio d'animation : effets lies au pointeur ──────────────────────
+   Reserves aux appareils qui ont un vrai survol. Sur telephone, « hover »
+   se declenche au toucher et resterait colle : la requete pointer:fine
+   les ecarte proprement plutot que de produire un effet casse.          */
+${A.tilt ? `
+@media (hover:hover) and (pointer:fine){
+  .pc{transform-style:preserve-3d;transition:transform .18s cubic-bezier(.2,0,0,1)}
+  .pc.tilted{transform:perspective(760px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) translateZ(6px)}
+}` : ''}
+${A.halo ? `
+.hero-halo{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:0;
+  transition:opacity .5s ease;
+  background:radial-gradient(340px circle at var(--mx,50%) var(--my,40%),
+    rgba(255,255,255,.16), transparent 70%)}
+@media (hover:hover) and (pointer:fine){ .header:hover .hero-halo{opacity:1} }` : ''}
+${A.curseur ? `
+@media (hover:hover) and (pointer:fine){
+  .baro-cursor{position:fixed;top:0;left:0;width:26px;height:26px;border-radius:50%;
+    border:1.5px solid ${tc};pointer-events:none;z-index:9999;
+    transform:translate(-50%,-50%);transition:width .18s,height .18s,background .18s,border-color .18s;
+    mix-blend-mode:difference}
+  .baro-cursor.actif{width:46px;height:46px;background:${tc}22}
+}` : ''}
+${A.hero !== 'aucun' ? `
+/* Hero tenu en place : le contenu glisse par-dessus. :where() met la regle
+   a specificite zero — toute section qui a deja son fond garde le sien. */
+.header{position:sticky;top:0;z-index:0}
+:where(.header ~ *){position:relative;z-index:1;background:var(--bg)}
+${A.hero === 'fondu' ? '.header{opacity:calc(1 - var(--hp,0) * .82)}' : ''}
+${A.hero === 'zoom'  ? '.header{transform:scale(calc(1 + var(--hp,0) * .12));transform-origin:50% 42%}' : ''}
+@media(prefers-reduced-motion:reduce){.header{opacity:1;transform:none}}` : ''}
+${A.vignette ? `
+.hero-vignette{position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(115% 85% at 50% 42%, transparent 42%, rgba(0,0,0,.42) 100%)}` : ''}
+${A.spotlight ? `
+/* Bordure lumineuse : un calque en surimpression, aucune ombre a recalculer */
+@media (hover:hover) and (pointer:fine){
+  .pc::after{content:'';position:absolute;inset:0;z-index:4;pointer-events:none;
+    border-radius:inherit;opacity:0;transition:opacity .25s ease;
+    background:radial-gradient(220px circle at var(--sx,50%) var(--sy,50%),
+      ${tc}2e, transparent 62%);
+    box-shadow:inset 0 0 0 1px ${tc}55}
+  .pc:hover::after{opacity:1}
+}` : ''}
+${A.magnetique ? `
+@media (hover:hover) and (pointer:fine){
+  .pc-add,.cn-go,.hero-cta,.cart-btn{transition:transform .16s cubic-bezier(.2,0,0,1)}
+}` : ''}
+${A.bandeau ? `
+.marquee{overflow:hidden;white-space:nowrap;padding:11px 0;
+  border-top:1px solid var(--bd,rgba(0,0,0,.06));border-bottom:1px solid var(--bd,rgba(0,0,0,.06));
+  background:${tc}0f}
+.marquee-in{display:inline-block;will-change:transform;animation:mqSlide 22s linear infinite}
+.marquee span{font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;
+  color:${tc};padding:0 26px}
+@keyframes mqSlide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.marquee:hover .marquee-in{animation-play-state:paused}
+@media(prefers-reduced-motion:reduce){.marquee-in{animation:none}}` : ''}
+${A.separateur !== 'aucun' ? `
+.sep{height:1px;margin:34px 16px;border:0;padding:0}
+${A.separateur === 'ligne'
+  ? `.sep{background:var(--bd,rgba(0,0,0,.10));transform:scaleX(0);transform-origin:0 50%;
+      transition:transform 1s cubic-bezier(.16,1,.3,1)}
+     .sep.in{transform:scaleX(1)}`
+  : `.sep{background:linear-gradient(90deg,transparent,${tc}66,transparent);
+      opacity:0;transition:opacity .9s ease}
+     .sep.in{opacity:1}`}
+@media(prefers-reduced-motion:reduce){.sep{transform:none;opacity:1}}` : ''}
+@media(prefers-reduced-motion:reduce){
+  .pc.tilted{transform:none!important}
+  .hero-halo{display:none}
+  .baro-cursor{display:none}
+}
 
 /* ── Application de la palette ────────────────────────────────────────
    Place en fin de feuille pour primer sur les couleurs ecrites en dur
@@ -24123,12 +24759,12 @@ ${bannerHTML(topBanner, 'top')}
   ${logo ? `<img src="${logo}" class="topbar-logo" alt="Logo">` : `<div class="topbar-mono">${esc((bc.name||S.session?.business||'B').charAt(0).toUpperCase())}</div>`}
   <div class="topbar-name">${esc(bc.name||S.session?.business||'Ma Boutique')}</div>
   <nav class="topnav">${_navLinks.map(l=>`<a href="${l[0]}" onclick="event.preventDefault();(document.querySelector('${l[0]}')||document.body).scrollIntoView({behavior:'smooth',block:'start'})">${l[1]}</a>`).join('')}</nav>
-  <span class="cur-badge" title="Devise de la boutique">${_curBadge}</span>
+  <span class="cur-badge" title="${t('z4_deviseBoutique')}">${_curBadge}</span>
   ${(BARO_API_OK && shopIdNum) ? `<button class="icon-btn" id="acc-btn" onclick="baroAccount()" title="Mon compte" aria-label="Mon compte">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
     <span class="acc-dot" id="acc-dot" hidden></span>
   </button>` : ''}
-  <button class="icon-btn" onclick="baroMyOrders()" title="Mes achats" aria-label="Mes achats">
+  <button class="icon-btn" onclick="baroMyOrders()" title="${t('z4_mesAchats')}" aria-label="${t('z4_mesAchats')}">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
   </button>
   ${showCartButton ? `<button class="cart-btn" onclick="baroOpenCheckout()" title="Panier">
@@ -24139,7 +24775,7 @@ ${bannerHTML(topBanner, 'top')}
 <div class="scroll-prog" id="scroll-prog" aria-hidden="true"></div>
 <nav class="navpills" aria-label="Navigation">
   ${_navLinks.map(l=>`<a href="${l[0]}" onclick="event.preventDefault();(document.querySelector('${l[0]}')||document.body).scrollIntoView({behavior:'smooth',block:'start'})">${l[1]}</a>`).join('')}
-  <a href="#" onclick="event.preventDefault();baroMyOrders()">Mes achats</a>
+  <a href="#" onclick="event.preventDefault();baroMyOrders()">${t('z4_mesAchats')}</a>
 </nav>
 <div class="header header-${heroStyle}${_heroVid?' has-video':''}">
   ${heroVideoHTML}
@@ -24151,17 +24787,37 @@ ${bannerHTML(topBanner, 'top')}
         déclenchaient la même action, l'un sous l'autre : le repère seul est
         plus juste, et c'est le langage des vitrines de reference. */ ''}
   ${heroStyle !== 'minimal' ? `<div class="scroll-explore" role="button" tabindex="0" title="Voir les produits" onclick="(document.querySelector('main.grid')||document.body).scrollIntoView({behavior:'smooth',block:'start'})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}"><span class="se-label">${t('x2_faitesDefiler')}</span><span class="se-rail"><span class="se-dot"></span></span></div>` : ''}
+  ${A.halo ? '<div class="hero-halo" aria-hidden="true"></div>' : ''}
+  ${A.vignette ? '<div class="hero-vignette" aria-hidden="true"></div>' : ''}
   <div class="hero-grain" aria-hidden="true"></div>
   <div class="hero-fade" aria-hidden="true"></div>
 </div>
 <div class="info-bar">
   <div class="info-item" id="shop-status" style="font-weight:800;display:none"></div>
   ${_deliveryOff
-    ? `<div class="info-item">🏬 Retrait sur place uniquement${_pickupHours?` · 🕒 ${esc(_pickupHours)}`:''}</div>`
+    ? `<div class="info-item">🏬 ${t('z4_retraitUniquement')}${_pickupHours?` · 🕒 ${esc(_pickupHours)}`:''}</div>`
     : `${(bc.deliveryZones||[]).length>0?`<div class="info-item">📍 ${(bc.deliveryZones||[]).slice(0,4).join(', ')}${(bc.deliveryZones||[]).length>4?' +'+((bc.deliveryZones||[]).length-4):''}</div>`:''}
-  ${bc.deliveryFees>0?`<div class="info-item">🚚 Livraison : ${fmt(bc.deliveryFees)} ${sym()}</div>`:'<div class="info-item">🚚 Livraison disponible</div>'}`}
-  <div class="info-item">💬 Commande WhatsApp</div>
+  ${bc.deliveryFees>0?`<div class="info-item">🚚 ${t('z3_livraison')} : ${fmt(bc.deliveryFees)} ${sym()}</div>`:`<div class="info-item">🚚 ${t('z4_livraisonDispo')}</div>`}`}
+  <div class="info-item">💬 ${t('z3_commandeWhatsapp')}</div>
 </div>
+${(() => {
+  if (!A.bandeau) return '';
+  // Sans texte saisi, on reprend des informations vraies de la boutique
+  // plutot que d'inventer une promesse que le commercant ne tient pas.
+  const saisi = String(A.bandeauTexte || '').split(/[\n·|]+/).map(x => x.trim()).filter(Boolean);
+  const auto = [
+    `${shopProds.length} ${shopProds.length > 1 ? t('z3_articles') : t('z3_article')}`,
+    _deliveryOff ? (_pickupAddr ? t('z3_retraitPlace') : '') :
+      ((bc.deliveryZones || []).length ? `${t('z3_livraison')} ${(bc.deliveryZones || []).slice(0, 3).map(z => esc(z)).join(' · ')}` : ''),
+    bc.deliveryTime ? esc(bc.deliveryTime) : '',
+    waNum ? t('z3_commandeWhatsapp') : '',
+  ].filter(Boolean);
+  const items = (saisi.length ? saisi.map(x => esc(x)) : auto);
+  if (!items.length) return '';
+  // Deux copies : l'animation translate de -50%, la boucle est donc continue
+  const suite = items.map(x => `<span>${x}</span>`).join('');
+  return `<div class="marquee" aria-hidden="true"><div class="marquee-in">${suite}${suite}</div></div>`;
+})()}
 ${_cinemaHTML}
 ${_cinemaHTML ? `<script>(function(){
   // Pilote de la sequence : convertit la position de defilement en une
@@ -24200,13 +24856,13 @@ ${_cinemaHTML ? `<script>(function(){
   var open=false,closeStr='';
   if(td&&!td.x){var o=toMin(td.o),c=toMin(td.c);if(o!=null&&c!=null&&n>=o&&n<c){open=true;closeStr=td.c;}}
   el.style.display='';
-  if(open){el.textContent='🟢 Ouvert · ferme à '+closeStr;el.style.color='#16A34A';}
-  else{var nx='';for(var i=0;i<7;i++){var j=(idx+i)%7,dd=H[j];if(dd&&!dd.x&&dd.o){if(i===0){var o2=toMin(dd.o);if(o2!=null&&n<o2){nx="aujourd'hui à "+dd.o;break;}else{continue;}}nx=(i===1?'demain':days[j])+' à '+dd.o;break;}}el.textContent='🔴 Fermé'+(nx?' · ouvre '+nx:'');el.style.color='#DC2626';}
+  if(open){el.textContent='🟢 ${t('z4_ouvertFermeA')} '+closeStr;el.style.color='#16A34A';}
+  else{var nx='';for(var i=0;i<7;i++){var j=(idx+i)%7,dd=H[j];if(dd&&!dd.x&&dd.o){if(i===0){var o2=toMin(dd.o);if(o2!=null&&n<o2){nx="${t('z4_aujourdhuiA')} "+dd.o;break;}else{continue;}}nx=(i===1?'${t('z4_demain')}':days[j])+' ${t('z4_aMot')} '+dd.o;break;}}el.textContent='🔴 ${t('z4_ferme')}'+(nx?' · ${t('z4_ouvre')} '+nx:'');el.style.color='#DC2626';}
 })();</script>
 <div class="toolbar">
   <div class="toolbar-row">
     <input class="search" id="shop-search" type="search" placeholder="🔍  Rechercher un produit…">
-    ${shopProds.length > 2 ? `<select class="sort-sel" id="shop-sort" onchange="baroSort(this.value)" aria-label="Trier les produits">
+    ${shopProds.length > 2 ? `<select class="sort-sel" id="shop-sort" onchange="baroSort(this.value)" aria-label="${t('z4_trierProduits')}">
       <option value="">Trier</option>
       <option value="price-asc">Prix ↑</option>
       <option value="price-desc">Prix ↓</option>
@@ -24217,7 +24873,7 @@ ${_cinemaHTML ? `<script>(function(){
 </div>
 <div class="container">
 ${cc.body || ''}
-<div class="sec-eyebrow reveal"><span>${shopProds.length} article${shopProds.length>1?'s':''} · Notre sélection</span></div>
+<div class="sec-eyebrow reveal"><span>${shopProds.length} ${shopProds.length>1?t('z3_articles'):t('z3_article')} · ${t('z4_notreSelection')}</span></div>
 <main class="grid" id="produits">
 ${prodsHTML}
 </main>
@@ -24228,17 +24884,17 @@ ${(() => {
   // WhatsApp : l'ecrire supprime le principal point de friction.
   const _z = (bc.deliveryZones || []).filter(Boolean).map(z => esc(z));
   const _etapes = [
-    ['Choisissez', 'Ajoutez au panier les articles qui vous intéressent.'],
+    [t('z4_etChoisissez'), t('z4_etChoisissezTx')],
     waNum
-      ? ['Envoyez', 'Votre panier part sur WhatsApp avec le détail et le total.']
-      : ['Validez', 'Renseignez vos coordonnées et confirmez votre commande.'],
+      ? [t('z4_etEnvoyez'), t('z4_etEnvoyezTx')]
+      : [t('z4_etValidez'), t('z4_etValidezTx')],
     (!_deliveryOff && _z.length)
-      ? ['Recevez', `Livraison ${_z.slice(0, 3).join(', ')}${_z.length > 3 ? '…' : ''}`
-          + (_defFee > 0 ? ` · ${fmt(_defFee)} ${sym()}` : ' · offerte')
+      ? [t('z4_etRecevez'), `${t('z3_livraison')} ${_z.slice(0, 3).join(', ')}${_z.length > 3 ? '…' : ''}`
+          + (_defFee > 0 ? ` · ${fmt(_defFee)} ${sym()}` : ` · ${t('z4_offerte')}`)
           + (bc.deliveryTime ? ` · ${esc(bc.deliveryTime)}` : '')]
       : (_pickupEnabled
-          ? ['Retirez', `Sur place : ${esc(_pickupAddr)}`]
-          : ['Recevez', 'Nous vous recontactons pour convenir de la remise.'])
+          ? [t('z4_etRetirez'), `${t('z4_surPlace')} : ${esc(_pickupAddr)}`]
+          : [t('z4_etRecevez'), t('z4_etRecontact')])
   ];
   return `<div class="sec-eyebrow reveal"><span>${t('x2_commentCaMarche3')}</span></div>
 <ol class="howto reveal">${_etapes.map((e, i) => `
@@ -24259,7 +24915,7 @@ ${showReviews ? reviewsHTML : ''}
   <div class="pay-section-title">${t('w8_moyensAcceptes')}</div>
   <div class="pay-badges">${payHTML}</div>
 </div>
-${_hasContact?`<div class="sec-eyebrow reveal"><span>Nous joindre</span></div>
+${_hasContact?`<div class="sec-eyebrow reveal"><span>${t('z4_nousJoindre')}</span></div>
 <div class="contact-section reveal" id="contact">
   <div class="pay-section-title">Contact</div>
   <div class="contact-rows">
@@ -24270,7 +24926,7 @@ ${_hasContact?`<div class="sec-eyebrow reveal"><span>Nous joindre</span></div>
   </div>
 </div>`:''}
 ${(bc.deliveryZones||[]).length>0 && !_deliveryOff?`<div class="delivery-info reveal">🏙️ Zones de livraison : ${(bc.deliveryZones||[]).join(' • ')}</div>`:''}
-${_deliveryOff && _pickupEnabled?`<div class="delivery-info reveal">🏬 Retrait sur place uniquement — 📍 ${esc(_pickupAddr)}${_pickupHours?` · 🕒 ${esc(_pickupHours)}`:''} · <a href="${esc(_pickupMap)}" target="_blank" rel="noopener" style="font-weight:700">${t('x2_itineraire2')}</a></div>`:''}
+${_deliveryOff && _pickupEnabled?`<div class="delivery-info reveal">🏬 ${t('z4_retraitUniquement')} — 📍 ${esc(_pickupAddr)}${_pickupHours?` · 🕒 ${esc(_pickupHours)}`:''} · <a href="${esc(_pickupMap)}" target="_blank" rel="noopener" style="font-weight:700">${t('x2_itineraire2')}</a></div>`:''}
 ${(bc.faqs||[]).length>0?`<div class="pay-section reveal" style="text-align:left">
   <div class="pay-section-title" style="text-align:center">${t('x2_questionsFreq')}</div>
   ${(bc.faqs||[]).map(f=>`<details style="padding:10px 4px;border-bottom:1px solid #F2F2F5"><summary style="font-weight:700;font-size:13.5px;cursor:pointer">${esc(f.q||f.question||'')}</summary><div style="font-size:13px;color:#666;line-height:1.6;padding:8px 2px 2px">${esc(f.a||f.answer||'')}</div></details>`).join('')}
@@ -24297,7 +24953,7 @@ ${popupHTML}
     <div class="ft-col">
       <h4>Liens</h4>
       ${_navLinks.map(l=>`<a href="${l[0]}" onclick="event.preventDefault();(document.querySelector('${l[0]}')||document.body).scrollIntoView({behavior:'smooth',block:'start'})">${l[1]}</a>`).join('')}
-      <a onclick="baroMyOrders()">Mes achats</a>
+      <a onclick="baroMyOrders()">${t('z4_mesAchats')}</a>
     </div>
     <div class="ft-col">
       <h4>${t('x2_legales')}</h4>
@@ -24307,7 +24963,7 @@ ${popupHTML}
     </div>
   </div>
   <div class="ft-bottom">
-    <span>© ${new Date().getFullYear()} ${esc(bc.name||S.session?.business||'Ma Boutique')} — Tous droits réservés</span>
+    <span>© ${new Date().getFullYear()} ${esc(bc.name||S.session?.business||'Ma Boutique')} — ${t('z4_droitsReserves')}</span>
     ${(_planHasFeature('whiteLabel') && bc.hideBaroBranding) ? '' : `<span>${t('x2_propulsePar')} <a href="#" style="font-weight:700">BARO</a></span>`}
   </div>
 </footer>
@@ -24467,7 +25123,7 @@ ${(BARO_API_OK && shopIdNum) ? `<div class="legal-ov" id="acc-ov" onclick="if(ev
 })();
 </scr`+`ipt>` : ''}
 <div class="legal-ov" id="myorders-ov" onclick="if(event.target===this)this.classList.remove('show')">
-  <div class="legal-box"><button class="legal-x" onclick="document.getElementById('myorders-ov').classList.remove('show')">✕</button><h3>🛍️ Mes achats</h3><div id="myorders-c"></div></div>
+  <div class="legal-box"><button class="legal-x" onclick="document.getElementById('myorders-ov').classList.remove('show')">✕</button><h3>🛍️ ${t('z4_mesAchats')}</h3><div id="myorders-c"></div></div>
 </div>
 <script>
 (function(){
@@ -24517,7 +25173,7 @@ ${showCartButton ? `
     <input id="ck-name" type="text" placeholder="ex : Aminata Traoré">
     <label>${t('w9_telephone')} <span class="ck-req">obligatoire</span></label>
     <input id="ck-phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="ex : 07 00 00 00 00">
-    <div class="ck-phone-why">Le seul moyen pour ${esc(bc.name||S.session?.business||'la boutique')} de vous joindre pour confirmer.</div>
+    <div class="ck-phone-why">${t('z4_telPourquoi').replace('{0}', esc(bc.name||S.session?.business||t('z4_laBoutique')))}</div>
     ${_pickupEnabled && !_deliveryOff?`<label>${t('x2_modeReception')}</label>
     <div class="ck-mode">
       <button type="button" class="ck-mode-btn on" id="ck-mode-delivery" onclick="baroSetMode('delivery')">🚚 Livraison</button>
@@ -24611,8 +25267,8 @@ var baroMode=BARO_DELOFF?'pickup':'delivery';
     var fs=document.getElementById('ck-freeship');
     if(fs&&BARO_FREESHIP>0){var sub=total();
       if(count()===0){fs.style.display='none';}
-      else if(sub>=BARO_FREESHIP){fs.style.display='';fs.style.background='#DCFCE7';fs.style.color='#15803D';fs.textContent='🎉 Livraison offerte !';}
-      else{fs.style.display='';fs.style.background='#FEF3C7';fs.style.color='#92400E';fs.textContent='Plus que '+fmtn(BARO_FREESHIP-sub)+' '+BARO_SYM+' pour la livraison offerte 🎁';}
+      else if(sub>=BARO_FREESHIP){fs.style.display='';fs.style.background='#DCFCE7';fs.style.color='#15803D';fs.textContent='🎉 ${t('z4_livraisonOfferte')}';}
+      else{fs.style.display='';fs.style.background='#FEF3C7';fs.style.color='#92400E';fs.textContent='${t('z4_plusQue')} '+fmtn(BARO_FREESHIP-sub)+' '+BARO_SYM+' ${t('z4_pourLivraisonOfferte')} 🎁';}
     }
     var tot=document.getElementById('ck-total');if(tot)tot.textContent=fmtn(Math.max(0,total()-disc)+(count()>0?fee:0))+' '+BARO_SYM;
   }
@@ -24666,14 +25322,14 @@ var baroMode=BARO_DELOFF?'pickup':'delivery';
     L.push('Sous-total : '+fmtn(total())+' '+BARO_SYM);
     if(disc>0)L.push('Réduction '+appliedPromo.code+' : -'+fmtn(disc)+' '+BARO_SYM);
     var _pickup=(baroMode==='pickup');
-    if(_pickup)L.push('Retrait sur place 🏬 (gratuit)');
-    else if(fee>0)L.push('Livraison'+(zone?' ('+zone+')':'')+' : '+fmtn(fee)+' '+BARO_SYM);
-    else if(BARO_FREESHIP>0&&total()>=BARO_FREESHIP)L.push('Livraison : Offerte 🎉');
+    if(_pickup)L.push('${t('z3_retraitPlace')} 🏬 (${t('z4_gratuit')})');
+    else if(fee>0)L.push('${t('z3_livraison')}'+(zone?' ('+zone+')':'')+' : '+fmtn(fee)+' '+BARO_SYM);
+    else if(BARO_FREESHIP>0&&total()>=BARO_FREESHIP)L.push('${t('z3_livraison')} : ${t('z4_offerteMaj')} 🎉');
     L.push('*TOTAL : '+fmtn(Math.max(0,total()-disc)+fee)+' '+BARO_SYM+'*');
     L.push('');
     if(name)L.push('👤 '+name);
     if(phone)L.push('📞 '+phone);
-    if(_pickup){if(BARO_PICKUP&&BARO_PICKUP.on){L.push('🏬 Retrait : '+BARO_PICKUP.addr);if(BARO_PICKUP.hours)L.push('🕒 '+BARO_PICKUP.hours);}else{L.push('🏬 Retrait sur place');}}
+    if(_pickup){if(BARO_PICKUP&&BARO_PICKUP.on){L.push('🏬 ${t('z4_retrait')} : '+BARO_PICKUP.addr);if(BARO_PICKUP.hours)L.push('🕒 '+BARO_PICKUP.hours);}else{L.push('🏬 ${t('z3_retraitPlace')}');}}
     else if(zone)L.push('📍 '+zone);
     if(pay)L.push('💳 '+pay);
     // Mémorise la commande côté acheteur (Mes achats) — local, honnête
@@ -24732,7 +25388,7 @@ var baroMode=BARO_DELOFF?'pickup':'delivery';
         +'<p>'+${JSON.stringify(t('y4_unInstant'))}.replace('{0}',BARO_SHOP)+'</p>';
     } else if(etat==='ok'){
       c.innerHTML='<div class="cfm-ico ok">✓</div><h3>${t('x2_commandeEnvoyee')}</h3>'
-        +'<p>'+BARO_SHOP+' a reçu votre commande. Suivez son avancement dans <b>Mes achats</b>.</p>'
+        +'<p>'+BARO_SHOP+' ${t('z4_aRecuCommande')} <b>${t('z4_mesAchats')}</b>.</p>'
         +'<div class="cfm-code"><span>${t('x2_codeSuivi')}</span><b>'+code+'</b></div>'
         +'<button class="cfm-go" onclick="baroCloseConfirm();baroMyOrders()">${t('x2_voirMesAchats')}</button>'
         +'<button class="cfm-alt" onclick="baroCloseConfirm();baroWaSend()">${t('x2_envoyerAussiWa')}</button>';
@@ -24797,6 +25453,7 @@ var baroMode=BARO_DELOFF?'pickup':'delivery';
 .qv-cat{font-size:11px;font-weight:700;color:#999;text-transform:uppercase;letter-spacing:.5px}
 .qv-name{font-size:21px;font-weight:800;margin:3px 0 8px;line-height:1.2}
 .qv-price{font-size:23px;font-weight:900;color:${tc}}
+.qv-tag{font-size:12.5px;font-weight:700;color:${tc};margin:-4px 0 8px;line-height:1.4}
 .qv-price s{font-size:15px;color:#b0b0b0;font-weight:600;margin-right:6px}
 .qv-stock{font-size:13px;font-weight:700;margin-top:6px}
 .qv-desc{font-size:14px;color:#555;line-height:1.6;margin:12px 0 16px;white-space:pre-wrap}
@@ -24830,7 +25487,7 @@ var baroMode=BARO_DELOFF?'pickup':'delivery';
 .pc-rating{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:700;color:#92400E;background:#FEF3C7;padding:2px 7px;border-radius:999px}
 .pc{cursor:pointer;animation:none}
 .pc:active{transform:scale(.98)}
-.reveal{opacity:0;transform:translateY(30px) scale(.984);filter:blur(5px);transition:opacity .85s cubic-bezier(.16,1,.3,1),transform .85s cubic-bezier(.16,1,.3,1),filter .6s ease;will-change:opacity,transform,filter}
+.reveal{${_revealDe};filter:blur(4px);transition:opacity .85s cubic-bezier(.16,1,.3,1),transform .85s cubic-bezier(.16,1,.3,1),filter .6s ease;will-change:opacity,transform,filter}
 .reveal.in{opacity:1;transform:none;filter:blur(0)}
 @media(prefers-reduced-motion:reduce){.reveal{opacity:1!important;transform:none!important;filter:none!important;transition:none}}
 .qv-img{cursor:zoom-in}
@@ -24873,6 +25530,7 @@ var baroMode=BARO_DELOFF?'pickup':'delivery';
     <div class="qv-info">
       <div class="qv-cat" id="qv-cat"></div>
       <div class="qv-name" id="qv-name"></div>
+      <div class="qv-tag" id="qv-tag"></div>
       <div class="qv-price" id="qv-price"></div>
       <div class="qv-stock" id="qv-stock"></div>
       <div class="qv-desc" id="qv-desc"></div>
@@ -24909,10 +25567,14 @@ window.BARO_VARSEL=window.BARO_VARSEL||{};
     tb.innerHTML=(imgs.length>1)?imgs.map(function(u,i){return '<button class="qv-thumb'+(i===0?' on':'')+'" style="background-image:url(\\''+u+'\\')" onclick="baroQVThumb('+i+')"></button>';}).join(''):'';
     document.getElementById('qv-cat').textContent=it.cat||'';
     document.getElementById('qv-name').textContent=it.name;
-    document.getElementById('qv-price').innerHTML=(it.oldPrice?'<s>'+fmtn(it.oldPrice)+' ${sym()}</s>':'')+fmtn(it.price)+' ${sym()}';
+    var _qt=document.getElementById('qv-tag');
+    if(_qt){_qt.textContent=it.tag||'';_qt.style.display=it.tag?'':'none';}
+    document.getElementById('qv-price').innerHTML=it.ask
+      ? ${JSON.stringify('')}+'${t('z5_prixSurDemande')}'
+      : (it.oldPrice?'<s>'+fmtn(it.oldPrice)+' ${sym()}</s>':'')+fmtn(it.price)+' ${sym()}';
     var st=document.getElementById('qv-stock');
-    if(it.qty===0){st.textContent='✕ Rupture de stock';st.style.color='#DC2626';}
-    else if(it.qty!=null&&it.qty<=5){st.textContent='⚡ Plus que '+it.qty+' en stock';st.style.color='#D97706';}
+    if(it.qty===0){st.textContent='✕ ${t('z4_ruptureStock')}';st.style.color='#DC2626';}
+    else if(it.qty!=null&&it.qty<=5){st.textContent='⚡ ${t('z4_plusQue')} '+it.qty+' ${t('z4_enStock')}';st.style.color='#D97706';}
     else{st.textContent='';}
     document.getElementById('qv-desc').textContent=it.desc||'';
     var vc=document.getElementById('qv-variants');
@@ -24993,15 +25655,39 @@ window.BARO_VARSEL=window.BARO_VARSEL||{};
 })();</script>
 <script>(function(){
   var els=[].slice.call(document.querySelectorAll('.reveal'));
+  var _sep=${JSON.stringify(A.separateur)};
   if(!('IntersectionObserver' in window)){els.forEach(function(e){e.classList.add('in');});return;}
-  var io=new IntersectionObserver(function(ents){ents.forEach(function(en){if(en.isIntersecting){var el=en.target,sib=el.parentElement?[].indexOf.call(el.parentElement.children,el):0;el.style.transitionDelay=(Math.min(sib%4,3)*0.06)+'s';el.classList.add('in');io.unobserve(el);}});},{rootMargin:'0px 0px -8% 0px',threshold:0.08});
+  var ORD=${JSON.stringify(A.grille)};
+  // Ordre d'apparition : par colonne (rang dans la rangee), par ligne
+  // (tout ensemble) ou en diagonale (rang + numero de rangee).
+  function retard(el){
+    var par=el.parentElement;if(!par)return 0;
+    var idx=[].indexOf.call(par.children,el);
+    var cols=4;
+    try{var g=getComputedStyle(par).gridTemplateColumns;
+      if(g&&g!=='none')cols=Math.max(1,g.split(' ').filter(Boolean).length);}catch(e){}
+    var col=idx%cols, lig=Math.floor(idx/cols);
+    if(ORD==='ligne')return 0;
+    if(ORD==='diagonale')return Math.min(col+lig,6)*0.055;
+    return Math.min(col,3)*0.06;
+  }
+  var io=new IntersectionObserver(function(ents){ents.forEach(function(en){if(en.isIntersecting){var el=en.target;el.style.transitionDelay=retard(el).toFixed(3)+'s';el.classList.add('in');io.unobserve(el);}});},{rootMargin:'0px 0px -8% 0px',threshold:0.08});
+  ${A.separateur !== 'aucun' ? `
+  // Separateurs : poses avant chaque intertitre sauf le premier, puis
+  // observes comme le reste. Un seul endroit a maintenir.
+  var eyes=[].slice.call(document.querySelectorAll('.sec-eyebrow'));
+  eyes.slice(1).forEach(function(ey){
+    var hr=document.createElement('hr'); hr.className='sep';
+    ey.parentNode.insertBefore(hr,ey); els.push(hr);
+  });` : ''}
   els.forEach(function(e){io.observe(e);});
   // Filet de securite : rien ne reste invisible meme si l'observer ne se declenche pas
   setTimeout(function(){els.forEach(function(e){e.classList.add('in');});},1600);
 })();</script>
-<script>(function(){
+${((Number(A.parallaxe) || 0) > 0 || A.hero !== 'aucun') ? `<scr` + `ipt>(function(){
   // Parallax du hero : le contenu monte plus lentement que la page et s'estompe
   if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  var PARA=${Number(A.parallaxe)||0}, HERO=${JSON.stringify(A.hero)};
   var hd=document.querySelector('.header');if(!hd)return;
   var items=[].slice.call(hd.querySelectorAll('.header-logo,h1,p,.header-rating,.hero-cta'));
   var cue=hd.querySelector('.scroll-explore');
@@ -25009,12 +25695,16 @@ window.BARO_VARSEL=window.BARO_VARSEL||{};
   function frame(){
     ticking=false;
     var h=hd.offsetHeight||1,y=window.pageYOffset||document.documentElement.scrollTop||0;
-    if(y>h){return;}                       // hero sorti de l'ecran : plus rien a calculer
+    if(y>h+40){return;}                    // hero sorti de l'ecran : plus rien a calculer
     var p=Math.min(y/h,1);
+    // Progression du hero, lue par les regles CSS du mode « hero »
+    if(HERO!=='aucun')hd.style.setProperty('--hp',p.toFixed(3));
+    if(PARA<=0)return;
     // Fondu progressif : plein jusqu'a 25% du hero, disparait vers 85% (pas de clignotement)
     var op=p<0.25?1:Math.max(0,1-(p-0.25)/0.6);
     items.forEach(function(el,i){
-      var depth=0.12+i*0.05;               // les elements du bas derivent un peu plus
+      // Intensite reglable : 0 immobilise le hero, 100 double la derive
+      var depth=(0.12+i*0.05)*${(Number(A.parallaxe)||0)/60};
       el.style.transform='translate3d(0,'+(y*depth).toFixed(1)+'px,0)';
       el.style.opacity=op.toFixed(3);
     });
@@ -25028,7 +25718,7 @@ window.BARO_VARSEL=window.BARO_VARSEL||{};
   // animation tourne, elle prime sur le style inline et le parallax ne peut
   // pas le faire disparaitre : on la retire une fois l'entree finie.
   if(cue){setTimeout(function(){cue.style.animation='none';frame();},1700);}
-})();</script>
+})();</scr` + `ipt>` : ''}
 <script>(function(){
   // Barre de progression de lecture — independante du parallax (doit marcher partout)
   var bar=document.getElementById('scroll-prog');if(!bar)return;
@@ -25042,7 +25732,99 @@ window.BARO_VARSEL=window.BARO_VARSEL||{};
   window.addEventListener('scroll',function(){if(!tick){tick=true;requestAnimationFrame(up);}},{passive:true});
   window.addEventListener('resize',up,{passive:true});
   up();
-})();</script>
+})();</scr` + `ipt>
+${(A.tilt || A.halo || A.curseur || A.spotlight || A.magnetique) ? `<scr` + `ipt>(function(){
+  // Effets lies au pointeur. Ils n'ont de sens qu'avec un vrai survol :
+  // sur telephone, « hover » se declenche au toucher et resterait colle.
+  if(!window.matchMedia)return;
+  if(!window.matchMedia('(hover:hover) and (pointer:fine)').matches)return;
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+
+  ${A.tilt ? `
+  // Inclinaison 3D : la carte suit le curseur, dans une amplitude douce.
+  // Lecture des dimensions une seule fois a l'entree, pour ne pas
+  // declencher un recalcul de mise en page a chaque mouvement.
+  document.querySelectorAll('.pc').forEach(function(carte){
+    var r=null;
+    carte.addEventListener('pointerenter',function(){ r=carte.getBoundingClientRect(); carte.classList.add('tilted'); });
+    carte.addEventListener('pointermove',function(e){
+      if(!r)return;
+      var x=(e.clientX-r.left)/r.width-.5, y=(e.clientY-r.top)/r.height-.5;
+      carte.style.setProperty('--ry',(x*9).toFixed(2)+'deg');
+      carte.style.setProperty('--rx',(-y*9).toFixed(2)+'deg');
+    });
+    carte.addEventListener('pointerleave',function(){
+      carte.classList.remove('tilted');
+      carte.style.setProperty('--rx','0deg'); carte.style.setProperty('--ry','0deg');
+      r=null;
+    });
+  });` : ''}
+
+  ${A.halo ? `
+  // Halo qui suit le curseur dans le hero
+  var hd=document.querySelector('.header');
+  if(hd){
+    var att=false;
+    hd.addEventListener('pointermove',function(e){
+      if(att)return; att=true;
+      requestAnimationFrame(function(){
+        att=false;
+        var r=hd.getBoundingClientRect();
+        hd.style.setProperty('--mx',(((e.clientX-r.left)/r.width)*100).toFixed(1)+'%');
+        hd.style.setProperty('--my',(((e.clientY-r.top)/r.height)*100).toFixed(1)+'%');
+      });
+    },{passive:true});
+  }` : ''}
+
+  ${A.curseur ? `
+  // Curseur personnalise : un point qui grossit sur ce qui est cliquable
+  var cur=document.createElement('div'); cur.className='baro-cursor';
+  document.body.appendChild(cur);
+  var cx=0,cy=0,pending=false;
+  document.addEventListener('pointermove',function(e){
+    cx=e.clientX; cy=e.clientY;
+    if(pending)return; pending=true;
+    requestAnimationFrame(function(){ pending=false; cur.style.transform='translate('+cx+'px,'+cy+'px) translate(-50%,-50%)'; });
+  },{passive:true});
+  document.addEventListener('pointerover',function(e){
+    var c=e.target && e.target.closest && e.target.closest('a,button,.pc,select,input');
+    cur.classList.toggle('actif', !!c);
+  },{passive:true});` : ''}
+
+  ${A.spotlight ? `
+  // Bordure lumineuse : deux variables suffisent, le degrade est en CSS
+  document.querySelectorAll('.pc').forEach(function(carte){
+    var r=null,att=false;
+    carte.addEventListener('pointerenter',function(){ r=carte.getBoundingClientRect(); });
+    carte.addEventListener('pointermove',function(e){
+      if(!r||att)return; att=true;
+      requestAnimationFrame(function(){
+        att=false;
+        carte.style.setProperty('--sx',(((e.clientX-r.left)/r.width)*100).toFixed(1)+'%');
+        carte.style.setProperty('--sy',(((e.clientY-r.top)/r.height)*100).toFixed(1)+'%');
+      });
+    },{passive:true});
+    carte.addEventListener('pointerleave',function(){ r=null; });
+  });` : ''}
+
+  ${A.magnetique ? `
+  // Boutons magnetiques : le bouton se decale vers le curseur, dans une
+  // limite de 6 px. Au-dela ce serait penible a cliquer.
+  document.querySelectorAll('.pc-add,.cn-go,.hero-cta,.cart-btn').forEach(function(b){
+    var r=null,att=false;
+    b.addEventListener('pointerenter',function(){ r=b.getBoundingClientRect(); });
+    b.addEventListener('pointermove',function(e){
+      if(!r||att)return; att=true;
+      requestAnimationFrame(function(){
+        att=false;
+        var dx=(e.clientX-(r.left+r.width/2))/r.width, dy=(e.clientY-(r.top+r.height/2))/r.height;
+        b.style.transform='translate('+(dx*12).toFixed(1)+'px,'+(dy*8).toFixed(1)+'px)';
+      });
+    },{passive:true});
+    b.addEventListener('pointerleave',function(){ r=null; b.style.transform=''; });
+  });` : ''}
+})();</scr` + `ipt>` : ''}
+${A.doux ? `<style>html{scroll-behavior:smooth}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}</style>` : ''}
 ${waNum?`<a href="${waLink}" target="_blank" rel="noopener noreferrer" class="wa-float"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg></a>`:''}
 ${customJsBody}
 ${cc.js ? `<script>${cc.js}<\/script>` : ''}
@@ -25137,9 +25919,9 @@ function vBoutiqueEditor() {
       // surfaces et les bordures : le contraste ne peut pas casser.
       const _ent = (typeof _planHasFeature === 'function') && _planHasFeature('whiteLabel');
       const _pals = [
-        ['clair', 'Clair',  '#FAF9F6', '#16161C', 'Blanc chaud, contemporain'],
-        ['creme', 'Crème',  '#F2EDE1', '#241C15', 'Beige éditorial, chaleureux'],
-        ['nuit',  'Nuit',   '#141110', '#F3EEE0', 'Fond profond, texte crème'],
+        ['clair', t('z3_palClair'), '#FAF9F6', '#16161C', t('z3_palClairTx')],
+        ['creme', t('z3_palCreme'), '#F2EDE1', '#241C15', t('z3_palCremeTx')],
+        ['nuit',  t('z3_palNuit'),  '#141110', '#F3EEE0', t('z3_palNuitTx')],
       ];
       const _cur = g('palette', '');
       if (!_ent) {
@@ -25148,7 +25930,11 @@ function vBoutiqueEditor() {
           <div class="bq-lock-row">
             ${_pals.map(p => `<span class="bq-pal-mini" style="background:${p[2]}"><i style="background:${p[3]}"></i></span>`).join('')}
           </div>
-          <div class="bq-lock-tx"><strong>${t('x3_reserveEntreprise')}</strong><span>Clair, Crème et Nuit — fond, texte et surfaces accordés. Voir les plans →</span></div>
+          <div class="bq-lock-tx"><strong>${t('x3_reserveEntreprise')}</strong><span>${t('z3_lockPaletteTx')}</span></div>
+        </div>
+        <div class="bq-sec-title" style="margin-top:14px">${t('z3_studio')}</div>
+        <div class="bq-lock" onclick="nav('pricing')">
+          <div class="bq-lock-tx"><strong>${t('z3_lockStudioTitre')}</strong><span>${t('z3_lockStudioTx')}</span></div>
         </div>`;
       }
       return `<div class="bq-sec-title">${t('x2_sequenceOuverture')} <span class="bq-badge-ent">Entreprise</span></div>
@@ -25156,9 +25942,97 @@ function vBoutiqueEditor() {
         <input type="checkbox" ${g('cinema', false) ? 'checked' : ''} onchange="boutiqueEditSet('cinema', this.checked)">
         <span class="bq-cine-tx">
           <strong>${t('x2_ouvertureDefilement')}</strong>
-          <span>Un rideau se lève sur vos produits pendant que le visiteur fait défiler. Construit avec vos articles — aucune vidéo à fournir.</span>
+          <span>${t('z3_cinemaTx')}</span>
         </span>
       </label>
+
+      ${(() => {
+        // Studio d'animation : vingt-deux reglages qui pilotent reellement
+        // le rendu de la vitrine. Les effets de souris sont annonces comme
+        // tels — ils n'existent pas sur telephone, autant le dire.
+        const A = Object.assign({ rideau:'haut', longueur:240, declenche:'normal',
+          entree:'montee', cascade:'normale', ordre:'normal', parallaxe:60,
+          hero:'aucun', vignette:false, reveal:'fondu', grille:'colonne',
+          separateur:'aucun', progression:'haut', zoomImage:8, tilt:true,
+          spotlight:false, magnetique:false, halo:true, curseur:false,
+          bandeau:false, bandeauTexte:'', grain:true, doux:true }, g('anim', {}) || {});
+        const opts = (k, liste) => liste.map(([v, lbl]) =>
+          `<option value="${v}" ${String(A[k]) === String(v) ? 'selected' : ''}>${lbl}</option>`).join('');
+        const bascule = (k, titre, aide) => `
+      <label class="bq-cine ${A[k] ? 'on' : ''}" style="margin-bottom:7px">
+        <input type="checkbox" ${A[k] ? 'checked' : ''} onchange="boutiqueEditSetAnim('${k}',this.checked)">
+        <span class="bq-cine-tx"><strong>${titre}</strong><span>${aide}</span></span>
+      </label>`;
+        const curseurSel = (k, liste) => `<div class="bq-fld"><label>${liste.titre}</label>
+          <select class="input" onchange="boutiqueEditSetAnim('${k}',this.value)">${opts(k, liste.v)}</select></div>`;
+        return `
+      <div class="bq-sec-title">${t('z3_studio')} <span class="bq-badge-ent">Entreprise</span></div>
+
+      <div class="bq-sub-title">${t('z3_sequence')}</div>
+      <div class="bq-studio">
+        ${curseurSel('rideau', { titre: t('z3_rideau'), v: [
+          ['haut', t('z3_versHaut')], ['bas', t('z3_versBas')],
+          ['horizontal', t('z3_horizontal')], ['iris', t('z3_iris')]] })}
+        ${curseurSel('longueur', { titre: t('z3_longueur'), v: [
+          [160, t('z3_courte')], [240, t('z3_moyenne')], [400, t('z3_ample')]] })}
+        ${curseurSel('declenche', { titre: t('z3_declenche'), v: [
+          ['tot', t('z3_tot')], ['normal', t('z3_normal')], ['tard', t('z3_tard')]] })}
+        ${curseurSel('entree', { titre: t('z3_entree'), v: [
+          ['montee', t('z3_montee')], ['zoom', t('z3_zoom')],
+          ['rotation', t('z3_rotation3d')], ['lateral', t('z3_lateral')]] })}
+        ${curseurSel('cascade', { titre: t('z3_cascade'), v: [
+          ['serree', t('z3_serree')], ['normale', t('z3_normale')], ['ample', t('z3_ampleCascade')]] })}
+        ${curseurSel('ordre', { titre: t('z3_ordre'), v: [
+          ['normal', t('z3_ordreNormal')], ['inverse', t('z3_ordreInverse')],
+          ['centre', t('z3_ordreCentre')]] })}
+      </div>
+
+      <div class="bq-sub-title">${t('z3_page')}</div>
+      <div class="bq-studio">
+        ${curseurSel('hero', { titre: t('z3_heroMode'), v: [
+          ['aucun', t('z3_heroAucun')], ['fixe', t('z3_heroFixe')],
+          ['fondu', t('z3_heroFondu')], ['zoom', t('z3_heroZoom')]] })}
+        ${curseurSel('reveal', { titre: t('z3_reveal'), v: [
+          ['fondu', t('z3_fondu')], ['bas', t('z3_glisseBas')], ['cote', t('z3_glisseCote')],
+          ['zoom', t('z3_zoomLeger')], ['bascule', t('z3_bascule3d')]] })}
+        ${curseurSel('grille', { titre: t('z3_grille'), v: [
+          ['colonne', t('z3_grilleColonne')], ['ligne', t('z3_grilleLigne')],
+          ['diagonale', t('z3_grilleDiagonale')]] })}
+        ${curseurSel('separateur', { titre: t('z3_separateur'), v: [
+          ['aucun', t('z3_sepAucun')], ['ligne', t('z3_sepLigne')], ['degrade', t('z3_sepDegrade')]] })}
+        ${curseurSel('progression', { titre: t('z3_progression'), v: [
+          ['haut', t('z3_enHaut')], ['bas', t('z3_enBas')], ['aucune', t('z3_aucune')]] })}
+        <div class="bq-fld bq-fld-large"><label>${t('z3_parallaxe')} — <b>${A.parallaxe}</b></label>
+          <input type="range" min="0" max="100" step="10" value="${A.parallaxe}"
+                 onchange="boutiqueEditSetAnim('parallaxe',Number(this.value))">
+          <div class="bq-hint2">${t('z3_parallaxeAide')}</div></div>
+        <div class="bq-fld bq-fld-large"><label>${t('z3_zoomImage')} — <b>${A.zoomImage}%</b></label>
+          <input type="range" min="0" max="40" step="4" value="${A.zoomImage}"
+                 onchange="boutiqueEditSetAnim('zoomImage',Number(this.value))">
+          <div class="bq-hint2">${t('z3_zoomImageAide')}</div></div>
+      </div>
+      <div class="bq-hint2" style="margin:7px 0 0">${t('z3_heroAide')}</div>
+
+      <div class="bq-sub-title" style="margin-top:14px">${t('z3_effetsSouris')}</div>
+      <div class="bq-hint2" style="margin:-4px 0 8px">${t('z3_sourisAide')}</div>
+      ${bascule('tilt', t('z3_tilt'), t('z3_tiltAide'))}
+      ${bascule('spotlight', t('z3_spotlight'), t('z3_spotlightAide'))}
+      ${bascule('magnetique', t('z3_magnetique'), t('z3_magnetiqueAide'))}
+      ${bascule('halo', t('z3_halo'), t('z3_haloAide'))}
+      ${bascule('curseur', t('z3_curseur'), t('z3_curseurAide'))}
+
+      <div class="bq-sub-title" style="margin-top:14px">${t('z3_finitions')}</div>
+      ${bascule('vignette', t('z3_vignette'), t('z3_vignetteAide'))}
+      ${bascule('grain', t('z3_grain'), t('z3_grainAide'))}
+      ${bascule('doux', t('z3_doux'), t('z3_douxAide'))}
+      ${bascule('bandeau', t('z3_bandeau'), t('z3_bandeauAide'))}
+      ${A.bandeau ? `<div class="bq-fld" style="margin:0 0 7px">
+        <label>${t('z3_bandeauTexte')}</label>
+        <input class="input" type="text" value="${String(A.bandeauTexte || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;')}"
+               placeholder="${t('z3_bandeauPlaceholder').replace(/"/g,'&quot;')}"
+               onchange="boutiqueEditSetAnim('bandeauTexte',this.value)">
+      </div>` : ''}`;
+      })()}
 
       <div class="bq-sec-title">${t('x2_paletteComplete')} <span class="bq-badge-ent">Entreprise</span></div>
       <div class="bq-pals">
@@ -25185,9 +26059,9 @@ function vBoutiqueEditor() {
 
     <div class="bq-sec-title">${t('x2_coinsCartes')}</div>
     <div class="bq-opts">
-      ${optBtn('borderStyle','rounded','Arrondis', g('borderStyle','rounded')==='rounded')}
-      ${optBtn('borderStyle','xl','Très arrondis', g('borderStyle','rounded')==='xl')}
-      ${optBtn('borderStyle','square','Carrés', g('borderStyle','rounded')==='square')}
+      ${optBtn('borderStyle','rounded',t('z3_arrondis'), g('borderStyle','rounded')==='rounded')}
+      ${optBtn('borderStyle','xl',t('z3_tresArrondis'), g('borderStyle','rounded')==='xl')}
+      ${optBtn('borderStyle','square',t('z3_carres'), g('borderStyle','rounded')==='square')}
     </div>
 
     <div class="bq-sec-title">Bouton commander</div>
@@ -25204,9 +26078,9 @@ function vBoutiqueEditor() {
 
     <div class="bq-sec-title">${t('x2_effetSurvol')}</div>
     <div class="bq-opts">
-      ${optBtn('cardHover','lift','Élévation', g('cardHover','lift')==='lift')}
-      ${optBtn('cardHover','zoom','Zoom photo', g('cardHover','lift')==='zoom')}
-      ${optBtn('cardHover','none','Aucun', g('cardHover','lift')==='none')}
+      ${optBtn('cardHover','lift',t('z3_elevation'), g('cardHover','lift')==='lift')}
+      ${optBtn('cardHover','zoom',t('z3_zoomPhoto'), g('cardHover','lift')==='zoom')}
+      ${optBtn('cardHover','none',t('z3_aucune'), g('cardHover','lift')==='none')}
     </div>`;
 
   const layoutTab = `
@@ -25280,23 +26154,94 @@ function vBoutiqueEditor() {
     <div style="font-size:11px;color:var(--text-3);margin-top:4px">Les icônes apparaissent dans le pied de page de la boutique. WhatsApp & e-mail se prennent du contact ci-dessus.</div>
     <div style="font-size:11px;color:var(--text-3);margin-top:12px;line-height:1.5">💡 Laissez vide pour masquer une section. Le nom et la description de la boutique se modifient dans l'onglet principal Boutique.</div>`;
 
+  // ── Onglet Produits : ordre + studio produit (personnalisation par article) ──
+  const _entProd = (typeof _planHasFeature === 'function') && _planHasFeature('whiteLabel');
+  const _pmeta = (S.boutiqueConfig.pmeta && typeof S.boutiqueConfig.pmeta === 'object') ? S.boutiqueConfig.pmeta : {};
+  const _att = v => String(v == null ? '' : v).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+  const _ouvert = String(S.bqProdOpen || '');
+  const _BADGES = ['#111827','#DC2626','#059669','#D97706','#7C3AED','#0891B2'];
+  const _pid = id => String(id).replace(/'/g, "\\'");
+
+  // Panneau de personnalisation d'un article. Rien n'est invente : chaque
+  // champ laisse vide retombe sur la fiche de gestion existante.
+  const persoPanel = (p) => {
+    const m = _pmeta[String(p.id)] || {};
+    const nb = Object.keys(m).length;
+    const id = _pid(p.id);
+    const set = (k) => `boutiqueEditSetPmeta('${id}','${k}',this.value)`;
+    return `
+    <div class="bq-perso">
+      <div class="bq-fld"><label>${t('z5_nomVitrine')}</label>
+        <input class="input" type="text" value="${_att(m.titre)}" placeholder="${_att(p.name)}" onchange="${set('titre')}"></div>
+      <div class="bq-fld"><label>${t('z5_accroche')}</label>
+        <input class="input" type="text" value="${_att(m.accroche)}" placeholder="${_att(t('z5_accrochePl'))}" onchange="${set('accroche')}"></div>
+      <div class="bq-fld bq-fld-large"><label>${t('z5_descVitrine')}</label>
+        <textarea class="input" rows="2" placeholder="${_att(t('z5_descPl'))}" onchange="${set('desc')}">${_att(m.desc)}</textarea></div>
+      <div class="bq-fld"><label>${t('z5_pastille')}</label>
+        <input class="input" type="text" maxlength="22" value="${_att(m.badge)}" placeholder="${_att(t('z5_pastillePl'))}" onchange="${set('badge')}"></div>
+      <div class="bq-fld"><label>${t('z5_couleurPastille')}</label>
+        <div class="bq-badge-colors">${_BADGES.map(c => `
+          <button class="bq-bc ${String(m.badgeCouleur || '#111827') === c ? 'on' : ''}" style="background:${c}"
+                  onclick="boutiqueEditSetPmeta('${id}','badgeCouleur','${c}')" aria-label="${c}"></button>`).join('')}</div></div>
+      <div class="bq-fld"><label>${t('z5_formatImage')}</label>
+        <select class="input" onchange="${set('ratio')}">
+          ${[['','—'],['carre',t('z5_carre')],['portrait',t('z5_portrait')],['paysage',t('z5_paysage')]]
+            .map(o => `<option value="${o[0]}" ${String(m.ratio||'')===o[0]?'selected':''}>${o[1]}</option>`).join('')}
+        </select></div>
+      <label class="bq-cine ${m.enAvant ? 'on' : ''}" style="grid-column:1/-1;margin:2px 0 0">
+        <input type="checkbox" ${m.enAvant ? 'checked' : ''} onchange="boutiqueEditSetPmeta('${id}','enAvant',this.checked)">
+        <span class="bq-cine-tx"><strong>${t('z5_enAvant')}</strong><span>${t('z5_enAvantAide')}</span></span>
+      </label>
+      <label class="bq-cine ${m.prixCache ? 'on' : ''}" style="grid-column:1/-1;margin:0">
+        <input type="checkbox" ${m.prixCache ? 'checked' : ''} onchange="boutiqueEditSetPmeta('${id}','prixCache',this.checked)">
+        <span class="bq-cine-tx"><strong>${t('z5_prixCache')}</strong><span>${t('z5_prixCacheAide')}</span></span>
+      </label>
+      ${nb ? `<button class="bq-perso-reset" onclick="boutiqueProdReset('${id}')">${t('z5_reinitialiser')}</button>` : ''}
+    </div>`;
+  };
+
   const productsTab = `
-    <div class="bq-sec-title">Ordre d'affichage <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--text-3)">${t('x2_reorganisezFleches')}</span></div>
+    ${_entProd ? `
+    <div class="bq-sec-title">${t('z5_cartesProduits')} <span class="bq-badge-ent">Entreprise</span></div>
+    <div class="bq-studio">
+      <div class="bq-fld"><label>${t('z5_typoPrix')}</label>
+        <select class="input" onchange="boutiqueEditSet('prixStyle',this.value)">
+          ${[['normal',t('z5_prixNormal')],['discret',t('z5_prixDiscret')],['fort',t('z5_prixFort')],['editorial',t('z5_prixEditorial')]]
+            .map(o => `<option value="${o[0]}" ${g('prixStyle','normal')===o[0]?'selected':''}>${o[1]}</option>`).join('')}
+        </select></div>
+      <div class="bq-fld"><label>${t('z5_etatRupture')}</label>
+        <select class="input" onchange="boutiqueEditSet('ruptureStyle',this.value)">
+          ${[['grise',t('z5_ruptGrise')],['bandeau',t('z5_ruptBandeau')],['voile',t('z5_ruptVoile')]]
+            .map(o => `<option value="${o[0]}" ${g('ruptureStyle','grise')===o[0]?'selected':''}>${o[1]}</option>`).join('')}
+        </select></div>
+    </div>` : `
+    <div class="bq-sec-title">${t('z5_cartesProduits')}</div>
+    <div class="bq-lock" onclick="nav('pricing')">
+      <div class="bq-lock-tx"><strong>${t('z5_lockTitre')}</strong><span>${t('z5_lockTx')}</span></div>
+    </div>`}
+
+    <div class="bq-sec-title" style="margin-top:14px">${t('z5_ordreAffichage')} <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--text-3)">${t('x2_reorganisezFleches')}</span></div>
     <div class="bq-prod-list">
-      ${ordered.map((p, i) => `
-      <div class="bq-prod-row">
+      ${ordered.map((p, i) => {
+        const m = _pmeta[String(p.id)] || {};
+        const nb = Object.keys(m).length;
+        const ouvert = _ouvert === String(p.id);
+        return `
+      <div class="bq-prod-row${nb ? ' bq-prod-perso' : ''}">
         ${p.image ? `<img src="${p.image}" class="bq-prod-img" alt="">` : `<div class="bq-prod-img bq-prod-ph">${(p.name||'?').charAt(0).toUpperCase()}</div>`}
         <div style="flex:1;min-width:0">
-          <div class="bq-prod-name">${p.name}</div>
-          <div class="bq-prod-meta">${fmt(p.price)} ${sym()}${p.category?' · '+p.category:''}</div>
+          <div class="bq-prod-name">${(m.titre || '').trim() || p.name}</div>
+          <div class="bq-prod-meta">${fmt(p.price)} ${sym()}${p.category?' · '+p.category:''}${nb ? ` · <b style="color:var(--accent)">${t('z5_personnalise')}</b>` : ''}</div>
         </div>
         <div class="bq-prod-arrows">
-          <button class="bq-arrow" ${i===0?'disabled':''} onclick="boutiqueMoveProduct('${p.id}',-1)" title="Monter">▲</button>
-          <button class="bq-arrow" ${i===ordered.length-1?'disabled':''} onclick="boutiqueMoveProduct('${p.id}',1)" title="Descendre">▼</button>
+          ${_entProd ? `<button class="bq-arrow bq-arrow-perso ${ouvert ? 'on' : ''}" onclick="boutiqueProdOuvre('${_pid(p.id)}')" title="${t('z5_personnaliser')}">✎</button>` : ''}
+          <button class="bq-arrow" ${i===0?'disabled':''} onclick="boutiqueMoveProduct('${p.id}',-1)" title="${t('z5_monter')}">▲</button>
+          <button class="bq-arrow" ${i===ordered.length-1?'disabled':''} onclick="boutiqueMoveProduct('${p.id}',1)" title="${t('z5_descendre')}">▼</button>
         </div>
-      </div>`).join('')}
+      </div>${(_entProd && ouvert) ? persoPanel(p) : ''}`;
+      }).join('')}
     </div>
-    <div style="font-size:11px;color:var(--text-3);margin-top:12px;line-height:1.5">💡 Le premier produit apparaît en haut de votre boutique. Mettez vos best-sellers en premier !</div>`;
+    <div style="font-size:11px;color:var(--text-3);margin-top:12px;line-height:1.5">${t('z5_astuceOrdre')}</div>`;
 
   const tabContent = { style: styleTab, layout: layoutTab, content: contentTab, products: productsTab }[tab] || styleTab;
 
@@ -25320,8 +26265,8 @@ function vBoutiqueEditor() {
     </div>
     <div class="bq-controls">
       ${tabContent}
-      <button class="btn btn-primary" style="margin-top:18px" onclick="generateBoutiqueSite()">${IC.download||'⬇'} Télécharger mon site</button>
-      <button class="btn btn-ghost" style="margin-top:8px" onclick="previewBoutiqueSite()">${IC.globe||'🌐'} Ouvrir en plein écran</button>
+      <button class="btn btn-primary" style="margin-top:18px" onclick="generateBoutiqueSite()">${IC.download||'⬇'} ${t('z3_telechargerSite')}</button>
+      <button class="btn btn-ghost" style="margin-top:8px" onclick="previewBoutiqueSite()">${IC.globe||'🌐'} ${t('z3_pleinEcran')}</button>
     </div>
   </div>`;
 }
