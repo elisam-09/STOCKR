@@ -270,6 +270,61 @@ const API_BASE = (location.hostname === 'localhost' || location.hostname === '12
 // ── i18n ─────────────────────────────────────
 const LANGS = {
   fr: {
+    ze_grPage: "La page",
+    ze_grGrille: "La grille",
+    ze_grCartes: "Les cartes",
+    ze_grChrome: "En-tête, bannière et pied",
+    ze_dansPanier: "Dans le panier",
+    ze_panier: "Panier",
+    ze_voirPanier: "Voir le panier",
+    ze_ordreCarte: "Ordre dans la carte",
+    ze_ocNormal: "Photo, nom, prix",
+    ze_ocNomDabord: "Nom, prix, puis photo",
+    ze_ocPrixHaut: "Prix avant le nom",
+    ze_boutonCarte: "Bouton de commande",
+    ze_bcPlein: "Pleine largeur",
+    ze_bcDiscret: "Discret, contour seul",
+    ze_bcSurvol: "Au survol seulement",
+    ze_bcMasque: "Masqué — fiche produit seule",
+    ze_bcAide: "« Au survol » n'existe pas sur téléphone : le bouton y reste visible.",
+    ze_logoPos: "Logo et nom",
+    ze_lpGauche: "À gauche",
+    ze_lpCentre: "Centrés",
+    ze_navStyle: "Barre de liens",
+    ze_nsPastilles: "Pastilles",
+    ze_nsSouligne: "Soulignés",
+    ze_nsMasquee: "Masquée",
+    ze_coins: "Arrondi général",
+    ze_cAnguleux: "Anguleux",
+    ze_cDoux: "Doux",
+    ze_cRonds: "Très arrondi",
+    ze_fondMotif: "Fond de page",
+    ze_fmAucun: "Uni",
+    ze_fmGrille: "Grille fine",
+    ze_fmPoints: "Pointillé",
+    ze_fmDegrade: "Halo de votre couleur",
+    ze_sectionsLarges: "Sections bord à bord",
+    ze_sectionsLargesAide: "À propos, avis et moyens de paiement s'étendent jusqu'aux marges.",
+    ze_panierFlottant: "Panier toujours à portée",
+    ze_pfAucun: "Dans l'en-tête seulement",
+    ze_pfBouton: "Bouton flottant",
+    ze_pfBarre: "Barre en bas quand le panier n'est pas vide",
+    ze_imageFit: "Cadrage des photos",
+    ze_ifCover: "Remplir le cadre",
+    ze_ifContain: "Photo entière, sur fond",
+    ze_ifAide: "« Photo entière » convient aux produits détourés : rien n'est rogné.",
+    ze_hauteurBanniere: "Hauteur de la bannière",
+    ze_hbCourte: "Courte",
+    ze_hbNormale: "Normale",
+    ze_hbHaute: "Haute",
+    ze_hbPlein: "Presque plein écran",
+    ze_alignGrille: "Rangée incomplète",
+    ze_agGauche: "Alignée à gauche",
+    ze_agCentre: "Centrée",
+    ze_airSections: "Air entre les sections",
+    ze_asSerre: "Serré",
+    ze_asNormal: "Normal",
+    ze_asAmple: "Ample",
     zd_colonnesProduits: "Colonnes de produits",
     zd_1col: "1 colonne",
     zd_2col: "2 colonnes",
@@ -1945,6 +2000,61 @@ const LANGS = {
     version:'Version',
   },
   en: {
+    ze_grPage: "The page",
+    ze_grGrille: "The grid",
+    ze_grCartes: "The cards",
+    ze_grChrome: "Header, banner and footer",
+    ze_dansPanier: "In the cart",
+    ze_panier: "Cart",
+    ze_voirPanier: "View cart",
+    ze_ordreCarte: "Order inside the card",
+    ze_ocNormal: "Photo, name, price",
+    ze_ocNomDabord: "Name, price, then photo",
+    ze_ocPrixHaut: "Price before the name",
+    ze_boutonCarte: "Order button",
+    ze_bcPlein: "Full width",
+    ze_bcDiscret: "Understated, outline only",
+    ze_bcSurvol: "On hover only",
+    ze_bcMasque: "Hidden — product page only",
+    ze_bcAide: "“On hover” does not exist on phones: the button stays visible there.",
+    ze_logoPos: "Logo and name",
+    ze_lpGauche: "Left",
+    ze_lpCentre: "Centred",
+    ze_navStyle: "Link bar",
+    ze_nsPastilles: "Pills",
+    ze_nsSouligne: "Underlined",
+    ze_nsMasquee: "Hidden",
+    ze_coins: "Overall rounding",
+    ze_cAnguleux: "Sharp",
+    ze_cDoux: "Soft",
+    ze_cRonds: "Very round",
+    ze_fondMotif: "Page background",
+    ze_fmAucun: "Plain",
+    ze_fmGrille: "Fine grid",
+    ze_fmPoints: "Dotted",
+    ze_fmDegrade: "Halo of your colour",
+    ze_sectionsLarges: "Edge-to-edge sections",
+    ze_sectionsLargesAide: "About, reviews and payment methods stretch to the margins.",
+    ze_panierFlottant: "Cart always within reach",
+    ze_pfAucun: "In the header only",
+    ze_pfBouton: "Floating button",
+    ze_pfBarre: "Bottom bar when the cart is not empty",
+    ze_imageFit: "Photo framing",
+    ze_ifCover: "Fill the frame",
+    ze_ifContain: "Whole photo, on a background",
+    ze_ifAide: "“Whole photo” suits cut-out products: nothing is cropped.",
+    ze_hauteurBanniere: "Banner height",
+    ze_hbCourte: "Short",
+    ze_hbNormale: "Normal",
+    ze_hbHaute: "Tall",
+    ze_hbPlein: "Nearly full screen",
+    ze_alignGrille: "Incomplete row",
+    ze_agGauche: "Left-aligned",
+    ze_agCentre: "Centred",
+    ze_airSections: "Air between sections",
+    ze_asSerre: "Tight",
+    ze_asNormal: "Normal",
+    ze_asAmple: "Generous",
     zd_colonnesProduits: "Product columns",
     zd_1col: "1 column",
     zd_2col: "2 columns",
@@ -24359,12 +24469,28 @@ function generateBoutiqueSite(opts) {
     banniere:   'page',     // page | pleine | debordante
     outils:     'haut',     // haut | collante | masquee
     pied:       'complet',  // complet | compact | minimal
+    ordreCarte: 'normal',   // normal | nomDabord | prixHaut
+    boutonCarte:'plein',    // plein | discret | survol | masque
+    logoPos:    'gauche',   // gauche | centre
+    navStyle:   'pastilles',// pastilles | souligne | masquee
+    coins:      'doux',     // anguleux | doux | ronds
+    fondMotif:  'aucun',    // aucun | grille | points | degrade
+    sectionsLarges: false,  // a propos et avis sur toute la largeur
+    panierFlottant: 'aucun',// aucun | bouton | barre
+    imageFit:   'cover',    // cover | contain
+    hauteurBanniere: 'normale', // courte | normale | haute | plein
+    alignGrille:'gauche',   // gauche | centre
+    airSections:'normal',   // serre | normal | ample
   }, (_palAllowed && bc.mep) ? bc.mep : {});
 
   const _mepLarg = { etroite: '560px', normale: '680px', large: '860px', pleine: '1200px' }[MEP.largeur] || '680px';
   const _mepGout = { serree: '6px', normale: '14px', large: '26px' }[MEP.gouttiere] || gap;
   const _mepMarg = { fines: '10px', normales: '16px', genereuses: '30px' }[MEP.marges] || '16px';
   const _mepVign = { carre: '1/1', portrait: '3/4', paysage: '4/3' }[MEP.vignette] || '';
+  const _mepCoins = { anguleux: '2px', doux: '', ronds: '22px' }[MEP.coins] || '';
+  const _mepBann = { courte: '34px 20px 42px', normale: '', haute: '92px 20px 112px',
+                     plein: 'clamp(120px,26vh,220px) 20px clamp(130px,28vh,240px)' }[MEP.hauteurBanniere] || '';
+  const _mepAir = { serre: '10px', normal: '', ample: '46px' }[MEP.airSections] || '';
   const pad        = density === 'compact' ? '10px' : density === 'airy' ? '24px' : '16px';
   const hoverCss   = cardHover === 'none'
     ? ''
@@ -25150,6 +25276,73 @@ ${MEP.outils === 'collante' ? `.toolbar{position:sticky;top:52px;z-index:40;padd
 ${MEP.outils === 'masquee' ? `.toolbar{display:none}` : ''}
 ${MEP.pied === 'compact' ? `.ft-grid{grid-template-columns:1fr;gap:16px}
 .footer{padding:26px 20px 84px}` : ''}
+${_mepCoins ? `:root{--r:${_mepCoins}}` : ''}
+${_mepBann ? `.header{padding:${_mepBann}}` : ''}
+${_mepAir ? `.container > .sec-eyebrow{margin-top:${_mepAir}}
+.container > .pay-section,.container > .about-section,.container > .contact-section,
+.container > .howto,.container > .svc-strip,.container > .reviews-section{margin-top:${_mepAir}}` : ''}
+${MEP.alignGrille === 'centre' ? `.grid{justify-content:center;justify-items:center}
+.grid > .pc{width:100%;max-width:340px}
+.grid > .pc.pc-hero{max-width:none}` : ''}
+${MEP.imageFit === 'contain' ? `.pc-img{object-fit:contain;padding:9%}
+.qv-img img{object-fit:contain;padding:6%}` : ''}
+${MEP.ordreCarte === 'nomDabord' ? `
+/* Le nom avant la photo : l'ordre visuel change, l'ordre du document non —
+   un lecteur d'ecran lit toujours la carte dans le meme sens. */
+.pc:not(.pc-hero){display:flex;flex-direction:column}
+.pc:not(.pc-hero) .pc-imgwrap{order:2}
+.pc:not(.pc-hero) .pc-body{order:1;padding-bottom:8px}
+.pc:not(.pc-hero) .pc-body .pc-row{order:3}` : ''}
+${MEP.ordreCarte === 'prixHaut' ? `.pc-body{display:flex;flex-direction:column}
+.pc-body .pc-row{order:-1;margin-top:0;padding-top:0;padding-bottom:2px}` : ''}
+${MEP.boutonCarte === 'discret' ? `.pc-add{background:transparent!important;border:1px solid var(--bd)!important;
+  color:var(--tx)!important;box-shadow:none!important;font-size:11.5px;padding:8px 10px}
+.pc-add:hover{background:var(--surface)!important}` : ''}
+${MEP.boutonCarte === 'survol' ? `
+@media (hover:hover) and (pointer:fine){
+  .pc-add{opacity:0;transform:translateY(4px);transition:opacity .2s ease,transform .2s ease}
+  .pc:hover .pc-add,.pc:focus-within .pc-add{opacity:1;transform:none}
+}` : ''}
+${MEP.boutonCarte === 'masque' ? `.pc-add{display:none}` : ''}
+${MEP.logoPos === 'centre' ? `.topbar{justify-content:center}
+.topbar-name{flex:0 1 auto;text-align:center}
+.topnav{order:5;flex-basis:100%;justify-content:center}` : ''}
+${MEP.navStyle === 'souligne' ? `.navpills{background:transparent;border-bottom:1px solid var(--bd);
+  justify-content:center;gap:22px}
+.navpills a{border:0;border-radius:0;padding:8px 0;background:transparent;
+  border-bottom:2px solid transparent}
+.navpills a:hover{border-bottom-color:${tc};background:transparent}` : ''}
+${MEP.navStyle === 'masquee' ? `.navpills{display:none}` : ''}
+${MEP.fondMotif === 'grille' ? `body{background-image:
+  linear-gradient(var(--bd) 1px,transparent 1px),linear-gradient(90deg,var(--bd) 1px,transparent 1px);
+  background-size:46px 46px;background-attachment:fixed}` : ''}
+${MEP.fondMotif === 'points' ? `body{background-image:radial-gradient(var(--bd) 1.1px,transparent 1.1px);
+  background-size:22px 22px;background-attachment:fixed}` : ''}
+${MEP.fondMotif === 'degrade' ? `body{background-image:
+  radial-gradient(120% 60% at 50% 0%, ${tc}12, transparent 60%);
+  background-repeat:no-repeat;background-attachment:fixed}` : ''}
+${MEP.sectionsLarges ? `.about-section,.reviews-section,.pay-section{
+  margin-left:calc(-1 * ${_mepMarg});margin-right:calc(-1 * ${_mepMarg});
+  border-radius:0;padding-left:${_mepMarg};padding-right:${_mepMarg}}` : ''}
+${MEP.panierFlottant === 'bouton' ? `
+/* Panier flottant : il double le bouton de l'en-tete, utile quand la page
+   est longue. Il se pose a gauche, l'autre coin appartient a WhatsApp. */
+.cart-float{position:fixed;left:20px;bottom:78px;z-index:91;width:52px;height:52px;border-radius:50%;
+  border:1px solid var(--bd);background:var(--surface);color:var(--tx);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;box-shadow:0 10px 28px -10px var(--sh)}
+.cart-float .cart-badge{position:absolute;top:-3px;right:-3px}` : ''}
+${MEP.panierFlottant === 'barre' ? `
+.cart-bar{position:fixed;left:0;right:0;bottom:0;z-index:91;display:flex;align-items:center;
+  justify-content:space-between;gap:12px;padding:12px 16px calc(12px + env(safe-area-inset-bottom));
+  background:color-mix(in srgb,var(--bg) 92%,transparent);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-top:1px solid var(--bd);transform:translateY(110%);transition:transform .3s cubic-bezier(.2,0,0,1)}
+.cart-bar.on{transform:none}
+.cart-bar b{font-size:14px;font-weight:800}
+.cart-bar span{font-size:11.5px;color:var(--tx2)}
+.cart-bar button{border:0;border-radius:var(--rb);background:${tc};color:#fff;font-family:inherit;
+  font-weight:800;font-size:13px;padding:11px 20px;cursor:pointer}
+.wa-float{bottom:88px}` : ''}
 ${MEP.pied === 'minimal' ? `.ft-grid > .ft-col{display:none}
 .ft-grid{grid-template-columns:1fr}
 .footer{padding:22px 20px 82px}
@@ -25712,6 +25905,14 @@ ${bannerHTML(topBanner, 'top')}
   </button>` : ''}
 </header>
 <div class="scroll-prog" id="scroll-prog" aria-hidden="true"></div>
+${(_palAllowed && MEP.panierFlottant === 'bouton' && showCartButton) ? `<button class="cart-float" onclick="baroOpenCheckout()" aria-label="${t('ze_panier')}" title="${t('ze_panier')}">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+  <span class="cart-badge" id="cart-badge-2">0</span>
+</button>` : ''}
+${(_palAllowed && MEP.panierFlottant === 'barre' && showCartButton) ? `<div class="cart-bar" id="cart-bar">
+  <div><b id="cart-bar-total">—</b><br><span id="cart-bar-n">0</span></div>
+  <button onclick="baroOpenCheckout()">${t('ze_voirPanier')}</button>
+</div>` : ''}
 ${_retourHaut ? `<button class="to-top" id="to-top" aria-label="${t('za_retourHaut')}" title="${t('za_retourHaut')}"
   onclick="window.scrollTo({top:0,behavior:'smooth'})">
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>
@@ -26228,9 +26429,18 @@ var baroMode=BARO_DELOFF?'pickup':'delivery';
       document.getElementById('cartbar-count').textContent=c;
       document.getElementById('cartbar-total').textContent=fmtn(total())+' '+BARO_SYM;}
     var fl=document.querySelector('.wa-float');if(fl)fl.style.display=c>0?'none':'flex';
+    // Panier flottant : bouton double, ou barre basse qui n'apparait que
+    // lorsqu'il y a quelque chose dedans.
+    var b2=document.getElementById('cart-badge-2');
+    if(b2){b2.style.display=c>0?'flex':'none';b2.textContent=c;}
+    var cb=document.getElementById('cart-bar');
+    if(cb){cb.classList.toggle('on',c>0);
+      var ct=document.getElementById('cart-bar-total'), cn=document.getElementById('cart-bar-n');
+      if(ct)ct.textContent=fmtn(total())+' '+BARO_SYM;
+      if(cn)cn.textContent=c+' '+(c>1?'${t('z3_articles')}':'${t('z3_article')}');}
     document.querySelectorAll('.pc-add[data-id]').forEach(function(b){
       var q=cart[b.getAttribute('data-id')]||0;
-      if(q>0){b.classList.add('in-cart');b.textContent='✓ Dans le panier ('+q+')';}
+      if(q>0){b.classList.add('in-cart');b.textContent='✓ ${t('ze_dansPanier')} ('+q+')';}
       else{b.classList.remove('in-cart');if(!b.disabled)b.textContent=BARO_ORDERTXT;}
     });
     renderCk();
@@ -27321,7 +27531,10 @@ function vBoutiqueEditor() {
     </div>`;
     const M = Object.assign({ largeur:'normale', gouttiere:'auto', colTel:'auto', colBureau:'auto',
       marges:'normales', hauteurs:'egales', vedette:false, separation:'carte', vignette:'carre',
-      banniere:'page', outils:'haut', pied:'complet' }, g('mep', {}) || {});
+      banniere:'page', outils:'haut', pied:'complet', ordreCarte:'normal', boutonCarte:'plein',
+      logoPos:'gauche', navStyle:'pastilles', coins:'doux', fondMotif:'aucun', sectionsLarges:false,
+      panierFlottant:'aucun', imageFit:'cover', hauteurBanniere:'normale', alignGrille:'gauche',
+      airSections:'normal' }, g('mep', {}) || {});
     const opts = (k, liste) => liste.map(([v, lbl]) =>
       `<option value="${v}" ${String(M[k]) === String(v) ? 'selected' : ''}>${lbl}</option>`).join('');
     const sel = (k, titre, liste, aide) => `<div class="bq-fld${aide ? ' bq-fld-large' : ''}"><label>${titre}</label>
@@ -27329,30 +27542,66 @@ function vBoutiqueEditor() {
       ${aide ? `<div class="bq-hint2">${aide}</div>` : ''}</div>`;
     return `
     <div class="bq-sec-title">${t('zd_studioMep')} <span class="bq-badge-ent">Entreprise</span></div>
+
+    <div class="bq-sub-title">${t('ze_grPage')}</div>
     <div class="bq-studio">
       ${sel('largeur', t('zd_largeur'), [['etroite',t('zd_lEtroite')],['normale',t('zd_lNormale')],
         ['large',t('zd_lLarge')],['pleine',t('zd_lPleine')]])}
       ${sel('marges', t('zd_marges'), [['fines',t('zd_mFines')],['normales',t('zd_mNormales')],
         ['genereuses',t('zd_mGenereuses')]])}
+      ${sel('coins', t('ze_coins'), [['anguleux',t('ze_cAnguleux')],['doux',t('ze_cDoux')],['ronds',t('ze_cRonds')]])}
+      ${sel('airSections', t('ze_airSections'), [['serre',t('ze_asSerre')],['normal',t('ze_asNormal')],
+        ['ample',t('ze_asAmple')]])}
+      ${sel('fondMotif', t('ze_fondMotif'), [['aucun',t('ze_fmAucun')],['grille',t('ze_fmGrille')],
+        ['points',t('ze_fmPoints')],['degrade',t('ze_fmDegrade')]])}
+    </div>
+
+    <div class="bq-sub-title" style="margin-top:12px">${t('ze_grGrille')}</div>
+    <div class="bq-studio">
       ${sel('colTel', t('zd_colTel'), [['auto',t('zd_auto')],['1','1'],['2','2']])}
       ${sel('colBureau', t('zd_colBureau'), [['auto',t('zd_auto')],['2','2'],['3','3'],['4','4']])}
       ${sel('gouttiere', t('zd_gouttiere'), [['auto',t('zd_gAuto')],['serree',t('zd_gSerree')],
         ['normale',t('zd_gNormale')],['large',t('zd_gLarge')]])}
-      ${sel('vignette', t('zd_vignette'), [['carre',t('zd_vCarre')],['portrait',t('zd_vPortrait')],
-        ['paysage',t('zd_vPaysage')],['libre',t('zd_vLibre')]])}
-      ${sel('separation', t('zd_separation'), [['carte',t('zd_sCarte')],['filet',t('zd_sFilet')],
-        ['nue',t('zd_sNue')]])}
       ${sel('hauteurs', t('zd_hauteurs'), [['egales',t('zd_hEgales')],['naturelles',t('zd_hNaturelles')]])}
-      ${sel('banniere', t('zd_banniere'), [['page',t('zd_bPage')],['pleine',t('zd_bPleine')],
-        ['debordante',t('zd_bDebordante')]])}
-      ${sel('outils', t('zd_outils'), [['haut',t('zd_oHaut')],['collante',t('zd_oCollante')],
-        ['masquee',t('zd_oMasquee')]])}
-      ${sel('pied', t('zd_pied'), [['complet',t('zd_pComplet')],['compact',t('zd_pCompact')],
-        ['minimal',t('zd_pMinimal')]])}
+      ${sel('alignGrille', t('ze_alignGrille'), [['gauche',t('ze_agGauche')],['centre',t('ze_agCentre')]])}
     </div>
     <label class="bq-cine ${M.vedette ? 'on' : ''}" style="margin:7px 0">
       <input type="checkbox" ${M.vedette ? 'checked' : ''} onchange="boutiqueEditSetMep('vedette',this.checked)">
       <span class="bq-cine-tx"><strong>${t('zd_vedette')}</strong><span>${t('zd_vedetteAide')}</span></span>
+    </label>
+
+    <div class="bq-sub-title" style="margin-top:12px">${t('ze_grCartes')}</div>
+    <div class="bq-studio">
+      ${sel('vignette', t('zd_vignette'), [['carre',t('zd_vCarre')],['portrait',t('zd_vPortrait')],
+        ['paysage',t('zd_vPaysage')],['libre',t('zd_vLibre')]])}
+      ${sel('separation', t('zd_separation'), [['carte',t('zd_sCarte')],['filet',t('zd_sFilet')],
+        ['nue',t('zd_sNue')]])}
+      ${sel('ordreCarte', t('ze_ordreCarte'), [['normal',t('ze_ocNormal')],['nomDabord',t('ze_ocNomDabord')],
+        ['prixHaut',t('ze_ocPrixHaut')]])}
+      ${sel('imageFit', t('ze_imageFit'), [['cover',t('ze_ifCover')],['contain',t('ze_ifContain')]], t('ze_ifAide'))}
+      ${sel('boutonCarte', t('ze_boutonCarte'), [['plein',t('ze_bcPlein')],['discret',t('ze_bcDiscret')],
+        ['survol',t('ze_bcSurvol')],['masque',t('ze_bcMasque')]], t('ze_bcAide'))}
+    </div>
+
+    <div class="bq-sub-title" style="margin-top:12px">${t('ze_grChrome')}</div>
+    <div class="bq-studio">
+      ${sel('banniere', t('zd_banniere'), [['page',t('zd_bPage')],['pleine',t('zd_bPleine')],
+        ['debordante',t('zd_bDebordante')]])}
+      ${sel('hauteurBanniere', t('ze_hauteurBanniere'), [['courte',t('ze_hbCourte')],['normale',t('ze_hbNormale')],
+        ['haute',t('ze_hbHaute')],['plein',t('ze_hbPlein')]])}
+      ${sel('logoPos', t('ze_logoPos'), [['gauche',t('ze_lpGauche')],['centre',t('ze_lpCentre')]])}
+      ${sel('navStyle', t('ze_navStyle'), [['pastilles',t('ze_nsPastilles')],['souligne',t('ze_nsSouligne')],
+        ['masquee',t('ze_nsMasquee')]])}
+      ${sel('outils', t('zd_outils'), [['haut',t('zd_oHaut')],['collante',t('zd_oCollante')],
+        ['masquee',t('zd_oMasquee')]])}
+      ${sel('panierFlottant', t('ze_panierFlottant'), [['aucun',t('ze_pfAucun')],['bouton',t('ze_pfBouton')],
+        ['barre',t('ze_pfBarre')]])}
+      ${sel('pied', t('zd_pied'), [['complet',t('zd_pComplet')],['compact',t('zd_pCompact')],
+        ['minimal',t('zd_pMinimal')]])}
+    </div>
+    <label class="bq-cine ${M.sectionsLarges ? 'on' : ''}" style="margin:7px 0">
+      <input type="checkbox" ${M.sectionsLarges ? 'checked' : ''} onchange="boutiqueEditSetMep('sectionsLarges',this.checked)">
+      <span class="bq-cine-tx"><strong>${t('ze_sectionsLarges')}</strong><span>${t('ze_sectionsLargesAide')}</span></span>
     </label>`;
   })();
 
