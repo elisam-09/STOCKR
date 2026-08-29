@@ -270,6 +270,53 @@ const API_BASE = (location.hostname === 'localhost' || location.hostname === '12
 // ── i18n ─────────────────────────────────────
 const LANGS = {
   fr: {
+    zf_contenuStudio: "Studio contenu produits",
+    zf_grInfos: "Les informations",
+    zf_grPhoto: "La photo",
+    zf_promoStyle: "Affichage de la remise",
+    zf_psPastille: "Pastille −20 %",
+    zf_psBarre: "Prix barré seul",
+    zf_psPourcent: "Pourcentage en gros",
+    zf_psEconomie: "Ce que le client économise",
+    zf_noteStyle: "Note du produit",
+    zf_nsEtoile: "Étoile et note",
+    zf_nsChiffre: "Chiffre sur 5",
+    zf_nsMasquee: "Masquée",
+    zf_categorieCarte: "Catégorie sur la carte",
+    zf_ccDessus: "Au-dessus du nom",
+    zf_ccPhoto: "En pastille sur la photo",
+    zf_ccMasquee: "Masquée",
+    zf_ordreInfos: "Ordre nom et catégorie",
+    zf_oiCatNom: "Catégorie, puis nom",
+    zf_oiNomCat: "Nom, puis catégorie",
+    zf_nomLignes: "Nom du produit",
+    zf_nl1: "Sur une ligne",
+    zf_nl2: "Sur deux lignes",
+    zf_nl0: "Entier, sans coupe",
+    zf_descLignes: "Description",
+    zf_dl0: "Masquée",
+    zf_dl1: "Une ligne",
+    zf_dl2: "Deux lignes",
+    zf_dl3: "Trois lignes",
+    zf_dlAll: "Entière",
+    zf_stockBarre: "Jauge de stock restant",
+    zf_stockBarreAide: "Un trait fin sous le prix, proportionnel au plus gros stock de votre boutique. Aucun maximum n'est inventé, et rien ne s'affiche pour un article sans quantité.",
+    zf_survolPhoto: "Au survol de la photo",
+    zf_spAucun: "Rien",
+    zf_spZoom: "Zoom",
+    zf_spGlisse: "Zoom et remontée",
+    zf_spEclat: "Éclat",
+    zf_couleurCarte: "Teinte de la carte",
+    zf_couleurCarteAide: "Un fond propre à cet article, pour le détacher des autres.",
+    zf_tailleCarte: "Largeur sur la grille",
+    zf_tc1: "Une colonne",
+    zf_tc2: "Deux colonnes",
+    zf_masquer: "Mettre de côté",
+    zf_masquerAide: "L'article quitte la vitrine sans sortir de votre sélection. Il revient d'un clic.",
+    zf_livraison: "Mention de livraison",
+    zf_livraisonPl: "Livraison offerte",
+    zf_livraisonAide: "Une ligne sous le prix, propre à cet article.",
+    zf_aucune: "Aucune",
     ze_grPage: "La page",
     ze_grGrille: "La grille",
     ze_grCartes: "Les cartes",
@@ -2000,6 +2047,53 @@ const LANGS = {
     version:'Version',
   },
   en: {
+    zf_contenuStudio: "Product content studio",
+    zf_grInfos: "The information",
+    zf_grPhoto: "The photo",
+    zf_promoStyle: "Discount display",
+    zf_psPastille: "−20% badge",
+    zf_psBarre: "Struck-through price only",
+    zf_psPourcent: "Large percentage",
+    zf_psEconomie: "What the customer saves",
+    zf_noteStyle: "Product rating",
+    zf_nsEtoile: "Star and score",
+    zf_nsChiffre: "Score out of 5",
+    zf_nsMasquee: "Hidden",
+    zf_categorieCarte: "Category on the card",
+    zf_ccDessus: "Above the name",
+    zf_ccPhoto: "As a badge on the photo",
+    zf_ccMasquee: "Hidden",
+    zf_ordreInfos: "Name and category order",
+    zf_oiCatNom: "Category, then name",
+    zf_oiNomCat: "Name, then category",
+    zf_nomLignes: "Product name",
+    zf_nl1: "One line",
+    zf_nl2: "Two lines",
+    zf_nl0: "Whole, never cut",
+    zf_descLignes: "Description",
+    zf_dl0: "Hidden",
+    zf_dl1: "One line",
+    zf_dl2: "Two lines",
+    zf_dl3: "Three lines",
+    zf_dlAll: "Whole",
+    zf_stockBarre: "Remaining-stock gauge",
+    zf_stockBarreAide: "A thin bar under the price, relative to the largest stock in your shop. No maximum is invented, and nothing shows for an item without a quantity.",
+    zf_survolPhoto: "On photo hover",
+    zf_spAucun: "Nothing",
+    zf_spZoom: "Zoom",
+    zf_spGlisse: "Zoom and lift",
+    zf_spEclat: "Brighten",
+    zf_couleurCarte: "Card tint",
+    zf_couleurCarteAide: "A background of its own for this item, to set it apart.",
+    zf_tailleCarte: "Width on the grid",
+    zf_tc1: "One column",
+    zf_tc2: "Two columns",
+    zf_masquer: "Set aside",
+    zf_masquerAide: "The item leaves the shop without leaving your selection. One click brings it back.",
+    zf_livraison: "Delivery note",
+    zf_livraisonPl: "Free delivery",
+    zf_livraisonAide: "A line under the price, specific to this item.",
+    zf_aucune: "None",
     ze_grPage: "The page",
     ze_grGrille: "The grid",
     ze_grCartes: "The cards",
@@ -24165,6 +24259,19 @@ function boutiqueProdReset(id) {
 // familles distinctes, deux endroits distincts.
 // Reglages de mise en page. Ranges sous bc.mep, aux cotes de bc.anim et
 // bc.typo : une famille, un endroit.
+// Reglages de contenu des cartes. Ranges sous bc.contenu, aux cotes de
+// bc.anim, bc.typo et bc.mep.
+function boutiqueEditSetContenu(cle, val) {
+  const bc = S.boutiqueConfig;
+  if (!bc.contenu || typeof bc.contenu !== 'object') bc.contenu = {};
+  if (typeof val === 'string' && val !== '' && !isNaN(Number(val))) val = Number(val);
+  bc.contenu[cle] = val;
+  try { localStorage.setItem('baro_boutique', JSON.stringify(bc)); } catch (_) {}
+  haptic('tap');
+  render();
+  _refreshBoutiqueLivePreview();
+}
+
 function boutiqueEditSetMep(cle, val) {
   const bc = S.boutiqueConfig;
   if (!bc.mep || typeof bc.mep !== 'object') bc.mep = {};
@@ -24271,6 +24378,12 @@ function generateBoutiqueSite(opts) {
   if (bc.pmeta && (typeof _planHasFeature !== 'function' || _planHasFeature('whiteLabel'))) {
     const epingle = (id) => (bc.pmeta[String(id)] || {}).epingle ? 0 : 1;
     shopProds = shopProds.slice().sort((a, b) => epingle(a.id) - epingle(b.id));
+  }
+
+  // Articles mis de cote : le commercant les retire de la vitrine sans les
+  // sortir de sa selection. Ils reviennent d'un clic.
+  if (bc.pmeta && (typeof _planHasFeature !== 'function' || _planHasFeature('whiteLabel'))) {
+    shopProds = shopProds.filter(x => !(bc.pmeta[String(x.id)] || {}).masquer);
   }
 
   const categories = [...new Set(shopProds.map(p => p.category || 'Autres'))];
@@ -24668,6 +24781,16 @@ function generateBoutiqueSite(opts) {
   const _cadre   = (_palAllowed && ['filet', 'ombre'].includes(bc.cadreImage)) ? bc.cadreImage : 'aucun';
   const _posPast = (_palAllowed && ['hg', 'hd', 'bd'].includes(bc.posPastille)) ? bc.posPastille : 'bg';
   const _fmtPrix = (_palAllowed && ['avant', 'compact'].includes(bc.formatPrix)) ? bc.formatPrix : 'apres';
+  const CP = Object.assign({
+    promoStyle:   'pastille',  // pastille | barre | pourcent | economie
+    noteStyle:    'etoile',    // etoile | chiffre | masquee
+    categorieCarte:'dessus',   // dessus | photo | masquee
+    nomLignes:    2,           // 1 | 2 | 0 (entier)
+    descLignes:   2,           // 0 (masquee) | 1 | 2 | 3 | -1 (entiere)
+    stockBarre:   false,       // jauge de stock restant
+    survolPhoto:  'zoom',      // aucun | zoom | glisse | eclat
+    ordreInfos:   'catNom',    // catNom | nomCat
+  }, (_palAllowed && bc.contenu) ? bc.contenu : {});
   // Ecriture du prix : le symbole reste celui de la devise du commercant,
   // seule sa place ou sa forme change. On n'invente aucune conversion.
   const _prixHTML = (v) => _fmtPrix === 'avant'
@@ -24714,6 +24837,9 @@ function generateBoutiqueSite(opts) {
     return /^(https?:\/\/|mailto:|tel:)/i.test(v) ? v : '';
   };
 
+  // Repere de la jauge de stock : le plus gros stock reellement present.
+  const _stockRefs = shopProds.map(x => (typeof x.qty === 'number' && x.qty > 0) ? x.qty : 0);
+
   const _carte = (p, idx) => {
     const M = pmeta(p.id);
     const _nom = (M.titre || '').trim() || p.name;
@@ -24732,7 +24858,11 @@ function generateBoutiqueSite(opts) {
     const _pcUnder = p._pack ? null : ((S.articles||[]).find(a => a.id === p.id) || (S.products||[]).find(x => x.id === p.id));
     const _pcRevs = (_pcUnder && Array.isArray(_pcUnder.reviews)) ? _pcUnder.reviews.filter(r => r.author || r.text) : [];
     const _pcAvg = _pcRevs.length ? (_pcRevs.reduce((s, r) => s + (+r.rating || 0), 0) / _pcRevs.length) : 0;
-    const ratingHTML = _pcRevs.length ? `<div class="pc-rating">★ ${_pcAvg.toFixed(1)} <span style="opacity:.7">(${_pcRevs.length})</span></div>` : '';
+    const ratingHTML = (_pcRevs.length && CP.noteStyle !== 'masquee')
+      ? (CP.noteStyle === 'chiffre'
+        ? `<div class="pc-rating pc-rating-n">${_pcAvg.toFixed(1)}<span style="opacity:.7"> / 5 · ${_pcRevs.length}</span></div>`
+        : `<div class="pc-rating">★ ${_pcAvg.toFixed(1)} <span style="opacity:.7">(${_pcRevs.length})</span></div>`)
+      : '';
     // Vignette de repli : la plupart des commerçants n'ont pas de photo pour
     // chaque référence. Plutôt qu'un aplat identique partout, on dérive une
     // teinte stable du nom — chaque article a sa vignette, toujours la même.
@@ -24772,18 +24902,21 @@ function generateBoutiqueSite(opts) {
     const filigrane = String(M.filigrane || '').trim()
       ? `<span class="pc-ruban">${esc(String(M.filigrane).trim())}</span>` : '';
     const _ratio = _ratioCss[M.ratio] || '';
-    return `<div class="pc reveal${p.qty === 0 ? ' pc-out' : ''}${M.enAvant ? ' pc-hero' : ''}${_multi ? ' pc-multi' : ''}" data-idx="${idx}" data-cat="${esc(p.category||'Autres')}" data-name="${esc((_nom||'').toLowerCase())}" data-price="${Math.round(finalPrice)||0}">
+    const _teinte = /^#[0-9a-fA-F]{6}$/.test(String(M.couleurCarte || '')) ? M.couleurCarte : '';
+    return `<div class="pc reveal${M.tailleCarte === 2 ? ' pc-x2' : ''}${p.qty === 0 ? ' pc-out' : ''}${M.enAvant ? ' pc-hero' : ''}${_multi ? ' pc-multi' : ''}" data-idx="${idx}" data-cat="${esc(p.category||'Autres')}" data-name="${esc((_nom||'').toLowerCase())}" data-price="${Math.round(finalPrice)||0}"${_teinte ? ` style="background:${_teinte}"` : ''}>
       <div class="pc-imgwrap" onclick="baroQV&&baroQV('${esc(String(p.id))}')" style="cursor:zoom-in${_ratio ? `;aspect-ratio:${_ratio}` : ''}">
         ${img}
         ${galHTML}
         ${filigrane}
+        ${(showCategories && p.category && CP.categorieCarte === 'photo') ? `<span class="pc-cat-flottante">${esc(p.category)}</span>` : ''}
         ${urgHTML}
         ${showPromoBadges && promo ? `<span class="pc-promo">${promo.type==='fixed'?'-'+fmt(promo.value)+' '+sym():'-'+(promo.value||promo.discount)+'%'}</span>` : ''}
         ${p._pack ? '<span class="pc-pack">PACK</span>' : ''}
       </div>
       <div class="pc-body">
-        ${showCategories && p.category ? `<div class="pc-cat">${esc(p.category)}</div>` : ''}
+        ${(showCategories && p.category && CP.categorieCarte === 'dessus' && CP.ordreInfos === 'catNom') ? `<div class="pc-cat">${esc(p.category)}</div>` : ''}
         <div class="pc-name" onclick="baroQV&&baroQV('${esc(String(p.id))}')" style="cursor:pointer">${esc(_nom)}</div>
+        ${(showCategories && p.category && CP.categorieCarte === 'dessus' && CP.ordreInfos === 'nomCat') ? `<div class="pc-cat">${esc(p.category)}</div>` : ''}
         ${(M.accroche || '').trim() ? `<div class="pc-tag">${esc(M.accroche.trim())}</div>` : ''}
         ${ratingHTML}
         ${_desc ? `<div class="pc-desc">${esc(_desc)}</div>` : ''}
@@ -24793,12 +24926,24 @@ function generateBoutiqueSite(opts) {
             : `${promo ? `<s>${fmt(p.price)}</s>` : ''}${_prixHTML(finalPrice)}`}</div>
           ${(() => {
             // Remise annoncee en clair : le prix barre seul oblige le client
-            // a faire le calcul de tete.
+            // a faire le calcul de tete. Quatre ecritures, meme verite.
             if (!promo || !(p.price > 0) || !(finalPrice < p.price)) return stockBadge;
             const pct = Math.round((1 - finalPrice / p.price) * 100);
-            return pct >= 1 ? `<span class="pc-save">−${pct}%</span>` : stockBadge;
+            if (pct < 1) return stockBadge;
+            if (CP.promoStyle === 'barre') return stockBadge;
+            if (CP.promoStyle === 'economie') return `<span class="pc-save">−${fmt(p.price - finalPrice)} ${sym()}</span>`;
+            if (CP.promoStyle === 'pourcent') return `<span class="pc-save pc-save-xl">−${pct}%</span>`;
+            return `<span class="pc-save">−${pct}%</span>`;
           })()}
         </div>
+        ${(CP.stockBarre && p.qty != null && p.qty > 0) ? (() => {
+          // Jauge de stock : le repere est le plus gros stock de la boutique,
+          // jamais un maximum invente. Elle ne s'affiche pas sans quantite.
+          const _max = Math.max(1, ..._stockRefs);
+          const _q = Math.max(0, Math.min(100, Math.round((p.qty / _max) * 100)));
+          return `<div class="pc-jauge" title="${p.qty}"><i style="width:${_q}%"></i></div>`;
+        })() : ''}
+        ${String(M.livraison || '').trim() ? `<div class="pc-livr">${esc(String(M.livraison).trim())}</div>` : ''}
         ${_lienSur(M.lien) ? `<a class="pc-lien" href="${esc(_lienSur(M.lien))}" target="_blank" rel="noopener noreferrer">${t('zc_enSavoirPlus')} →</a>` : ''}
         ${showCartButton
           ? `<button class="pc-add order-btn" data-id="${esc(String(p.id))}" ${p.qty===0?'disabled':''}>${p.qty===0?t('z5_indisponible'):esc(String(M.bouton || '').trim() || orderText)}</button>`
@@ -25360,6 +25505,27 @@ ${_cadre === 'ombre' ? `.pc-imgwrap{box-shadow:0 10px 26px -12px var(--sh)}
 .pc{overflow:visible}
 .pc-imgwrap{border-radius:var(--r) var(--r) 0 0;overflow:hidden}` : ''}
 ${_palAllowed ? `
+/* Nombre de lignes du nom et de la description */
+${CP.nomLignes ? `.pc-name{display:-webkit-box;-webkit-line-clamp:${CP.nomLignes};-webkit-box-orient:vertical;overflow:hidden}` : ''}
+${CP.descLignes === 0 ? `.pc-desc{display:none}`
+  : CP.descLignes === -1 ? `.pc-desc{display:block;-webkit-line-clamp:none;overflow:visible}`
+  : `.pc-desc{-webkit-line-clamp:${CP.descLignes}}`}
+${CP.noteStyle === 'chiffre' ? `.pc-rating-n{font-variant-numeric:tabular-nums;font-weight:800}` : ''}
+${CP.promoStyle === 'pourcent' ? `.pc-save-xl{font-size:15px;padding:6px 12px;letter-spacing:-.02em}` : ''}
+${CP.categorieCarte === 'photo' ? `.pc-cat-flottante{position:absolute;z-index:3;top:9px;left:9px;
+  font-size:9.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--tx);background:color-mix(in srgb,var(--surface) 88%,transparent);
+  backdrop-filter:blur(6px);padding:4px 9px;border-radius:999px;max-width:74%;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}` : ''}
+${CP.stockBarre ? `.pc-jauge{height:3px;border-radius:999px;background:var(--bd);overflow:hidden;margin-top:2px}
+.pc-jauge i{display:block;height:100%;border-radius:999px;background:${tc};transition:width .4s ease}` : ''}
+.pc-livr{font-size:10.5px;font-weight:700;color:var(--tx2);letter-spacing:.01em}
+/* Carte sur deux colonnes : sans effet sur une grille a une colonne */
+.pc-x2{grid-column:span 2}
+@media(max-width:520px){.pc-x2{grid-column:auto}}
+${CP.survolPhoto === 'aucun' ? `.pc:hover .pc-img{transform:none;filter:none}` : ''}
+${CP.survolPhoto === 'glisse' ? `.pc:hover .pc-img{transform:scale(${(Number(_zoomImg) + .06).toFixed(3)}) translateY(-3%)}` : ''}
+${CP.survolPhoto === 'eclat' ? `.pc:hover .pc-img{filter:brightness(1.08) saturate(1.14) contrast(1.03)}` : ''}
 /* Filigrane : une bande en diagonale, ancree au coin haut gauche */
 .pc-ruban{position:absolute;z-index:3;top:11px;left:-34px;width:132px;
   transform:rotate(-38deg);text-align:center;
@@ -27790,9 +27956,29 @@ function vBoutiqueEditor() {
         <input type="checkbox" ${m.prixCache ? 'checked' : ''} onchange="boutiqueEditSetPmeta('${id}','prixCache',this.checked)">
         <span class="bq-cine-tx"><strong>${t('z5_prixCache')}</strong><span>${t('z5_prixCacheAide')}</span></span>
       </label>
+      <div class="bq-fld"><label>${t('zf_livraison')}</label>
+        <input class="input" type="text" maxlength="30" value="${_att(m.livraison)}" placeholder="${_att(t('zf_livraisonPl'))}" onchange="${set('livraison')}">
+        <div class="bq-hint2">${t('zf_livraisonAide')}</div></div>
+      <div class="bq-fld"><label>${t('zf_tailleCarte')}</label>
+        <select class="input" onchange="boutiqueEditSetPmeta('${id}','tailleCarte',Number(this.value))">
+          ${[[1,t('zf_tc1')],[2,t('zf_tc2')]].map(o => `<option value="${o[0]}" ${Number(m.tailleCarte||1)===o[0]?'selected':''}>${o[1]}</option>`).join('')}
+        </select></div>
+      <div class="bq-fld bq-fld-large"><label>${t('zf_couleurCarte')}</label>
+        <div class="bq-badge-colors">
+          <button class="bq-bc ${!m.couleurCarte ? 'on' : ''}" style="background:transparent;box-shadow:inset 0 0 0 1px var(--border)"
+                  onclick="boutiqueEditSetPmeta('${id}','couleurCarte','')" aria-label="${t('zf_aucune')}"></button>
+          ${['#FFF7ED','#F0FDF4','#EFF6FF','#FDF2F8','#F5F3FF','#1F1B19'].map(c => `
+          <button class="bq-bc ${String(m.couleurCarte||'') === c ? 'on' : ''}" style="background:${c}"
+                  onclick="boutiqueEditSetPmeta('${id}','couleurCarte','${c}')" aria-label="${c}"></button>`).join('')}
+        </div>
+        <div class="bq-hint2">${t('zf_couleurCarteAide')}</div></div>
       <label class="bq-cine ${m.epingle ? 'on' : ''}" style="grid-column:1/-1;margin:0">
         <input type="checkbox" ${m.epingle ? 'checked' : ''} onchange="boutiqueEditSetPmeta('${id}','epingle',this.checked)">
         <span class="bq-cine-tx"><strong>${t('zc_epingle')}</strong><span>${t('zc_epingleAide')}</span></span>
+      </label>
+      <label class="bq-cine ${m.masquer ? 'on' : ''}" style="grid-column:1/-1;margin:0">
+        <input type="checkbox" ${m.masquer ? 'checked' : ''} onchange="boutiqueEditSetPmeta('${id}','masquer',this.checked)">
+        <span class="bq-cine-tx"><strong>${t('zf_masquer')}</strong><span>${t('zf_masquerAide')}</span></span>
       </label>
       ${nb ? `<button class="bq-perso-reset" onclick="boutiqueProdReset('${id}')">${t('z5_reinitialiser')}</button>` : ''}
     </div>`;
@@ -27853,50 +28039,54 @@ function vBoutiqueEditor() {
   const productsTab = `
     ${collectionsUI}
     ${_entProd ? `
-    <div class="bq-sec-title" style="margin-top:14px">${t('z5_cartesProduits')} <span class="bq-badge-ent">Entreprise</span></div>
+    ${(() => {
+      const C = Object.assign({ promoStyle:'pastille', noteStyle:'etoile', categorieCarte:'dessus',
+        nomLignes:2, descLignes:2, stockBarre:false, survolPhoto:'zoom', ordreInfos:'catNom' },
+        g('contenu', {}) || {});
+      const opC = (k, liste) => liste.map(([v, lbl]) =>
+        `<option value="${v}" ${String(C[k]) === String(v) ? 'selected' : ''}>${lbl}</option>`).join('');
+      const selC = (k, titre, liste, aide) => `<div class="bq-fld${aide ? ' bq-fld-large' : ''}"><label>${titre}</label>
+        <select class="input" onchange="boutiqueEditSetContenu('${k}',this.value)">${opC(k, liste)}</select>
+        ${aide ? `<div class="bq-hint2">${aide}</div>` : ''}</div>`;
+      const opB = (k, liste) => liste.map(([v, lbl]) =>
+        `<option value="${v}" ${String(g(k, liste[0][0])) === String(v) ? 'selected' : ''}>${lbl}</option>`).join('');
+      const selB = (k, titre, liste, aide) => `<div class="bq-fld${aide ? ' bq-fld-large' : ''}"><label>${titre}</label>
+        <select class="input" onchange="boutiqueEditSet('${k}',this.value)">${opB(k, liste)}</select>
+        ${aide ? `<div class="bq-hint2">${aide}</div>` : ''}</div>`;
+      return `
+    <div class="bq-sec-title" style="margin-top:14px">${t('zf_contenuStudio')} <span class="bq-badge-ent">Entreprise</span></div>
+
+    <div class="bq-sub-title">${t('ze_grCartes')}</div>
     <div class="bq-studio">
-      <div class="bq-fld"><label>${t('z5_typoPrix')}</label>
-        <select class="input" onchange="boutiqueEditSet('prixStyle',this.value)">
-          ${[['normal',t('z5_prixNormal')],['discret',t('z5_prixDiscret')],['fort',t('z5_prixFort')],['editorial',t('z5_prixEditorial')]]
-            .map(o => `<option value="${o[0]}" ${g('prixStyle','normal')===o[0]?'selected':''}>${o[1]}</option>`).join('')}
-        </select></div>
-      <div class="bq-fld"><label>${t('z9_galerie')}</label>
-        <select class="input" onchange="boutiqueEditSet('galerieCarte',this.value)">
-          ${[['aucune',t('z9_galAucune')],['survol',t('z9_galSurvol')],['points',t('z9_galPoints')]]
-            .map(o => `<option value="${o[0]}" ${g('galerieCarte','aucune')===o[0]?'selected':''}>${o[1]}</option>`).join('')}
-        </select></div>
-      <div class="bq-fld"><label>${t('z5_etatRupture')}</label>
-        <select class="input" onchange="boutiqueEditSet('ruptureStyle',this.value)">
-          ${[['grise',t('z5_ruptGrise')],['bandeau',t('z5_ruptBandeau')],['voile',t('z5_ruptVoile')]]
-            .map(o => `<option value="${o[0]}" ${g('ruptureStyle','grise')===o[0]?'selected':''}>${o[1]}</option>`).join('')}
-        </select></div>
-      <div class="bq-fld"><label>${t('zc_disposition')}</label>
-        <select class="input" onchange="boutiqueEditSet('dispositionCarte',this.value)">
-          ${[['grille',t('zc_dispGrille')],['liste',t('zc_dispListe')]]
-            .map(o => `<option value="${o[0]}" ${g('dispositionCarte','grille')===o[0]?'selected':''}>${o[1]}</option>`).join('')}
-        </select></div>
-      <div class="bq-fld"><label>${t('zc_imageEffet')}</label>
-        <select class="input" onchange="boutiqueEditSet('imageEffet',this.value)">
-          ${[['aucun',t('zc_imgAucun')],['nb',t('zc_imgNb')],['doux',t('zc_imgDoux')]]
-            .map(o => `<option value="${o[0]}" ${g('imageEffet','aucun')===o[0]?'selected':''}>${o[1]}</option>`).join('')}
-        </select></div>
-      <div class="bq-fld"><label>${t('zc_cadreImage')}</label>
-        <select class="input" onchange="boutiqueEditSet('cadreImage',this.value)">
-          ${[['aucun',t('zc_cadreAucun')],['filet',t('zc_cadreFilet')],['ombre',t('zc_cadreOmbre')]]
-            .map(o => `<option value="${o[0]}" ${g('cadreImage','aucun')===o[0]?'selected':''}>${o[1]}</option>`).join('')}
-        </select></div>
-      <div class="bq-fld"><label>${t('zc_posPastille')}</label>
-        <select class="input" onchange="boutiqueEditSet('posPastille',this.value)">
-          ${[['bg',t('zc_pastBg')],['hg',t('zc_pastHg')],['hd',t('zc_pastHd')],['bd',t('zc_pastBd')]]
-            .map(o => `<option value="${o[0]}" ${g('posPastille','bg')===o[0]?'selected':''}>${o[1]}</option>`).join('')}
-        </select></div>
-      <div class="bq-fld bq-fld-large"><label>${t('zc_formatPrix')}</label>
-        <select class="input" onchange="boutiqueEditSet('formatPrix',this.value)">
-          ${[['apres',t('zc_prixApres')],['avant',t('zc_prixAvant')],['compact',t('zc_prixCompact')]]
-            .map(o => `<option value="${o[0]}" ${g('formatPrix','apres')===o[0]?'selected':''}>${o[1]}</option>`).join('')}
-        </select>
-        <div class="bq-hint2">${t('zc_formatPrixAide')}</div></div>
-    </div>` : `
+      ${selB('dispositionCarte', t('zc_disposition'), [['grille',t('zc_dispGrille')],['liste',t('zc_dispListe')]])}
+      ${selB('ruptureStyle', t('z5_etatRupture'), [['grise',t('z5_ruptGrise')],['bandeau',t('z5_ruptBandeau')],['voile',t('z5_ruptVoile')]])}
+      ${selB('prixStyle', t('z5_typoPrix'), [['normal',t('z5_prixNormal')],['discret',t('z5_prixDiscret')],['fort',t('z5_prixFort')],['editorial',t('z5_prixEditorial')]])}
+      ${selB('formatPrix', t('zc_formatPrix'), [['apres',t('zc_prixApres')],['avant',t('zc_prixAvant')],['compact',t('zc_prixCompact')]], t('zc_formatPrixAide'))}
+    </div>
+
+    <div class="bq-sub-title" style="margin-top:12px">${t('zf_grPhoto')}</div>
+    <div class="bq-studio">
+      ${selB('galerieCarte', t('z9_galerie'), [['aucune',t('z9_galAucune')],['survol',t('z9_galSurvol')],['points',t('z9_galPoints')]])}
+      ${selB('imageEffet', t('zc_imageEffet'), [['aucun',t('zc_imgAucun')],['nb',t('zc_imgNb')],['doux',t('zc_imgDoux')]])}
+      ${selB('cadreImage', t('zc_cadreImage'), [['aucun',t('zc_cadreAucun')],['filet',t('zc_cadreFilet')],['ombre',t('zc_cadreOmbre')]])}
+      ${selB('posPastille', t('zc_posPastille'), [['bg',t('zc_pastBg')],['hg',t('zc_pastHg')],['hd',t('zc_pastHd')],['bd',t('zc_pastBd')]])}
+      ${selC('survolPhoto', t('zf_survolPhoto'), [['aucun',t('zf_spAucun')],['zoom',t('zf_spZoom')],['glisse',t('zf_spGlisse')],['eclat',t('zf_spEclat')]])}
+      ${selC('categorieCarte', t('zf_categorieCarte'), [['dessus',t('zf_ccDessus')],['photo',t('zf_ccPhoto')],['masquee',t('zf_ccMasquee')]])}
+    </div>
+
+    <div class="bq-sub-title" style="margin-top:12px">${t('zf_grInfos')}</div>
+    <div class="bq-studio">
+      ${selC('nomLignes', t('zf_nomLignes'), [[1,t('zf_nl1')],[2,t('zf_nl2')],[0,t('zf_nl0')]])}
+      ${selC('descLignes', t('zf_descLignes'), [[0,t('zf_dl0')],[1,t('zf_dl1')],[2,t('zf_dl2')],[3,t('zf_dl3')],[-1,t('zf_dlAll')]])}
+      ${selC('ordreInfos', t('zf_ordreInfos'), [['catNom',t('zf_oiCatNom')],['nomCat',t('zf_oiNomCat')]])}
+      ${selC('noteStyle', t('zf_noteStyle'), [['etoile',t('zf_nsEtoile')],['chiffre',t('zf_nsChiffre')],['masquee',t('zf_nsMasquee')]])}
+      ${selC('promoStyle', t('zf_promoStyle'), [['pastille',t('zf_psPastille')],['barre',t('zf_psBarre')],['pourcent',t('zf_psPourcent')],['economie',t('zf_psEconomie')]])}
+    </div>
+    <label class="bq-cine ${C.stockBarre ? 'on' : ''}" style="margin:7px 0">
+      <input type="checkbox" ${C.stockBarre ? 'checked' : ''} onchange="boutiqueEditSetContenu('stockBarre',this.checked)">
+      <span class="bq-cine-tx"><strong>${t('zf_stockBarre')}</strong><span>${t('zf_stockBarreAide')}</span></span>
+    </label>`;
+    })()}` : `
     <div class="bq-sec-title">${t('z5_cartesProduits')}</div>
     <div class="bq-lock" onclick="nav('pricing')">
       <div class="bq-lock-tx"><strong>${t('z5_lockTitre')}</strong><span>${t('z5_lockTx')}</span></div>
@@ -27913,7 +28103,7 @@ function vBoutiqueEditor() {
         ${p.image ? `<img src="${p.image}" class="bq-prod-img" alt="">` : `<div class="bq-prod-img bq-prod-ph">${(p.name||'?').charAt(0).toUpperCase()}</div>`}
         <div style="flex:1;min-width:0">
           <div class="bq-prod-name">${(m.titre || '').trim() || p.name}</div>
-          <div class="bq-prod-meta">${fmt(p.price)} ${sym()}${p.category?' · '+p.category:''}${nb ? ` · <b style="color:var(--accent)">${t('z5_personnalise')}</b>` : ''}</div>
+          <div class="bq-prod-meta">${fmt(p.price)} ${sym()}${p.category?' · '+p.category:''}${m.masquer ? ` · <b style="color:var(--danger)">${t('zf_masquer')}</b>` : nb ? ` · <b style="color:var(--accent)">${t('z5_personnalise')}</b>` : ''}</div>
         </div>
         <div class="bq-prod-arrows">
           ${_entProd ? `<button class="bq-arrow bq-arrow-perso ${ouvert ? 'on' : ''}" onclick="boutiqueProdOuvre('${_pid(p.id)}')" title="${t('z5_personnaliser')}">✎</button>` : ''}
