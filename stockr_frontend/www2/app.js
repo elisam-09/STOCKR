@@ -270,6 +270,73 @@ const API_BASE = (location.hostname === 'localhost' || location.hostname === '12
 // ── i18n ─────────────────────────────────────
 const LANGS = {
   fr: {
+    zd_colonnesProduits: "Colonnes de produits",
+    zd_1col: "1 colonne",
+    zd_2col: "2 colonnes",
+    zd_3col: "3 colonnes",
+    zd_classique: "Classique",
+    zd_grandeBanniere: "Grande bannière",
+    zd_minimaliste: "Minimaliste",
+    zd_espacement: "Espacement",
+    zd_compact: "Compact",
+    zd_normal: "Normal",
+    zd_aere: "Aéré",
+    zd_tgPanier: "Panier & commande",
+    zd_tgCategories: "Filtres par catégorie",
+    zd_tgPromos: "Badges promo",
+    zd_tgStock: "Indicateur de stock",
+    zd_tgAvis: "Avis clients",
+    zd_rechercher: "Rechercher un produit…",
+    zd_trier: "Trier",
+    zd_prixCroissant: "Prix ↑",
+    zd_prixDecroissant: "Prix ↓",
+    zd_nomAZ: "Nom A→Z",
+    zd_studioMep: "Studio de mise en page",
+    zd_lockTitre: "Studio de mise en page réservé au plan Entreprise",
+    zd_lockTx: "Largeur de la page, colonnes par taille d'écran, gouttière, marges, forme des vignettes, séparation des cartes, première carte en vedette, bannière pleine largeur, barre d'outils collante, pied de page. Voir les plans →",
+    zd_largeur: "Largeur de la page",
+    zd_lEtroite: "Étroite — 560 px",
+    zd_lNormale: "Normale — 680 px",
+    zd_lLarge: "Large — 860 px",
+    zd_lPleine: "Pleine — 1200 px",
+    zd_gouttiere: "Écart entre les cartes",
+    zd_gAuto: "Suit l'espacement",
+    zd_gSerree: "Serré",
+    zd_gNormale: "Normal",
+    zd_gLarge: "Large",
+    zd_colTel: "Colonnes sur téléphone",
+    zd_colBureau: "Colonnes sur grand écran",
+    zd_auto: "Comme partout",
+    zd_marges: "Marges latérales",
+    zd_mFines: "Fines",
+    zd_mNormales: "Normales",
+    zd_mGenereuses: "Généreuses",
+    zd_hauteurs: "Hauteur des cartes",
+    zd_hEgales: "Toutes égales",
+    zd_hNaturelles: "Chacune la sienne",
+    zd_vedette: "Première carte en vedette",
+    zd_vedetteAide: "Le premier article de chaque grille prend toute la largeur, avec une grande photo.",
+    zd_separation: "Séparation des cartes",
+    zd_sCarte: "Carte encadrée",
+    zd_sFilet: "Filet horizontal seul",
+    zd_sNue: "Aucune — grille nue",
+    zd_vignette: "Forme des vignettes",
+    zd_vCarre: "Carrée",
+    zd_vPortrait: "Portrait",
+    zd_vPaysage: "Paysage",
+    zd_vLibre: "Comme la photo",
+    zd_banniere: "Largeur de la bannière",
+    zd_bPage: "Dans la page",
+    zd_bPleine: "Bord à bord",
+    zd_bDebordante: "Bord à bord et haute",
+    zd_outils: "Recherche et tri",
+    zd_oHaut: "En haut de la liste",
+    zd_oCollante: "Collée sous l'en-tête",
+    zd_oMasquee: "Masquées",
+    zd_pied: "Pied de page",
+    zd_pComplet: "Complet",
+    zd_pCompact: "Compact",
+    zd_pMinimal: "Minimal",
     zc_contenu: "Contenu et mise en scène",
     zc_disposition: "Disposition des cartes",
     zc_dispGrille: "En grille",
@@ -1878,6 +1945,73 @@ const LANGS = {
     version:'Version',
   },
   en: {
+    zd_colonnesProduits: "Product columns",
+    zd_1col: "1 column",
+    zd_2col: "2 columns",
+    zd_3col: "3 columns",
+    zd_classique: "Classic",
+    zd_grandeBanniere: "Large banner",
+    zd_minimaliste: "Minimal",
+    zd_espacement: "Spacing",
+    zd_compact: "Compact",
+    zd_normal: "Normal",
+    zd_aere: "Airy",
+    zd_tgPanier: "Cart & checkout",
+    zd_tgCategories: "Category filters",
+    zd_tgPromos: "Promo badges",
+    zd_tgStock: "Stock indicator",
+    zd_tgAvis: "Customer reviews",
+    zd_rechercher: "Search for a product…",
+    zd_trier: "Sort",
+    zd_prixCroissant: "Price ↑",
+    zd_prixDecroissant: "Price ↓",
+    zd_nomAZ: "Name A→Z",
+    zd_studioMep: "Layout studio",
+    zd_lockTitre: "Layout studio, Enterprise plan only",
+    zd_lockTx: "Page width, columns per screen size, gutter, margins, thumbnail shape, card separation, first card featured, full-bleed banner, sticky toolbar, footer. See the plans →",
+    zd_largeur: "Page width",
+    zd_lEtroite: "Narrow — 560 px",
+    zd_lNormale: "Normal — 680 px",
+    zd_lLarge: "Wide — 860 px",
+    zd_lPleine: "Full — 1200 px",
+    zd_gouttiere: "Gap between cards",
+    zd_gAuto: "Follows the spacing",
+    zd_gSerree: "Tight",
+    zd_gNormale: "Normal",
+    zd_gLarge: "Wide",
+    zd_colTel: "Columns on phones",
+    zd_colBureau: "Columns on large screens",
+    zd_auto: "Same as everywhere",
+    zd_marges: "Side margins",
+    zd_mFines: "Thin",
+    zd_mNormales: "Normal",
+    zd_mGenereuses: "Generous",
+    zd_hauteurs: "Card heights",
+    zd_hEgales: "All equal",
+    zd_hNaturelles: "Each its own",
+    zd_vedette: "First card featured",
+    zd_vedetteAide: "The first item of each grid spans the full width, with a large photo.",
+    zd_separation: "Card separation",
+    zd_sCarte: "Framed card",
+    zd_sFilet: "Horizontal rule only",
+    zd_sNue: "None — bare grid",
+    zd_vignette: "Thumbnail shape",
+    zd_vCarre: "Square",
+    zd_vPortrait: "Portrait",
+    zd_vPaysage: "Landscape",
+    zd_vLibre: "As the photo is",
+    zd_banniere: "Banner width",
+    zd_bPage: "Within the page",
+    zd_bPleine: "Edge to edge",
+    zd_bDebordante: "Edge to edge and tall",
+    zd_outils: "Search and sort",
+    zd_oHaut: "Above the list",
+    zd_oCollante: "Stuck under the header",
+    zd_oMasquee: "Hidden",
+    zd_pied: "Footer",
+    zd_pComplet: "Full",
+    zd_pCompact: "Compact",
+    zd_pMinimal: "Minimal",
     zc_contenu: "Content and staging",
     zc_disposition: "Card layout",
     zc_dispGrille: "Grid",
@@ -23919,6 +24053,19 @@ function boutiqueProdReset(id) {
 
 // Reglages de typographie. Ranges sous bc.typo, comme bc.anim : deux
 // familles distinctes, deux endroits distincts.
+// Reglages de mise en page. Ranges sous bc.mep, aux cotes de bc.anim et
+// bc.typo : une famille, un endroit.
+function boutiqueEditSetMep(cle, val) {
+  const bc = S.boutiqueConfig;
+  if (!bc.mep || typeof bc.mep !== 'object') bc.mep = {};
+  if (typeof val === 'string' && val !== '' && !isNaN(Number(val))) val = Number(val);
+  bc.mep[cle] = val;
+  try { localStorage.setItem('baro_boutique', JSON.stringify(bc)); } catch (_) {}
+  haptic('tap');
+  render();
+  _refreshBoutiqueLivePreview();
+}
+
 function boutiqueEditSetTypo(cle, val) {
   const bc = S.boutiqueConfig;
   if (!bc.typo || typeof bc.typo !== 'object') bc.typo = {};
@@ -24198,6 +24345,26 @@ function generateBoutiqueSite(opts) {
 </div>`;
   const cornerR    = bc.borderStyle === 'square' ? '2px' : bc.borderStyle === 'xl' ? '24px' : '16px';
   const gap        = density === 'compact' ? '8px' : density === 'airy' ? '20px' : '12px';
+  // ── Studio de mise en page (plan Entreprise) ────────────────────────
+  const MEP = Object.assign({
+    largeur:    'normale',  // etroite | normale | large | pleine
+    gouttiere:  'auto',     // auto | serree | normale | large
+    colTel:     'auto',     // auto | 1 | 2
+    colBureau:  'auto',     // auto | 2 | 3 | 4
+    marges:     'normales', // fines | normales | genereuses
+    hauteurs:   'egales',   // egales | naturelles
+    vedette:    false,      // la premiere carte occupe toute la largeur
+    separation: 'carte',    // carte | filet | nue
+    vignette:   'carre',    // carre | portrait | paysage | libre
+    banniere:   'page',     // page | pleine | debordante
+    outils:     'haut',     // haut | collante | masquee
+    pied:       'complet',  // complet | compact | minimal
+  }, (_palAllowed && bc.mep) ? bc.mep : {});
+
+  const _mepLarg = { etroite: '560px', normale: '680px', large: '860px', pleine: '1200px' }[MEP.largeur] || '680px';
+  const _mepGout = { serree: '6px', normale: '14px', large: '26px' }[MEP.gouttiere] || gap;
+  const _mepMarg = { fines: '10px', normales: '16px', genereuses: '30px' }[MEP.marges] || '16px';
+  const _mepVign = { carre: '1/1', portrait: '3/4', paysage: '4/3' }[MEP.vignette] || '';
   const pad        = density === 'compact' ? '10px' : density === 'airy' ? '24px' : '16px';
   const hoverCss   = cardHover === 'none'
     ? ''
@@ -24940,6 +25107,53 @@ ${T.revealTexte !== 'aucun' ? `
 @media(prefers-reduced-motion:reduce){.tx-part{opacity:1;transform:none;transition:none}}` : ''}
 ${T.chiffresAnimes ? `
 .n-anim{font-variant-numeric:tabular-nums}` : ''}
+${_palAllowed ? `
+/* ── Mise en page (plan Entreprise) ─────────────────────────────────
+   Tout passe par la largeur du conteneur, la grille et les marges :
+   aucune position absolue, donc rien ne peut se chevaucher.          */
+.container,.toolbar,.ft-grid{max-width:${_mepLarg}}
+.container{padding-left:${_mepMarg};padding-right:${_mepMarg}}
+.toolbar{padding-left:${_mepMarg};padding-right:${_mepMarg}}
+.grid{gap:${_mepGout}}
+${MEP.colTel !== 'auto' ? `@media(max-width:520px){.grid{grid-template-columns:repeat(${MEP.colTel},1fr)}}` : ''}
+${MEP.colBureau !== 'auto' ? `@media(min-width:860px){.grid{grid-template-columns:repeat(${MEP.colBureau},1fr)}}` : ''}
+${MEP.hauteurs === 'naturelles' ? `.grid{align-items:start}
+.pc{height:auto}
+.pc .pc-body{flex:0 0 auto}` : ''}
+${MEP.vedette ? `
+/* Premiere carte en vedette : elle prend toute la largeur de sa grille.
+   Sur une grille a une colonne, elle s'y trouve deja — rien ne change. */
+.grid > .pc:first-child{grid-column:1 / -1}
+.grid > .pc:first-child .pc-imgwrap{aspect-ratio:16/9}
+.grid > .pc:first-child .pc-name{font-size:19px;letter-spacing:-.3px}
+@media(min-width:720px){
+  .grid > .pc:first-child{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);align-items:stretch}
+  .grid > .pc:first-child .pc-imgwrap{aspect-ratio:auto;height:100%;min-height:230px}
+  .grid > .pc:first-child .pc-body{padding:22px 24px;justify-content:center;gap:8px}
+}` : ''}
+${MEP.separation === 'filet' ? `.pc{background:transparent;border:0;border-radius:0;box-shadow:none;
+  border-bottom:1px solid var(--bd);padding-bottom:8px}
+.pc:hover{transform:none;box-shadow:none}
+.pc-imgwrap{border-radius:calc(var(--r) * .6)}` : ''}
+${MEP.separation === 'nue' ? `.pc{background:transparent;border:0;box-shadow:none}
+.pc:hover{transform:none;box-shadow:none}
+.pc-body{padding:10px 2px 4px}
+.pc-imgwrap{border-radius:var(--r)}` : ''}
+${_mepVign ? `.pc-imgwrap{aspect-ratio:${_mepVign}}` : ''}
+${MEP.banniere === 'pleine' ? `.header{border-radius:0;margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);width:100vw}` : ''}
+${MEP.banniere === 'debordante' ? `.header{margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);width:100vw;
+  padding-top:86px;padding-bottom:104px}
+.header h1{max-width:${_mepLarg};margin-left:auto;margin-right:auto}` : ''}
+${MEP.outils === 'collante' ? `.toolbar{position:sticky;top:52px;z-index:40;padding-top:8px;padding-bottom:8px;
+  background:color-mix(in srgb,var(--bg) 90%,transparent);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}` : ''}
+${MEP.outils === 'masquee' ? `.toolbar{display:none}` : ''}
+${MEP.pied === 'compact' ? `.ft-grid{grid-template-columns:1fr;gap:16px}
+.footer{padding:26px 20px 84px}` : ''}
+${MEP.pied === 'minimal' ? `.ft-grid > .ft-col{display:none}
+.ft-grid{grid-template-columns:1fr}
+.footer{padding:22px 20px 82px}
+.ft-desc{display:none}` : ''}` : ''}
 /* ── Contenu produits ───────────────────────────────────────────────── */
 ${_posPast !== 'bg' ? `.pc-urgwrap{${_posPast === 'hg' ? 'top:8px;bottom:auto;left:8px'
   : _posPast === 'hd' ? 'top:8px;bottom:auto;left:auto;right:8px;align-items:flex-end'
@@ -25590,12 +25804,12 @@ ${_cinemaHTML ? `<script>(function(){
 })();</script>
 <div class="toolbar">
   <div class="toolbar-row">
-    <input class="search" id="shop-search" type="search" placeholder="🔍  Rechercher un produit…">
+    <input class="search" id="shop-search" type="search" placeholder="🔍  ${t('zd_rechercher')}">
     ${shopProds.length > 2 ? `<select class="sort-sel" id="shop-sort" onchange="baroSort(this.value)" aria-label="${t('z4_trierProduits')}">
-      <option value="">Trier</option>
-      <option value="price-asc">Prix ↑</option>
-      <option value="price-desc">Prix ↓</option>
-      <option value="name">Nom A→Z</option>
+      <option value="">${t('zd_trier')}</option>
+      <option value="price-asc">${t('zd_prixCroissant')}</option>
+      <option value="price-desc">${t('zd_prixDecroissant')}</option>
+      <option value="name">${t('zd_nomAZ')}</option>
     </select>` : ''}
   </div>
   ${chipsHTML}
@@ -27097,36 +27311,82 @@ function vBoutiqueEditor() {
       ${optBtn('cardHover','none',t('z3_aucune'), g('cardHover','lift')==='none')}
     </div>`;
 
+  const _entMep = (typeof _planHasFeature === 'function') && _planHasFeature('whiteLabel');
+  // ── Studio de mise en page (plan Entreprise) ─────────────────────────
+  const studioMep = (() => {
+    if (!_entMep) return `
+    <div class="bq-sec-title">${t('zd_studioMep')}</div>
+    <div class="bq-lock" onclick="nav('pricing')">
+      <div class="bq-lock-tx"><strong>${t('zd_lockTitre')}</strong><span>${t('zd_lockTx')}</span></div>
+    </div>`;
+    const M = Object.assign({ largeur:'normale', gouttiere:'auto', colTel:'auto', colBureau:'auto',
+      marges:'normales', hauteurs:'egales', vedette:false, separation:'carte', vignette:'carre',
+      banniere:'page', outils:'haut', pied:'complet' }, g('mep', {}) || {});
+    const opts = (k, liste) => liste.map(([v, lbl]) =>
+      `<option value="${v}" ${String(M[k]) === String(v) ? 'selected' : ''}>${lbl}</option>`).join('');
+    const sel = (k, titre, liste, aide) => `<div class="bq-fld${aide ? ' bq-fld-large' : ''}"><label>${titre}</label>
+      <select class="input" onchange="boutiqueEditSetMep('${k}',this.value)">${opts(k, liste)}</select>
+      ${aide ? `<div class="bq-hint2">${aide}</div>` : ''}</div>`;
+    return `
+    <div class="bq-sec-title">${t('zd_studioMep')} <span class="bq-badge-ent">Entreprise</span></div>
+    <div class="bq-studio">
+      ${sel('largeur', t('zd_largeur'), [['etroite',t('zd_lEtroite')],['normale',t('zd_lNormale')],
+        ['large',t('zd_lLarge')],['pleine',t('zd_lPleine')]])}
+      ${sel('marges', t('zd_marges'), [['fines',t('zd_mFines')],['normales',t('zd_mNormales')],
+        ['genereuses',t('zd_mGenereuses')]])}
+      ${sel('colTel', t('zd_colTel'), [['auto',t('zd_auto')],['1','1'],['2','2']])}
+      ${sel('colBureau', t('zd_colBureau'), [['auto',t('zd_auto')],['2','2'],['3','3'],['4','4']])}
+      ${sel('gouttiere', t('zd_gouttiere'), [['auto',t('zd_gAuto')],['serree',t('zd_gSerree')],
+        ['normale',t('zd_gNormale')],['large',t('zd_gLarge')]])}
+      ${sel('vignette', t('zd_vignette'), [['carre',t('zd_vCarre')],['portrait',t('zd_vPortrait')],
+        ['paysage',t('zd_vPaysage')],['libre',t('zd_vLibre')]])}
+      ${sel('separation', t('zd_separation'), [['carte',t('zd_sCarte')],['filet',t('zd_sFilet')],
+        ['nue',t('zd_sNue')]])}
+      ${sel('hauteurs', t('zd_hauteurs'), [['egales',t('zd_hEgales')],['naturelles',t('zd_hNaturelles')]])}
+      ${sel('banniere', t('zd_banniere'), [['page',t('zd_bPage')],['pleine',t('zd_bPleine')],
+        ['debordante',t('zd_bDebordante')]])}
+      ${sel('outils', t('zd_outils'), [['haut',t('zd_oHaut')],['collante',t('zd_oCollante')],
+        ['masquee',t('zd_oMasquee')]])}
+      ${sel('pied', t('zd_pied'), [['complet',t('zd_pComplet')],['compact',t('zd_pCompact')],
+        ['minimal',t('zd_pMinimal')]])}
+    </div>
+    <label class="bq-cine ${M.vedette ? 'on' : ''}" style="margin:7px 0">
+      <input type="checkbox" ${M.vedette ? 'checked' : ''} onchange="boutiqueEditSetMep('vedette',this.checked)">
+      <span class="bq-cine-tx"><strong>${t('zd_vedette')}</strong><span>${t('zd_vedetteAide')}</span></span>
+    </label>`;
+  })();
+
   const layoutTab = `
-    <div class="bq-sec-title">Colonnes de produits</div>
+    ${studioMep}
+    <div class="bq-sec-title" style="margin-top:14px">${t('zd_colonnesProduits')}</div>
     <div class="bq-opts">
-      ${optBtn('gridCols','1','1 colonne', String(g('gridCols',2))==='1')}
-      ${optBtn('gridCols','2','2 colonnes', String(g('gridCols',2))==='2')}
-      ${optBtn('gridCols','3','3 colonnes', String(g('gridCols',2))==='3')}
+      ${optBtn('gridCols','1',t('zd_1col'), String(g('gridCols',2))==='1')}
+      ${optBtn('gridCols','2',t('zd_2col'), String(g('gridCols',2))==='2')}
+      ${optBtn('gridCols','3',t('zd_3col'), String(g('gridCols',2))==='3')}
     </div>
 
     <div class="bq-sec-title">${t('x2_styleEntete')}</div>
     <div class="bq-opts">
-      ${optBtn('heroStyle','classic','Classique', g('heroStyle','classic')==='classic')}
-      ${optBtn('heroStyle','banner','Grande bannière', g('heroStyle','classic')==='banner')}
-      ${optBtn('heroStyle','minimal','Minimaliste', g('heroStyle','classic')==='minimal')}
+      ${optBtn('heroStyle','classic',t('zd_classique'), g('heroStyle','classic')==='classic')}
+      ${optBtn('heroStyle','banner',t('zd_grandeBanniere'), g('heroStyle','classic')==='banner')}
+      ${optBtn('heroStyle','minimal',t('zd_minimaliste'), g('heroStyle','classic')==='minimal')}
     </div>
 
-    <div class="bq-sec-title">Espacement</div>
+    <div class="bq-sec-title">${t('zd_espacement')}</div>
     <div class="bq-opts">
-      ${optBtn('density','compact','Compact', g('density','normal')==='compact')}
-      ${optBtn('density','normal','Normal', g('density','normal')==='normal')}
-      ${optBtn('density','airy','Aéré', g('density','normal')==='airy')}
+      ${optBtn('density','compact',t('zd_compact'), g('density','normal')==='compact')}
+      ${optBtn('density','normal',t('zd_normal'), g('density','normal')==='normal')}
+      ${optBtn('density','airy',t('zd_aere'), g('density','normal')==='airy')}
     </div>
 
     <div class="bq-sec-title">${t('x2_sectionsAffichees')}</div>
     <div class="settings-row-block" style="margin-top:4px">
       ${[
-        {key:'showCartButton', label:'🛒 Panier & commande', def:true},
-        {key:'showCategories', label:'🏷️ Filtres par catégorie', def:true},
-        {key:'showPromoBadges',label:'🔥 Badges promo', def:true},
-        {key:'showStockCount', label:'📦 Indicateur de stock', def:true},
-        {key:'showReviews',    label:'⭐ Avis clients', def:true},
+        {key:'showCartButton', label:'🛒 ' + t('zd_tgPanier'), def:true},
+        {key:'showCategories', label:'🏷️ ' + t('zd_tgCategories'), def:true},
+        {key:'showPromoBadges',label:'🔥 ' + t('zd_tgPromos'), def:true},
+        {key:'showStockCount', label:'📦 ' + t('zd_tgStock'), def:true},
+        {key:'showReviews',    label:'⭐ ' + t('zd_tgAvis'), def:true},
       ].map(tg => {
         const on = bc[tg.key] === undefined ? tg.def : bc[tg.key];
         return `<div class="settings-row" style="cursor:default">
