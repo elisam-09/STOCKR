@@ -270,6 +270,44 @@ const API_BASE = (location.hostname === 'localhost' || location.hostname === '12
 // ── i18n ─────────────────────────────────────
 const LANGS = {
   fr: {
+    zb_typo: "Typographie et rythme",
+    zb_titreEchelle: "Taille des intertitres",
+    zb_echDiscret: "Discrète — surtitre",
+    zb_echMoyen: "Moyenne",
+    zb_echAffirme: "Affirmée",
+    zb_echMonumental: "Monumentale",
+    zb_titreStyle: "Style des intertitres",
+    zb_stCapitales: "Capitales espacées",
+    zb_stNormal: "Casse normale",
+    zb_stEditorial: "Éditorial — police des titres",
+    zb_titreAlign: "Alignement",
+    zb_alGauche: "À gauche",
+    zb_alCentre: "Centré",
+    zb_titreTrait: "Filet du titre",
+    zb_trApres: "Après le texte",
+    zb_trAvant: "Avant le texte",
+    zb_trAucun: "Aucun filet",
+    zb_titreNumero: "Numéroter les sections",
+    zb_titreNumeroAide: "01, 02, 03 devant chaque intertitre. Le compte se corrige tout seul si vous masquez ou déplacez une section.",
+    zb_revealTexte: "Arrivée du texte",
+    zb_rvAucun: "Le titre est simplement là",
+    zb_rvLigne: "La ligne monte d'un bloc",
+    zb_rvMot: "Mot après mot",
+    zb_rvLettre: "Lettre après lettre",
+    zb_heroEchelle: "Taille du titre de bannière",
+    zb_hMesure: "Mesurée",
+    zb_hGrand: "Grande",
+    zb_hDemesure: "Démesurée",
+    zb_heroSerrage: "Resserrement des lettres",
+    zb_heroSerrageAide: "0 laisse les lettres respirer, 80 les serre comme une affiche.",
+    zb_interlettrage: "Interlettrage des intertitres",
+    zb_interlettrageAide: "N'agit qu'en capitales espacées, où l'air entre les lettres fait tout.",
+    zb_rythme: "Air entre les sections",
+    zb_ryServe: "Serré",
+    zb_ryNormal: "Normal",
+    zb_ryAmple: "Ample",
+    zb_chiffres: "Chiffres qui montent",
+    zb_chiffresAide: "Les nombres déjà affichés — articles, note moyenne — comptent jusqu'à leur valeur en arrivant. Aucun chiffre n'est inventé.",
     za_navigation: "Navigation dans la page",
     za_entete: "En-tête au défilement",
     za_enteteFixe: "Toujours la même",
@@ -1804,6 +1842,44 @@ const LANGS = {
     version:'Version',
   },
   en: {
+    zb_typo: "Typography and rhythm",
+    zb_titreEchelle: "Section heading size",
+    zb_echDiscret: "Small — eyebrow",
+    zb_echMoyen: "Medium",
+    zb_echAffirme: "Bold",
+    zb_echMonumental: "Monumental",
+    zb_titreStyle: "Section heading style",
+    zb_stCapitales: "Spaced capitals",
+    zb_stNormal: "Normal case",
+    zb_stEditorial: "Editorial — heading font",
+    zb_titreAlign: "Alignment",
+    zb_alGauche: "Left",
+    zb_alCentre: "Centred",
+    zb_titreTrait: "Heading rule",
+    zb_trApres: "After the text",
+    zb_trAvant: "Before the text",
+    zb_trAucun: "No rule",
+    zb_titreNumero: "Number the sections",
+    zb_titreNumeroAide: "01, 02, 03 before each heading. The count fixes itself when you hide or move a section.",
+    zb_revealTexte: "How the text arrives",
+    zb_rvAucun: "The heading is simply there",
+    zb_rvLigne: "The line rises as one",
+    zb_rvMot: "Word after word",
+    zb_rvLettre: "Letter after letter",
+    zb_heroEchelle: "Banner title size",
+    zb_hMesure: "Measured",
+    zb_hGrand: "Large",
+    zb_hDemesure: "Oversized",
+    zb_heroSerrage: "Letter tightening",
+    zb_heroSerrageAide: "0 lets the letters breathe, 80 packs them like a poster.",
+    zb_interlettrage: "Heading letter spacing",
+    zb_interlettrageAide: "Only applies to spaced capitals, where the air between letters is everything.",
+    zb_rythme: "Air between sections",
+    zb_ryServe: "Tight",
+    zb_ryNormal: "Normal",
+    zb_ryAmple: "Generous",
+    zb_chiffres: "Numbers that count up",
+    zb_chiffresAide: "Numbers already on the page — item counts, average rating — count up to their value as they arrive. No number is invented.",
     za_navigation: "Page navigation",
     za_entete: "Header on scroll",
     za_enteteFixe: "Always the same",
@@ -23769,6 +23845,19 @@ function boutiqueProdReset(id) {
   _refreshBoutiqueLivePreview();
 }
 
+// Reglages de typographie. Ranges sous bc.typo, comme bc.anim : deux
+// familles distinctes, deux endroits distincts.
+function boutiqueEditSetTypo(cle, val) {
+  const bc = S.boutiqueConfig;
+  if (!bc.typo || typeof bc.typo !== 'object') bc.typo = {};
+  if (typeof val === 'string' && val !== '' && !isNaN(Number(val))) val = Number(val);
+  bc.typo[cle] = val;
+  try { localStorage.setItem('baro_boutique', JSON.stringify(bc)); } catch (_) {}
+  haptic('tap');
+  render();
+  _refreshBoutiqueLivePreview();
+}
+
 function boutiqueEditSet(key, val) {
   S.boutiqueConfig[key] = val;
   localStorage.setItem('baro_boutique', JSON.stringify(S.boutiqueConfig));
@@ -24204,6 +24293,34 @@ function generateBoutiqueSite(opts) {
   const _entete = (_palAllowed && ['compacte', 'contextuelle'].includes(bc.enteteScroll)) ? bc.enteteScroll : 'fixe';
   const _titresColles = _palAllowed && !!bc.titresColles;
   const _retourHaut = _palAllowed && !!bc.retourHaut;
+
+  // ── Typographie et rythme (plan Entreprise) ─────────────────────────
+  const T = Object.assign({
+    titreEchelle: 'discret',   // discret | moyen | affirme | monumental
+    titreStyle:   'capitales', // capitales | normal | editorial
+    titreNumero:  false,       // 01 / 02 devant chaque intertitre
+    titreAlign:   'gauche',    // gauche | centre
+    titreTrait:   'apres',     // apres | avant | aucun — le filet du titre
+    revealTexte:  'aucun',     // aucun | mot | ligne | lettre
+    heroEchelle:  'grand',     // mesure | grand | demesure
+    heroSerrage:  35,          // 0 a 80 — resserrement des lettres, en millièmes d'em
+    interlettrage: 16,         // 0 a 40 — interlettrage des intertitres, en centièmes d'em
+    rythme:       'normal',    // serre | normal | ample
+    chiffresAnimes: false,     // les nombres montent quand ils arrivent
+  }, (_palAllowed && bc.typo) ? bc.typo : {});
+
+  const _tEch = { discret: '10.5px', moyen: 'clamp(13px,2.6vw,15px)',
+                  affirme: 'clamp(19px,4.4vw,26px)', monumental: 'clamp(28px,7vw,46px)' }[T.titreEchelle] || '10.5px';
+  const _tPoids = { discret: 800, moyen: 800, affirme: 800, monumental: 900 }[T.titreEchelle] || 800;
+  const _tLettre = (T.titreStyle === 'capitales')
+    ? `${Math.max(0, Math.min(40, Number(T.interlettrage) || 0)) / 100}em`
+    : (T.titreEchelle === 'monumental' ? '-.035em' : T.titreEchelle === 'affirme' ? '-.02em' : '0');
+  const _tCasse = T.titreStyle === 'capitales' ? 'uppercase' : 'none';
+  const _tFonte = T.titreStyle === 'editorial' ? headingStack : 'inherit';
+  const _hEch = { mesure: 'clamp(26px,6.4vw,40px)', grand: 'clamp(34px,9vw,56px)',
+                  demesure: 'clamp(40px,13vw,92px)' }[T.heroEchelle] || 'clamp(34px,9vw,56px)';
+  const _hSerre = `-${Math.max(0, Math.min(80, Number(T.heroSerrage) || 0)) / 1000}em`;
+  const _rythme = { serre: 18, normal: 26, ample: 46 }[T.rythme] || 26;
   const _ruptureStyle = (_palAllowed && bc.ruptureStyle) || 'grise';
   const _ratioCss = { carre: '1/1', portrait: '3/4', paysage: '4/3' };
 
@@ -24423,9 +24540,22 @@ h1,h2,.header h1,.pc-name,.cartbar-total,.ck h2{font-family:${headingStack}}
 .scroll-prog{position:fixed;${A.progression==='bas'?'bottom:0':'top:0'};left:0;height:2.5px;width:0;z-index:100;pointer-events:none;${A.progression==='aucune'?'display:none;':''}
   background:linear-gradient(90deg,${tc},${tc}88);box-shadow:0 0 10px ${tc}66;transition:width .1s linear}
 /* Titres de section (rythme éditorial) */
-.sec-eyebrow{display:flex;align-items:center;gap:9px;margin:26px 0 12px}
-.sec-eyebrow::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(0,0,0,.10),transparent)}
-.sec-eyebrow span{font-size:10.5px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#8b8b96}
+.sec-eyebrow{display:flex;align-items:center;gap:11px;margin:${_rythme}px 0 ${Math.round(_rythme * .46)}px;
+  ${T.titreAlign === 'centre' ? 'justify-content:center;text-align:center' : ''}}
+${T.titreTrait === 'aucun' ? '' : `.sec-eyebrow::${T.titreTrait === 'avant' ? 'before' : 'after'}{content:'';flex:1;height:1px;
+  background:linear-gradient(${T.titreTrait === 'avant' ? '270deg' : '90deg'},rgba(0,0,0,.10),transparent)}`}
+${T.titreAlign === 'centre' && T.titreTrait !== 'aucun' ? `.sec-eyebrow::before{content:'';flex:1;height:1px;
+  background:linear-gradient(270deg,rgba(0,0,0,.10),transparent)}` : ''}
+.sec-eyebrow > span{font-family:${_tFonte};font-size:${_tEch};font-weight:${_tPoids};
+  letter-spacing:${_tLettre};text-transform:${_tCasse};color:${T.titreEchelle === 'discret' ? '#8b8b96' : 'var(--tx)'};
+  line-height:1.08;text-wrap:balance;flex:0 1 auto;min-width:0}
+${T.titreNumero ? `
+/* Numerotation : un compteur CSS, donc juste meme si une section est
+   masquee ou deplacee — rien a tenir a jour a la main. */
+body{counter-reset:baro-sec}
+.sec-eyebrow > span::before{counter-increment:baro-sec;content:counter(baro-sec,decimal-leading-zero);
+  margin-right:.7em;opacity:.42;font-variant-numeric:tabular-nums;font-weight:700;
+  ${T.titreEchelle === 'discret' ? '' : 'font-size:.52em;vertical-align:.5em'}}` : ''}
 /* Top bar sticky verre dépoli */
 .topbar{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:10px;padding:12px 16px;background:rgba(255,255,255,.82);backdrop-filter:blur(18px) saturate(180%);-webkit-backdrop-filter:blur(18px) saturate(180%);border-bottom:1px solid rgba(0,0,0,.05)}
 .topbar-logo{width:34px;height:34px;border-radius:9px;object-fit:cover;box-shadow:0 2px 8px rgba(0,0,0,.12)}
@@ -24488,7 +24618,7 @@ h1,h2,.header h1,.pc-name,.cartbar-total,.ck h2{font-family:${headingStack}}
 .header.has-video iframe.hero-video{width:177.78vh;min-width:100%;height:56.25vw;min-height:100%;left:50%;top:50%;transform:translate(-50%,-50%)}
 .hero-vid-ov{position:absolute;inset:0;z-index:0;background:linear-gradient(to bottom,rgba(0,0,0,.32),rgba(0,0,0,.58))}
 .header-logo{width:72px;height:72px;border-radius:20px;object-fit:cover;margin-bottom:14px;border:3px solid rgba(255,255,255,.35);box-shadow:0 8px 28px rgba(0,0,0,.25);position:relative;z-index:1}
-.header h1{font-size:clamp(34px,9vw,56px);font-weight:900;letter-spacing:-.035em;line-height:.98;position:relative;z-index:1;text-wrap:balance;text-shadow:0 2px 20px rgba(0,0,0,.18)}
+.header h1{font-size:${_hEch};font-weight:900;letter-spacing:${_hSerre};line-height:.96;position:relative;z-index:1;text-wrap:balance;text-shadow:0 2px 20px rgba(0,0,0,.18)}
 .header p{opacity:.92;margin-top:14px;font-size:clamp(14.5px,3.7vw,17px);max-width:440px;margin-left:auto;margin-right:auto;line-height:1.55;position:relative;z-index:1;text-wrap:pretty}
 /* Entrée cinématique du hero (échelonnée, une seule fois) */
 @keyframes heroRise{from{opacity:0;transform:translateY(26px) scale(.985);filter:blur(6px)}to{opacity:1;transform:none;filter:blur(0)}}
@@ -24692,6 +24822,18 @@ ${_retourHaut ? `
 .to-top.on{opacity:1;transform:translateY(0);pointer-events:auto}
 .to-top:hover{transform:translateY(-2px)}
 @media(prefers-reduced-motion:reduce){.to-top{transition:none}}` : ''}
+${T.revealTexte !== 'aucun' ? `
+/* ── Arrivee du texte ───────────────────────────────────────────────
+   Le titre est decoupe en morceaux qui montent l'un apres l'autre.
+   Chaque morceau garde sa place : le decoupage n'est que visuel.     */
+.tx-part{display:inline-block;opacity:0;transform:translateY(${T.revealTexte === 'lettre' ? '.5em' : '.85em'});
+  transition:opacity .5s cubic-bezier(.16,1,.3,1),transform .62s cubic-bezier(.16,1,.3,1);
+  transition-delay:calc(var(--k,0) * ${T.revealTexte === 'lettre' ? '22ms' : T.revealTexte === 'mot' ? '46ms' : '90ms'})}
+.tx-in .tx-part{opacity:1;transform:none}
+.tx-masque{display:inline-block;overflow:hidden;vertical-align:bottom}
+@media(prefers-reduced-motion:reduce){.tx-part{opacity:1;transform:none;transition:none}}` : ''}
+${T.chiffresAnimes ? `
+.n-anim{font-variant-numeric:tabular-nums}` : ''}
 /* Chapeau d'une collection : une ou deux phrases, pas un paragraphe */
 .col-intro{max-width:62ch;margin:-6px 0 14px;font-size:13.5px;line-height:1.6;color:var(--tx2)}
 .pc-tag{font-size:11px;font-weight:700;letter-spacing:.01em;color:${tc};
@@ -25125,7 +25267,7 @@ ${A.separateur === 'ligne'
 .info-bar,.pay-section,.about-section,.contact-section,.howto-step,.review,
 .pc,.svc-strip,.faq-item,.delivery-info{background:var(--surface);color:var(--tx);border-color:var(--bd)}
 .pay-section-title,.howto-body strong,.pc-name,.about-section h2,.contact-section h2{color:var(--tx)}
-.howto-body span,.about-text,.pc-cat,.contact-row,.delivery-info,.sec-eyebrow span{color:var(--tx2)}
+.howto-body span,.about-text,.pc-cat,.contact-row,.delivery-info,.sec-eyebrow > span{color:var(--tx2)}
 .pay-section,.about-section,.contact-section,.howto-step,.review,.info-bar{
   box-shadow:0 1px 2px var(--sh),0 6px 20px -10px var(--sh)}
 .search-wrap input,.sort-select,input[type=text],input[type=tel],input[type=search],textarea,select{
@@ -26414,6 +26556,75 @@ ${(_entete !== 'fixe' || _retourHaut) ? `<scr` + `ipt>(function(){
   window.addEventListener('load',function(){ if(sec)releve(); frame(); });
   frame();
 })();</scr` + `ipt>` : ''}
+${(T.revealTexte !== 'aucun' || T.chiffresAnimes) ? `<scr` + `ipt>(function(){
+  var doux = !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  ${T.revealTexte !== 'aucun' ? `
+  // Decoupage du texte. On ne touche qu'aux noeuds de texte : les balises
+  // internes d'un titre (une marque, un chiffre) restent intactes.
+  var mode=${JSON.stringify(T.revealTexte)};
+  function decoupe(el){
+    if(el.dataset.txFait)return; el.dataset.txFait='1';
+    var brut=(el.textContent||'').trim();
+    if(!brut)return;
+    var bouts = mode==='ligne' ? [brut]
+      : mode==='mot' ? brut.split(/(\\s+)/)
+      : brut.split('');
+    var html='', k=0;
+    bouts.forEach(function(b){
+      if(/^\\s+$/.test(b)){ html+=b; return; }
+      html+='<span class="tx-masque"><span class="tx-part" style="--k:'+(k++)+'">'+
+        b.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</span></span>';
+    });
+    el.innerHTML=html;
+  }
+  var cibles=[].slice.call(document.querySelectorAll('.sec-eyebrow > span, .header h1'));
+  if(doux){
+    cibles.forEach(decoupe);
+    if('IntersectionObserver' in window){
+      var io=new IntersectionObserver(function(ents){
+        ents.forEach(function(en){ if(en.isIntersecting){ en.target.classList.add('tx-in'); io.unobserve(en.target); } });
+      },{rootMargin:'0px 0px -12% 0px',threshold:0.15});
+      cibles.forEach(function(el){io.observe(el);});
+      // Filet : rien ne doit rester invisible si l'observateur ne repond pas
+      setTimeout(function(){cibles.forEach(function(el){el.classList.add('tx-in');});},1800);
+    } else { cibles.forEach(function(el){el.classList.add('tx-in');}); }
+  }` : ''}
+  ${T.chiffresAnimes ? `
+  // Compteurs : on n'anime que des nombres deja affiches, jamais une valeur
+  // inventee. Le texte final est remis tel quel a la fin.
+  if(doux && 'IntersectionObserver' in window){
+    var nums=[].slice.call(document.querySelectorAll('.sec-eyebrow > span, .header-rating, .reviews-title div'))
+      .filter(function(el){ return /\\d/.test(el.textContent) && !el.querySelector('.tx-part') && !el.closest('.tx-masque'); });
+    var ion=new IntersectionObserver(function(ents){
+      ents.forEach(function(en){
+        if(!en.isIntersecting)return;
+        var el=en.target; ion.unobserve(el);
+        var fin=el.textContent, m=fin.match(/\\d+(?:[.,]\\d+)?/);
+        if(!m)return;
+        var cible=parseFloat(m[0].replace(',','.')), dec=(m[0].indexOf(',')>=0||m[0].indexOf('.')>=0)?1:0;
+        if(!isFinite(cible)||cible<=0)return;
+        var t0=null, duree=900, fini=false;
+        el.classList.add('n-anim');
+        // Filet de securite : quoi qu'il arrive a l'animation — onglet mis
+        // en veille, appareil lent, erreur — la vraie valeur est reposee.
+        // Sans lui, un compteur interrompu laissait « 0,1 / 5 » a l'ecran.
+        function pose(){ if(fini)return; fini=true; el.textContent=fin; }
+        setTimeout(pose, duree + 400);
+        function pas(t){
+          if(fini)return;
+          if(t0===null)t0=t;
+          var q=Math.min(1,(t-t0)/duree), e=1-Math.pow(1-q,3);
+          if(q>=1){ pose(); return; }
+          var v=(cible*e).toFixed(dec).replace('.', m[0].indexOf(',')>=0?',':'.');
+          el.textContent=fin.replace(m[0], v);
+          requestAnimationFrame(pas);
+        }
+        try{ requestAnimationFrame(pas); }catch(_){ pose(); }
+      });
+    },{threshold:0.4});
+    nums.forEach(function(el){ion.observe(el);});
+  }` : ''}
+})();</scr` + `ipt>` : ''}
 ${A.doux ? `<style>html{scroll-behavior:smooth}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}</style>` : ''}
 ${waNum?`<a href="${waLink}" target="_blank" rel="noopener noreferrer" class="wa-float"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg></a>`:''}
 ${customJsBody}
@@ -26637,6 +26848,48 @@ function vBoutiqueEditor() {
         <input type="checkbox" ${g('retourHaut',false) ? 'checked' : ''} onchange="boutiqueEditSet('retourHaut',this.checked)">
         <span class="bq-cine-tx"><strong>${t('za_retourHautOpt')}</strong><span>${t('za_retourHautAide')}</span></span>
       </label>
+
+      ${(() => {
+        const T = Object.assign({ titreEchelle:'discret', titreStyle:'capitales', titreNumero:false,
+          titreAlign:'gauche', titreTrait:'apres', revealTexte:'aucun', heroEchelle:'grand',
+          heroSerrage:35, interlettrage:16, rythme:'normal', chiffresAnimes:false }, g('typo', {}) || {});
+        const opts = (k, liste) => liste.map(([v, lbl]) =>
+          `<option value="${v}" ${String(T[k]) === String(v) ? 'selected' : ''}>${lbl}</option>`).join('');
+        const sel = (k, titre, liste) => `<div class="bq-fld"><label>${titre}</label>
+          <select class="input" onchange="boutiqueEditSetTypo('${k}',this.value)">${opts(k, liste)}</select></div>`;
+        const bascule = (k, titre, aide) => `
+      <label class="bq-cine ${T[k] ? 'on' : ''}" style="margin-bottom:7px">
+        <input type="checkbox" ${T[k] ? 'checked' : ''} onchange="boutiqueEditSetTypo('${k}',this.checked)">
+        <span class="bq-cine-tx"><strong>${titre}</strong><span>${aide}</span></span>
+      </label>`;
+        return `
+      <div class="bq-sub-title" style="margin-top:14px">${t('zb_typo')}</div>
+      <div class="bq-studio">
+        ${sel('titreEchelle', t('zb_titreEchelle'), [['discret', t('zb_echDiscret')], ['moyen', t('zb_echMoyen')],
+          ['affirme', t('zb_echAffirme')], ['monumental', t('zb_echMonumental')]])}
+        ${sel('titreStyle', t('zb_titreStyle'), [['capitales', t('zb_stCapitales')], ['normal', t('zb_stNormal')],
+          ['editorial', t('zb_stEditorial')]])}
+        ${sel('titreAlign', t('zb_titreAlign'), [['gauche', t('zb_alGauche')], ['centre', t('zb_alCentre')]])}
+        ${sel('titreTrait', t('zb_titreTrait'), [['apres', t('zb_trApres')], ['avant', t('zb_trAvant')],
+          ['aucun', t('zb_trAucun')]])}
+        ${sel('revealTexte', t('zb_revealTexte'), [['aucun', t('zb_rvAucun')], ['ligne', t('zb_rvLigne')],
+          ['mot', t('zb_rvMot')], ['lettre', t('zb_rvLettre')]])}
+        ${sel('heroEchelle', t('zb_heroEchelle'), [['mesure', t('zb_hMesure')], ['grand', t('zb_hGrand')],
+          ['demesure', t('zb_hDemesure')]])}
+        ${sel('rythme', t('zb_rythme'), [['serre', t('zb_ryServe')], ['normal', t('zb_ryNormal')],
+          ['ample', t('zb_ryAmple')]])}
+        <div class="bq-fld bq-fld-large"><label>${t('zb_heroSerrage')} — <b>${T.heroSerrage}</b></label>
+          <input type="range" min="0" max="80" step="5" value="${T.heroSerrage}"
+                 onchange="boutiqueEditSetTypo('heroSerrage',Number(this.value))">
+          <div class="bq-hint2">${t('zb_heroSerrageAide')}</div></div>
+        ${T.titreStyle === 'capitales' ? `<div class="bq-fld bq-fld-large"><label>${t('zb_interlettrage')} — <b>${T.interlettrage}</b></label>
+          <input type="range" min="0" max="40" step="2" value="${T.interlettrage}"
+                 onchange="boutiqueEditSetTypo('interlettrage',Number(this.value))">
+          <div class="bq-hint2">${t('zb_interlettrageAide')}</div></div>` : ''}
+      </div>
+      ${bascule('titreNumero', t('zb_titreNumero'), t('zb_titreNumeroAide'))}
+      ${bascule('chiffresAnimes', t('zb_chiffres'), t('zb_chiffresAide'))}`;
+      })()}
 
       <div class="bq-sub-title" style="margin-top:14px">${t('z3_effetsSouris')}</div>
       <div class="bq-hint2" style="margin:-4px 0 8px">${t('z3_sourisAide')}</div>
