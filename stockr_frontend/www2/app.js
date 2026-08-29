@@ -270,6 +270,19 @@ const API_BASE = (location.hostname === 'localhost' || location.hostname === '12
 // ── i18n ─────────────────────────────────────
 const LANGS = {
   fr: {
+    za_navigation: "Navigation dans la page",
+    za_entete: "En-tête au défilement",
+    za_enteteFixe: "Toujours la même",
+    za_enteteCompacte: "Se resserre après la bannière",
+    za_enteteContextuelle: "Se resserre et nomme la section",
+    za_enteteAide: "« Nomme la section » affiche à côté de votre nom la partie que le visiteur est en train de lire.",
+    za_titresColles: "Titres de section collés",
+    za_titresCollesAide: "Le titre reste en haut tant qu'on lit sa section, puis cède la place au suivant.",
+    za_retourHautOpt: "Bouton retour en haut",
+    za_retourHautAide: "Apparaît après un écran et demi, en bas à gauche — l'autre coin est pris par WhatsApp.",
+    za_retourHaut: "Retour en haut",
+    za_lockTitre: "Navigation de page réservée au plan Entreprise",
+    za_lockTx: "En-tête qui se resserre et nomme la section lue, titres de section collés, bouton de retour en haut. Voir les plans →",
     z9_specs: "Caractéristiques",
     z9_specsPl: "Contenance : 200 ml\nOrigine : France\nConservation : à l'abri de la lumière",
     z9_specsAide: "Une ligne par caractéristique, sous la forme « Nom : valeur ». Elles s'affichent dans la fiche plein écran. Douze au maximum.",
@@ -1791,6 +1804,19 @@ const LANGS = {
     version:'Version',
   },
   en: {
+    za_navigation: "Page navigation",
+    za_entete: "Header on scroll",
+    za_enteteFixe: "Always the same",
+    za_enteteCompacte: "Shrinks past the banner",
+    za_enteteContextuelle: "Shrinks and names the section",
+    za_enteteAide: "“Names the section” shows, next to your name, the part the visitor is currently reading.",
+    za_titresColles: "Sticky section headings",
+    za_titresCollesAide: "The heading stays at the top while its section is being read, then hands over to the next one.",
+    za_retourHautOpt: "Back-to-top button",
+    za_retourHautAide: "Appears after a screen and a half, bottom left — the other corner belongs to WhatsApp.",
+    za_retourHaut: "Back to top",
+    za_lockTitre: "Page navigation, Enterprise plan only",
+    za_lockTx: "A header that shrinks and names the section being read, sticky section headings, and a back-to-top button. See the plans →",
     z9_specs: "Specifications",
     z9_specsPl: "Volume: 200 ml\nOrigin: France\nStorage: keep away from light",
     z9_specsAide: "One line per specification, written as “Name: value”. They appear on the full-screen product page. Twelve at most.",
@@ -24175,6 +24201,9 @@ function generateBoutiqueSite(opts) {
   const pmeta = (id) => _PM[String(id)] || {};
   const _prixStyle = (_palAllowed && bc.prixStyle) || 'normal';
   const _galerie = (_palAllowed && ['survol', 'points'].includes(bc.galerieCarte)) ? bc.galerieCarte : 'aucune';
+  const _entete = (_palAllowed && ['compacte', 'contextuelle'].includes(bc.enteteScroll)) ? bc.enteteScroll : 'fixe';
+  const _titresColles = _palAllowed && !!bc.titresColles;
+  const _retourHaut = _palAllowed && !!bc.retourHaut;
   const _ruptureStyle = (_palAllowed && bc.ruptureStyle) || 'grise';
   const _ratioCss = { carre: '1/1', portrait: '3/4', paysage: '4/3' };
 
@@ -24628,6 +24657,41 @@ ${_galerie === 'survol' ? `
   box-shadow:0 1px 3px rgba(0,0,0,.4);transition:width .22s,background .22s}
 .pc-dots i.on{width:15px;border-radius:3px;background:#fff}`}
 @media(prefers-reduced-motion:reduce){.pc-multi .pc-img{transition:none}}` : ''}
+${_entete !== 'fixe' ? `
+/* ── En-tete qui se retracte ────────────────────────────────────────
+   Passe la banniere, l'en-tete se resserre : moins de hauteur perdue
+   pendant qu'on lit la boutique. Aucune position ne change, seul le
+   remplissage bouge — la page ne saute pas.                          */
+.topbar{transition:padding .24s cubic-bezier(.2,0,0,1),box-shadow .24s ease}
+.topbar.tb-compacte{padding:7px 16px;box-shadow:0 6px 22px -14px var(--sh)}
+.topbar.tb-compacte .topbar-logo,.topbar.tb-compacte .topbar-mono{width:28px;height:28px;font-size:13px}
+.topbar.tb-compacte .topbar-name{font-size:13.5px}
+@media(prefers-reduced-motion:reduce){.topbar{transition:none}}` : ''}
+${_entete === 'contextuelle' ? `
+/* Nom de la section en cours, a la suite du nom de la boutique */
+.tb-sec{display:inline-block;max-width:0;overflow:hidden;vertical-align:bottom;
+  white-space:nowrap;opacity:0;font-weight:600;font-size:12.5px;color:var(--tx2);
+  transition:max-width .34s cubic-bezier(.2,0,0,1),opacity .24s ease}
+.tb-sec.on{max-width:52vw;opacity:1}
+.tb-sec::before{content:'/';margin:0 7px;opacity:.45}
+@media(max-width:520px){.tb-sec{display:none}}` : ''}
+${_titresColles ? `
+/* Titres de section colles : le titre tient tant qu'on lit sa section.
+   Le fond est necessaire, sinon les cartes defileraient au travers. */
+.sec-eyebrow{position:sticky;top:${_entete !== 'fixe' ? '44' : '52'}px;z-index:5;
+  padding:10px 0 8px;margin:26px 0 6px;
+  background:color-mix(in srgb,var(--bg) 90%,transparent);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}` : ''}
+${_retourHaut ? `
+.to-top{position:fixed;left:20px;bottom:20px;z-index:90;width:44px;height:44px;
+  border-radius:50%;border:1px solid var(--bd);background:var(--surface);color:var(--tx);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  box-shadow:0 8px 24px -10px var(--sh);
+  opacity:0;transform:translateY(12px);pointer-events:none;
+  transition:opacity .28s ease,transform .28s cubic-bezier(.2,0,0,1)}
+.to-top.on{opacity:1;transform:translateY(0);pointer-events:auto}
+.to-top:hover{transform:translateY(-2px)}
+@media(prefers-reduced-motion:reduce){.to-top{transition:none}}` : ''}
 /* Chapeau d'une collection : une ou deux phrases, pas un paragraphe */
 .col-intro{max-width:62ch;margin:-6px 0 14px;font-size:13.5px;line-height:1.6;color:var(--tx2)}
 .pc-tag{font-size:11px;font-weight:700;letter-spacing:.01em;color:${tc};
@@ -25136,7 +25200,7 @@ ${announce ? `<div class="announce-bar">${esc(announce)}</div>` : ''}
 ${bannerHTML(topBanner, 'top')}
 <header class="topbar">
   ${logo ? `<img src="${logo}" class="topbar-logo" alt="Logo">` : `<div class="topbar-mono">${esc((bc.name||S.session?.business||'B').charAt(0).toUpperCase())}</div>`}
-  <div class="topbar-name">${esc(bc.name||S.session?.business||'Ma Boutique')}</div>
+  <div class="topbar-name">${esc(bc.name||S.session?.business||'Ma Boutique')}${_entete === 'contextuelle' ? `<span class="tb-sec" id="tb-sec" aria-hidden="true"></span>` : ''}</div>
   <nav class="topnav">${_navLinks.map(l=>`<a href="${l[0]}" onclick="event.preventDefault();(document.querySelector('${l[0]}')||document.body).scrollIntoView({behavior:'smooth',block:'start'})">${l[1]}</a>`).join('')}</nav>
   <span class="cur-badge" title="${t('z4_deviseBoutique')}">${_curBadge}</span>
   ${_themeMode === 'choix' ? `<button class="icon-btn theme-btn" id="theme-btn" onclick="baroTheme()" title="${t('z6_basculerTheme')}" aria-label="${t('z6_basculerTheme')}">
@@ -25156,6 +25220,10 @@ ${bannerHTML(topBanner, 'top')}
   </button>` : ''}
 </header>
 <div class="scroll-prog" id="scroll-prog" aria-hidden="true"></div>
+${_retourHaut ? `<button class="to-top" id="to-top" aria-label="${t('za_retourHaut')}" title="${t('za_retourHaut')}"
+  onclick="window.scrollTo({top:0,behavior:'smooth'})">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>
+</button>` : ''}
 <nav class="navpills" aria-label="Navigation">
   ${_navLinks.map(l=>`<a href="${l[0]}" onclick="event.preventDefault();(document.querySelector('${l[0]}')||document.body).scrollIntoView({behavior:'smooth',block:'start'})">${l[1]}</a>`).join('')}
   <a href="#" onclick="event.preventDefault();baroMyOrders()">${t('z4_mesAchats')}</a>
@@ -26300,6 +26368,52 @@ ${_galerie === 'points' ? `<scr` + `ipt>(function(){
     },true);
   });
 })();</scr` + `ipt>` : ''}
+${(_entete !== 'fixe' || _retourHaut) ? `<scr` + `ipt>(function(){
+  var tb=document.querySelector('.topbar');
+  var haut=document.getElementById('to-top');
+  var sec=document.getElementById('tb-sec');
+  var hd=document.querySelector('.header');
+  var seuil=function(){ return hd ? Math.max(120, hd.offsetHeight - 80) : 220; };
+
+  // Titres de section, avec leur position dans le document. Elle est
+  // relevee une fois, puis rafraichie au redimensionnement : la lire a
+  // chaque frame forcerait un recalcul de mise en page.
+  var titres=[], hauts=[];
+  function releve(){
+    titres=[].slice.call(document.querySelectorAll('.sec-eyebrow'));
+    hauts=titres.map(function(el){
+      var y=0, n=el;
+      while(n){ y+=n.offsetTop||0; n=n.offsetParent; }
+      return y;
+    });
+  }
+  if(sec)releve();
+
+  var dernierNom=null, attente=false;
+  function frame(){
+    attente=false;
+    var y=window.pageYOffset||document.documentElement.scrollTop||0;
+    if(tb)tb.classList.toggle('tb-compacte', y > seuil());
+    if(haut)haut.classList.toggle('on', y > window.innerHeight * 1.5);
+    if(sec && titres.length){
+      // Section en cours : la derniere dont le titre est passe sous l'en-tete
+      var i=-1, garde=y + 96;
+      for(var k=0;k<hauts.length;k++){ if(hauts[k] <= garde) i=k; else break; }
+      var nom = i>=0 ? (titres[i].textContent||'').trim() : '';
+      if(nom !== dernierNom){
+        dernierNom = nom;
+        sec.textContent = nom;
+        sec.classList.toggle('on', !!nom);
+      }
+    }
+  }
+  window.addEventListener('scroll',function(){if(!attente){attente=true;requestAnimationFrame(frame);}},{passive:true});
+  window.addEventListener('resize',function(){ if(sec)releve(); frame(); },{passive:true});
+  // Les images se chargent apres coup et decalent les titres : on releve
+  // une seconde fois quand la page est vraiment posee.
+  window.addEventListener('load',function(){ if(sec)releve(); frame(); });
+  frame();
+})();</scr` + `ipt>` : ''}
 ${A.doux ? `<style>html{scroll-behavior:smooth}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}</style>` : ''}
 ${waNum?`<a href="${waLink}" target="_blank" rel="noopener noreferrer" class="wa-float"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg></a>`:''}
 ${customJsBody}
@@ -26505,6 +26619,24 @@ function vBoutiqueEditor() {
           <div class="bq-hint2">${t('z3_zoomImageAide')}</div></div>
       </div>
       <div class="bq-hint2" style="margin:7px 0 0">${t('z3_heroAide')}</div>
+
+      <div class="bq-sub-title" style="margin-top:14px">${t('za_navigation')}</div>
+      <div class="bq-studio">
+        <div class="bq-fld bq-fld-large"><label>${t('za_entete')}</label>
+          <select class="input" onchange="boutiqueEditSet('enteteScroll',this.value)">
+            ${[['fixe', t('za_enteteFixe')], ['compacte', t('za_enteteCompacte')], ['contextuelle', t('za_enteteContextuelle')]]
+              .map(o => `<option value="${o[0]}" ${g('enteteScroll','fixe')===o[0]?'selected':''}>${o[1]}</option>`).join('')}
+          </select>
+          <div class="bq-hint2">${t('za_enteteAide')}</div></div>
+      </div>
+      <label class="bq-cine ${g('titresColles',false) ? 'on' : ''}" style="margin:7px 0">
+        <input type="checkbox" ${g('titresColles',false) ? 'checked' : ''} onchange="boutiqueEditSet('titresColles',this.checked)">
+        <span class="bq-cine-tx"><strong>${t('za_titresColles')}</strong><span>${t('za_titresCollesAide')}</span></span>
+      </label>
+      <label class="bq-cine ${g('retourHaut',false) ? 'on' : ''}" style="margin-bottom:7px">
+        <input type="checkbox" ${g('retourHaut',false) ? 'checked' : ''} onchange="boutiqueEditSet('retourHaut',this.checked)">
+        <span class="bq-cine-tx"><strong>${t('za_retourHautOpt')}</strong><span>${t('za_retourHautAide')}</span></span>
+      </label>
 
       <div class="bq-sub-title" style="margin-top:14px">${t('z3_effetsSouris')}</div>
       <div class="bq-hint2" style="margin:-4px 0 8px">${t('z3_sourisAide')}</div>
