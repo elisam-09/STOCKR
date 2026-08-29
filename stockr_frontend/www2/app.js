@@ -270,6 +270,25 @@ const API_BASE = (location.hostname === 'localhost' || location.hostname === '12
 // ── i18n ─────────────────────────────────────
 const LANGS = {
   fr: {
+    z8_collections: "Collections",
+    z8_collection: "Collection",
+    z8_collectionsAide: "Regroupez des articles sous un nom et un chapeau — « Rentrée des classes », « Nos essentiels ». Chaque collection devient une section que vous placez où vous voulez.",
+    z8_lockTitre: "Collections réservées au plan Entreprise",
+    z8_lockTx: "Jusqu'à six groupes d'articles, chacun avec son nom, son chapeau et sa propre grille, déplaçables dans la page. Voir les plans →",
+    z8_nomCollection: "Nom de la collection",
+    z8_nomCollectionPl: "Nos essentiels",
+    z8_introCollection: "Chapeau",
+    z8_introCollectionPl: "Une ou deux phrases pour présenter ce groupe.",
+    z8_articlesDedans: "Articles de la collection",
+    z8_aucunArticle: "Aucun article choisi — la collection ne s'affichera pas.",
+    z8_supprimerCollection: "Supprimer cette collection",
+    z8_ajouterCollection: "Ajouter une collection",
+    z8_maxCollections: "Six collections au maximum",
+    z8_articlesRestants: "Articles déjà dans une collection",
+    z8_resteRetirer: "Les retirer de la grille principale",
+    z8_resteGarder: "Les garder aussi dans la grille principale",
+    z8_nbArticles: "{0} article(s)",
+    z8_sansNom: "Collection sans nom",
     z7_composeur: "Composition de la page",
     z7_composeurAide: "Déplacez les sections, masquez celles qui ne vous servent pas. La grille de produits reste toujours affichée.",
     z7_lockTitre: "Composition de la page réservée au plan Entreprise",
@@ -1765,6 +1784,25 @@ const LANGS = {
     version:'Version',
   },
   en: {
+    z8_collections: "Collections",
+    z8_collection: "Collection",
+    z8_collectionsAide: "Group items under a name and an intro — “Back to school”, “Our essentials”. Each collection becomes a section you can place wherever you like.",
+    z8_lockTitre: "Collections, Enterprise plan only",
+    z8_lockTx: "Up to six groups of items, each with its own name, intro and grid, movable anywhere on the page. See the plans →",
+    z8_nomCollection: "Collection name",
+    z8_nomCollectionPl: "Our essentials",
+    z8_introCollection: "Intro",
+    z8_introCollectionPl: "A sentence or two to introduce this group.",
+    z8_articlesDedans: "Items in this collection",
+    z8_aucunArticle: "No item selected — this collection will not appear.",
+    z8_supprimerCollection: "Delete this collection",
+    z8_ajouterCollection: "Add a collection",
+    z8_maxCollections: "Six collections at most",
+    z8_articlesRestants: "Items already in a collection",
+    z8_resteRetirer: "Remove them from the main grid",
+    z8_resteGarder: "Keep them in the main grid too",
+    z8_nbArticles: "{0} item(s)",
+    z8_sansNom: "Untitled collection",
     z7_composeur: "Page composition",
     z7_composeurAide: "Move sections around, hide the ones you don't need. The product grid always stays.",
     z7_lockTitre: "Page composition, Enterprise plan only",
@@ -23571,7 +23609,15 @@ const BQ_SECTIONS_DEFAUT = ['produits','etapes','services','video','apropos','av
 function _bqOrdreSections() {
   const bc = S.boutiqueConfig;
   const blocs = Array.isArray(bc.blocs) ? bc.blocs : [];
-  const tout = BQ_SECTIONS_DEFAUT.concat(blocs.map((b, i) => 'bloc' + i));
+  // Une collection sans nom ou sans article ne produit aucune section :
+  // l'afficher dans le composeur promettrait une section qui n'existe pas.
+  const cols = (Array.isArray(bc.collections) ? bc.collections : [])
+    .map((c, i) => ({ c, i }))
+    .filter(x => x.c && String(x.c.nom || '').trim() && (x.c.ids || []).length)
+    .map(x => 'col' + x.i);
+  const tout = ['produits'].concat(cols)
+    .concat(BQ_SECTIONS_DEFAUT.filter(k => k !== 'produits'))
+    .concat(blocs.map((b, i) => 'bloc' + i));
   const enregistre = Array.isArray(bc.ordreSections) ? bc.ordreSections.filter(k => tout.includes(k)) : [];
   return enregistre.concat(tout.filter(k => !enregistre.includes(k)));
 }
@@ -23596,6 +23642,52 @@ function boutiqueToggleSection(cle) {
   try { localStorage.setItem('baro_boutique', JSON.stringify(bc)); } catch (_) {}
   haptic('tap'); render(); _refreshBoutiqueLivePreview();
 }
+// ── Collections : groupes d'articles nommes, avec leur propre chapeau ──
+function _bqCollections() {
+  const bc = S.boutiqueConfig;
+  if (!Array.isArray(bc.collections)) bc.collections = [];
+  return bc.collections;
+}
+function boutiqueAjouteCollection() {
+  const cols = _bqCollections();
+  if (cols.length >= 6) { showToast(t('z8_maxCollections')); return; }
+  cols.push({ nom: '', intro: '', ids: [] });
+  _bqSauveBoutique(); haptic('tap'); render(); _refreshBoutiqueLivePreview();
+}
+function boutiqueSetCollection(i, champ, val) {
+  const c = _bqCollections()[i];
+  if (!c) return;
+  c[champ] = val;
+  _bqSauveBoutique(); _refreshBoutiqueLivePreview();
+  // Le nom sert d'etiquette dans le composeur : il doit s'y voir tout de suite
+  if (champ === 'nom') render();
+}
+function boutiqueToggleProdCollection(i, id) {
+  const c = _bqCollections()[i];
+  if (!c) return;
+  if (!Array.isArray(c.ids)) c.ids = [];
+  const k = String(id), j = c.ids.map(String).indexOf(k);
+  if (j >= 0) c.ids.splice(j, 1); else c.ids.push(k);
+  _bqSauveBoutique(); haptic('tap'); render(); _refreshBoutiqueLivePreview();
+}
+function boutiqueSupprimeCollection(i) {
+  const bc = S.boutiqueConfig;
+  const cols = _bqCollections();
+  cols.splice(i, 1);
+  // Les cles de collection sont positionnelles, comme celles des blocs :
+  // un ordre enregistre qui les nomme designerait la mauvaise collection.
+  if (Array.isArray(bc.ordreSections)) bc.ordreSections = bc.ordreSections.filter(k => !/^col\d+$/.test(k));
+  if (Array.isArray(bc.sectionsOff)) bc.sectionsOff = bc.sectionsOff.filter(k => !/^col\d+$/.test(k));
+  _bqSauveBoutique(); haptic('tap'); render(); _refreshBoutiqueLivePreview();
+}
+function boutiqueOuvreCollection(i) {
+  S.bqColOpen = (S.bqColOpen === i) ? -1 : i;
+  haptic('tap'); render();
+}
+function _bqSauveBoutique() {
+  try { localStorage.setItem('baro_boutique', JSON.stringify(S.boutiqueConfig)); } catch (_) {}
+}
+
 function boutiqueAjouteBloc() {
   const bc = S.boutiqueConfig;
   if (!Array.isArray(bc.blocs)) bc.blocs = [];
@@ -24071,7 +24163,7 @@ function generateBoutiqueSite(opts) {
   const _ruptureStyle = (_palAllowed && bc.ruptureStyle) || 'grise';
   const _ratioCss = { carre: '1/1', portrait: '3/4', paysage: '4/3' };
 
-  const prodsHTML = shopProds.map((p, idx) => {
+  const _carte = (p, idx) => {
     const M = pmeta(p.id);
     const _nom = (M.titre || '').trim() || p.name;
     const _desc = (M.desc || '').trim() || p.description;
@@ -24140,7 +24232,41 @@ function generateBoutiqueSite(opts) {
           : `<a class="pc-add order-btn" style="text-decoration:none;text-align:center" href="${waLink}?text=${encodeURIComponent(t('z5_bonjourCommander')+' : '+_nom+' — '+fmt(finalPrice)+' '+sym())}" target="_blank" rel="noopener noreferrer">${t('z5_commander')}</a>`}
       </div>
     </div>`;
-  }).join('\n');
+  };
+  const prodsHTML = shopProds.map(_carte).join('\n');
+
+  // ── Collections (plan Entreprise) ────────────────────────────────────
+  // Chaque collection reprend les memes cartes, dans sa propre grille.
+  // Un article place en collection quitte la grille principale, sauf si
+  // le commercant demande explicitement de l'y garder aussi.
+  const _cols = (_palAllowed && Array.isArray(bc.collections))
+    ? bc.collections.filter(c => c && String(c.nom || '').trim()) : [];
+  // Sections masquees : lues ici parce qu'une collection cachee ne doit pas
+  // emporter ses articles avec elle. Sans cela, masquer une collection
+  // faisait disparaitre ses produits de toute la boutique.
+  const _offSec = (_palAllowed && Array.isArray(bc.sectionsOff)) ? bc.sectionsOff.map(String) : [];
+  const _colIds = new Set();
+  const _colSecs = _cols.map((c, ci) => {
+    const ids = Array.isArray(c.ids) ? c.ids.map(String) : [];
+    const items = shopProds
+      .map((p, idx) => ({ p, idx }))
+      .filter(x => ids.includes(String(x.p.id)));
+    if (!items.length) return null;
+    if (!_offSec.includes('col' + ci)) items.forEach(x => _colIds.add(String(x.p.id)));
+    const intro = String(c.intro || '').trim();
+    return { cle: 'col' + ci, nom: String(c.nom).trim(), html: `
+<div class="sec-eyebrow reveal"><span>${esc(String(c.nom).trim())}</span></div>
+${intro ? `<p class="col-intro reveal">${esc(intro).replace(/\n/g, '<br>')}</p>` : ''}
+<div class="grid col-grid" data-col="${ci}">
+${items.map(x => _carte(x.p, x.idx)).join('\n')}
+</div>` };
+  }).filter(Boolean);
+  // Grille principale : ce qui n'est dans aucune collection
+  const _garderTout = bc.colReste === 'garder' || !_colSecs.length;
+  const prodsGrille = (_garderTout ? shopProds.map((p, idx) => ({ p, idx }))
+    : shopProds.map((p, idx) => ({ p, idx })).filter(x => !_colIds.has(String(x.p.id))))
+    .map(x => _carte(x.p, x.idx)).join('\n');
+
   // Données panier embarquées dans la page générée (id, nom, prix après promo)
   const itemsJSON = JSON.stringify(shopProds.map(p => {
     const M = pmeta(p.id);
@@ -24451,6 +24577,8 @@ ${hoverCss}
 /* ── Studio produit (plan Entreprise) ───────────────────────────────── */
 /* Accroche : une ligne courte, ecrite par le commercant, entre le nom et
    la description. Elle porte la promesse, pas la fiche technique. */
+/* Chapeau d'une collection : une ou deux phrases, pas un paragraphe */
+.col-intro{max-width:62ch;margin:-6px 0 14px;font-size:13.5px;line-height:1.6;color:var(--tx2)}
 .pc-tag{font-size:11px;font-weight:700;letter-spacing:.01em;color:${tc};
   display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
 .pc-ask{font-size:14px!important;font-weight:800;color:var(--tx)!important;letter-spacing:-.01em}
@@ -25099,7 +25227,7 @@ ${(() => {
   const SEC = {
     produits: `<div class="sec-eyebrow reveal"><span>${shopProds.length} ${shopProds.length>1?t('z3_articles'):t('z3_article')} · ${t('z4_notreSelection')}</span></div>
 <main class="grid" id="produits">
-${prodsHTML}
+${prodsGrille}
 </main>
 <div id="no-results">${t('x2_aucunProduitRech')}</div>`,
 
@@ -25153,6 +25281,8 @@ ${prodsHTML}
 </div>`:'',
   };
 
+  _colSecs.forEach(c => { SEC[c.cle] = c.html; });
+
   // Blocs libres ecrits par le commercant (plan Entreprise)
   const _blocs = (_palAllowed && Array.isArray(bc.blocs)) ? bc.blocs : [];
   _blocs.forEach((b, i) => {
@@ -25163,14 +25293,15 @@ ${prodsHTML}
 ${texte ? `<div class="about-section reveal"><p class="about-text">${esc(texte).replace(/\n/g,'<br>')}</p></div>` : ''}`;
   });
 
-  const _defaut = ['produits','etapes','services','video','apropos','avis','paiement','contact','livraison','faq']
+  const _defaut = ['produits'].concat(_colSecs.map(c => c.cle))
+    .concat(['etapes','services','video','apropos','avis','paiement','contact','livraison','faq'])
     .concat(_blocs.map((b, i) => 'bloc' + i));
   const _voulu = (_palAllowed && Array.isArray(bc.ordreSections) && bc.ordreSections.length)
     ? bc.ordreSections.filter(k => k in SEC) : [];
   // Toute section absente de l'ordre enregistre reste affichee, a sa place
   // par defaut : ajouter une section ne doit pas la faire disparaitre.
   const _ordre = _voulu.concat(_defaut.filter(k => !_voulu.includes(k)));
-  const _off = (_palAllowed && Array.isArray(bc.sectionsOff)) ? bc.sectionsOff : [];
+  const _off = _offSec;
   return _ordre.filter(k => k === 'produits' || !_off.includes(k)).map(k => SEC[k] || '').join('\n');
 })()}
 </div>
@@ -25663,15 +25794,19 @@ var baroMode=BARO_DELOFF?'pickup':'delivery';
   if(si)si.addEventListener('input',filter);
   window.baroSetCat=function(c,el){activeCat=c;document.querySelectorAll('.chip').forEach(function(x){x.classList.remove('active');});if(el)el.classList.add('active');filter();};
   window.baroSort=function(mode){
-    var grid=document.querySelector('main.grid');if(!grid)return;
-    var cards=[].slice.call(grid.querySelectorAll('.pc'));
-    cards.sort(function(a,b){
-      if(mode==='price-asc')return (+a.getAttribute('data-price'))-(+b.getAttribute('data-price'));
-      if(mode==='price-desc')return (+b.getAttribute('data-price'))-(+a.getAttribute('data-price'));
-      if(mode==='name')return (a.getAttribute('data-name')||'').localeCompare(b.getAttribute('data-name')||'');
-      return (+a.getAttribute('data-idx'))-(+b.getAttribute('data-idx'));
+    // Les collections ont leur propre grille : on trie chacune sur place,
+    // sinon seule la grille principale aurait obei au menu de tri.
+    [].slice.call(document.querySelectorAll('.grid')).forEach(function(grid){
+      var cards=[].slice.call(grid.querySelectorAll('.pc'));
+      if(!cards.length)return;
+      cards.sort(function(a,b){
+        if(mode==='price-asc')return (+a.getAttribute('data-price'))-(+b.getAttribute('data-price'));
+        if(mode==='price-desc')return (+b.getAttribute('data-price'))-(+a.getAttribute('data-price'));
+        if(mode==='name')return (a.getAttribute('data-name')||'').localeCompare(b.getAttribute('data-name')||'');
+        return (+a.getAttribute('data-idx'))-(+b.getAttribute('data-idx'));
+      });
+      cards.forEach(function(c){grid.appendChild(c);});
     });
-    cards.forEach(function(c){grid.appendChild(c);});
   };
   function filter(){
     var q=(si?si.value:'').toLowerCase().trim(),any=false;
@@ -26403,14 +26538,17 @@ function vBoutiqueEditor() {
     <div class="bq-prod-list">
       ${_ordreBq.map((k, i) => {
         const bloc = /^bloc(\d+)$/.exec(k);
-        const nom = bloc ? ((_blocsBq[+bloc[1]] || {}).titre || '').trim() || t('z7_blocSansTitre') : (_NOMS_SEC[k] || k);
+        const col = /^col(\d+)$/.exec(k);
+        const nom = bloc ? ((_blocsBq[+bloc[1]] || {}).titre || '').trim() || t('z7_blocSansTitre')
+          : col ? (((bc.collections || [])[+col[1]] || {}).nom || '').trim()
+          : (_NOMS_SEC[k] || k);
         const off = _offBq.includes(k);
         return `
       <div class="bq-prod-row${off ? ' bq-sec-off' : ''}">
         <div class="bq-sec-num">${i + 1}</div>
         <div style="flex:1;min-width:0">
           <div class="bq-prod-name">${nom}</div>
-          <div class="bq-prod-meta">${bloc ? t('z7_blocLibre') : (off ? t('z7_masquee') : t('z7_visible'))}</div>
+          <div class="bq-prod-meta">${bloc ? t('z7_blocLibre') : col ? t('z8_collection') : (off ? t('z7_masquee') : t('z7_visible'))}</div>
         </div>
         <div class="bq-prod-arrows">
           <button class="bq-arrow ${off ? '' : 'bq-arrow-perso on'}" onclick="boutiqueToggleSection('${k}')"
@@ -26513,9 +26651,62 @@ function vBoutiqueEditor() {
     </div>`;
   };
 
+  // ── Collections : groupes nommes, avec leur chapeau et leur grille ──
+  const _colsBq = Array.isArray(bc.collections) ? bc.collections : [];
+  const _colOuv = (typeof S.bqColOpen === 'number') ? S.bqColOpen : -1;
+  const _dejaEnCol = new Set();
+  _colsBq.forEach(c => (c && Array.isArray(c.ids) ? c.ids : []).forEach(id => _dejaEnCol.add(String(id))));
+
+  const collectionsUI = !_entProd ? `
+    <div class="bq-sec-title">${t('z8_collections')}</div>
+    <div class="bq-lock" onclick="nav('pricing')">
+      <div class="bq-lock-tx"><strong>${t('z8_lockTitre')}</strong><span>${t('z8_lockTx')}</span></div>
+    </div>` : `
+    <div class="bq-sec-title">${t('z8_collections')} <span class="bq-badge-ent">Entreprise</span></div>
+    <div class="bq-hint2" style="margin:-4px 0 8px">${t('z8_collectionsAide')}</div>
+    ${_colsBq.map((c, i) => {
+      const nom = String(c && c.nom || '').trim();
+      const ids = (c && Array.isArray(c.ids)) ? c.ids.map(String) : [];
+      const ouvert = _colOuv === i;
+      return `
+      <div class="bq-prod-row${ids.length ? ' bq-prod-perso' : ''}">
+        <div class="bq-sec-num">${i + 1}</div>
+        <div style="flex:1;min-width:0">
+          <div class="bq-prod-name">${nom || t('z8_sansNom')}</div>
+          <div class="bq-prod-meta">${ids.length ? t('z8_nbArticles').replace('{0}', ids.length) : t('z8_aucunArticle')}</div>
+        </div>
+        <div class="bq-prod-arrows">
+          <button class="bq-arrow bq-arrow-perso ${ouvert ? 'on' : ''}" onclick="boutiqueOuvreCollection(${i})" title="${t('z5_personnaliser')}">✎</button>
+        </div>
+      </div>
+      ${ouvert ? `<div class="bq-perso">
+        <div class="bq-fld bq-fld-large"><label>${t('z8_nomCollection')}</label>
+          <input class="input" type="text" value="${_att(nom)}" placeholder="${_att(t('z8_nomCollectionPl'))}"
+                 onchange="boutiqueSetCollection(${i},'nom',this.value)"></div>
+        <div class="bq-fld bq-fld-large"><label>${t('z8_introCollection')}</label>
+          <textarea class="input" rows="2" placeholder="${_att(t('z8_introCollectionPl'))}"
+                    onchange="boutiqueSetCollection(${i},'intro',this.value)">${_att(String(c && c.intro || ''))}</textarea></div>
+        <div class="bq-fld bq-fld-large"><label>${t('z8_articlesDedans')}</label>
+          <div class="bq-col-pick">${ordered.map(pr => {
+            const dans = ids.includes(String(pr.id));
+            return `<button class="bq-col-chip ${dans ? 'on' : ''}"
+              onclick="boutiqueToggleProdCollection(${i},'${_pid(pr.id)}')">${dans ? '✓ ' : ''}${(( (_pmeta[String(pr.id)]||{}).titre || '').trim() || pr.name)}</button>`;
+          }).join('')}</div></div>
+        <button class="bq-perso-reset" onclick="boutiqueSupprimeCollection(${i})">${t('z8_supprimerCollection')}</button>
+      </div>` : ''}`;
+    }).join('')}
+    <button class="btn btn-ghost" style="margin-bottom:4px" onclick="boutiqueAjouteCollection()">+ ${t('z8_ajouterCollection')}</button>
+    ${_dejaEnCol.size ? `
+    <div class="bq-fld bq-fld-large" style="margin-top:9px"><label>${t('z8_articlesRestants')}</label>
+      <select class="input" onchange="boutiqueEditSet('colReste',this.value)">
+        ${[['retirer', t('z8_resteRetirer')], ['garder', t('z8_resteGarder')]]
+          .map(o => `<option value="${o[0]}" ${g('colReste','retirer')===o[0]?'selected':''}>${o[1]}</option>`).join('')}
+      </select></div>` : ''}`;
+
   const productsTab = `
+    ${collectionsUI}
     ${_entProd ? `
-    <div class="bq-sec-title">${t('z5_cartesProduits')} <span class="bq-badge-ent">Entreprise</span></div>
+    <div class="bq-sec-title" style="margin-top:14px">${t('z5_cartesProduits')} <span class="bq-badge-ent">Entreprise</span></div>
     <div class="bq-studio">
       <div class="bq-fld"><label>${t('z5_typoPrix')}</label>
         <select class="input" onchange="boutiqueEditSet('prixStyle',this.value)">

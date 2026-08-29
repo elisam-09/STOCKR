@@ -5468,6 +5468,30 @@ body.vt-active .card { animation: none !important; }
 .bq-sec-off { opacity: .5; }
 .bq-sec-off .bq-prod-name { text-decoration: line-through; }
 
+/* ── Collections : choix des articles par pastilles ───────────────── */
+.bq-col-pick { display: flex; flex-wrap: wrap; gap: 6px; }
+.bq-col-chip {
+  max-width: 100%;
+  padding: 6px 11px;
+  border: 1.5px solid var(--border);
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--text-2);
+  font-family: inherit;
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 1.3;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color .16s, background .16s, color .16s;
+}
+.bq-col-chip.on {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, var(--card));
+  color: var(--text-1);
+  font-weight: 700;
+}
+
 /* ── Prévision de demande (plan Entreprise) ─────────────────────────── */
 .pv-week { display: flex; align-items: flex-end; gap: 6px; height: 92px; }
 .pv-day { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; justify-content: flex-end; }
