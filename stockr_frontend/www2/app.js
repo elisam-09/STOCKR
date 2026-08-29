@@ -270,6 +270,39 @@ const API_BASE = (location.hostname === 'localhost' || location.hostname === '12
 // ── i18n ─────────────────────────────────────
 const LANGS = {
   fr: {
+    z7_composeur: "Composition de la page",
+    z7_composeurAide: "Déplacez les sections, masquez celles qui ne vous servent pas. La grille de produits reste toujours affichée.",
+    z7_lockTitre: "Composition de la page réservée au plan Entreprise",
+    z7_lockTx: "Choisir l'ordre des sections, en masquer, et ajouter jusqu'à six blocs de texte à vous — histoire de la maison, engagement qualité, conditions. Voir les plans →",
+    z7_secProduits: "Grille de produits",
+    z7_secEtapes: "Comment ça marche",
+    z7_secServices: "Bandeau de services",
+    z7_secVideo: "Vidéo",
+    z7_secApropos: "À propos",
+    z7_secAvis: "Avis clients",
+    z7_secPaiement: "Moyens de paiement",
+    z7_secContact: "Contact",
+    z7_secLivraison: "Livraison et retrait",
+    z7_secFaq: "Questions fréquentes",
+    z7_visible: "Affichée",
+    z7_masquee: "Masquée",
+    z7_afficher: "Afficher",
+    z7_masquer: "Masquer",
+    z7_blocLibre: "Bloc à vous",
+    z7_blocSansTitre: "Bloc sans titre",
+    z7_blocsLibres: "Vos propres blocs",
+    z7_blocsAide: "Un titre et un texte, placés où vous voulez dans la page. Six au maximum.",
+    z7_titreBloc: "Titre du bloc",
+    z7_titreBlocPl: "Notre engagement",
+    z7_texteBloc: "Texte",
+    z7_texteBlocPl: "Ce que vous voulez dire à vos clients, en quelques lignes.",
+    z7_supprimerBloc: "Supprimer ce bloc",
+    z7_ajouterBloc: "Ajouter un bloc",
+    z7_maxBlocs: "Six blocs au maximum",
+    z7_produitsObligatoire: "La grille de produits ne peut pas être masquée",
+    z7_zonesLivraison: "Zones de livraison",
+    z7_titreAccroche: "Titre d'accroche",
+    z7_sousTitre: "Sous-titre",
     z6_clairSombre: "Clair et sombre",
     z6_modeAffichage: "Qui décide de la couleur de fond",
     z6_modeFixe: "Vous — la palette choisie, pour tous",
@@ -1732,6 +1765,39 @@ const LANGS = {
     version:'Version',
   },
   en: {
+    z7_composeur: "Page composition",
+    z7_composeurAide: "Move sections around, hide the ones you don't need. The product grid always stays.",
+    z7_lockTitre: "Page composition, Enterprise plan only",
+    z7_lockTx: "Choose the order of your sections, hide any of them, and add up to six blocks of your own text — your story, your quality promise, your terms. See the plans →",
+    z7_secProduits: "Product grid",
+    z7_secEtapes: "How it works",
+    z7_secServices: "Services strip",
+    z7_secVideo: "Video",
+    z7_secApropos: "About",
+    z7_secAvis: "Customer reviews",
+    z7_secPaiement: "Payment methods",
+    z7_secContact: "Contact",
+    z7_secLivraison: "Delivery and pickup",
+    z7_secFaq: "FAQ",
+    z7_visible: "Shown",
+    z7_masquee: "Hidden",
+    z7_afficher: "Show",
+    z7_masquer: "Hide",
+    z7_blocLibre: "Your own block",
+    z7_blocSansTitre: "Untitled block",
+    z7_blocsLibres: "Your own blocks",
+    z7_blocsAide: "A heading and some text, placed wherever you like on the page. Six at most.",
+    z7_titreBloc: "Block heading",
+    z7_titreBlocPl: "Our promise",
+    z7_texteBloc: "Text",
+    z7_texteBlocPl: "What you want to tell your customers, in a few lines.",
+    z7_supprimerBloc: "Delete this block",
+    z7_ajouterBloc: "Add a block",
+    z7_maxBlocs: "Six blocks at most",
+    z7_produitsObligatoire: "The product grid cannot be hidden",
+    z7_zonesLivraison: "Delivery areas",
+    z7_titreAccroche: "Headline",
+    z7_sousTitre: "Subheading",
     z6_clairSombre: "Light and dark",
     z6_modeAffichage: "Who decides the background",
     z6_modeFixe: "You — the chosen palette, for everyone",
@@ -23497,6 +23563,66 @@ function boutiqueEditSetPmeta(id, cle, val) {
   render();
   _refreshBoutiqueLivePreview();
 }
+// ── Composeur de page : ordre, visibilite et blocs libres ─────────────
+// L'ordre par defaut sert de reference : une section jamais deplacee garde
+// sa place, et une section ajoutee plus tard apparait sans rien casser.
+const BQ_SECTIONS_DEFAUT = ['produits','etapes','services','video','apropos','avis','paiement','contact','livraison','faq'];
+
+function _bqOrdreSections() {
+  const bc = S.boutiqueConfig;
+  const blocs = Array.isArray(bc.blocs) ? bc.blocs : [];
+  const tout = BQ_SECTIONS_DEFAUT.concat(blocs.map((b, i) => 'bloc' + i));
+  const enregistre = Array.isArray(bc.ordreSections) ? bc.ordreSections.filter(k => tout.includes(k)) : [];
+  return enregistre.concat(tout.filter(k => !enregistre.includes(k)));
+}
+function boutiqueDeplaceSection(cle, sens) {
+  const bc = S.boutiqueConfig;
+  const o = _bqOrdreSections();
+  const i = o.indexOf(cle), j = i + sens;
+  if (i < 0 || j < 0 || j >= o.length) return;
+  o.splice(j, 0, o.splice(i, 1)[0]);
+  bc.ordreSections = o;
+  try { localStorage.setItem('baro_boutique', JSON.stringify(bc)); } catch (_) {}
+  haptic('tap'); render(); _refreshBoutiqueLivePreview();
+}
+function boutiqueToggleSection(cle) {
+  const bc = S.boutiqueConfig;
+  // La grille de produits est la boutique : la masquer laisserait une page vide.
+  if (cle === 'produits') { showToast(t('z7_produitsObligatoire')); return; }
+  const off = Array.isArray(bc.sectionsOff) ? bc.sectionsOff.slice() : [];
+  const i = off.indexOf(cle);
+  if (i >= 0) off.splice(i, 1); else off.push(cle);
+  bc.sectionsOff = off;
+  try { localStorage.setItem('baro_boutique', JSON.stringify(bc)); } catch (_) {}
+  haptic('tap'); render(); _refreshBoutiqueLivePreview();
+}
+function boutiqueAjouteBloc() {
+  const bc = S.boutiqueConfig;
+  if (!Array.isArray(bc.blocs)) bc.blocs = [];
+  if (bc.blocs.length >= 6) { showToast(t('z7_maxBlocs')); return; }
+  bc.blocs.push({ titre: '', texte: '' });
+  try { localStorage.setItem('baro_boutique', JSON.stringify(bc)); } catch (_) {}
+  haptic('tap'); render(); _refreshBoutiqueLivePreview();
+}
+function boutiqueSetBloc(i, champ, val) {
+  const bc = S.boutiqueConfig;
+  if (!Array.isArray(bc.blocs) || !bc.blocs[i]) return;
+  bc.blocs[i][champ] = val;
+  try { localStorage.setItem('baro_boutique', JSON.stringify(bc)); } catch (_) {}
+  _refreshBoutiqueLivePreview();
+}
+function boutiqueSupprimeBloc(i) {
+  const bc = S.boutiqueConfig;
+  if (!Array.isArray(bc.blocs)) return;
+  bc.blocs.splice(i, 1);
+  // Les cles des blocs sont positionnelles : un ordre enregistre qui les
+  // nomme deviendrait faux apres suppression. On le purge de ces cles.
+  if (Array.isArray(bc.ordreSections)) bc.ordreSections = bc.ordreSections.filter(k => !/^bloc\d+$/.test(k));
+  if (Array.isArray(bc.sectionsOff)) bc.sectionsOff = bc.sectionsOff.filter(k => !/^bloc\d+$/.test(k));
+  try { localStorage.setItem('baro_boutique', JSON.stringify(bc)); } catch (_) {}
+  haptic('tap'); render(); _refreshBoutiqueLivePreview();
+}
+
 function boutiqueProdOuvre(id) {
   S.bqProdOpen = (S.bqProdOpen === String(id)) ? '' : String(id);
   haptic('tap');
@@ -24951,15 +25077,10 @@ ${_cinemaHTML ? `<script>(function(){
 </div>
 <div class="container">
 ${cc.body || ''}
-<div class="sec-eyebrow reveal"><span>${shopProds.length} ${shopProds.length>1?t('z3_articles'):t('z3_article')} · ${t('z4_notreSelection')}</span></div>
-<main class="grid" id="produits">
-${prodsHTML}
-</main>
-<div id="no-results">${t('x2_aucunProduitRech')}</div>
 ${(() => {
-  // Parcours de commande decrit a partir de la configuration reelle de la
-  // boutique. Beaucoup de clients ne devinent pas que la commande part sur
-  // WhatsApp : l'ecrire supprime le principal point de friction.
+  // ── Composeur de page (plan Entreprise) ─────────────────────────────
+  // Chaque section est construite une fois, puis emise dans l'ordre voulu.
+  // Sans plan Entreprise, c'est l'ordre par defaut, soit le rendu d'avant.
   const _z = (bc.deliveryZones || []).filter(Boolean).map(z => esc(z));
   const _etapes = [
     [t('z4_etChoisissez'), t('z4_etChoisissezTx')],
@@ -24974,41 +25095,84 @@ ${(() => {
           ? [t('z4_etRetirez'), `${t('z4_surPlace')} : ${esc(_pickupAddr)}`]
           : [t('z4_etRecevez'), t('z4_etRecontact')])
   ];
-  return `<div class="sec-eyebrow reveal"><span>${t('x2_commentCaMarche3')}</span></div>
+
+  const SEC = {
+    produits: `<div class="sec-eyebrow reveal"><span>${shopProds.length} ${shopProds.length>1?t('z3_articles'):t('z3_article')} · ${t('z4_notreSelection')}</span></div>
+<main class="grid" id="produits">
+${prodsHTML}
+</main>
+<div id="no-results">${t('x2_aucunProduitRech')}</div>`,
+
+    // Beaucoup de clients ne devinent pas que la commande part sur WhatsApp :
+    // l'ecrire supprime le principal point de friction.
+    etapes: `<div class="sec-eyebrow reveal"><span>${t('x2_commentCaMarche3')}</span></div>
 <ol class="howto reveal">${_etapes.map((e, i) => `
   <li class="howto-step">
     <span class="howto-num">${i + 1}</span>
     <div class="howto-body"><strong>${e[0]}</strong><span>${e[1]}</span></div>
-  </li>`).join('')}</ol>`;
-})()}
-${_servicesArr.length>0?`<div class="svc-strip reveal">${_servicesArr.map(s=>`<div class="svc-item">${esc(s)}</div>`).join('')}</div>`:''}
-${midVideoHTML}
-${_aboutText?`<div class="sec-eyebrow reveal"><span>${t('x2_laMaison')}</span></div>
+  </li>`).join('')}</ol>`,
+
+    services: _servicesArr.length>0?`<div class="svc-strip reveal">${_servicesArr.map(x=>`<div class="svc-item">${esc(x)}</div>`).join('')}</div>`:'',
+
+    video: midVideoHTML,
+
+    apropos: _aboutText?`<div class="sec-eyebrow reveal"><span>${t('x2_laMaison')}</span></div>
 <div class="about-section reveal" id="apropos">
   <div class="pay-section-title">${t('x2_apropos')}</div>
   <p class="about-text">${esc(_aboutText).replace(/\n/g,'<br>')}</p>
-</div>`:''}
-${showReviews ? reviewsHTML : ''}
-<div class="pay-section reveal">
+</div>`:'',
+
+    avis: showReviews ? reviewsHTML : '',
+
+    paiement: `<div class="pay-section reveal">
   <div class="pay-section-title">${t('w8_moyensAcceptes')}</div>
   <div class="pay-badges">${payHTML}</div>
-</div>
-${_hasContact?`<div class="sec-eyebrow reveal"><span>${t('z4_nousJoindre')}</span></div>
+</div>`,
+
+    contact: _hasContact?`<div class="sec-eyebrow reveal"><span>${t('z4_nousJoindre')}</span></div>
 <div class="contact-section reveal" id="contact">
-  <div class="pay-section-title">Contact</div>
+  <div class="pay-section-title">${t('z4_navContact')}</div>
   <div class="contact-rows">
     ${_ctPhone?`<a class="contact-row" href="tel:${esc(_ctPhone.replace(/\s/g,''))}"><span>📞</span><span>${esc(_ctPhone)}</span></a>`:''}
     ${_ctEmail?`<a class="contact-row" href="mailto:${esc(_ctEmail)}"><span>✉️</span><span>${esc(_ctEmail)}</span></a>`:''}
     ${_ctAddress?`<div class="contact-row"><span>📍</span><span>${esc(_ctAddress)}</span></div>`:''}
     ${waNum?`<a class="contact-row" href="${waLink}" target="_blank" rel="noopener noreferrer"><span>💬</span><span>${t('x2_ecrireSurWa')}</span></a>`:''}
   </div>
-</div>`:''}
-${(bc.deliveryZones||[]).length>0 && !_deliveryOff?`<div class="delivery-info reveal">🏙️ Zones de livraison : ${(bc.deliveryZones||[]).join(' • ')}</div>`:''}
-${_deliveryOff && _pickupEnabled?`<div class="delivery-info reveal">🏬 ${t('z4_retraitUniquement')} — 📍 ${esc(_pickupAddr)}${_pickupHours?` · 🕒 ${esc(_pickupHours)}`:''} · <a href="${esc(_pickupMap)}" target="_blank" rel="noopener" style="font-weight:700">${t('x2_itineraire2')}</a></div>`:''}
-${(bc.faqs||[]).length>0?`<div class="pay-section reveal" style="text-align:left">
+</div>`:'',
+
+    livraison: ((bc.deliveryZones||[]).length>0 && !_deliveryOff
+        ? `<div class="delivery-info reveal">🏙️ ${t('z7_zonesLivraison')} : ${(bc.deliveryZones||[]).map(z=>esc(z)).join(' • ')}</div>`
+        : '')
+      + (_deliveryOff && _pickupEnabled
+        ? `<div class="delivery-info reveal">🏬 ${t('z4_retraitUniquement')} — 📍 ${esc(_pickupAddr)}${_pickupHours?` · 🕒 ${esc(_pickupHours)}`:''} · <a href="${esc(_pickupMap)}" target="_blank" rel="noopener" style="font-weight:700">${t('x2_itineraire2')}</a></div>`
+        : ''),
+
+    faq: (bc.faqs||[]).length>0?`<div class="pay-section reveal" style="text-align:left">
   <div class="pay-section-title" style="text-align:center">${t('x2_questionsFreq')}</div>
-  ${(bc.faqs||[]).map(f=>`<details style="padding:10px 4px;border-bottom:1px solid #F2F2F5"><summary style="font-weight:700;font-size:13.5px;cursor:pointer">${esc(f.q||f.question||'')}</summary><div style="font-size:13px;color:#666;line-height:1.6;padding:8px 2px 2px">${esc(f.a||f.answer||'')}</div></details>`).join('')}
-</div>`:''}
+  ${(bc.faqs||[]).map(q=>`<details style="padding:10px 4px;border-bottom:1px solid var(--bd)"><summary style="font-weight:700;font-size:13.5px;cursor:pointer">${esc(q.q||q.question||'')}</summary><div style="font-size:13px;color:var(--tx2);line-height:1.6;padding:8px 2px 2px">${esc(q.a||q.answer||'')}</div></details>`).join('')}
+</div>`:'',
+  };
+
+  // Blocs libres ecrits par le commercant (plan Entreprise)
+  const _blocs = (_palAllowed && Array.isArray(bc.blocs)) ? bc.blocs : [];
+  _blocs.forEach((b, i) => {
+    const titre = String(b && b.titre || '').trim();
+    const texte = String(b && b.texte || '').trim();
+    if (!titre && !texte) return;
+    SEC['bloc' + i] = `${titre ? `<div class="sec-eyebrow reveal"><span>${esc(titre)}</span></div>` : ''}
+${texte ? `<div class="about-section reveal"><p class="about-text">${esc(texte).replace(/\n/g,'<br>')}</p></div>` : ''}`;
+  });
+
+  const _defaut = ['produits','etapes','services','video','apropos','avis','paiement','contact','livraison','faq']
+    .concat(_blocs.map((b, i) => 'bloc' + i));
+  const _voulu = (_palAllowed && Array.isArray(bc.ordreSections) && bc.ordreSections.length)
+    ? bc.ordreSections.filter(k => k in SEC) : [];
+  // Toute section absente de l'ordre enregistre reste affichee, a sa place
+  // par defaut : ajouter une section ne doit pas la faire disparaitre.
+  const _ordre = _voulu.concat(_defaut.filter(k => !_voulu.includes(k)));
+  const _off = (_palAllowed && Array.isArray(bc.sectionsOff)) ? bc.sectionsOff : [];
+  return _ordre.filter(k => k === 'produits' || !_off.includes(k)).map(k => SEC[k] || '').join('\n');
+})()}
 </div>
 ${bannerHTML(bottomBanner, 'bottom')}
 ${popupHTML}
@@ -26217,11 +26381,66 @@ function vBoutiqueEditor() {
       }).join('')}
     </div>`;
 
+  // ── Composeur de page : l'ordre et la visibilite des sections ────────
+  const _entProd = (typeof _planHasFeature === 'function') && _planHasFeature('whiteLabel');
+  const _NOMS_SEC = {
+    produits: t('z7_secProduits'), etapes: t('z7_secEtapes'), services: t('z7_secServices'),
+    video: t('z7_secVideo'), apropos: t('z7_secApropos'), avis: t('z7_secAvis'),
+    paiement: t('z7_secPaiement'), contact: t('z7_secContact'),
+    livraison: t('z7_secLivraison'), faq: t('z7_secFaq'),
+  };
+  const _blocsBq = Array.isArray(bc.blocs) ? bc.blocs : [];
+  const _offBq = Array.isArray(bc.sectionsOff) ? bc.sectionsOff : [];
+  const _ordreBq = _entProd ? _bqOrdreSections() : [];
+
+  const composeur = !_entProd ? `
+    <div class="bq-sec-title">${t('z7_composeur')}</div>
+    <div class="bq-lock" onclick="nav('pricing')">
+      <div class="bq-lock-tx"><strong>${t('z7_lockTitre')}</strong><span>${t('z7_lockTx')}</span></div>
+    </div>` : `
+    <div class="bq-sec-title">${t('z7_composeur')} <span class="bq-badge-ent">Entreprise</span></div>
+    <div class="bq-hint2" style="margin:-4px 0 8px">${t('z7_composeurAide')}</div>
+    <div class="bq-prod-list">
+      ${_ordreBq.map((k, i) => {
+        const bloc = /^bloc(\d+)$/.exec(k);
+        const nom = bloc ? ((_blocsBq[+bloc[1]] || {}).titre || '').trim() || t('z7_blocSansTitre') : (_NOMS_SEC[k] || k);
+        const off = _offBq.includes(k);
+        return `
+      <div class="bq-prod-row${off ? ' bq-sec-off' : ''}">
+        <div class="bq-sec-num">${i + 1}</div>
+        <div style="flex:1;min-width:0">
+          <div class="bq-prod-name">${nom}</div>
+          <div class="bq-prod-meta">${bloc ? t('z7_blocLibre') : (off ? t('z7_masquee') : t('z7_visible'))}</div>
+        </div>
+        <div class="bq-prod-arrows">
+          <button class="bq-arrow ${off ? '' : 'bq-arrow-perso on'}" onclick="boutiqueToggleSection('${k}')"
+                  title="${off ? t('z7_afficher') : t('z7_masquer')}">${off ? '○' : '●'}</button>
+          <button class="bq-arrow" ${i===0?'disabled':''} onclick="boutiqueDeplaceSection('${k}',-1)" title="${t('z5_monter')}">▲</button>
+          <button class="bq-arrow" ${i===_ordreBq.length-1?'disabled':''} onclick="boutiqueDeplaceSection('${k}',1)" title="${t('z5_descendre')}">▼</button>
+        </div>
+      </div>`;
+      }).join('')}
+    </div>
+
+    <div class="bq-sec-title" style="margin-top:14px">${t('z7_blocsLibres')}</div>
+    <div class="bq-hint2" style="margin:-4px 0 8px">${t('z7_blocsAide')}</div>
+    ${_blocsBq.map((b, i) => `
+    <div class="bq-perso" style="border-top:1.5px solid var(--accent);border-radius:12px;margin-bottom:9px">
+      <div class="bq-fld bq-fld-large"><label>${t('z7_titreBloc')} ${i + 1}</label>
+        <input class="input" type="text" value="${String(b.titre||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;')}"
+               placeholder="${t('z7_titreBlocPl')}" oninput="boutiqueSetBloc(${i},'titre',this.value)"></div>
+      <div class="bq-fld bq-fld-large"><label>${t('z7_texteBloc')}</label>
+        <textarea class="input" rows="3" placeholder="${t('z7_texteBlocPl')}" oninput="boutiqueSetBloc(${i},'texte',this.value)">${String(b.texte||'').replace(/&/g,'&amp;').replace(/</g,'&lt;')}</textarea></div>
+      <button class="bq-perso-reset" onclick="boutiqueSupprimeBloc(${i})">${t('z7_supprimerBloc')}</button>
+    </div>`).join('')}
+    <button class="btn btn-ghost" style="margin-bottom:4px" onclick="boutiqueAjouteBloc()">+ ${t('z7_ajouterBloc')}</button>`;
+
   const contentTab = `
-    <div class="bq-sec-title">Titre d'accroche</div>
+    ${composeur}
+    <div class="bq-sec-title" style="margin-top:14px">${t('z7_titreAccroche')}</div>
     <input class="input" value="${(bc.heroTitle||'').replace(/"/g,'&quot;')}" placeholder="${(bc.name||'Ma Boutique').replace(/"/g,'&quot;')}" oninput="boutiqueEditText('heroTitle',this.value)">
-    <div class="bq-sec-title">Sous-titre</div>
-    <input class="input" value="${(bc.heroSubtitle||'').replace(/"/g,'&quot;')}" placeholder="Bienvenue ! Découvrez nos produits…" oninput="boutiqueEditText('heroSubtitle',this.value)">
+    <div class="bq-sec-title">${t('z7_sousTitre')}</div>
+    <input class="input" value="${(bc.heroSubtitle||'').replace(/"/g,'&quot;')}" placeholder="${t('z4_heroSub').replace(/"/g,'&quot;')}" oninput="boutiqueEditText('heroSubtitle',this.value)">
     <div class="bq-sec-title">Bandeau d'annonce (haut de page)</div>
     <input class="input" value="${(bc.announceText||'').replace(/"/g,'&quot;')}" placeholder="ex : 🚚 Livraison gratuite dès 25 000 FCFA" oninput="boutiqueEditText('announceText',this.value)">
     <div class="bq-sec-title">${t('x2_texteBoutonCmd')}</div>
@@ -26250,7 +26469,6 @@ function vBoutiqueEditor() {
     <div style="font-size:11px;color:var(--text-3);margin-top:12px;line-height:1.5">💡 Laissez vide pour masquer une section. Le nom et la description de la boutique se modifient dans l'onglet principal Boutique.</div>`;
 
   // ── Onglet Produits : ordre + studio produit (personnalisation par article) ──
-  const _entProd = (typeof _planHasFeature === 'function') && _planHasFeature('whiteLabel');
   const _pmeta = (S.boutiqueConfig.pmeta && typeof S.boutiqueConfig.pmeta === 'object') ? S.boutiqueConfig.pmeta : {};
   const _att = v => String(v == null ? '' : v).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
   const _ouvert = String(S.bqProdOpen || '');

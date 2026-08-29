@@ -5450,6 +5450,24 @@ body.vt-active .card { animation: none !important; }
 .bq-arrow-perso.on { background: var(--accent); color: #fff; border-color: var(--accent); }
 .bq-prod-perso { border-color: var(--accent); }
 
+/* ── Composeur de page : ordre et visibilité des sections ─────────── */
+.bq-sec-num {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: 7px;
+  background: var(--gray-1);
+  border: 1px solid var(--border);
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--text-3);
+  font-variant-numeric: tabular-nums;
+}
+.bq-sec-off { opacity: .5; }
+.bq-sec-off .bq-prod-name { text-decoration: line-through; }
+
 /* ── Prévision de demande (plan Entreprise) ─────────────────────────── */
 .pv-week { display: flex; align-items: flex-end; gap: 6px; height: 92px; }
 .pv-day { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; justify-content: flex-end; }
