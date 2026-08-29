@@ -270,6 +270,15 @@ const API_BASE = (location.hostname === 'localhost' || location.hostname === '12
 // ── i18n ─────────────────────────────────────
 const LANGS = {
   fr: {
+    z6_clairSombre: "Clair et sombre",
+    z6_modeAffichage: "Qui décide de la couleur de fond",
+    z6_modeFixe: "Vous — la palette choisie, pour tous",
+    z6_modeAuto: "Le visiteur — selon son téléphone",
+    z6_modeChoix: "Le visiteur, avec un bouton pour changer",
+    z6_modeAide: "En « auto », la boutique s'affiche en sombre chez un visiteur dont le téléphone est en sombre. Avec le bouton, il peut forcer l'un ou l'autre — son choix est retenu.",
+    z6_versionClaire: "Version claire de la paire",
+    z6_versionClaireAide: "Votre palette Nuit sert de version sombre. Choisissez celle qui lui répond en clair.",
+    z6_basculerTheme: "Changer de thème",
     z5_prixSurDemande: "Prix sur demande",
     z5_populaire: "Populaire",
     z5_nouveau: "Nouveau",
@@ -1723,6 +1732,15 @@ const LANGS = {
     version:'Version',
   },
   en: {
+    z6_clairSombre: "Light and dark",
+    z6_modeAffichage: "Who decides the background",
+    z6_modeFixe: "You — the chosen palette, for everyone",
+    z6_modeAuto: "The visitor — following their phone",
+    z6_modeChoix: "The visitor, with a button to switch",
+    z6_modeAide: "On “auto”, the shop shows dark to a visitor whose phone is set to dark. With the button they can force either one — their choice is remembered.",
+    z6_versionClaire: "Light half of the pair",
+    z6_versionClaireAide: "Your Night palette is the dark half. Pick the light one that answers it.",
+    z6_basculerTheme: "Switch theme",
     z5_prixSurDemande: "Price on request",
     z5_populaire: "Popular",
     z5_nouveau: "New",
@@ -19810,7 +19828,7 @@ function vSettings() {
       <div class="card" style="padding:14px">
         <div class="form-group">
           <label class="form-label">${t('name')}</label>
-          <input class="input" id="set-name" type="text" value="${S.session.name.replace(/"/g,'&quot;')}">
+          <input class="input" id="set-name" type="text" value="${(S.session.name||'').replace(/"/g,'&quot;')}">
         </div>
         <div class="form-group">
           <label class="form-label">${t('business')}</label>
@@ -19818,7 +19836,7 @@ function vSettings() {
         </div>
         <div class="form-group">
           <label class="form-label">Email</label>
-          <input class="input" id="set-email" type="email" value="${S.session.email.replace(/"/g,'&quot;')}">
+          <input class="input" id="set-email" type="email" value="${(S.session.email||'').replace(/"/g,'&quot;')}">
         </div>
         <div style="display:flex;gap:8px;margin-top:4px">
           <button class="btn btn-primary" style="flex:1" onclick="saveAccountInfo()">${t('save')}</button>
@@ -19831,7 +19849,7 @@ function vSettings() {
           <div class="settings-row-inner">
             <span class="settings-row-ico">${IC.user}</span>
             <div>
-              <div class="settings-row-lbl">${S.session.name}</div>
+              <div class="settings-row-lbl">${S.session.name || S.session.business || t('myAccount')}</div>
               <div class="settings-row-sub">${S.session.business || t('business')}</div>
             </div>
           </div>
@@ -23618,8 +23636,18 @@ function generateBoutiqueSite(opts) {
   const PAL = PALETTES[_palName];
   // Le fond reste celui du commercant tant qu'il n'a pas choisi de palette
   const _bgFinal = (_palAllowed && PALETTES[bc.palette]) ? PAL.bg : pageBg;
-  // Contrepartie pour le bouton clair/sombre offert au visiteur
-  const _palAlt = PAL.sombre ? (_palName === 'nuit' && bc.paletteLight === 'creme' ? 'creme' : 'clair') : 'nuit';
+  // ── Clair / sombre au choix du visiteur (plan Entreprise) ────────────
+  // 'fixe'  : la palette du commercant, pour tout le monde (comportement
+  //           d'origine, toujours par defaut) ;
+  // 'auto'  : la boutique suit le reglage systeme du visiteur ;
+  // 'choix' : auto, plus un bouton dans l'en-tete pour forcer l'un ou l'autre.
+  const _themeMode = (_palAllowed && ['auto', 'choix'].includes(bc.themeMode)) ? bc.themeMode : 'fixe';
+  const _palClair  = PAL.sombre ? PALETTES[bc.paletteLight === 'creme' ? 'creme' : 'clair'] : PAL;
+  const _palSombre = PAL.sombre ? PAL : PALETTES.nuit;
+  // Jetons d'une palette. Le fond du commercant ne prime que dans le mode
+  // fixe : en clair/sombre, chaque cote doit garder son propre fond.
+  const _jetons = (P, bg) => `--bg:${bg || P.bg};--surface:${P.surface};--tx:${P.text};--tx2:${P.text2};`
+    + `--bd:${P.border};--sh:${P.shadow};--field:${P.field};--pill:${P.pill};--pillTx:${P.pillText}`;
   const headingFont= bc.headingFont || bc.fontFamily || 'Inter';
   const bodyFont   = bc.bodyFont || bc.fontFamily || 'Inter';
   const orderStyle = bc.orderBtnStyle || 'whatsapp';         // whatsapp | brand | outline
@@ -24071,8 +24099,11 @@ ${cc.head || ''}
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--tc:${tc};--r:${cornerR};--rb:${btnRadius}}
-:root{--bg:${_bgFinal};--surface:${PAL.surface};--tx:${PAL.text};--tx2:${PAL.text2};
-  --bd:${PAL.border};--sh:${PAL.shadow};--field:${PAL.field};--pill:${PAL.pill};--pillTx:${PAL.pillText}}
+${_themeMode === 'fixe'
+  ? `:root{${_jetons(PAL, _bgFinal)}}`
+  : `:root{${_jetons(_palClair)}}
+:root[data-theme="dark"]{${_jetons(_palSombre)}}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){${_jetons(_palSombre)}}}`}
 body{font-family:${fontStack};background:var(--bg);color:var(--tx);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
 h1,h2,.header h1,.pc-name,.cartbar-total,.ck h2{font-family:${headingStack}}
 ::selection{background:${tc}33}
@@ -24733,25 +24764,68 @@ ${A.separateur === 'ligne'
 .search-wrap input::placeholder,textarea::placeholder{color:var(--tx2);opacity:.8}
 .cat-pill{background:var(--pill);color:var(--pillTx);border-color:var(--bd)}
 .navpills{background:color-mix(in srgb,var(--bg) 82%,transparent)}
+/* L'en-tete collante etait figee en blanc translucide : sur fond sombre
+   elle formait une bande claire au-dessus de la page. */
+.topbar{background:color-mix(in srgb,var(--bg) 84%,transparent);border-bottom-color:var(--bd)}
+.topbar-name{color:var(--tx)}
+${_themeMode === 'choix' ? `
+/* Bouton clair/sombre : une seule icone visible a la fois, l'autre est
+   retiree du flux — pas de saut de mise en page a la bascule. */
+.theme-btn{color:var(--tx)}
+.theme-btn svg{display:none}
+.theme-btn .th-lune{display:block}
+:root[data-theme="dark"] .theme-btn .th-lune{display:none}
+:root[data-theme="dark"] .theme-btn .th-soleil{display:block}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]) .theme-btn .th-lune{display:none}
+  :root:not([data-theme="light"]) .theme-btn .th-soleil{display:block}
+}` : ''}
+.topnav a{color:var(--tx2)}
+.icon-btn svg,.cart-btn svg{stroke:var(--tx)}
 .navpills a{color:var(--tx2)}
 .navpills a:hover{color:var(--tx)}
 .footer{background:var(--surface);color:var(--tx);border-top:1px solid var(--bd)}
 .ft-col a,.ft-bottom,.ft-mono{color:var(--tx2)}
-${PAL.sombre ? `
-/* Ajustements propres au fond sombre : les ombres portees ne se voient pas,
-   c'est la bordure lumineuse qui detache les surfaces. */
-.pc,.pay-section,.about-section,.contact-section,.howto-step,.review,.info-bar{
+${(() => {
+  // Ajustements propres au fond sombre : les ombres portees ne se voient
+  // pas, c'est la bordure lumineuse qui detache les surfaces. Le meme
+  // bloc sert au mode fixe (sans prefixe) et aux modes auto/choix (une
+  // fois sous [data-theme="dark"], une fois sous la requete systeme).
+  const q = (pre) => `
+${pre}.pc,${pre}.pay-section,${pre}.about-section,${pre}.contact-section,${pre}.howto-step,${pre}.review,${pre}.info-bar{
   box-shadow:inset 0 1px 0 rgba(255,255,255,.045),0 10px 30px -14px rgba(0,0,0,.8)}
-.pc-imgwrap{background:linear-gradient(160deg,#231E1C,#1A1615)}
-.pc-ph{filter:saturate(.72) brightness(.42)}
-.pc-ph span{color:hsl(var(--ph) 34% 78%);text-shadow:none;opacity:.86}
-.hero-fade{background:linear-gradient(to bottom,transparent,color-mix(in srgb,var(--bg) 55%,transparent),var(--bg))}
-.pay-section::before,.about-section::before,.contact-section::before{box-shadow:none}
-.pc-stock.ok{background:rgba(52,199,120,.16);color:#7EE2A8}
-.no-results,#no-results{color:var(--tx2)}` : ''}
+${pre}.pc-imgwrap{background:linear-gradient(160deg,#231E1C,#1A1615)}
+${pre}.pc-ph{filter:saturate(.72) brightness(.42)}
+${pre}.pc-ph span{color:hsl(var(--ph) 34% 78%);text-shadow:none;opacity:.86}
+${pre}.hero-fade{background:linear-gradient(to bottom,transparent,color-mix(in srgb,var(--bg) 55%,transparent),var(--bg))}
+${pre}.pay-section::before,${pre}.about-section::before,${pre}.contact-section::before{box-shadow:none}
+${pre}.pc-stock.ok{background:rgba(52,199,120,.16);color:#7EE2A8}
+${pre}.no-results,${pre}#no-results{color:var(--tx2)}`;
+  if (_themeMode === 'fixe') return PAL.sombre ? q('') : '';
+  return q(':root[data-theme="dark"] ')
+    + `\n@media (prefers-color-scheme: dark){` + q(':root:not([data-theme="light"]) ') + `}`;
+})()}
 ${btnAnimCss}
 ${cc.css || ''}
 </style></head><body>
+${_themeMode === 'choix' ? `<scr` + `ipt>
+  // Applique le choix memorise avant le premier rendu : sans cela la page
+  // s'afficherait un instant dans l'autre theme.
+  (function(){
+    try{
+      var v=localStorage.getItem('baro_theme');
+      if(v==='dark'||v==='light')document.documentElement.setAttribute('data-theme',v);
+    }catch(e){}
+    window.baroTheme=function(){
+      var r=document.documentElement, a=r.getAttribute('data-theme');
+      var sombre = a ? a==='dark'
+        : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      var n = sombre ? 'light' : 'dark';
+      r.setAttribute('data-theme', n);
+      try{ localStorage.setItem('baro_theme', n); }catch(e){}
+    };
+  })();
+</scr` + `ipt>` : ''}
 ${gtmBody}
 ${announce ? `<div class="announce-bar">${esc(announce)}</div>` : ''}
 ${bannerHTML(topBanner, 'top')}
@@ -24760,6 +24834,10 @@ ${bannerHTML(topBanner, 'top')}
   <div class="topbar-name">${esc(bc.name||S.session?.business||'Ma Boutique')}</div>
   <nav class="topnav">${_navLinks.map(l=>`<a href="${l[0]}" onclick="event.preventDefault();(document.querySelector('${l[0]}')||document.body).scrollIntoView({behavior:'smooth',block:'start'})">${l[1]}</a>`).join('')}</nav>
   <span class="cur-badge" title="${t('z4_deviseBoutique')}">${_curBadge}</span>
+  ${_themeMode === 'choix' ? `<button class="icon-btn theme-btn" id="theme-btn" onclick="baroTheme()" title="${t('z6_basculerTheme')}" aria-label="${t('z6_basculerTheme')}">
+    <svg class="th-soleil" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2M12 20v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M2 12h2M20 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg>
+    <svg class="th-lune" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  </button>` : ''}
   ${(BARO_API_OK && shopIdNum) ? `<button class="icon-btn" id="acc-btn" onclick="baroAccount()" title="Mon compte" aria-label="Mon compte">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
     <span class="acc-dot" id="acc-dot" hidden></span>
@@ -25937,7 +26015,24 @@ function vBoutiqueEditor() {
           <div class="bq-lock-tx"><strong>${t('z3_lockStudioTitre')}</strong><span>${t('z3_lockStudioTx')}</span></div>
         </div>`;
       }
-      return `<div class="bq-sec-title">${t('x2_sequenceOuverture')} <span class="bq-badge-ent">Entreprise</span></div>
+      return `<div class="bq-sec-title">${t('z6_clairSombre')} <span class="bq-badge-ent">Entreprise</span></div>
+      <div class="bq-studio">
+        <div class="bq-fld bq-fld-large"><label>${t('z6_modeAffichage')}</label>
+          <select class="input" onchange="boutiqueEditSet('themeMode',this.value)">
+            ${[['fixe', t('z6_modeFixe')], ['auto', t('z6_modeAuto')], ['choix', t('z6_modeChoix')]]
+              .map(o => `<option value="${o[0]}" ${g('themeMode','fixe')===o[0]?'selected':''}>${o[1]}</option>`).join('')}
+          </select>
+          <div class="bq-hint2">${t('z6_modeAide')}</div></div>
+        ${g('themeMode','fixe') !== 'fixe' && _cur === 'nuit' ? `
+        <div class="bq-fld bq-fld-large"><label>${t('z6_versionClaire')}</label>
+          <select class="input" onchange="boutiqueEditSet('paletteLight',this.value)">
+            ${[['clair', t('z3_palClair')], ['creme', t('z3_palCreme')]]
+              .map(o => `<option value="${o[0]}" ${g('paletteLight','clair')===o[0]?'selected':''}>${o[1]}</option>`).join('')}
+          </select>
+          <div class="bq-hint2">${t('z6_versionClaireAide')}</div></div>` : ''}
+      </div>
+
+      <div class="bq-sec-title" style="margin-top:14px">${t('x2_sequenceOuverture')} <span class="bq-badge-ent">Entreprise</span></div>
       <label class="bq-cine ${g('cinema', false) ? 'on' : ''}">
         <input type="checkbox" ${g('cinema', false) ? 'checked' : ''} onchange="boutiqueEditSet('cinema', this.checked)">
         <span class="bq-cine-tx">
