@@ -270,6 +270,13 @@ const API_BASE = (location.hostname === 'localhost' || location.hostname === '12
 // ── i18n ─────────────────────────────────────
 const LANGS = {
   fr: {
+    z9_specs: "Caractéristiques",
+    z9_specsPl: "Contenance : 200 ml\nOrigine : France\nConservation : à l'abri de la lumière",
+    z9_specsAide: "Une ligne par caractéristique, sous la forme « Nom : valeur ». Elles s'affichent dans la fiche plein écran. Douze au maximum.",
+    z9_galerie: "Photos sur la carte",
+    z9_galAucune: "Une seule photo",
+    z9_galSurvol: "2ᵉ photo au survol",
+    z9_galPoints: "Points de navigation",
     z8_collections: "Collections",
     z8_collection: "Collection",
     z8_collectionsAide: "Regroupez des articles sous un nom et un chapeau — « Rentrée des classes », « Nos essentiels ». Chaque collection devient une section que vous placez où vous voulez.",
@@ -1784,6 +1791,13 @@ const LANGS = {
     version:'Version',
   },
   en: {
+    z9_specs: "Specifications",
+    z9_specsPl: "Volume: 200 ml\nOrigin: France\nStorage: keep away from light",
+    z9_specsAide: "One line per specification, written as “Name: value”. They appear on the full-screen product page. Twelve at most.",
+    z9_galerie: "Photos on the card",
+    z9_galAucune: "A single photo",
+    z9_galSurvol: "2nd photo on hover",
+    z9_galPoints: "Navigation dots",
     z8_collections: "Collections",
     z8_collection: "Collection",
     z8_collectionsAide: "Group items under a name and an intro — “Back to school”, “Our essentials”. Each collection becomes a section you can place wherever you like.",
@@ -24160,6 +24174,7 @@ function generateBoutiqueSite(opts) {
   const _PM = (_palAllowed && bc.pmeta && typeof bc.pmeta === 'object') ? bc.pmeta : {};
   const pmeta = (id) => _PM[String(id)] || {};
   const _prixStyle = (_palAllowed && bc.prixStyle) || 'normal';
+  const _galerie = (_palAllowed && ['survol', 'points'].includes(bc.galerieCarte)) ? bc.galerieCarte : 'aucune';
   const _ruptureStyle = (_palAllowed && bc.ruptureStyle) || 'grise';
   const _ratioCss = { carre: '1/1', portrait: '3/4', paysage: '4/3' };
 
@@ -24195,16 +24210,29 @@ function generateBoutiqueSite(opts) {
           .filter(w => w.length >= 3 && !_MOTS_VIDES.includes(w.toLowerCase()))
           .slice(0, 2).map(w => w.charAt(0).toUpperCase()).join('')
         || (p.name || '?').trim().charAt(0).toUpperCase() || '?');
-    const img = p.image
-      ? `<img class="pc-img" src="${p.image}" alt="${esc(_nom)}" loading="lazy">`
+    // Photos supplementaires de l'article : elles vivent sur la fiche de
+    // gestion, pas sur l'objet de vitrine, d'ou la recherche par identifiant.
+    const _sous = p._pack ? null : ((S.articles || []).find(a => a.id === p.id) || (S.products || []).find(x => x.id === p.id));
+    const _photos = (_galerie === 'aucune' ? [p.image]
+      : [p.image, ...((_sous && Array.isArray(_sous.images)) ? _sous.images : [])])
+      .filter(Boolean)
+      .filter((u, i, tab) => tab.indexOf(u) === i)
+      .slice(0, 5);
+    const _multi = _photos.length > 1;
+    const img = _photos.length
+      ? _photos.map((u, i) => `<img class="pc-img${i ? ' pc-img-alt' : ''}" src="${u}" alt="${esc(_nom)}"${i ? ' data-g="' + i + '"' : ''} loading="lazy">`).join('')
       : `<div class="pc-img pc-ph" style="--ph:${_phHue}"><span>${esc(initial)}</span></div>`;
+    const galHTML = (_multi && _galerie === 'points')
+      ? `<div class="pc-dots" aria-hidden="true">${_photos.map((u, i) => `<i class="${i ? '' : 'on'}"></i>`).join('')}</div>`
+      : '';
     const stockBadge = (showStockCount && p.qty != null)
       ? (p.qty > 0 ? `<span class="pc-stock ok">✓ ${t('z5_stock')}</span>` : `<span class="pc-stock out">${t('z5_rupture')}</span>`)
       : '';
     const _ratio = _ratioCss[M.ratio] || '';
-    return `<div class="pc reveal${p.qty === 0 ? ' pc-out' : ''}${M.enAvant ? ' pc-hero' : ''}" data-idx="${idx}" data-cat="${esc(p.category||'Autres')}" data-name="${esc((_nom||'').toLowerCase())}" data-price="${Math.round(finalPrice)||0}">
+    return `<div class="pc reveal${p.qty === 0 ? ' pc-out' : ''}${M.enAvant ? ' pc-hero' : ''}${_multi ? ' pc-multi' : ''}" data-idx="${idx}" data-cat="${esc(p.category||'Autres')}" data-name="${esc((_nom||'').toLowerCase())}" data-price="${Math.round(finalPrice)||0}">
       <div class="pc-imgwrap" onclick="baroQV&&baroQV('${esc(String(p.id))}')" style="cursor:zoom-in${_ratio ? `;aspect-ratio:${_ratio}` : ''}">
         ${img}
+        ${galHTML}
         ${urgHTML}
         ${showPromoBadges && promo ? `<span class="pc-promo">${promo.type==='fixed'?'-'+fmt(promo.value)+' '+sym():'-'+(promo.value||promo.discount)+'%'}</span>` : ''}
         ${p._pack ? '<span class="pc-pack">PACK</span>' : ''}
@@ -24281,6 +24309,9 @@ ${items.map(x => _carte(x.p, x.idx)).join('\n')}
       promo: promo ? (promo.code || promo.name || '') : '',
       oldPrice: (pp != null ? p.price : 0), desc: (M.desc || '').trim() || p.description || '',
       tag: (M.accroche || '').trim(), ask: !!M.prixCache,
+      // Une ligne par caracteristique : « Contenance : 200 ml »
+      specs: String(M.specs || '').split('\n').map(l => l.trim()).filter(Boolean).slice(0, 12)
+        .map(l => { const i = l.indexOf(':'); return i > 0 ? [l.slice(0, i).trim(), l.slice(i + 1).trim()] : ['', l]; }),
       img: p.image || '', cat: p.category || '', qty: (p.qty != null ? p.qty : null),
       imgs: imgs, variants: variants, reviews: reviews,
     };
@@ -24577,6 +24608,26 @@ ${hoverCss}
 /* ── Studio produit (plan Entreprise) ───────────────────────────────── */
 /* Accroche : une ligne courte, ecrite par le commercant, entre le nom et
    la description. Elle porte la promesse, pas la fiche technique. */
+${_galerie !== 'aucune' ? `
+/* ── Galerie de la carte ────────────────────────────────────────────
+   Les photos sont empilees dans le meme cadre ; seule celle qui porte
+   .on est visible. Rien ne bouge dans la mise en page.               */
+.pc-multi .pc-imgwrap{position:relative}
+.pc-multi .pc-img{position:absolute;inset:0;opacity:0;transition:opacity .32s ease}
+.pc-multi .pc-img:first-of-type{opacity:1}
+.pc-multi.pc-nav .pc-img{opacity:0}
+.pc-multi.pc-nav .pc-img.on{opacity:1}
+${_galerie === 'survol' ? `
+@media (hover:hover) and (pointer:fine){
+  .pc-multi:hover .pc-img:first-of-type{opacity:0}
+  .pc-multi:hover .pc-img-alt[data-g="1"]{opacity:1}
+}` : `
+.pc-dots{position:absolute;left:0;right:0;bottom:9px;z-index:3;
+  display:flex;justify-content:center;gap:5px;pointer-events:none}
+.pc-dots i{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.55);
+  box-shadow:0 1px 3px rgba(0,0,0,.4);transition:width .22s,background .22s}
+.pc-dots i.on{width:15px;border-radius:3px;background:#fff}`}
+@media(prefers-reduced-motion:reduce){.pc-multi .pc-img{transition:none}}` : ''}
 /* Chapeau d'une collection : une ou deux phrases, pas un paragraphe */
 .col-intro{max-width:62ch;margin:-6px 0 14px;font-size:13.5px;line-height:1.6;color:var(--tx2)}
 .pc-tag{font-size:11px;font-weight:700;letter-spacing:.01em;color:${tc};
@@ -25831,6 +25882,12 @@ var baroMode=BARO_DELOFF?'pickup':'delivery';
 .qv-name{font-size:21px;font-weight:800;margin:3px 0 8px;line-height:1.2}
 .qv-price{font-size:23px;font-weight:900;color:${tc}}
 .qv-tag{font-size:12.5px;font-weight:700;color:${tc};margin:-4px 0 8px;line-height:1.4}
+/* Caracteristiques : une grille cle/valeur, alignee, qui se lit en diagonale */
+.qv-specs{margin:12px 0 4px;border-top:1px solid var(--bd)}
+.qv-spec{display:flex;justify-content:space-between;gap:14px;align-items:baseline;
+  padding:8px 0;border-bottom:1px solid var(--bd);font-size:12.5px}
+.qv-spec span{color:var(--tx2);flex:0 0 auto}
+.qv-spec b{font-weight:700;text-align:right;min-width:0;word-break:break-word}
 .qv-price s{font-size:15px;color:#b0b0b0;font-weight:600;margin-right:6px}
 .qv-stock{font-size:13px;font-weight:700;margin-top:6px}
 .qv-desc{font-size:14px;color:#555;line-height:1.6;margin:12px 0 16px;white-space:pre-wrap}
@@ -25909,6 +25966,7 @@ var baroMode=BARO_DELOFF?'pickup':'delivery';
       <div class="qv-name" id="qv-name"></div>
       <div class="qv-tag" id="qv-tag"></div>
       <div class="qv-price" id="qv-price"></div>
+      <div class="qv-specs" id="qv-specs"></div>
       <div class="qv-stock" id="qv-stock"></div>
       <div class="qv-desc" id="qv-desc"></div>
       <div class="qv-variants" id="qv-variants"></div>
@@ -25946,6 +26004,14 @@ window.BARO_VARSEL=window.BARO_VARSEL||{};
     document.getElementById('qv-name').textContent=it.name;
     var _qt=document.getElementById('qv-tag');
     if(_qt){_qt.textContent=it.tag||'';_qt.style.display=it.tag?'':'none';}
+    var _qs=document.getElementById('qv-specs');
+    if(_qs){
+      var sp=it.specs||[];
+      _qs.innerHTML=sp.length?sp.map(function(r){
+        return '<div class="qv-spec"><span>'+String(r[0]||'').replace(/</g,'&lt;')+'</span><b>'+String(r[1]||'').replace(/</g,'&lt;')+'</b></div>';
+      }).join(''):'';
+      _qs.style.display=sp.length?'':'none';
+    }
     document.getElementById('qv-price').innerHTML=it.ask
       ? ${JSON.stringify('')}+'${t('z5_prixSurDemande')}'
       : (it.oldPrice?'<s>'+fmtn(it.oldPrice)+' ${sym()}</s>':'')+fmtn(it.price)+' ${sym()}';
@@ -26200,6 +26266,39 @@ ${(A.tilt || A.halo || A.curseur || A.spotlight || A.magnetique) ? `<scr` + `ipt
     },{passive:true});
     b.addEventListener('pointerleave',function(){ r=null; b.style.transform=''; });
   });` : ''}
+})();</scr` + `ipt>` : ''}
+${_galerie === 'points' ? `<scr` + `ipt>(function(){
+  // Points de la galerie : un clic (ou un doigt) fait avancer la photo.
+  // Le clic sur la photo elle-meme continue d'ouvrir la fiche : on n'ecoute
+  // que la zone des points, elargie pour rester attrapable au doigt.
+  document.querySelectorAll('.pc-multi').forEach(function(carte){
+    var pts=carte.querySelector('.pc-dots'); if(!pts)return;
+    var imgs=[].slice.call(carte.querySelectorAll('.pc-img'));
+    var dots=[].slice.call(pts.children);
+    if(imgs.length<2)return;
+    var k=0;
+    function montre(n){
+      carte.classList.add('pc-nav');
+      k=(n+imgs.length)%imgs.length;
+      imgs.forEach(function(im,i){im.classList.toggle('on',i===k);});
+      dots.forEach(function(d,i){d.classList.toggle('on',i===k);});
+    }
+    var zone=carte.querySelector('.pc-imgwrap');
+    zone.addEventListener('click',function(e){
+      // Bande basse de 34 px : on y fait defiler au lieu d'ouvrir la fiche
+      var r=zone.getBoundingClientRect();
+      if(e.clientY < r.bottom-34)return;
+      e.stopPropagation(); montre(k+1);
+    },true);
+    // Balayage horizontal, pour le tactile
+    var x0=null;
+    zone.addEventListener('touchstart',function(e){x0=e.touches[0].clientX;},{passive:true});
+    zone.addEventListener('touchend',function(e){
+      if(x0==null)return;
+      var dx=e.changedTouches[0].clientX-x0; x0=null;
+      if(Math.abs(dx)>42){e.stopPropagation();montre(k+(dx<0?1:-1));}
+    },true);
+  });
 })();</scr` + `ipt>` : ''}
 ${A.doux ? `<style>html{scroll-behavior:smooth}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}</style>` : ''}
 ${waNum?`<a href="${waLink}" target="_blank" rel="noopener noreferrer" class="wa-float"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg></a>`:''}
@@ -26628,6 +26727,9 @@ function vBoutiqueEditor() {
         <input class="input" type="text" value="${_att(m.accroche)}" placeholder="${_att(t('z5_accrochePl'))}" onchange="${set('accroche')}"></div>
       <div class="bq-fld bq-fld-large"><label>${t('z5_descVitrine')}</label>
         <textarea class="input" rows="2" placeholder="${_att(t('z5_descPl'))}" onchange="${set('desc')}">${_att(m.desc)}</textarea></div>
+      <div class="bq-fld bq-fld-large"><label>${t('z9_specs')}</label>
+        <textarea class="input" rows="3" placeholder="${_att(t('z9_specsPl'))}" onchange="${set('specs')}">${_att(m.specs)}</textarea>
+        <div class="bq-hint2">${t('z9_specsAide')}</div></div>
       <div class="bq-fld"><label>${t('z5_pastille')}</label>
         <input class="input" type="text" maxlength="22" value="${_att(m.badge)}" placeholder="${_att(t('z5_pastillePl'))}" onchange="${set('badge')}"></div>
       <div class="bq-fld"><label>${t('z5_couleurPastille')}</label>
@@ -26712,6 +26814,11 @@ function vBoutiqueEditor() {
         <select class="input" onchange="boutiqueEditSet('prixStyle',this.value)">
           ${[['normal',t('z5_prixNormal')],['discret',t('z5_prixDiscret')],['fort',t('z5_prixFort')],['editorial',t('z5_prixEditorial')]]
             .map(o => `<option value="${o[0]}" ${g('prixStyle','normal')===o[0]?'selected':''}>${o[1]}</option>`).join('')}
+        </select></div>
+      <div class="bq-fld"><label>${t('z9_galerie')}</label>
+        <select class="input" onchange="boutiqueEditSet('galerieCarte',this.value)">
+          ${[['aucune',t('z9_galAucune')],['survol',t('z9_galSurvol')],['points',t('z9_galPoints')]]
+            .map(o => `<option value="${o[0]}" ${g('galerieCarte','aucune')===o[0]?'selected':''}>${o[1]}</option>`).join('')}
         </select></div>
       <div class="bq-fld"><label>${t('z5_etatRupture')}</label>
         <select class="input" onchange="boutiqueEditSet('ruptureStyle',this.value)">
