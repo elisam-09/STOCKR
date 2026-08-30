@@ -270,6 +270,21 @@ const API_BASE = (location.hostname === 'localhost' || location.hostname === '12
 // ── i18n ─────────────────────────────────────
 const LANGS = {
   fr: {
+    zi_titre: "Envois automatiques",
+    zi_explication: "BARO appelle cette adresse tout seul, depuis votre appareil, dès que l'événement se produit. Rien ne part si vous ne cochez rien.",
+    zi_chatId: "Identifiant de conversation",
+    zi_chatIdAide: "Telegram a besoin de savoir à qui écrire. Écrivez à votre bot, puis ouvrez api.telegram.org/bot<votre-jeton>/getUpdates pour lire le champ « chat.id ».",
+    zi_telSansChat: "Identifiant de conversation manquant",
+    zi_journal: "Derniers envois",
+    zi_vider: "Vider",
+    zi_ev_vente: "Vente enregistrée",
+    zi_evd_vente: "À chaque vente encaissée.",
+    zi_ev_stock: "Mouvement de stock",
+    zi_evd_stock: "Entrée, sortie ou transfert d'article.",
+    zi_ev_depense: "Dépense enregistrée",
+    zi_evd_depense: "À chaque dépense saisie.",
+    zi_ev_commande: "Commande fournisseur",
+    zi_evd_commande: "Quand vous passez une commande de réassort.",
     zh_ouvrir: "Ouvrir",
     zh_quoiMaintenant: "Ce que vous pouvez faire",
     zh_aucuneAction: "Cette intégration n'a pas encore d'action dans BARO. Vos identifiants sont enregistrés.",
@@ -2154,6 +2169,21 @@ const LANGS = {
     version:'Version',
   },
   en: {
+    zi_titre: "Automatic sends",
+    zi_explication: "BARO calls this address by itself, from your device, as soon as the event happens. Nothing is sent if you tick nothing.",
+    zi_chatId: "Chat identifier",
+    zi_chatIdAide: "Telegram needs to know who to write to. Message your bot, then open api.telegram.org/bot<your-token>/getUpdates and read the “chat.id” field.",
+    zi_telSansChat: "Chat identifier missing",
+    zi_journal: "Recent sends",
+    zi_vider: "Clear",
+    zi_ev_vente: "Sale recorded",
+    zi_evd_vente: "Every time a sale is taken.",
+    zi_ev_stock: "Stock movement",
+    zi_evd_stock: "Item in, out or transferred.",
+    zi_ev_depense: "Expense recorded",
+    zi_evd_depense: "Every time an expense is entered.",
+    zi_ev_commande: "Supplier order",
+    zi_evd_commande: "When you place a restock order.",
     zh_ouvrir: "Open",
     zh_quoiMaintenant: "What you can do",
     zh_aucuneAction: "This integration has no action in BARO yet. Your credentials are saved.",
@@ -4681,6 +4711,9 @@ const S = {
   expenses: JSON.parse(localStorage.getItem('baro_expenses') || '[]'),
   // Integrations state
   integrationsConfig: JSON.parse(localStorage.getItem('baro_integrations') || '[]'),
+  // Journal des envois automatiques : relu au demarrage, sinon il
+  // repartait vide a chaque ouverture et ne prouvait plus rien.
+  autoJournal: JSON.parse(localStorage.getItem('baro_auto_journal') || '[]'),
   // API & webhooks state
   apiConfig: JSON.parse(localStorage.getItem('baro_api') || '{"token":null,"createdAt":null,"webhooks":[]}'),
   // Spectra enhanced state
@@ -5519,11 +5552,104 @@ function recalcAllMins() {
 }
 
 // ── Activity Feed ─────────────────────────────
+// ── Déclencheurs automatiques ─────────────────────────────────────────
+// Un webhook est une adresse fournie par un service (Zapier, Make, n8n…)
+// qui attend d'être appelée quand un événement survient. BARO l'appelle
+// tout seul, depuis l'appareil du commerçant.
+//
+// Les quatre événements correspondent à ce que logActivity reçoit déjà :
+// pas de nouvelle instrumentation, donc pas de risque d'en oublier un.
+const BARO_EVENEMENTS = [
+  { cle:'vente',   type:'sale',    icone:'💰' },
+  { cle:'stock',   type:'stock',   icone:'📦' },
+  { cle:'depense', type:'expense', icone:'🧾' },
+  { cle:'commande',type:'order',   icone:'🚚' },
+];
+// Services capables de recevoir un appel depuis un navigateur. Slack et
+// les autres refusent l'appel côté navigateur : les proposer serait
+// promettre un envoi qui n'arrivera jamais.
+const BARO_CIBLES_AUTO = ['zapier', 'make', 'n8n', 'telegram'];
+
+function _declencheursDe(id) {
+  const e = (S.integrationsConfig || []).find(x => x.id === id);
+  return (e && Array.isArray(e.declencheurs)) ? e.declencheurs : [];
+}
+function basculerDeclencheur(id, cle) {
+  const e = (S.integrationsConfig || []).find(x => x.id === id);
+  if (!e) return;
+  if (!Array.isArray(e.declencheurs)) e.declencheurs = [];
+  const i = e.declencheurs.indexOf(cle);
+  if (i >= 0) e.declencheurs.splice(i, 1); else e.declencheurs.push(cle);
+  localStorage.setItem('baro_integrations', JSON.stringify(S.integrationsConfig));
+  haptic('tap');
+  render();
+}
+
+// Journal des envois : sans lui, un envoi automatique est invérifiable.
+// Cinquante lignes suffisent à comprendre ce qui s'est passé.
+function _journalAuto(entree) {
+  if (!Array.isArray(S.autoJournal)) S.autoJournal = [];
+  S.autoJournal.unshift(entree);
+  if (S.autoJournal.length > 50) S.autoJournal = S.autoJournal.slice(0, 50);
+  try { localStorage.setItem('baro_auto_journal', JSON.stringify(S.autoJournal)); } catch (_) {}
+}
+
+async function _envoyerAuto(entree, evenement, charge) {
+  const nom = entree.name || entree.id;
+  const base = { integration: entree.id, evenement, date: new Date().toISOString() };
+  try {
+    if (entree.id === 'telegram') {
+      // Telegram veut un identifiant de conversation. Sans lui, on ne peut
+      // pas écrire : on le dit plutôt que d'échouer en silence.
+      const chat = String(entree.chatId || '').trim();
+      if (!chat) { _journalAuto({ ...base, etat:'config', message:t('zi_telSansChat') }); return; }
+      const texte = `*BARO — ${charge.titre}*\n${charge.detail}`;
+      const url = `https://api.telegram.org/bot${encodeURIComponent(entree.key || '')}/sendMessage`;
+      const r = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ chat_id: chat, text: texte, parse_mode: 'Markdown' }) });
+      const j = await r.json().catch(() => null);
+      _journalAuto({ ...base, etat: (j && j.ok) ? 'ok' : 'erreur',
+        message: (j && j.ok) ? nom : ((j && j.description) || 'HTTP ' + r.status) });
+      return;
+    }
+    const r = await fetch(entree.value, { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(charge) });
+    _journalAuto({ ...base, etat: r.ok ? 'ok' : 'erreur', message: r.ok ? nom : 'HTTP ' + r.status });
+  } catch (_) {
+    // Échec CORS : la requête est partie, le navigateur refuse d'en lire la
+    // réponse. On ne peut ni confirmer ni infirmer — on l'écrit ainsi.
+    _journalAuto({ ...base, etat:'indetermine', message: nom });
+  }
+}
+
+// Appelé à chaque événement. Ne fait rien tant qu'aucun déclencheur n'est
+// coché : le coût est une comparaison de tableau vide.
+function _declencherAuto(type, detail) {
+  const ev = BARO_EVENEMENTS.find(e => e.type === type);
+  if (!ev) return;
+  if (typeof _planHasFeature === 'function' && !_planHasFeature('integrations')) return;
+  const cibles = (S.integrationsConfig || []).filter(e =>
+    e.connected && BARO_CIBLES_AUTO.includes(e.id) && _declencheursDe(e.id).includes(ev.cle));
+  if (!cibles.length) return;
+  const charge = {
+    source: 'BARO',
+    evenement: ev.cle,
+    titre: t('zi_ev_' + ev.cle),
+    detail: String(detail || ''),
+    boutique: S.session?.business || '',
+    date: new Date().toISOString(),
+  };
+  cibles.forEach(e => { _envoyerAuto(e, ev.cle, charge); });
+}
+
 function logActivity(type, detail, extra = {}) {
   const act = { id: Date.now(), type, detail, date: new Date().toISOString(), ...extra };
   S.activities.unshift(act);
   if (S.activities.length > 100) S.activities = S.activities.slice(0, 100);
   localStorage.setItem('baro_activities', JSON.stringify(S.activities));
+  // Les envois partent après l'enregistrement local : une panne réseau ne
+  // doit jamais empêcher l'activité d'être écrite.
+  try { _declencherAuto(type, detail); } catch (_) {}
 }
 function fmtTimeAgo(iso) {
   const diff = Date.now() - new Date(iso).getTime();
@@ -34958,6 +35084,7 @@ function vPanneauIntegration() {
             <span class="int-action-fl">→</span>
           </button>`).join('')}
         </div>` : `<div class="int-sheet-note">${t('zh_aucuneAction')}</div>`}
+        ${vDeclencheursIntegration(p.id)}
         ${def.docUrl ? `<a class="int-sheet-doc" href="${att(def.docUrl)}" target="_blank" rel="noopener noreferrer">${t('zg_documentation')} ↗</a>` : ''}
       </div>
       <div class="int-sheet-pied">
@@ -34965,6 +35092,61 @@ function vPanneauIntegration() {
         <button class="btn btn-primary" onclick="fermerPanneauIntegration()">${t('zh_termine')}</button>
       </div>
     </div>
+  </div>`;
+}
+
+// ── Déclencheurs : ce que BARO envoie tout seul ─────────────────────────
+function _majChatTelegram(v) {
+  const e = (S.integrationsConfig || []).find(x => x.id === 'telegram');
+  if (!e) return;
+  e.chatId = String(v || '').trim();
+  try { localStorage.setItem('baro_integrations', JSON.stringify(S.integrationsConfig)); } catch (_) {}
+}
+function viderJournalAuto() {
+  S.autoJournal = [];
+  try { localStorage.setItem('baro_auto_journal', '[]'); } catch (_) {}
+  render();
+}
+function vDeclencheursIntegration(id) {
+  if (!BARO_CIBLES_AUTO.includes(id)) return '';
+  const e = (S.integrationsConfig || []).find(x => x.id === id);
+  if (!e || !e.connected) return '';
+  const att = v => String(v == null ? '' : v).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+  const actifs = _declencheursDe(id);
+  const journal = (S.autoJournal || []).filter(j => j.integration === id).slice(0, 5);
+  const etats = { ok:'✓', erreur:'✕', indetermine:'?', config:'⚙' };
+  return `
+  <div class="int-decl">
+    <div class="int-quoi">${t('zi_titre')}</div>
+    <div class="int-sheet-note" style="margin:-4px 0 2px">${t('zi_explication')}</div>
+    ${id === 'telegram' ? `
+    <div class="bq-fld bq-fld-large">
+      <label>${t('zi_chatId')}</label>
+      <input class="input" type="text" value="${att(e.chatId || '')}" placeholder="123456789"
+             onchange="_majChatTelegram(this.value)">
+      <div class="bq-hint2">${t('zi_chatIdAide')}</div>
+    </div>` : ''}
+    ${BARO_EVENEMENTS.map(ev => `
+    <label class="int-decl-l ${actifs.includes(ev.cle) ? 'on' : ''}">
+      <input type="checkbox" ${actifs.includes(ev.cle) ? 'checked' : ''}
+             onchange="basculerDeclencheur('${att(id)}','${ev.cle}')">
+      <span class="int-decl-ic">${ev.icone}</span>
+      <span class="int-decl-tx">
+        <strong>${t('zi_ev_' + ev.cle)}</strong>
+        <span>${t('zi_evd_' + ev.cle)}</span>
+      </span>
+    </label>`).join('')}
+    ${journal.length ? `
+    <div class="int-journal">
+      <div class="int-journal-t">${t('zi_journal')}
+        <button class="int-journal-x" onclick="viderJournalAuto()">${t('zi_vider')}</button></div>
+      ${journal.map(j => `<div class="int-journal-l int-j-${att(j.etat)}">
+        <span>${etats[j.etat] || '·'}</span>
+        <b>${t('zi_ev_' + j.evenement) || j.evenement}</b>
+        <i>${att(j.message || '')}</i>
+        <em>${fmtTimeAgo(j.date)}</em>
+      </div>`).join('')}
+    </div>` : ''}
   </div>`;
 }
 

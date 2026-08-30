@@ -5705,3 +5705,45 @@ body.vt-active .card { animation: none !important; }
 .int-action-tx span { font-size: 11.5px; line-height: 1.4; color: var(--text-3); }
 .int-action-fl { flex-shrink: 0; font-size: 15px; color: var(--text-3); }
 .int-action:hover .int-action-fl { color: var(--accent); }
+
+/* ── Déclencheurs automatiques d'une intégration ───────────────────── */
+.int-decl { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+.int-decl-l {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 12px; cursor: pointer;
+  border: 1px solid var(--border); border-radius: 12px;
+  background: var(--card-bg);
+  transition: border-color .16s, background .16s;
+}
+.int-decl-l.on { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 6%, var(--card-bg)); }
+.int-decl-l input { margin-top: 2px; width: 16px; height: 16px; flex-shrink: 0; accent-color: var(--accent); }
+.int-decl-ic { font-size: 16px; line-height: 1.2; flex-shrink: 0; }
+.int-decl-tx { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.int-decl-tx strong { font-size: 13px; font-weight: 700; color: var(--text-1); }
+.int-decl-tx span { font-size: 11px; line-height: 1.4; color: var(--text-3); }
+
+.int-journal { margin-top: 4px; border-top: 1px solid var(--border); padding-top: 10px; }
+.int-journal-t {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 10px; font-weight: 800; letter-spacing: .09em; text-transform: uppercase;
+  color: var(--text-3); margin-bottom: 7px;
+}
+.int-journal-x {
+  margin-left: auto; border: 0; background: none; cursor: pointer;
+  font-family: inherit; font-size: 10.5px; font-weight: 700;
+  letter-spacing: 0; text-transform: none; color: var(--accent);
+}
+.int-journal-l {
+  display: flex; align-items: baseline; gap: 7px;
+  font-size: 11.5px; line-height: 1.5; padding: 3px 0;
+  border-bottom: 1px solid var(--border);
+}
+.int-journal-l:last-child { border-bottom: 0; }
+.int-journal-l span { flex-shrink: 0; font-weight: 800; width: 13px; }
+.int-journal-l b { font-weight: 700; color: var(--text-2); flex-shrink: 0; }
+.int-journal-l i { font-style: normal; color: var(--text-3); flex: 1; min-width: 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.int-journal-l em { font-style: normal; color: var(--text-3); flex-shrink: 0; font-size: 10.5px; }
+.int-j-ok span { color: var(--success); }
+.int-j-erreur span { color: var(--danger); }
+.int-j-indetermine span, .int-j-config span { color: var(--warning); }
