@@ -1770,7 +1770,7 @@ body.dark .card:hover { border-color: var(--border); }
 .spectra-feature-btn {
   display: flex; flex-direction: column; align-items: flex-start; gap: 8px;
   padding: 16px;
-  background: var(--card);
+  background: var(--card-bg);
   border: 1px solid var(--border);
   border-radius: 14px;
   cursor: pointer;
@@ -1939,7 +1939,7 @@ body.dark .card:hover { border-color: var(--border); }
 
 /* Confirm card */
 .spectra-confirm-card {
-  background: var(--card);
+  background: var(--card-bg);
   border: 1px solid var(--border);
   border-radius: 20px;
   padding: 28px 24px;
@@ -2053,7 +2053,7 @@ body.dark .card:hover { border-color: var(--border); }
 .spectra-det-card {
   display: flex; justify-content: space-between; align-items: center;
   padding: 14px 16px;
-  background: var(--card);
+  background: var(--card-bg);
   border: 1px solid var(--border);
   border-radius: 12px;
   margin-bottom: 6px;
@@ -2072,7 +2072,7 @@ body.dark .card:hover { border-color: var(--border); }
 
 /* ── Location cards ──────────────────────────── */
 .loc-card {
-  background: var(--card);
+  background: var(--card-bg);
   border: 1.5px solid var(--border);
   border-radius: 14px;
   padding: 16px;
@@ -2136,7 +2136,7 @@ body.dark .card:hover { border-color: var(--border); }
   gap: 12px;
   padding: 14px 14px;
   margin-bottom: 10px;
-  background: var(--card);
+  background: var(--card-bg);
   border: 1.5px solid var(--border);
   border-radius: 16px;
   cursor: pointer;
@@ -2158,14 +2158,14 @@ body.dark .card:hover { border-color: var(--border); }
 /* Variant SOVA : gold/bronze subtil */
 .agent-sova {
   border-color: rgba(201,169,110,.35);
-  background: linear-gradient(135deg, rgba(201,169,110,.07), rgba(184,147,90,.03) 60%, var(--card));
+  background: linear-gradient(135deg, rgba(201,169,110,.07), rgba(184,147,90,.03) 60%, var(--card-bg));
 }
 .agent-sova:hover { border-color: #c9a96e; box-shadow: 0 8px 24px rgba(201,169,110,.18); }
 
 /* Variant Spectra : violet électrique */
 .agent-spectra {
   border-color: rgba(167,139,250,.35);
-  background: linear-gradient(135deg, rgba(124,58,237,.08), rgba(79,70,229,.03) 60%, var(--card));
+  background: linear-gradient(135deg, rgba(124,58,237,.08), rgba(79,70,229,.03) 60%, var(--card-bg));
 }
 .agent-spectra:hover { border-color: #a78bfa; box-shadow: 0 8px 24px rgba(124,58,237,.18); }
 
@@ -2250,7 +2250,7 @@ body.dark .card:hover { border-color: var(--border); }
   align-items: center;
   gap: 6px;
   padding: 14px 6px 12px;
-  background: var(--card);
+  background: var(--card-bg);
   border: 1.5px solid var(--border);
   border-radius: 14px;
   cursor: pointer;
@@ -2919,7 +2919,7 @@ body.dark .card:hover { border-color: var(--border); }
 }
 .spectra-mode-btn {
   position: relative;
-  background: var(--card);
+  background: var(--card-bg);
   border: 1.5px solid var(--border);
   border-radius: 16px;
   padding: 16px 12px 14px;
@@ -2944,7 +2944,7 @@ body.dark .card:hover { border-color: var(--border); }
 .spectra-mode-btn:active { transform: scale(0.96); }
 .spectra-mode-btn.active {
   border-color: var(--spectra-violet);
-  background: linear-gradient(135deg, rgba(124,58,237,.08), rgba(79,70,229,.04) 60%, var(--card));
+  background: linear-gradient(135deg, rgba(124,58,237,.08), rgba(79,70,229,.04) 60%, var(--card-bg));
   box-shadow: 0 6px 24px rgba(124,58,237,.22);
 }
 .spectra-mode-btn.active::before { opacity: 1; }
@@ -2984,7 +2984,7 @@ body.dark .spectra-mode-btn.active .spectra-mode-lbl { color: var(--spectra-viol
 /* Résultat scan — carte avec badge quantité dégradé */
 .spectra-count-result {
   position: relative;
-  background: var(--card);
+  background: var(--card-bg);
   border: 1.5px solid var(--border);
   border-radius: 14px;
   padding: 14px;
@@ -4306,7 +4306,7 @@ body.dark .sova-tab.active { color: #f0d09c; }
   align-items: center;
   gap: 16px;
   padding: 18px;
-  background: linear-gradient(135deg, rgba(201,169,110,.08), rgba(184,147,90,.04) 60%, var(--card));
+  background: linear-gradient(135deg, rgba(201,169,110,.08), rgba(184,147,90,.04) 60%, var(--card-bg));
   border: 1.5px solid var(--sova-border);
   border-radius: 18px;
   margin-bottom: 14px;
@@ -4381,7 +4381,7 @@ body.dark .sova-score-card {
 .sova-empty {
   text-align: center;
   padding: 44px 20px;
-  background: var(--card);
+  background: var(--card-bg);
   border: 1.5px dashed var(--sova-border);
   border-radius: 16px;
   margin-bottom: 14px;
@@ -4408,7 +4408,7 @@ body.dark .sova-empty-title { color: #d4b27a; }
   border-radius: 16px;
   margin-bottom: 10px;
   border: 1.5px solid var(--border);
-  background: var(--card);
+  background: var(--card-bg);
   animation: sovaFadeIn .35s both;
 }
 @keyframes sovaFadeIn {
@@ -4417,11 +4417,11 @@ body.dark .sova-empty-title { color: #d4b27a; }
 }
 .sova-alert-critical {
   border-color: rgba(239,68,68,.35);
-  background: linear-gradient(135deg, rgba(239,68,68,.06), var(--card));
+  background: linear-gradient(135deg, rgba(239,68,68,.06), var(--card-bg));
 }
 .sova-alert-warning {
   border-color: rgba(245,158,11,.35);
-  background: linear-gradient(135deg, rgba(245,158,11,.06), var(--card));
+  background: linear-gradient(135deg, rgba(245,158,11,.06), var(--card-bg));
 }
 .sova-alert-top {
   display: flex;
@@ -4512,7 +4512,7 @@ body.dark .sova-empty-title { color: #d4b27a; }
 }
 .sova-plan-card {
   padding: 14px;
-  background: var(--card);
+  background: var(--card-bg);
   border: 1.5px solid var(--border);
   border-radius: 14px;
   margin-bottom: 10px;
@@ -4590,7 +4590,7 @@ body.dark .sova-plan-qty { color: #d4b27a; background: rgba(201,169,110,.18); }
   font-size: 12px;
   font-weight: 700;
   color: var(--text-2);
-  background: var(--card);
+  background: var(--card-bg);
   border: 1.5px solid var(--border);
   border-radius: 10px;
   cursor: pointer;
@@ -4616,7 +4616,7 @@ body.dark .sova-plan-qty { color: #d4b27a; background: rgba(201,169,110,.18); }
 
 .sova-detail-card {
   padding: 16px;
-  background: var(--card);
+  background: var(--card-bg);
   border: 1.5px solid var(--border);
   border-radius: 16px;
   margin-bottom: 12px;
@@ -4681,7 +4681,7 @@ body.dark .sova-plan-qty { color: #d4b27a; background: rgba(201,169,110,.18); }
 /* Charts dans SOVA */
 .sova-chart-wrap {
   padding: 14px;
-  background: var(--card);
+  background: var(--card-bg);
   border: 1.5px solid var(--border);
   border-radius: 14px;
   margin-bottom: 12px;
@@ -5292,7 +5292,7 @@ body.vt-active .card { animation: none !important; }
   padding: 9px 6px;
   border: 1.5px solid var(--border);
   border-radius: 12px;
-  background: var(--card);
+  background: var(--card-bg);
   cursor: pointer;
   font-family: inherit;
   transition: border-color .18s, transform .18s cubic-bezier(.2, 0, 0, 1);
@@ -5355,73 +5355,143 @@ body.vt-active .card { animation: none !important; }
   display: flex;
   align-items: flex-start;
   gap: 11px;
-  padding: 12px;
-  border: 1.5px solid var(--border);
-  border-radius: 12px;
-  background: var(--card);
+  padding: 11px 12px;
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  background: var(--card-bg);
   cursor: pointer;
-  transition: border-color .18s, background .18s;
+  transition: border-color .18s, background .18s, box-shadow .18s;
 }
-.bq-cine.on { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 6%, var(--card)); }
+.bq-cine:hover { border-color: color-mix(in srgb, var(--accent) 45%, var(--border)); }
+.bq-cine.on { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 6%, var(--card-bg)); }
 .bq-cine input { margin-top: 2px; width: 17px; height: 17px; flex-shrink: 0; accent-color: var(--accent); }
 .bq-cine-tx { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
 .bq-cine-tx strong { font-size: 12.5px; font-weight: 800; color: var(--text-1); }
 .bq-cine-tx span { font-size: 11px; line-height: 1.45; color: var(--text-3); }
 
-/* ── Studio d'animation (plan Entreprise) ──────────────────────────── */
+/* ── Panneaux de studio (plan Entreprise) ──────────────────────────── */
 .bq-studio {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
-  gap: 9px;
-  padding: 12px;
-  border: 1.5px solid var(--border);
-  border-radius: 14px;
-  background: var(--card);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  padding: 13px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  /* Le panneau se lit comme un bloc, les champs comme des objets poses
+     dessus : fond legerement teinte ici, blanc pur sur les champs. */
+  background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 4%, var(--gray-1)), var(--gray-1));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .55);
 }
-.bq-fld { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+/* Un champ seul sur sa rangee prend toute la largeur plutot que de laisser
+   une moitie vide : soit qu'il termine le panneau, soit qu'un champ pleine
+   largeur le suive. Sans :has(), on retombe simplement sur l'ancien rendu. */
+.bq-studio > .bq-fld:last-child:nth-child(odd) { grid-column: 1 / -1; }
+.bq-studio > .bq-fld:nth-child(odd):has(+ .bq-fld-large) { grid-column: 1 / -1; }
+.bq-fld { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
 .bq-fld-large { grid-column: 1 / -1; }
 .bq-fld > label {
-  font-size: 10.5px;
+  display: block;
+  font-size: 10px;
   font-weight: 700;
-  letter-spacing: .3px;
+  letter-spacing: .06em;
   text-transform: uppercase;
-  color: var(--text-3);
+  line-height: 1.3;
+  color: var(--text-2);
 }
-.bq-fld > label b { color: var(--accent); font-weight: 800; }
-.bq-fld .input { padding: 8px 10px; font-size: 12.5px; border-radius: 9px; }
-.bq-fld input[type="range"] { width: 100%; accent-color: var(--accent); }
-.bq-hint2 { font-size: 10.5px; line-height: 1.45; color: var(--text-3); }
+.bq-fld > label b { color: var(--accent); font-weight: 800; letter-spacing: 0; }
+
+/* Les champs du studio doivent rester denses : la regle generale .input
+   impose sa hauteur en !important, il faut donc la reprendre de meme. */
+.bq-fld .input,
+.bq-perso .input {
+  min-height: 38px !important;
+  padding: 9px 12px !important;
+  font-size: 13px !important;
+  font-weight: 600;
+  border-radius: 11px;
+  /* background-color, pas le raccourci : « background » en !important
+     remet background-image a none et effacait le chevron dessine. */
+  background-color: var(--card-bg) !important;
+  border-color: var(--border);
+  box-shadow: 0 1px 2px rgba(16, 18, 28, .05);
+}
+.bq-fld textarea.input,
+.bq-perso textarea.input {
+  min-height: 62px !important;
+  font-weight: 500;
+  line-height: 1.5;
+}
+.bq-fld .input:hover,
+.bq-perso .input:hover { border-color: color-mix(in srgb, var(--accent) 45%, var(--border)); }
+.bq-fld .input:focus,
+.bq-perso .input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 16%, transparent);
+}
+/* Chevron dessine : la fleche native change d'un appareil a l'autre */
+.bq-fld select.input,
+.bq-perso select.input {
+  padding-right: 30px !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23888' stroke-width='1.7' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 11px center !important;
+  cursor: pointer;
+}
+/* Curseur : piste fine, bouton a la couleur de marque */
+.bq-fld input[type="range"] {
+  width: 100%;
+  height: 22px;
+  accent-color: var(--accent);
+  background: transparent;
+  cursor: pointer;
+}
+.bq-hint2 {
+  font-size: 10.5px;
+  line-height: 1.45;
+  color: var(--text-3);
+  margin-top: -1px;
+}
 .bq-sub-title {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin: 11px 0 7px;
-  font-size: 10.5px;
+  gap: 9px;
+  margin: 14px 0 8px;
+  font-size: 10px;
   font-weight: 800;
-  letter-spacing: .8px;
+  letter-spacing: .1em;
   text-transform: uppercase;
   color: var(--text-2);
+}
+.bq-sub-title::before {
+  content: '';
+  width: 3px;
+  height: 12px;
+  border-radius: 2px;
+  background: var(--accent);
+  flex-shrink: 0;
 }
 .bq-sub-title::after {
   content: '';
   flex: 1;
   height: 1px;
-  background: var(--border);
+  background: linear-gradient(90deg, var(--border), transparent);
 }
 
 /* ── Studio produit : panneau par article (plan Entreprise) ────────── */
 .bq-perso {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
-  gap: 9px;
-  margin: -4px 0 9px;
-  padding: 13px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: -5px 0 10px;
+  padding: 14px 13px 13px;
   border: 1.5px solid var(--accent);
   border-top: 0;
-  border-radius: 0 0 12px 12px;
-  background: color-mix(in srgb, var(--accent) 4%, var(--card));
+  border-radius: 0 0 14px 14px;
+  background: color-mix(in srgb, var(--accent) 4%, var(--card-bg));
 }
-.bq-perso textarea.input { resize: vertical; min-height: 54px; line-height: 1.45; }
+.bq-perso > .bq-fld:last-child:nth-child(odd) { grid-column: 1 / -1; }
+.bq-perso > .bq-fld:nth-child(odd):has(+ .bq-fld-large) { grid-column: 1 / -1; }
+.bq-perso textarea.input { resize: vertical; }
 .bq-perso-reset {
   grid-column: 1 / -1;
   margin-top: 2px;
@@ -5475,7 +5545,7 @@ body.vt-active .card { animation: none !important; }
   padding: 6px 11px;
   border: 1.5px solid var(--border);
   border-radius: 999px;
-  background: var(--card);
+  background: var(--card-bg);
   color: var(--text-2);
   font-family: inherit;
   font-size: 11.5px;
@@ -5487,7 +5557,7 @@ body.vt-active .card { animation: none !important; }
 }
 .bq-col-chip.on {
   border-color: var(--accent);
-  background: color-mix(in srgb, var(--accent) 10%, var(--card));
+  background: color-mix(in srgb, var(--accent) 10%, var(--card-bg));
   color: var(--text-1);
   font-weight: 700;
 }

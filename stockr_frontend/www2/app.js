@@ -27917,15 +27917,13 @@ function vBoutiqueEditor() {
     const set = (k) => `boutiqueEditSetPmeta('${id}','${k}',this.value)`;
     return `
     <div class="bq-perso">
+      ${''/* Trois temps : les champs courts, deux par rangee ; les champs
+             pleine largeur ; les interrupteurs. Un champ large intercale
+             forcerait une rangee et laisserait son voisin a mi-largeur. */}
       <div class="bq-fld"><label>${t('z5_nomVitrine')}</label>
         <input class="input" type="text" value="${_att(m.titre)}" placeholder="${_att(p.name)}" onchange="${set('titre')}"></div>
       <div class="bq-fld"><label>${t('z5_accroche')}</label>
         <input class="input" type="text" value="${_att(m.accroche)}" placeholder="${_att(t('z5_accrochePl'))}" onchange="${set('accroche')}"></div>
-      <div class="bq-fld bq-fld-large"><label>${t('z5_descVitrine')}</label>
-        <textarea class="input" rows="2" placeholder="${_att(t('z5_descPl'))}" onchange="${set('desc')}">${_att(m.desc)}</textarea></div>
-      <div class="bq-fld bq-fld-large"><label>${t('z9_specs')}</label>
-        <textarea class="input" rows="3" placeholder="${_att(t('z9_specsPl'))}" onchange="${set('specs')}">${_att(m.specs)}</textarea>
-        <div class="bq-hint2">${t('z9_specsAide')}</div></div>
       <div class="bq-fld"><label>${t('z5_pastille')}</label>
         <input class="input" type="text" maxlength="22" value="${_att(m.badge)}" placeholder="${_att(t('z5_pastillePl'))}" onchange="${set('badge')}"></div>
       <div class="bq-fld"><label>${t('z5_couleurPastille')}</label>
@@ -27937,10 +27935,10 @@ function vBoutiqueEditor() {
           ${[['','—'],['carre',t('z5_carre')],['portrait',t('z5_portrait')],['paysage',t('z5_paysage')]]
             .map(o => `<option value="${o[0]}" ${String(m.ratio||'')===o[0]?'selected':''}>${o[1]}</option>`).join('')}
         </select></div>
-      <label class="bq-cine ${m.enAvant ? 'on' : ''}" style="grid-column:1/-1;margin:2px 0 0">
-        <input type="checkbox" ${m.enAvant ? 'checked' : ''} onchange="boutiqueEditSetPmeta('${id}','enAvant',this.checked)">
-        <span class="bq-cine-tx"><strong>${t('z5_enAvant')}</strong><span>${t('z5_enAvantAide')}</span></span>
-      </label>
+      <div class="bq-fld"><label>${t('zf_tailleCarte')}</label>
+        <select class="input" onchange="boutiqueEditSetPmeta('${id}','tailleCarte',Number(this.value))">
+          ${[[1,t('zf_tc1')],[2,t('zf_tc2')]].map(o => `<option value="${o[0]}" ${Number(m.tailleCarte||1)===o[0]?'selected':''}>${o[1]}</option>`).join('')}
+        </select></div>
       <div class="bq-fld"><label>${t('zc_bouton')}</label>
         <input class="input" type="text" value="${_att(m.bouton)}" placeholder="${_att(t('zc_boutonPl'))}" onchange="${set('bouton')}"></div>
       <div class="bq-fld"><label>${t('zc_filigrane')}</label>
@@ -27949,20 +27947,18 @@ function vBoutiqueEditor() {
       <div class="bq-fld"><label>${t('zc_stockTexte')}</label>
         <input class="input" type="text" maxlength="30" value="${_att(m.stockTexte)}" placeholder="${_att(t('zc_stockTextePl'))}" onchange="${set('stockTexte')}">
         <div class="bq-hint2">${t('zc_stockTexteAide')}</div></div>
-      <div class="bq-fld"><label>${t('zc_lien')}</label>
-        <input class="input" type="url" value="${_att(m.lien)}" placeholder="${_att(t('zc_lienPl'))}" onchange="${set('lien')}">
-        <div class="bq-hint2">${t('zc_lienAide')}</div></div>
-      <label class="bq-cine ${m.prixCache ? 'on' : ''}" style="grid-column:1/-1;margin:0">
-        <input type="checkbox" ${m.prixCache ? 'checked' : ''} onchange="boutiqueEditSetPmeta('${id}','prixCache',this.checked)">
-        <span class="bq-cine-tx"><strong>${t('z5_prixCache')}</strong><span>${t('z5_prixCacheAide')}</span></span>
-      </label>
       <div class="bq-fld"><label>${t('zf_livraison')}</label>
         <input class="input" type="text" maxlength="30" value="${_att(m.livraison)}" placeholder="${_att(t('zf_livraisonPl'))}" onchange="${set('livraison')}">
         <div class="bq-hint2">${t('zf_livraisonAide')}</div></div>
-      <div class="bq-fld"><label>${t('zf_tailleCarte')}</label>
-        <select class="input" onchange="boutiqueEditSetPmeta('${id}','tailleCarte',Number(this.value))">
-          ${[[1,t('zf_tc1')],[2,t('zf_tc2')]].map(o => `<option value="${o[0]}" ${Number(m.tailleCarte||1)===o[0]?'selected':''}>${o[1]}</option>`).join('')}
-        </select></div>
+
+      <div class="bq-fld bq-fld-large"><label>${t('zc_lien')}</label>
+        <input class="input" type="url" value="${_att(m.lien)}" placeholder="${_att(t('zc_lienPl'))}" onchange="${set('lien')}">
+        <div class="bq-hint2">${t('zc_lienAide')}</div></div>
+      <div class="bq-fld bq-fld-large"><label>${t('z5_descVitrine')}</label>
+        <textarea class="input" rows="2" placeholder="${_att(t('z5_descPl'))}" onchange="${set('desc')}">${_att(m.desc)}</textarea></div>
+      <div class="bq-fld bq-fld-large"><label>${t('z9_specs')}</label>
+        <textarea class="input" rows="3" placeholder="${_att(t('z9_specsPl'))}" onchange="${set('specs')}">${_att(m.specs)}</textarea>
+        <div class="bq-hint2">${t('z9_specsAide')}</div></div>
       <div class="bq-fld bq-fld-large"><label>${t('zf_couleurCarte')}</label>
         <div class="bq-badge-colors">
           <button class="bq-bc ${!m.couleurCarte ? 'on' : ''}" style="background:transparent;box-shadow:inset 0 0 0 1px var(--border)"
@@ -27972,14 +27968,15 @@ function vBoutiqueEditor() {
                   onclick="boutiqueEditSetPmeta('${id}','couleurCarte','${c}')" aria-label="${c}"></button>`).join('')}
         </div>
         <div class="bq-hint2">${t('zf_couleurCarteAide')}</div></div>
-      <label class="bq-cine ${m.epingle ? 'on' : ''}" style="grid-column:1/-1;margin:0">
-        <input type="checkbox" ${m.epingle ? 'checked' : ''} onchange="boutiqueEditSetPmeta('${id}','epingle',this.checked)">
-        <span class="bq-cine-tx"><strong>${t('zc_epingle')}</strong><span>${t('zc_epingleAide')}</span></span>
-      </label>
-      <label class="bq-cine ${m.masquer ? 'on' : ''}" style="grid-column:1/-1;margin:0">
-        <input type="checkbox" ${m.masquer ? 'checked' : ''} onchange="boutiqueEditSetPmeta('${id}','masquer',this.checked)">
-        <span class="bq-cine-tx"><strong>${t('zf_masquer')}</strong><span>${t('zf_masquerAide')}</span></span>
-      </label>
+
+      ${[['enAvant', t('z5_enAvant'), t('z5_enAvantAide')],
+         ['prixCache', t('z5_prixCache'), t('z5_prixCacheAide')],
+         ['epingle', t('zc_epingle'), t('zc_epingleAide')],
+         ['masquer', t('zf_masquer'), t('zf_masquerAide')]].map(b => `
+      <label class="bq-cine ${m[b[0]] ? 'on' : ''}" style="grid-column:1/-1;margin:0">
+        <input type="checkbox" ${m[b[0]] ? 'checked' : ''} onchange="boutiqueEditSetPmeta('${id}','${b[0]}',this.checked)">
+        <span class="bq-cine-tx"><strong>${b[1]}</strong><span>${b[2]}</span></span>
+      </label>`).join('')}
       ${nb ? `<button class="bq-perso-reset" onclick="boutiqueProdReset('${id}')">${t('z5_reinitialiser')}</button>` : ''}
     </div>`;
   };
