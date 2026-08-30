@@ -1823,7 +1823,7 @@ body.dark .card:hover { border-color: var(--border); }
   transition: all .2s;
 }
 .spectra-demo-btn:active { transform: scale(.95); }
-.spectra-demo-btn:hover { background: var(--bg-2); color: var(--text); border-color: var(--accent); }
+.spectra-demo-btn:hover { background: var(--gray-1); color: var(--text); border-color: var(--accent); }
 [data-theme="dark"] .spectra-demo-btn { border-color: var(--gray-6); }
 
 .spectra-privacy {
@@ -1958,7 +1958,7 @@ body.dark .card:hover { border-color: var(--border); }
 .spectra-conf-meta { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; margin-bottom: 20px; }
 .spectra-pill {
   font-size: 11px; font-weight: 600;
-  background: var(--bg-2); border: 1px solid var(--border);
+  background: var(--gray-1); border: 1px solid var(--border);
   border-radius: 99px; padding: 3px 10px; color: var(--text-2);
 }
 .spectra-pill-match { background: #dcfce7; border-color: #bbf7d0; color: #16a34a; }
@@ -2353,10 +2353,16 @@ body.dark .card:hover { border-color: var(--border); }
   flex-direction: column;
   gap: 4px;
 }
-.profile-card:hover { background: var(--bg-2); }
+/* La carte se pose sur le gris de la page : sans fond propre, ni le survol
+   ni la selection ne se voyaient — seule la bordure changeait. Meme
+   traitement que les autres choix de l'app : fond blanc, teinte d'accent
+   une fois choisi. */
+.profile-card { background: var(--surface); }
+.profile-card:hover { background: var(--gray-1); border-color: var(--accent); }
 .profile-card.selected {
-  border-color: var(--text);
-  background: var(--bg-2);
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 9%, var(--surface));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 13%, transparent);
 }
 .profile-card-icon { color: var(--text); margin-bottom: 6px; }
 .profile-card-label { font-size: 15px; font-weight: 700; color: var(--text); }
@@ -2377,7 +2383,7 @@ body.dark .card:hover { border-color: var(--border); }
   text-align: center;
   transition: all .2s;
 }
-.spectra-feature-btn:hover { background: var(--bg-2); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,.06); }
+.spectra-feature-btn:hover { background: var(--gray-1); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,.06); }
 .spectra-feature-btn:active { transform: scale(.97); }
 .spectra-feat-ico { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
 .spectra-feat-title { font-size: 13px; font-weight: 800; color: var(--text); }
@@ -2421,7 +2427,7 @@ body.dark .card:hover { border-color: var(--border); }
   flex-shrink: 0;
   transition: all .15s;
 }
-.quick-sale-chip:hover { background: var(--bg-2); border-color: var(--accent); }
+.quick-sale-chip:hover { background: var(--gray-1); border-color: var(--accent); }
 .quick-sale-chip:active { transform: scale(.95); background: var(--accent-light); }
 [data-theme="dark"] .quick-sale-chip { background: var(--gray-8); border-color: var(--gray-7); }
 [data-theme="dark"] .quick-sale-chip:hover { background: var(--gray-7); }
@@ -2439,7 +2445,7 @@ body.dark .card:hover { border-color: var(--border); }
   cursor: pointer;
   transition: all .2s;
 }
-.spectra-demo-btn:hover { background: var(--bg-2); color: var(--text); border-color: var(--accent); }
+.spectra-demo-btn:hover { background: var(--gray-1); color: var(--text); border-color: var(--accent); }
 [data-theme="dark"] .spectra-demo-btn { border-color: var(--gray-6); }
 
 /* ── Empty states ───────────────────────────── */

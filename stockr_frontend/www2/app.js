@@ -19462,7 +19462,7 @@ function vSupplierDetail() {
     <div class="card" style="padding:16px">
       ${sup.phone ? `<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span style="color:var(--gray-5)">${IC.phone}</span><span style="font-size:14px">${sup.phone}</span></div>` : ''}
       ${sup.email ? `<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span style="color:var(--gray-5)">${IC.info}</span><span style="font-size:14px">${sup.email}</span></div>` : ''}
-      ${sup.notes ? `<div style="margin-top:8px;padding:10px;background:var(--bg-2);border-radius:8px;font-size:13px;color:var(--text-2);line-height:1.5">${sup.notes}</div>` : ''}
+      ${sup.notes ? `<div style="margin-top:8px;padding:10px;background:var(--gray-1);border-radius:8px;font-size:13px;color:var(--text-2);line-height:1.5">${sup.notes}</div>` : ''}
     </div>
     <div style="display:flex;gap:8px;margin-top:12px">
       ${sup.phone ? `<a href="tel:${sup.phone}" class="btn btn-primary" style="flex:1;text-align:center;text-decoration:none">${IC.phone} &nbsp; ${t('supplierPhone')}</a>` : ''}
