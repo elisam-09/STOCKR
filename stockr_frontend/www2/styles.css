@@ -5747,3 +5747,24 @@ body.vt-active .card { animation: none !important; }
 .int-j-ok span { color: var(--success); }
 .int-j-erreur span { color: var(--danger); }
 .int-j-indetermine span, .int-j-config span { color: var(--warning); }
+
+/* ── Recherche et filtres de la liste d'intégrations ───────────────── */
+.int-filtres { display: flex; flex-direction: column; gap: 9px; margin: 4px 0 14px; }
+.int-etats { display: flex; gap: 7px; overflow-x: auto; padding-bottom: 2px; }
+.int-etats::-webkit-scrollbar { display: none; }
+.int-etat {
+  flex: 0 0 auto;
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 14px; cursor: pointer;
+  border: 1px solid var(--border); border-radius: 999px;
+  background: var(--card-bg); color: var(--text-2);
+  font-family: inherit; font-size: 12.5px; font-weight: 600;
+  transition: border-color .16s, background .16s, color .16s;
+}
+.int-etat b { font-size: 11px; font-weight: 800; color: var(--text-3); }
+.int-etat.on {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, var(--card-bg));
+  color: var(--text-1);
+}
+.int-etat.on b { color: var(--accent); }

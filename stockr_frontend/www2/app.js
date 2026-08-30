@@ -270,6 +270,13 @@ const API_BASE = (location.hostname === 'localhost' || location.hostname === '12
 // ── i18n ─────────────────────────────────────
 const LANGS = {
   fr: {
+    zj_chercher: "Chercher une intégration…",
+    zj_toutes: "Toutes",
+    zj_connectees: "Connectées",
+    zj_aConnecter: "À connecter",
+    zj_rienTrouve: "Aucune intégration",
+    zj_rienTrouveAide: "Aucune ne correspond à cette recherche, dans ce pays et cet état.",
+    zj_toutVoir: "Tout revoir",
     zi_titre: "Envois automatiques",
     zi_explication: "BARO appelle cette adresse tout seul, depuis votre appareil, dès que l'événement se produit. Rien ne part si vous ne cochez rien.",
     zi_chatId: "Identifiant de conversation",
@@ -2169,6 +2176,13 @@ const LANGS = {
     version:'Version',
   },
   en: {
+    zj_chercher: "Search an integration…",
+    zj_toutes: "All",
+    zj_connectees: "Connected",
+    zj_aConnecter: "To connect",
+    zj_rienTrouve: "No integration",
+    zj_rienTrouveAide: "None matches this search, in this country and this state.",
+    zj_toutVoir: "Show everything",
     zi_titre: "Automatic sends",
     zi_explication: "BARO calls this address by itself, from your device, as soon as the event happens. Nothing is sent if you tick nothing.",
     zi_chatId: "Chat identifier",
@@ -34119,10 +34133,51 @@ function vIntegrations() {
       </select>
     </div>`;
     })()}
+    ${(() => {
+      // Recherche et etat : sans eux, atteindre la 40e integration demandait
+      // de faire defiler quatre categories entieres.
+      const q = String(S.intQ || '').trim();
+      const etat = S.intEtat || 'tous';
+      // Les compteurs doivent decrire ce que la liste montre vraiment :
+      // le filtre pays s'applique aussi a eux, sinon on annonce 44 et on
+      // en affiche 41.
+      const paysActif = S.intPays === undefined ? (S.session?.country || 'CI') : S.intPays;
+      const auPays = integrationsList.filter(i => _intVisible(i, '', 'tous', paysActif));
+      const nbCo = auPays.filter(i => (S.integrationsConfig || []).some(c => c.id === i.id && c.connected)).length;
+      return `
+    <div class="int-filtres">
+      <div class="search-wrap" style="margin:0">
+        <span class="search-ico">${IC.search}</span>
+        <input class="input input-search" type="search" value="${q.replace(/"/g, '&quot;')}"
+               placeholder="${t('zj_chercher')}" oninput="S.intQ=this.value;render()">
+      </div>
+      <div class="int-etats">
+        ${[['tous', t('zj_toutes'), auPays.length],
+           ['connectees', t('zj_connectees'), nbCo],
+           ['a-connecter', t('zj_aConnecter'), auPays.length - nbCo]]
+          .map(o => `<button class="int-etat ${etat === o[0] ? 'on' : ''}" onclick="S.intEtat='${o[0]}';render()">${o[1]} <b>${o[2]}</b></button>`).join('')}
+      </div>
+    </div>`;
+    })()}
+    ${(() => {
+      // Aucun resultat : on le dit, plutot que de laisser une page vide.
+      const q = _normInt(S.intQ);
+      const etat = S.intEtat || 'tous';
+      const paysActif = S.intPays === undefined ? (S.session?.country || 'CI') : S.intPays;
+      const total = integrationsList.filter(i => _intVisible(i, q, etat, paysActif)).length;
+      return total ? '' : `<div class="empty" style="padding:34px 20px">
+        <div class="empty-ico">🔍</div>
+        <div class="empty-title">${t('zj_rienTrouve')}</div>
+        <div class="empty-text">${t('zj_rienTrouveAide')}</div>
+        <button class="btn btn-ghost" style="width:auto;padding:9px 20px" onclick="S.intQ='';S.intEtat='tous';render()">${t('zj_toutVoir')}</button>
+      </div>`;
+    })()}
     ${['finance','ecommerce','delivery','communication','productivity'].map(cat => {
       const paysActif = S.intPays === undefined ? (S.session?.country || 'CI') : S.intPays;
+      const q = _normInt(S.intQ);
+      const etat = S.intEtat || 'tous';
       const items = integrationsList.filter(i => i.category === cat)
-        .filter(i => !paysActif || (i.pays || []).includes('*') || (i.pays || []).includes(paysActif));
+        .filter(i => _intVisible(i, q, etat, paysActif));
       if (!items.length) return '';
       const labels = {communication:'💬 Communication',ecommerce:'🛒 E-commerce',productivity:'📊 Productivité & automatisation',delivery:'🚚 Livraison',finance:'💰 Paiement & comptabilité'};
       const NIV = { lien:['Raccourci','Ouvre le service avec votre identifiant mémorisé'],
@@ -35172,6 +35227,27 @@ function fermerFeuilleIntegration() {
   S.intSheet = null;
   render();
 }
+// Recherche insensible aux accents et a la casse : « telegramme »,
+// « TELEGRAM » et « télégram » doivent tous trouver Telegram.
+function _normInt(v) {
+  return String(v || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+}
+// Une integration est visible si elle passe les trois filtres a la fois :
+// recherche, etat, pays.
+function _intVisible(i, q, etat, pays) {
+  if (pays && !(i.pays || []).includes('*') && !(i.pays || []).includes(pays)) return false;
+  if (etat !== 'tous') {
+    const co = (S.integrationsConfig || []).some(c => c.id === i.id && c.connected);
+    if (etat === 'connectees' && !co) return false;
+    if (etat === 'a-connecter' && co) return false;
+  }
+  if (q) {
+    const foin = _normInt([i.name, i.desc, i.id, i.category].join(' '));
+    if (!q.split(/\s+/).every(mot => foin.includes(mot))) return false;
+  }
+  return true;
+}
+
 function _nomIntegration(id) {
   // Le nom affiché vient du catalogue, pas d'une table parallèle.
   const trouve = BARO_INTEGRATIONS.find(x => x.id === id);
