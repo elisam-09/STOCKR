@@ -5679,3 +5679,29 @@ body.vt-active .card { animation: none !important; }
   padding: 14px 18px 18px;
 }
 .int-sheet-pied .btn { flex: 1; margin: 0; }
+
+/* ── Panneau « que faire maintenant » d'une intégration ────────────── */
+.int-sheet-sous { font-size: 11.5px; font-weight: 600; color: var(--success); margin-top: 2px; }
+.int-quoi {
+  font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--text-3); margin-bottom: -2px;
+}
+.int-actions { display: flex; flex-direction: column; gap: 8px; }
+.int-action {
+  display: flex; align-items: center; gap: 12px; width: 100%;
+  padding: 12px 13px; text-align: left; cursor: pointer;
+  border: 1px solid var(--border); border-radius: 13px;
+  background: var(--card-bg); font-family: inherit;
+  transition: border-color .16s, transform .12s, box-shadow .16s;
+}
+.int-action:hover {
+  border-color: var(--accent);
+  box-shadow: 0 4px 14px -8px var(--accent);
+}
+.int-action:active { transform: scale(.985); }
+.int-action-ic { font-size: 19px; line-height: 1; flex-shrink: 0; }
+.int-action-tx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.int-action-tx strong { font-size: 13.5px; font-weight: 700; color: var(--text-1); }
+.int-action-tx span { font-size: 11.5px; line-height: 1.4; color: var(--text-3); }
+.int-action-fl { flex-shrink: 0; font-size: 15px; color: var(--text-3); }
+.int-action:hover .int-action-fl { color: var(--accent); }

@@ -270,6 +270,100 @@ const API_BASE = (location.hostname === 'localhost' || location.hostname === '12
 // ── i18n ─────────────────────────────────────
 const LANGS = {
   fr: {
+    zh_ouvrir: "Ouvrir",
+    zh_quoiMaintenant: "Ce que vous pouvez faire",
+    zh_aucuneAction: "Cette intégration n'a pas encore d'action dans BARO. Vos identifiants sont enregistrés.",
+    zh_modifier: "Modifier",
+    zh_termine: "Terminé",
+    zh_montantLien: "Montant à encaisser",
+    zh_montantRequis: "Indiquez d'abord le montant.",
+    zh_pasDeLien: "Aucun lien enregistré pour cette intégration.",
+    zh_pasDUrl: "L'adresse enregistrée n'est pas une URL valide.",
+    zh_pasDeJeton: "Aucun jeton enregistré — modifiez la connexion.",
+    zh_envoiEnCours: "Envoi en cours…",
+    zh_envoiOk: "Envoi reçu par le service.",
+    zh_envoiRefuse: "Le service a répondu {0} — vérifiez l'adresse.",
+    zh_envoiIndetermine: "Envoyé, mais le service n'autorise pas BARO à lire sa réponse. Vérifiez de votre côté.",
+    zh_botReconnu: "Bot @{0} reconnu — le jeton est valide.",
+    zh_jetonRefuse: "Telegram refuse ce jeton.",
+    zh_reseauIndispo: "Réseau indisponible.",
+    zh_aucunClient: "Aucun client à exporter pour le moment.",
+    zh_actionEchec: "Cette action n'a pas pu s'exécuter.",
+    zh_nonConnecte: "Cette intégration n'est pas connectée.",
+    "zh_a_wave-lien": "Créer un lien de paiement",
+    "zh_d_wave-lien": "Ouvre un lien Wave au montant saisi, à envoyer au client.",
+    "zh_a_om-lien": "Créer un lien de paiement",
+    "zh_d_om-lien": "Ouvre un lien Orange Money au montant saisi.",
+    "zh_a_wave-demande": "Demander par WhatsApp",
+    "zh_d_wave-demande": "Prépare un message de demande de paiement.",
+    "zh_a_om-demande": "Demander par WhatsApp",
+    "zh_d_om-demande": "Prépare un message de demande de paiement.",
+    "zh_a_momo-demande": "Demander par WhatsApp",
+    "zh_d_momo-demande": "Prépare un message de demande de paiement.",
+    "zh_a_moov-demande": "Demander par WhatsApp",
+    "zh_d_moov-demande": "Prépare un message de demande de paiement.",
+    "zh_a_wave-encaisse": "Enregistrer une vente",
+    "zh_d_wave-encaisse": "Ouvre l'écran de vente pour encaisser.",
+    "zh_a_om-encaisse": "Enregistrer une vente",
+    "zh_d_om-encaisse": "Ouvre l'écran de vente pour encaisser.",
+    "zh_a_momo-encaisse": "Enregistrer une vente",
+    "zh_d_momo-encaisse": "Ouvre l'écran de vente pour encaisser.",
+    "zh_a_moov-encaisse": "Enregistrer une vente",
+    "zh_d_moov-encaisse": "Ouvre l'écran de vente pour encaisser.",
+    "zh_a_djamo-encaisse": "Enregistrer une vente",
+    "zh_d_djamo-encaisse": "Ouvre l'écran de vente pour encaisser.",
+    "zh_a_gw-tableau": "Ouvrir mon tableau de bord",
+    "zh_d_gw-tableau": "Les encaissements se consultent chez le partenaire.",
+    "zh_a_liv-tableau": "Ouvrir mon tableau de bord",
+    "zh_d_liv-tableau": "Le suivi des envois se consulte chez le partenaire.",
+    "zh_a_cpt-ventes": "Exporter les ventes",
+    "zh_d_cpt-ventes": "Un fichier CSV des ventes, prêt pour votre comptable.",
+    "zh_a_cpt-complet": "Exporter tout",
+    "zh_d_cpt-complet": "Articles, ventes, clients et dépenses en un fichier.",
+    "zh_a_cpt-articles": "Exporter les articles",
+    "zh_d_cpt-articles": "La liste du stock au format CSV.",
+    "zh_a_cpt-ohada": "Comptabilité OHADA",
+    "zh_d_cpt-ohada": "Le plan SYSCOHADA et le journal des écritures.",
+    "zh_a_ec-catalogue": "Exporter mon catalogue",
+    "zh_d_ec-catalogue": "Un fichier au format d'import de la plateforme.",
+    "zh_a_ec-sync": "Configurer la synchronisation",
+    "zh_d_ec-sync": "Adresse de la boutique et clé d'accès.",
+    "zh_a_fb-catalogue": "Exporter mon catalogue",
+    "zh_d_fb-catalogue": "Un fichier de produits à importer dans la boutique.",
+    "zh_a_fb-image": "Créer une image catalogue",
+    "zh_d_fb-image": "Une affiche de vos produits, à publier.",
+    "zh_a_liv-config": "Configurer la livraison",
+    "zh_d_liv-config": "Zones, frais et délais du partenaire.",
+    "zh_a_liv-commandes": "Voir les commandes",
+    "zh_d_liv-commandes": "Les commandes reçues depuis votre boutique.",
+    "zh_a_wa-config": "Configurer WhatsApp",
+    "zh_d_wa-config": "Numéro, modèles de message et jeton.",
+    "zh_a_wa-catalogue": "Créer une image catalogue",
+    "zh_d_wa-catalogue": "Une affiche de vos produits, à envoyer.",
+    "zh_a_sms-config": "Configurer la passerelle",
+    "zh_d_sms-config": "Fournisseur, identifiants et expéditeur.",
+    "zh_a_tg-test": "Vérifier le bot",
+    "zh_d_tg-test": "Demande son identité à Telegram — réponse immédiate.",
+    "zh_a_auto-test": "Envoyer un test",
+    "zh_d_auto-test": "Envoie vraiment un message d'essai à votre webhook.",
+    "zh_a_mk-contacts": "Exporter mes contacts",
+    "zh_d_mk-contacts": "Un CSV e-mail, nom, téléphone, ville.",
+    "zh_a_gs-export": "Exporter pour Sheets",
+    "zh_d_gs-export": "Toutes vos données, à coller dans une feuille.",
+    "zh_a_gs-ouvrir": "Ouvrir ma feuille",
+    "zh_d_gs-ouvrir": "Le document que vous avez enregistré.",
+    "zh_a_yt-ouvrir": "Ouvrir ma chaîne",
+    "zh_d_yt-ouvrir": "La chaîne que vous avez enregistrée.",
+    "zh_a_xl-tout": "Exporter tout (Excel)",
+    "zh_d_xl-tout": "Un classeur avec toutes vos données.",
+    "zh_a_xl-ventes": "Exporter les ventes (Excel)",
+    "zh_d_xl-ventes": "Le détail des ventes en feuille de calcul.",
+    "zh_a_xl-articles": "Exporter les articles (Excel)",
+    "zh_d_xl-articles": "L'état du stock en feuille de calcul.",
+    "zh_a_pos-config": "Configurer la caisse",
+    "zh_d_pos-config": "Imprimante, tiroir-caisse et format de ticket.",
+    "zh_a_api-cles": "Mes clés d'API",
+    "zh_d_api-cles": "Créer et révoquer les accès à vos données.",
     zg_fermer: "Fermer",
     zg_connecter: "Connecter",
     zg_ouvrirCompte: "Ouvrir mon compte {0}",
@@ -2060,6 +2154,100 @@ const LANGS = {
     version:'Version',
   },
   en: {
+    zh_ouvrir: "Open",
+    zh_quoiMaintenant: "What you can do",
+    zh_aucuneAction: "This integration has no action in BARO yet. Your credentials are saved.",
+    zh_modifier: "Edit",
+    zh_termine: "Done",
+    zh_montantLien: "Amount to collect",
+    zh_montantRequis: "Enter the amount first.",
+    zh_pasDeLien: "No link saved for this integration.",
+    zh_pasDUrl: "The saved address is not a valid URL.",
+    zh_pasDeJeton: "No token saved — edit the connection.",
+    zh_envoiEnCours: "Sending…",
+    zh_envoiOk: "The service received it.",
+    zh_envoiRefuse: "The service replied {0} — check the address.",
+    zh_envoiIndetermine: "Sent, but the service does not let BARO read its reply. Check on your side.",
+    zh_botReconnu: "Bot @{0} recognised — the token is valid.",
+    zh_jetonRefuse: "Telegram rejects this token.",
+    zh_reseauIndispo: "Network unavailable.",
+    zh_aucunClient: "No customer to export yet.",
+    zh_actionEchec: "This action could not run.",
+    zh_nonConnecte: "This integration is not connected.",
+    "zh_a_wave-lien": "Create a payment link",
+    "zh_d_wave-lien": "Opens a Wave link for the amount entered, to send to the customer.",
+    "zh_a_om-lien": "Create a payment link",
+    "zh_d_om-lien": "Opens an Orange Money link for the amount entered.",
+    "zh_a_wave-demande": "Ask via WhatsApp",
+    "zh_d_wave-demande": "Prepares a payment request message.",
+    "zh_a_om-demande": "Ask via WhatsApp",
+    "zh_d_om-demande": "Prepares a payment request message.",
+    "zh_a_momo-demande": "Ask via WhatsApp",
+    "zh_d_momo-demande": "Prepares a payment request message.",
+    "zh_a_moov-demande": "Ask via WhatsApp",
+    "zh_d_moov-demande": "Prepares a payment request message.",
+    "zh_a_wave-encaisse": "Record a sale",
+    "zh_d_wave-encaisse": "Opens the sales screen to take payment.",
+    "zh_a_om-encaisse": "Record a sale",
+    "zh_d_om-encaisse": "Opens the sales screen to take payment.",
+    "zh_a_momo-encaisse": "Record a sale",
+    "zh_d_momo-encaisse": "Opens the sales screen to take payment.",
+    "zh_a_moov-encaisse": "Record a sale",
+    "zh_d_moov-encaisse": "Opens the sales screen to take payment.",
+    "zh_a_djamo-encaisse": "Record a sale",
+    "zh_d_djamo-encaisse": "Opens the sales screen to take payment.",
+    "zh_a_gw-tableau": "Open my dashboard",
+    "zh_d_gw-tableau": "Payments are viewed on the partner's side.",
+    "zh_a_liv-tableau": "Open my dashboard",
+    "zh_d_liv-tableau": "Shipment tracking is on the partner's side.",
+    "zh_a_cpt-ventes": "Export sales",
+    "zh_d_cpt-ventes": "A CSV of your sales, ready for your accountant.",
+    "zh_a_cpt-complet": "Export everything",
+    "zh_d_cpt-complet": "Items, sales, customers and expenses in one file.",
+    "zh_a_cpt-articles": "Export items",
+    "zh_d_cpt-articles": "Your stock list as CSV.",
+    "zh_a_cpt-ohada": "OHADA accounting",
+    "zh_d_cpt-ohada": "The SYSCOHADA chart and the entry journal.",
+    "zh_a_ec-catalogue": "Export my catalogue",
+    "zh_d_ec-catalogue": "A file in the platform's import format.",
+    "zh_a_ec-sync": "Set up synchronisation",
+    "zh_d_ec-sync": "Shop address and access key.",
+    "zh_a_fb-catalogue": "Export my catalogue",
+    "zh_d_fb-catalogue": "A product file to import into the shop.",
+    "zh_a_fb-image": "Create a catalogue image",
+    "zh_d_fb-image": "A poster of your products, ready to post.",
+    "zh_a_liv-config": "Set up delivery",
+    "zh_d_liv-config": "Partner areas, fees and lead times.",
+    "zh_a_liv-commandes": "View orders",
+    "zh_d_liv-commandes": "Orders received from your shop.",
+    "zh_a_wa-config": "Set up WhatsApp",
+    "zh_d_wa-config": "Number, message templates and token.",
+    "zh_a_wa-catalogue": "Create a catalogue image",
+    "zh_d_wa-catalogue": "A poster of your products, ready to send.",
+    "zh_a_sms-config": "Set up the gateway",
+    "zh_d_sms-config": "Provider, credentials and sender name.",
+    "zh_a_tg-test": "Check the bot",
+    "zh_d_tg-test": "Asks Telegram for its identity — instant reply.",
+    "zh_a_auto-test": "Send a test",
+    "zh_d_auto-test": "Really sends a test message to your webhook.",
+    "zh_a_mk-contacts": "Export my contacts",
+    "zh_d_mk-contacts": "A CSV with email, name, phone and city.",
+    "zh_a_gs-export": "Export for Sheets",
+    "zh_d_gs-export": "All your data, ready to paste into a sheet.",
+    "zh_a_gs-ouvrir": "Open my sheet",
+    "zh_d_gs-ouvrir": "The document you saved.",
+    "zh_a_yt-ouvrir": "Open my channel",
+    "zh_d_yt-ouvrir": "The channel you saved.",
+    "zh_a_xl-tout": "Export everything (Excel)",
+    "zh_d_xl-tout": "A workbook with all your data.",
+    "zh_a_xl-ventes": "Export sales (Excel)",
+    "zh_d_xl-ventes": "Sales detail as a spreadsheet.",
+    "zh_a_xl-articles": "Export items (Excel)",
+    "zh_d_xl-articles": "Stock levels as a spreadsheet.",
+    "zh_a_pos-config": "Set up the till",
+    "zh_d_pos-config": "Printer, cash drawer and receipt format.",
+    "zh_a_api-cles": "My API keys",
+    "zh_d_api-cles": "Create and revoke access to your data.",
     zg_fermer: "Close",
     zg_connecter: "Connect",
     zg_ouvrirCompte: "Open my {0} account",
@@ -33771,6 +33959,7 @@ function vIntegrations() {
 
   return `
   ${vFeuilleIntegration()}
+  ${vPanneauIntegration()}
   <div class="sub-hero">
     <div class="page-header-row" style="margin-bottom:14px">
       <button class="back-btn-dark" onclick="nav('more')">${IC.left}</button>
@@ -33832,7 +34021,7 @@ function vIntegrations() {
         </div>
         ${connected ? `
           <div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0">
-            <button class="int-btn int-btn-solid" style="border-color:${it.color};background:${it.color}" onclick="openIntegrationDashboard('${it.id}')">Ouvrir</button>
+            <button class="int-btn int-btn-solid" style="border-color:${it.color};background:${it.color}" onclick="ouvrirPanneauIntegration('${it.id}')">${t('zh_ouvrir')}</button>
             <button class="int-btn int-btn-danger" onclick="disconnectIntegration('${it.id}','${it.name}')">Retirer</button>
           </div>
         ` : `
@@ -33844,195 +34033,13 @@ function vIntegrations() {
 }
 
 // Ouvre un dashboard fonctionnel pour chaque intégration connectée
+// Conserve pour les appels existants : le panneau des actions a pris
+// la suite. L'ancien tableau de bord ne couvrait que 15 intégrations
+// sur 44 et demandait le montant par prompt(), bloqué en PWA.
 function openIntegrationDashboard(integrationId) {
-  const cfg = (S.integrationsConfig||[]).find(i => i.id === integrationId);
-  if (!cfg) { showToast('Non connecté', 'error'); return; }
-  const actions = {
-    'wave': {
-      title:'Wave Business',
-      color:'#1DC3FF',
-      deeplink:`https://pay.wave.com/m/${(cfg.value||'').replace(/\D/g,'')}/c/ci`,
-      items:[
-        { label:'📊 Tableau de bord Wave', url:'https://dashboard.wave.com/' },
-        { label:'📱 Ouvrir l\'app Wave', url:'https://wave.com/download' },
-        { label:'💳 Nouveau paiement', action:()=>{
-            const amt = prompt('Montant à encaisser :', '1000');
-            if (amt && Number(amt) > 0) payWithProvider('wave', Number(amt), 'Paiement BARO');
-          }},
-        { label:'📈 Historique des transactions', action:()=>nav('payments-setup') },
-      ]
-    },
-    'yango': {
-      title:'Yango Delivery',
-      color:'#FF4D00',
-      items:[
-        { label:'🚚 Nouvelle livraison', action:()=>{
-            const addr = prompt('Adresse de livraison :', '');
-            if (addr) window.open(`https://delivery.yango.com/new?to=${encodeURIComponent(addr)}`, '_blank');
-          }},
-        { label:'📋 Voir mes livraisons', url:'https://delivery.yango.com/orders' },
-        { label:'⚙️ Paramètres compte', url:'https://delivery.yango.com/settings' },
-      ]
-    },
-    'yango-deli': {
-      title:'Yango Deli',
-      color:'#FF4D00',
-      items:[
-        { label:'🍽️ Tableau de bord Deli', url:'https://deli.yango.com/dashboard' },
-        { label:'📋 Menu restaurant', url:'https://deli.yango.com/menu' },
-        { label:'📈 Analytics commandes', url:'https://deli.yango.com/analytics' },
-      ]
-    },
-    'yango-market': {
-      title:'Yango Market',
-      color:'#FF4D00',
-      items:[
-        { label:'🛒 Ma boutique Yango', url:'https://market.yango.com/seller' },
-        { label:'📦 Mes commandes', url:'https://market.yango.com/seller/orders' },
-        { label:'💰 Mes paiements', url:'https://market.yango.com/seller/payments' },
-      ]
-    },
-    'glovo': {
-      title:'Glovo Partners',
-      color:'#FFC244',
-      items:[
-        { label:'📊 Portail partenaire', url:'https://partners.glovoapp.com/' },
-        { label:'🏪 Manager (POS)', url:'https://managers.glovoapp.com/' },
-        { label:'📈 Analytics Glovo', url:'https://partners.glovoapp.com/analytics' },
-        { label:'🚚 Nouvelle livraison à la demande', action:()=>{
-            const orderId = (S.orders||[])[0]?.id;
-            if (orderId) createGlovoDelivery(orderId);
-            else showToast('Aucune commande en attente', 'info');
-          }},
-      ]
-    },
-    'youtube-studio': {
-      title:'YouTube Studio',
-      color:'#FF0000',
-      items:[
-        { label:'📤 Upload direct depuis BARO (API)', action:()=>__openYTUploadModal() },
-        { label:'📹 Uploader via YouTube Studio', url:'https://studio.youtube.com/channel/UC/videos/upload' },
-        { label:'📊 Studio (analytics)', url:'https://studio.youtube.com/' },
-        { label:'💬 Gérer les commentaires', url:'https://studio.youtube.com/channel/UC/comments' },
-        ...(_isHidden('video-library') ? [] : [{ label:'🎬 Créer une vidéo', action:()=>openVideoEditor(SOCIAL_TEMPLATES.video.find(t=>t.id==='yt-short')) }]),
-      ]
-    },
-    'whatsapp-business': {
-      title:'WhatsApp Business',
-      color:'#25D366',
-      items:[
-        { label:'💬 Envoyer un broadcast', action:()=>nav('whatsapp-broadcast') },
-        { label:'📱 Ouvrir WhatsApp Business', url:`https://wa.me/${(cfg.value||'').replace(/\D/g,'')}` },
-        { label:'📊 Manager Cloud API', url:'https://business.facebook.com/wa/manage/' },
-      ]
-    },
-    'shopify': {
-      title:'Shopify',
-      color:'#96BF48',
-      items:[
-        { label:'🔄 Pousser tous mes articles (API)', action:()=>{ syncEcommerceStock('shopify'); } },
-        { label:'📥 Importer produits Shopify → BARO', action:()=>{ importFromEcommerce('shopify'); } },
-        { label:'✏️ Éditer un produit Shopify', action:()=>{ openEcommerceProductEditor('shopify'); } },
-        { label:'🛒 Admin Shopify (web)', url: cfg.value && cfg.value.includes('myshopify') ? cfg.value+'/admin' : 'https://shopify.com/admin' },
-        { label:'📦 Voir les commandes', url: (cfg.value||'https://shopify.com')+'/admin/orders' },
-      ]
-    },
-    'woocommerce': {
-      title:'WooCommerce',
-      color:'#96588A',
-      items:[
-        { label:'🔄 Pousser tous mes articles (API)', action:()=>{ syncEcommerceStock('woocommerce'); } },
-        { label:'📥 Importer produits WC → BARO', action:()=>{ importFromEcommerce('woocommerce'); } },
-        { label:'✏️ Éditer un produit WooCommerce', action:()=>{ openEcommerceProductEditor('woocommerce'); } },
-        { label:'🛒 Admin WP (web)', url: (cfg.value||'')+'/wp-admin/' },
-        { label:'📦 Voir les commandes', url: (cfg.value||'')+'/wp-admin/edit.php?post_type=shop_order' },
-      ]
-    },
-    'jumia': {
-      title:'Jumia Seller',
-      color:'#F68B1E',
-      items:[
-        { label:'📤 Exporter catalogue → CSV Jumia', action:()=>exportToJumia() },
-        { label:'🔄 Sync & export produits', action:()=>{ S.ecommerceSetupProvider='jumia'; nav('ecommerce-setup'); } },
-        { label:'📊 Vendor Center', url:'https://vendorcenter.jumia.com/' },
-        { label:'📦 Mes commandes Jumia', url:'https://vendorcenter.jumia.com/orders' },
-        { label:'💰 Paiements Jumia', url:'https://vendorcenter.jumia.com/payments' },
-        { label:'📈 Statistiques ventes', url:'https://vendorcenter.jumia.com/performance' },
-      ]
-    },
-    'google-sheets': {
-      title:'Google Sheets',
-      color:'#0F9D58',
-      items:[
-        { label:'📑 Ouvrir le tableau', url: cfg.value || 'https://sheets.google.com' },
-        { label:'🔄 Pousser les ventes maintenant', action:()=>{ if(typeof pushSalesToSheets==='function') pushSalesToSheets(); else showToast('Configurez Google Sheets', 'info'); } },
-      ]
-    },
-    'sms-api': {
-      title:'SMS API',
-      color:'#4F46E5',
-      items:[
-        { label:'📩 Envoyer SMS de masse', action:()=>nav('sms-broadcast') },
-        { label:'📊 Historique SMS', action:()=>nav('sms-setup') },
-      ]
-    },
-    'pos': {
-      title:'Terminal POS',
-      color:'#059669',
-      items:[
-        { label:'⚙️ Configuration POS', action:()=>nav('pos-setup') },
-        { label:'🖨 Test impression', action:()=>{ if(typeof testPOSPrint==='function') testPOSPrint(); } },
-      ]
-    },
-    'comptabilite': {
-      title:'Export Comptable OHADA',
-      color:'#334155',
-      items:[
-        { label:'📊 Voir la balance', action:()=>nav('compta-setup') },
-        { label:'📥 Exporter CSV OHADA', action:()=>{ if(typeof exportOHADA==='function') exportOHADA(); } },
-      ]
-    },
-    'excel': {
-      title:'Export Excel/CSV',
-      color:'#217346',
-      items:[
-        { label:'📊 Exporter toutes les données', action:()=>{ if(typeof exportAllCSV==='function') exportAllCSV(); } },
-        { label:'📥 Importer depuis CSV', action:()=>{ if(typeof openImportCSV==='function') openImportCSV(); else showToast('Collez votre CSV dans Paramètres > Import','info'); } },
-      ]
-    },
-  };
-  const d = actions[integrationId];
-  if (!d) { showToast('Dashboard non disponible pour ' + integrationId, 'info'); return; }
-  const existing = document.getElementById('integ-dash-modal');
-  if (existing) existing.remove();
-  const modal = document.createElement('div');
-  modal.id = 'integ-dash-modal';
-  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:10000;display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(6px);animation:fadeIn .2s ease';
-  modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-  modal.innerHTML = `
-    <div style="background:var(--surface);border-radius:16px;max-width:420px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 25px 60px rgba(0,0,0,.35);animation:slideUp .25s ease">
-      <div style="background:${d.color};padding:18px 20px;color:#fff;display:flex;align-items:center;justify-content:space-between">
-        <div>
-          <div style="font-size:17px;font-weight:800">${d.title}</div>
-          <div style="font-size:12px;opacity:.9;margin-top:2px">${cfg.value || 'Connecté'}</div>
-        </div>
-        <button style="width:32px;height:32px;border-radius:50%;border:none;background:rgba(255,255,255,.2);color:#fff;font-size:18px;cursor:pointer" onclick="document.getElementById('integ-dash-modal').remove()">×</button>
-      </div>
-      <div style="padding:14px 18px">
-        ${d.items.map((item, i) => `
-          <button class="btn btn-ghost" style="width:100%;margin-bottom:8px;padding:14px;text-align:left;font-size:14px;font-weight:600;display:flex;justify-content:space-between;align-items:center"
-            onclick="${item.url ? `window.open('${item.url}','_blank');document.getElementById('integ-dash-modal').remove()` : `document.getElementById('integ-dash-modal').remove();__runIntegAction('${integrationId}',${i})`}">
-            <span>${item.label}</span>
-            <span style="color:var(--text-3);font-size:14px">${item.url?'↗':'→'}</span>
-          </button>
-        `).join('')}
-        <button class="btn btn-ghost" style="width:100%;color:var(--danger);font-size:12px;margin-top:6px" onclick="document.getElementById('integ-dash-modal').remove();disconnectIntegration('${integrationId}','${d.title}')">${t('x1_deconnecter')}</button>
-      </div>
-    </div>`;
-  document.body.appendChild(modal);
-  // Stocker les actions pour __runIntegAction
-  window.__integActions = window.__integActions || {};
-  window.__integActions[integrationId] = d.items.map(it => it.action || null);
+  const cfg = (S.integrationsConfig || []).find(i => i.id === integrationId);
+  if (!cfg) { showToast(t('zh_nonConnecte'), 'error'); return; }
+  ouvrirPanneauIntegration(integrationId);
 }
 
 function __runIntegAction(integrationId, idx) {
@@ -34486,19 +34493,19 @@ const BARO_INTEGRATIONS = [
   // ── Agrégateurs de paiement ──
   { id:'cinetpay', name:'CinetPay', desc:t('w5_dCinetpay'), color:'#0F4C81', icon:IC.creditCard, category:'finance',
     pays:['CI','SN','ML','BF','CM','TG','BJ','NE','GN','CD'], niveau:'cle',
-    setupType:'apikey', setupLabel:'Clé API CinetPay', setupPlaceholder:'API key', url:'https://cinetpay.com/' },
+    setupType:'apikey', setupLabel:'Clé API CinetPay', setupPlaceholder:'API key', url:'https://app.cinetpay.com/' },
   { id:'paydunya', name:'PayDunya', desc:'Paiement en ligne Afrique de l\'Ouest', color:'#0B8457', icon:IC.creditCard, category:'finance',
     pays:['SN','CI','BF','ML','BJ','TG'], niveau:'cle',
-    setupType:'apikey', setupLabel:'Clé maîtresse PayDunya', setupPlaceholder:'live_master_...', url:'https://paydunya.com/' },
+    setupType:'apikey', setupLabel:'Clé maîtresse PayDunya', setupPlaceholder:'live_master_...', url:'https://app.paydunya.com/' },
   { id:'flutterwave', name:'Flutterwave', desc:t('w5_dFlutter'), color:'#F5A623', icon:IC.creditCard, category:'finance',
     pays:['NG','GH','KE','ZA','CI','SN','UG','TZ','RW','CM','EG'], niveau:'cle',
-    setupType:'apikey', setupLabel:'Clé secrète Flutterwave', setupPlaceholder:'FLWSECK-...', url:'https://flutterwave.com/' },
+    setupType:'apikey', setupLabel:'Clé secrète Flutterwave', setupPlaceholder:'FLWSECK-...', url:'https://dashboard.flutterwave.com/' },
   { id:'paystack', name:'Paystack', desc:t('w5_dPaystack'), color:'#00C3F7', icon:IC.creditCard, category:'finance',
     pays:['NG','GH','ZA','KE','CI'], niveau:'cle',
-    setupType:'apikey', setupLabel:'Clé secrète Paystack', setupPlaceholder:'sk_live_...', url:'https://paystack.com/' },
+    setupType:'apikey', setupLabel:'Clé secrète Paystack', setupPlaceholder:'sk_live_...', url:'https://dashboard.paystack.com/' },
   { id:'kkiapay', name:'Kkiapay', desc:t('w5_dKkiapay'), color:'#3B5AFB', icon:IC.creditCard, category:'finance',
     pays:['BJ','CI','TG','SN'], niveau:'cle',
-    setupType:'apikey', setupLabel:'Clé publique Kkiapay', setupPlaceholder:'pk_...', url:'https://kkiapay.me/' },
+    setupType:'apikey', setupLabel:'Clé publique Kkiapay', setupPlaceholder:'pk_...', url:'https://app.kkiapay.me/' },
   { id:'stripe', name:'Stripe', desc:t('w5_dStripe'), color:'#635BFF', icon:IC.creditCard, category:'finance',
     pays:['*'], niveau:'cle',
     setupType:'apikey', setupLabel:'Clé secrète Stripe', setupPlaceholder:'sk_live_...', url:'https://dashboard.stripe.com/' },
@@ -34693,12 +34700,281 @@ function connectIntegration(integrationId) {
   showToast(t('zg_pasDeConfig').replace('{0}', name), 'error');
 }
 
+// ── Que faire une fois connecté ? ───────────────────────────────────────
+// Chaque action pointe vers une capacité qui existe déjà dans BARO. Rien
+// n'est promis qui ne soit pas branché : la liste est vérifiée au démarrage
+// de la feuille (voir _actionsIntegration, qui écarte tout appel absent).
+const BARO_ACTIONS_INTEGRATION = {
+  // ── Paiement mobile : construire un lien de paiement pour un client ──
+  'wave': [
+    { cle:'wave-lien', icone:'🔗', type:'lien', fn:'ouvrirLienPaiement', arg:'wave' },
+    { cle:'wave-demande', icone:'💬', type:'copier', fn:'requestPaymentWhatsApp' },
+    { cle:'wave-encaisse', icone:'💰', type:'vue', fn:'nav', arg:'sales' },
+  ],
+  'orange-money': [
+    { cle:'om-lien', icone:'🔗', type:'lien', fn:'ouvrirLienPaiement', arg:'orange' },
+    { cle:'om-demande', icone:'💬', type:'copier', fn:'requestPaymentWhatsApp' },
+    { cle:'om-encaisse', icone:'💰', type:'vue', fn:'nav', arg:'sales' },
+  ],
+  'mtn-momo':   [{ cle:'momo-demande', icone:'💬', type:'copier', fn:'requestPaymentWhatsApp' },
+                 { cle:'momo-encaisse', icone:'💰', type:'vue', fn:'nav', arg:'sales' }],
+  'moov-money': [{ cle:'moov-demande', icone:'💬', type:'copier', fn:'requestPaymentWhatsApp' },
+                 { cle:'moov-encaisse', icone:'💰', type:'vue', fn:'nav', arg:'sales' }],
+  'djamo':      [{ cle:'djamo-encaisse', icone:'💰', type:'vue', fn:'nav', arg:'sales' }],
+  'free-money':   [{ cle:'moov-demande', icone:'💬', type:'copier', fn:'requestPaymentWhatsApp' },
+                   { cle:'moov-encaisse', icone:'💰', type:'vue', fn:'nav', arg:'sales' }],
+  'airtel-money': [{ cle:'moov-demande', icone:'💬', type:'copier', fn:'requestPaymentWhatsApp' },
+                   { cle:'moov-encaisse', icone:'💰', type:'vue', fn:'nav', arg:'sales' }],
+
+  // ── Passerelles : le tableau de bord du partenaire fait foi ──────────
+  'cinetpay':    [{ cle:'gw-tableau', icone:'📊', type:'lien', fn:'ouvrirPartenaire' }],
+  'paydunya':    [{ cle:'gw-tableau', icone:'📊', type:'lien', fn:'ouvrirPartenaire' }],
+  'flutterwave': [{ cle:'gw-tableau', icone:'📊', type:'lien', fn:'ouvrirPartenaire' }],
+  'paystack':    [{ cle:'gw-tableau', icone:'📊', type:'lien', fn:'ouvrirPartenaire' }],
+  'kkiapay':     [{ cle:'gw-tableau', icone:'📊', type:'lien', fn:'ouvrirPartenaire' }],
+  'stripe':      [{ cle:'gw-tableau', icone:'📊', type:'lien', fn:'ouvrirPartenaire' }],
+  'paypal':      [{ cle:'gw-tableau', icone:'📊', type:'lien', fn:'ouvrirPartenaire' }],
+
+  // ── Comptabilité : le fichier que le comptable attend ────────────────
+  'sage':       [{ cle:'cpt-ventes', icone:'📄', type:'export', fn:'exportSalesCSV' },
+                 { cle:'cpt-complet', icone:'📦', type:'export', fn:'exportFullCSV' },
+                 { cle:'cpt-ohada', icone:'📊', type:'vue', fn:'nav', arg:'compta-setup' }],
+  'quickbooks': [{ cle:'cpt-ventes', icone:'📄', type:'export', fn:'exportSalesCSV' },
+                 { cle:'cpt-complet', icone:'📦', type:'export', fn:'exportFullCSV' }],
+  'odoo':       [{ cle:'cpt-complet', icone:'📦', type:'export', fn:'exportFullCSV' },
+                 { cle:'cpt-articles', icone:'📋', type:'export', fn:'exportArticlesCSV' }],
+
+  // ── Vente en ligne : le catalogue au format de la place de marché ────
+  'shopify':       [{ cle:'ec-catalogue', icone:'🛒', type:'export', fn:'exportToShopify' },
+                    { cle:'ec-sync', icone:'🔄', type:'vue', fn:'connectIntegration', arg:'shopify' }],
+  'woocommerce':   [{ cle:'ec-catalogue', icone:'🟣', type:'export', fn:'exportToWooCommerce' },
+                    { cle:'ec-sync', icone:'🔄', type:'vue', fn:'connectIntegration', arg:'woocommerce' }],
+  'jumia':         [{ cle:'ec-catalogue', icone:'🟠', type:'export', fn:'exportToJumia' },
+                    { cle:'ec-sync', icone:'🔄', type:'vue', fn:'connectIntegration', arg:'jumia' }],
+  'facebook-shop': [{ cle:'fb-catalogue', icone:'📘', type:'export', fn:'exportProductsCSV' },
+                    { cle:'fb-image', icone:'🖼️', type:'vue', fn:'nav', arg:'catalog' }],
+  'etsy':          [{ cle:'ec-catalogue', icone:'🧵', type:'export', fn:'exportProductsCSV' }],
+  'tiktok-shop':   [{ cle:'ec-catalogue', icone:'🎵', type:'export', fn:'exportProductsCSV' },
+                    { cle:'gw-tableau', icone:'📊', type:'lien', fn:'ouvrirPartenaire' }],
+
+  // ── Livraison : la liste à remettre au coursier ──────────────────────
+  'glovo':       [{ cle:'liv-config', icone:'⚙️', type:'vue', fn:'connectIntegration', arg:'glovo' }],
+  'yango':       [{ cle:'liv-config', icone:'⚙️', type:'vue', fn:'connectIntegration', arg:'yango' }],
+  'yango-deli':  [{ cle:'liv-commandes', icone:'📦', type:'vue', fn:'nav', arg:'boutique-orders' }],
+  'yango-market':[{ cle:'liv-commandes', icone:'📦', type:'vue', fn:'nav', arg:'boutique-orders' }],
+  'gozem':       [{ cle:'liv-commandes', icone:'📦', type:'vue', fn:'nav', arg:'boutique-orders' }],
+  'dhl':         [{ cle:'liv-tableau', icone:'📊', type:'lien', fn:'ouvrirPartenaire' }],
+
+  // ── Messages : envoyer pour de vrai ──────────────────────────────────
+  'whatsapp-business': [{ cle:'wa-config', icone:'⚙️', type:'vue', fn:'connectIntegration', arg:'whatsapp-business' },
+                        { cle:'wa-catalogue', icone:'🖼️', type:'vue', fn:'nav', arg:'catalog' }],
+  'sms-api':  [{ cle:'sms-config', icone:'⚙️', type:'vue', fn:'connectIntegration', arg:'sms-api' }],
+  'telegram': [{ cle:'tg-test', icone:'📨', type:'envoi', fn:'envoyerTestTelegram' }],
+  'brevo':    [{ cle:'mk-contacts', icone:'👥', type:'export', fn:'exportClientsCSVSimple' }],
+  'mailchimp':[{ cle:'mk-contacts', icone:'👥', type:'export', fn:'exportClientsCSVSimple' }],
+
+  // ── Automatisation : un envoi réel, vérifiable ───────────────────────
+  'slack':  [{ cle:'auto-test', icone:'📨', type:'envoi', fn:'envoyerTestWebhook' }],
+  'zapier': [{ cle:'auto-test', icone:'📨', type:'envoi', fn:'envoyerTestWebhook' }],
+  'make':   [{ cle:'auto-test', icone:'📨', type:'envoi', fn:'envoyerTestWebhook' }],
+  'n8n':    [{ cle:'auto-test', icone:'📨', type:'envoi', fn:'envoyerTestWebhook' }],
+
+  // ── Tableurs et fichiers ─────────────────────────────────────────────
+  'google-sheets': [{ cle:'gs-export', icone:'📈', type:'export', fn:'exportToGoogleSheets' },
+                    { cle:'gs-ouvrir', icone:'🔗', type:'lien', fn:'ouvrirValeurEnregistree' }],
+  'excel':         [{ cle:'xl-tout', icone:'📊', type:'export', fn:'exportFullXLSX' },
+                    { cle:'xl-ventes', icone:'💰', type:'export', fn:'exportSalesXLSX' },
+                    { cle:'xl-articles', icone:'📦', type:'export', fn:'exportArticlesXLSX' }],
+
+  // ── Boutique et divers ───────────────────────────────────────────────
+  'youtube-studio': [{ cle:'yt-ouvrir', icone:'🔗', type:'lien', fn:'ouvrirValeurEnregistree' }],
+  'pos':            [{ cle:'pos-config', icone:'⚙️', type:'vue', fn:'connectIntegration', arg:'pos' }],
+  'comptabilite':   [{ cle:'cpt-ohada', icone:'📊', type:'vue', fn:'connectIntegration', arg:'comptabilite' }],
+  'api-rest':       [{ cle:'api-cles', icone:'🔑', type:'vue', fn:'nav', arg:'api-settings' }],
+};
+
+// Actions réellement disponibles pour une intégration : on écarte celles
+// dont la fonction n'existe pas. Une action affichée est une action qui
+// marche — c'est la seule promesse que je peux tenir.
+// t() renvoie la clé quand elle manque : sans ce garde-fou, un libellé
+// oublié s'afficherait tel quel — « zh_a_wave-lien » — à l'écran.
+function _libelleAction(prefixe, cle, repli) {
+  const v = t(prefixe + cle);
+  return (v && v !== prefixe + cle) ? v : repli;
+}
+
+function _actionsIntegration(id) {
+  const brut = BARO_ACTIONS_INTEGRATION[id] || [];
+  return brut.filter(a => typeof window[a.fn] === 'function');
+}
+
+function lancerActionIntegration(id, cle) {
+  const a = _actionsIntegration(id).find(x => x.cle === cle);
+  if (!a) return;
+  haptic('tap');
+  try {
+    if (a.arg !== undefined) window[a.fn](a.arg);
+    else window[a.fn]();
+  } catch (e) {
+    showToast(t('zh_actionEchec'), 'error');
+  }
+}
+
+// ── Fonctions d'action propres aux intégrations ─────────────────────────
+function ouvrirPartenaire(id) {
+  const cible = id || (S.intPanneau && S.intPanneau.id);
+  const def = _getIntegrationDef(cible);
+  if (!def.url) { showToast(t('zh_pasDeLien'), 'info'); return; }
+  window.open(def.url, '_blank', 'noopener');
+}
+function ouvrirValeurEnregistree() {
+  const id = S.intPanneau && S.intPanneau.id;
+  const e = (S.integrationsConfig || []).find(x => x.id === id);
+  const v = String((e && e.value) || '').trim();
+  if (!/^https?:\/\//i.test(v)) { showToast(t('zh_pasDeLien'), 'info'); return; }
+  window.open(v, '_blank', 'noopener');
+}
+// Lien de paiement : réutilise les générateurs déjà en place, qui lisent
+// le numéro marchand configuré dans Paiements.
+function ouvrirLienPaiement(fournisseur) {
+  const montant = Number(S.intMontant || 0);
+  if (!(montant > 0)) { showToast(t('zh_montantRequis'), 'error'); return; }
+  // Le numéro saisi dans l'intégration fait foi. Sinon on retombe sur celui
+  // de l'écran Paiements — deux endroits, une seule vérité utilisable.
+  const id = fournisseur === 'wave' ? 'wave' : 'orange-money';
+  const e = (S.integrationsConfig || []).find(x => x.id === id);
+  const num = String((e && e.value) || '').replace(/\D/g, '');
+  let lien = null;
+  if (num.length >= 8 && fournisseur === 'wave') {
+    lien = `https://pay.wave.com/m/${num}/c/ci?amount=${encodeURIComponent(montant)}`;
+  } else {
+    lien = fournisseur === 'wave'
+      ? (typeof generateWavePayment === 'function' ? generateWavePayment(montant, 'BARO') : null)
+      : (typeof generateOrangePayment === 'function' ? generateOrangePayment(montant) : null);
+  }
+  if (!lien) return;                       // le générateur a déjà expliqué pourquoi
+  window.open(lien, '_blank', 'noopener');
+}
+// Envoi réel vers un webhook. Les webhooks de Zapier, Make, n8n et
+// Telegram acceptent les appels depuis un navigateur ; Slack ne les
+// accepte pas — on le dit plutôt que de faire semblant.
+async function envoyerTestWebhook() {
+  const id = S.intPanneau && S.intPanneau.id;
+  const e = (S.integrationsConfig || []).find(x => x.id === id);
+  const url = String((e && e.value) || '').trim();
+  if (!/^https?:\/\//i.test(url)) { showToast(t('zh_pasDUrl'), 'error'); return; }
+  showToast(t('zh_envoiEnCours'));
+  const charge = {
+    source: 'BARO', evenement: 'test',
+    boutique: S.session?.business || '',
+    envoye_le: new Date().toISOString(),
+    articles: (S.articles || []).length,
+    ventes_du_mois: (typeof _salesThisMonth === 'function') ? _salesThisMonth() : null,
+  };
+  try {
+    const r = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(charge) });
+    showToast(r.ok ? t('zh_envoiOk') : t('zh_envoiRefuse').replace('{0}', r.status), r.ok ? 'success' : 'error');
+  } catch (_) {
+    // Un échec ici vient presque toujours de CORS : la requête est partie,
+    // le navigateur refuse d'en lire la réponse. On ne peut pas conclure.
+    showToast(t('zh_envoiIndetermine'), 'info');
+  }
+}
+async function envoyerTestTelegram() {
+  const e = (S.integrationsConfig || []).find(x => x.id === 'telegram');
+  const jeton = (e && e.key) || '';
+  if (!jeton) { showToast(t('zh_pasDeJeton'), 'error'); return; }
+  showToast(t('zh_envoiEnCours'));
+  try {
+    const r = await fetch(`https://api.telegram.org/bot${encodeURIComponent(jeton)}/getMe`);
+    const j = await r.json();
+    if (j && j.ok && j.result) showToast(t('zh_botReconnu').replace('{0}', j.result.username || j.result.first_name || ''));
+    else showToast(t('zh_jetonRefuse'), 'error');
+  } catch (_) { showToast(t('zh_reseauIndispo'), 'error'); }
+}
+// Contacts au format attendu par un outil d'emailing.
+function exportClientsCSVSimple() {
+  const cl = S.clients || [];
+  if (!cl.length) { showToast(t('zh_aucunClient'), 'info'); return; }
+  const lignes = [['email','first_name','phone','city'].join(',')];
+  cl.forEach(c => {
+    const champs = [c.email || '', c.name || '', c.phone || '', c.address || ''];
+    lignes.push(champs.map(x => `"${String(x).replace(/"/g, '""')}"`).join(','));
+  });
+  if (typeof downloadCSV === 'function') downloadCSV(lignes.join('\n'), 'baro-contacts.csv');
+  else showToast(t('zh_actionEchec'), 'error');
+}
+
+// ── Panneau d'une intégration connectée ─────────────────────────────────
+// « C'est connecté, et maintenant ? » — la réponse tient ici : les actions
+// que cette intégration rend possibles, chacune branchée sur une capacité
+// réelle de l'app.
+function ouvrirPanneauIntegration(id) {
+  S.intPanneau = { id, nom: _nomIntegration(id) };
+  S.intMontant = '';
+  haptic('tap');
+  render();
+}
+function fermerPanneauIntegration() { S.intPanneau = null; render(); }
+function _majMontantIntegration(v) { S.intMontant = v; }
+
+function vPanneauIntegration() {
+  const p = S.intPanneau;
+  if (!p) return '';
+  const att = v => String(v == null ? '' : v).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+  const actions = _actionsIntegration(p.id);
+  const e = (S.integrationsConfig || []).find(x => x.id === p.id);
+  const def = _getIntegrationDef(p.id);
+  // Le champ montant ne sert qu'aux actions qui construisent un lien de
+  // paiement : l'afficher ailleurs serait une case sans emploi.
+  const besoinMontant = actions.some(a => a.fn === 'ouvrirLienPaiement');
+  return `
+  <div class="int-ov show" onclick="if(event.target===this)fermerPanneauIntegration()">
+    <div class="int-sheet" role="dialog" aria-modal="true" aria-label="${att(p.nom)}">
+      <div class="int-sheet-head">
+        <div style="flex:1;min-width:0">
+          <div class="int-sheet-titre">${att(p.nom)}</div>
+          ${e && e.value ? `<div class="int-sheet-sous">✓ ${att(e.value)}</div>` : ''}
+        </div>
+        <button class="int-sheet-x" onclick="fermerPanneauIntegration()" aria-label="${t('zg_fermer')}">✕</button>
+      </div>
+      <div class="int-sheet-corps">
+        ${actions.length ? `
+        <div class="int-quoi">${t('zh_quoiMaintenant')}</div>
+        ${besoinMontant ? `
+        <div class="bq-fld bq-fld-large">
+          <label>${t('zh_montantLien')}</label>
+          <input class="input" type="number" inputmode="decimal" min="1" value="${att(S.intMontant || '')}"
+                 placeholder="5000" oninput="_majMontantIntegration(this.value)">
+        </div>` : ''}
+        <div class="int-actions">
+          ${actions.map(a => `
+          <button class="int-action" onclick="lancerActionIntegration('${att(p.id)}','${att(a.cle)}')">
+            <span class="int-action-ic">${a.icone}</span>
+            <span class="int-action-tx">
+              <strong>${_libelleAction('zh_a_', a.cle, a.cle)}</strong>
+              <span>${_libelleAction('zh_d_', a.cle, '')}</span>
+            </span>
+            <span class="int-action-fl">→</span>
+          </button>`).join('')}
+        </div>` : `<div class="int-sheet-note">${t('zh_aucuneAction')}</div>`}
+        ${def.docUrl ? `<a class="int-sheet-doc" href="${att(def.docUrl)}" target="_blank" rel="noopener noreferrer">${t('zg_documentation')} ↗</a>` : ''}
+      </div>
+      <div class="int-sheet-pied">
+        <button class="btn btn-ghost" onclick="ouvrirFeuilleIntegration('${att(p.id)}')">${t('zh_modifier')}</button>
+        <button class="btn btn-primary" onclick="fermerPanneauIntegration()">${t('zh_termine')}</button>
+      </div>
+    </div>
+  </div>`;
+}
+
 // ── Feuille de configuration d'une intégration ──────────────────────────
 // Un seul écran pour les six formes de configuration. Les valeurs saisies
 // restent sur l'appareil : elles ne sont envoyées nulle part.
 function ouvrirFeuilleIntegration(id) {
   const def = _getIntegrationDef(id);
   if (!def.setupType) return;
+  S.intPanneau = null;
   const dejaLa = (S.integrationsConfig || []).find(i => i.id === id);
   S.intSheet = {
     id,
