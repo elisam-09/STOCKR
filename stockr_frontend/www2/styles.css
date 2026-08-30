@@ -5613,3 +5613,69 @@ body.vt-active .card { animation: none !important; }
 .int-niv-lien { background: var(--gray-1); color: var(--text-3); }
 .int-niv-cle  { background: rgba(217, 119, 6, .12); color: #B45309; }
 .int-niv-sync { background: rgba(22, 163, 74, .13); color: #16A34A; }
+
+/* ── Feuille de configuration d'une intégration ────────────────────── */
+/* Remplace confirm()/prompt(), que le système bloque dans une PWA
+   installée : le bouton « Connecter » ne faisait alors rien du tout.   */
+.int-ov {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(12, 14, 20, .52);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+.int-ov.show { display: flex; }
+@media (min-width: 640px) { .int-ov { align-items: center; } }
+.int-sheet {
+  width: 100%;
+  max-width: 440px;
+  max-height: 92vh;
+  overflow-y: auto;
+  background: var(--surface);
+  border-radius: 22px 22px 0 0;
+  box-shadow: 0 -12px 44px -12px rgba(12, 14, 20, .34);
+  animation: intUp .28s cubic-bezier(.2, 0, 0, 1) both;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+@media (min-width: 640px) { .int-sheet { border-radius: 22px; } }
+@keyframes intUp { from { transform: translateY(14px); opacity: 0 } to { transform: none; opacity: 1 } }
+@media (prefers-reduced-motion: reduce) { .int-sheet { animation: none } }
+.int-sheet-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 18px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.int-sheet-titre { flex: 1; font-size: 17px; font-weight: 800; letter-spacing: -.2px; color: var(--text-1); }
+.int-sheet-x {
+  width: 32px; height: 32px; flex-shrink: 0;
+  border: 1px solid var(--border); border-radius: 50%;
+  background: var(--gray-1); color: var(--text-2);
+  font-size: 14px; cursor: pointer; line-height: 1;
+}
+.int-sheet-corps { display: flex; flex-direction: column; gap: 12px; padding: 16px 18px 4px; }
+.int-sheet-lien, .int-sheet-doc {
+  display: inline-block;
+  font-size: 12.5px; font-weight: 700;
+  color: var(--accent); text-decoration: none;
+}
+.int-sheet-lien:hover, .int-sheet-doc:hover { text-decoration: underline; }
+.int-sheet-doc { font-weight: 600; color: var(--text-3); }
+.int-sheet-err {
+  font-size: 12px; font-weight: 600; line-height: 1.45;
+  color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 9%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--danger) 26%, transparent);
+  border-radius: 10px; padding: 9px 11px;
+}
+.int-sheet-note { font-size: 11px; line-height: 1.5; color: var(--text-3); }
+.int-sheet-pied {
+  display: flex; gap: 9px;
+  padding: 14px 18px 18px;
+}
+.int-sheet-pied .btn { flex: 1; margin: 0; }

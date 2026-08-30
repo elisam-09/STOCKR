@@ -270,6 +270,19 @@ const API_BASE = (location.hostname === 'localhost' || location.hostname === '12
 // ── i18n ─────────────────────────────────────
 const LANGS = {
   fr: {
+    zg_fermer: "Fermer",
+    zg_connecter: "Connecter",
+    zg_ouvrirCompte: "Ouvrir mon compte {0}",
+    zg_documentation: "Documentation du partenaire",
+    zg_identifiant: "Identifiant",
+    zg_cleApi: "Clé API",
+    zg_collerCle: "Collez la clé ici",
+    zg_champRequis: "Ce champ est nécessaire pour connecter.",
+    zg_cleRequise: "La clé est nécessaire pour connecter.",
+    zg_urlInvalide: "L'adresse doit commencer par https:// et contenir un domaine.",
+    zg_telInvalide: "Ce numéro semble trop court — vérifiez-le.",
+    zg_resteSurAppareil: "Vos identifiants restent sur cet appareil. BARO ne les envoie nulle part.",
+    zg_pasDeConfig: "{0} n'a pas encore de mode de configuration dans BARO.",
     zf_contenuStudio: "Studio contenu produits",
     zf_grInfos: "Les informations",
     zf_grPhoto: "La photo",
@@ -2047,6 +2060,19 @@ const LANGS = {
     version:'Version',
   },
   en: {
+    zg_fermer: "Close",
+    zg_connecter: "Connect",
+    zg_ouvrirCompte: "Open my {0} account",
+    zg_documentation: "Partner documentation",
+    zg_identifiant: "Identifier",
+    zg_cleApi: "API key",
+    zg_collerCle: "Paste the key here",
+    zg_champRequis: "This field is needed to connect.",
+    zg_cleRequise: "The key is needed to connect.",
+    zg_urlInvalide: "The address must start with https:// and include a domain.",
+    zg_telInvalide: "That number looks too short — please check it.",
+    zg_resteSurAppareil: "Your credentials stay on this device. BARO never sends them anywhere.",
+    zg_pasDeConfig: "{0} does not have a configuration mode in BARO yet.",
     zf_contenuStudio: "Product content studio",
     zf_grInfos: "The information",
     zf_grPhoto: "The photo",
@@ -33741,155 +33767,10 @@ function vIntegrations() {
   if (!_planHasFeature('integrations')) {
     return _vProLock('🔌', 'Intégrations & API', 'Connecte WhatsApp Business, Shopify, WooCommerce, Glovo, Yango, Wave et plus à ton stock BARO.', ['🔌 10 intégrations (Pro)', '🛒 Shopify, WooCommerce, Jumia', '🚚 Glovo, Yango Delivery', '💳 Wave, Orange Money dashboards', '🔗 API REST (Enterprise)']);
   }
-  const integrationsList = [
-    // ── Paiement mobile — Afrique de l'Ouest & Centrale ──
-    { id:'wave', name:'Wave', desc:t('w5_dPaiementMobile'), color:'#1DC3FF', icon:IC.creditCard, category:'finance',
-      pays:['CI','SN','ML','BF','UG'], niveau:'lien',
-      setupType:'phone', setupLabel:'Numéro Wave Business', setupPlaceholder:'+225 07 00 00 00 00', url:'https://www.wave.com/fr/business/' },
-    { id:'orange-money', name:'Orange Money', desc:t('w5_dOrange'), color:'#FF7900', icon:IC.creditCard, category:'finance',
-      pays:['CI','SN','ML','BF','NE','CM','GN','MG','CD','JO'], niveau:'lien',
-      setupType:'phone', setupLabel:'Numéro marchand Orange Money', setupPlaceholder:'+225 07 00 00 00 00', url:'https://www.orange.ci/omoney' },
-    { id:'mtn-momo', name:'MTN MoMo', desc:t('w5_dMtn'), color:'#FFCC00', icon:IC.creditCard, category:'finance',
-      pays:['CI','GH','CM','UG','RW','ZM','BJ','NG'], niveau:'lien',
-      setupType:'phone', setupLabel:'Numéro marchand MoMo', setupPlaceholder:'+225 05 00 00 00 00', url:'https://momo.mtn.com/' },
-    { id:'moov-money', name:'Moov Money', desc:t('w5_dMoov'), color:'#0066B3', icon:IC.creditCard, category:'finance',
-      pays:['CI','BJ','TG','BF','NE'], niveau:'lien',
-      setupType:'phone', setupLabel:'Numéro marchand Moov', setupPlaceholder:'+225 01 00 00 00 00', url:'https://www.moov-africa.ci/' },
-    { id:'free-money', name:'Free Money', desc:t('w5_dFree'), color:'#CD1719', icon:IC.creditCard, category:'finance',
-      pays:['SN'], niveau:'lien',
-      setupType:'phone', setupLabel:'Numéro Free Money', setupPlaceholder:'+221 76 000 00 00', url:'https://www.free.sn/' },
-    { id:'airtel-money', name:'Airtel Money', desc:t('w5_dAirtel'), color:'#E4002B', icon:IC.creditCard, category:'finance',
-      pays:['NE','TD','GA','CD','KE','TZ','UG','RW','ZM','MW'], niveau:'lien',
-      setupType:'phone', setupLabel:'Numéro Airtel Money', setupPlaceholder:'+227 90 00 00 00', url:'https://www.airtel.africa/money' },
-    { id:'djamo', name:'Djamo', desc:t('w5_dDjamo'), color:'#1B1B3A', icon:IC.creditCard, category:'finance',
-      pays:['CI','SN'], niveau:'lien',
-      setupType:'account', setupLabel:'Identifiant Djamo', setupPlaceholder:'DJ-XXXXX', url:'https://www.djamo.com/' },
-
-    // ── Agrégateurs de paiement ──
-    { id:'cinetpay', name:'CinetPay', desc:t('w5_dCinetpay'), color:'#0F4C81', icon:IC.creditCard, category:'finance',
-      pays:['CI','SN','ML','BF','CM','TG','BJ','NE','GN','CD'], niveau:'cle',
-      setupType:'apikey', setupLabel:'Clé API CinetPay', setupPlaceholder:'API key', url:'https://cinetpay.com/' },
-    { id:'paydunya', name:'PayDunya', desc:'Paiement en ligne Afrique de l\'Ouest', color:'#0B8457', icon:IC.creditCard, category:'finance',
-      pays:['SN','CI','BF','ML','BJ','TG'], niveau:'cle',
-      setupType:'apikey', setupLabel:'Clé maîtresse PayDunya', setupPlaceholder:'live_master_...', url:'https://paydunya.com/' },
-    { id:'flutterwave', name:'Flutterwave', desc:t('w5_dFlutter'), color:'#F5A623', icon:IC.creditCard, category:'finance',
-      pays:['NG','GH','KE','ZA','CI','SN','UG','TZ','RW','CM','EG'], niveau:'cle',
-      setupType:'apikey', setupLabel:'Clé secrète Flutterwave', setupPlaceholder:'FLWSECK-...', url:'https://flutterwave.com/' },
-    { id:'paystack', name:'Paystack', desc:t('w5_dPaystack'), color:'#00C3F7', icon:IC.creditCard, category:'finance',
-      pays:['NG','GH','ZA','KE','CI'], niveau:'cle',
-      setupType:'apikey', setupLabel:'Clé secrète Paystack', setupPlaceholder:'sk_live_...', url:'https://paystack.com/' },
-    { id:'kkiapay', name:'Kkiapay', desc:t('w5_dKkiapay'), color:'#3B5AFB', icon:IC.creditCard, category:'finance',
-      pays:['BJ','CI','TG','SN'], niveau:'cle',
-      setupType:'apikey', setupLabel:'Clé publique Kkiapay', setupPlaceholder:'pk_...', url:'https://kkiapay.me/' },
-    { id:'stripe', name:'Stripe', desc:t('w5_dStripe'), color:'#635BFF', icon:IC.creditCard, category:'finance',
-      pays:['*'], niveau:'cle',
-      setupType:'apikey', setupLabel:'Clé secrète Stripe', setupPlaceholder:'sk_live_...', url:'https://dashboard.stripe.com/' },
-    { id:'paypal', name:'PayPal', desc:t('w5_dPaypal'), color:'#003087', icon:IC.creditCard, category:'finance',
-      pays:['*'], niveau:'lien',
-      setupType:'account', setupLabel:'E-mail PayPal Business', setupPlaceholder:'vous@boutique.com', url:'https://www.paypal.com/business' },
-
-    // ── Caisse & comptabilité ──
-    { id:'pos', name:'Caisse (POS)', desc:t('w5_dPos'), color:'#059669', icon:IC.creditCard, category:'finance',
-      pays:['*'], niveau:'lien',
-      setupType:'serial', setupLabel:'ID Terminal POS', setupPlaceholder:'POS-XXXXXX', url:null },
-    { id:'comptabilite', name:'Export Comptable', desc:t('w5_dOhada'), color:'#334155', icon:IC.receipt, category:'finance',
-      pays:['CI','SN','ML','BF','BJ','TG','NE','CM','GA','CD','TD','GN'], niveau:'sync',
-      setupType:'action', url:null },
-    { id:'sage', name:'Sage', desc:t('w5_dSage'), color:'#00DC06', icon:IC.receipt, category:'finance',
-      pays:['*'], niveau:'lien',
-      setupType:'account', setupLabel:'Référence dossier Sage', setupPlaceholder:'SAGE-XXXX', url:'https://www.sage.com/' },
-    { id:'quickbooks', name:'QuickBooks', desc:t('w5_dQuickbooks'), color:'#2CA01C', icon:IC.receipt, category:'finance',
-      pays:['*'], niveau:'lien',
-      setupType:'account', setupLabel:'Identifiant société', setupPlaceholder:'QB-XXXX', url:'https://quickbooks.intuit.com/' },
-    { id:'odoo', name:'Odoo', desc:t('w5_dOdoo'), color:'#714B67', icon:IC.layers, category:'finance',
-      pays:['*'], niveau:'cle',
-      setupType:'url+key', setupLabel:'URL de votre Odoo', setupPlaceholder:'https://monentreprise.odoo.com', keyLabel:'Clé API', url:'https://www.odoo.com/' },
-
-    // ── E-commerce & marketplaces ──
-    { id:'shopify', name:'Shopify', desc:t('w5_dShopify'), color:'#96BF48', icon:IC.shop, category:'ecommerce',
-      pays:['*'], niveau:'cle',
-      setupType:'url+key', setupLabel:'URL boutique Shopify', setupPlaceholder:'https://maboutique.myshopify.com', keyLabel:'Access Token', url:'https://www.shopify.com/admin' },
-    { id:'woocommerce', name:'WooCommerce', desc:t('w5_dWoo'), color:'#96588A', icon:IC.shop, category:'ecommerce',
-      pays:['*'], niveau:'cle',
-      setupType:'url+key', setupLabel:'URL boutique WooCommerce', setupPlaceholder:'https://maboutique.com', keyLabel:'Clé API WooCommerce', url:null },
-    { id:'jumia', name:'Jumia Seller', desc:t('w5_dJumia'), color:'#F68B1E', icon:IC.globe, category:'ecommerce',
-      pays:['CI','SN','NG','GH','KE','EG','MA','TN','UG','DZ'], niveau:'lien',
-      setupType:'url', setupLabel:'Lien vendeur Jumia', setupPlaceholder:'https://vendeur.jumia.ci/...', url:'https://vendeur.jumia.ci/' },
-    { id:'yango-market', name:'Yango Achat & Vente', desc:t('w5_dYangoMarket'), color:'#FF4D00', icon:IC.shop, category:'ecommerce',
-      pays:['CI','SN','CM','GH','ZM'], niveau:'lien',
-      setupType:'account', setupLabel:'ID Vendeur Yango Market', setupPlaceholder:'YMK-XXXXX', url:'https://market.yango.com/' },
-    { id:'facebook-shop', name:'Facebook & Instagram Shop', desc:t('w5_dFacebook'), color:'#0866FF', icon:IC.shop, category:'ecommerce',
-      pays:['*'], niveau:'lien',
-      setupType:'url', setupLabel:'Lien de votre boutique Facebook', setupPlaceholder:'https://facebook.com/maboutique/shop', url:'https://business.facebook.com/commerce' },
-    { id:'tiktok-shop', name:'TikTok Shop', desc:t('w5_dTiktok'), color:'#000000', icon:IC.shop, category:'ecommerce',
-      pays:['NG','ZA','GB','US','FR','MY','TH','VN','ID','SG'], niveau:'lien',
-      setupType:'account', setupLabel:'ID Vendeur TikTok Shop', setupPlaceholder:'TTS-XXXXX', url:'https://seller.tiktokglobalshop.com/' },
-    { id:'etsy', name:'Etsy', desc:t('w5_dEtsy'), color:'#F1641E', icon:IC.shop, category:'ecommerce',
-      pays:['*'], niveau:'lien',
-      setupType:'url', setupLabel:'Lien de votre boutique Etsy', setupPlaceholder:'https://etsy.com/shop/maboutique', url:'https://www.etsy.com/sell' },
-
-    // ── Livraison ──
-    { id:'glovo', name:'Glovo Partners', desc:t('w5_dGlovo'), color:'#FFC244', icon:IC.truck, category:'delivery',
-      pays:['CI','MA','KE','GH','NG','ES','IT','PT','RO','UA'], niveau:'lien',
-      setupType:'account', setupLabel:'ID Partenaire Glovo', setupPlaceholder:'GLV-XXXXX', url:'https://sell.glovoapp.com/' },
-    { id:'yango', name:'Yango Delivery', desc:t('w5_dYango'), color:'#FF4D00', icon:IC.truck, category:'delivery',
-      pays:['CI','SN','CM','GH','ZM','CD','MA'], niveau:'lien',
-      setupType:'account', setupLabel:'ID Partenaire Yango', setupPlaceholder:'YNG-XXXXX', url:'https://delivery.yango.com/' },
-    { id:'yango-deli', name:'Yango Deli', desc:t('w5_dYangoDeli'), color:'#FF4D00', icon:IC.truck, category:'delivery',
-      pays:['CI','SN','CM','GH'], niveau:'lien',
-      setupType:'account', setupLabel:'ID Partenaire Yango Deli', setupPlaceholder:'YDL-XXXXX', url:'https://deli.yango.com/' },
-    { id:'gozem', name:'Gozem', desc:t('w5_dGozem'), color:'#00A651', icon:IC.truck, category:'delivery',
-      pays:['TG','BJ','GA','CI','CM'], niveau:'lien',
-      setupType:'account', setupLabel:'ID Partenaire Gozem', setupPlaceholder:'GZM-XXXXX', url:'https://gozem.co/' },
-    { id:'dhl', name:'DHL Express', desc:t('w5_dDhl'), color:'#FFCC00', icon:IC.truck, category:'delivery',
-      pays:['*'], niveau:'lien',
-      setupType:'account', setupLabel:'Numéro de compte DHL', setupPlaceholder:'DHL-XXXXXXXX', url:'https://mydhl.express.dhl/' },
-
-    // ── Communication ──
-    { id:'whatsapp-business', name:'WhatsApp Business', desc:t('w5_dWhatsapp'), color:'#25D366', icon:IC.whatsapp, category:'communication',
-      pays:['*'], niveau:'lien',
-      setupType:'phone', setupLabel:'Numéro WhatsApp Business', setupPlaceholder:'+225 07 XX XX XX XX', url:'https://business.whatsapp.com/' },
-    { id:'sms-api', name:'SMS API', desc:t('w5_dSms'), color:'#4F46E5', icon:IC.smartphone, category:'communication',
-      pays:['*'], niveau:'cle',
-      setupType:'apikey', setupLabel:'Clé API SMS', setupPlaceholder:'sk_live_xxxxx', url:null },
-    { id:'telegram', name:'Telegram Bot', desc:t('w5_dTelegram'), color:'#26A5E4', icon:IC.smartphone, category:'communication',
-      pays:['*'], niveau:'cle',
-      setupType:'apikey', setupLabel:'Jeton du bot Telegram', setupPlaceholder:'123456:ABC-DEF...', url:'https://core.telegram.org/bots' },
-    { id:'brevo', name:'Brevo', desc:t('w5_dBrevo'), color:'#0B996E', icon:IC.mail, category:'communication',
-      pays:['*'], niveau:'cle',
-      setupType:'apikey', setupLabel:'Clé API Brevo', setupPlaceholder:'xkeysib-...', url:'https://www.brevo.com/' },
-    { id:'mailchimp', name:'Mailchimp', desc:t('w5_dMailchimp'), color:'#FFE01B', icon:IC.mail, category:'communication',
-      pays:['*'], niveau:'cle',
-      setupType:'apikey', setupLabel:'Clé API Mailchimp', setupPlaceholder:'xxxxxxxx-us1', url:'https://mailchimp.com/' },
-    { id:'slack', name:'Slack', desc:t('w5_dSlack'), color:'#4A154B', icon:IC.smartphone, category:'communication',
-      pays:['*'], niveau:'cle',
-      setupType:'url', setupLabel:'URL du webhook Slack', setupPlaceholder:'https://hooks.slack.com/services/...', url:'https://slack.com/' },
-
-    // ── Productivité & automatisation ──
-    { id:'google-sheets', name:'Google Sheets', desc:t('w5_dSheets'), color:'#0F9D58', icon:IC.layers, category:'productivity',
-      pays:['*'], niveau:'lien',
-      setupType:'url', setupLabel:'URL Google Sheet', setupPlaceholder:'https://docs.google.com/spreadsheets/d/...', url:null },
-    { id:'excel', name:'Import/Export Excel', desc:t('w5_dExcel'), color:'#217346', icon:IC.layers, category:'productivity',
-      pays:['*'], niveau:'sync',
-      setupType:'action', url:null },
-    { id:'zapier', name:'Zapier', desc:t('w5_dZapier'), color:'#FF4A00', icon:IC.link, category:'productivity',
-      pays:['*'], niveau:'cle',
-      setupType:'url', setupLabel:'URL du webhook Zapier', setupPlaceholder:'https://hooks.zapier.com/hooks/catch/...', url:'https://zapier.com/' },
-    { id:'make', name:'Make', desc:t('w5_dMake'), color:'#6D00CC', icon:IC.link, category:'productivity',
-      pays:['*'], niveau:'cle',
-      setupType:'url', setupLabel:'URL du webhook Make', setupPlaceholder:'https://hook.eu1.make.com/...', url:'https://www.make.com/' },
-    { id:'n8n', name:'n8n', desc:t('w5_dN8n'), color:'#EA4B71', icon:IC.link, category:'productivity',
-      pays:['*'], niveau:'cle',
-      setupType:'url', setupLabel:'URL du webhook n8n', setupPlaceholder:'https://n8n.mondomaine.com/webhook/...', url:'https://n8n.io/' },
-    { id:'youtube-studio', name:'YouTube Studio', desc:t('w5_dYoutube'), color:'#FF0000', icon:IC.youtube, category:'productivity',
-      pays:['*'], niveau:'lien',
-      setupType:'url', setupLabel:'URL chaîne YouTube', setupPlaceholder:'https://youtube.com/@maboutique', url:'https://studio.youtube.com/' },
-    { id:'api-rest', name:'API REST BARO', desc:t('w5_dApi'), color:'#1E1B80', icon:IC.link, category:'productivity',
-      pays:['*'], niveau:'sync',
-      setupType:'action', url:null },
-  ];
+  const integrationsList = BARO_INTEGRATIONS;
 
   return `
+  ${vFeuilleIntegration()}
   <div class="sub-hero">
     <div class="page-header-row" style="margin-bottom:14px">
       <button class="back-btn-dark" onclick="nav('more')">${IC.left}</button>
@@ -34572,25 +34453,171 @@ async function uploadVideoToYouTube(blob, title, description) {
   }
 }
 
+// ── Catalogue des intégrations ────────────────────────────────────────
+// Source unique : chaque entrée porte son mode de configuration, son
+// libellé, son exemple, le lien vers le compte partenaire et la doc.
+// Déclarée au niveau du module pour que la feuille de configuration et
+// _getIntegrationDef y accèdent — une table parallèle finissait toujours
+// par prendre du retard, et vingt-huit intégrations avaient un bouton muet.
+const BARO_INTEGRATIONS = [
+  // ── Paiement mobile — Afrique de l'Ouest & Centrale ──
+  { id:'wave', name:'Wave', desc:t('w5_dPaiementMobile'), color:'#1DC3FF', icon:IC.creditCard, category:'finance',
+    pays:['CI','SN','ML','BF','UG'], niveau:'lien',
+    setupType:'phone', setupLabel:'Numéro Wave Business', setupPlaceholder:'+225 07 00 00 00 00', url:'https://www.wave.com/fr/business/' },
+  { id:'orange-money', name:'Orange Money', desc:t('w5_dOrange'), color:'#FF7900', icon:IC.creditCard, category:'finance',
+    pays:['CI','SN','ML','BF','NE','CM','GN','MG','CD','JO'], niveau:'lien',
+    setupType:'phone', setupLabel:'Numéro marchand Orange Money', setupPlaceholder:'+225 07 00 00 00 00', url:'https://www.orange.ci/omoney' },
+  { id:'mtn-momo', name:'MTN MoMo', desc:t('w5_dMtn'), color:'#FFCC00', icon:IC.creditCard, category:'finance',
+    pays:['CI','GH','CM','UG','RW','ZM','BJ','NG'], niveau:'lien',
+    setupType:'phone', setupLabel:'Numéro marchand MoMo', setupPlaceholder:'+225 05 00 00 00 00', url:'https://momo.mtn.com/' },
+  { id:'moov-money', name:'Moov Money', desc:t('w5_dMoov'), color:'#0066B3', icon:IC.creditCard, category:'finance',
+    pays:['CI','BJ','TG','BF','NE'], niveau:'lien',
+    setupType:'phone', setupLabel:'Numéro marchand Moov', setupPlaceholder:'+225 01 00 00 00 00', url:'https://www.moov-africa.ci/' },
+  { id:'free-money', name:'Free Money', desc:t('w5_dFree'), color:'#CD1719', icon:IC.creditCard, category:'finance',
+    pays:['SN'], niveau:'lien',
+    setupType:'phone', setupLabel:'Numéro Free Money', setupPlaceholder:'+221 76 000 00 00', url:'https://www.free.sn/' },
+  { id:'airtel-money', name:'Airtel Money', desc:t('w5_dAirtel'), color:'#E4002B', icon:IC.creditCard, category:'finance',
+    pays:['NE','TD','GA','CD','KE','TZ','UG','RW','ZM','MW'], niveau:'lien',
+    setupType:'phone', setupLabel:'Numéro Airtel Money', setupPlaceholder:'+227 90 00 00 00', url:'https://www.airtel.africa/money' },
+  { id:'djamo', name:'Djamo', desc:t('w5_dDjamo'), color:'#1B1B3A', icon:IC.creditCard, category:'finance',
+    pays:['CI','SN'], niveau:'lien',
+    setupType:'account', setupLabel:'Identifiant Djamo', setupPlaceholder:'DJ-XXXXX', url:'https://www.djamo.com/' },
+
+  // ── Agrégateurs de paiement ──
+  { id:'cinetpay', name:'CinetPay', desc:t('w5_dCinetpay'), color:'#0F4C81', icon:IC.creditCard, category:'finance',
+    pays:['CI','SN','ML','BF','CM','TG','BJ','NE','GN','CD'], niveau:'cle',
+    setupType:'apikey', setupLabel:'Clé API CinetPay', setupPlaceholder:'API key', url:'https://cinetpay.com/' },
+  { id:'paydunya', name:'PayDunya', desc:'Paiement en ligne Afrique de l\'Ouest', color:'#0B8457', icon:IC.creditCard, category:'finance',
+    pays:['SN','CI','BF','ML','BJ','TG'], niveau:'cle',
+    setupType:'apikey', setupLabel:'Clé maîtresse PayDunya', setupPlaceholder:'live_master_...', url:'https://paydunya.com/' },
+  { id:'flutterwave', name:'Flutterwave', desc:t('w5_dFlutter'), color:'#F5A623', icon:IC.creditCard, category:'finance',
+    pays:['NG','GH','KE','ZA','CI','SN','UG','TZ','RW','CM','EG'], niveau:'cle',
+    setupType:'apikey', setupLabel:'Clé secrète Flutterwave', setupPlaceholder:'FLWSECK-...', url:'https://flutterwave.com/' },
+  { id:'paystack', name:'Paystack', desc:t('w5_dPaystack'), color:'#00C3F7', icon:IC.creditCard, category:'finance',
+    pays:['NG','GH','ZA','KE','CI'], niveau:'cle',
+    setupType:'apikey', setupLabel:'Clé secrète Paystack', setupPlaceholder:'sk_live_...', url:'https://paystack.com/' },
+  { id:'kkiapay', name:'Kkiapay', desc:t('w5_dKkiapay'), color:'#3B5AFB', icon:IC.creditCard, category:'finance',
+    pays:['BJ','CI','TG','SN'], niveau:'cle',
+    setupType:'apikey', setupLabel:'Clé publique Kkiapay', setupPlaceholder:'pk_...', url:'https://kkiapay.me/' },
+  { id:'stripe', name:'Stripe', desc:t('w5_dStripe'), color:'#635BFF', icon:IC.creditCard, category:'finance',
+    pays:['*'], niveau:'cle',
+    setupType:'apikey', setupLabel:'Clé secrète Stripe', setupPlaceholder:'sk_live_...', url:'https://dashboard.stripe.com/' },
+  { id:'paypal', name:'PayPal', desc:t('w5_dPaypal'), color:'#003087', icon:IC.creditCard, category:'finance',
+    pays:['*'], niveau:'lien',
+    setupType:'account', setupLabel:'E-mail PayPal Business', setupPlaceholder:'vous@boutique.com', url:'https://www.paypal.com/business' },
+
+  // ── Caisse & comptabilité ──
+  { id:'pos', name:'Caisse (POS)', desc:t('w5_dPos'), color:'#059669', icon:IC.creditCard, category:'finance',
+    pays:['*'], niveau:'lien',
+    setupType:'serial', setupLabel:'ID Terminal POS', setupPlaceholder:'POS-XXXXXX', url:null },
+  { id:'comptabilite', name:'Export Comptable', desc:t('w5_dOhada'), color:'#334155', icon:IC.receipt, category:'finance',
+    pays:['CI','SN','ML','BF','BJ','TG','NE','CM','GA','CD','TD','GN'], niveau:'sync',
+    setupType:'action', url:null },
+  { id:'sage', name:'Sage', desc:t('w5_dSage'), color:'#00DC06', icon:IC.receipt, category:'finance',
+    pays:['*'], niveau:'lien',
+    setupType:'account', setupLabel:'Référence dossier Sage', setupPlaceholder:'SAGE-XXXX', url:'https://www.sage.com/' },
+  { id:'quickbooks', name:'QuickBooks', desc:t('w5_dQuickbooks'), color:'#2CA01C', icon:IC.receipt, category:'finance',
+    pays:['*'], niveau:'lien',
+    setupType:'account', setupLabel:'Identifiant société', setupPlaceholder:'QB-XXXX', url:'https://quickbooks.intuit.com/' },
+  { id:'odoo', name:'Odoo', desc:t('w5_dOdoo'), color:'#714B67', icon:IC.layers, category:'finance',
+    pays:['*'], niveau:'cle',
+    setupType:'url+key', setupLabel:'URL de votre Odoo', setupPlaceholder:'https://monentreprise.odoo.com', keyLabel:'Clé API', url:'https://www.odoo.com/' },
+
+  // ── E-commerce & marketplaces ──
+  { id:'shopify', name:'Shopify', desc:t('w5_dShopify'), color:'#96BF48', icon:IC.shop, category:'ecommerce',
+    pays:['*'], niveau:'cle',
+    setupType:'url+key', setupLabel:'URL boutique Shopify', setupPlaceholder:'https://maboutique.myshopify.com', keyLabel:'Access Token', url:'https://www.shopify.com/admin' },
+  { id:'woocommerce', name:'WooCommerce', desc:t('w5_dWoo'), color:'#96588A', icon:IC.shop, category:'ecommerce',
+    pays:['*'], niveau:'cle',
+    setupType:'url+key', setupLabel:'URL boutique WooCommerce', setupPlaceholder:'https://maboutique.com', keyLabel:'Clé API WooCommerce', url:null },
+  { id:'jumia', name:'Jumia Seller', desc:t('w5_dJumia'), color:'#F68B1E', icon:IC.globe, category:'ecommerce',
+    pays:['CI','SN','NG','GH','KE','EG','MA','TN','UG','DZ'], niveau:'lien',
+    setupType:'url', setupLabel:'Lien vendeur Jumia', setupPlaceholder:'https://vendeur.jumia.ci/...', url:'https://vendeur.jumia.ci/' },
+  { id:'yango-market', name:'Yango Achat & Vente', desc:t('w5_dYangoMarket'), color:'#FF4D00', icon:IC.shop, category:'ecommerce',
+    pays:['CI','SN','CM','GH','ZM'], niveau:'lien',
+    setupType:'account', setupLabel:'ID Vendeur Yango Market', setupPlaceholder:'YMK-XXXXX', url:'https://market.yango.com/' },
+  { id:'facebook-shop', name:'Facebook & Instagram Shop', desc:t('w5_dFacebook'), color:'#0866FF', icon:IC.shop, category:'ecommerce',
+    pays:['*'], niveau:'lien',
+    setupType:'url', setupLabel:'Lien de votre boutique Facebook', setupPlaceholder:'https://facebook.com/maboutique/shop', url:'https://business.facebook.com/commerce' },
+  { id:'tiktok-shop', name:'TikTok Shop', desc:t('w5_dTiktok'), color:'#000000', icon:IC.shop, category:'ecommerce',
+    pays:['NG','ZA','GB','US','FR','MY','TH','VN','ID','SG'], niveau:'lien',
+    setupType:'account', setupLabel:'ID Vendeur TikTok Shop', setupPlaceholder:'TTS-XXXXX', url:'https://seller.tiktokglobalshop.com/' },
+  { id:'etsy', name:'Etsy', desc:t('w5_dEtsy'), color:'#F1641E', icon:IC.shop, category:'ecommerce',
+    pays:['*'], niveau:'lien',
+    setupType:'url', setupLabel:'Lien de votre boutique Etsy', setupPlaceholder:'https://etsy.com/shop/maboutique', url:'https://www.etsy.com/sell' },
+
+  // ── Livraison ──
+  { id:'glovo', name:'Glovo Partners', desc:t('w5_dGlovo'), color:'#FFC244', icon:IC.truck, category:'delivery',
+    pays:['CI','MA','KE','GH','NG','ES','IT','PT','RO','UA'], niveau:'lien',
+    setupType:'account', setupLabel:'ID Partenaire Glovo', setupPlaceholder:'GLV-XXXXX', url:'https://sell.glovoapp.com/' },
+  { id:'yango', name:'Yango Delivery', desc:t('w5_dYango'), color:'#FF4D00', icon:IC.truck, category:'delivery',
+    pays:['CI','SN','CM','GH','ZM','CD','MA'], niveau:'lien',
+    setupType:'account', setupLabel:'ID Partenaire Yango', setupPlaceholder:'YNG-XXXXX', url:'https://delivery.yango.com/' },
+  { id:'yango-deli', name:'Yango Deli', desc:t('w5_dYangoDeli'), color:'#FF4D00', icon:IC.truck, category:'delivery',
+    pays:['CI','SN','CM','GH'], niveau:'lien',
+    setupType:'account', setupLabel:'ID Partenaire Yango Deli', setupPlaceholder:'YDL-XXXXX', url:'https://deli.yango.com/' },
+  { id:'gozem', name:'Gozem', desc:t('w5_dGozem'), color:'#00A651', icon:IC.truck, category:'delivery',
+    pays:['TG','BJ','GA','CI','CM'], niveau:'lien',
+    setupType:'account', setupLabel:'ID Partenaire Gozem', setupPlaceholder:'GZM-XXXXX', url:'https://gozem.co/' },
+  { id:'dhl', name:'DHL Express', desc:t('w5_dDhl'), color:'#FFCC00', icon:IC.truck, category:'delivery',
+    pays:['*'], niveau:'lien',
+    setupType:'account', setupLabel:'Numéro de compte DHL', setupPlaceholder:'DHL-XXXXXXXX', url:'https://mydhl.express.dhl/' },
+
+  // ── Communication ──
+  { id:'whatsapp-business', name:'WhatsApp Business', desc:t('w5_dWhatsapp'), color:'#25D366', icon:IC.whatsapp, category:'communication',
+    pays:['*'], niveau:'lien',
+    setupType:'phone', setupLabel:'Numéro WhatsApp Business', setupPlaceholder:'+225 07 XX XX XX XX', url:'https://business.whatsapp.com/' },
+  { id:'sms-api', name:'SMS API', desc:t('w5_dSms'), color:'#4F46E5', icon:IC.smartphone, category:'communication',
+    pays:['*'], niveau:'cle',
+    setupType:'apikey', setupLabel:'Clé API SMS', setupPlaceholder:'sk_live_xxxxx', url:null },
+  { id:'telegram', name:'Telegram Bot', desc:t('w5_dTelegram'), color:'#26A5E4', icon:IC.smartphone, category:'communication',
+    pays:['*'], niveau:'cle',
+    setupType:'apikey', setupLabel:'Jeton du bot Telegram', setupPlaceholder:'123456:ABC-DEF...', url:'https://core.telegram.org/bots' },
+  { id:'brevo', name:'Brevo', desc:t('w5_dBrevo'), color:'#0B996E', icon:IC.mail, category:'communication',
+    pays:['*'], niveau:'cle',
+    setupType:'apikey', setupLabel:'Clé API Brevo', setupPlaceholder:'xkeysib-...', url:'https://www.brevo.com/' },
+  { id:'mailchimp', name:'Mailchimp', desc:t('w5_dMailchimp'), color:'#FFE01B', icon:IC.mail, category:'communication',
+    pays:['*'], niveau:'cle',
+    setupType:'apikey', setupLabel:'Clé API Mailchimp', setupPlaceholder:'xxxxxxxx-us1', url:'https://mailchimp.com/' },
+  { id:'slack', name:'Slack', desc:t('w5_dSlack'), color:'#4A154B', icon:IC.smartphone, category:'communication',
+    pays:['*'], niveau:'cle',
+    setupType:'url', setupLabel:'URL du webhook Slack', setupPlaceholder:'https://hooks.slack.com/services/...', url:'https://slack.com/' },
+
+  // ── Productivité & automatisation ──
+  { id:'google-sheets', name:'Google Sheets', desc:t('w5_dSheets'), color:'#0F9D58', icon:IC.layers, category:'productivity',
+    pays:['*'], niveau:'lien',
+    setupType:'url', setupLabel:'URL Google Sheet', setupPlaceholder:'https://docs.google.com/spreadsheets/d/...', url:null },
+  { id:'excel', name:'Import/Export Excel', desc:t('w5_dExcel'), color:'#217346', icon:IC.layers, category:'productivity',
+    pays:['*'], niveau:'sync',
+    setupType:'action', url:null },
+  { id:'zapier', name:'Zapier', desc:t('w5_dZapier'), color:'#FF4A00', icon:IC.link, category:'productivity',
+    pays:['*'], niveau:'cle',
+    setupType:'url', setupLabel:'URL du webhook Zapier', setupPlaceholder:'https://hooks.zapier.com/hooks/catch/...', url:'https://zapier.com/' },
+  { id:'make', name:'Make', desc:t('w5_dMake'), color:'#6D00CC', icon:IC.link, category:'productivity',
+    pays:['*'], niveau:'cle',
+    setupType:'url', setupLabel:'URL du webhook Make', setupPlaceholder:'https://hook.eu1.make.com/...', url:'https://www.make.com/' },
+  { id:'n8n', name:'n8n', desc:t('w5_dN8n'), color:'#EA4B71', icon:IC.link, category:'productivity',
+    pays:['*'], niveau:'cle',
+    setupType:'url', setupLabel:'URL du webhook n8n', setupPlaceholder:'https://n8n.mondomaine.com/webhook/...', url:'https://n8n.io/' },
+  { id:'youtube-studio', name:'YouTube Studio', desc:t('w5_dYoutube'), color:'#FF0000', icon:IC.youtube, category:'productivity',
+    pays:['*'], niveau:'lien',
+    setupType:'url', setupLabel:'URL chaîne YouTube', setupPlaceholder:'https://youtube.com/@maboutique', url:'https://studio.youtube.com/' },
+  { id:'api-rest', name:'API REST BARO', desc:t('w5_dApi'), color:'#1E1B80', icon:IC.link, category:'productivity',
+    pays:['*'], niveau:'sync',
+    setupType:'action', url:null },
+];
+
 function _getIntegrationDef(id) {
-  const defs = {
-    'whatsapp-business': { setupType:'whatsapp-setup', setupLabel:'Numero WhatsApp Business', setupPlaceholder:'+225 07 XX XX XX XX', url:'https://business.facebook.com/wa/manage/', docUrl:'https://developers.facebook.com/docs/whatsapp/cloud-api/' },
-    'sms-api':           { setupType:'sms-setup', setupLabel:'Configuration passerelle SMS', setupPlaceholder:'Twilio, Vonage, Africa\'s Talking...', docUrl:'https://www.twilio.com/docs/sms' },
-    'woocommerce':       { setupType:'url+key', setupLabel:'URL boutique WooCommerce', setupPlaceholder:'https://maboutique.com', keyLabel:'Cle API WooCommerce' },
-    'shopify':           { setupType:'url+key', setupLabel:'URL boutique Shopify', setupPlaceholder:'https://maboutique.myshopify.com', keyLabel:'Access Token', url:'https://www.shopify.com/admin' },
-    'jumia':             { setupType:'url', setupLabel:'Lien vendeur Jumia', setupPlaceholder:'https://vendorcenter.jumia.com/', url:'https://vendorcenter.jumia.com/' },
-    'glovo':             { setupType:'delivery-oauth', setupLabel:'Connexion Glovo Partners', url:'https://sell.glovoapp.com/', docUrl:'https://api-docs.glovoapp.com/' },
-    'yango':             { setupType:'delivery-oauth', setupLabel:'Connexion Yango Delivery', url:'https://delivery.yango.com/', docUrl:'https://delivery.yango.com/docs' },
-    'yango-deli':        { setupType:'account', setupLabel:'ID Partenaire Yango Deli', setupPlaceholder:'YDL-XXXXX', url:'https://deli.yango.com/', docUrl:'https://deli.yango.com/partners' },
-    'yango-market':      { setupType:'account', setupLabel:'ID Vendeur Yango Market', setupPlaceholder:'YMK-XXXXX', url:'https://market.yango.com/', docUrl:'https://market.yango.com/seller' },
-    'wave':              { setupType:'phone', setupLabel:'Numéro Wave Business', setupPlaceholder:'+225 07 00 00 00 00', url:'https://www.wave.com/fr/business/', docUrl:'https://www.wave.com/fr/business/docs' },
-    'youtube-studio':    { setupType:'url', setupLabel:'URL chaîne YouTube', setupPlaceholder:'https://youtube.com/@mashop', url:'https://studio.youtube.com/', docUrl:'https://support.google.com/youtube/topic/9257610' },
-    'google-sheets':     { setupType:'url', setupLabel:'URL Google Sheet partagee', setupPlaceholder:'https://docs.google.com/spreadsheets/d/...' },
-    'excel':             { setupType:'action' },
-    'comptabilite':      { setupType:'action' },
-    'pos':               { setupType:'serial', setupLabel:'ID Terminal POS', setupPlaceholder:'POS-XXXXXX' },
+  // La liste fait foi. Le repli couvre les identifiants historiques qui
+  // n'y figurent pas (vues dédiées appelées directement).
+  const dansListe = BARO_INTEGRATIONS.find(x => x.id === id);
+  if (dansListe && dansListe.setupType) return dansListe;
+  const anciens = {
+    'comptabilite': { setupType:'action' },
+    'pos':          { setupType:'serial', setupLabel:'ID Terminal POS', setupPlaceholder:'POS-XXXXXX' },
+    'excel':        { setupType:'action' },
   };
-  return defs[id] || {};
+  return anciens[id] || {};
 }
 
 function connectIntegration(integrationId) {
@@ -34606,6 +34633,11 @@ function connectIntegration(integrationId) {
   // POS / Caisse → vue dédiée (ESC/POS + tiroir)
   if (integrationId === 'pos') {
     nav('pos-setup');
+    return;
+  }
+  // API REST → la vue des cles d'API existe deja
+  if (integrationId === 'api-rest') {
+    nav('api-settings');
     return;
   }
   // Excel — action flow (export CSV)
@@ -34649,37 +34681,121 @@ function connectIntegration(integrationId) {
     return;
   }
 
-  // Open partner URL if available
-  if (def.url) {
-    if (confirm(`Ouvrir ${name} dans un nouvel onglet pour recuperer vos identifiants ?`)) {
-      window.open(def.url, '_blank');
-    }
+  // Tout le reste ouvre la feuille de configuration. Ni confirm() ni
+  // prompt() : dans une PWA installee, le systeme les bloque et le bouton
+  // ne faisait rien du tout.
+  if (['phone','apikey','url+key','url','account','serial'].includes(def.setupType)) {
+    ouvrirFeuilleIntegration(integrationId);
+    return;
+  }
+  // Une integration sans mode de configuration connu ne doit pas rester
+  // muette : on le dit, plutot que de laisser croire a une panne.
+  showToast(t('zg_pasDeConfig').replace('{0}', name), 'error');
+}
+
+// ── Feuille de configuration d'une intégration ──────────────────────────
+// Un seul écran pour les six formes de configuration. Les valeurs saisies
+// restent sur l'appareil : elles ne sont envoyées nulle part.
+function ouvrirFeuilleIntegration(id) {
+  const def = _getIntegrationDef(id);
+  if (!def.setupType) return;
+  const dejaLa = (S.integrationsConfig || []).find(i => i.id === id);
+  S.intSheet = {
+    id,
+    nom: _nomIntegration(id),
+    val: dejaLa && def.setupType !== 'apikey' ? (dejaLa.value || '') : '',
+    cle: '',
+    erreur: '',
+  };
+  haptic('tap');
+  render();
+}
+function fermerFeuilleIntegration() {
+  S.intSheet = null;
+  render();
+}
+function _nomIntegration(id) {
+  // Le nom affiché vient du catalogue, pas d'une table parallèle.
+  const trouve = BARO_INTEGRATIONS.find(x => x.id === id);
+  return (trouve && trouve.name) || id;
+}
+function _majFeuilleIntegration(champ, valeur) {
+  if (!S.intSheet) return;
+  S.intSheet[champ] = valeur;
+  S.intSheet.erreur = '';
+}
+function validerFeuilleIntegration() {
+  const f = S.intSheet;
+  if (!f) return;
+  const def = _getIntegrationDef(f.id);
+  const val = String(f.val || '').trim();
+  const cle = String(f.cle || '').trim();
+  const besoinVal = def.setupType !== 'apikey';
+  const besoinCle = def.setupType === 'apikey' || def.setupType === 'url+key';
+
+  // On vérifie ce qui est vérifiable, et rien de plus : un champ vide, un
+  // lien qui n'en est pas un, un numéro sans assez de chiffres.
+  if (besoinVal && !val) { f.erreur = t('zg_champRequis'); render(); return; }
+  if (besoinCle && !cle) { f.erreur = t('zg_cleRequise'); render(); return; }
+  if ((def.setupType === 'url' || def.setupType === 'url+key') && !/^https?:\/\/.+\..+/i.test(val)) {
+    f.erreur = t('zg_urlInvalide'); render(); return;
+  }
+  if (def.setupType === 'phone' && (val.replace(/\D/g, '').length < 8)) {
+    f.erreur = t('zg_telInvalide'); render(); return;
   }
 
-  // Collect credentials
-  if (def.setupType === 'phone') {
-    const phone = prompt(def.setupLabel + ' :', def.setupPlaceholder);
-    if (!phone || phone === def.setupPlaceholder) return;
-    _saveIntegration(integrationId, name, phone);
-  } else if (def.setupType === 'apikey') {
-    const key = prompt(def.setupLabel + ' :', '');
-    if (!key) return;
-    _saveIntegration(integrationId, name, '****' + key.slice(-4), key);
-  } else if (def.setupType === 'url+key') {
-    const url = prompt(def.setupLabel + ' :', def.setupPlaceholder);
-    if (!url || url === def.setupPlaceholder) return;
-    const apiKey = prompt((def.keyLabel||'Cle API') + ' :', '');
-    if (!apiKey) return;
-    _saveIntegration(integrationId, name, url, apiKey);
-  } else if (def.setupType === 'url') {
-    const url = prompt(def.setupLabel + ' :', def.setupPlaceholder);
-    if (!url || url === def.setupPlaceholder) return;
-    _saveIntegration(integrationId, name, url);
-  } else if (def.setupType === 'account' || def.setupType === 'serial') {
-    const val = prompt(def.setupLabel + ' :', def.setupPlaceholder);
-    if (!val || val === def.setupPlaceholder) return;
-    _saveIntegration(integrationId, name, val);
-  }
+  if (def.setupType === 'apikey') _saveIntegration(f.id, f.nom, '••••' + cle.slice(-4), cle);
+  else if (def.setupType === 'url+key') _saveIntegration(f.id, f.nom, val, cle);
+  else _saveIntegration(f.id, f.nom, val);
+
+  S.intSheet = null;
+  render();
+}
+
+// Rendu de la feuille. Appelé par la vue des intégrations.
+function vFeuilleIntegration() {
+  const f = S.intSheet;
+  if (!f) return '';
+  const def = _getIntegrationDef(f.id);
+  const att = v => String(v == null ? '' : v).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+  const besoinVal = def.setupType !== 'apikey';
+  const besoinCle = def.setupType === 'apikey' || def.setupType === 'url+key';
+  const typeChamp = def.setupType === 'phone' ? 'tel'
+    : (def.setupType === 'url' || def.setupType === 'url+key') ? 'url' : 'text';
+  return `
+  <div class="int-ov show" onclick="if(event.target===this)fermerFeuilleIntegration()">
+    <div class="int-sheet" role="dialog" aria-modal="true" aria-label="${att(f.nom)}">
+      <div class="int-sheet-head">
+        <div class="int-sheet-titre">${att(f.nom)}</div>
+        <button class="int-sheet-x" onclick="fermerFeuilleIntegration()" aria-label="${t('zg_fermer')}">✕</button>
+      </div>
+      <div class="int-sheet-corps">
+        ${def.url ? `<a class="int-sheet-lien" href="${att(def.url)}" target="_blank" rel="noopener noreferrer">
+          ${t('zg_ouvrirCompte').replace('{0}', att(f.nom))} ↗</a>` : ''}
+        ${besoinVal ? `
+        <div class="bq-fld bq-fld-large">
+          <label>${att(def.setupLabel || t('zg_identifiant'))}</label>
+          <input class="input" type="${typeChamp}" value="${att(f.val)}"
+                 placeholder="${att(def.setupPlaceholder || '')}"
+                 oninput="_majFeuilleIntegration('val',this.value)">
+        </div>` : ''}
+        ${besoinCle ? `
+        <div class="bq-fld bq-fld-large">
+          <label>${att(def.keyLabel || t('zg_cleApi'))}</label>
+          <input class="input" type="password" autocomplete="off" value="${att(f.cle)}"
+                 placeholder="${t('zg_collerCle')}"
+                 oninput="_majFeuilleIntegration('cle',this.value)">
+        </div>` : ''}
+        ${f.erreur ? `<div class="int-sheet-err">${att(f.erreur)}</div>` : ''}
+        <div class="int-sheet-note">🔒 ${t('zg_resteSurAppareil')}</div>
+        ${def.docUrl ? `<a class="int-sheet-doc" href="${att(def.docUrl)}" target="_blank" rel="noopener noreferrer">${t('zg_documentation')} ↗</a>` : ''}
+      </div>
+      <div class="int-sheet-pied">
+        <button class="btn btn-ghost" onclick="fermerFeuilleIntegration()">${t('cancel')}</button>
+        <button class="btn btn-primary" onclick="validerFeuilleIntegration()">${t('zg_connecter')}</button>
+      </div>
+    </div>
+  </div>`;
 }
 
 function _saveIntegration(id, name, displayValue, secretKey) {
