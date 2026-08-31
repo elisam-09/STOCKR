@@ -270,6 +270,25 @@ const API_BASE = (location.hostname === 'localhost' || location.hostname === '12
 // ── i18n ─────────────────────────────────────
 const LANGS = {
   fr: {
+    zm_titre: "Modèles de vitrine",
+    zm_aide: "Un modèle pose d'un coup une combinaison cohérente des quatre studios. Tout reste modifiable ensuite — c'est un point de départ, pas un cadre fermé.",
+    zm_lockTitre: "Modèles de vitrine réservés au plan Entreprise",
+    zm_lockTx: "Six combinaisons prêtes — sobre, éditoriale, marché, atelier, technique, table — qui règlent d'un coup l'animation, la typographie, la mise en page et le contenu. Voir les plans →",
+    zm_applique: "Modèle « {0} » appliqué",
+    zm_annule: "Réglages précédents rétablis",
+    zm_annuler: "Revenir à mes réglages précédents",
+    zm_n_sobre: "Sobre",
+    zm_p_sobre: "Clair, lisible, sans effet inutile. Pour la santé, les services, tout ce qui doit inspirer confiance.",
+    zm_n_editorial: "Éditorial",
+    zm_p_editorial: "Fond profond, grandes photos, titres monumentaux. Pour la mode et les pièces qu'on regarde longtemps.",
+    zm_n_marche: "Marché",
+    zm_p_marche: "Dense, chaleureux, beaucoup de références visibles d'un coup. Pour l'épicerie et le quotidien.",
+    zm_n_atelier: "Atelier",
+    zm_p_atelier: "Beige, aéré, photos entières sur fond. Pour l'artisanat et les produits détourés.",
+    zm_n_tech: "Technique",
+    zm_p_tech: "Sombre, grille fine, caractéristiques en avant. Pour l'électronique et les pièces détachées.",
+    zm_n_table: "Table",
+    zm_p_table: "Photos larges en liste, description lisible. Pour la restauration et les plats préparés.",
     zk_nivLien: "Raccourci",
     zk_nivLienD: "Ouvre le service avec votre identifiant mémorisé",
     zk_nivCle: "Clé stockée",
@@ -2228,6 +2247,25 @@ const LANGS = {
     version:'Version',
   },
   en: {
+    zm_titre: "Shop templates",
+    zm_aide: "A template sets a coherent combination across the four studios in one go. Everything stays editable afterwards — it is a starting point, not a fixed frame.",
+    zm_lockTitre: "Shop templates, Enterprise plan only",
+    zm_lockTx: "Six ready combinations — plain, editorial, market, workshop, technical, table — setting animation, typography, layout and content at once. See the plans →",
+    zm_applique: "Template “{0}” applied",
+    zm_annule: "Previous settings restored",
+    zm_annuler: "Back to my previous settings",
+    zm_n_sobre: "Plain",
+    zm_p_sobre: "Light, readable, no needless effect. For health, services, anything that must inspire trust.",
+    zm_n_editorial: "Editorial",
+    zm_p_editorial: "Deep background, large photos, monumental headings. For fashion and pieces people linger on.",
+    zm_n_marche: "Market",
+    zm_p_marche: "Dense, warm, many items visible at once. For groceries and everyday goods.",
+    zm_n_atelier: "Workshop",
+    zm_p_atelier: "Beige, airy, whole photos on a background. For crafts and cut-out products.",
+    zm_n_tech: "Technical",
+    zm_p_tech: "Dark, fine grid, specifications up front. For electronics and spare parts.",
+    zm_n_table: "Table",
+    zm_p_table: "Wide photos in a list, readable description. For catering and prepared dishes.",
     zk_nivLien: "Shortcut",
     zk_nivLienD: "Opens the service with your saved identifier",
     zk_nivCle: "Key stored",
@@ -24556,6 +24594,194 @@ function _bqPickerChips(kind, items) {
 function boutiqueSetPickCat(kind, cat) { _bqCatState()[kind] = cat; haptic('tap'); render(); }
 
 // ── Éditeur visuel : applique un réglage + rafraîchit l'aperçu live SANS re-render ──
+// ── Modèles de vitrine (plan Entreprise) ────────────────────────────────
+// Chaque modèle pose une combinaison cohérente des réglages des quatre
+// studios. Fonction et non constante : les libellés passent par t().
+function BARO_MODELES() {
+  return [
+  {
+    id: 'sobre', nom: t('zm_n_sobre'), pitch: t('zm_p_sobre'), apercu: ['#FAF9F6', '#16161C', '#2563EB'],
+    reglages: {
+      palette:'clair', themeMode:'auto', gridCols:2, heroStyle:'classic', density:'normal',
+      cardHover:'lift', borderStyle:'rounded', prixStyle:'normal', ruptureStyle:'bandeau',
+      galerieCarte:'aucune', imageEffet:'aucun', cadreImage:'filet', posPastille:'hd', formatPrix:'apres',
+      cinema:false,
+      anim:{ parallaxe:30, hero:'aucun', reveal:'bas', grille:'colonne', separateur:'ligne',
+             progression:'haut', zoomImage:4, tilt:false, spotlight:false, magnetique:false,
+             halo:false, curseur:false, grain:false, doux:true, bandeau:false },
+      typo:{ titreEchelle:'moyen', titreStyle:'capitales', titreNumero:false, titreAlign:'gauche',
+             titreTrait:'apres', revealTexte:'aucun', heroEchelle:'mesure', heroSerrage:25,
+             interlettrage:14, rythme:'normal', chiffresAnimes:false },
+      mep:{ largeur:'normale', marges:'normales', colBureau:3, gouttiere:'normale', vignette:'carre',
+            separation:'carte', hauteurs:'egales', vedette:false, banniere:'page', outils:'collante',
+            pied:'complet', ordreCarte:'normal', boutonCarte:'plein', logoPos:'gauche',
+            navStyle:'pastilles', coins:'doux', fondMotif:'aucun', sectionsLarges:false,
+            panierFlottant:'barre', imageFit:'cover', hauteurBanniere:'courte',
+            alignGrille:'gauche', airSections:'normal' },
+      contenu:{ promoStyle:'pastille', noteStyle:'etoile', categorieCarte:'dessus', nomLignes:2,
+                descLignes:2, stockBarre:true, survolPhoto:'zoom', ordreInfos:'catNom' },
+    },
+  },
+  {
+    id: 'editorial', nom: t('zm_n_editorial'), pitch: t('zm_p_editorial'), apercu: ['#141110', '#F3EEE0', '#C9A96E'],
+    reglages: {
+      palette:'nuit', paletteLight:'creme', themeMode:'choix', gridCols:2, heroStyle:'banner',
+      density:'airy', cardHover:'zoom', borderStyle:'square', prixStyle:'editorial',
+      ruptureStyle:'voile', galerieCarte:'survol', imageEffet:'nb', cadreImage:'aucun',
+      posPastille:'hg', formatPrix:'apres', cinema:true,
+      anim:{ rideau:'haut', longueur:240, declenche:'normal', entree:'montee', cascade:'ample',
+             ordre:'normal', parallaxe:80, hero:'fondu', vignette:true, reveal:'bascule',
+             grille:'diagonale', separateur:'ligne', progression:'haut', zoomImage:12,
+             tilt:true, spotlight:true, magnetique:true, halo:true, curseur:false,
+             bandeau:false, grain:true, doux:true },
+      typo:{ titreEchelle:'monumental', titreStyle:'editorial', titreNumero:true, titreAlign:'gauche',
+             titreTrait:'apres', revealTexte:'mot', heroEchelle:'demesure', heroSerrage:60,
+             interlettrage:16, rythme:'ample', chiffresAnimes:true },
+      mep:{ largeur:'large', marges:'genereuses', colBureau:2, gouttiere:'large', vignette:'portrait',
+            separation:'nue', hauteurs:'naturelles', vedette:true, banniere:'debordante',
+            outils:'haut', pied:'compact', ordreCarte:'normal', boutonCarte:'discret',
+            logoPos:'centre', navStyle:'souligne', coins:'anguleux', fondMotif:'aucun',
+            sectionsLarges:true, panierFlottant:'bouton', imageFit:'cover',
+            hauteurBanniere:'haute', alignGrille:'gauche', airSections:'ample' },
+      contenu:{ promoStyle:'barre', noteStyle:'chiffre', categorieCarte:'photo', nomLignes:2,
+                descLignes:1, stockBarre:false, survolPhoto:'glisse', ordreInfos:'nomCat' },
+    },
+  },
+  {
+    id: 'marche', nom: t('zm_n_marche'), pitch: t('zm_p_marche'), apercu: ['#F2EDE1', '#241C15', '#D97706'],
+    reglages: {
+      palette:'creme', themeMode:'fixe', gridCols:3, heroStyle:'classic', density:'compact',
+      cardHover:'lift', borderStyle:'rounded', prixStyle:'fort', ruptureStyle:'grise',
+      galerieCarte:'aucune', imageEffet:'aucun', cadreImage:'aucun', posPastille:'bg',
+      formatPrix:'apres', cinema:false,
+      anim:{ parallaxe:40, hero:'aucun', reveal:'fondu', grille:'ligne', separateur:'aucun',
+             progression:'aucune', zoomImage:8, tilt:false, spotlight:false, magnetique:false,
+             halo:false, curseur:false, grain:false, doux:true,
+             bandeau:true, bandeauTexte:'' },
+      typo:{ titreEchelle:'discret', titreStyle:'capitales', titreNumero:false, titreAlign:'gauche',
+             titreTrait:'apres', revealTexte:'aucun', heroEchelle:'mesure', heroSerrage:30,
+             interlettrage:18, rythme:'serre', chiffresAnimes:false },
+      mep:{ largeur:'large', marges:'fines', colTel:2, colBureau:4, gouttiere:'serree',
+            vignette:'carre', separation:'carte', hauteurs:'egales', vedette:false,
+            banniere:'page', outils:'collante', pied:'compact', ordreCarte:'normal',
+            boutonCarte:'plein', logoPos:'gauche', navStyle:'pastilles', coins:'doux',
+            fondMotif:'aucun', sectionsLarges:false, panierFlottant:'barre', imageFit:'cover',
+            hauteurBanniere:'courte', alignGrille:'gauche', airSections:'serre' },
+      contenu:{ promoStyle:'economie', noteStyle:'masquee', categorieCarte:'dessus', nomLignes:2,
+                descLignes:0, stockBarre:true, survolPhoto:'zoom', ordreInfos:'catNom' },
+    },
+  },
+  {
+    id: 'atelier', nom: t('zm_n_atelier'), pitch: t('zm_p_atelier'), apercu: ['#F2EDE1', '#241C15', '#7C3AED'],
+    reglages: {
+      palette:'creme', themeMode:'auto', gridCols:2, heroStyle:'minimal', density:'airy',
+      cardHover:'none', borderStyle:'xl', prixStyle:'discret', ruptureStyle:'bandeau',
+      galerieCarte:'points', imageEffet:'doux', cadreImage:'ombre', posPastille:'hd',
+      formatPrix:'apres', cinema:false,
+      anim:{ parallaxe:20, hero:'aucun', reveal:'zoom', grille:'colonne', separateur:'degrade',
+             progression:'aucune', zoomImage:0, tilt:true, spotlight:false, magnetique:false,
+             halo:false, curseur:false, grain:true, doux:true, bandeau:false },
+      typo:{ titreEchelle:'affirme', titreStyle:'normal', titreNumero:false, titreAlign:'centre',
+             titreTrait:'aucun', revealTexte:'ligne', heroEchelle:'grand', heroSerrage:20,
+             interlettrage:10, rythme:'ample', chiffresAnimes:false },
+      mep:{ largeur:'etroite', marges:'genereuses', colBureau:2, gouttiere:'large',
+            vignette:'carre', separation:'nue', hauteurs:'naturelles', vedette:false,
+            banniere:'page', outils:'haut', pied:'minimal', ordreCarte:'normal',
+            boutonCarte:'discret', logoPos:'centre', navStyle:'souligne', coins:'ronds',
+            fondMotif:'aucun', sectionsLarges:false, panierFlottant:'aucun', imageFit:'contain',
+            hauteurBanniere:'normale', alignGrille:'centre', airSections:'ample' },
+      contenu:{ promoStyle:'pastille', noteStyle:'etoile', categorieCarte:'masquee', nomLignes:0,
+                descLignes:3, stockBarre:false, survolPhoto:'aucun', ordreInfos:'catNom' },
+    },
+  },
+  {
+    id: 'tech', nom: t('zm_n_tech'), pitch: t('zm_p_tech'), apercu: ['#141110', '#F3EEE0', '#0891B2'],
+    reglages: {
+      palette:'nuit', paletteLight:'clair', themeMode:'choix', gridCols:3, heroStyle:'classic',
+      density:'normal', cardHover:'lift', borderStyle:'rounded', prixStyle:'fort',
+      ruptureStyle:'voile', galerieCarte:'points', imageEffet:'aucun', cadreImage:'filet',
+      posPastille:'hd', formatPrix:'apres', cinema:false,
+      anim:{ parallaxe:50, hero:'fixe', reveal:'bas', grille:'diagonale', separateur:'ligne',
+             progression:'haut', zoomImage:10, tilt:true, spotlight:true, magnetique:false,
+             halo:true, curseur:false, grain:false, doux:true, bandeau:false },
+      typo:{ titreEchelle:'affirme', titreStyle:'capitales', titreNumero:true, titreAlign:'gauche',
+             titreTrait:'apres', revealTexte:'lettre', heroEchelle:'grand', heroSerrage:45,
+             interlettrage:20, rythme:'normal', chiffresAnimes:true },
+      mep:{ largeur:'large', marges:'normales', colTel:2, colBureau:4, gouttiere:'normale',
+            vignette:'carre', separation:'filet', hauteurs:'egales', vedette:true,
+            banniere:'pleine', outils:'collante', pied:'complet', ordreCarte:'normal',
+            boutonCarte:'plein', logoPos:'gauche', navStyle:'souligne', coins:'anguleux',
+            fondMotif:'grille', sectionsLarges:true, panierFlottant:'barre', imageFit:'cover',
+            hauteurBanniere:'normale', alignGrille:'gauche', airSections:'normal' },
+      contenu:{ promoStyle:'pourcent', noteStyle:'chiffre', categorieCarte:'dessus', nomLignes:2,
+                descLignes:2, stockBarre:true, survolPhoto:'eclat', ordreInfos:'catNom' },
+    },
+  },
+  {
+    id: 'table', nom: t('zm_n_table'), pitch: t('zm_p_table'), apercu: ['#FAF9F6', '#16161C', '#DC2626'],
+    reglages: {
+      palette:'clair', themeMode:'fixe', gridCols:1, heroStyle:'banner', density:'normal',
+      cardHover:'zoom', borderStyle:'rounded', prixStyle:'normal', ruptureStyle:'bandeau',
+      galerieCarte:'survol', imageEffet:'aucun', cadreImage:'aucun', posPastille:'hg',
+      formatPrix:'apres', dispositionCarte:'liste', cinema:false,
+      anim:{ parallaxe:60, hero:'zoom', reveal:'bas', grille:'ligne', separateur:'degrade',
+             progression:'haut', zoomImage:14, tilt:false, spotlight:false, magnetique:false,
+             halo:true, curseur:false, grain:true, doux:true, bandeau:true, bandeauTexte:'' },
+      typo:{ titreEchelle:'affirme', titreStyle:'editorial', titreNumero:false, titreAlign:'centre',
+             titreTrait:'aucun', revealTexte:'ligne', heroEchelle:'grand', heroSerrage:35,
+             interlettrage:12, rythme:'normal', chiffresAnimes:false },
+      mep:{ largeur:'normale', marges:'normales', colTel:1, colBureau:2, gouttiere:'normale',
+            vignette:'paysage', separation:'carte', hauteurs:'egales', vedette:true,
+            banniere:'pleine', outils:'haut', pied:'compact', ordreCarte:'normal',
+            boutonCarte:'plein', logoPos:'centre', navStyle:'pastilles', coins:'doux',
+            fondMotif:'degrade', sectionsLarges:false, panierFlottant:'barre', imageFit:'cover',
+            hauteurBanniere:'haute', alignGrille:'gauche', airSections:'normal' },
+      contenu:{ promoStyle:'pastille', noteStyle:'etoile', categorieCarte:'dessus', nomLignes:1,
+                descLignes:2, stockBarre:false, survolPhoto:'zoom', ordreInfos:'catNom' },
+    },
+  },
+  ];
+}
+
+// Appliquer un modèle écrase beaucoup de réglages : on garde l'état
+// précédent pour permettre un vrai retour en arrière, pas une promesse.
+function appliquerModeleVitrine(id) {
+  if (typeof _planHasFeature === 'function' && !_planHasFeature('whiteLabel')) {
+    if (typeof _showPlanFeatureModal === 'function') _showPlanFeatureModal('whiteLabel');
+    return;
+  }
+  const m = BARO_MODELES().find(x => x.id === id);
+  if (!m) return;
+  const bc = S.boutiqueConfig;
+  const cles = Object.keys(m.reglages);
+  const avant = {};
+  cles.forEach(k => { avant[k] = (bc[k] === undefined) ? null : JSON.parse(JSON.stringify(bc[k])); });
+  S.modeleAvant = { id, avant, modeleAvant: bc.modeleActif || null };
+  cles.forEach(k => { bc[k] = JSON.parse(JSON.stringify(m.reglages[k])); });
+  bc.modeleActif = id;
+  try { localStorage.setItem('baro_boutique', JSON.stringify(bc)); } catch (_) {}
+  haptic('success');
+  showToast(t('zm_applique').replace('{0}', m.nom));
+  render();
+  _refreshBoutiqueLivePreview();
+}
+
+function annulerModeleVitrine() {
+  const sauv = S.modeleAvant;
+  if (!sauv) return;
+  const bc = S.boutiqueConfig;
+  Object.keys(sauv.avant).forEach(k => {
+    if (sauv.avant[k] === null) delete bc[k]; else bc[k] = sauv.avant[k];
+  });
+  if (sauv.modeleAvant) bc.modeleActif = sauv.modeleAvant; else delete bc.modeleActif;
+  S.modeleAvant = null;
+  try { localStorage.setItem('baro_boutique', JSON.stringify(bc)); } catch (_) {}
+  haptic('tap');
+  showToast(t('zm_annule'));
+  render();
+  _refreshBoutiqueLivePreview();
+}
+
 // Réglage du studio d'animation. Les valeurs vivent sous bc.anim pour
 // rester groupées et ne pas polluer la configuration de la boutique.
 function boutiqueEditSetAnim(cle, val) {
@@ -27891,8 +28117,41 @@ function vBoutiqueEditor() {
     return arr;
   })();
 
+  const _entMep = (typeof _planHasFeature === 'function') && _planHasFeature('whiteLabel');
+  // ── Modèles : un point de départ cohérent, entièrement modifiable ────
+  const modelesUI = (() => {
+    if (!_entMep) return `
+    <div class="bq-sec-title">${t('zm_titre')}</div>
+    <div class="bq-lock" onclick="nav('pricing')">
+      <div class="bq-lock-row">
+        ${BARO_MODELES().slice(0, 4).map(m => `<span class="bq-pal-mini" style="background:${m.apercu[0]}"><i style="background:${m.apercu[2]}"></i></span>`).join('')}
+      </div>
+      <div class="bq-lock-tx"><strong>${t('zm_lockTitre')}</strong><span>${t('zm_lockTx')}</span></div>
+    </div>`;
+    const actif = g('modeleActif', '');
+    return `
+    <div class="bq-sec-title">${t('zm_titre')} <span class="bq-badge-ent">Entreprise</span></div>
+    <div class="bq-hint2" style="margin:-4px 0 9px">${t('zm_aide')}</div>
+    <div class="bq-modeles">
+      ${BARO_MODELES().map(m => `
+      <button class="bq-modele ${actif === m.id ? 'on' : ''}" onclick="appliquerModeleVitrine('${m.id}')">
+        <span class="bq-modele-ap" style="background:${m.apercu[0]}">
+          <i style="background:${m.apercu[2]}"></i>
+          <b style="background:${m.apercu[1]}"></b>
+        </span>
+        <span class="bq-modele-tx">
+          <strong>${m.nom}</strong>
+          <span>${m.pitch}</span>
+        </span>
+        ${actif === m.id ? `<span class="bq-modele-ok">✓</span>` : ''}
+      </button>`).join('')}
+    </div>
+    ${S.modeleAvant ? `<button class="bq-perso-reset" style="margin:9px 0 0" onclick="annulerModeleVitrine()">${t('zm_annuler')}</button>` : ''}`;
+  })();
+
   const styleTab = `
-    <div class="bq-sec-title">${t('x2_couleurMarque')}</div>
+    ${modelesUI}
+    <div class="bq-sec-title" style="margin-top:14px">${t('x2_couleurMarque')}</div>
     <div class="bq-swatches">
       ${colors.map(c => `<button class="bq-swatch ${tc===c.color?'sel':''}" style="background:${c.color}" title="${c.name}" onclick="boutiqueEditSet('themeColor','${c.color}');document.querySelectorAll('.bq-swatch[data-grp=brand]').forEach(s=>s.classList.remove('sel'));this.classList.add('sel')" data-grp="brand">${tc===c.color?'✓':''}</button>`).join('')}
       <label class="bq-swatch bq-swatch-custom" title="Personnalisée">✎<input type="color" value="${tc}" onchange="boutiqueEditSet('themeColor',this.value)"></label>
@@ -28145,7 +28404,6 @@ function vBoutiqueEditor() {
       ${optBtn('cardHover','none',t('z3_aucune'), g('cardHover','lift')==='none')}
     </div>`;
 
-  const _entMep = (typeof _planHasFeature === 'function') && _planHasFeature('whiteLabel');
   // ── Studio de mise en page (plan Entreprise) ─────────────────────────
   const studioMep = (() => {
     if (!_entMep) return `

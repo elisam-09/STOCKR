@@ -5768,3 +5768,37 @@ body.vt-active .card { animation: none !important; }
   color: var(--text-1);
 }
 .int-etat.on b { color: var(--accent); }
+
+/* ── Modèles de vitrine ────────────────────────────────────────────── */
+.bq-modeles { display: flex; flex-direction: column; gap: 8px; }
+.bq-modele {
+  display: flex; align-items: center; gap: 12px; width: 100%;
+  padding: 11px 12px; text-align: left; cursor: pointer;
+  border: 1.5px solid var(--border); border-radius: 14px;
+  background: var(--card-bg); font-family: inherit;
+  transition: border-color .16s, box-shadow .16s, transform .12s;
+}
+.bq-modele:hover { border-color: var(--accent); box-shadow: 0 4px 14px -8px var(--accent); }
+.bq-modele:active { transform: scale(.99); }
+.bq-modele.on {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 7%, var(--card-bg));
+}
+/* Aperçu : le fond du modèle, sa couleur d'accent et sa couleur de texte */
+.bq-modele-ap {
+  position: relative; flex-shrink: 0;
+  width: 42px; height: 42px; border-radius: 11px;
+  border: 1px solid var(--border); overflow: hidden;
+}
+.bq-modele-ap i {
+  position: absolute; left: 7px; bottom: 7px;
+  width: 15px; height: 15px; border-radius: 50%;
+}
+.bq-modele-ap b {
+  position: absolute; right: 7px; top: 9px;
+  width: 13px; height: 3px; border-radius: 2px; opacity: .85;
+}
+.bq-modele-tx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.bq-modele-tx strong { font-size: 13.5px; font-weight: 800; color: var(--text-1); }
+.bq-modele-tx span { font-size: 11px; line-height: 1.42; color: var(--text-3); }
+.bq-modele-ok { flex-shrink: 0; font-size: 15px; font-weight: 800; color: var(--accent); }
