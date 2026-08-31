@@ -270,6 +270,58 @@ const API_BASE = (location.hostname === 'localhost' || location.hostname === '12
 // ── i18n ─────────────────────────────────────
 const LANGS = {
   fr: {
+    zk_nivLien: "Raccourci",
+    zk_nivLienD: "Ouvre le service avec votre identifiant mémorisé",
+    zk_nivCle: "Clé stockée",
+    zk_nivCleD: "Votre clé est conservée pour les échanges à venir",
+    zk_nivSync: "Échange réel",
+    zk_nivSyncD: "Les données circulent vraiment",
+    zk_l_wave: "Numéro Wave Business",
+    "zk_l_orange-money": "Numéro marchand Orange Money",
+    "zk_l_mtn-momo": "Numéro marchand MoMo",
+    "zk_l_moov-money": "Numéro marchand Moov",
+    "zk_l_free-money": "Numéro Free Money",
+    "zk_l_airtel-money": "Numéro Airtel Money",
+    zk_l_djamo: "Numéro Djamo Business",
+    zk_l_cinetpay: "Clé API CinetPay",
+    zk_l_paydunya: "Clé maîtresse PayDunya",
+    zk_l_flutterwave: "Clé secrète Flutterwave",
+    zk_l_paystack: "Clé secrète Paystack",
+    zk_l_kkiapay: "Clé privée KkiaPay",
+    zk_l_stripe: "Clé secrète Stripe",
+    zk_l_paypal: "Identifiant client PayPal",
+    zk_l_sage: "Adresse de votre Sage",
+    zk_l_quickbooks: "Jeton QuickBooks",
+    zk_l_odoo: "Adresse de votre Odoo",
+    zk_l_shopify: "Adresse de la boutique Shopify",
+    zk_l_woocommerce: "Adresse de la boutique WooCommerce",
+    zk_l_jumia: "Lien vendeur Jumia",
+    "zk_l_facebook-shop": "Lien de votre boutique Facebook",
+    zk_l_etsy: "Adresse de votre boutique Etsy",
+    "zk_l_tiktok-shop": "Lien vendeur TikTok Shop",
+    zk_l_glovo: "Connexion Glovo Partners",
+    zk_l_yango: "Connexion Yango Delivery",
+    "zk_l_yango-deli": "Identifiant partenaire Yango Deli",
+    "zk_l_yango-market": "Identifiant vendeur Yango Market",
+    zk_l_gozem: "Identifiant partenaire Gozem",
+    zk_l_dhl: "Clé API DHL Express",
+    "zk_l_whatsapp-business": "Numéro WhatsApp Business",
+    "zk_l_sms-api": "Configuration de la passerelle SMS",
+    zk_l_telegram: "Jeton du bot Telegram",
+    zk_l_brevo: "Clé API Brevo",
+    zk_l_mailchimp: "Clé API Mailchimp",
+    zk_l_slack: "Adresse du webhook Slack",
+    zk_l_zapier: "Adresse du webhook Zapier",
+    zk_l_make: "Adresse du webhook Make",
+    zk_l_n8n: "Adresse du webhook n8n",
+    "zk_l_google-sheets": "Adresse de la feuille partagée",
+    "zk_l_youtube-studio": "Adresse de la chaîne YouTube",
+    zk_l_pos: "Identifiant du terminal",
+    zk_k_shopify: "Jeton d'accès",
+    zk_k_woocommerce: "Clé API WooCommerce",
+    zk_k_sage: "Clé API Sage",
+    zk_k_odoo: "Clé API Odoo",
+    zk_k_etsy: "Clé API Etsy",
     zj_chercher: "Chercher une intégration…",
     zj_toutes: "Toutes",
     zj_connectees: "Connectées",
@@ -2176,6 +2228,58 @@ const LANGS = {
     version:'Version',
   },
   en: {
+    zk_nivLien: "Shortcut",
+    zk_nivLienD: "Opens the service with your saved identifier",
+    zk_nivCle: "Key stored",
+    zk_nivCleD: "Your key is kept for future exchanges",
+    zk_nivSync: "Real exchange",
+    zk_nivSyncD: "Data actually flows",
+    zk_l_wave: "Wave Business number",
+    "zk_l_orange-money": "Orange Money merchant number",
+    "zk_l_mtn-momo": "MoMo merchant number",
+    "zk_l_moov-money": "Moov merchant number",
+    "zk_l_free-money": "Free Money number",
+    "zk_l_airtel-money": "Airtel Money number",
+    zk_l_djamo: "Djamo Business number",
+    zk_l_cinetpay: "CinetPay API key",
+    zk_l_paydunya: "PayDunya master key",
+    zk_l_flutterwave: "Flutterwave secret key",
+    zk_l_paystack: "Paystack secret key",
+    zk_l_kkiapay: "KkiaPay private key",
+    zk_l_stripe: "Stripe secret key",
+    zk_l_paypal: "PayPal client ID",
+    zk_l_sage: "Your Sage address",
+    zk_l_quickbooks: "QuickBooks token",
+    zk_l_odoo: "Your Odoo address",
+    zk_l_shopify: "Shopify store address",
+    zk_l_woocommerce: "WooCommerce store address",
+    zk_l_jumia: "Jumia seller link",
+    "zk_l_facebook-shop": "Your Facebook shop link",
+    zk_l_etsy: "Your Etsy shop address",
+    "zk_l_tiktok-shop": "TikTok Shop seller link",
+    zk_l_glovo: "Glovo Partners connection",
+    zk_l_yango: "Yango Delivery connection",
+    "zk_l_yango-deli": "Yango Deli partner ID",
+    "zk_l_yango-market": "Yango Market seller ID",
+    zk_l_gozem: "Gozem partner ID",
+    zk_l_dhl: "DHL Express API key",
+    "zk_l_whatsapp-business": "WhatsApp Business number",
+    "zk_l_sms-api": "SMS gateway settings",
+    zk_l_telegram: "Telegram bot token",
+    zk_l_brevo: "Brevo API key",
+    zk_l_mailchimp: "Mailchimp API key",
+    zk_l_slack: "Slack webhook address",
+    zk_l_zapier: "Zapier webhook address",
+    zk_l_make: "Make webhook address",
+    zk_l_n8n: "n8n webhook address",
+    "zk_l_google-sheets": "Shared sheet address",
+    "zk_l_youtube-studio": "YouTube channel address",
+    zk_l_pos: "Terminal ID",
+    zk_k_shopify: "Access token",
+    zk_k_woocommerce: "WooCommerce API key",
+    zk_k_sage: "Sage API key",
+    zk_k_odoo: "Odoo API key",
+    zk_k_etsy: "Etsy API key",
     zj_chercher: "Search an integration…",
     zj_toutes: "All",
     zj_connectees: "Connected",
@@ -34095,7 +34199,7 @@ function vIntegrations() {
   if (!_planHasFeature('integrations')) {
     return _vProLock('🔌', 'Intégrations & API', 'Connecte WhatsApp Business, Shopify, WooCommerce, Glovo, Yango, Wave et plus à ton stock BARO.', ['🔌 10 intégrations (Pro)', '🛒 Shopify, WooCommerce, Jumia', '🚚 Glovo, Yango Delivery', '💳 Wave, Orange Money dashboards', '🔗 API REST (Enterprise)']);
   }
-  const integrationsList = BARO_INTEGRATIONS;
+  const integrationsList = BARO_INTEGRATIONS_();
 
   return `
   ${vFeuilleIntegration()}
@@ -34180,9 +34284,9 @@ function vIntegrations() {
         .filter(i => _intVisible(i, q, etat, paysActif));
       if (!items.length) return '';
       const labels = {communication:'💬 Communication',ecommerce:'🛒 E-commerce',productivity:'📊 Productivité & automatisation',delivery:'🚚 Livraison',finance:'💰 Paiement & comptabilité'};
-      const NIV = { lien:['Raccourci','Ouvre le service avec votre identifiant mémorisé'],
-                    cle:['Clé stockée','Votre clé est conservée pour les échanges à venir'],
-                    sync:['Échange réel','Les données circulent vraiment'] };
+      const NIV = { lien:[t('zk_nivLien'), t('zk_nivLienD')],
+                    cle:[t('zk_nivCle'), t('zk_nivCleD')],
+                    sync:[t('zk_nivSync'), t('zk_nivSyncD')] };
       return `
     <div class="section-hd"><span class="section-lbl">${labels[cat]} · ${items.length}</span></div>
     ${items.map(it => {
@@ -34206,7 +34310,7 @@ function vIntegrations() {
             <button class="int-btn int-btn-danger" onclick="disconnectIntegration('${it.id}','${it.name}')">Retirer</button>
           </div>
         ` : `
-          <button class="int-btn" style="border-color:${it.color};background:${it.color}10;color:${it.color}" onclick="connectIntegration('${it.id}')">Connecter</button>
+          <button class="int-btn" style="border-color:${it.color};background:${it.color}10;color:${it.color}" onclick="connectIntegration('${it.id}')">${t('zg_connecter')}</button>
         `}
       </div>
     </div>`;}).join('')}`;}).join('')}
@@ -34647,7 +34751,13 @@ async function uploadVideoToYouTube(blob, title, description) {
 // Déclarée au niveau du module pour que la feuille de configuration et
 // _getIntegrationDef y accèdent — une table parallèle finissait toujours
 // par prendre du retard, et vingt-huit intégrations avaient un bouton muet.
-const BARO_INTEGRATIONS = [
+// Le catalogue est reconstruit quand la langue change : ses libellés
+// passent par t(), et une constante figerait la langue du chargement.
+let _catIntCache = null, _catIntLang = null;
+function BARO_INTEGRATIONS_() {
+  if (_catIntCache && _catIntLang === _lang) return _catIntCache;
+  _catIntLang = _lang;
+  _catIntCache = [
   // ── Paiement mobile — Afrique de l'Ouest & Centrale ──
   { id:'wave', name:'Wave', desc:t('w5_dPaiementMobile'), color:'#1DC3FF', icon:IC.creditCard, category:'finance',
     pays:['CI','SN','ML','BF','UG'], niveau:'lien',
@@ -34675,7 +34785,7 @@ const BARO_INTEGRATIONS = [
   { id:'cinetpay', name:'CinetPay', desc:t('w5_dCinetpay'), color:'#0F4C81', icon:IC.creditCard, category:'finance',
     pays:['CI','SN','ML','BF','CM','TG','BJ','NE','GN','CD'], niveau:'cle',
     setupType:'apikey', setupLabel:'Clé API CinetPay', setupPlaceholder:'API key', url:'https://app.cinetpay.com/' },
-  { id:'paydunya', name:'PayDunya', desc:'Paiement en ligne Afrique de l\'Ouest', color:'#0B8457', icon:IC.creditCard, category:'finance',
+  { id:'paydunya', name:'PayDunya', desc:t('w5_dPaydunya'), color:'#0B8457', icon:IC.creditCard, category:'finance',
     pays:['SN','CI','BF','ML','BJ','TG'], niveau:'cle',
     setupType:'apikey', setupLabel:'Clé maîtresse PayDunya', setupPlaceholder:'live_master_...', url:'https://app.paydunya.com/' },
   { id:'flutterwave', name:'Flutterwave', desc:t('w5_dFlutter'), color:'#F5A623', icon:IC.creditCard, category:'finance',
@@ -34793,12 +34903,14 @@ const BARO_INTEGRATIONS = [
   { id:'api-rest', name:'API REST BARO', desc:t('w5_dApi'), color:'#1E1B80', icon:IC.link, category:'productivity',
     pays:['*'], niveau:'sync',
     setupType:'action', url:null },
-];
+  ];
+  return _catIntCache;
+}
 
 function _getIntegrationDef(id) {
   // La liste fait foi. Le repli couvre les identifiants historiques qui
   // n'y figurent pas (vues dédiées appelées directement).
-  const dansListe = BARO_INTEGRATIONS.find(x => x.id === id);
+  const dansListe = BARO_INTEGRATIONS_().find(x => x.id === id);
   if (dansListe && dansListe.setupType) return dansListe;
   const anciens = {
     'comptabilite': { setupType:'action' },
@@ -34979,6 +35091,17 @@ const BARO_ACTIONS_INTEGRATION = {
 // marche — c'est la seule promesse que je peux tenir.
 // t() renvoie la clé quand elle manque : sans ce garde-fou, un libellé
 // oublié s'afficherait tel quel — « zh_a_wave-lien » — à l'écran.
+// Libellé du champ de configuration : la traduction prime, le texte du
+// catalogue sert de repli pour toute intégration ajoutée sans clé.
+function _labelInt(id, def) {
+  const v = t('zk_l_' + id);
+  return (v && v !== 'zk_l_' + id) ? v : (def.setupLabel || t('zg_identifiant'));
+}
+function _labelCle(id, def) {
+  const v = t('zk_k_' + id);
+  return (v && v !== 'zk_k_' + id) ? v : (def.keyLabel || t('zg_cleApi'));
+}
+
 function _libelleAction(prefixe, cle, repli) {
   const v = t(prefixe + cle);
   return (v && v !== prefixe + cle) ? v : repli;
@@ -35091,6 +35214,7 @@ function exportClientsCSVSimple() {
 // que cette intégration rend possibles, chacune branchée sur une capacité
 // réelle de l'app.
 function ouvrirPanneauIntegration(id) {
+  if (S.view !== 'integrations') nav('integrations');
   S.intPanneau = { id, nom: _nomIntegration(id) };
   S.intMontant = '';
   haptic('tap');
@@ -35212,6 +35336,7 @@ function ouvrirFeuilleIntegration(id) {
   const def = _getIntegrationDef(id);
   if (!def.setupType) return;
   S.intPanneau = null;
+  if (S.view !== 'integrations') nav('integrations');
   const dejaLa = (S.integrationsConfig || []).find(i => i.id === id);
   S.intSheet = {
     id,
@@ -35250,7 +35375,7 @@ function _intVisible(i, q, etat, pays) {
 
 function _nomIntegration(id) {
   // Le nom affiché vient du catalogue, pas d'une table parallèle.
-  const trouve = BARO_INTEGRATIONS.find(x => x.id === id);
+  const trouve = BARO_INTEGRATIONS_().find(x => x.id === id);
   return (trouve && trouve.name) || id;
 }
 function _majFeuilleIntegration(champ, valeur) {
@@ -35308,14 +35433,14 @@ function vFeuilleIntegration() {
           ${t('zg_ouvrirCompte').replace('{0}', att(f.nom))} ↗</a>` : ''}
         ${besoinVal ? `
         <div class="bq-fld bq-fld-large">
-          <label>${att(def.setupLabel || t('zg_identifiant'))}</label>
+          <label>${att(_labelInt(f.id, def))}</label>
           <input class="input" type="${typeChamp}" value="${att(f.val)}"
                  placeholder="${att(def.setupPlaceholder || '')}"
                  oninput="_majFeuilleIntegration('val',this.value)">
         </div>` : ''}
         ${besoinCle ? `
         <div class="bq-fld bq-fld-large">
-          <label>${att(def.keyLabel || t('zg_cleApi'))}</label>
+          <label>${att(_labelCle(f.id, def))}</label>
           <input class="input" type="password" autocomplete="off" value="${att(f.cle)}"
                  placeholder="${t('zg_collerCle')}"
                  oninput="_majFeuilleIntegration('cle',this.value)">
