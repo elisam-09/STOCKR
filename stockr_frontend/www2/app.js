@@ -270,6 +270,77 @@ const API_BASE = (location.hostname === 'localhost' || location.hostname === '12
 // ── i18n ─────────────────────────────────────
 const LANGS = {
   fr: {
+    zs_plansBaro: "Plans BARO",
+    zs_planActif: "Plan actif",
+    zs_planActuel: "Plan actuel",
+    zs_gratuitToujours: "Gratuit pour toujours",
+    zs_gratuit: "Gratuit",
+    zs_dFree: "Pour démarrer — toujours gratuit",
+    zs_dStarter: "Pour les petits commerces",
+    zs_dPro: "Pour les PME en croissance",
+    zs_dEnterprise: "Pour les grandes entreprises",
+    zs_mensuel: "Mensuel",
+    zs_annuel: "Annuel",
+    zs_an: "an",
+    zs_mois: "mois",
+    zs_choisir: "Choisir {0}",
+    zs_resterGratuit: "Rester en Gratuit",
+    zs_essaiRestant: "{0} jours d'essai restants",
+    zs_expireLe: "Expire le {0}",
+    zs_abonnementPaye: "Abonnement payé",
+    zs_renouvellementLe: "Renouvellement le {0}",
+    zs_tousIncluent: "Tous les plans incluent le mode hors-ligne, les mises à jour, le support WhatsApp et la sauvegarde cloud.",
+    zs_paiement: "Paiement",
+    zs_carte: "Carte",
+    zs_resiliable: "Résiliable à tout moment · Sans engagement · Essai 14 jours offert",
+    zs_configEncaissement: "Configurer l'encaissement (admin)",
+    zs_articles: "articles",
+    zs_ventes: "ventes",
+    zs_articlesN: "{0} articles",
+    zs_ventesMoisN: "{0} ventes/mois",
+    zs_emplacementN: "{0} emplacement",
+    zs_emplacementsN: "{0} emplacements",
+    zs_emplacements: "emplacements",
+    zs_spectraJour: "🔍 Spectra ({0} scans/jour)",
+    zs_spectraIllimite: "🔍 Spectra — vision IA illimitée ✨",
+    zs_facturesPdf: "Factures PDF",
+    zs_facturesPerso: "Factures PDF personnalisées",
+    zs_horsLigne: "Mode hors-ligne",
+    zs_supportWa: "Support WhatsApp",
+    zs_waCatalogue: "Catalogue WhatsApp",
+    zs_fournisseursN: "{0} fournisseurs",
+    zs_fournisseursIll: "Fournisseurs illimités",
+    zs_paiementsN: "{0} moyens de paiement",
+    zs_sauvegarde: "Sauvegarde cloud",
+    zs_boutiqueEnLigne: "Boutique en ligne",
+    zs_marketing: "Marketing & campagnes",
+    zs_integrationsN: "{0} intégrations",
+    zs_integrationsIll: "Intégrations illimitées",
+    zs_rapportsAvances: "Rapports avancés",
+    zs_tousPaiements: "Tous les paiements (Wave, OM, carte, PayPal…)",
+    zs_fidelite: "Programme fidélité",
+    zs_fideliteAvancee: "Programme fidélité avancé",
+    zs_iaAvancee: "IA avancée",
+    zs_apiRest: "API REST complète",
+    zs_multiUtilisateurs: "Multi-utilisateurs illimités",
+    zs_support247: "Support prioritaire 24/7",
+    zs_accountManager: "Chargé de compte dédié",
+    zs_roles: "Gestion des rôles et permissions",
+    zs_boutiqueDomaine: "Boutique + domaine personnalisé",
+    zs_exportOhada: "Export comptable OHADA + SYSCOHADA",
+    zs_formation: "Formation de l'équipe incluse",
+    zr_instant: "À l'instant",
+    zr_ilYaMin: "Il y a {0} min",
+    zr_ilYaH: "Il y a {0} h",
+    zq_officielle: "Parité officielle et fixe — {0} et {1} sont arrimés depuis 1999.",
+    zq_releveDirect: "Relevé en direct",
+    zq_releveEmbarque: "Dernier relevé connu",
+    zq_aucunTaux: "Aucun taux connu pour ces deux monnaies.",
+    zq_tauxVarie: "Ce taux varie chaque jour. Vérifiez-le auprès de votre banque ou de votre bureau de change avant de convertir.",
+    zq_tauxActualiser: "Actualiser le taux",
+    zq_tauxEnCours: "Relevé en cours…",
+    zq_tauxMaj: "Taux mis à jour",
+    zq_tauxEchec: "Impossible de relever le taux — celui affiché reste le dernier connu",
     zp_studioFilm: "Le film d'ouverture",
     zp_studioAide: "Ce que voit le client pendant les trois premières secondes : la scène, le texte affiché, et les images qui défilent derrière le rideau.",
     zp_scene: "Décor de la scène",
@@ -2331,6 +2402,77 @@ const LANGS = {
     version:'Version',
   },
   en: {
+    zs_plansBaro: "BARO plans",
+    zs_planActif: "Active plan",
+    zs_planActuel: "Current plan",
+    zs_gratuitToujours: "Free forever",
+    zs_gratuit: "Free",
+    zs_dFree: "To get started — free forever",
+    zs_dStarter: "For small shops",
+    zs_dPro: "For growing businesses",
+    zs_dEnterprise: "For large companies",
+    zs_mensuel: "Monthly",
+    zs_annuel: "Yearly",
+    zs_an: "year",
+    zs_mois: "month",
+    zs_choisir: "Choose {0}",
+    zs_resterGratuit: "Stay on Free",
+    zs_essaiRestant: "{0} days of trial left",
+    zs_expireLe: "Ends on {0}",
+    zs_abonnementPaye: "Subscription paid",
+    zs_renouvellementLe: "Renews on {0}",
+    zs_tousIncluent: "Every plan includes offline mode, updates, WhatsApp support and cloud backup.",
+    zs_paiement: "Payment",
+    zs_carte: "Card",
+    zs_resiliable: "Cancel any time · No commitment · 14-day free trial",
+    zs_configEncaissement: "Set up collection (admin)",
+    zs_articles: "items",
+    zs_ventes: "sales",
+    zs_articlesN: "{0} items",
+    zs_ventesMoisN: "{0} sales/month",
+    zs_emplacementN: "{0} location",
+    zs_emplacementsN: "{0} locations",
+    zs_emplacements: "locations",
+    zs_spectraJour: "🔍 Spectra ({0} scans/day)",
+    zs_spectraIllimite: "🔍 Spectra — unlimited AI vision ✨",
+    zs_facturesPdf: "PDF invoices",
+    zs_facturesPerso: "Custom PDF invoices",
+    zs_horsLigne: "Offline mode",
+    zs_supportWa: "WhatsApp support",
+    zs_waCatalogue: "WhatsApp catalogue",
+    zs_fournisseursN: "{0} suppliers",
+    zs_fournisseursIll: "Unlimited suppliers",
+    zs_paiementsN: "{0} payment methods",
+    zs_sauvegarde: "Cloud backup",
+    zs_boutiqueEnLigne: "Online shop",
+    zs_marketing: "Marketing & campaigns",
+    zs_integrationsN: "{0} integrations",
+    zs_integrationsIll: "Unlimited integrations",
+    zs_rapportsAvances: "Advanced reports",
+    zs_tousPaiements: "All payments (Wave, OM, card, PayPal…)",
+    zs_fidelite: "Loyalty programme",
+    zs_fideliteAvancee: "Advanced loyalty programme",
+    zs_iaAvancee: "advanced AI",
+    zs_apiRest: "Full REST API",
+    zs_multiUtilisateurs: "Unlimited users",
+    zs_support247: "Priority support 24/7",
+    zs_accountManager: "Dedicated account manager",
+    zs_roles: "Roles and permissions",
+    zs_boutiqueDomaine: "Shop + custom domain",
+    zs_exportOhada: "OHADA + SYSCOHADA accounting export",
+    zs_formation: "Team training included",
+    zr_instant: "Just now",
+    zr_ilYaMin: "{0} min ago",
+    zr_ilYaH: "{0} h ago",
+    zq_officielle: "Official fixed parity — {0} and {1} have been pegged since 1999.",
+    zq_releveDirect: "Live reading",
+    zq_releveEmbarque: "Last known reading",
+    zq_aucunTaux: "No known rate between these two currencies.",
+    zq_tauxVarie: "This rate moves every day. Check it with your bank or bureau de change before converting.",
+    zq_tauxActualiser: "Refresh the rate",
+    zq_tauxEnCours: "Reading…",
+    zq_tauxMaj: "Rate updated",
+    zq_tauxEchec: "Could not read the rate — the one shown is the last known",
     zp_studioFilm: "The opening film",
     zp_studioAide: "What the customer sees during the first three seconds: the stage, the text on screen, and the images moving behind the shutter.",
     zp_scene: "Stage setting",
@@ -4675,8 +4817,8 @@ function shareViaWhatsApp(sales) {
   if (!Array.isArray(sales)) sales = [sales];
   const csym = S.session?.currency_symbol || 'FCFA';
   const biz  = S.session?.business || S.session?.name || 'Mon Commerce';
-  const date = new Date(sales[0].date).toLocaleDateString('fr-FR');
-  const time = new Date(sales[0].date).toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
+  const date = new Date(sales[0].date).toLocaleDateString(_loc());
+  const time = new Date(sales[0].date).toLocaleTimeString(_loc(), {hour:'2-digit', minute:'2-digit'});
   const invId = _invNum(sales[0].id);
   const total = sales.reduce((s, v) => s + v.total, 0);
   const taxRate = parseFloat(S.session?.tax_rate) || 0;
@@ -4826,7 +4968,7 @@ function renderRevenueChart() {
           backgroundColor: '#1e1b4b',
           titleFont: { size: 11 },
           bodyFont: { size: 12, weight: '700' },
-          callbacks: { label: ctx => `  ${Math.round(ctx.raw).toLocaleString('fr-FR')} ${sym()}` }
+          callbacks: { label: ctx => `  ${Math.round(ctx.raw).toLocaleString(_loc())} ${sym()}` }
         }
       },
       scales: {
@@ -4878,7 +5020,7 @@ function renderProfitChart() {
         tooltip: {
           backgroundColor: '#064e3b',
           titleFont: { size: 11 }, bodyFont: { size: 12, weight: '700' },
-          callbacks: { label: ctx => `  ${Math.round(ctx.raw).toLocaleString('fr-FR')} ${sym()}` }
+          callbacks: { label: ctx => `  ${Math.round(ctx.raw).toLocaleString(_loc())} ${sym()}` }
         }
       },
       scales: {
@@ -5770,8 +5912,21 @@ async function _reconcileLocalArticles(list) {
 // ── Helpers ───────────────────────────────────
 const $ = id => document.getElementById(id);
 
+// La langue d'affichage des nombres et des dates. Elle suit la langue
+// choisie : en anglais, mille s'ecrit « 1,000 » et non « 1 000 ».
+function _loc() { return (typeof _lang !== 'undefined' && _lang === 'en') ? 'en-GB' : 'fr-FR'; }
+
 function fmt(n) {
-  return Math.round(n).toLocaleString('fr-FR');
+  const v = Number(n) || 0;
+  // Les monnaies sans centime — le franc CFA, le naira — s'ecrivent en
+  // entier, et les comptages aussi (« 12 ventes », pas « 12,00 »). Mais
+  // des qu'un montant a une partie fractionnaire, elle doit apparaitre :
+  // sans cela, un prix converti a 2,65 $ s'affichait « 3 $ » et les
+  // comptes ne tombaient plus juste.
+  const dec = (typeof _decimalesDe === 'function')
+    ? _decimalesDe(S.session?.currency || 'XOF') : 0;
+  if (!dec || Number.isInteger(v)) return Math.round(v).toLocaleString(_loc());
+  return v.toLocaleString(_loc(), { minimumFractionDigits: dec, maximumFractionDigits: dec });
 }
 function fmtCurrency(n) {
   const sym = S.session?.currency_symbol || 'FCFA';
@@ -5779,10 +5934,10 @@ function fmtCurrency(n) {
 }
 function fmtDate(iso) {
   const d = new Date(iso), now = new Date(), diff = now - d;
-  if (diff < 60000)    return "À l'instant";
-  if (diff < 3600000)  return `Il y a ${Math.floor(diff/60000)} min`;
-  if (diff < 86400000) return `Il y a ${Math.floor(diff/3600000)} h`;
-  return d.toLocaleDateString('fr-FR', { day:'numeric', month:'short' });
+  if (diff < 60000)    return t('zr_instant');
+  if (diff < 3600000)  return t('zr_ilYaMin').replace('{0}', Math.floor(diff / 60000));
+  if (diff < 86400000) return t('zr_ilYaH').replace('{0}', Math.floor(diff / 3600000));
+  return d.toLocaleDateString(_loc(), { day:'numeric', month:'short' });
 }
 function initials(name) {
   // Robuste : un nom vide/absent (commerce pas encore nommé, client sans nom)
@@ -8683,8 +8838,8 @@ function downloadCSV(filename, rows) {
 function _csvHeader(title, summary = []) {
   const biz = S.session?.business || S.session?.name || 'BARO Commerce';
   const now = new Date();
-  const dateStr = now.toLocaleDateString('fr-FR', { day:'2-digit', month:'long', year:'numeric' });
-  const timeStr = now.toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' });
+  const dateStr = now.toLocaleDateString(_loc(), { day:'2-digit', month:'long', year:'numeric' });
+  const timeStr = now.toLocaleTimeString(_loc(), { hour:'2-digit', minute:'2-digit' });
   const rows = [
     ['═══════════════════════════════════════'],
     [biz.toUpperCase()],
@@ -8756,8 +8911,8 @@ function exportSalesCSV() {
     const unit = s.qty > 0 ? Math.round(s.total / s.qty) : 0;
     rows.push([
       i+1,
-      d.toLocaleDateString('fr-FR'),
-      d.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'}),
+      d.toLocaleDateString(_loc()),
+      d.toLocaleTimeString(_loc(), {hour:'2-digit', minute:'2-digit'}),
       _invNum ? _invNum(s.id) : ('INV-'+s.id),
       s.productName, s.qty, unit, s.total, s.profit || 0,
       s.clientName || 'Anonyme',
@@ -8849,7 +9004,7 @@ function exportFullXLSX() {
   const caToday = S.sales.filter(s => (s.date||'').slice(0,10) === today).reduce((sum,v)=>sum+v.total,0);
   const topProducts = Object.entries(S.sales.reduce((m,s)=>{m[s.productName]=(m[s.productName]||0)+s.total;return m;},{}))
     .sort((a,b)=>b[1]-a[1]).slice(0,10);
-  const dashHdr = `<h2 style="color:#10b981;font-family:Arial">📊 TABLEAU DE BORD — ${S.session?.business||'BARO'}</h2><p>Généré le ${now.toLocaleString('fr-FR')}</p>`;
+  const dashHdr = `<h2 style="color:#10b981;font-family:Arial">📊 TABLEAU DE BORD — ${S.session?.business||'BARO'}</h2><p>Généré le ${now.toLocaleString(_loc())}</p>`;
   const totalExp = (S.expenses||[]).reduce((s,e)=>s+(e.amount||0),0);
   const dashRows = [
     ['INDICATEUR', 'VALEUR', 'UNITÉ'],
@@ -9012,7 +9167,7 @@ function generateStockReportPDF() {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ unit:'mm', format:'a4' });
   const biz = S.session?.business || S.session?.name || 'Mon Commerce';
-  const date = new Date().toLocaleDateString('fr-FR', { day:'numeric', month:'long', year:'numeric' });
+  const date = new Date().toLocaleDateString(_loc(), { day:'numeric', month:'long', year:'numeric' });
   // Header
   doc.setFillColor(79,70,229); doc.rect(0,0,210,32,'F');
   doc.setTextColor(255,255,255); doc.setFontSize(20); doc.setFont('helvetica','bold');
@@ -9066,7 +9221,7 @@ function generateSalesReportPDF(period = 'all') {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ unit:'mm', format:'a4' });
   const biz = S.session?.business || S.session?.name || 'Mon Commerce';
-  const date = new Date().toLocaleDateString('fr-FR', { day:'numeric', month:'long', year:'numeric' });
+  const date = new Date().toLocaleDateString(_loc(), { day:'numeric', month:'long', year:'numeric' });
   const perLabel = {all:'Global', today:"Aujourd'hui", week:'7 derniers jours', month:'30 derniers jours'}[period] || 'Global';
   // Filter
   let sales = S.sales.slice();
@@ -9183,7 +9338,7 @@ function generateClientsReportPDF() {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ unit:'mm', format:'a4' });
   const biz = S.session?.business || S.session?.name || 'Mon Commerce';
-  const date = new Date().toLocaleDateString('fr-FR', { day:'numeric', month:'long', year:'numeric' });
+  const date = new Date().toLocaleDateString(_loc(), { day:'numeric', month:'long', year:'numeric' });
   // Enrich clients with stats
   const clients = (S.clients||[]).map(c => {
     const mySales = S.sales.filter(s => String(s.clientId) === String(c.id));
@@ -9232,7 +9387,7 @@ function generateBilanReportPDF() {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ unit:'mm', format:'a4' });
   const biz  = S.session?.business || S.session?.name || 'Mon Commerce';
-  const date = new Date().toLocaleDateString('fr-FR', { day:'numeric', month:'long', year:'numeric' });
+  const date = new Date().toLocaleDateString(_loc(), { day:'numeric', month:'long', year:'numeric' });
   const BRAND = [30,27,128]; // #1E1B80
 
   // ── Données (alignées sur la vue Bilan) ──
@@ -9265,7 +9420,7 @@ function generateBilanReportPDF() {
   const series = (() => {
     if (S.period === 'all') {
       const m = {};
-      filtered.forEach(s => { const d=new Date(s.date); const k=d.toLocaleDateString('fr-FR',{month:'short',year:'2-digit'}); m[k]=(m[k]||0)+s.total; });
+      filtered.forEach(s => { const d=new Date(s.date); const k=d.toLocaleDateString(_loc(),{month:'short',year:'2-digit'}); m[k]=(m[k]||0)+s.total; });
       const e = Object.entries(m).slice(-12);
       return e.map(([label,value])=>({label, value:Math.round(value)}));
     }
@@ -9274,7 +9429,7 @@ function generateBilanReportPDF() {
     for (let i=days-1;i>=0;i--) {
       const d=new Date(now); d.setDate(d.getDate()-i); const ds=d.toDateString();
       const v=filtered.filter(s=>new Date(s.date).toDateString()===ds).reduce((x,s)=>x+s.total,0);
-      arr.push({ label:d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'}), value:Math.round(v) });
+      arr.push({ label:d.toLocaleDateString(_loc(),{day:'2-digit',month:'2-digit'}), value:Math.round(v) });
     }
     return arr;
   })();
@@ -10315,7 +10470,7 @@ function importBackupFile(file) {
       return;
     }
     const n = Object.keys(payload.data).length;
-    const when = payload.exportedAt ? new Date(payload.exportedAt).toLocaleString('fr-FR') : 'date inconnue';
+    const when = payload.exportedAt ? new Date(payload.exportedAt).toLocaleString(_loc()) : 'date inconnue';
     if (!confirm(`Restaurer cette sauvegarde ?\n\n${payload.business ? '🏪 ' + payload.business + '\n' : ''}📅 ${when}\n📦 ${n} éléments\n\n⚠️ Cela REMPLACE toutes les données actuelles de cet appareil.`)) return;
     try {
       // Purge des clés BARO existantes puis restauration intégrale
@@ -10399,6 +10554,101 @@ function _decimalesDe(code) { return _DECIMALES_DEVISE[code] != null ? _DECIMALE
 // Parités officielles et fixes — pas des cours de marché. Le franc CFA est
 // arrimé à l'euro depuis 1999 à ce taux exact, il ne bouge pas.
 const _PARITES_FIXES = { 'XOF|EUR': 655.957, 'XAF|EUR': 655.957, 'XOF|XAF': 1, 'XAF|XOF': 1 };
+
+// ── Taux de change ────────────────────────────────────────────────────
+// Tout est exprime en euros, parce que c'est la seule monnaie a laquelle
+// le franc CFA est arrime : 1 EUR = 655,957 XOF, une parite statutaire
+// qui ne bouge pas depuis 1999. Le reste se deduit en passant par l'euro.
+//
+// Les valeurs ci-dessous sont un releve date, embarque pour que le
+// telephone hors ligne ne se retrouve pas sans rien. Elles servent de
+// point de depart, pas de verite : l'ecran dit d'ou vient le taux et
+// laisse toujours le commercant le corriger a la main.
+const _TAUX_REF = {
+  date: '2026-09-02T00:02:31Z',
+  origine: 'embarque',
+  taux: { EUR: 1, XOF: 655.957, XAF: 655.957, USD: 1.159417,
+          GBP: 0.857241, MAD: 10.809288, NGN: 1567.186218, GHS: 13.071515 },
+};
+const _MONNAIES_ARRIMEES = ['EUR', 'XOF', 'XAF'];
+
+function _tauxCharges() {
+  try {
+    const v = JSON.parse(localStorage.getItem('baro_taux') || 'null');
+    if (v && v.taux && typeof v.taux.EUR === 'number' && typeof v.taux.XOF === 'number') return v;
+  } catch (_) {}
+  return _TAUX_REF;
+}
+
+// Le taux tel que l'ecran le demande : « 1 <vers> = X <de> ».
+// La parite officielle prime toujours sur un releve de marche : entre
+// l'euro et le franc CFA, le marche n'a pas son mot a dire.
+function _tauxEntre(de, vers) {
+  if (!de || !vers || de === vers) return null;
+  const fixe = _pariteFixe(de, vers);
+  if (fixe) return { valeur: fixe, origine: 'officielle', date: '' };
+  const paquet = _tauxCharges();
+  const a = paquet.taux[de], b = paquet.taux[vers];
+  if (typeof a !== 'number' || typeof b !== 'number' || !b) return null;
+  return { valeur: a / b, origine: paquet.origine, date: paquet.date || '' };
+}
+
+// Releve en direct. Le service est public, sans cle, et ne recoit que des
+// codes de monnaie — aucune donnee du commercant ne sort d'ici.
+async function rafraichirTaux(silencieux) {
+  try {
+    const r = await fetch('https://open.er-api.com/v6/latest/EUR', { cache: 'no-store' });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const j = await r.json();
+    if (!j || j.result !== 'success' || !j.rates || typeof j.rates.XOF !== 'number') {
+      throw new Error('reponse inattendue');
+    }
+    const garde = { EUR: 1 };
+    CURRENCIES.forEach(c => {
+      if (typeof j.rates[c.code] === 'number' && j.rates[c.code] > 0) garde[c.code] = j.rates[c.code];
+    });
+    // Garde-fou : la parite CFA est une loi, pas une cotation. Si le
+    // service renvoyait autre chose, c'est lui qui a tort.
+    garde.XOF = 655.957; garde.XAF = 655.957;
+    const paquet = { date: j.time_last_update_utc || new Date().toISOString(),
+                     origine: 'direct', taux: garde };
+    try { localStorage.setItem('baro_taux', JSON.stringify(paquet)); } catch (_) {}
+    if (!silencieux) showToast(t('zq_tauxMaj'));
+    return paquet;
+  } catch (e) {
+    // Un echec ne doit rien effacer : on garde ce qu'on avait, et on le dit.
+    if (!silencieux) showToast(t('zq_tauxEchec'), 'error');
+    return null;
+  }
+}
+
+// Au demarrage, une fois par jour au plus, et sans bloquer quoi que ce
+// soit : si ca echoue, l'application fonctionne exactement pareil.
+function _tauxAuDemarrage() {
+  try {
+    const v = _tauxCharges();
+    const age = v.origine === 'direct' ? (Date.now() - new Date(v.date).getTime()) : Infinity;
+    if (age > 20 * 3600 * 1000 && navigator.onLine !== false) {
+      setTimeout(() => { rafraichirTaux(true); }, 2500);
+    }
+  } catch (_) {}
+}
+
+// Le taux affiche dans l'ecran de conversion, mis a jour a la volee.
+async function rafraichirTauxEcran() {
+  const c = S.currencyChange;
+  if (!c) return;
+  S.currencyChange.chargement = true; render();
+  await rafraichirTaux(false);
+  const info = _tauxEntre(c.de, c.vers);
+  S.currencyChange.chargement = false;
+  if (info) {
+    S.currencyChange.taux = String(Number(info.valeur.toFixed(6)));
+    S.currencyChange.origine = info.origine;
+    S.currencyChange.dateTaux = info.date;
+  }
+  render();
+}
 function _pariteFixe(de, vers) {
   if (_PARITES_FIXES[de + '|' + vers]) return _PARITES_FIXES[de + '|' + vers];
   const inverse = _PARITES_FIXES[vers + '|' + de];
@@ -10464,12 +10714,16 @@ function changeCurrency(code) {
     render();
     return;
   }
-  const parite = _pariteFixe(avant, code);
+  // Le taux est propose d'emblee : parite officielle quand elle existe,
+  // sinon le dernier releve connu. Le champ n'est plus jamais vide.
+  const info = _tauxEntre(avant, code);
   S.currencyChange = {
     de: avant, deSym: getCurrencySymbol(avant),
     vers: code, versSym: getCurrencySymbol(code),
-    taux: parite ? String(parite) : '',
-    fixe: !!parite,
+    taux: info ? String(Number(info.valeur.toFixed(6))) : '',
+    fixe: !!(info && info.origine === 'officielle'),
+    origine: info ? info.origine : 'aucune',
+    dateTaux: info ? info.date : '',
     nbMontants: nb,
   };
   nav('currency-convert');
@@ -10532,14 +10786,29 @@ async function applyCurrencyConversion(convertir) {
   nav('settings');
 }
 
+// La date du releve, en clair. Le service la renvoie au format courrier,
+// pas toujours analysable : dans ce cas on ne montre rien plutot qu'une
+// date fausse.
+function _dateTaux(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return '';
+  return '— ' + d.toLocaleDateString(_lang === 'en' ? 'en-GB' : 'fr-FR',
+    { day: 'numeric', month: 'long', year: 'numeric' });
+}
+
 function vCurrencyConvert() {
   const c = S.currencyChange;
   if (!c) { nav('settings'); return ''; }
   const exemple = (S.articles || []).find(a => a.price > 0);
   const taux = parseFloat(String(c.taux).replace(',', '.'));
   const valide = isFinite(taux) && taux > 0;
+  // L'apercu ecrivait « 2.65 » avec un point, alors que tout le reste de
+  // l'application ecrit « 2,65 » en francais. Le nombre suit la langue.
+  const _dec = _decimalesDe(c.vers);
   const apercu = (exemple && valide)
-    ? `${fmt(exemple.price)} ${c.deSym} → <b>${(exemple.price / taux).toFixed(_decimalesDe(c.vers))} ${c.versSym}</b>`
+    ? `${fmt(exemple.price)} ${c.deSym} → <b>${(exemple.price / taux).toLocaleString(_loc(),
+        { minimumFractionDigits: _dec, maximumFractionDigits: _dec })} ${c.versSym}</b>`
     : '';
   return `
   <div class="sub-hero">
@@ -10568,12 +10837,20 @@ function vCurrencyConvert() {
         </div>
         ${c.fixe
           ? `<div style="font-size:11.5px;color:var(--success);margin-top:7px;font-weight:600">
-               ✓ Parité officielle et fixe — ${c.deSym} et ${c.versSym} sont arrimés depuis 1999.
+               ✓ ${t('zq_officielle').replace('{0}', c.deSym).replace('{1}', c.versSym)}
              </div>`
           : `<div style="font-size:11.5px;color:var(--text-3);margin-top:7px;line-height:1.45">
-               Ce taux varie chaque jour et l'application ne peut pas le connaître hors ligne.
-               Entrez celui de votre banque ou de votre bureau de change.
-             </div>`}
+               ${c.origine === 'direct'
+                 ? `<b style="color:var(--success)">${t('zq_releveDirect')}</b> ${_dateTaux(c.dateTaux)}`
+                 : c.origine === 'embarque'
+                   ? `<b>${t('zq_releveEmbarque')}</b> ${_dateTaux(c.dateTaux)}`
+                   : t('zq_aucunTaux')}
+               <br>${t('zq_tauxVarie')}
+             </div>
+             <button class="btn btn-ghost" style="width:100%;margin-top:9px;font-size:12.5px"
+                     ${c.chargement ? 'disabled' : ''} onclick="rafraichirTauxEcran()">
+               ${c.chargement ? t('zq_tauxEnCours') : t('zq_tauxActualiser')}
+             </button>`}
         ${apercu ? `<div style="margin-top:12px;padding:11px;border-radius:10px;background:var(--gray-1);font-size:13.5px">
           Aperçu : ${apercu}</div>` : ''}
       </div>
@@ -13643,7 +13920,7 @@ function vSales() {
         const k = _dayKey(d);
         if (k === new Date().toDateString()) return "Aujourd'hui";
         if (k === new Date(Date.now() - 86400000).toDateString()) return 'Hier';
-        return new Date(d).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+        return new Date(d).toLocaleDateString(_loc(), { weekday: 'long', day: 'numeric', month: 'long' });
       };
       const _dayTotals = {};
       groups.forEach(g => { const k = _dayKey(g.date); _dayTotals[k] = (_dayTotals[k] || 0) + (g.total || 0); });
@@ -14046,7 +14323,7 @@ function _sovaComputeLocal() {
     const ruptureProb = status === 'critical' ? 90 : status === 'warning' ? 55 : (dd > 0.01 ? 12 : 0);
     const orderQty = dd > 0.01 ? Math.max(0, Math.ceil(dd * (lead + 14)) - stock) : 0;
     const before = daysRemaining != null
-      ? new Date(now + Math.max(0, daysRemaining - lead) * DAY).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })
+      ? new Date(now + Math.max(0, daysRemaining - lead) * DAY).toLocaleDateString(_loc(), { day: '2-digit', month: '2-digit' })
       : '';
     let action = null;
     if ((status === 'critical' || status === 'warning') && orderQty > 0) {
@@ -14087,7 +14364,7 @@ function _sovaComputeLocal() {
 }
 function _sovaTomorrowPlan(byName, now, DAY, bt) {
   const tmr = new Date(now + DAY);
-  let weekday = tmr.toLocaleDateString('fr-FR', { weekday: 'long' });
+  let weekday = tmr.toLocaleDateString(_loc(), { weekday: 'long' });
   weekday = weekday.charAt(0).toUpperCase() + weekday.slice(1);
   const plan = [];
   if (bt === 'reseller') {
@@ -19364,7 +19641,7 @@ async function generateSpectraAuditPDF(){
   let y = 45;
   pdf.setFont('helvetica','bold'); pdf.text('Métadonnées', 15, y); y += 7;
   pdf.setFont('helvetica','normal');
-  pdf.text(`Date : ${now.toLocaleDateString('fr-FR')} ${now.toLocaleTimeString('fr-FR')}`, 15, y); y += 6;
+  pdf.text(`Date : ${now.toLocaleDateString(_loc())} ${now.toLocaleTimeString(_loc())}`, 15, y); y += 6;
   pdf.text(`Opérateur : ${user}`, 15, y); y += 6;
   pdf.text(`Mode : ${S.spectraMode || 'photo'}`, 15, y); y += 6;
   if (gps) {
@@ -19844,17 +20121,17 @@ function vSubscription() {
   };
   const planOrder = ['free','starter','pro','enterprise'];
   const planMeta = {
-    free:       { label:'Gratuit', color:'#64748B', emoji:'🎁', desc:'Pour démarrer — Toujours gratuit' },
-    starter:    { label:'Starter', color:'#0EA5E9', emoji:'🚀', desc:'Pour les petits commerces' },
-    pro:        { label:'Professional', color:'var(--accent)', emoji:'💎', desc:'Pour les PME en croissance', popular:true },
-    enterprise: { label:'Enterprise', color:'var(--success)', emoji:'🏢', desc:'Pour les grandes entreprises' },
+    free:       { label:t('zs_gratuit'), color:'#64748B', emoji:'🎁', desc:t('zs_dFree') },
+    starter:    { label:'Starter', color:'#0EA5E9', emoji:'🚀', desc:t('zs_dStarter') },
+    pro:        { label:'Professional', color:'var(--accent)', emoji:'💎', desc:t('zs_dPro'), popular:true },
+    enterprise: { label:'Enterprise', color:'var(--success)', emoji:'🏢', desc:t('zs_dEnterprise') },
   };
 
   return `
   <div class="sub-hero" style="background:linear-gradient(135deg,var(--accent) 0%,color-mix(in srgb, var(--accent) 70%, #000) 100%)">
     <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('more')">${IC.left}</button>
-    <div class="sub-hero-title">💎 Plans BARO</div>
-    <div class="sub-hero-sub">${isActive ? 'Plan actif : ' + (planMeta[sub.plan]?.label || sub.plan.toUpperCase()) : '🎁 Gratuit pour toujours'}</div>
+    <div class="sub-hero-title">💎 ${t('zs_plansBaro')}</div>
+    <div class="sub-hero-sub">${isActive ? t('zs_planActif') + ' : ' + (planMeta[sub.plan]?.label || sub.plan.toUpperCase()) : '🎁 ' + t('zs_gratuitToujours')}</div>
   </div>
   <div class="container">
 
@@ -19863,7 +20140,7 @@ function vSubscription() {
       <div style="background:linear-gradient(135deg,${planMeta[sub.plan]?.color||'var(--accent)'},#7C3AED);padding:16px;margin:-16px -16px 16px -16px">
         <div style="display:flex;align-items:center;justify-content:space-between">
           <div>
-            <div style="color:rgba(255,255,255,.75);font-size:11px;font-weight:700;text-transform:uppercase">Plan actif</div>
+            <div style="color:rgba(255,255,255,.75);font-size:11px;font-weight:700;text-transform:uppercase">${t('zs_planActif')}</div>
             <div style="color:#fff;font-size:22px;font-weight:900;margin-top:4px">${planMeta[sub.plan]?.emoji||''} ${planMeta[sub.plan]?.label||sub.plan.toUpperCase()}</div>
           </div>
           <div style="width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;color:#fff;font-size:24px">${planMeta[sub.plan]?.emoji||'⭐'}</div>
@@ -19873,16 +20150,16 @@ function vSubscription() {
       <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(79,70,229,.06);border-radius:10px;margin-bottom:12px">
         <div style="width:36px;height:36px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:900">${trialDays}</div>
         <div>
-          <div style="font-size:13px;font-weight:700;color:var(--text-1)">${trialDays} jours d'essai restants</div>
-          <div style="font-size:11px;color:var(--text-3)">Expire le ${new Date(sub.trialEnd).toLocaleDateString(_lang==='en'?'en-US':'fr-FR')}</div>
+          <div style="font-size:13px;font-weight:700;color:var(--text-1)">${t('zs_essaiRestant').replace('{0}', trialDays)}</div>
+          <div style="font-size:11px;color:var(--text-3)">${t('zs_expireLe').replace('{0}', new Date(sub.trialEnd).toLocaleDateString(_loc(), { day:'numeric', month:'long', year:'numeric' }))}</div>
         </div>
       </div>` : ''}
       ${sub.source === 'server' && sub.expires ? `
       <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(16,185,129,.08);border-radius:10px;margin-bottom:12px">
         <div style="width:36px;height:36px;border-radius:50%;background:var(--success);display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px">✓</div>
         <div>
-          <div style="font-size:13px;font-weight:700;color:var(--text-1)">Abonnement payé${sub.provider ? ' via ' + (sub.provider === 'stripe' ? 'Stripe' : 'CinetPay') : ''}</div>
-          <div style="font-size:11px;color:var(--text-3)">Renouvellement le ${new Date(sub.expires).toLocaleDateString(_lang==='en'?'en-US':'fr-FR')}</div>
+          <div style="font-size:13px;font-weight:700;color:var(--text-1)">${t('zs_abonnementPaye')}${sub.provider ? ' — ' + (sub.provider === 'stripe' ? 'Stripe' : 'CinetPay') : ''}</div>
+          <div style="font-size:11px;color:var(--text-3)">${t('zs_renouvellementLe').replace('{0}', new Date(sub.expires).toLocaleDateString(_loc(), { day:'numeric', month:'long', year:'numeric' }))}</div>
         </div>
       </div>` : ''}
       <div style="font-size:13px;font-weight:700;margin-bottom:10px;color:var(--text-1)">${t('x4_fonctionnalitesIncluses')}</div>
@@ -19897,9 +20174,9 @@ function vSubscription() {
     </div>` : ''}
 
     <div style="display:flex;gap:6px;margin-bottom:16px;background:var(--gray-1);padding:4px;border-radius:10px">
-      <button class="btn ${billing==='monthly'?'btn-primary':'btn-ghost'}" style="flex:1;padding:10px;font-size:13px;font-weight:700" onclick="setBilling('monthly')">Mensuel</button>
+      <button class="btn ${billing==='monthly'?'btn-primary':'btn-ghost'}" style="flex:1;padding:10px;font-size:13px;font-weight:700" onclick="setBilling('monthly')">${t('zs_mensuel')}</button>
       <button class="btn ${billing==='yearly'?'btn-primary':'btn-ghost'}" style="flex:1;padding:10px;font-size:13px;font-weight:700" onclick="setBilling('yearly')">
-        Annuel <span style="font-size:10px;opacity:.9;background:#10B98125;color:#10B981;padding:2px 6px;border-radius:4px;margin-left:4px">-20%</span>
+        ${t('zs_annuel')} <span style="font-size:10px;opacity:.9;background:#10B98125;color:#10B981;padding:2px 6px;border-radius:4px;margin-left:4px">-20%</span>
       </button>
     </div>
 
@@ -19918,15 +20195,15 @@ function vSubscription() {
         <div style="font-size:12px;color:var(--text-3);margin-bottom:10px">${meta.desc}</div>
         <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:12px">
           ${price === 0
-            ? `<span style="font-size:28px;font-weight:900;color:${meta.color}">Gratuit</span><span style="font-size:12px;color:var(--success);font-weight:700">${t('x4_aVie')}</span>`
-            : `<span style="font-size:28px;font-weight:900;color:${meta.color}">${fmt(price)}</span><span style="font-size:13px;color:var(--text-3)">${sym()}/${billing==='yearly'?'an':'mois'}</span>`}
+            ? `<span style="font-size:28px;font-weight:900;color:${meta.color}">${t('zs_gratuit')}</span><span style="font-size:12px;color:var(--success);font-weight:700">${t('x4_aVie')}</span>`
+            : `<span style="font-size:28px;font-weight:900;color:${meta.color}">${fmt(price)}</span><span style="font-size:13px;color:var(--text-3)">${sym()}/${billing==='yearly'?t('zs_an'):t('zs_mois')}</span>`}
         </div>
         ${_planFeatures(pk).map(f => `
         <div style="display:flex;align-items:center;gap:8px;padding:3px 0;font-size:12px">
           <span style="color:${meta.color}">${IC.check}</span><span>${f}</span>
         </div>`).join('')}
         <button class="btn ${isCurrent?'btn-ghost':'btn-primary'}" style="width:100%;margin-top:14px;${isCurrent?'opacity:.6;cursor:default':`background:${meta.color};border-color:${meta.color}`}" ${isCurrent?'disabled':`onclick="activatePlan('${pk}')"`}>
-          ${isCurrent ? '✓ Plan actuel' : price === 0 ? 'Rester en Gratuit' : `🚀 Choisir ${meta.label}`}
+          ${isCurrent ? '✓ ' + t('zs_planActuel') : price === 0 ? t('zs_resterGratuit') : `🚀 ${t('zs_choisir').replace('{0}', meta.label)}`}
         </button>
       </div>
     </div>`;
@@ -19934,16 +20211,16 @@ function vSubscription() {
 
     <div class="card" style="margin-top:8px;text-align:center;padding:16px;background:var(--gray-1)">
       <div style="font-size:12px;color:var(--text-2);line-height:1.6;font-weight:600">
-        ✅ Tous les plans incluent le mode hors-ligne, les mises à jour, le support WhatsApp, la sauvegarde cloud.
+        ✅ ${t('zs_tousIncluent')}
       </div>
       <div style="font-size:11px;color:var(--text-3);margin-top:8px;line-height:1.5">
-        💳 Paiement : Wave · Orange Money · Moov · MTN MoMo · Carte · PayPal · Google Pay · Apple Pay<br>
-        🔒 Résiliable à tout moment · Sans engagement · Essai 14j offert
+        💳 ${t('zs_paiement')} : Wave · Orange Money · Moov · MTN MoMo · ${t('zs_carte')} · PayPal · Google Pay · Apple Pay<br>
+        🔒 ${t('zs_resiliable')}
       </div>
       <div style="font-size:11px;color:var(--accent);margin-top:6px;font-weight:700">support@baro.app</div>
     </div>
 
-    <button class="btn btn-ghost" style="margin-top:12px;font-size:12px;color:var(--text-3)" onclick="nav('billing-setup')">⚙️ Configurer l'encaissement (admin)</button>
+    <button class="btn btn-ghost" style="margin-top:12px;font-size:12px;color:var(--text-3)" onclick="nav('billing-setup')">⚙️ ${t('zs_configEncaissement')}</button>
   </div>`;
 }
 
@@ -20013,38 +20290,42 @@ function saveBillingLinks() {
 }
 
 function _planFeatures(plan) {
+  // Les chiffres restent des chiffres ; seuls les mots passent par les
+  // traductions. « {0} » recoit la quantite pour que l'ordre des mots
+  // reste naturel dans les deux langues.
+  const q = (cle, n) => t(cle).replace('{0}', n);
   if (plan === 'free') return [
-    '50 articles', '100 ventes/mois',
-    '1 emplacement', '🔍 Spectra (10 scans/jour)',
-    'Factures PDF', 'Mode hors-ligne',
-    'Support WhatsApp',
+    q('zs_articlesN', 50), q('zs_ventesMoisN', 100),
+    q('zs_emplacementN', 1), q('zs_spectraJour', 10),
+    t('zs_facturesPdf'), t('zs_horsLigne'),
+    t('zs_supportWa'),
   ];
   if (plan === 'starter') return [
-    '500 articles', '2000 ventes/mois',
-    '2 emplacements', '🔍 Spectra (50 scans/jour)',
-    'Factures PDF personnalisées', 'Export CSV',
-    'WhatsApp catalogue', 'Fournisseurs (10)',
-    '3 moyens de paiement',
-    'Sauvegarde cloud',
+    q('zs_articlesN', 500), q('zs_ventesMoisN', 2000),
+    q('zs_emplacementsN', 2), q('zs_spectraJour', 50),
+    t('zs_facturesPerso'), t('exportCSV'),
+    t('zs_waCatalogue'), q('zs_fournisseursN', 10),
+    q('zs_paiementsN', 3),
+    t('zs_sauvegarde'),
   ];
   if (plan === 'pro') return [
-    t('unlimited')+' articles', t('unlimited')+' ventes',
-    '5 emplacements', '🔍 Spectra IA vision illimitée ✨',
-    'WhatsApp '+t('catalog'), t('purchaseOrders'), t('suppliers')+' illimités',
-    t('exportCSV')+' + Excel', 'Boutique en ligne',
-    'Marketing & campagnes', 'Intégrations (10)',
-    'Rapports avancés', 'Tous paiements (Wave, OM, carte, PayPal…)',
-    'Programme fidélité',
+    t('unlimited')+' '+t('zs_articles'), t('unlimited')+' '+t('zs_ventes'),
+    q('zs_emplacementsN', 5), t('zs_spectraIllimite'),
+    'WhatsApp '+t('catalog'), t('purchaseOrders'), t('zs_fournisseursIll'),
+    t('exportCSV')+' + Excel', t('zs_boutiqueEnLigne'),
+    t('zs_marketing'), q('zs_integrationsN', 10),
+    t('zs_rapportsAvances'), t('zs_tousPaiements'),
+    t('zs_fidelite'),
   ];
   if (plan === 'enterprise') return [
-    t('unlimited')+' articles', t('unlimited')+' ventes',
-    t('unlimited')+' emplacements', 'Spectra '+t('unlimited')+' + IA avancée',
-    'API REST complète', 'Multi-utilisateurs illimités',
-    'Support prioritaire 24/7', 'Account manager dédié',
-    'Gestion des rôles & permissions', 'Intégrations illimitées',
-    'Boutique + domaine personnalisé', 'Programme fidélité avancé',
-    'Export comptable OHADA + SYSCOHADA', 'SLA 99.9%',
-    'Formation équipe incluse',
+    t('unlimited')+' '+t('zs_articles'), t('unlimited')+' '+t('zs_ventes'),
+    t('unlimited')+' '+t('zs_emplacements'), 'Spectra '+t('unlimited')+' + '+t('zs_iaAvancee'),
+    t('zs_apiRest'), t('zs_multiUtilisateurs'),
+    t('zs_support247'), t('zs_accountManager'),
+    t('zs_roles'), t('zs_integrationsIll'),
+    t('zs_boutiqueDomaine'), t('zs_fideliteAvancee'),
+    t('zs_exportOhada'), 'SLA 99.9%',
+    t('zs_formation'),
   ];
   return _planFeatures('free');
 }
@@ -21813,8 +22094,8 @@ function vTeam() {
             ${upcoming.length ? `<div style="font-size:11px;font-weight:700;color:var(--text-3);letter-spacing:.3px;text-transform:uppercase;margin:8px 0 6px">À venir (${upcoming.length})</div>` : ''}
             ${upcoming.map(mt => {
               const d = new Date(mt.datetime);
-              const dateStr = d.toLocaleDateString('fr-FR', {weekday:'short', day:'2-digit', month:'short'});
-              const timeStr = d.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
+              const dateStr = d.toLocaleDateString(_loc(), {weekday:'short', day:'2-digit', month:'short'});
+              const timeStr = d.toLocaleTimeString(_loc(), {hour:'2-digit', minute:'2-digit'});
               const attendees = (mt.attendees || []).map(id => (S.teamMembers.find(x => x.id === id) || {}).name).filter(Boolean);
               const urgencyColor = (d.getTime() - now) < 86400000 ? '#EF4444' : (d.getTime() - now) < 259200000 ? '#F59E0B' : 'var(--accent)';
               return `
@@ -21846,7 +22127,7 @@ function vTeam() {
                 <div style="display:flex;justify-content:space-between;align-items:center">
                   <div style="flex:1;min-width:0">
                     <div style="font-weight:600;color:var(--text-2);font-size:13px">${mt.title}</div>
-                    <div style="font-size:10px;color:var(--text-3)">${d.toLocaleDateString('fr-FR')}</div>
+                    <div style="font-size:10px;color:var(--text-3)">${d.toLocaleDateString(_loc())}</div>
                   </div>
                   <button class="btn btn-ghost" style="padding:3px 8px;font-size:11px" onclick="deleteMeeting('${mt.id}')">🗑️</button>
                 </div>
@@ -21875,7 +22156,7 @@ function vTeam() {
                 <div style="font-weight:600;font-size:13px;color:${tk.done?'var(--text-3)':'var(--text-1)'};text-decoration:${tk.done?'line-through':'none'}">${tk.title}</div>
                 <div style="font-size:11px;color:${overdue?'#EF4444':'var(--text-3)'}">
                   ${assignee ? `👤 ${assignee.name}` : '👥 Équipe'}
-                  ${tk.due ? ` · 📅 ${new Date(tk.due).toLocaleDateString('fr-FR')}${overdue?' (en retard)':''}` : ''}
+                  ${tk.due ? ` · 📅 ${new Date(tk.due).toLocaleDateString(_loc())}${overdue?' (en retard)':''}` : ''}
                 </div>
               </div>
               <button class="btn btn-ghost" style="padding:4px 8px;font-size:11px;color:#EF4444" onclick="deleteTeamTask('${tk.id}')">🗑️</button>
@@ -21899,7 +22180,7 @@ function vTeam() {
                 <div style="flex:1">
                   <div style="font-weight:700;font-size:13px;color:var(--text-1)">${a.title}</div>
                   <div style="font-size:12px;color:var(--text-2);margin-top:3px;line-height:1.45">${a.body}</div>
-                  <div style="font-size:10px;color:var(--text-3);margin-top:6px">📅 ${new Date(a.createdAt).toLocaleDateString('fr-FR', {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'})}</div>
+                  <div style="font-size:10px;color:var(--text-3);margin-top:6px">📅 ${new Date(a.createdAt).toLocaleDateString(_loc(), {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'})}</div>
                 </div>
                 <button class="btn btn-ghost" style="padding:3px 8px;font-size:11px;color:#EF4444" onclick="deleteAnnouncement('${a.id}')">🗑️</button>
               </div>
@@ -23248,7 +23529,7 @@ function vSecurity() {
     <div class="container"><div class="card" style="text-align:center;padding:40px 20px">${t('w7_seulAdminSecu')}</div></div>`;
   }
   const s = S.security || {};
-  const lastLogin = s.lastLogin ? new Date(s.lastLogin).toLocaleString('fr-FR') : 'Première connexion';
+  const lastLogin = s.lastLogin ? new Date(s.lastLogin).toLocaleString(_loc()) : 'Première connexion';
   const recentAttempts = (s.loginAttempts || []).slice(0, 5);
   return `
   <div class="sub-hero" style="background:linear-gradient(135deg,#EF4444,#B91C1C)">
@@ -23363,7 +23644,7 @@ function vSecurity() {
             <div style="font-size:16px">${at.success ? '✅' : '❌'}</div>
             <div style="flex:1">
               <div style="font-weight:600;color:var(--text-1)">${at.success ? 'Succès' : 'Échec'}</div>
-              <div style="font-size:11px;color:var(--text-3)">${new Date(at.ts).toLocaleString('fr-FR')}</div>
+              <div style="font-size:11px;color:var(--text-3)">${new Date(at.ts).toLocaleString(_loc())}</div>
             </div>
             <div style="font-size:10px;color:var(--text-3);font-family:monospace">${at.ip || 'local'}</div>
           </div>
@@ -23918,8 +24199,8 @@ function generateDevisPDF(devis) {
   // Infos
   let y = 62;
   doc.setTextColor(90,90,90); doc.setFontSize(9);
-  doc.text('Date : ' + new Date(devis.date).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}), 16, y);
-  doc.text('Valable jusqu\'au : ' + new Date(devis.validUntil).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}), 16, y+6);
+  doc.text('Date : ' + new Date(devis.date).toLocaleDateString(_loc(),{day:'numeric',month:'long',year:'numeric'}), 16, y);
+  doc.text('Valable jusqu\'au : ' + new Date(devis.validUntil).toLocaleDateString(_loc(),{day:'numeric',month:'long',year:'numeric'}), 16, y+6);
   if (devis.client) { doc.setFont('helvetica','bold'); doc.setTextColor(30,30,30); doc.text('Client : ' + devis.client, 194, y, { align:'right' }); doc.setFont('helvetica','normal'); }
   // En-tête tableau
   y += 16;
@@ -24080,7 +24361,7 @@ function vDocuments() {
     ${devisHist.slice(0,5).map(d => `
       <div class="card" style="padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:10px">
         <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:13.5px;color:var(--text-1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${d.client? (d.client).replace(/</g,'&lt;') : d.num}</div>
-        <div style="font-size:11px;color:var(--text-3)">${new Date(d.date).toLocaleDateString('fr-FR')} · ${fmt(d.total)} ${sym()}</div></div>
+        <div style="font-size:11px;color:var(--text-3)">${new Date(d.date).toLocaleDateString(_loc())} · ${fmt(d.total)} ${sym()}</div></div>
         <button class="btn btn-ghost" style="flex:0 0 auto;width:auto;padding:8px 12px;font-size:12px" onclick='generateDevisPDF(${JSON.stringify(d).replace(/'/g,"&#39;")})'>PDF</button>
       </div>`).join('')}` : ''}
   </div>`;
@@ -24214,7 +24495,7 @@ function _bqPerf() {
     const d = new Date(); d.setDate(d.getDate() - i); d.setHours(0,0,0,0);
     const ds = d.toDateString();
     const dayO = orders.filter(o => new Date(o.date).toDateString() === ds);
-    days.push({ lbl: d.toLocaleDateString('fr-FR', { weekday:'short' }).replace('.','').slice(0,2),
+    days.push({ lbl: d.toLocaleDateString(_loc(), { weekday:'short' }).replace('.','').slice(0,2),
                 rev: dayO.reduce((s,o)=>s+(o.total||0),0), n: dayO.length });
   }
   const maxDay = Math.max(1, ...days.map(d => d.rev));
@@ -25330,6 +25611,9 @@ function generateBoutiqueSite(opts) {
   const bc = S.boutiqueConfig;
   if (!isPreview && !bc.domain) { showToast('Entrez un nom de domaine', 'error'); return; }
   const esc = s => String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  // La langue de mise en forme du site genere. Elle est figee ici, a
+  // l'ecriture : la page du visiteur n'a pas les fonctions de l'atelier.
+  const _locSite = JSON.stringify(_loc());
   const vitrineProds = (bt_showProducts() ? S.products : []).filter(p => (bc.products||[]).includes(p.id))
     .map(p => ({ id:p.id, name:p.name, price:p.price||0, description:p.description||'', category:p.category||'Produits', image:p.image||'', qty:null, unit:'' }));
   const vitrinePacks = (bt_showProducts() ? (S.packs||[]) : []).filter(pk => (bc.packs||[]).includes(pk.id) && pk.active !== false)
@@ -27579,8 +27863,8 @@ ${(BARO_API_OK && shopIdNum) ? `<div class="legal-ov" id="acc-ov" onclick="if(ev
       if(!a.length){el.innerHTML='<div class="acc-vide">${t('x2_aucuneCommandeInstant')}</div>';return;}
       el.innerHTML=a.map(function(o){
         return '<div class="acc-cmd"><div class="acc-cmd-h"><span>'
-          +new Date(o.date).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'})
-          +'</span><b>'+Math.round(o.total).toLocaleString('fr-FR')+' '+BARO_SYM+'</b></div>'
+          +new Date(o.date).toLocaleDateString(${_locSite},{day:'2-digit',month:'short',year:'numeric'})
+          +'</span><b>'+Math.round(o.total).toLocaleString(${_locSite})+' '+BARO_SYM+'</b></div>'
           +'<div class="acc-cmd-i">'+(o.items||[]).slice(0,4).map(function(x){
               return String(typeof x==='string'?x:(x&&x.name)||'').replace(/[<>]/g,'');}).join(' · ')
           +((o.items||[]).length>4?' …':'')+'</div>'
@@ -27646,7 +27930,7 @@ ${(BARO_API_OK && shopIdNum) ? `<div class="legal-ov" id="acc-ov" onclick="if(ev
   window.baroMyOrders=function(){var c=document.getElementById('myorders-c');if(!c)return;var a=[];try{a=JSON.parse(localStorage.getItem(MYO_KEY)||'[]');}catch(e){}
     if(!a.length){c.innerHTML='<div style="text-align:center;color:#999;padding:24px 8px;font-size:13px">${t('x2_aucunAchat')}<br>${t('x2_commandesIci')}</div>';}
     else{c.innerHTML=a.map(function(o,i){var st=(o.srv&&o.tc)?'<div class="myo-track" id="myo-st-'+i+'" style="margin-top:6px;font-size:12px;font-weight:700;color:#4F46E5">⏳ Statut en cours de chargement…</div>':'';
-      return '<div class="myo-item"><div class="myo-top"><span>'+new Date(o.date).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'})+'</span><b>'+o.total+'</b></div><div class="myo-items">'+(o.items||[]).map(function(x){return x;}).join('<br>')+'</div>'+st+'</div>';}).join('');
+      return '<div class="myo-item"><div class="myo-top"><span>'+new Date(o.date).toLocaleDateString(${_locSite},{day:'2-digit',month:'short',year:'numeric'})+'</span><b>'+o.total+'</b></div><div class="myo-items">'+(o.items||[]).map(function(x){return x;}).join('<br>')+'</div>'+st+'</div>';}).join('');
       // Suivi EN DIRECT : interroge le serveur de la boutique (code secret par commande)
       if(typeof BARO_API!=='undefined'&&BARO_API){a.slice(0,6).forEach(function(o,i){if(!(o.srv&&o.tc))return;var el=document.getElementById('myo-st-'+i);if(!el)return;
         fetch(BARO_API+'/api/orders/track/'+o.srv+'?code='+encodeURIComponent(o.tc)).then(function(r){return r.ok?r.json():null;}).then(function(d){
@@ -27719,7 +28003,7 @@ var baroMode=BARO_DELOFF?'pickup':'delivery';
   var prevCount=0;
   var toastT=null;
   window.baroToast=function(msg){var t=document.getElementById('baro-toast');if(!t)return;t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove('show');},1800);};
-  function fmtn(n){return Math.round(n).toLocaleString('fr-FR');}
+  function fmtn(n){return Math.round(n).toLocaleString(${_locSite});}
   function item(id){for(var i=0;i<BARO_ITEMS.length;i++)if(BARO_ITEMS[i].id===id)return BARO_ITEMS[i];return null;}
   function baseFee(){var z=(document.getElementById('ck-zone')||{}).value;return (BARO_ZONEFEES&&BARO_ZONEFEES[z]!=null)?BARO_ZONEFEES[z]:BARO_FEES;}
   function curFee(){if(BARO_DELOFF||baroMode==='pickup')return 0;if(BARO_FREESHIP>0&&total()>=BARO_FREESHIP)return 0;return baseFee();}
@@ -28085,7 +28369,7 @@ window.BARO_VARSEL=window.BARO_VARSEL||{};
   var IT=${itemsJSON};var cur=null;var sel={};var qvQty=1;
   function find(id){for(var i=0;i<IT.length;i++)if(IT[i].id===id)return IT[i];return null;}
   window.baroQVQty=function(d){qvQty=Math.max(1,Math.min(99,qvQty+d));var q=document.getElementById('qv-qty');if(q)q.textContent=qvQty;qvUpdTotal();};
-  function fmtn(n){return Math.round(n).toLocaleString('fr-FR');}
+  function fmtn(n){return Math.round(n).toLocaleString(${_locSite});}
   function qvUpdTotal(){var b=document.getElementById('qv-bar-tot');if(b&&cur)b.textContent=fmtn((cur.price||0)*qvQty)+' ${sym()}';}
   function setMain(src,name){var iw=document.getElementById('qv-img');iw.innerHTML=src?'<img src="'+src+'" alt="">':'<div class="qv-ph">'+((name||'?').charAt(0).toUpperCase())+'</div>';var im=iw.querySelector('img');if(im){im.style.opacity='0';requestAnimationFrame(function(){im.style.transition='opacity .25s ease';im.style.opacity='1';});}}
   window.baroQVThumb=function(i){var it=cur;if(!it)return;var imgs=(it.imgs&&it.imgs.length)?it.imgs:[it.img];setMain(imgs[i],it.name);document.querySelectorAll('#qv-thumbs .qv-thumb').forEach(function(t,k){t.classList.toggle('on',k===i);});};
@@ -30515,7 +30799,7 @@ function vBoutiqueAnalytics() {
   const _days7 = (() => { const arr = []; const now = new Date();
     for (let i = 6; i >= 0; i--) { const d = new Date(now); d.setDate(d.getDate() - i); const key = d.toDateString();
       const dayO = orders.filter(o => new Date(o.date).toDateString() === key);
-      arr.push({ label: d.toLocaleDateString('fr-FR', { weekday:'short' }).replace('.','').slice(0,3), rev: dayO.reduce((s,o)=>s+(o.total||0),0), n: dayO.length }); }
+      arr.push({ label: d.toLocaleDateString(_loc(), { weekday:'short' }).replace('.','').slice(0,3), rev: dayO.reduce((s,o)=>s+(o.total||0),0), n: dayO.length }); }
     return arr; })();
   const _d7max = Math.max(1, ..._days7.map(d => d.rev));
   // Pixels de suivi visiteurs (réels, hébergés sur GA/Meta/TikTok)
@@ -33237,7 +33521,7 @@ function __vidStartRecord(stream, mode) {
     const blob = new Blob(chunks, { type:'video/webm' });
     window.__lastVidBlob = blob;
     // Enregistrement automatique dans IndexedDB
-    const id = await _vidSave(blob, { name: `BARO ${mode} ${new Date().toLocaleString('fr-FR')}`, source: mode });
+    const id = await _vidSave(blob, { name: `BARO ${mode} ${new Date().toLocaleString(_loc())}`, source: mode });
     window.__lastVidId = id;
     const url = URL.createObjectURL(blob);
     const sizeKb = Math.round(blob.size / 1024);
@@ -33316,7 +33600,7 @@ function __vidStartOverlayRecord(stream, text) {
       stream.getTracks().forEach(t => t.stop());
       const blob = new Blob(chunks, { type: 'video/webm' });
       window.__lastVidBlob = blob;
-      const id = await _vidSave(blob, { name: `BARO texte « ${text.slice(0,24)} » ${new Date().toLocaleString('fr-FR')}`, source: 'overlay' });
+      const id = await _vidSave(blob, { name: `BARO texte « ${text.slice(0,24)} » ${new Date().toLocaleString(_loc())}`, source: 'overlay' });
       window.__lastVidId = id;
       const url = URL.createObjectURL(blob);
       const sizeKb = Math.round(blob.size / 1024);
@@ -33714,7 +33998,7 @@ function vVideoLibrary() {
           </div>
           <div style="flex:1;min-width:0">
             <div style="font-size:13px;font-weight:700;color:var(--text-1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${v.name}</div>
-            <div style="font-size:11px;color:var(--text-3);margin-top:2px">${new Date(v.createdAt).toLocaleString('fr-FR')} · ${Math.round(v.size/1024)} KB</div>
+            <div style="font-size:11px;color:var(--text-3);margin-top:2px">${new Date(v.createdAt).toLocaleString(_loc())} · ${Math.round(v.size/1024)} KB</div>
             <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
               <button class="btn btn-ghost" style="padding:6px 10px;font-size:11px" onclick="playVideoFromLibrary('${v.id}')">${t('y4_voir')}</button>
               <button class="btn btn-primary" style="padding:6px 10px;font-size:11px" onclick="publishVideoFromLibrary('${v.id}')">📤 Publier</button>
@@ -38324,7 +38608,7 @@ async function posPrintTest() {
     (cfg.header||'BARO').toUpperCase(),
     '================================',
     'TICKET DE TEST',
-    new Date().toLocaleString('fr-FR'),
+    new Date().toLocaleString(_loc()),
     '--------------------------------',
     'Café express ....... 1500 FCFA',
     'Croissant .......... 1000 FCFA',
@@ -38369,7 +38653,7 @@ async function posPrintSale(sale) {
     (cfg.header||S.session?.business||'BARO').toUpperCase(),
     '================================',
     `Ticket #${sale.id}`,
-    new Date(sale.date).toLocaleString('fr-FR'),
+    new Date(sale.date).toLocaleString(_loc()),
     '--------------------------------',
     `${sale.productName}  x${sale.qty}`,
     `   ${fmt(sale.total)} ${sym()}`,
@@ -39250,7 +39534,12 @@ if ('serviceWorker' in navigator) {
 // immédiatement ; sinon on attend DOMContentLoaded. Couvre TOUS les cas de chargement
 // (script en fin de body, script defer, script async, SW cache hit, etc.)
 function __baroInit() {
+  // Taux de change : un releve par jour au plus, en arriere-plan, et sans
+  // consequence s'il echoue.
+  try { _tauxAuDemarrage(); } catch (_) {}
   // Exposer au global pour les onclick inline
+  window.rafraichirTaux       = rafraichirTaux;
+  window.rafraichirTauxEcran  = rafraichirTauxEcran;
   window.S             = S;
   window.nav           = nav;
   window.render        = render;
