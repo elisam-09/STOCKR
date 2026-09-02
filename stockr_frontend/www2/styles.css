@@ -5802,3 +5802,67 @@ body.vt-active .card { animation: none !important; }
 .bq-modele-tx strong { font-size: 13.5px; font-weight: 800; color: var(--text-1); }
 .bq-modele-tx span { font-size: 11px; line-height: 1.42; color: var(--text-3); }
 .bq-modele-ok { flex-shrink: 0; font-size: 15px; font-weight: 800; color: var(--accent); }
+
+/* ── Photos du film d'ouverture ────────────────────────────────────────
+   Une grille de vignettes carrees : le commercant voit ce qu'il a charge
+   plutot qu'une liste de noms de fichiers. Le bouton d'ajout occupe la
+   meme case, donc la grille ne saute pas quand il disparait a six.     */
+.bq-cine-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
+  gap: 8px;
+}
+.bq-cine-ph {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--gray-1);
+}
+.bq-cine-ph img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.bq-cine-x {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  line-height: 1;
+  font-family: inherit;
+  /* Fond opaque et non translucide : sur une photo claire, un bouton
+     semi-transparent devenait invisible. */
+  background: rgba(20, 20, 26, .82);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+.bq-cine-x:active { transform: scale(.9); }
+.bq-cine-add {
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+  border: 1.5px dashed var(--border);
+  background: var(--gray-1);
+  color: var(--text-2);
+  cursor: pointer;
+  font-family: inherit;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 6px;
+}
+.bq-cine-add span { font-size: 20px; line-height: 1; }
+.bq-cine-add b { font-size: 10.5px; font-weight: 700; text-align: center; line-height: 1.25; }
+.bq-cine-add:active { transform: scale(.97); }

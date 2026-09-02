@@ -270,6 +270,90 @@ const API_BASE = (location.hostname === 'localhost' || location.hostname === '12
 // ── i18n ─────────────────────────────────────
 const LANGS = {
   fr: {
+    zp_studioFilm: "Le film d'ouverture",
+    zp_studioAide: "Ce que voit le client pendant les trois premières secondes : la scène, le texte affiché, et les images qui défilent derrière le rideau.",
+    zp_scene: "Décor de la scène",
+    zp_scTheatre: "Salle sombre",
+    zp_scClair: "Salle beige",
+    zp_scPalette: "Suit les couleurs de la boutique",
+    zp_sceneAide: "Le décor règle ensemble le fond, le rideau et la couleur du texte. « Suit la boutique » s'adapte aussi au mode clair ou sombre choisi par le visiteur.",
+    zp_titre: "Titre affiché",
+    zp_titreEx: "Le nom de votre boutique",
+    zp_titreAide: "Laissez vide pour reprendre le nom de la boutique.",
+    zp_message: "Message sous le titre",
+    zp_messageEx: "Ouvert du lundi au samedi, livraison dans tout Abidjan",
+    zp_messageAide: "Une phrase, pas un paragraphe : elle disparaît quand le rideau se lève.",
+    zp_bouton: "Texte du bouton",
+    zp_boutonEx: "Entrer dans la boutique",
+    zp_lignes: "Les trois pastilles",
+    zp_lignesAide: "Elles s'affichent en bas, juste avant le bouton. Laissez-les vides et elles seront déduites de votre boutique — horaires, zones de livraison, nombre de références.",
+    zp_ligne: "Pastille {0}",
+    zp_ligneEx0: "Ouvert 7j/7",
+    zp_ligneEx1: "Livraison Cocody · Yopougon",
+    zp_ligneEx2: "Paiement Wave et Orange Money",
+    zp_images: "Vos photos dans le film",
+    zp_imagesAide: "Six photos au maximum. Elles sont réduites à 1100 px et gardées dans ce navigateur — pensez à recharger vos photos si vous changez d'appareil.",
+    zp_ajouterPhoto: "Ajouter une photo",
+    zp_retirer: "Retirer cette photo",
+    zp_source: "Ce que montre le mur",
+    zp_srProduits: "Mes produits",
+    zp_srMelange: "Mes photos et mes produits",
+    zp_srPerso: "Mes photos seulement",
+    zp_video: "Vidéo de fond",
+    zp_videoLien: "Adresse de la vidéo",
+    zp_videoAide: "Une adresse https vers un fichier .mp4 ou .webm déjà hébergé. La vidéo joue muette et en boucle derrière le mur — une vidéo ne peut pas être stockée dans le navigateur comme une photo, elle doit vivre quelque part en ligne. Un lien YouTube ne marchera pas : il faut le fichier lui-même.",
+    zp_plein: "Espace de stockage plein — retirez une photo du film avant d'en ajouter une autre",
+    zp_echecSauve: "Enregistrement impossible",
+    zp_erreurImage: "Image illisible",
+    zp_imageInvalide: "Fichier image invalide",
+    zp_lectureEchouee: "Lecture du fichier échouée",
+    zp_sixMax: "Six photos au maximum dans le film",
+    zo_livraison: "Livraison",
+    zo_reference: "{0} référence en vitrine",
+    zo_references: "{0} références en vitrine",
+    zo_passer: "Passer l'intro",
+    zo_ariaFilm: "Ouverture de la boutique",
+    zn_matiere: "Matière du rideau",
+    zn_maLames: "Lames métalliques",
+    zn_maUni: "Surface unie",
+    zn_maDegrade: "Dégradé profond",
+    zn_murFond: "Fond de la scène",
+    zn_muHalo: "Halo coloré",
+    zn_muGrille: "Grille fine",
+    zn_muVide: "Rien",
+    zn_titreSeq: "Titre de la séquence",
+    zn_tsMonte: "Monte et grandit",
+    zn_tsDisperse: "Grandit et se disperse",
+    zn_tsRecul: "Recule dans la profondeur",
+    zn_finSeq: "Sortie de la séquence",
+    zn_fsCoupe: "Enchaîne directement",
+    zn_fsFondu: "Se fond vers la page",
+    zn_sequenceAide: "Ces quatre réglages ne changent que la séquence d'ouverture. Ils n'ont aucun effet si elle est désactivée plus haut.",
+    zn_vitesse: "Vitesse d'ensemble",
+    zn_viLente: "Posée",
+    zn_viNormale: "Normale",
+    zn_viVive: "Vive",
+    zn_ouverture: "Ouverture de la page",
+    zn_ouAucune: "Aucune",
+    zn_ouFondu: "Fondu",
+    zn_ouVoile: "Fondu qui monte",
+    zn_bouton: "Bouton au survol",
+    zn_boElevation: "Se soulève",
+    zn_boLueur: "S'entoure d'une lueur",
+    zn_boRemplissage: "S'assombrit",
+    zn_boAucun: "Ne bouge pas",
+    zn_curseurMot: "Mot dans le curseur",
+    zn_curseurMotEx: "Voir",
+    zn_curseurMotAide: "Affiché à l'intérieur du curseur quand il passe sur une carte. Quatorze caractères au plus, et rien sur téléphone.",
+    zn_vieCartes: "Vie des cartes",
+    zn_flottement: "Cartes flottantes dans la séquence",
+    zn_flottementAide: "Les vignettes du mur d'ouverture respirent lentement, à trois rythmes décalés pour éviter l'effet métronome.",
+    zn_imageDerive: "Photos qui dérivent au défilement",
+    zn_imageDeriveAide: "La photo bouge légèrement dans son cadre pendant que la page défile. Elle est agrandie juste ce qu'il faut pour qu'aucun bord ne se découvre.",
+    zn_pastilleAnim: "Pastilles en cascade",
+    zn_pastilleAnimAide: "Promotion, stock, nouveauté : les pastilles d'une carte arrivent l'une après l'autre plutôt qu'ensemble.",
+    zn_ancrage: "Sections qui s'alignent",
+    zn_ancrageAide: "En fin de défilement, la page se cale sur la section la plus proche. L'alignement reste souple : on peut toujours parcourir la page vite.",
     zm_titre: "Modèles de vitrine",
     zm_aide: "Un modèle pose d'un coup une combinaison cohérente des quatre studios. Tout reste modifiable ensuite — c'est un point de départ, pas un cadre fermé.",
     zm_lockTitre: "Modèles de vitrine réservés au plan Entreprise",
@@ -2247,6 +2331,90 @@ const LANGS = {
     version:'Version',
   },
   en: {
+    zp_studioFilm: "The opening film",
+    zp_studioAide: "What the customer sees during the first three seconds: the stage, the text on screen, and the images moving behind the shutter.",
+    zp_scene: "Stage setting",
+    zp_scTheatre: "Dark room",
+    zp_scClair: "Beige room",
+    zp_scPalette: "Follows the shop colours",
+    zp_sceneAide: "The setting fixes the background, the shutter and the text colour together. “Follows the shop” also adapts to the light or dark mode the visitor picks.",
+    zp_titre: "Title on screen",
+    zp_titreEx: "Your shop name",
+    zp_titreAide: "Leave empty to reuse the shop name.",
+    zp_message: "Message under the title",
+    zp_messageEx: "Open Monday to Saturday, delivery across Abidjan",
+    zp_messageAide: "One sentence, not a paragraph: it goes as the shutter rises.",
+    zp_bouton: "Button text",
+    zp_boutonEx: "Enter the shop",
+    zp_lignes: "The three pills",
+    zp_lignesAide: "They appear at the bottom, just before the button. Leave them empty and they are drawn from your shop — opening hours, delivery zones, number of items.",
+    zp_ligne: "Pill {0}",
+    zp_ligneEx0: "Open every day",
+    zp_ligneEx1: "Delivery Cocody · Yopougon",
+    zp_ligneEx2: "Wave and Orange Money accepted",
+    zp_images: "Your photos in the film",
+    zp_imagesAide: "Six photos at most. They are reduced to 1100 px and kept in this browser — remember to load them again if you switch device.",
+    zp_ajouterPhoto: "Add a photo",
+    zp_retirer: "Remove this photo",
+    zp_source: "What the wall shows",
+    zp_srProduits: "My products",
+    zp_srMelange: "My photos and my products",
+    zp_srPerso: "My photos only",
+    zp_video: "Background video",
+    zp_videoLien: "Video address",
+    zp_videoAide: "An https address to an .mp4 or .webm file already hosted somewhere. The video plays muted and looping behind the wall — a video cannot be stored in the browser the way a photo can, it has to live online. A YouTube link will not work: it needs the file itself.",
+    zp_plein: "Storage full — remove a film photo before adding another",
+    zp_echecSauve: "Could not save",
+    zp_erreurImage: "Unreadable image",
+    zp_imageInvalide: "Invalid image file",
+    zp_lectureEchouee: "Could not read the file",
+    zp_sixMax: "Six photos at most in the film",
+    zo_livraison: "Delivery",
+    zo_reference: "{0} item on show",
+    zo_references: "{0} items on show",
+    zo_passer: "Skip intro",
+    zo_ariaFilm: "Shop opening",
+    zn_matiere: "Shutter material",
+    zn_maLames: "Metal slats",
+    zn_maUni: "Plain surface",
+    zn_maDegrade: "Deep gradient",
+    zn_murFond: "Stage background",
+    zn_muHalo: "Coloured halo",
+    zn_muGrille: "Fine grid",
+    zn_muVide: "Nothing",
+    zn_titreSeq: "Sequence heading",
+    zn_tsMonte: "Rises and grows",
+    zn_tsDisperse: "Grows and scatters",
+    zn_tsRecul: "Recedes into depth",
+    zn_finSeq: "Sequence exit",
+    zn_fsCoupe: "Cuts straight on",
+    zn_fsFondu: "Fades into the page",
+    zn_sequenceAide: "These four settings only affect the opening sequence. They do nothing if it is switched off above.",
+    zn_vitesse: "Overall speed",
+    zn_viLente: "Unhurried",
+    zn_viNormale: "Normal",
+    zn_viVive: "Brisk",
+    zn_ouverture: "Page opening",
+    zn_ouAucune: "None",
+    zn_ouFondu: "Fade",
+    zn_ouVoile: "Fade upwards",
+    zn_bouton: "Button on hover",
+    zn_boElevation: "Lifts",
+    zn_boLueur: "Glows",
+    zn_boRemplissage: "Darkens",
+    zn_boAucun: "Stays put",
+    zn_curseurMot: "Word in the cursor",
+    zn_curseurMotEx: "View",
+    zn_curseurMotAide: "Shown inside the cursor as it passes over a card. Fourteen characters at most, and nothing on phones.",
+    zn_vieCartes: "Life on the cards",
+    zn_flottement: "Floating cards in the sequence",
+    zn_flottementAide: "The thumbnails on the opening wall breathe slowly, on three offset rhythms so it never feels like a metronome.",
+    zn_imageDerive: "Photos drifting as you scroll",
+    zn_imageDeriveAide: "The photo shifts slightly within its frame while the page scrolls. It is enlarged just enough that no edge is ever uncovered.",
+    zn_pastilleAnim: "Badges in sequence",
+    zn_pastilleAnimAide: "Sale, stock, new: a card's badges arrive one after another rather than all at once.",
+    zn_ancrage: "Sections that align",
+    zn_ancrageAide: "As scrolling settles, the page aligns to the nearest section. The alignment stays loose: you can still move through the page quickly.",
     zm_titre: "Shop templates",
     zm_aide: "A template sets a coherent combination across the four studios in one go. Everything stays editable afterwards — it is a starting point, not a fixed frame.",
     zm_lockTitre: "Shop templates, Enterprise plan only",
@@ -24784,6 +24952,124 @@ function annulerModeleVitrine() {
 
 // Réglage du studio d'animation. Les valeurs vivent sous bc.anim pour
 // rester groupées et ne pas polluer la configuration de la boutique.
+// ── Le film d'ouverture ───────────────────────────────────────────────
+// Enregistrer la vitrine peut echouer : les photos du film sont stockees
+// en base64 dans le navigateur, et l'espace n'est pas infini. Quand c'est
+// le cas il faut le dire — sinon le commercant croit avoir enregistre.
+function _sauveBoutique(bc) {
+  try {
+    localStorage.setItem('baro_boutique', JSON.stringify(bc));
+    return true;
+  } catch (e) {
+    const plein = e && (e.name === 'QuotaExceededError' || e.code === 22 || e.code === 1014);
+    showToast(plein ? t('zp_plein') : t('zp_echecSauve'), 'error');
+    return false;
+  }
+}
+
+// Le verrou de forfait, cote fonction. L'interface cache deja le studio
+// aux plans inferieurs et la vitrine ignore bc.cine sans le plan, mais une
+// fonction appelee directement ecrivait quand meme : la configuration se
+// salissait sans que rien ne le montre.
+function _cineAutorise() {
+  if (typeof _planHasFeature !== 'function' || _planHasFeature('whiteLabel')) return true;
+  if (typeof _showPlanFeatureModal === 'function') _showPlanFeatureModal('whiteLabel');
+  return false;
+}
+
+function boutiqueEditSetCine(cle, val) {
+  if (!_cineAutorise()) return;
+  const bc = S.boutiqueConfig;
+  if (!bc.cine || typeof bc.cine !== 'object') bc.cine = {};
+  bc.cine[cle] = val;
+  _sauveBoutique(bc);
+  haptic('tap');
+  render();
+  _refreshBoutiqueLivePreview();
+}
+
+function boutiqueCineSetMeta(i, val) {
+  if (!_cineAutorise()) return;
+  const bc = S.boutiqueConfig;
+  if (!bc.cine || typeof bc.cine !== 'object') bc.cine = {};
+  const m = Array.isArray(bc.cine.metas) ? bc.cine.metas.slice() : [];
+  while (m.length < 3) m.push('');
+  m[i] = String(val || '').slice(0, 60);
+  bc.cine.metas = m;
+  _sauveBoutique(bc);
+  render();
+  _refreshBoutiqueLivePreview();
+}
+
+// Photos du film : plus grandes que celles des fiches produit (elles
+// occupent un mur entier), mais compressees quand meme — six photos non
+// reduites saturent le stockage du navigateur a elles seules.
+function pickCinePhoto(onDone) {
+  const input = document.createElement('input');
+  input.type = 'file'; input.accept = 'image/*';
+  input.style.display = 'none';
+  document.body.appendChild(input);
+  const cleanup = () => { try { input.remove(); } catch (_) {} };
+  input.onchange = () => {
+    const file = input.files && input.files[0];
+    if (!file) { cleanup(); return; }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        try {
+          const MAX = 1100;
+          const ratio = Math.min(1, MAX / Math.max(img.width, img.height));
+          const canvas = document.createElement('canvas');
+          canvas.width = Math.round(img.width * ratio);
+          canvas.height = Math.round(img.height * ratio);
+          canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+          onDone(canvas.toDataURL('image/jpeg', 0.78));
+        } catch (err) { showToast(t('zp_erreurImage'), 'error'); }
+        finally { cleanup(); }
+      };
+      img.onerror = () => { cleanup(); showToast(t('zp_imageInvalide'), 'error'); };
+      img.src = e.target.result;
+    };
+    reader.onerror = () => { cleanup(); showToast(t('zp_lectureEchouee'), 'error'); };
+    reader.readAsDataURL(file);
+  };
+  setTimeout(() => { if (!input.files || !input.files.length) cleanup(); }, 60000);
+  input.click();
+}
+
+function boutiqueCineAjoutePhoto() {
+  if (!_cineAutorise()) return;
+  const bc = S.boutiqueConfig;
+  if (!bc.cine || typeof bc.cine !== 'object') bc.cine = {};
+  const liste = Array.isArray(bc.cine.medias) ? bc.cine.medias : [];
+  if (liste.length >= 6) { showToast(t('zp_sixMax'), 'error'); return; }
+  pickCinePhoto(data => {
+    const avant = (bc.cine.medias || []).slice();
+    bc.cine.medias = avant.concat([data]);
+    // Si l'enregistrement echoue, la photo ne doit pas rester en memoire
+    // en donnant l'illusion d'etre gardee : on revient en arriere.
+    if (!_sauveBoutique(bc)) { bc.cine.medias = avant; render(); return; }
+    if (bc.cine.source !== 'perso' && bc.cine.source !== 'melange') {
+      bc.cine.source = 'melange';
+      _sauveBoutique(bc);
+    }
+    haptic('success');
+    render(); _refreshBoutiqueLivePreview();
+  });
+}
+
+function boutiqueCineSupprimePhoto(i) {
+  if (!_cineAutorise()) return;
+  const bc = S.boutiqueConfig;
+  if (!bc.cine || !Array.isArray(bc.cine.medias)) return;
+  bc.cine.medias = bc.cine.medias.filter((_, k) => k !== i);
+  if (!bc.cine.medias.length) bc.cine.source = 'produits';
+  _sauveBoutique(bc);
+  haptic('tap');
+  render(); _refreshBoutiqueLivePreview();
+}
+
 function boutiqueEditSetAnim(cle, val) {
   const bc = S.boutiqueConfig;
   if (!bc.anim || typeof bc.anim !== 'object') bc.anim = {};
@@ -25139,6 +25425,50 @@ function generateBoutiqueSite(opts) {
   // tourner, aucune image à fournir — un commerçant l'active et elle marche.
   const _cinemaOn = _palAllowed && !!bc.cinema;
 
+  // ── Le film d'ouverture : contenu et couleurs ────────────────────────
+  // La scene a ses propres couleurs. Le titre etait ecrit en creme fixe
+  // au-dessus d'une scene qui, elle, suivait la palette : des que la
+  // boutique etait claire, le titre passait a 1,05 de contraste — un
+  // texte blanc sur blanc. Les trois scenes ci-dessous sont chacune
+  // coherente de bout en bout : fond, rideau, lame et texte ensemble.
+  const CINE = Object.assign({
+    titre: '', message: '', bouton: '', source: 'produits',
+    medias: [], video: '', metas: [], scene: 'theatre', videoSon: false,
+  }, (_palAllowed && bc.cine) ? bc.cine : {});
+  const _sceneNom = ['theatre', 'palette', 'clair'].includes(CINE.scene) ? CINE.scene : 'theatre';
+  const SCENE = _sceneNom === 'theatre' ? {
+        fond: '#0D0D11', rideauA: '#26262C', rideauB: '#1A1A1F',
+        lameA: '#3A3A44', lameB: '#15151A', tx: '#F3EEE0', tx2: '#F3EEE0',
+        pilule: 'rgba(255,255,255,.09)', pilBd: 'rgba(255,255,255,.18)', ombre: '.5',
+      } : _sceneNom === 'clair' ? {
+        fond: '#F2EEE3', rideauA: '#E4DECF', rideauB: '#D6CFBB',
+        lameA: '#FBF8F1', lameB: '#C3BAA3', tx: '#1B1B1F', tx2: '#4A4740',
+        pilule: 'rgba(0,0,0,.05)', pilBd: 'rgba(0,0,0,.12)', ombre: '.18',
+      } : {
+        // « Suit la boutique » : tout passe par les jetons de palette, donc
+        // le film reste lisible meme si le visiteur bascule clair/sombre.
+        // Le rideau, lui, ne peut pas se contenter de --surface : sur une
+        // boutique claire il sortait blanc sur blanc et on ne le voyait
+        // plus se lever. Les deux teintes sont decalees vers la couleur du
+        // texte — un ecart qui fonctionne dans les deux sens, clair comme
+        // sombre — et la lame de tete prend la couleur de la marque.
+        fond: 'var(--bg)',
+        rideauA: 'color-mix(in srgb, var(--surface) 58%, var(--tx))',
+        rideauB: 'color-mix(in srgb, var(--surface) 46%, var(--tx))',
+        lameA: 'color-mix(in srgb, var(--surface) 34%, var(--tx))', lameB: tc,
+        tx: 'var(--tx)', tx2: 'var(--tx2)',
+        pilule: 'var(--surface)', pilBd: 'var(--bd)', ombre: '.22',
+      };
+  const _cineMedias = Array.isArray(CINE.medias)
+    ? CINE.medias.filter(m => typeof m === 'string' && m.trim()).slice(0, 6) : [];
+  const _cineSource = (_cineMedias.length && ['perso', 'melange'].includes(CINE.source))
+    ? CINE.source : 'produits';
+  // La video de fond passe par le meme filtre que les autres liens : une
+  // adresse https, rien d'autre. Elle est muette et en boucle — un son qui
+  // demarre tout seul serait bloque par le navigateur de toute facon.
+  const _cineVideo = /^https:\/\/[^\s"'<>]+$/.test(String(CINE.video || '').trim())
+    ? String(CINE.video).trim() : '';
+
   // ── Studio d'animation (plan Entreprise) ──────────────────────────────
   // Vingt-deux reglages qui pilotent reellement le rendu. Chacun a un
   // defaut sobre : une boutique qui n'y touche pas reste lisible et rapide.
@@ -25167,7 +25497,25 @@ function generateBoutiqueSite(opts) {
     bandeauTexte: '',
     grain:      true,
     doux:       true,        // defilement doux
+    // ── Douze reglages de plus ────────────────────────────────────────
+    vitesse:    'normale',   // lente | normale | vive
+    ouverture:  'aucune',    // aucune | fondu | voile
+    matiere:    'lames',     // lames | uni | degrade
+    murFond:    'halo',      // halo | grille | vide
+    titreSeq:   'monte',     // monte | disperse | recul
+    flottement: false,       // les cartes du mur respirent
+    imageDerive: false,      // la photo derive dans son cadre au defilement
+    boutonSurvol:'elevation',// elevation | lueur | remplissage | aucun
+    pastilleAnim: false,     // les pastilles arrivent en cascade
+    curseurMot: '',          // mot affiche dans le curseur personnalise
+    ancrage:    false,       // les sections s'accrochent au defilement
+    finSequence:'coupe',     // coupe | fondu
   }, (_palAllowed && bc.anim) ? bc.anim : {});
+
+  // Multiplicateur global : une seule valeur qui etire ou resserre toutes
+  // les durees, plutot que douze curseurs a accorder a la main.
+  const _vit = { lente: 1.6, normale: 1, vive: 0.62 }[A.vitesse] || 1;
+  const _d = (ms) => Math.round(ms * _vit) + 'ms';
 
   // Decalage entre deux produits de la cascade
   const _casc = { serree: 0.018, normale: 0.035, ample: 0.06 }[A.cascade] ?? 0.035;
@@ -25349,8 +25697,15 @@ function generateBoutiqueSite(opts) {
   const showPromoBadges = bc.showPromoBadges !== false;
   const showStockCount  = bc.showStockCount  !== false;
   const showCategories  = bc.showCategories  !== false;
-  // URL publique (domaine personnalisé si vérifié)
-  const publicUrl = (bc.customDomainVerified && bc.customDomain) ? `https://${bc.customDomain}` : `https://${bc.domain}.baro.shop`;
+  // URL publique (domaine personnalisé si vérifié).
+  // Tant que le commerçant n'a pas choisi d'adresse, il n'y en a pas : on
+  // écrivait « https://undefined.baro.shop » dans og:url et dans le lien
+  // canonique, soit une adresse inexistante donnée aux moteurs de
+  // recherche et aux aperçus de partage.
+  const _domaine = String(bc.domain || '').trim();
+  const publicUrl = (bc.customDomainVerified && bc.customDomain)
+    ? `https://${bc.customDomain}`
+    : (_domaine ? `https://${_domaine}.baro.shop` : '');
 
   // ── Snippets pixels ──
   const fbPixelHead = (px.facebookPixel_enabled && px.facebookPixel) ? `
@@ -25698,12 +26053,31 @@ ${items.map(x => _carte(x.p, x.idx)).join('\n')}
   // le travail reste sur le compositeur.
   // Sens de la cascade : l'ordre d'apparition des produits sur le mur.
   // « centre » part du milieu et s'ecarte vers les bords.
-  const _cineTotal = Math.min(8, shopProds.length);
+  const _cineTotal = Math.min(8, Math.max(shopProds.length,
+    (Array.isArray(bc.cine && bc.cine.medias) ? bc.cine.medias.length : 0)));
   const _rangCasc = (i) => A.ordre === 'inverse' ? (_cineTotal - 1 - i)
     : A.ordre === 'centre' ? Math.abs(i - (_cineTotal - 1) / 2)
     : i;
-  const _cineItems = shopProds.slice(0, 8).map((p, _ci0) => {
+  // Le mur d'ouverture. « perso » n'affiche que les photos chargees par le
+  // commercant, « melange » les intercale avec ses produits.
+  const _cineSlots = (() => {
+    const prods = shopProds.slice(0, 8).map(p => ({ prod: p }));
+    const persos = _cineMedias.map(src => ({ src }));
+    if (_cineSource === 'perso') return persos;
+    if (_cineSource === 'melange') {
+      const out = [];
+      for (let i = 0; i < Math.max(prods.length, persos.length) && out.length < 8; i++) {
+        if (persos[i]) out.push(persos[i]);
+        if (prods[i] && out.length < 8) out.push(prods[i]);
+      }
+      return out;
+    }
+    return prods;
+  })();
+  const _cineItems = _cineSlots.map((slot, _ci0) => {
     const _ci = _rangCasc(_ci0);
+    if (slot.src) return `<figure class="cn-it" style="--i:${_ci}"><img src="${esc(slot.src)}" alt="" loading="lazy"></figure>`;
+    const p = slot.prod;
     let hue = 0;
     { const s = String(p.name || '?'); for (let i = 0; i < s.length; i++) hue = (hue * 31 + s.charCodeAt(i)) % 360; }
     const mono = (p.name || '?').trim().split(/[^A-Za-zÀ-ÿ]+/)
@@ -25713,22 +26087,36 @@ ${items.map(x => _carte(x.p, x.idx)).join('\n')}
       ? `<figure class="cn-it" style="--i:${_ci}"><img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy"></figure>`
       : `<figure class="cn-it cn-ph" style="--i:${_ci};--ph:${hue}"><span>${esc(mono)}</span></figure>`;
   }).join('');
-  const _cineMeta = [
+  // Trois lignes sous le titre. Le commercant peut les ecrire lui-meme ;
+  // s'il n'en ecrit aucune, elles sont deduites de sa vraie boutique.
+  const _metasPerso = (Array.isArray(CINE.metas) ? CINE.metas : [])
+    .map(m => String(m || '').trim()).filter(Boolean).slice(0, 3);
+  const _cineMeta = _metasPerso.length ? _metasPerso.map(esc) : [
     (bc.businessHours || []).length ? t('z4_horairesDirect') : '',
     _deliveryOff ? (_pickupAddr ? t('z3_retraitPlace') : '') :
-      ((bc.deliveryZones || []).length ? `Livraison ${(bc.deliveryZones || []).slice(0, 2).map(z => esc(z)).join(' · ')}` : ''),
-    `${shopProds.length} référence${shopProds.length > 1 ? 's' : ''} en vitrine`,
+      ((bc.deliveryZones || []).length
+        ? `${t('zo_livraison')} ${(bc.deliveryZones || []).slice(0, 2).map(z => esc(z)).join(' · ')}` : ''),
+    t(shopProds.length > 1 ? 'zo_references' : 'zo_reference').replace('{0}', shopProds.length),
   ].filter(Boolean);
-  const _cinemaHTML = (!_cinemaOn || shopProds.length < 3) ? '' : `
-<section class="cinema" id="cinema" aria-label="Ouverture de la boutique">
+  const _cineTitre = String(CINE.titre || '').trim() || heroTitle;
+  const _cineMsg   = String(CINE.message || '').trim();
+  const _cineBtn   = String(CINE.bouton || '').trim() || t('x2_entrerBoutique');
+  // Le film a besoin d'au moins trois vignettes. Avec des photos chargees,
+  // ce sont elles qui comptent ; sinon ce sont les produits en vitrine.
+  const _cineAssez = _cineSlots.length >= 3;
+  const _cinemaHTML = (!_cinemaOn || !_cineAssez) ? '' : `
+<section class="cinema" id="cinema" aria-label="${esc(t('zo_ariaFilm'))}">
   <div class="cn-stage">
+    ${_cineVideo ? `<video class="cn-video" autoplay muted loop playsinline preload="metadata"
+      aria-hidden="true" src="${esc(_cineVideo)}"></video>` : ''}
     <div class="cn-room" aria-hidden="true"></div>
     <div class="cn-wall">${_cineItems}</div>
     <div class="cn-shutter" aria-hidden="true"><span class="cn-slat"></span></div>
-    <div class="cn-title"><span>${esc(heroTitle)}</span></div>
+    <div class="cn-title"><span>${esc(_cineTitre)}</span></div>
+    ${_cineMsg ? `<p class="cn-msg">${esc(_cineMsg)}</p>` : ''}
     <div class="cn-meta">${_cineMeta.map(m => `<span>${m}</span>`).join('')}</div>
-    <a class="cn-go" href="#produits" onclick="event.preventDefault();(document.querySelector('main.grid')||document.body).scrollIntoView({behavior:'smooth',block:'start'})">${t('x2_entrerBoutique')}</a>
-    <button class="cn-skip" onclick="(document.querySelector('main.grid')||document.body).scrollIntoView({behavior:'smooth',block:'start'})">Passer l'intro</button>
+    <a class="cn-go" href="#produits" onclick="event.preventDefault();(document.querySelector('main.grid')||document.body).scrollIntoView({behavior:'smooth',block:'start'})">${esc(_cineBtn)}</a>
+    <button class="cn-skip" onclick="(document.querySelector('main.grid')||document.body).scrollIntoView({behavior:'smooth',block:'start'})">${esc(t('zo_passer'))}</button>
   </div>
 </section>`;
 
@@ -25737,14 +26125,88 @@ ${items.map(x => _carte(x.p, x.idx)).join('\n')}
   const chipsHTML = categories.length > 1
     ? `<div class="chips"><button class="chip active" data-cat="" onclick="baroSetCat('',this)">${t('y4_tout')} <span class="chip-n">${shopProds.length}</span></button>${categories.map(c => `<button class="chip" data-cat="${esc(c)}" onclick="baroSetCat('${esc(c).replace(/'/g,'&#39;')}',this)">${esc(c)} <span class="chip-n">${_catCount[c]||0}</span></button>`).join('')}</div>`
     : '';
+  // Les douze reglages du studio d'animation, sortis dans leur propre
+  // feuille. Elle est emise en dernier : plusieurs regles ecrites plus
+  // bas (.reveal notamment) reposent la transition complete des memes
+  // elements, et reprendraient la main sur la vitesse d'ensemble.
+  const _animPlus = `/* ── Studio d'animation : les douze reglages suivants ─────────────── */
+${A.vitesse !== 'normale' ? `
+/* Vitesse d'ensemble : on ne retouche que les durees deja posees. */
+.pc,.pc-img,.reveal,.sep,.tx-part,.int-action{transition-duration:${_d(320)}}
+.cn-it,.cn-shutter,.cn-title{transition-duration:${_d(280)}}` : ''}
+${A.ouverture !== 'aucune' ? `
+/* Ouverture de page : une seule fois, au chargement. */
+@keyframes baroOuvre{from{opacity:0${A.ouverture === 'voile' ? ';transform:translateY(10px)' : ''}}to{opacity:1;transform:none}}
+body{animation:baroOuvre ${_d(A.ouverture === 'voile' ? 620 : 420)} cubic-bezier(.2,0,0,1) both}
+@media(prefers-reduced-motion:reduce){body{animation:none}}` : ''}
+${A.matiere !== 'lames' ? `
+.cn-shutter{background:${A.matiere === 'uni'
+  ? '#1D1D22'
+  : 'linear-gradient(180deg,#2A2A31,#131317)'}}` : ''}
+${A.murFond !== 'halo' ? `
+.cn-room{background:${A.murFond === 'vide' ? 'none' : `
+  linear-gradient(var(--bd) 1px,transparent 1px),linear-gradient(90deg,var(--bd) 1px,transparent 1px)`};
+  ${A.murFond === 'grille' ? 'background-size:54px 54px;opacity:.5' : ''}}` : ''}
+${A.titreSeq !== 'monte' ? `
+.cn-title{transform:${A.titreSeq === 'recul'
+  ? 'perspective(900px) translateZ(calc(var(--pt) * -240px)) translateY(calc(var(--pt) * -18px))'
+  : 'translateY(calc(var(--pt) * -20px)) scale(calc(1 + var(--pt) * .34))'};
+  ${A.titreSeq === 'disperse' ? 'filter:blur(calc(var(--pt) * 7px))' : ''}}` : ''}
+${A.flottement ? `
+/* Respiration du mur : trois phases decalees pour eviter l'effet metronome */
+@keyframes baroFlotte{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+.cn-it{animation:baroFlotte ${_d(5200)} ease-in-out infinite}
+.cn-it:nth-child(3n+2){animation-duration:${_d(6100)};animation-delay:-1.4s}
+.cn-it:nth-child(3n+3){animation-duration:${_d(4700)};animation-delay:-2.6s}
+@media(prefers-reduced-motion:reduce){.cn-it{animation:none}}` : ''}
+${A.imageDerive ? `
+/* La photo derive dans son cadre : elle est plus grande que lui, donc
+   rien ne se decouvre sur les bords. */
+.pc-imgwrap{overflow:hidden}
+/* Le decalage est un pourcentage de la hauteur de l'image, pas un nombre
+   de pixels : l'agrandissement laisse 8 % de marge de chaque cote, la
+   derive en consomme 4 au plus. Aucun bord ne peut se decouvrir, quelle
+   que soit la taille de la carte. */
+.pc-img{transform:scale(1.16) translateY(calc(var(--dv,0) * -4%))}
+.pc:hover .pc-img{transform:scale(${(Number(_zoomImg) + .16).toFixed(3)}) translateY(calc(var(--dv,0) * -4%))}` : ''}
+${A.boutonSurvol !== 'elevation' ? `
+.order-btn:hover{${A.boutonSurvol === 'aucun' ? 'transform:none;filter:none'
+  : A.boutonSurvol === 'lueur' ? `transform:none;box-shadow:0 0 0 3px ${tc}33,0 8px 22px -10px ${tc}`
+  : `transform:none;filter:brightness(.92) saturate(1.2)`}}` : ''}
+${A.pastilleAnim ? `
+/* Les pastilles ne portent pas toutes la meme classe : on vise les
+   enfants du bloc, pas une classe en particulier. */
+@keyframes baroPast{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:none}}
+.pc-urgwrap > *{animation:baroPast ${_d(420)} cubic-bezier(.2,0,0,1) both}
+.pc-urgwrap > *:nth-child(2){animation-delay:${_d(90)}}
+.pc-urgwrap > *:nth-child(3){animation-delay:${_d(180)}}
+@media(prefers-reduced-motion:reduce){.pc-urgwrap > *{animation:none}}` : ''}
+${A.ancrage ? `
+/* Ancrage : chaque section s'aligne en fin de defilement. « proximity »
+   et non « mandatory » — obliger l'alignement rend la page impossible a
+   parcourir vite. */
+html{scroll-snap-type:y proximity}
+.header,.cinema,main.grid,.col-grid{scroll-snap-align:start;scroll-snap-stop:normal}
+@media(prefers-reduced-motion:reduce){html{scroll-snap-type:none}}` : ''}
+${A.finSequence === 'fondu' ? `
+.cn-stage::after{content:'';position:absolute;inset:0;z-index:5;pointer-events:none;
+  background:var(--bg);opacity:clamp(0,(var(--p) - .88)/.12,1)}` : ''}
+${(A.curseur && String(A.curseurMot || '').trim()) ? `
+.baro-cursor::after{content:'${esc(String(A.curseurMot).trim().slice(0, 14))}';
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  font-size:9px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+  color:${tc};opacity:0;transition:opacity .18s ease;white-space:nowrap}
+.baro-cursor.actif::after{opacity:1}` : ''}
+/* Chapeau d'une collection : une ou deux phrases, pas un paragraphe */`;
+
   const html = `<!DOCTYPE html>
 <html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${bc.name||S.session?.business||'Ma Boutique'}</title>
 <meta name="description" content="${bc.description || 'Boutique en ligne'}">
 <meta property="og:title" content="${bc.name||S.session?.business||'Ma Boutique'}">
 <meta property="og:description" content="${bc.description || 'Boutique en ligne'}">
-<meta property="og:url" content="${publicUrl}">
-<link rel="canonical" href="${publicUrl}">
+${publicUrl ? `<meta property="og:url" content="${esc(publicUrl)}">
+<link rel="canonical" href="${esc(publicUrl)}">` : ''}
 <link rel="icon" type="image/png" href="${logo || ''}">
 ${fontImport}
 ${fbPixelHead}
@@ -26515,7 +26977,7 @@ ${_ruptureStyle === 'voile' ? `.pc-out .pc-imgwrap{filter:none;opacity:1}
 /* Echappatoire visible des le premier ecran : personne n'est pris au piege */
 .cn-skip{--pk:clamp(0,(.42 - var(--p))/.12,1);
   position:absolute;top:calc(14px + env(safe-area-inset-top));right:14px;z-index:4;
-  background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.26);color:#F3EEE0;
+  background:${SCENE.pilule};border:1px solid ${SCENE.pilBd};color:${SCENE.tx};
   backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
   font-family:inherit;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
   padding:8px 14px;border-radius:999px;cursor:pointer;
@@ -26523,7 +26985,11 @@ ${_ruptureStyle === 'voile' ? `.pc-out .pc-imgwrap{filter:none;opacity:1}
 .cn-skip:hover{background:rgba(255,255,255,.24)}
 .cn-skip[style*="opacity: 0"]{pointer-events:none}
 .cn-stage{position:sticky;top:0;height:100vh;overflow:hidden;--p:0;
-  display:grid;place-items:center;background:var(--bg)}
+  display:grid;place-items:center;background:${SCENE.fond}}
+/* Video de fond : muette, en boucle, derriere le mur. Elle ne remplace pas
+   le contenu — si elle ne charge pas, la scene reste entiere. */
+.cn-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  z-index:0;opacity:.55;pointer-events:none}
 .cn-room{position:absolute;inset:0;
   background:radial-gradient(120% 80% at 50% 112%, ${tc}26, transparent 62%),
              radial-gradient(90% 60% at 50% -12%, ${tc}1c, transparent 56%)}
@@ -26545,25 +27011,33 @@ ${_ruptureStyle === 'voile' ? `.pc-out .pc-imgwrap{filter:none;opacity:1}
 /* Le rideau : il remonte, il ne disparaît pas en fondu */
 .cn-shutter{--po:clamp(0,(var(--p) - ${_decl.rid})/.32,1);
   position:absolute;left:0;right:0;top:0;height:100%;z-index:2;
-  background:repeating-linear-gradient(180deg,#26262C 0 7px,#1D1D22 7px 14px);
-  box-shadow:0 20px 46px rgba(0,0,0,.5);
+  background:repeating-linear-gradient(180deg,${SCENE.rideauA} 0 7px,${SCENE.rideauB} 7px 14px);
+  box-shadow:0 20px 46px rgba(0,0,0,${SCENE.ombre});
   transform:${_rideauTf}}
 .cn-slat{position:absolute;left:0;right:0;bottom:0;height:10px;
-  background:linear-gradient(180deg,#3A3A44,#15151A);
-  box-shadow:0 4px 16px rgba(0,0,0,.55)}
+  background:linear-gradient(180deg,${SCENE.lameA},${SCENE.lameB});
+  box-shadow:0 4px 16px rgba(0,0,0,${SCENE.ombre})}
 .cn-title{--pt:clamp(0,(var(--p) - .26)/.18,1);
   position:relative;z-index:3;text-align:center;padding:0 6vw;
   font-size:clamp(30px,9vw,74px);font-weight:900;letter-spacing:-.04em;line-height:.96;
-  color:#F3EEE0;text-wrap:balance;
+  color:${SCENE.tx};text-wrap:balance;
   opacity:calc(1 - var(--pt));
   transform:translateY(calc(var(--pt) * -46px)) scale(calc(1 - var(--pt) * .06))}
 .cn-meta{--pm:clamp(0,(var(--p) - .74)/.16,1);
   position:absolute;bottom:17vh;z-index:3;display:flex;gap:8px;flex-wrap:wrap;
   justify-content:center;padding:0 6vw;
   opacity:var(--pm);transform:translateY(calc((1 - var(--pm)) * 20px))}
+/* Le message sous le titre : il suit le titre, en plus discret. Il
+   disparait au meme rythme, sinon il flotterait seul sur la scene vide. */
+.cn-msg{--pt:clamp(0,(var(--p) - .26)/.18,1);
+  position:relative;z-index:3;margin:14px 0 0;padding:0 8vw;max-width:640px;
+  text-align:center;font-size:clamp(13px,3.4vw,17px);line-height:1.5;
+  color:${SCENE.tx2};opacity:calc((1 - var(--pt)) * .82);
+  transform:translateY(calc(var(--pt) * -30px))}
 .cn-meta span{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
-  color:var(--tx2);background:var(--surface);border:1px solid var(--bd);
+  color:${SCENE.tx2};background:${SCENE.pilule};border:1px solid ${SCENE.pilBd};
   padding:7px 13px;border-radius:999px}
+${_sceneNom === 'theatre' ? '.cn-meta span{backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}' : ''}
 .cn-go{--pm:clamp(0,(var(--p) - .8)/.14,1);
   position:absolute;bottom:8vh;z-index:3;text-decoration:none;
   background:${tc};color:#fff;font-weight:800;font-size:15px;
@@ -26575,7 +27049,9 @@ ${_ruptureStyle === 'voile' ? `.pc-out .pc-imgwrap{filter:none;opacity:1}
   .cn-shutter{display:none}
   .cn-wall{position:relative;inset:auto;padding:24px 6vw 0}
   .cn-it{opacity:1;transform:none}
-  .cn-title{opacity:1;transform:none;color:var(--tx)}
+  .cn-title{opacity:1;transform:none;color:${SCENE.tx}}
+  .cn-msg{opacity:.82;transform:none}
+  .cn-video{display:none}
   .cn-meta,.cn-go{position:relative;bottom:auto;opacity:1;transform:none;margin-top:18px}
   .cn-skip{display:none}}
 
@@ -26652,7 +27128,6 @@ ${A.separateur === 'ligne'
   .hero-halo{display:none}
   .baro-cursor{display:none}
 }
-
 /* ── Application de la palette ────────────────────────────────────────
    Place en fin de feuille pour primer sur les couleurs ecrites en dur
    plus haut. Toutes les surfaces passent par les memes jetons, donc le
@@ -28035,10 +28510,35 @@ ${(T.revealTexte !== 'aucun' || T.chiffresAnimes) ? `<scr` + `ipt>(function(){
     nums.forEach(function(el){ion.observe(el);});
   }` : ''}
 })();</scr` + `ipt>` : ''}
+${A.imageDerive ? `<scr` + `ipt>(function(){
+  // Derive des photos : une variable par carte, mise a jour en une passe.
+  // On ne lit les positions qu'une fois par frame et jamais pendant
+  // l'ecriture, pour ne pas alterner lecture et ecriture de mise en page.
+  if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  var cartes=[].slice.call(document.querySelectorAll('.pc'));
+  if(!cartes.length)return;
+  var attente=false;
+  function frame(){
+    attente=false;
+    var h=window.innerHeight||1;
+    // -0,5 quand la carte est en haut de l'ecran, +0,5 quand elle est en
+    // bas. On ne multiplie pas : sinon la valeur bute contre sa borne des
+    // qu'une carte s'ecarte un peu du centre, et plus rien ne derive.
+    var mesures=cartes.map(function(c){var r=c.getBoundingClientRect();
+      return (r.top+r.height/2-h/2)/h;});
+    cartes.forEach(function(c,i){
+      c.style.setProperty('--dv',Math.max(-1,Math.min(1,mesures[i])).toFixed(3));
+    });
+  }
+  window.addEventListener('scroll',function(){if(!attente){attente=true;requestAnimationFrame(frame);}},{passive:true});
+  window.addEventListener('resize',frame,{passive:true});
+  frame();
+})();</scr` + `ipt>` : ''}
 ${A.doux ? `<style>html{scroll-behavior:smooth}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}</style>` : ''}
 ${waNum?`<a href="${waLink}" target="_blank" rel="noopener noreferrer" class="wa-float"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg></a>`:''}
 ${customJsBody}
 ${cc.js ? `<script>${cc.js}<\/script>` : ''}
+<style>${_animPlus}</style>
 </body></html>`;
   // Aperçu : retourne le HTML sans télécharger
   if (isPreview) return html;
@@ -28206,6 +28706,73 @@ function vBoutiqueEditor() {
           <span>${t('z3_cinemaTx')}</span>
         </span>
       </label>
+      ${g('cinema', false) ? (() => {
+        // Studio du film : la scene, le texte affiche, et les images qui
+        // defilent. Ouvert seulement quand la sequence est active — des
+        // reglages sans effet visible ne valent rien.
+        const C = Object.assign({ titre:'', message:'', bouton:'', source:'produits',
+          medias:[], video:'', metas:[], scene:'theatre' }, g('cine', {}) || {});
+        const photos = Array.isArray(C.medias) ? C.medias : [];
+        const metas = Array.isArray(C.metas) ? C.metas : [];
+        const ech = v => String(v == null ? '' : v)
+          .replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+        const champ = (cle, titre, exemple, aide) => `
+        <div class="bq-fld bq-fld-large"><label>${titre}</label>
+          <input class="input" type="text" value="${ech(C[cle])}"
+                 placeholder="${ech(exemple)}"
+                 onchange="boutiqueEditSetCine('${cle}',this.value)">
+          ${aide ? `<div class="bq-hint2">${aide}</div>` : ''}</div>`;
+        return `
+      <div class="bq-sub-title" style="margin-top:12px">${t('zp_studioFilm')}</div>
+      <div class="bq-hint2" style="margin:-4px 0 8px">${t('zp_studioAide')}</div>
+      <div class="bq-studio">
+        <div class="bq-fld bq-fld-large"><label>${t('zp_scene')}</label>
+          <select class="input" onchange="boutiqueEditSetCine('scene',this.value)">
+            ${[['theatre', t('zp_scTheatre')], ['clair', t('zp_scClair')], ['palette', t('zp_scPalette')]]
+              .map(o => `<option value="${o[0]}" ${C.scene === o[0] ? 'selected' : ''}>${o[1]}</option>`).join('')}
+          </select>
+          <div class="bq-hint2">${t('zp_sceneAide')}</div></div>
+        ${champ('titre', t('zp_titre'), t('zp_titreEx'), t('zp_titreAide'))}
+        ${champ('message', t('zp_message'), t('zp_messageEx'), t('zp_messageAide'))}
+        ${champ('bouton', t('zp_bouton'), t('zp_boutonEx'), '')}
+      </div>
+
+      <div class="bq-sub-title" style="margin-top:12px">${t('zp_lignes')}</div>
+      <div class="bq-hint2" style="margin:-4px 0 8px">${t('zp_lignesAide')}</div>
+      <div class="bq-studio">
+        ${[0,1,2].map(i => `<div class="bq-fld"><label>${t('zp_ligne').replace('{0}', i + 1)}</label>
+          <input class="input" type="text" value="${ech(metas[i] || '')}"
+                 placeholder="${ech(t('zp_ligneEx' + i))}"
+                 onchange="boutiqueCineSetMeta(${i},this.value)"></div>`).join('')}
+      </div>
+
+      <div class="bq-sub-title" style="margin-top:12px">${t('zp_images')}</div>
+      <div class="bq-hint2" style="margin:-4px 0 8px">${t('zp_imagesAide')}</div>
+      <div class="bq-cine-grid">
+        ${photos.map((src, i) => `<div class="bq-cine-ph">
+          <img src="${ech(src)}" alt="">
+          <button class="bq-cine-x" onclick="boutiqueCineSupprimePhoto(${i})"
+                  aria-label="${ech(t('zp_retirer'))}">✕</button>
+        </div>`).join('')}
+        ${photos.length < 6 ? `<button class="bq-cine-add" onclick="boutiqueCineAjoutePhoto()">
+          <span>＋</span><b>${t('zp_ajouterPhoto')}</b></button>` : ''}
+      </div>
+      ${photos.length ? `<div class="bq-fld bq-fld-large" style="margin-top:8px">
+        <label>${t('zp_source')}</label>
+        <select class="input" onchange="boutiqueEditSetCine('source',this.value)">
+          ${[['produits', t('zp_srProduits')], ['melange', t('zp_srMelange')], ['perso', t('zp_srPerso')]]
+            .map(o => `<option value="${o[0]}" ${C.source === o[0] ? 'selected' : ''}>${o[1]}</option>`).join('')}
+        </select></div>` : ''}
+
+      <div class="bq-sub-title" style="margin-top:12px">${t('zp_video')}</div>
+      <div class="bq-fld bq-fld-large">
+        <label>${t('zp_videoLien')}</label>
+        <input class="input" type="url" value="${ech(C.video)}"
+               placeholder="https://…/ouverture.mp4"
+               onchange="boutiqueEditSetCine('video',this.value)">
+        <div class="bq-hint2">${t('zp_videoAide')}</div>
+      </div>`;
+      })() : ''}
 
       ${(() => {
         // Studio d'animation : vingt-deux reglages qui pilotent reellement
@@ -28216,7 +28783,11 @@ function vBoutiqueEditor() {
           hero:'aucun', vignette:false, reveal:'fondu', grille:'colonne',
           separateur:'aucun', progression:'haut', zoomImage:8, tilt:true,
           spotlight:false, magnetique:false, halo:true, curseur:false,
-          bandeau:false, bandeauTexte:'', grain:true, doux:true }, g('anim', {}) || {});
+          bandeau:false, bandeauTexte:'', grain:true, doux:true,
+          vitesse:'normale', ouverture:'aucune', matiere:'lames', murFond:'halo',
+          titreSeq:'monte', flottement:false, imageDerive:false,
+          boutonSurvol:'elevation', pastilleAnim:false, curseurMot:'',
+          ancrage:false, finSequence:'coupe' }, g('anim', {}) || {});
         const opts = (k, liste) => liste.map(([v, lbl]) =>
           `<option value="${v}" ${String(A[k]) === String(v) ? 'selected' : ''}>${lbl}</option>`).join('');
         const bascule = (k, titre, aide) => `
@@ -28246,7 +28817,16 @@ function vBoutiqueEditor() {
         ${curseurSel('ordre', { titre: t('z3_ordre'), v: [
           ['normal', t('z3_ordreNormal')], ['inverse', t('z3_ordreInverse')],
           ['centre', t('z3_ordreCentre')]] })}
+        ${curseurSel('matiere', { titre: t('zn_matiere'), v: [
+          ['lames', t('zn_maLames')], ['uni', t('zn_maUni')], ['degrade', t('zn_maDegrade')]] })}
+        ${curseurSel('murFond', { titre: t('zn_murFond'), v: [
+          ['halo', t('zn_muHalo')], ['grille', t('zn_muGrille')], ['vide', t('zn_muVide')]] })}
+        ${curseurSel('titreSeq', { titre: t('zn_titreSeq'), v: [
+          ['monte', t('zn_tsMonte')], ['disperse', t('zn_tsDisperse')], ['recul', t('zn_tsRecul')]] })}
+        ${curseurSel('finSequence', { titre: t('zn_finSeq'), v: [
+          ['coupe', t('zn_fsCoupe')], ['fondu', t('zn_fsFondu')]] })}
       </div>
+      <div class="bq-hint2" style="margin:7px 0 0">${t('zn_sequenceAide')}</div>
 
       <div class="bq-sub-title">${t('z3_page')}</div>
       <div class="bq-studio">
@@ -28267,6 +28847,13 @@ function vBoutiqueEditor() {
           <input type="range" min="0" max="100" step="10" value="${A.parallaxe}"
                  onchange="boutiqueEditSetAnim('parallaxe',Number(this.value))">
           <div class="bq-hint2">${t('z3_parallaxeAide')}</div></div>
+        ${curseurSel('vitesse', { titre: t('zn_vitesse'), v: [
+          ['lente', t('zn_viLente')], ['normale', t('zn_viNormale')], ['vive', t('zn_viVive')]] })}
+        ${curseurSel('ouverture', { titre: t('zn_ouverture'), v: [
+          ['aucune', t('zn_ouAucune')], ['fondu', t('zn_ouFondu')], ['voile', t('zn_ouVoile')]] })}
+        ${curseurSel('boutonSurvol', { titre: t('zn_bouton'), v: [
+          ['elevation', t('zn_boElevation')], ['lueur', t('zn_boLueur')],
+          ['remplissage', t('zn_boRemplissage')], ['aucun', t('zn_boAucun')]] })}
         <div class="bq-fld bq-fld-large"><label>${t('z3_zoomImage')} — <b>${A.zoomImage}%</b></label>
           <input type="range" min="0" max="40" step="4" value="${A.zoomImage}"
                  onchange="boutiqueEditSetAnim('zoomImage',Number(this.value))">
@@ -28341,9 +28928,22 @@ function vBoutiqueEditor() {
       ${bascule('magnetique', t('z3_magnetique'), t('z3_magnetiqueAide'))}
       ${bascule('halo', t('z3_halo'), t('z3_haloAide'))}
       ${bascule('curseur', t('z3_curseur'), t('z3_curseurAide'))}
+      ${A.curseur ? `<div class="bq-fld" style="margin:0 0 7px">
+        <label>${t('zn_curseurMot')}</label>
+        <input class="input" type="text" maxlength="14" value="${String(A.curseurMot || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;')}"
+               placeholder="${t('zn_curseurMotEx').replace(/"/g,'&quot;')}"
+               onchange="boutiqueEditSetAnim('curseurMot',this.value)">
+        <div class="bq-hint2">${t('zn_curseurMotAide')}</div>
+      </div>` : ''}
+
+      <div class="bq-sub-title" style="margin-top:14px">${t('zn_vieCartes')}</div>
+      ${bascule('flottement', t('zn_flottement'), t('zn_flottementAide'))}
+      ${bascule('imageDerive', t('zn_imageDerive'), t('zn_imageDeriveAide'))}
+      ${bascule('pastilleAnim', t('zn_pastilleAnim'), t('zn_pastilleAnimAide'))}
 
       <div class="bq-sub-title" style="margin-top:14px">${t('z3_finitions')}</div>
       ${bascule('vignette', t('z3_vignette'), t('z3_vignetteAide'))}
+      ${bascule('ancrage', t('zn_ancrage'), t('zn_ancrageAide'))}
       ${bascule('grain', t('z3_grain'), t('z3_grainAide'))}
       ${bascule('doux', t('z3_doux'), t('z3_douxAide'))}
       ${bascule('bandeau', t('z3_bandeau'), t('z3_bandeauAide'))}
