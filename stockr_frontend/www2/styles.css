@@ -5866,3 +5866,114 @@ body.vt-active .card { animation: none !important; }
 .bq-cine-add span { font-size: 20px; line-height: 1; }
 .bq-cine-add b { font-size: 10.5px; font-weight: 700; text-align: center; line-height: 1.25; }
 .bq-cine-add:active { transform: scale(.97); }
+
+/* ── Le déroulé des listes ─────────────────────────────────────────────
+   Les <option> d'un <select> sont dessinées par le système : aucune règle
+   CSS ne les atteint, d'où la bande bleu vif et le texte parfois
+   illisible. Cette feuille dessine la liste à leur place.             */
+.dr-ov {
+  position: fixed;
+  inset: 0;
+  z-index: 9600;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(10, 10, 20, .42);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  animation: drFond .18s ease both;
+  padding: 0 0 env(safe-area-inset-bottom);
+}
+@keyframes drFond { from { opacity: 0 } to { opacity: 1 } }
+
+.dr-sheet {
+  width: 100%;
+  max-width: 520px;
+  max-height: min(70vh, 560px);
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-bottom: none;
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 -18px 48px -12px rgba(10, 10, 20, .34);
+  overflow: hidden;
+  animation: drMonte .26s cubic-bezier(.2, 0, 0, 1) both;
+}
+@keyframes drMonte { from { transform: translateY(14px); opacity: .6 } to { transform: none; opacity: 1 } }
+
+/* Une barre de préhension, comme sur les feuilles du système : elle dit
+   sans mot que le panneau se ferme en le poussant vers le bas. */
+.dr-sheet::before {
+  content: '';
+  display: block;
+  width: 38px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--border);
+  margin: 9px auto 2px;
+  flex: 0 0 auto;
+}
+.dr-titre {
+  flex: 0 0 auto;
+  padding: 8px 20px 10px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  border-bottom: 1px solid var(--border);
+}
+.dr-liste {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 6px 0 10px;
+}
+.dr-opt {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 20px;
+  border: none;
+  background: transparent;
+  color: var(--text-1);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  text-align: left;
+  line-height: 1.35;
+  cursor: pointer;
+}
+.dr-opt span { flex: 1; min-width: 0; }
+.dr-opt:active { background: var(--gray-1); }
+/* L'option choisie ne se signale PAS par la couleur du texte : l'accent
+   du commerçant peut être n'importe quelle teinte, et sur fond clair le
+   vert de la palette tombait à 2,54 de contraste — lisible pour personne.
+   Le texte reste à pleine force, et c'est le fond teinté plus la coche
+   qui marquent la sélection. */
+.dr-opt.actif {
+  font-weight: 800;
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+.dr-opt.actif .dr-ok {
+  font-style: normal;
+  font-size: 15px;
+  flex: 0 0 auto;
+  color: var(--accent);
+}
+.dr-opt:disabled { opacity: .4; cursor: not-allowed; }
+/* Le survol n'existe pas au doigt : réservé aux appareils qui pointent. */
+@media (hover: hover) and (pointer: fine) {
+  .dr-opt:hover:not(:disabled) { background: var(--gray-1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dr-ov, .dr-sheet { animation: none; }
+}
+/* Sur grand écran la feuille se centre au lieu de coller en bas. */
+@media (min-width: 720px) and (min-height: 560px) {
+  .dr-ov { align-items: center; padding: 24px; }
+  .dr-sheet { border-radius: 18px; border-bottom: 1px solid var(--border); }
+}

@@ -270,6 +270,7 @@ const API_BASE = (location.hostname === 'localhost' || location.hostname === '12
 // ── i18n ─────────────────────────────────────
 const LANGS = {
   fr: {
+    zt_environ: "Environ {0} par {1} au taux du jour — le prélèvement se fait en francs CFA.",
     zs_plansBaro: "Plans BARO",
     zs_planActif: "Plan actif",
     zs_planActuel: "Plan actuel",
@@ -2402,6 +2403,7 @@ const LANGS = {
     version:'Version',
   },
   en: {
+    zt_environ: "About {0} per {1} at today's rate — billing is in CFA francs.",
     zs_plansBaro: "BARO plans",
     zs_planActif: "Active plan",
     zs_planActuel: "Current plan",
@@ -10304,6 +10306,118 @@ function _unitDropHTML() {
     return `<div class="unit-opt" onmousedown="event.preventDefault()" onclick="selectUnit('${u}')">${hi}</div>`;
   }).join('');
 }
+// ── Le deroule des listes, dessine par l'application ──────────────────
+let _sel = null;   // { el, options, index }
+
+function _fermerDeroule(remettreFocus) {
+  const ov = document.getElementById('baro-deroule');
+  if (ov) ov.remove();
+  if (remettreFocus && _sel && _sel.el) { try { _sel.el.focus({ preventScroll: true }); } catch (_) {} }
+  _sel = null;
+  document.removeEventListener('keydown', _toucheDeroule, true);
+}
+
+function _choisirDeroule(i) {
+  if (!_sel) return;
+  const el = _sel.el, o = _sel.options[i];
+  if (!o || o.disabled) return;
+  _fermerDeroule(true);
+  if (el.value === o.value) return;
+  el.value = o.value;
+  // On declenche l'evenement que le code de l'application ecoute deja.
+  el.dispatchEvent(new Event('change', { bubbles: true }));
+  if (typeof haptic === 'function') haptic('tap');
+}
+
+function _toucheDeroule(e) {
+  if (!_sel) return;
+  const n = _sel.options.length;
+  if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); _fermerDeroule(true); return; }
+  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); _choisirDeroule(_sel.index); return; }
+  if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+    e.preventDefault(); e.stopPropagation();
+    const pas = e.key === 'ArrowDown' ? 1 : -1;
+    let i = _sel.index;
+    for (let k = 0; k < n; k++) {
+      i = (i + pas + n) % n;
+      if (!_sel.options[i].disabled) break;
+    }
+    _sel.index = i;
+    const liste = document.querySelectorAll('.dr-opt');
+    liste.forEach((b, k) => b.classList.toggle('actif', k === i));
+    if (liste[i]) liste[i].scrollIntoView({ block: 'nearest' });
+  }
+}
+
+function ouvrirDeroule(el) {
+  if (!el || !el.options || !el.options.length) return false;
+  _fermerDeroule(false);
+  const options = [].slice.call(el.options).map(o => ({
+    value: o.value, texte: o.textContent, disabled: o.disabled,
+  }));
+  const index = Math.max(0, el.selectedIndex);
+  _sel = { el, options, index };
+
+  const esc = v => String(v == null ? '' : v)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  // Le libelle du champ, s'il y en a un : le deroule doit dire de quoi il
+  // parle une fois qu'il recouvre l'ecran.
+  let titre = '';
+  const grp = el.closest('.bq-fld, .form-group, .info-row');
+  const lab = grp && grp.querySelector('label');
+  if (lab) titre = lab.textContent.trim();
+
+  const ov = document.createElement('div');
+  ov.id = 'baro-deroule';
+  ov.className = 'dr-ov';
+  ov.innerHTML = `
+    <div class="dr-sheet" role="listbox" aria-label="${esc(titre)}">
+      ${titre ? `<div class="dr-titre">${esc(titre)}</div>` : ''}
+      <div class="dr-liste">
+        ${options.map((o, i) => `
+        <button type="button" class="dr-opt ${i === index ? 'actif' : ''}" role="option"
+                aria-selected="${i === index}" ${o.disabled ? 'disabled' : ''}
+                onclick="_choisirDeroule(${i})">
+          <span>${esc(o.texte)}</span>
+          ${i === index ? '<i class="dr-ok">✓</i>' : ''}
+        </button>`).join('')}
+      </div>
+    </div>`;
+  ov.addEventListener('click', (e) => { if (e.target === ov) _fermerDeroule(true); });
+  document.body.appendChild(ov);
+  document.addEventListener('keydown', _toucheDeroule, true);
+  const actif = ov.querySelector('.dr-opt.actif');
+  if (actif) { try { actif.scrollIntoView({ block: 'center' }); } catch (_) {} }
+  if (typeof haptic === 'function') haptic('tap');
+  return true;
+}
+
+// Un seul intercepteur pour toute l'application. Il est pose en capture
+// pour passer avant l'ouverture native, et il n'agit que sur les listes
+// courtes : au-dela d'une trentaine d'entrees, le deroule du systeme —
+// avec sa recherche au clavier — reste le meilleur outil.
+document.addEventListener('mousedown', function (e) {
+  const el = e.target && e.target.closest && e.target.closest('select');
+  if (!el || el.disabled || el.multiple) return;
+  if (el.options.length > 30) return;
+  if (el.hasAttribute('data-natif')) return;
+  try {
+    if (ouvrirDeroule(el)) { e.preventDefault(); e.stopPropagation(); }
+  } catch (_) { /* en cas de pepin, le deroule natif s'ouvre normalement */ }
+}, true);
+
+// Sur telephone, c'est « touchstart » qui ouvre la liste : sans cela le
+// deroule natif apparaissait une fraction de seconde avant le notre.
+document.addEventListener('touchstart', function (e) {
+  const el = e.target && e.target.closest && e.target.closest('select');
+  if (!el || el.disabled || el.multiple) return;
+  if (el.options.length > 30) return;
+  if (el.hasAttribute('data-natif')) return;
+  try {
+    if (ouvrirDeroule(el)) { e.preventDefault(); e.stopPropagation(); }
+  } catch (_) {}
+}, { capture: true, passive: false });
+
 function openUnitDrop() {
   S.unitDropOpen = true;
   const wrap = document.getElementById('unit-combo-wrap');
@@ -20196,8 +20310,9 @@ function vSubscription() {
         <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:12px">
           ${price === 0
             ? `<span style="font-size:28px;font-weight:900;color:${meta.color}">${t('zs_gratuit')}</span><span style="font-size:12px;color:var(--success);font-weight:700">${t('x4_aVie')}</span>`
-            : `<span style="font-size:28px;font-weight:900;color:${meta.color}">${fmt(price)}</span><span style="font-size:13px;color:var(--text-3)">${sym()}/${billing==='yearly'?t('zs_an'):t('zs_mois')}</span>`}
+            : `<span style="font-size:28px;font-weight:900;color:${meta.color}">${_prixPlan(price)}</span><span style="font-size:13px;color:var(--text-3)">FCFA/${billing==='yearly'?t('zs_an'):t('zs_mois')}</span>`}
         </div>
+        ${price === 0 ? '' : _equivalentPlan(price, billing)}
         ${_planFeatures(pk).map(f => `
         <div style="display:flex;align-items:center;gap:8px;padding:3px 0;font-size:12px">
           <span style="color:${meta.color}">${IC.check}</span><span>${f}</span>
@@ -20228,9 +20343,9 @@ function vSubscription() {
 function vBillingSetup() {
   const links = _billingLinks();
   const plans = [
-    { id:'starter', label:'Starter', price:'5 000' },
-    { id:'pro', label:'Professional', price:'20 000' },
-    { id:'enterprise', label:'Enterprise', price:'100 000' },
+    { id:'starter', label:'Starter', price:_prixPlan(5000) },
+    { id:'pro', label:'Professional', price:_prixPlan(20000) },
+    { id:'enterprise', label:'Enterprise', price:_prixPlan(100000) },
   ];
   return `
   <div class="sub-hero">
@@ -20287,6 +20402,30 @@ function saveBillingLinks() {
   showToast('✅ Liens de paiement enregistrés', 'success');
   haptic('success');
   nav('pricing');
+}
+
+// Le tarif d'un forfait est un montant en francs CFA. Il ne passe donc
+// pas par fmt(), qui suit la devise d'affichage du commercant et
+// changerait le nombre de decimales sans changer le montant.
+function _prixPlan(n) {
+  return Math.round(n).toLocaleString(_loc());
+}
+
+// L'equivalent approximatif, seulement quand le commercant ne travaille
+// pas en francs CFA. « Environ », parce que le taux bouge et que le
+// prelevement, lui, se fera bien en francs CFA.
+function _equivalentPlan(prixFcfa, billing) {
+  const dev = S.session?.currency || 'XOF';
+  if (dev === 'XOF' || dev === 'XAF') return '';
+  const info = (typeof _tauxEntre === 'function') ? _tauxEntre('XOF', dev) : null;
+  if (!info || !info.valeur) return '';
+  const v = prixFcfa / info.valeur;
+  const dec = _decimalesDe(dev);
+  const txt = v.toLocaleString(_loc(), { minimumFractionDigits: dec, maximumFractionDigits: dec });
+  return `<div style="font-size:11.5px;color:var(--text-3);margin:-8px 0 12px">
+    ${t('zt_environ').replace('{0}', txt + ' ' + getCurrencySymbol(dev))
+      .replace('{1}', billing === 'yearly' ? t('zs_an') : t('zs_mois'))}
+  </div>`;
 }
 
 function _planFeatures(plan) {
@@ -39538,6 +39677,9 @@ function __baroInit() {
   // consequence s'il echoue.
   try { _tauxAuDemarrage(); } catch (_) {}
   // Exposer au global pour les onclick inline
+  window.ouvrirDeroule        = ouvrirDeroule;
+  window._choisirDeroule      = _choisirDeroule;
+  window._fermerDeroule       = _fermerDeroule;
   window.rafraichirTaux       = rafraichirTaux;
   window.rafraichirTauxEcran  = rafraichirTauxEcran;
   window.S             = S;
