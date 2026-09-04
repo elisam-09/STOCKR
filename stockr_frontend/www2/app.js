@@ -270,6 +270,114 @@ const API_BASE = (location.hostname === 'localhost' || location.hostname === '12
 // ── i18n ─────────────────────────────────────
 const LANGS = {
   fr: {
+    zz4_benefice: "Bénéfice",
+    zz4_ventes: "Ventes",
+    zz4_chiffreAffaires: "Chiffre d'affaires",
+    zz4_aujourdhui: "Aujourd'hui",
+    zz4_cetteSemaine: "Cette semaine",
+    zz4_ceMois: "Ce mois",
+    zz4_cetteAnnee: "Cette année",
+    zz4_apercu: "Aperçu",
+    zz4_exTitreSeo: "Ex : {0} — Livraison Abidjan",
+    zz4_caracteres: "{0} caractères",
+    zz3_retraitFin: "(restaurant, atelier, comptoir) : la boutique n'affiche plus ni frais, ni zones, ni choix de livraison.",
+    zz3_objectif: "Objectif",
+    zz3_reste: "Reste",
+    zz3_genererHtml: "Générer le HTML",
+    zz3_temoignages: "Témoignages clients",
+    zz3_caBoutique: "CA boutique",
+    zz3_commande: "{0} commande",
+    zz3_commandes: "{0} commandes",
+    zz3_derniereConnexion: "Dernière connexion",
+    zz2_fraisDefaut: "Frais de livraison par défaut ({0})",
+    zz2_livOfferte: "🎁 Livraison offerte dès ({0})",
+    zz2_annonceAide: "Affichée sur toutes les pages (ex. « Livraison gratuite dès 10 000 {0} ! »)",
+    zz2_enrParams: "Enregistrer les paramètres",
+    zz2_dom1: "1. Achetez votre nom de domaine chez un registrar (Namecheap, OVH, GoDaddy…)",
+    zz2_dom2: "2. Configurez les enregistrements DNS ci-dessus",
+    zz2_dom3: "3. Cliquez sur « Vérifier » — la propagation peut prendre 24 à 48 h",
+    zz2_dom4: "4. Votre boutique sera accessible sur votre domaine personnalisé !",
+    zz2_livGratuite: "Livraison gratuite à partir de ({0})",
+    zz2_backendAide: "Adresse de votre serveur BARO (Render / Railway). Une fois connecté, vos comptes, vos données et votre configuration se synchronisent entre appareils. Vide = serveur par défaut.",
+    zz2_mixteAide: "les deux à la fois — c'est le bon choix si vous faites les deux.",
+    zz2_premiereConnexion: "Première connexion",
+    zz_objectifCA: "💰 Objectif Chiffre d'affaires · Aujourd'hui",
+    zz_reste: "Reste",
+    zz_navMatieres: "Matières",
+    zz_modifLogo: "Modifier le logo",
+    zz_modifObjectif: "Modifier objectif",
+    zz_brouillonPub: "Brouillon — activez pour publier",
+    zz_aucuneCmdBq: "Aucune commande boutique pour l'instant. Dès la première commande reçue, vous verrez ici votre chiffre d'affaires, le panier moyen, l'évolution et vos meilleures ventes.",
+    zz_actif: "ACTIF",
+    zz_marqueBlanche: "Marque blanche",
+    zz_retraitSeul: "retrait uniquement",
+    zz_retraitAide2: "(restaurant, atelier, comptoir) : la boutique n'affiche plus ni frais, ni zones, ni choix de livraison.",
+    zz_fraisDefaut: "Frais de livraison par défaut (FCFA)",
+    zz_livraisonDes: "🎁 Livraison offerte dès (FCFA)",
+    zz_genererHTML: "Générer HTML",
+    zz_apercu: "Aperçu",
+    zz_decrivezBq: "Décrivez votre boutique...",
+    zz_annonceAide: "Affichée sur toutes les pages (ex. \"Livraison gratuite dès 10 000 FCFA !\")",
+    zz_texteAnnonce: "Texte de l'annonce",
+    zz_activerAnnonce: "Activer l'annonce",
+    zz_titreSeo: "Titre SEO (55-60 car.)",
+    zz_maBoutique: "Ma Boutique",
+    zz_descBqPoints: "Description de votre boutique...",
+    zz_enrRetour: "💾 Enregistrer et retour",
+    zz_exAnnonce: "Ex: 🎁 -10% sur tout jusqu'à dimanche !",
+    zz_exTitreSeo: "Ex: Ma Boutique — Livraison Abidjan",
+    zz_exDescSeo: "Décrivez ce que vend votre boutique...",
+    zz_exMotsCles: "boutique abidjan, livraison côte ivoire...",
+    zz_exImageOg: "https://... (1200x630px recommandé)",
+    zz_ficheAide: "Définissez comment s'affiche la page quand un client clique sur un produit",
+    zz_vueClassique: "Vue détaillée classique",
+    zz_vueStory: "Présentation storytelling",
+    zz_carre: "Carré",
+    zz_vedetteOn: "Afficher les produits en vedette",
+    zz_vedetteSub: "Mettez en avant vos meilleures ventes",
+    zz_achatCarte: "Afficher le bouton d'achat sur la carte produit",
+    zz_achatCarteSub: "Achat direct depuis la liste",
+    zz_avisOn: "Afficher les avis clients",
+    zz_avisSub: "Renforce la confiance",
+    zz_badgesOn: "Afficher les badges promo",
+    zz_badgesSub: "Montrer -10%, -20% sur les produits",
+    zz_stockOn: "Afficher le stock disponible",
+    zz_stockSub: "Crée un sentiment d'urgence",
+    zz_catsOn: "Afficher les catégories",
+    zz_catsSub: "Navigation par type de produit",
+    zz_enrParams: "Enregistrer les paramètres",
+    zz_domaineAide1: "Instaurez la confiance avec votre propre nom de domaine (ex:",
+    zz_domaineAide2: "). Un domaine professionnel permet aux clients de vous trouver plus facilement.",
+    zz_domEtape1: "1. Achetez votre nom de domaine chez un registrar (Namecheap, OVH, GoDaddy...)",
+    zz_domEtape2: "2. Configurez les enregistrements DNS ci-dessus",
+    zz_domEtape3: "3. Cliquez sur \"Vérifier\" — la propagation peut prendre 24-48h",
+    zz_domEtape4: "4. Votre boutique sera accessible sur votre domaine personnalisé !",
+    zz_horairesLiv: "🕒 Horaires & Livraison",
+    zz_ferme: "🔴 Fermé",
+    zz_livraisonTitre: "🚚 Livraison",
+    zz_livGratuiteDes: "Livraison gratuite à partir de (FCFA)",
+    zz_zeroDesactive: "0 = désactivé",
+    zz_exDelaiLiv: "Ex: Livraison le lendemain avant 18h pour toute commande avant 14h...",
+    zz_zeroCar: "0 caractères",
+    zz_exCgv: "Rédigez vos CGV — ou chargez un modèle...",
+    zz_exRetours: "Ex: Vous disposez de 7 jours pour retourner un produit...",
+    zz_retourBoutique: "← Retour boutique",
+    zz_caBoutique: "CA boutique",
+    zz_analyticsAide: "Pour compter vos visiteurs et mesurer vos conversions en temps réel, connectez un outil de suivi (gratuit). Il sera injecté automatiquement dans votre boutique.",
+    zz_cmdWaAide: "Les commandes boutique arrivent via WhatsApp. Enregistrez-les ici pour suivre votre CA, vos best-sellers et vos livraisons.",
+    zz_backendAide: "${t('zz2_backendAide')}",
+    zz_lesDeuxAide: "les deux à la fois — idéal si tu fais les deux.",
+    zz_eleve: "Élevé",
+    zz_translucideAide: "Rend la barre, les feuilles et les notifications plus ou moins translucides. Vers 0 = net et opaque · vers 100 = ultra-transparent (on voit à travers).",
+    zz_animCoupeAide: "Coupe les glissés et transitions — plus rapide, plus sobre, idéal sur téléphones modestes.",
+    zz_connexions: "Dernière connexion · Première connexion",
+    zz_codeAide: "La protection la plus simple : un code à 4-6 chiffres demandé à chaque ouverture de l'app. Idéal si votre téléphone est partagé au comptoir.",
+    zy_voir3d: "Voir en 3D",
+    zy_voirPhoto: "Voir la photo",
+    zy_chargement3d: "Chargement du modèle…",
+    zy_echec3d: "Le modèle n'a pas pu être chargé.",
+    zy_modele3d: "Modèle 3D (adresse)",
+    zy_modele3dAide: "Une adresse https vers un fichier .glb ou .gltf. Le client pourra faire tourner l'objet au doigt depuis la fiche. Le modèle n'est téléchargé que s'il clique — les autres visiteurs ne paient rien.",
     zx_anRebond: "Rebond",
     zx_anPulse: "Pulsation",
     zx_anLueur: "Lueur",
@@ -2466,6 +2574,114 @@ const LANGS = {
     version:'Version',
   },
   en: {
+    zz4_benefice: "Profit",
+    zz4_ventes: "Sales",
+    zz4_chiffreAffaires: "Revenue",
+    zz4_aujourdhui: "Today",
+    zz4_cetteSemaine: "This week",
+    zz4_ceMois: "This month",
+    zz4_cetteAnnee: "This year",
+    zz4_apercu: "Preview",
+    zz4_exTitreSeo: "E.g. {0} — Delivery in Abidjan",
+    zz4_caracteres: "{0} characters",
+    zz3_retraitFin: "(restaurant, workshop, counter): the shop no longer shows fees, zones or delivery choices.",
+    zz3_objectif: "Target",
+    zz3_reste: "Left",
+    zz3_genererHtml: "Generate the HTML",
+    zz3_temoignages: "Customer testimonials",
+    zz3_caBoutique: "Shop revenue",
+    zz3_commande: "{0} order",
+    zz3_commandes: "{0} orders",
+    zz3_derniereConnexion: "Last sign-in",
+    zz2_fraisDefaut: "Default delivery fee ({0})",
+    zz2_livOfferte: "🎁 Free delivery from ({0})",
+    zz2_annonceAide: "Shown on every page (e.g. “Free delivery from 10,000 {0}!”)",
+    zz2_enrParams: "Save settings",
+    zz2_dom1: "1. Buy your domain name from a registrar (Namecheap, OVH, GoDaddy…)",
+    zz2_dom2: "2. Set up the DNS records above",
+    zz2_dom3: "3. Tap “Verify” — propagation can take 24 to 48 hours",
+    zz2_dom4: "4. Your shop will then be reachable on your own domain!",
+    zz2_livGratuite: "Free delivery from ({0})",
+    zz2_backendAide: "Address of your BARO server (Render / Railway). Once connected, your accounts, data and settings sync across devices. Empty = default server.",
+    zz2_mixteAide: "both at once — the right choice if you do both.",
+    zz2_premiereConnexion: "First sign-in",
+    zz_objectifCA: "💰 Revenue target · Today",
+    zz_reste: "Left",
+    zz_navMatieres: "Materials",
+    zz_modifLogo: "Change the logo",
+    zz_modifObjectif: "Change target",
+    zz_brouillonPub: "Draft — switch on to publish",
+    zz_aucuneCmdBq: "No shop orders yet. From the first order received, you will see your revenue, average basket, trend and best sellers here.",
+    zz_actif: "ACTIVE",
+    zz_marqueBlanche: "White label",
+    zz_retraitSeul: "collection only",
+    zz_retraitAide2: "(restaurant, workshop, counter): the shop no longer shows fees, zones or delivery choices.",
+    zz_fraisDefaut: "Default delivery fee (FCFA)",
+    zz_livraisonDes: "🎁 Free delivery from (FCFA)",
+    zz_genererHTML: "Generate HTML",
+    zz_apercu: "Preview",
+    zz_decrivezBq: "Describe your shop...",
+    zz_annonceAide: "Shown on every page (e.g. \"Free delivery from 10,000 FCFA!\")",
+    zz_texteAnnonce: "Banner text",
+    zz_activerAnnonce: "Show the banner",
+    zz_titreSeo: "SEO title (55-60 chars)",
+    zz_maBoutique: "My Shop",
+    zz_descBqPoints: "Description of your shop...",
+    zz_enrRetour: "💾 Save and go back",
+    zz_exAnnonce: "E.g. 🎁 10% off everything until Sunday!",
+    zz_exTitreSeo: "E.g. My Shop — Delivery in Abidjan",
+    zz_exDescSeo: "Describe what your shop sells...",
+    zz_exMotsCles: "shop abidjan, delivery ivory coast...",
+    zz_exImageOg: "https://... (1200x630px recommended)",
+    zz_ficheAide: "Set how the page looks when a customer taps a product",
+    zz_vueClassique: "Classic detailed view",
+    zz_vueStory: "Storytelling presentation",
+    zz_carre: "Square",
+    zz_vedetteOn: "Show featured products",
+    zz_vedetteSub: "Put your best sellers up front",
+    zz_achatCarte: "Show the buy button on the product card",
+    zz_achatCarteSub: "Buy straight from the list",
+    zz_avisOn: "Show customer reviews",
+    zz_avisSub: "Builds trust",
+    zz_badgesOn: "Show sale badges",
+    zz_badgesSub: "Show −10%, −20% on products",
+    zz_stockOn: "Show available stock",
+    zz_stockSub: "Creates a sense of urgency",
+    zz_catsOn: "Show categories",
+    zz_catsSub: "Browsing by product type",
+    zz_enrParams: "Save settings",
+    zz_domaineAide1: "Build trust with your own domain name (e.g.",
+    zz_domaineAide2: "). A professional domain makes you easier for customers to find.",
+    zz_domEtape1: "1. Buy your domain name from a registrar (Namecheap, OVH, GoDaddy...)",
+    zz_domEtape2: "2. Set up the DNS records above",
+    zz_domEtape3: "3. Tap \"Verify\" — propagation can take 24-48 hours",
+    zz_domEtape4: "4. Your shop will then be reachable on your own domain!",
+    zz_horairesLiv: "🕒 Hours & delivery",
+    zz_ferme: "🔴 Closed",
+    zz_livraisonTitre: "🚚 Delivery",
+    zz_livGratuiteDes: "Free delivery from (FCFA)",
+    zz_zeroDesactive: "0 = off",
+    zz_exDelaiLiv: "E.g. Next-day delivery before 6pm for any order placed before 2pm...",
+    zz_zeroCar: "0 characters",
+    zz_exCgv: "Write your terms — or load a template...",
+    zz_exRetours: "E.g. You have 7 days to return a product...",
+    zz_retourBoutique: "← Back to shop",
+    zz_caBoutique: "Shop revenue",
+    zz_analyticsAide: "To count your visitors and measure conversions in real time, connect a tracking tool (free). It is injected into your shop automatically.",
+    zz_cmdWaAide: "Shop orders arrive through WhatsApp. Record them here to track your revenue, best sellers and deliveries.",
+    zz_backendAide: "Address of your BARO backend (Render / Railway). Once connected, your accounts, data and settings sync across devices. Empty = default server.",
+    zz_lesDeuxAide: "both at once — right if you do both.",
+    zz_eleve: "High",
+    zz_translucideAide: "Makes the bar, sheets and notifications more or less translucent. Towards 0 = crisp and opaque · towards 100 = see-through.",
+    zz_animCoupeAide: "Turns off slides and transitions — faster, plainer, right for modest phones.",
+    zz_connexions: "Last sign-in · First sign-in",
+    zz_codeAide: "The simplest protection: a 4-6 digit code asked for each time the app opens. Right if your phone is shared at the counter.",
+    zy_voir3d: "View in 3D",
+    zy_voirPhoto: "View the photo",
+    zy_chargement3d: "Loading the model…",
+    zy_echec3d: "The model could not be loaded.",
+    zy_modele3d: "3D model (address)",
+    zy_modele3dAide: "An https address to a .glb or .gltf file. Customers can turn the object with a finger from the product sheet. The model is only downloaded if they tap — other visitors pay nothing.",
     zx_anRebond: "Bounce",
     zx_anPulse: "Pulse",
     zx_anLueur: "Glow",
@@ -8588,9 +8804,9 @@ function seedDemoData(bt) {
   if (bt === 'maker' || bt === 'mixed') {
     // Transformateur : articles = matières premières
     seedArticles = seedArticles.concat([
-      { id: now+10, name:'Farine blé',  stock:50, unit:'kg',  min:10, lead:5,  ref:'FAR-010', price:800, purchasePrice:500, category:'Matières', perishable:true,  expiry:'2026-08-15', image:'' },
-      { id: now+11, name:'Sucre',       stock:30, unit:'kg',  min:5,  lead:5,  ref:'SUC-011', price:700, purchasePrice:450, category:'Matières', perishable:false, expiry:'', image:'' },
-      { id: now+12, name:'Huile palme', stock:20, unit:'L',   min:5,  lead:7,  ref:'HUI-012', price:1500,purchasePrice:1000,category:'Matières', perishable:true,  expiry:'2026-10-30', image:'' },
+      { id: now+10, name:'Farine blé',  stock:50, unit:'kg',  min:10, lead:5,  ref:'FAR-010', price:800, purchasePrice:500, category:t('zz_navMatieres'), perishable:true,  expiry:'2026-08-15', image:'' },
+      { id: now+11, name:'Sucre',       stock:30, unit:'kg',  min:5,  lead:5,  ref:'SUC-011', price:700, purchasePrice:450, category:t('zz_navMatieres'), perishable:false, expiry:'', image:'' },
+      { id: now+12, name:'Huile palme', stock:20, unit:'L',   min:5,  lead:7,  ref:'HUI-012', price:1500,purchasePrice:1000,category:t('zz_navMatieres'), perishable:true,  expiry:'2026-10-30', image:'' },
       { id: now+13, name:'Levure',      stock:5,  unit:'kg',  min:2,  lead:10, ref:'LVR-013', price:4000,purchasePrice:2500,category:'Additifs', perishable:true,  expiry:'2026-06-01', image:'' },
       { id: now+14, name:'Emballage 1kg',stock:200,unit:'pcs',min:50, lead:7,  ref:'EMB-014', price:100, purchasePrice:50,  category:'Pack',     perishable:false, expiry:'', image:'' },
     ]);
@@ -11838,7 +12054,7 @@ function _doRender() {
 
 function renderNav() {
   const bt = getBusinessType();
-  const stockLbl = bt === 'reseller' ? 'Boutique' : bt === 'maker' ? 'Matières' : t('stock');
+  const stockLbl = bt === 'reseller' ? 'Boutique' : bt === 'maker' ? t('zz_navMatieres') : t('stock');
   const tabs = [
     { id:'home',      icon:IC.home,    label:t('home')     },
     bt_showStock() ? { id:'pantry', icon:IC.box, label:stockLbl } : null,
@@ -12209,7 +12425,7 @@ function __socialLoginCreate(provider, email, name, avatar) {
     id: 'u_' + provider + '_' + Date.now(),
     email: email,
     name: name,
-    business: (name || 'Ma Boutique'),
+    business: (name || t('zz_maBoutique')),
     provider,
     avatar: avatar || (provider === 'google' ? '🟢' : provider === 'apple' ? '🍎' : '👤'),
     profile:         S.authProfile || 'reseller',
@@ -12838,7 +13054,7 @@ function vHome() {
   return `
   <div class="hero anim">
     <div class="hero-top" style="align-items:flex-start;gap:12px">
-      <div class="home-logo-wrap" onclick="nav('appearance')" title="Modifier le logo" style="cursor:pointer;flex-shrink:0">
+      <div class="home-logo-wrap" onclick="nav('appearance')" title=t('zz_modifLogo') style="cursor:pointer;flex-shrink:0">
         ${__businessLogo
           ? `<img src="${__businessLogo}" alt="logo" style="width:48px;height:48px;border-radius:12px;object-fit:cover;border:2px solid rgba(255,255,255,.25);box-shadow:0 4px 10px rgba(0,0,0,.2);background:rgba(255,255,255,.1)">`
           : `<div style="width:48px;height:48px;border-radius:12px;background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;font-weight:900;box-shadow:0 4px 10px rgba(0,0,0,.2)">${__bizInitials}</div>`
@@ -12992,8 +13208,8 @@ function vHome() {
       const pct = goal > 0 ? Math.min(100, Math.round((current / goal) * 100)) : 0;
       const remaining = Math.max(0, goal - current);
       const unit = goalType === 'sales' ? '' : sym();
-      const typeLbl = goalType === 'profit' ? 'Bénéfice' : goalType === 'sales' ? 'Ventes' : 'Chiffre d\'affaires';
-      const periodLbl = goalPeriod === 'day' ? 'Aujourd\'hui' : goalPeriod === 'week' ? 'Cette semaine' : goalPeriod === 'month' ? 'Ce mois' : 'Cette année';
+      const typeLbl = goalType === 'profit' ? t('zz4_benefice') : goalType === 'sales' ? t('zz4_ventes') : t('zz4_chiffreAffaires');
+      const periodLbl = goalPeriod === 'day' ? t('zz4_aujourdhui') : goalPeriod === 'week' ? t('zz4_cetteSemaine') : goalPeriod === 'month' ? t('zz4_ceMois') : t('zz4_cetteAnnee');
       const transactionsPeriod = periodSales.length;
       const avgBasket = transactionsPeriod > 0 ? Math.round(periodSales.reduce((x,s)=>x+s.total,0) / transactionsPeriod) : 0;
       const todayProfitVal = periodSales.reduce((x,s)=>x+(s.profit||0),0);
@@ -13003,17 +13219,17 @@ function vHome() {
       <div class="card anim" style="margin-bottom:12px;padding:14px 16px;background:linear-gradient(135deg,rgba(79,70,229,0.06),rgba(236,72,153,0.04));border:1px solid rgba(79,70,229,0.18)">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;gap:8px">
           <div style="flex:1;min-width:0">
-            <div style="font-size:11px;color:var(--text-3);font-weight:600;letter-spacing:.3px;text-transform:uppercase">${emoji} Objectif ${typeLbl} · ${periodLbl}</div>
+            <div style="font-size:11px;color:var(--text-3);font-weight:600;letter-spacing:.3px;text-transform:uppercase">${emoji} ${t('zz3_objectif')} ${typeLbl} · ${periodLbl}</div>
             <div style="font-size:17px;font-weight:800;color:var(--text-1);margin-top:3px">${goalType==='sales'?current:fmt(current)} <span style="color:var(--text-3);font-weight:500;font-size:13px">/ ${goalType==='sales'?goal:fmt(goal)} ${unit}</span></div>
           </div>
-          <button class="btn" style="padding:6px 10px;font-size:11px;border:1px solid var(--border);background:var(--surface);color:var(--text-2);font-weight:600;cursor:pointer" onclick="editDailyGoal()" title="Modifier objectif">⚙️</button>
+          <button class="btn" style="padding:6px 10px;font-size:11px;border:1px solid var(--border);background:var(--surface);color:var(--text-2);font-weight:600;cursor:pointer" onclick="editDailyGoal()" title=t('zz_modifObjectif')>⚙️</button>
         </div>
         <div style="height:9px;background:var(--gray-2);border-radius:5px;overflow:hidden;margin-bottom:8px;position:relative">
           <div style="height:100%;width:${pct}%;background:${barColor};border-radius:5px;transition:width .5s ease;box-shadow:${pct>=100?'0 0 8px rgba(16,185,129,.4)':'none'}"></div>
         </div>
         <div style="display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--text-3)">
           <span style="font-weight:600;color:${pct>=100?'#10B981':'var(--text-2)'}">${pct}% ${pct>=100?'atteint ✓':'atteint'}</span>
-          <span style="font-weight:500">${remaining>0 ? `Reste <strong style="color:var(--text-1)">${goalType==='sales'?remaining+' ventes':fmt(remaining)+' '+unit}</strong>` : '🎉 Objectif atteint !'}</span>
+          <span style="font-weight:500">${remaining>0 ? `${t('zz3_reste')} <strong style="color:var(--text-1)">${goalType==='sales'?remaining+' ventes':fmt(remaining)+' '+unit}</strong>` : '🎉 Objectif atteint !'}</span>
         </div>
         ${transactionsPeriod>0 ? `<div style="display:flex;gap:14px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:11px;color:var(--text-3);flex-wrap:wrap">
           <span>📝 <strong style="color:var(--text-1)">${transactionsPeriod}</strong> vente${transactionsPeriod>1?'s':''}</span>
@@ -14646,7 +14862,7 @@ function vSova() {
   const alertPreds=preds.filter(p=>p.status==='critical'||p.status==='warning');
   const criticalPreds=preds.filter(p=>p.status==='critical');
   const warningPreds=preds.filter(p=>p.status==='warning');
-  const tabs=[{id:'overview',label:'Aperçu'},{id:'insights',label:'💡 Idées'},{id:'alerts',label:`Alertes${alertPreds.length>0?' · '+alertPreds.length:''}`},{id:'tomorrow',label:'Demain'},{id:'articles',label:'Articles'}];
+  const tabs=[{id:'overview',label:t('zz_apercu')},{id:'insights',label:'💡 Idées'},{id:'alerts',label:`Alertes${alertPreds.length>0?' · '+alertPreds.length:''}`},{id:'tomorrow',label:'Demain'},{id:'articles',label:'Articles'}];
   const R=40,C=2*Math.PI*R,dash=(score/100)*C;
 
   function tabOverview() {
@@ -21788,7 +22004,7 @@ function vSettings() {
       })()}
       <div class="card" style="padding:14px">
         <div style="font-size:12px;color:var(--text-3);line-height:1.55;margin-bottom:10px">
-          URL de votre backend BARO (Render / Railway). Une fois connecté, vos comptes, données et configuration se synchronisent entre appareils. Vide = serveur par défaut.
+          ${t('zz2_backendAide')}
         </div>
         <input class="input" id="set-api-url" type="url" placeholder="https://baro-api-xxxx.onrender.com" value="${(localStorage.getItem('baro_api_url')||'').replace(/"/g,'&quot;')}">
         <div style="display:flex;gap:8px;margin-top:10px">
@@ -21831,7 +22047,7 @@ function vSettings() {
       <div style="font-size:11px;color:var(--text-3);padding:6px 16px;line-height:1.5">
         💡 <strong>${t('w2_revendeur')} :</strong> ${t('w2_modeRevendeur')}<br>
         💡 <strong>${t('w2_transformateur')} :</strong> ${t('w2_modeTransfo')}<br>
-        💡 <strong>Mixte :</strong> les deux à la fois — idéal si tu fais les deux.
+        💡 <strong>${t('zw_mMixte')} :</strong> ${t('zz2_mixteAide')}
       </div>
     </div>
 
@@ -23542,7 +23758,7 @@ function vAppearance() {
     <div class="card" style="margin-bottom:12px">
       <div class="card-title">⚫ Contraste</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-        ${[['normal','Normal'],['high','Élevé']].map(([v,lbl]) => `
+        ${[['normal','Normal'],['high',t('zz_eleve')]].map(([v,lbl]) => `
           <button onclick="setAppearance('contrast','${v}')" style="padding:14px 8px;border-radius:10px;border:2px solid ${a.contrast===v?'var(--accent)':'var(--border)'};background:${a.contrast===v?'var(--accent-light)':'var(--card-bg)'};cursor:pointer;font-size:13px;font-weight:700;color:${a.contrast===v?'var(--accent)':'var(--text-1)'}">${lbl}</button>
         `).join('')}
       </div>
@@ -23567,7 +23783,7 @@ function vAppearance() {
         <div class="card-title" style="margin:0">🫧 Transparence (Liquid Glass)</div>
         <span id="glass-val" style="font-size:13px;font-weight:800;color:var(--accent)">${a.glass==null?60:a.glass}%</span>
       </div>
-      <div style="font-size:12px;color:var(--text-3);line-height:1.5;margin-bottom:10px">Rend la barre, les feuilles et les notifications plus ou moins translucides. Vers 0 = net et opaque · vers 100 = ultra-transparent (on voit à travers).</div>
+      <div style="font-size:12px;color:var(--text-3);line-height:1.5;margin-bottom:10px">${t('zz_translucideAide')}</div>
       <!-- Aperçu en direct : un panneau de verre sur un fond coloré -->
       <div style="position:relative;height:74px;border-radius:14px;overflow:hidden;margin-bottom:12px;background:linear-gradient(120deg,#7C3AED 0%,#EC4899 45%,#F59E0B 100%)">
         <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:space-around;padding:0 10px;color:#fff;font-weight:800;font-size:13px;text-shadow:0 1px 3px rgba(0,0,0,.3)"><span>🛍️</span><span>💰</span><span>📦</span><span>⭐</span></div>
@@ -23593,7 +23809,7 @@ function vAppearance() {
       <label style="display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer">
         <div style="flex:1;min-width:0">
           <div style="font-weight:800;font-size:13.5px;color:var(--text-1)">${t('w7_reduireAnim')}</div>
-          <div style="font-size:12px;color:var(--text-3);margin-top:2px;line-height:1.5">Coupe les glissés et transitions — plus rapide, plus sobre, idéal sur téléphones modestes.</div>
+          <div style="font-size:12px;color:var(--text-3);margin-top:2px;line-height:1.5">${t('zz_animCoupeAide')}</div>
         </div>
         <span class="toggle-switch"><input type="checkbox" ${a.reduceMotion?'checked':''} onchange="setAppearance('reduceMotion',this.checked)"><span class="toggle-track"></span></span>
       </label>
@@ -23794,20 +24010,20 @@ function vSecurity() {
     <div class="container"><div class="card" style="text-align:center;padding:40px 20px">${t('w7_seulAdminSecu')}</div></div>`;
   }
   const s = S.security || {};
-  const lastLogin = s.lastLogin ? new Date(s.lastLogin).toLocaleString(_loc()) : 'Première connexion';
+  const lastLogin = s.lastLogin ? new Date(s.lastLogin).toLocaleString(_loc()) : t('zz2_premiereConnexion');
   const recentAttempts = (s.loginAttempts || []).slice(0, 5);
   return `
   <div class="sub-hero" style="background:linear-gradient(135deg,#EF4444,#B91C1C)">
     <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('settings')">${IC.left}</button>
     <div class="sub-hero-title">${t('w7_securite')}</div>
-    <div class="sub-hero-sub">Dernière connexion · ${lastLogin}</div>
+    <div class="sub-hero-sub">${t('zz3_derniereConnexion')} · ${lastLogin}</div>
   </div>
   <div class="container">
 
     <!-- PIN de démarrage -->
     <div class="card" style="margin-bottom:12px">
       <div class="card-title">${t('w7_codePinDemar')}</div>
-      <div style="font-size:12px;color:var(--text-3);margin-bottom:10px">La protection la plus simple : un code à 4-6 chiffres demandé à chaque ouverture de l'app. Idéal si votre téléphone est partagé au comptoir.</div>
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:10px">${t('zz_codeAide')}</div>
       ${localStorage.getItem('stockr_app_pin') ? `
         <div style="display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--success);font-weight:700;margin-bottom:10px">${t('w7_pinActive')}</div>
         <div style="display:flex;gap:8px">
@@ -24815,7 +25031,7 @@ function vBoutique() {
         <div class="sub-hero-title">${t('boutiqueTitle')||'Ma Boutique en ligne'}</div>
         <div class="sub-hero-sub" style="display:flex;align-items:center;gap:6px">
           <span style="width:7px;height:7px;border-radius:50%;background:${bc.published?'#34d399':'#94a3b8'};display:inline-block;${bc.published?'box-shadow:0 0 6px rgba(52,211,153,.6);animation:intDotPulse 2s ease-in-out infinite':''}"></span>
-          ${bc.published ? 'En ligne — visible par vos clients' : 'Brouillon — activez pour publier'}
+          ${bc.published ? 'En ligne — visible par vos clients' : t('zz_brouillonPub')}
         </div>
       </div>
       <label class="toggle-switch" style="flex-shrink:0">
@@ -24850,7 +25066,7 @@ function vBoutique() {
         <div style="font-size:26px;flex-shrink:0">📈</div>
         <div style="flex:1;min-width:0">
           <div style="font-size:14.5px;font-weight:800">Revenus & performance</div>
-          <div style="font-size:12.5px;color:var(--text-2);line-height:1.5;margin-top:3px">Aucune commande boutique pour l'instant. Dès la première commande reçue, vous verrez ici votre chiffre d'affaires, le panier moyen, l'évolution et vos meilleures ventes.</div>
+          <div style="font-size:12.5px;color:var(--text-2);line-height:1.5;margin-top:3px">${t('zz_aucuneCmdBq')}</div>
         </div>
       </div>
     </div>`;
@@ -24932,7 +25148,7 @@ function vBoutique() {
           <div style="font-size:14.5px;font-weight:800">Pro &amp; Entreprise</div>
           <div style="font-size:11.5px;color:var(--text-3)">${t('x4_votrePlan')} <b style="color:${isEnt?'#8B5CF6':'var(--text-2)'}">${planNm}</b></div>
         </div>
-        ${!isEnt ? `<button class="btn" style="flex-shrink:0;padding:7px 13px;font-size:11.5px;font-weight:800;background:linear-gradient(135deg,#8B5CF6,#6366F1);color:#fff;border:none" onclick="nav('pricing')">Passer</button>` : `<span style="flex-shrink:0;font-size:10.5px;font-weight:800;color:#fff;background:linear-gradient(135deg,#8B5CF6,#6366F1);padding:5px 11px;border-radius:999px">ACTIF</span>`}
+        ${!isEnt ? `<button class="btn" style="flex-shrink:0;padding:7px 13px;font-size:11.5px;font-weight:800;background:linear-gradient(135deg,#8B5CF6,#6366F1);color:#fff;border:none" onclick="nav('pricing')">Passer</button>` : `<span style="flex-shrink:0;font-size:10.5px;font-weight:800;color:#fff;background:linear-gradient(135deg,#8B5CF6,#6366F1);padding:5px 11px;border-radius:999px">${t('zz_actif')}</span>`}
       </div>
       <div style="display:grid;grid-template-columns:1fr 54px 74px;font-size:10px;font-weight:800;color:var(--text-3);letter-spacing:.4px;padding:8px 15px 6px;border-top:1px solid var(--border)">
         <span></span><span style="text-align:center">PRO</span><span style="text-align:center">ENTREPRISE</span>
@@ -24944,7 +25160,7 @@ function vBoutique() {
       </div>`).join('')}
       <div style="display:flex;align-items:center;gap:10px;padding:12px 15px;border-top:1px solid var(--border);${isEnt?'':'opacity:.6'}">
         <div style="flex:1;min-width:0">
-          <div style="font-size:12.5px;font-weight:700">Marque blanche</div>
+          <div style="font-size:12.5px;font-weight:700">${t('zz_marqueBlanche')}</div>
           <div style="font-size:11px;color:var(--text-3)">${isEnt ? t('zw_masquerMarque') : t('zw_avecEntreprise')}</div>
         </div>
         <label class="toggle-switch" style="flex-shrink:0">
@@ -24959,23 +25175,23 @@ function vBoutique() {
       <div class="card-title">Configuration</div>
       <div class="form-group">
         <label class="form-label">${t('w8_nomBoutique')}</label>
-        <input class="input" value="${bc.name || S.session?.business || ''}" oninput="updateBoutiqueConfig('name',this.value)" placeholder="${S.session?.business || 'Ma Boutique'}">
+        <input class="input" value="${bc.name || S.session?.business || ''}" oninput="updateBoutiqueConfig('name',this.value)" placeholder="${S.session?.business || t('zz_maBoutique')}">
       </div>
       <div class="form-group">
         <label class="form-label">Description</label>
-        <input class="input" value="${bc.description || ''}" oninput="updateBoutiqueConfig('description',this.value)" placeholder="Décrivez votre boutique...">
+        <input class="input" value="${bc.description || ''}" oninput="updateBoutiqueConfig('description',this.value)" placeholder=t('zz_decrivezBq')>
       </div>
       <div class="form-group" style="border-top:1px solid var(--border);padding-top:12px;margin-top:4px">
         <label class="form-label" style="display:flex;align-items:center;justify-content:space-between">
           <span>${t('w8_livraisonDom')}</span>
           <label class="toggle-switch"><input type="checkbox" ${bc.deliveryDisabled?'':'checked'} onchange="updateBoutiqueConfig('deliveryDisabled',!this.checked);render()"><span class="toggle-track"></span></label>
         </label>
-        <div style="font-size:11px;color:var(--text-3);margin-top:2px">${t('x2_desactivezPour')} <strong>retrait uniquement</strong> (restaurant, atelier, comptoir) : la boutique n'affiche plus ni frais, ni zones, ni choix de livraison.</div>
+        <div style="font-size:11px;color:var(--text-3);margin-top:2px">${t('x2_desactivezPour')} <strong>${t('zz_retraitSeul')}</strong> ${t('zz3_retraitFin')}</div>
         ${bc.deliveryDisabled && !bc.pickupEnabled ? `<div style="font-size:11.5px;font-weight:600;color:#B45309;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);border-radius:8px;padding:8px 10px;margin-top:8px">⚠️ Livraison désactivée sans retrait sur place : activez « 🏬 Retrait sur place » ci-dessous et renseignez l'adresse, pour que vos clients sachent où récupérer leur commande.</div>` : ''}
       </div>
       ${bc.deliveryDisabled ? '' : `
       <div class="form-group">
-        <label class="form-label">Frais de livraison par défaut (${sym()})</label>
+        <label class="form-label">${t('zz2_fraisDefaut').replace('{0}', sym())}</label>
         <input class="input" type="number" value="${bc.deliveryFees || 0}" oninput="updateBoutiqueConfig('deliveryFees',parseFloat(this.value)||0)">
         <div style="font-size:11px;color:var(--text-3);margin-top:4px">${t('w8_appliqueZones')}</div>
       </div>`}
@@ -24993,7 +25209,7 @@ function vBoutique() {
       </div>
       ${bc.deliveryDisabled ? '' : `
       <div class="form-group">
-        <label class="form-label">🎁 Livraison offerte dès (${sym()}) <span style="font-weight:500;color:var(--text-3)">${t('x2_zeroDesactive')}</span></label>
+        <label class="form-label">${t('zz2_livOfferte').replace('{0}', sym())} <span style="font-weight:500;color:var(--text-3)">${t('x2_zeroDesactive')}</span></label>
         <input class="input" type="number" inputmode="numeric" value="${bc.freeDeliveryThreshold || 0}" oninput="updateBoutiqueConfig('freeDeliveryThreshold',parseFloat(this.value)||0)" placeholder="ex : 25000">
         <div style="font-size:11px;color:var(--text-3);margin-top:4px">${t('zw_seuilAide')}</div>
       </div>
@@ -25143,8 +25359,8 @@ function vBoutique() {
         </div>
       </div>
       <div class="bgen-actions">
-        <button class="btn btn-primary bgen-btn-primary" onclick="generateBoutiqueSite()">${IC.check} Générer HTML</button>
-        <button class="btn btn-ghost bgen-btn-ghost" onclick="previewBoutiqueSite()">${IC.globe} Aperçu</button>
+        <button class="btn btn-primary bgen-btn-primary" onclick="generateBoutiqueSite()">${IC.check} ${t('zz3_genererHtml')}</button>
+        <button class="btn btn-ghost bgen-btn-ghost" onclick="previewBoutiqueSite()">${IC.globe} ${t('zz4_apercu')}</button>
       </div>
       <div class="bgen-actions" style="margin-top:8px">
         <button class="btn btn-ghost bgen-btn-ghost" onclick="showBoutiqueQR()">${IC.qrcode} QR code</button>
@@ -26122,7 +26338,7 @@ function generateBoutiqueSite(opts) {
   const bodyFont   = bc.bodyFont || bc.fontFamily || 'Inter';
   const orderStyle = bc.orderBtnStyle || 'whatsapp';         // whatsapp | brand | outline
   const orderText  = bc.orderBtnText || t('z4_ajouterPanier');
-  const heroTitle  = bc.heroTitle || bc.name || S.session?.business || 'Ma Boutique';
+  const heroTitle  = bc.heroTitle || bc.name || S.session?.business || t('zz_maBoutique');
   const heroSub    = bc.heroSubtitle || bc.description || t('z4_heroSub');
   // Séquence d'ouverture pilotée au défilement (option Entreprise).
   // Construite avec les vrais produits de la vitrine : aucune vidéo à
@@ -26598,6 +26814,12 @@ function generateBoutiqueSite(opts) {
   // Repere de la jauge de stock : le plus gros stock reellement present.
   const _stockRefs = shopProds.map(x => (typeof x.qty === 'number' && x.qty > 0) ? x.qty : 0);
 
+  // Meme exigence que pour le film : une adresse https vers un .glb ou
+  // un .gltf, rien d'autre. Un attribut echappe ou un javascript: n'a
+  // aucune chance de passer.
+  const _modele3dSur = (v) => (/^https:\/\/[^\s"'<>]+\.(glb|gltf)$/i.test(String(v || '').trim())
+    ? String(v).trim() : '');
+
   const _carte = (p, idx) => {
     const M = pmeta(p.id);
     const _nom = (M.titre || '').trim() || p.name;
@@ -26612,6 +26834,7 @@ function generateBoutiqueSite(opts) {
     // Pastille ecrite par le commercant : elle passe en tete, c'est son message
     if ((M.badge || '').trim()) _urg.unshift(`<span class="pc-urg" style="background:${esc(M.badgeCouleur || '#111827')}">${esc(M.badge.trim())}</span>`);
     const urgHTML = _urg.length ? `<div class="pc-urgwrap">${_urg.join('')}</div>` : '';
+    const _m3dHTML = _modele3dSur(M.modele3d) ? `<span class="pc-3d">3D</span>` : '';
     // Note moyenne (avis produit)
     const _pcUnder = p._pack ? null : ((S.articles||[]).find(a => a.id === p.id) || (S.products||[]).find(x => x.id === p.id));
     const _pcRevs = (_pcUnder && Array.isArray(_pcUnder.reviews)) ? _pcUnder.reviews.filter(r => r.author || r.text) : [];
@@ -26667,7 +26890,7 @@ function generateBoutiqueSite(opts) {
         ${galHTML}
         ${filigrane}
         ${(showCategories && p.category && CP.categorieCarte === 'photo') ? `<span class="pc-cat-flottante">${esc(p.category)}</span>` : ''}
-        ${urgHTML}
+        ${urgHTML}${_m3dHTML}
         ${showPromoBadges && promo ? `<span class="pc-promo">${promo.type==='fixed'?'-'+fmt(promo.value)+' '+sym():'-'+(promo.value||promo.discount)+'%'}</span>` : ''}
         ${p._pack ? '<span class="pc-pack">PACK</span>' : ''}
       </div>
@@ -26762,8 +26985,11 @@ ${items.map(x => _carte(x.p, x.idx)).join('\n')}
         .map(l => { const i = l.indexOf(':'); return i > 0 ? [l.slice(0, i).trim(), l.slice(i + 1).trim()] : ['', l]; }),
       img: p.image || '', cat: p.category || '', qty: (p.qty != null ? p.qty : null),
       imgs: imgs, variants: variants, reviews: reviews,
+      m3d: _modele3dSur(M.modele3d),
     };
   })).replace(/</g, '\\u003c');
+  const _produits3d = shopProds.some(p => _modele3dSur(pmeta(p.id).modele3d));
+
   // ── Séquence d'ouverture au défilement ────────────────────────────────
   // Un bloc de trois hauteurs d'écran dont la scène reste épinglée. Le
   // défilement ne fait pas jouer une vidéo : il pilote directement une
@@ -26925,9 +27151,9 @@ ${(A.curseur && String(A.curseurMot || '').trim()) ? `
 
   const html = `<!DOCTYPE html>
 <html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>${bc.name||S.session?.business||'Ma Boutique'}</title>
+<title>${bc.name||S.session?.business||t('zz_maBoutique')}</title>
 <meta name="description" content="${bc.description || 'Boutique en ligne'}">
-<meta property="og:title" content="${bc.name||S.session?.business||'Ma Boutique'}">
+<meta property="og:title" content="${bc.name||S.session?.business||t('zz_maBoutique')}">
 <meta property="og:description" content="${bc.description || 'Boutique en ligne'}">
 ${publicUrl ? `<meta property="og:url" content="${esc(publicUrl)}">
 <link rel="canonical" href="${esc(publicUrl)}">` : ''}
@@ -27946,7 +28172,7 @@ ${announce ? `<div class="announce-bar">${esc(announce)}</div>` : ''}
 ${bannerHTML(topBanner, 'top')}
 <header class="topbar">
   ${logo ? `<img src="${logo}" class="topbar-logo" alt="Logo">` : `<div class="topbar-mono">${esc((bc.name||S.session?.business||'B').charAt(0).toUpperCase())}</div>`}
-  <div class="topbar-name">${esc(bc.name||S.session?.business||'Ma Boutique')}${_entete === 'contextuelle' ? `<span class="tb-sec" id="tb-sec" aria-hidden="true"></span>` : ''}</div>
+  <div class="topbar-name">${esc(bc.name||S.session?.business||t('zz_maBoutique'))}${_entete === 'contextuelle' ? `<span class="tb-sec" id="tb-sec" aria-hidden="true"></span>` : ''}</div>
   <nav class="topnav">${_navLinks.map(l=>`<a href="${l[0]}" onclick="event.preventDefault();(document.querySelector('${l[0]}')||document.body).scrollIntoView({behavior:'smooth',block:'start'})">${l[1]}</a>`).join('')}</nav>
   <span class="cur-badge" title="${t('z4_deviseBoutique')}">${_curBadge}</span>
   ${_themeMode === 'choix' ? `<button class="icon-btn theme-btn" id="theme-btn" onclick="baroTheme()" title="${t('z6_basculerTheme')}" aria-label="${t('z6_basculerTheme')}">
@@ -28186,7 +28412,7 @@ ${popupHTML}
     <div class="ft-brand">
       <div class="ft-brand-row">
         ${logo ? `<img src="${logo}" class="ft-logo" alt="">` : `<div class="ft-mono">${esc((bc.name||S.session?.business||'B').charAt(0).toUpperCase())}</div>`}
-        <span class="ft-name">${esc(bc.name||S.session?.business||'Ma Boutique')}</span>
+        <span class="ft-name">${esc(bc.name||S.session?.business||t('zz_maBoutique'))}</span>
       </div>
       ${bc.description?`<p class="ft-desc">${esc(bc.description)}</p>`:''}
       <div class="ft-socials">
@@ -28209,7 +28435,7 @@ ${popupHTML}
     </div>
   </div>
   <div class="ft-bottom">
-    <span>© ${new Date().getFullYear()} ${esc(bc.name||S.session?.business||'Ma Boutique')} — ${t('z4_droitsReserves')}</span>
+    <span>© ${new Date().getFullYear()} ${esc(bc.name||S.session?.business||t('zz_maBoutique'))} — ${t('z4_droitsReserves')}</span>
     ${(_planHasFeature('whiteLabel') && bc.hideBaroBranding) ? '' : `<span>${t('x2_propulsePar')} <a href="#" style="font-weight:700">BARO</a></span>`}
   </div>
 </footer>
@@ -28422,7 +28648,7 @@ ${showCartButton ? `
     <div class="ck-phone-why">${t('z4_telPourquoi').replace('{0}', esc(bc.name||S.session?.business||t('z4_laBoutique')))}</div>
     ${_pickupEnabled && !_deliveryOff?`<label>${t('x2_modeReception')}</label>
     <div class="ck-mode">
-      <button type="button" class="ck-mode-btn on" id="ck-mode-delivery" onclick="baroSetMode('delivery')">🚚 Livraison</button>
+      <button type="button" class="ck-mode-btn on" id="ck-mode-delivery" onclick="baroSetMode('delivery')">${t('zz_livraisonTitre')}</button>
       <button type="button" class="ck-mode-btn" id="ck-mode-pickup" onclick="baroSetMode('pickup')">${t('x2_retraitSurPlace')}</button>
     </div>`:''}
     ${_pickupEnabled || _deliveryOff?`<div id="ck-pickup-info" style="display:none"></div>`:''}
@@ -28436,7 +28662,7 @@ ${showCartButton ? `
 <script>
 var BARO_ITEMS=${itemsJSON};
 var BARO_WA="${waLink}";
-var BARO_SHOP="${esc(bc.name||S.session?.business||'Ma Boutique').replace(/"/g,'')}";
+var BARO_SHOP="${esc(bc.name||S.session?.business||t('zz_maBoutique')).replace(/"/g,'')}";
 var BARO_FEES=${Number(bc.deliveryFees)||0};
 var BARO_ZONEFEES=${zoneFeesJSON};
 var BARO_PROMOS=${promoMapJSON};
@@ -28705,6 +28931,26 @@ var baroMode=BARO_DELOFF?'pickup':'delivery';
 .qv-overlay.show{display:flex}
 .qv{background:#fff;border-radius:20px;max-width:420px;width:100%;max-height:92vh;overflow-y:auto;position:relative;animation:ckUp .3s cubic-bezier(.2,0,0,1)}
 .qv-x{position:absolute;top:10px;right:10px;width:34px;height:34px;border-radius:50%;border:none;background:rgba(0,0,0,.5);color:#fff;font-size:17px;cursor:pointer;z-index:2}
+/* La vue 3D prend exactement la place de la photo : basculer de l'une a
+   l'autre ne doit rien deplacer sur la fiche. */
+.qv-3dwrap{display:none;width:100%;aspect-ratio:1/1;background:var(--surface);
+  position:relative;overflow:hidden}
+.qv-3dwrap.on{display:block}
+.qv-3dwrap model-viewer{width:100%;height:100%;background:transparent;--poster-color:transparent}
+.qv-3dload{position:absolute;inset:0;display:grid;place-items:center;padding:0 24px;
+  text-align:center;font-size:13px;font-weight:600;color:var(--tx2)}
+.qv-3dbtn{position:absolute;top:12px;left:12px;z-index:4;border:1px solid var(--bd);
+  background:color-mix(in srgb,var(--surface) 88%,transparent);color:var(--tx);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  font-family:inherit;font-size:11.5px;font-weight:800;letter-spacing:.04em;
+  padding:8px 13px;border-radius:999px;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.12)}
+.qv-3dbtn:active{transform:scale(.96)}
+/* La pastille sur la carte : elle annonce qu'un modele existe, sans le
+   charger. C'est ce qui donne envie d'ouvrir la fiche. */
+.pc-3d{position:absolute;top:8px;right:8px;z-index:3;
+  background:rgba(17,17,20,.78);color:#fff;backdrop-filter:blur(6px);
+  font-size:9.5px;font-weight:800;letter-spacing:.06em;
+  padding:4px 8px;border-radius:999px;pointer-events:none}
 .qv-img{width:100%;aspect-ratio:1/1;background:#f4f4f6;overflow:hidden}
 .qv-img img{width:100%;height:100%;object-fit:cover;display:block}
 .qv-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:64px;font-weight:800;color:#c4c4c4;background:linear-gradient(135deg,#eee,#f8f8f8)}
@@ -28791,6 +29037,8 @@ var baroMode=BARO_DELOFF?'pickup':'delivery';
   <div class="qv">
     <button class="qv-x" onclick="baroQVClose()">✕</button>
     <div class="qv-img" id="qv-img" onclick="baroLBOpen()"></div>
+    <div class="qv-3dwrap" id="qv-3dwrap"></div>
+    <button class="qv-3dbtn" id="qv-3dbtn" style="display:none" onclick="baroQV3D()"></button>
     <div class="qv-thumbs" id="qv-thumbs"></div>
     <div class="qv-info">
       <div class="qv-cat" id="qv-cat"></div>
@@ -28831,6 +29079,12 @@ window.BARO_VARSEL=window.BARO_VARSEL||{};
     setMain(imgs[0]||'',it.name);
     var tb=document.getElementById('qv-thumbs');
     tb.innerHTML=(imgs.length>1)?imgs.map(function(u,i){return '<button class="qv-thumb'+(i===0?' on':'')+'" style="background-image:url(\\''+u+'\\')" onclick="baroQVThumb('+i+')"></button>';}).join(''):'';
+    var _w3=document.getElementById('qv-3dwrap');
+    if(_w3){_w3.innerHTML='';_w3.classList.remove('on');}
+    vue3d=false;
+    var _i3=document.getElementById('qv-img'); if(_i3)_i3.style.display='';
+    if(tb) tb.style.display='';
+    maj3dBouton();
     document.getElementById('qv-cat').textContent=it.cat||'';
     document.getElementById('qv-name').textContent=it.name;
     var _qt=document.getElementById('qv-tag');
@@ -28882,6 +29136,67 @@ window.BARO_VARSEL=window.BARO_VARSEL||{};
       } else rel.style.display='none';
     }
     document.getElementById('qv-overlay').classList.add('show');document.body.style.overflow='hidden';
+  };
+  // La bibliotheque 3D n'est demandee qu'au premier clic sur « Voir en
+  // 3D ». Tant que personne ne clique, la boutique ne la telecharge pas.
+  var T3D={voir:${JSON.stringify(t('zy_voir3d'))},photo:${JSON.stringify(t('zy_voirPhoto'))},charge:${JSON.stringify(t('zy_chargement3d'))},echec:${JSON.stringify(t('zy_echec3d'))}};
+  var _mv3d=null;
+  function charger3D(){
+    if(_mv3d) return _mv3d;
+    _mv3d=new Promise(function(res,rej){
+      if(window.customElements&&customElements.get('model-viewer')){res();return;}
+      var sc=document.createElement('script');
+      sc.type='module';
+      sc.src='https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js';
+      sc.onload=function(){res();};
+      sc.onerror=function(){rej(new Error('3d'));};
+      document.head.appendChild(sc);
+    });
+    return _mv3d;
+  }
+  var vue3d=false;
+  function maj3dBouton(){
+    var b=document.getElementById('qv-3dbtn');
+    if(!b) return;
+    var a=!!(cur&&cur.m3d);
+    b.style.display=a?'':'none';
+    if(a) b.textContent=vue3d?T3D.photo:T3D.voir;
+  }
+  window.baroQV3D=function(){
+    if(!cur||!cur.m3d) return;
+    var w=document.getElementById('qv-3dwrap'), im=document.getElementById('qv-img');
+    var tb=document.getElementById('qv-thumbs');
+    if(vue3d){
+      vue3d=false; w.innerHTML=''; w.classList.remove('on');
+      im.style.display=''; if(tb) tb.style.display='';
+      maj3dBouton(); return;
+    }
+    vue3d=true; im.style.display='none'; if(tb) tb.style.display='none';
+    w.classList.add('on');
+    w.innerHTML='<div class="qv-3dload">'+T3D.charge+'</div>';
+    maj3dBouton();
+    charger3D().then(function(){
+      if(!vue3d||!cur) return;
+      var mv=document.createElement('model-viewer');
+      mv.setAttribute('src',cur.m3d);
+      mv.setAttribute('alt',cur.name||'');
+      mv.setAttribute('camera-controls','');
+      mv.setAttribute('touch-action','pan-y');
+      mv.setAttribute('auto-rotate','');
+      mv.setAttribute('rotation-per-second','22deg');
+      mv.setAttribute('shadow-intensity','1');
+      mv.setAttribute('exposure','1.05');
+      mv.setAttribute('environment-image','neutral');
+      mv.setAttribute('interaction-prompt','none');
+      w.innerHTML='';
+      w.appendChild(mv);
+    }).catch(function(){
+      // Une bibliotheque qui ne charge pas ne doit pas laisser un cadre
+      // vide : on le dit, puis on revient a la photo.
+      if(!vue3d) return;
+      w.innerHTML='<div class="qv-3dload">'+T3D.echec+'</div>';
+      setTimeout(function(){ if(vue3d) window.baroQV3D(); },1800);
+    });
   };
   window.baroQVClose=function(){document.getElementById('qv-overlay').classList.remove('show');document.body.style.overflow='';};
   // ── Visionneuse plein écran des photos produit (zoom + déplacement) ──
@@ -29967,7 +30282,7 @@ function vBoutiqueEditor() {
   const contentTab = `
     ${composeur}
     <div class="bq-sec-title" style="margin-top:14px">${t('z7_titreAccroche')}</div>
-    <input class="input" value="${(bc.heroTitle||'').replace(/"/g,'&quot;')}" placeholder="${(bc.name||'Ma Boutique').replace(/"/g,'&quot;')}" oninput="boutiqueEditText('heroTitle',this.value)">
+    <input class="input" value="${(bc.heroTitle||'').replace(/"/g,'&quot;')}" placeholder="${(bc.name||t('zz_maBoutique')).replace(/"/g,'&quot;')}" oninput="boutiqueEditText('heroTitle',this.value)">
     <div class="bq-sec-title">${t('z7_sousTitre')}</div>
     <input class="input" value="${(bc.heroSubtitle||'').replace(/"/g,'&quot;')}" placeholder="${t('z4_heroSub').replace(/"/g,'&quot;')}" oninput="boutiqueEditText('heroSubtitle',this.value)">
     <div class="bq-sec-title">Bandeau d'annonce (haut de page)</div>
@@ -30050,6 +30365,9 @@ function vBoutiqueEditor() {
       <div class="bq-fld bq-fld-large"><label>${t('zc_lien')}</label>
         <input class="input" type="url" value="${_att(m.lien)}" placeholder="${_att(t('zc_lienPl'))}" onchange="${set('lien')}">
         <div class="bq-hint2">${t('zc_lienAide')}</div></div>
+      <div class="bq-fld bq-fld-large"><label>${t('zy_modele3d')}</label>
+        <input class="input" type="url" value="${_att(m.modele3d)}" placeholder="https://…/sac.glb" onchange="${set('modele3d')}">
+        <div class="bq-hint2">${t('zy_modele3dAide')}</div></div>
       <div class="bq-fld bq-fld-large"><label>${t('z5_descVitrine')}</label>
         <textarea class="input" rows="2" placeholder="${_att(t('z5_descPl'))}" onchange="${set('desc')}">${_att(m.desc)}</textarea></div>
       <div class="bq-fld bq-fld-large"><label>${t('z9_specs')}</label>
@@ -30249,18 +30567,18 @@ function vBoutiqueAppearance() {
         <div class="sub-hero-title">${t('w8_paramApparence')}</div>
         <div class="sub-hero-sub">${t('w8_personnalisez')}</div>
       </div>
-      <button class="btn btn-primary" style="padding:6px 14px;font-size:12px" onclick="previewBoutiqueSite()">${IC.globe} Aperçu</button>
+      <button class="btn btn-primary" style="padding:6px 14px;font-size:12px" onclick="previewBoutiqueSite()">${IC.globe} ${t('zz4_apercu')}</button>
     </div>
   </div>
   <div class="container">
     <div class="card" style="margin-bottom:10px">
       <div class="card-title">${IC.layers||'📐'} Template de fiche produit</div>
-      <div style="font-size:11px;color:var(--text-3);margin-bottom:10px">Définissez comment s'affiche la page quand un client clique sur un produit</div>
+      <div style="font-size:11px;color:var(--text-3);margin-bottom:10px">${t('zz_ficheAide')}</div>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
         ${[
-          {id:'feed',    name:'Feed',  desc:'Vue détaillée classique'},
+          {id:'feed',    name:'Feed',  desc:t('zz_vueClassique')},
           {id:'oreo',    name:'Oreo',  desc:'Image + achat rapide'},
-          {id:'make',    name:'Make',  desc:'Présentation storytelling'},
+          {id:'make',    name:'Make',  desc:t('zz_vueStory')},
         ].map(t => `
         <div class="template-option ${tpl===t.id?'selected':''}" onclick="updateBoutiqueConfig('template','${t.id}');render()">
           <div class="template-preview">
@@ -30302,7 +30620,7 @@ function vBoutiqueAppearance() {
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
         ${[
           {id:'rounded', name:'Arrondi', radius:'16px'},
-          {id:'square', name:'Carré', radius:'2px'},
+          {id:'square', name:t('zz_carre'), radius:'2px'},
         ].map(b => `
         <div class="template-option ${border===b.id?'selected':''}" onclick="updateBoutiqueConfig('borderStyle','${b.id}');render()">
           <div style="background:var(--gray-1);width:80%;height:40px;margin:0 auto 8px;border-radius:${b.radius};border:2px solid var(--border)"></div>
@@ -30316,7 +30634,7 @@ function vBoutiqueAppearance() {
       <div style="display:flex;gap:8px">
         <select class="input" style="flex:1" onchange="updateBoutiqueConfig('buttonAnimation',this.value)">
           ${[
-            {id:'none',name:'Aucune'},
+            {id:'none',name:t('x2_aucune')},
             {id:'rebond',name:'Rebond'},
             {id:'pulse',name:'Pulsation'},
             {id:'shake',name:'Secousse'},
@@ -30329,12 +30647,12 @@ function vBoutiqueAppearance() {
     <div class="card" style="margin-bottom:10px">
       <div class="card-title">${t('w8_orgPage')}</div>
       ${[
-        {key:'showFeatured',label:'Afficher les produits en vedette',sub:'Mettez en avant vos meilleures ventes'},
-        {key:'showCartButton',label:"Afficher le bouton d'achat sur la carte produit",sub:'Achat direct depuis la liste'},
-        {key:'showReviews',label:'Afficher les avis clients',sub:'Renforce la confiance'},
-        {key:'showPromoBadges',label:'Afficher les badges promo',sub:'Montrer -10%, -20% sur les produits'},
-        {key:'showStockCount',label:'Afficher le stock disponible',sub:"Crée un sentiment d'urgence"},
-        {key:'showCategories',label:'Afficher les catégories',sub:'Navigation par type de produit'},
+        {key:'showFeatured',label:t('zz_vedetteOn'),sub:t('zz_vedetteSub')},
+        {key:'showCartButton',label:t('zz_achatCarte'),sub:t('zz_achatCarteSub')},
+        {key:'showReviews',label:t('zz_avisOn'),sub:t('zz_avisSub')},
+        {key:'showPromoBadges',label:t('zz_badgesOn'),sub:t('zz_badgesSub')},
+        {key:'showStockCount',label:t('zz_stockOn'),sub:t('zz_stockSub')},
+        {key:'showCategories',label:t('zz_catsOn'),sub:t('zz_catsSub')},
       ].map(opt => `
       <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)">
         <div style="flex:1">
@@ -30358,7 +30676,7 @@ function vBoutiqueAppearance() {
       </div>
     </div>
 
-    <button class="btn btn-primary" style="width:100%" onclick="showToast('Apparence sauvegardée ✓');nav('boutique')">${IC.check} Enregistrer les paramètres</button>
+    <button class="btn btn-primary" style="width:100%" onclick="showToast('Apparence sauvegardée ✓');nav('boutique')">${IC.check} ${t('zz2_enrParams')}</button>
   </div>`;
 }
 
@@ -30403,7 +30721,7 @@ function vBoutiqueDomain() {
 
     <div class="card" style="margin-bottom:10px;border:2px solid var(--accent);background:var(--accent-light)">
       <div class="card-title">${t('w9_domainePerso')}</div>
-      <div style="font-size:12px;color:var(--text-2);margin-bottom:12px">Instaurez la confiance avec votre propre nom de domaine (ex: <strong>maboutique.com</strong>). Un domaine professionnel permet aux clients de vous trouver plus facilement.</div>
+      <div style="font-size:12px;color:var(--text-2);margin-bottom:12px">${t('zz_domaineAide1')} <strong>maboutique.com</strong>${t('zz_domaineAide2')}</div>
       <div class="form-group">
         <label class="form-label">${t('w9_votreDomaine')}</label>
         <input class="input" value="${bc.customDomain||''}" placeholder="maboutique.com" oninput="updateBoutiqueConfig('customDomain',this.value.toLowerCase().trim())">
@@ -30437,10 +30755,10 @@ function vBoutiqueDomain() {
 
     <div class="card" style="font-size:11px;color:var(--text-3);line-height:1.6">
       <strong style="color:var(--text-1);display:block;margin-bottom:6px">${t('w9_commentCaMarche2')}</strong>
-      1. Achetez votre nom de domaine chez un registrar (Namecheap, OVH, GoDaddy...)<br>
-      2. Configurez les enregistrements DNS ci-dessus<br>
-      3. Cliquez sur "Vérifier" — la propagation peut prendre 24-48h<br>
-      4. Votre boutique sera accessible sur votre domaine personnalisé !
+      ${t('zz2_dom1')}<br>
+      ${t('zz2_dom2')}<br>
+      ${t('zz2_dom3')}<br>
+      ${t('zz2_dom4')}
     </div>
   </div>`;
 }
@@ -30533,7 +30851,7 @@ function vBoutiquePixels() {
     </div>
 
     <div class="card" style="background:#EFF6FF;border-color:#3B82F640;margin-top:14px;font-size:11px;color:#1E40AF;line-height:1.6">
-      💡 <strong>Astuce :</strong> les pixels sont automatiquement injectés dans le site quand vous cliquez sur "Générer HTML" depuis la page Boutique.
+      💡 <strong>Astuce :</strong> les pixels sont automatiquement injectés dans le site quand vous cliquez sur t('zz_genererHTML') depuis la page Boutique.
     </div>
   </div>`;
 }
@@ -30616,7 +30934,7 @@ function vBoutiqueCode() {
         </div>
       </div>
       <textarea id="code-editor-${tab}" class="input" rows="14" style="font-family:'SF Mono',Consolas,monospace;font-size:12px;line-height:1.5;background:#1E1E1E;color:#D4D4D4;border:none;white-space:pre;overflow-x:auto;caret-color:#fff" placeholder="/* Votre code ${tabLabels[tab]} */" oninput="updateCustomCode('${tab}',this.value)">${cc[tab]||''}</textarea>
-      <div style="font-size:10px;color:var(--text-3);margin-top:4px">${(cc[tab]||'').length} caractères</div>
+      <div style="font-size:10px;color:var(--text-3);margin-top:4px">${t('zz4_caracteres').replace('{0}', (cc[tab]||'').length)}</div>
       <div style="display:flex;gap:6px;margin-top:10px">
         <button class="btn btn-primary" style="flex:1" onclick="saveCustomCode('${tab}')">${IC.check} Enregistrer</button>
         <button class="btn btn-ghost" onclick="clearCustomCode('${tab}')" style="color:var(--danger)">🗑 Effacer</button>
@@ -30685,14 +31003,14 @@ function vBoutiqueSEO() {
   <div class="container">
     <div class="card" style="margin-bottom:10px">
       <div class="card-title">${t('w9_annonceHaut')}</div>
-      <div style="font-size:12px;color:var(--text-3);margin-bottom:10px">Affichée sur toutes les pages (ex. "Livraison gratuite dès 10 000 ${sym()} !")</div>
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:10px">${t('zz2_annonceAide').replace('{0}', sym())}</div>
       <div class="form-group">
-        <label class="form-label">Texte de l'annonce</label>
-        <input class="input" value="${(bc.announcement||'').replace(/"/g,'&quot;')}" oninput="updateBoutiqueConfig('announcement',this.value)" placeholder="Ex: 🎁 -10% sur tout jusqu'à dimanche !">
+        <label class="form-label">${t('zz_texteAnnonce')}</label>
+        <input class="input" value="${(bc.announcement||'').replace(/"/g,'&quot;')}" oninput="updateBoutiqueConfig('announcement',this.value)" placeholder=t('zz_exAnnonce')>
       </div>
       <label style="display:flex;align-items:center;gap:8px;margin-top:10px;cursor:pointer">
         <input type="checkbox" ${bc.announcementActive?'checked':''} onchange="updateBoutiqueConfig('announcementActive',this.checked);render()">
-        <span style="font-size:13px">Activer l'annonce</span>
+        <span style="font-size:13px">${t('zz_activerAnnonce')}</span>
       </label>
       ${bc.announcementActive && bc.announcement ? `
       <div style="margin-top:10px;padding:10px;background:linear-gradient(135deg,#4F46E5,#7C3AED);color:#fff;border-radius:8px;font-size:13px;font-weight:600;text-align:center">${bc.announcement}</div>` : ''}
@@ -30701,30 +31019,30 @@ function vBoutiqueSEO() {
     <div class="card" style="margin-bottom:10px">
       <div class="card-title">${t('w9_seoGoogle')}</div>
       <div class="form-group">
-        <label class="form-label">Titre SEO (55-60 car.)</label>
-        <input class="input" value="${(bc.seoTitle||'').replace(/"/g,'&quot;')}" oninput="updateBoutiqueConfig('seoTitle',this.value)" placeholder="Ex: ${bc.name||'Ma Boutique'} — Livraison Abidjan">
+        <label class="form-label">${t('zz_titreSeo')}</label>
+        <input class="input" value="${(bc.seoTitle||'').replace(/"/g,'&quot;')}" oninput="updateBoutiqueConfig('seoTitle',this.value)" placeholder="${t('zz4_exTitreSeo').replace('{0}', bc.name||t('zz_maBoutique'))}">
         <div style="font-size:10px;color:${(bc.seoTitle||'').length>60?'var(--danger)':'var(--text-3)'};margin-top:2px">${(bc.seoTitle||'').length}/60</div>
       </div>
       <div class="form-group">
         <label class="form-label">Description SEO (150-160 car.)</label>
-        <textarea class="input" rows="3" oninput="updateBoutiqueConfig('seoDescription',this.value)" placeholder="Décrivez ce que vend votre boutique...">${bc.seoDescription||''}</textarea>
+        <textarea class="input" rows="3" oninput="updateBoutiqueConfig('seoDescription',this.value)" placeholder=t('zz_exDescSeo')>${bc.seoDescription||''}</textarea>
         <div style="font-size:10px;color:${(bc.seoDescription||'').length>160?'var(--danger)':'var(--text-3)'};margin-top:2px">${(bc.seoDescription||'').length}/160</div>
       </div>
       <div class="form-group">
         <label class="form-label">${t('w9_motsCles')}</label>
-        <input class="input" value="${(bc.seoKeywords||'').replace(/"/g,'&quot;')}" oninput="updateBoutiqueConfig('seoKeywords',this.value)" placeholder="boutique abidjan, livraison côte ivoire...">
+        <input class="input" value="${(bc.seoKeywords||'').replace(/"/g,'&quot;')}" oninput="updateBoutiqueConfig('seoKeywords',this.value)" placeholder=t('zz_exMotsCles')>
       </div>
       <div class="form-group">
         <label class="form-label">Image de partage (URL)</label>
-        <input class="input" value="${(bc.ogImage||'').replace(/"/g,'&quot;')}" oninput="updateBoutiqueConfig('ogImage',this.value)" placeholder="https://... (1200x630px recommandé)">
+        <input class="input" value="${(bc.ogImage||'').replace(/"/g,'&quot;')}" oninput="updateBoutiqueConfig('ogImage',this.value)" placeholder=t('zz_exImageOg')>
         <div style="font-size:10px;color:var(--text-3);margin-top:2px">${t('w9_partageSocial')}</div>
       </div>
 
       <div style="margin-top:14px;padding:12px;background:var(--gray-1);border-radius:8px">
         <div style="font-size:10px;color:var(--text-3);margin-bottom:6px">${t('w9_apercuGoogle')}</div>
-        <div style="color:#1a0dab;font-size:16px;font-weight:400">${bc.seoTitle || bc.name || 'Ma Boutique'}</div>
+        <div style="color:#1a0dab;font-size:16px;font-weight:400">${bc.seoTitle || bc.name || t('zz_maBoutique')}</div>
         <div style="color:#006621;font-size:12px">${bc.publicUrl || (bc.domain||'maboutique')+'.stockr.shop'}</div>
-        <div style="color:#4d5156;font-size:12px;line-height:1.4;margin-top:2px">${bc.seoDescription || bc.description || 'Description de votre boutique...'}</div>
+        <div style="color:#4d5156;font-size:12px;line-height:1.4;margin-top:2px">${bc.seoDescription || bc.description || t('zz_descBqPoints')}</div>
       </div>
     </div>
 
@@ -30744,7 +31062,7 @@ function vBoutiqueSEO() {
       </div>`).join('')}
     </div>
 
-    <button class="btn btn-primary" style="width:100%" onclick="showToast('✓ SEO enregistré');nav('boutique')">💾 Enregistrer et retour</button>
+    <button class="btn btn-primary" style="width:100%" onclick="showToast('✓ SEO enregistré');nav('boutique')">${t('zz_enrRetour')}</button>
   </div>`;
 }
 
@@ -30768,8 +31086,8 @@ function vBoutiqueHours() {
     <div class="page-header-row">
       <button class="back-btn-dark" onclick="nav('boutique')">${IC.left}</button>
       <div style="flex:1">
-        <div class="sub-hero-title">🕒 Horaires & Livraison</div>
-        <div class="sub-hero-sub">${isOpen?'🟢 Ouvert actuellement':'🔴 Fermé'}</div>
+        <div class="sub-hero-title">${t('zz_horairesLiv')}</div>
+        <div class="sub-hero-sub">${isOpen?'🟢 Ouvert actuellement':t('zz_ferme')}</div>
       </div>
     </div>
   </div>
@@ -30793,22 +31111,22 @@ function vBoutiqueHours() {
     </div>
 
     <div class="card" style="margin-bottom:10px">
-      <div class="card-title">🚚 Livraison</div>
+      <div class="card-title">${t('zz_livraisonTitre')}</div>
       <div class="form-group">
         <label class="form-label">${t('w9_delaiLivraison')}</label>
         <input class="input" value="${(bc.deliveryTime||'').replace(/"/g,'&quot;')}" oninput="updateBoutiqueConfig('deliveryTime',this.value)" placeholder="Ex: 24-48h, 2-3 jours">
       </div>
       <div class="form-group">
-        <label class="form-label">Livraison gratuite à partir de (${sym()})</label>
-        <input class="input" type="number" value="${bc.freeDeliveryFrom||0}" oninput="updateBoutiqueConfig('freeDeliveryFrom',parseFloat(this.value)||0)" placeholder="0 = désactivé">
+        <label class="form-label">${t('zz2_livGratuite').replace('{0}', sym())}</label>
+        <input class="input" type="number" value="${bc.freeDeliveryFrom||0}" oninput="updateBoutiqueConfig('freeDeliveryFrom',parseFloat(this.value)||0)" placeholder=t('zz_zeroDesactive')>
       </div>
       <div class="form-group">
         <label class="form-label">${t('w9_infosCompl')}</label>
-        <textarea class="input" rows="3" oninput="updateBoutiqueConfig('deliveryInfo',this.value)" placeholder="Ex: Livraison le lendemain avant 18h pour toute commande avant 14h...">${bc.deliveryInfo||''}</textarea>
+        <textarea class="input" rows="3" oninput="updateBoutiqueConfig('deliveryInfo',this.value)" placeholder=t('zz_exDelaiLiv')>${bc.deliveryInfo||''}</textarea>
       </div>
     </div>
 
-    <button class="btn btn-primary" style="width:100%" onclick="showToast('✓ Horaires enregistrés');nav('boutique')">💾 Enregistrer et retour</button>
+    <button class="btn btn-primary" style="width:100%" onclick="showToast('✓ Horaires enregistrés');nav('boutique')">${t('zz_enrRetour')}</button>
   </div>`;
 }
 
@@ -30843,8 +31161,8 @@ function vBoutiquePolicies() {
         <div class="card-title" style="margin-bottom:0">${t('x5_cgv')}</div>
         <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" onclick="loadCgvTemplate()">${t('x5_modele2')}</button>
       </div>
-      <textarea class="input" rows="10" oninput="updateBoutiqueConfig('conditions',this.value)" placeholder="Rédigez vos CGV — ou chargez un modèle...">${bc.conditions||''}</textarea>
-      <div style="font-size:10px;color:var(--text-3);margin-top:4px">${(bc.conditions||'').length} caractères</div>
+      <textarea class="input" rows="10" oninput="updateBoutiqueConfig('conditions',this.value)" placeholder=t('zz_exCgv')>${bc.conditions||''}</textarea>
+      <div style="font-size:10px;color:var(--text-3);margin-top:4px">${t('zz4_caracteres').replace('{0}', (bc.conditions||'').length)}</div>
     </div>
 
     <div class="card" style="margin-bottom:10px">
@@ -30852,15 +31170,15 @@ function vBoutiquePolicies() {
         <div class="card-title" style="margin-bottom:0">🔄 Politique de retour / remboursement</div>
         <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" onclick="loadReturnTemplate()">${t('x5_modele2')}</button>
       </div>
-      <textarea class="input" rows="6" oninput="updateBoutiqueConfig('returnPolicy',this.value)" placeholder="Ex: Vous disposez de 7 jours pour retourner un produit...">${bc.returnPolicy||''}</textarea>
+      <textarea class="input" rows="6" oninput="updateBoutiqueConfig('returnPolicy',this.value)" placeholder=t('zz_exRetours')>${bc.returnPolicy||''}</textarea>
     </div>
 
-    <button class="btn btn-primary" style="width:100%" onclick="showToast('✓ Politiques enregistrées');nav('boutique')">💾 Enregistrer et retour</button>
+    <button class="btn btn-primary" style="width:100%" onclick="showToast('✓ Politiques enregistrées');nav('boutique')">${t('zz_enrRetour')}</button>
   </div>`;
 }
 
 function loadCgvTemplate() {
-  const biz = S.boutiqueConfig.name || S.session?.business || 'Ma Boutique';
+  const biz = S.boutiqueConfig.name || S.session?.business || t('zz_maBoutique');
   const tpl = `CONDITIONS GÉNÉRALES DE VENTE — ${biz}
 
 1. OBJET
@@ -30944,7 +31262,7 @@ function vBoutiqueFAQ() {
     </div>`).join('')}
 
     <div class="section-hd" style="margin-top:14px">
-      <span class="section-lbl">⭐ Témoignages clients (${testimonials.length})</span>
+      <span class="section-lbl">⭐ ${t('zz3_temoignages')} (${testimonials.length})</span>
       <button class="fab" style="width:32px;height:32px" onclick="addBoutiqueTestimonial()">${IC.plus}</button>
     </div>
     ${testimonials.length === 0 ? `
@@ -30963,7 +31281,7 @@ function vBoutiqueFAQ() {
       </div>
     </div>`).join('')}
 
-    <button class="btn btn-primary" style="width:100%;margin-top:14px" onclick="nav('boutique')">← Retour boutique</button>
+    <button class="btn btn-primary" style="width:100%;margin-top:14px" onclick="nav('boutique')">${t('zz_retourBoutique')}</button>
   </div>`;
 }
 
@@ -31115,7 +31433,7 @@ function shareBoutiqueWhatsApp() {
   const bc = S.boutiqueConfig;
   const items = _getAllVitrineItems();
   const lines = [
-    `🛍️ *${bc.name || S.session?.business || 'Ma Boutique'}*`,
+    `🛍️ *${bc.name || S.session?.business || t('zz_maBoutique')}*`,
     bc.description || '', '',
     `📦 *Nos ${items.some(i=>i.kind==='product')?'produits':'articles'} :*`,
     ...items.map(p => `▸ ${p.name} — *${fmt(p.price)} ${sym()}*`),
@@ -31126,7 +31444,7 @@ function shareBoutiqueWhatsApp() {
   window.open('https://wa.me/?text=' + encodeURIComponent(lines.join('\n')), '_blank');
 }
 function copyBoutiqueLink() {
-  const text = `${S.boutiqueConfig.name||S.session?.business||'Ma Boutique'} — Commandez sur WhatsApp !`;
+  const text = `${S.boutiqueConfig.name||S.session?.business||t('zz_maBoutique')} — Commandez sur WhatsApp !`;
   navigator.clipboard?.writeText(text).then(() => showToast(t('copied')||'Copie !'));
 }
 // URL publique de la boutique (domaine perso vérifié sinon sous-domaine .baro.shop)
@@ -31311,11 +31629,11 @@ function vBoutiqueAnalytics() {
     <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('boutique')">${IC.left}</button>
     <div class="sub-hero-title">📈 Analytics & Revenus</div>
     <div class="sub-hero-big"><span data-count="${caBoutique}">${fmt(caBoutique)}</span> <span style="font-size:16px;color:var(--accent-muted)">${sym()}</span></div>
-    <div class="sub-hero-sub">CA boutique · ${nbOrders} commande${nbOrders>1?'s':''}</div>
+    <div class="sub-hero-sub">${t('zz3_caBoutique')} · ${t(nbOrders>1?'zz3_commandes':'zz3_commande').replace('{0}', nbOrders)}</div>
   </div>
   <div class="container">
     <div class="metric-grid">
-      <div class="metric-card"><div class="metric-val">${fmt(caBoutique)}</div><div class="metric-lbl">CA boutique</div></div>
+      <div class="metric-card"><div class="metric-val">${fmt(caBoutique)}</div><div class="metric-lbl">${t('zz_caBoutique')}</div></div>
       <div class="metric-card"><div class="metric-val">${nbOrders}</div><div class="metric-lbl">Commandes</div></div>
       <div class="metric-card"><div class="metric-val">${fmt(panierMoyen)}</div><div class="metric-lbl">${t('w4_panierMoyen')}</div></div>
       <div class="metric-card"><div class="metric-val">${vitrine.length}</div><div class="metric-lbl">En vitrine</div></div>
@@ -31407,7 +31725,7 @@ function vBoutiqueAnalytics() {
         </a>`).join('')}
         <div style="font-size:11px;color:var(--text-3);line-height:1.5;margin-top:6px">Le nombre exact de visiteurs, sources de trafic et conversions se consultent en temps réel sur la plateforme connectée.</div>
       ` : `
-        <div style="font-size:13px;color:var(--text-2);line-height:1.6;margin-bottom:12px">Pour compter vos visiteurs et mesurer vos conversions en temps réel, connectez un outil de suivi (gratuit). Il sera injecté automatiquement dans votre boutique.</div>
+        <div style="font-size:13px;color:var(--text-2);line-height:1.6;margin-bottom:12px">${t('zz_analyticsAide')}</div>
         <button class="btn btn-primary" style="width:100%" onclick="nav('boutique-pixels')">Connecter Google Analytics / Pixel</button>
       `}
     </div>
@@ -31417,7 +31735,7 @@ function vBoutiqueAnalytics() {
     <div class="empty" style="padding:28px 16px">
       <div class="empty-ico">🧾</div>
       <div class="empty-title">${t('x2_aucuneCommandeEnr')}</div>
-      <div class="empty-text">Les commandes boutique arrivent via WhatsApp. Enregistrez-les ici pour suivre votre CA, vos best-sellers et vos livraisons.</div>
+      <div class="empty-text">${t('zz_cmdWaAide')}</div>
       <button class="btn btn-primary" style="max-width:240px" onclick="addBoutiqueOrder()">${t('x2_enregistrerCommande')}</button>
     </div>` : orders.slice(0,12).map(o => `
     <div class="card" style="margin-bottom:6px;padding:12px 14px">
@@ -36292,7 +36610,7 @@ function __openYTUploadModal() {
           ${vids.map(v => `<option value="${v.id}">${v.name} (${Math.round(v.size/1024)} KB)</option>`).join('')}
         </select>
         <label class="form-label" style="margin-top:10px">Titre</label>
-        <input id="yt-title" class="input" type="text" placeholder="Titre YouTube" value="BARO — ${S.session?.business || 'Ma Boutique'}" style="font-size:14px !important">
+        <input id="yt-title" class="input" type="text" placeholder="Titre YouTube" value="BARO — ${S.session?.business || t('zz_maBoutique')}" style="font-size:14px !important">
         <label class="form-label" style="margin-top:10px">Description</label>
         <textarea id="yt-desc" class="input" rows="3" placeholder="Description..." style="font-size:14px !important">🔥 Publié depuis BARO PWA — gestion de stock & vente en ligne</textarea>
         <button class="btn btn-primary" style="width:100%;margin-top:14px;background:#FF0000;border-color:#FF0000;padding:14px" onclick="__confirmYTUpload()">${t('y3_uploaderPrive')}</button>
