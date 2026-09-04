@@ -270,6 +270,48 @@ const API_BASE = (location.hostname === 'localhost' || location.hostname === '12
 // ── i18n ─────────────────────────────────────
 const LANGS = {
   fr: {
+    zx_anRebond: "Rebond",
+    zx_anPulse: "Pulsation",
+    zx_anLueur: "Lueur",
+    zx_anSecousse: "Secousse",
+    zx_roles: "Rôles",
+    zx_evEnregistres: "{0} {1} enregistré(s)",
+    zw_cmpVitrine: "Boutique en ligne + éditeur visuel",
+    zw_cmpPanier: "Panier & commande WhatsApp",
+    zw_cmpRevenus: "Revenus & analytics essentiels",
+    zw_cmpPdv: "Points de vente",
+    zw_illimites: "Illimités",
+    zw_cmpDomaine: "Domaine personnalisé (mapharmacie.ci)",
+    zw_cmpMarque: "Retirer la mention « Propulsé par BARO »",
+    zw_cmpAnalytics: "Analytics avancés (par point de vente)",
+    zw_emeraude: "Émeraude",
+    zw_masquerMarque: "Masquer « Propulsé par BARO » sur votre boutique",
+    zw_avecEntreprise: "Disponible avec le plan Entreprise",
+    zw_retraitAide: "Le client choisit de venir chercher sa commande (gratuit, sans livraison).",
+    zw_seuilAide: "Incite le client à remplir son panier pour la livraison gratuite.",
+    zw_configure: "✓ Configuré",
+    zw_seoSub: "Titre, description, bannière",
+    zw_genererAide: "Générez votre site en un clic — toutes vos promos, bannières et avis seront inclus",
+    zw_editeurVide: "Ajoutez au moins un produit à votre vitrine pour ouvrir l'éditeur visuel.",
+    zw_famCommunication: "Communication",
+    zw_famEcommerce: "E-commerce",
+    zw_famProductivite: "Productivité & automatisation",
+    zw_famLivraison: "Livraison",
+    zw_famFinance: "Paiement & comptabilité",
+    zw_enLigne: "En ligne — synchronisé",
+    zw_modeLocal: "Mode local (hors-ligne)",
+    zw_compte: "Compte :",
+    zw_derniereSync: "dernière synchro :",
+    zw_localSeul: "Vos données sont sur cet appareil uniquement.",
+    zw_mRevendeur: "Revendeur / Boutique",
+    zw_mRevendeurSub: "Boutique, épicerie, cosmétiques… stock uniquement",
+    zw_mFabricant: "Fabricant / Restaurant",
+    zw_mFabricantSub: "Restaurant, pâtisserie, couture… matières → produits",
+    zw_mMixte: "Mixte",
+    zw_mMixteSub: "Les deux — vente directe + fabrication",
+    zw_ajouterCollab: "Ajouter un collaborateur",
+    zw_modifierMembre: "Modifier membre",
+    zw_equipeVide: "Ajoutez votre premier membre d'équipe pour suivre ses ventes, commissions et performances.",
     zv_importerVideo: "Importer une vidéo",
     zv_videoLimite: "MP4 ou WebM · 6 Mo au maximum",
     zv_ouAdresse: "Ou son adresse en ligne",
@@ -2424,6 +2466,48 @@ const LANGS = {
     version:'Version',
   },
   en: {
+    zx_anRebond: "Bounce",
+    zx_anPulse: "Pulse",
+    zx_anLueur: "Glow",
+    zx_anSecousse: "Shake",
+    zx_roles: "Roles",
+    zx_evEnregistres: "{0} {1} recorded",
+    zw_cmpVitrine: "Online shop + visual editor",
+    zw_cmpPanier: "Cart & WhatsApp ordering",
+    zw_cmpRevenus: "Core revenue & analytics",
+    zw_cmpPdv: "Points of sale",
+    zw_illimites: "Unlimited",
+    zw_cmpDomaine: "Custom domain (mypharmacy.ci)",
+    zw_cmpMarque: "Remove the “Powered by BARO” line",
+    zw_cmpAnalytics: "Advanced analytics (per point of sale)",
+    zw_emeraude: "Emerald",
+    zw_masquerMarque: "Hide “Powered by BARO” on your shop",
+    zw_avecEntreprise: "Available on the Enterprise plan",
+    zw_retraitAide: "The customer chooses to collect the order in person (free, no delivery).",
+    zw_seuilAide: "Encourages customers to fill their cart to earn free delivery.",
+    zw_configure: "✓ Set up",
+    zw_seoSub: "Title, description, banner",
+    zw_genererAide: "Generate your site in one click — all your promotions, banners and reviews are included",
+    zw_editeurVide: "Add at least one product to your shop window to open the visual editor.",
+    zw_famCommunication: "Communication",
+    zw_famEcommerce: "E-commerce",
+    zw_famProductivite: "Productivity & automation",
+    zw_famLivraison: "Delivery",
+    zw_famFinance: "Payments & accounting",
+    zw_enLigne: "Online — synced",
+    zw_modeLocal: "Local mode (offline)",
+    zw_compte: "Account:",
+    zw_derniereSync: "last sync:",
+    zw_localSeul: "Your data is on this device only.",
+    zw_mRevendeur: "Reseller / Shop",
+    zw_mRevendeurSub: "Shop, grocery, cosmetics… stock only",
+    zw_mFabricant: "Maker / Restaurant",
+    zw_mFabricantSub: "Restaurant, bakery, tailoring… materials → products",
+    zw_mMixte: "Mixed",
+    zw_mMixteSub: "Both — direct sales + making",
+    zw_ajouterCollab: "Add a team member",
+    zw_modifierMembre: "Edit member",
+    zw_equipeVide: "Add your first team member to track their sales, commissions and performance.",
     zv_importerVideo: "Import a video",
     zv_videoLimite: "MP4 or WebM · 6 MB at most",
     zv_ouAdresse: "Or its online address",
@@ -21694,8 +21778,8 @@ function vSettings() {
         <div style="display:flex;align-items:center;gap:12px;padding:14px;background:linear-gradient(135deg,${online?'rgba(16,185,129,.10)':'rgba(148,163,184,.10)'},transparent)">
           <div style="width:44px;height:44px;border-radius:50%;background:${online?'rgba(16,185,129,.15)':'rgba(148,163,184,.15)'};display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">${online?'☁️':'📴'}</div>
           <div style="flex:1;min-width:0">
-            <div style="font-weight:800;font-size:14px;color:var(--text-1)">${online?'En ligne — synchronisé':'Mode local (hors-ligne)'}</div>
-            <div style="font-size:11.5px;color:var(--text-3);margin-top:1px">${online?`Compte : ${(S.session?.email||'—')} · dernière synchro : ${lastTxt}`:'Vos données sont sur cet appareil uniquement.'}</div>
+            <div style="font-weight:800;font-size:14px;color:var(--text-1)">${online?t('zw_enLigne'):t('zw_modeLocal')}</div>
+            <div style="font-size:11.5px;color:var(--text-3);margin-top:1px">${online?`${t('zw_compte')} ${(S.session?.email||'—')} · ${t('zw_derniereSync')} ${lastTxt}`:t('zw_localSeul')}</div>
           </div>
           <span style="width:10px;height:10px;border-radius:50%;background:${online?'#10B981':'#94A3B8'};flex-shrink:0;${online?'box-shadow:0 0 8px rgba(16,185,129,.6);animation:intDotPulse 2s ease-in-out infinite':''}"></span>
         </div>
@@ -21729,9 +21813,9 @@ function vSettings() {
       <div class="settings-label">${t('w2_typeActivite')}</div>
       <div class="settings-row-block">
         ${[
-          { id:'reseller', icon:'🏪', label:'Revendeur / Boutique', sub:'Boutique, épicerie, cosmétiques… stock uniquement' },
-          { id:'maker',    icon:'🏭', label:'Fabricant / Restaurant', sub:'Restaurant, pâtisserie, couture… matières → produits' },
-          { id:'mixed',    icon:'🔀', label:'Mixte',    sub:'Les deux — vente directe + fabrication' },
+          { id:'reseller', icon:'🏪', label:t('zw_mRevendeur'), sub:t('zw_mRevendeurSub') },
+          { id:'maker',    icon:'🏭', label:t('zw_mFabricant'), sub:t('zw_mFabricantSub') },
+          { id:'mixed',    icon:'🔀', label:t('zw_mMixte'),     sub:t('zw_mMixteSub') },
         ].map(bt => `
         <div class="settings-row" onclick="changeBusinessType('${bt.id}')" style="border-left:3px solid ${getBusinessType()===bt.id?'var(--accent)':'transparent'}">
           <div class="settings-row-inner">
@@ -21950,7 +22034,7 @@ function vSettings() {
             <span class="settings-row-ico" style="color:#7C73FF">👥</span>
             <div>
               <div class="settings-row-lbl">${t('w2_equipe')}</div>
-              <div class="settings-row-sub">${(S.teamMembers||[]).length} ${t('w4_collaborateurs')} · Rôles</div>
+              <div class="settings-row-sub">${(S.teamMembers||[]).length} ${t('w4_collaborateurs')} · ${t('zx_roles')}</div>
             </div>
           </div>
           ${IC.chevron}
@@ -21960,7 +22044,7 @@ function vSettings() {
             <span class="settings-row-ico" style="color:#1E293B">📋</span>
             <div>
               <div class="settings-row-lbl">Journal d'audit</div>
-              <div class="settings-row-sub">${(S.auditLog||[]).length} ${t('w4_evenements')} enregistré(s)</div>
+              <div class="settings-row-sub">${t('zx_evEnregistres').replace('{0}', (S.auditLog||[]).length).replace('{1}', t('w4_evenements'))}</div>
             </div>
           </div>
           ${IC.chevron}
@@ -22148,14 +22232,14 @@ function vTeam() {
       </div>` : ''}
 
       <button class="btn btn-primary" onclick="nav('add-team-member')" style="width:100%;margin-bottom:12px">
-        ＋ Ajouter un collaborateur
+        ＋ ${t('zw_ajouterCollab')}
       </button>
 
       ${members.length === 0 ? `
         <div class="card" style="text-align:center;padding:40px 20px">
           <div style="font-size:48px;margin-bottom:10px">👥</div>
           <div style="font-size:16px;font-weight:700;color:var(--text-1);margin-bottom:6px">${t('w7_aucunCollab')}</div>
-          <div style="font-size:13px;color:var(--text-3);margin-bottom:16px">Ajoutez votre premier membre d'équipe pour suivre ses ventes, commissions et performances.</div>
+          <div style="font-size:13px;color:var(--text-3);margin-bottom:16px">${t('zw_equipeVide')}</div>
         </div>
       ` : members.map((m, i) => {
         const st = _teamMemberStats(m.id);
@@ -22624,7 +22708,7 @@ function vAddTeamMember() {
   <div class="page-header">
     <div class="page-header-row">
       <button class="back-btn" onclick="nav('team')">${IC.left}</button>
-      <div class="page-title">${isEdit ? 'Modifier membre' : 'Ajouter un collaborateur'}</div>
+      <div class="page-title">${isEdit ? t('zw_modifierMembre') : t('zw_ajouterCollab')}</div>
     </div>
   </div>
   <div class="container">
@@ -24829,13 +24913,13 @@ function vBoutique() {
       const isEnt = _planHasFeature('whiteLabel');
       const planNm = PLAN_LABELS[_currentPlan()] || _currentPlan();
       const rows = [
-        ['Boutique en ligne + éditeur visuel', true, true],
-        ['Panier & commande WhatsApp', true, true],
-        ['Revenus & analytics essentiels', true, true],
-        ['Points de vente', '5', 'Illimités'],
-        ['Domaine personnalisé (mapharmacie.ci)', false, true],
-        ['Retirer la mention « Propulsé par BARO »', false, true],
-        ['Analytics avancés (par point de vente)', false, true],
+        [t('zw_cmpVitrine'), true, true],
+        [t('zw_cmpPanier'), true, true],
+        [t('zw_cmpRevenus'), true, true],
+        [t('zw_cmpPdv'), '5', t('zw_illimites')],
+        [t('zw_cmpDomaine'), false, true],
+        [t('zw_cmpMarque'), false, true],
+        [t('zw_cmpAnalytics'), false, true],
       ];
       const cell = v => v === true ? '<span style="color:var(--success);font-weight:800">✓</span>'
                      : v === false ? '<span style="color:var(--text-3)">—</span>'
@@ -24861,7 +24945,7 @@ function vBoutique() {
       <div style="display:flex;align-items:center;gap:10px;padding:12px 15px;border-top:1px solid var(--border);${isEnt?'':'opacity:.6'}">
         <div style="flex:1;min-width:0">
           <div style="font-size:12.5px;font-weight:700">Marque blanche</div>
-          <div style="font-size:11px;color:var(--text-3)">${isEnt ? 'Masquer « Propulsé par BARO » sur votre boutique' : 'Disponible avec le plan Entreprise'}</div>
+          <div style="font-size:11px;color:var(--text-3)">${isEnt ? t('zw_masquerMarque') : t('zw_avecEntreprise')}</div>
         </div>
         <label class="toggle-switch" style="flex-shrink:0">
           <input type="checkbox" ${bc.hideBaroBranding&&isEnt?'checked':''} ${isEnt?'':'disabled'} onchange="${isEnt?"updateBoutiqueConfig('hideBaroBranding',this.checked)":"this.checked=false;nav('pricing')"}">
@@ -24900,7 +24984,7 @@ function vBoutique() {
           <span>${t('w8_retraitSurPlace')}</span>
           <label class="toggle-switch"><input type="checkbox" ${bc.pickupEnabled?'checked':''} onchange="updateBoutiqueConfig('pickupEnabled',this.checked);render()"><span class="toggle-track"></span></label>
         </label>
-        <div style="font-size:11px;color:var(--text-3);margin:2px 0 8px">Le client choisit de venir chercher sa commande (gratuit, sans livraison).</div>
+        <div style="font-size:11px;color:var(--text-3);margin:2px 0 8px">${t('zw_retraitAide')}</div>
         ${bc.pickupEnabled?`
         <input class="input" value="${(bc.pickupAddress||'').replace(/"/g,'&quot;')}" placeholder="📍 Adresse de retrait (ex : Rue des Jardins, Cocody)" oninput="updateBoutiqueConfig('pickupAddress',this.value)">
         <input class="input" style="margin-top:8px" value="${(bc.pickupMapUrl||'').replace(/"/g,'&quot;')}" placeholder="🗺️ Lien Google Maps (optionnel)" oninput="updateBoutiqueConfig('pickupMapUrl',this.value)">
@@ -24911,7 +24995,7 @@ function vBoutique() {
       <div class="form-group">
         <label class="form-label">🎁 Livraison offerte dès (${sym()}) <span style="font-weight:500;color:var(--text-3)">${t('x2_zeroDesactive')}</span></label>
         <input class="input" type="number" inputmode="numeric" value="${bc.freeDeliveryThreshold || 0}" oninput="updateBoutiqueConfig('freeDeliveryThreshold',parseFloat(this.value)||0)" placeholder="ex : 25000">
-        <div style="font-size:11px;color:var(--text-3);margin-top:4px">Incite le client à remplir son panier pour la livraison gratuite.</div>
+        <div style="font-size:11px;color:var(--text-3);margin-top:4px">${t('zw_seuilAide')}</div>
       </div>
       <div class="form-group">
         <label class="form-label">${t('w8_zonesLivraison')}</label>
@@ -24943,7 +25027,7 @@ function vBoutique() {
         <div style="display:flex;gap:8px;flex-wrap:wrap">
           ${[
             {id:'indigo',  color:'#4F46E5', name:'Indigo'},
-            {id:'emerald', color:'#059669', name:'Émeraude'},
+            {id:'emerald', color:'#059669', name:t('zw_emeraude')},
             {id:'rose',    color:'#E11D48', name:'Rose'},
             {id:'amber',   color:'#D97706', name:'Ambre'},
             {id:'sky',     color:'#0284C7', name:'Ciel'},
@@ -25004,7 +25088,7 @@ function vBoutique() {
         <div class="btc-ico" style="background:#10B98110;color:#10B981">🔍</div>
         <div class="btc-txt">
           <div class="btc-title">SEO & Annonces</div>
-          <div class="btc-sub">${bc.seoTitle ? '✓ Configuré' : 'Titre, description, bannière'}</div>
+          <div class="btc-sub">${bc.seoTitle ? t('zw_configure') : t('zw_seoSub')}</div>
         </div>
       </button>
       <button class="boutique-tool-card" onclick="nav('boutique-hours')">
@@ -25055,7 +25139,7 @@ function vBoutique() {
         <div class="bgen-ico">${IC.globe}</div>
         <div class="bgen-head-txt">
           <div class="bgen-title">${t('w8_generationSite')}</div>
-          <div class="bgen-sub">Générez votre site en un clic — toutes vos promos, bannières et avis seront inclus</div>
+          <div class="bgen-sub">${t('zw_genererAide')}</div>
         </div>
       </div>
       <div class="bgen-actions">
@@ -25154,7 +25238,7 @@ function vBoutique() {
     </div>
 
     <div class="section-hd" id="bq-orders">
-      <span class="section-lbl">Commandes reçues (${orders.length})</span>
+      <span class="section-lbl">${t('boutiqueOrders')} (${orders.length})</span>
       <button class="fab" style="width:32px;height:32px" onclick="addBoutiqueOrder()">${IC.plus}</button>
     </div>
     ${orders.length === 0 ? `
@@ -29228,7 +29312,7 @@ function vBoutiqueEditor() {
     <div class="container"><div class="empty">
       <div class="empty-ico">🎨</div>
       <div class="empty-title">Vitrine vide</div>
-      <div class="empty-text">Ajoutez au moins un produit à votre vitrine pour ouvrir l'éditeur visuel.</div>
+      <div class="empty-text">${t('zw_editeurVide')}</div>
       <button class="btn btn-primary" style="width:auto;padding:11px 24px" onclick="nav('boutique')">${t('x2_gererVitrine')}</button>
     </div></div>`;
   }
@@ -29690,7 +29774,7 @@ function vBoutiqueEditor() {
 
     <div class="bq-sec-title">${t('x2_animationBouton')}</div>
     <div class="bq-opts">
-      ${[['rebond','Rebond'],['pulse','Pulse'],['glow','Lueur'],['shake','Secousse'],['none','Aucune']].map(([v,l])=>optBtn('buttonAnimation',v,l,g('buttonAnimation','rebond')===v)).join('')}
+      ${[['rebond',t('zx_anRebond')],['pulse',t('zx_anPulse')],['glow',t('zx_anLueur')],['shake',t('zx_anSecousse')],['none',t('x2_aucune')]].map(([v,l])=>optBtn('buttonAnimation',v,l,g('buttonAnimation','rebond')===v)).join('')}
     </div>
 
     <div class="bq-sec-title">${t('x2_effetSurvol')}</div>
@@ -35837,7 +35921,11 @@ function vIntegrations() {
       const items = integrationsList.filter(i => i.category === cat)
         .filter(i => _intVisible(i, q, etat, paysActif));
       if (!items.length) return '';
-      const labels = {communication:'💬 Communication',ecommerce:'🛒 E-commerce',productivity:'📊 Productivité & automatisation',delivery:'🚚 Livraison',finance:'💰 Paiement & comptabilité'};
+      const labels = { communication: '💬 ' + t('zw_famCommunication'),
+                       ecommerce:     '🛒 ' + t('zw_famEcommerce'),
+                       productivity:  '📊 ' + t('zw_famProductivite'),
+                       delivery:      '🚚 ' + t('zw_famLivraison'),
+                       finance:       '💰 ' + t('zw_famFinance') };
       const NIV = { lien:[t('zk_nivLien'), t('zk_nivLienD')],
                     cle:[t('zk_nivCle'), t('zk_nivCleD')],
                     sync:[t('zk_nivSync'), t('zk_nivSyncD')] };
