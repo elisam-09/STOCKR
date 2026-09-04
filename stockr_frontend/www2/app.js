@@ -270,6 +270,70 @@ const API_BASE = (location.hostname === 'localhost' || location.hostname === '12
 // ── i18n ─────────────────────────────────────
 const LANGS = {
   fr: {
+    w1_lblConfirm: "Confirmation commande",
+    w1_lblPaiement: "Demande de paiement",
+    w1_lblStockStaff: "Alerte stock faible (équipe)",
+    w1_lblAnniv: "Anniversaire client",
+    w1_creerPlat2: "Créer un plat",
+    w1_lienCommandes: "Commandes",
+    w1_lienStock: "Stock",
+    w1_collezCi2: "3. Collez-les ci-dessous — BARO enverra les commandes {0} automatiquement",
+    w1_assignAuto2: "Laisser {0} assigner automatiquement le livreur le plus proche",
+    w1_pasFacture2: "Pas de facturation {0} — parfait pour valider la configuration",
+    w1_modeTest: "Mode test actif",
+    w1_ouvreWa: "— Ouvre WhatsApp avec message pré-rempli. Aucune inscription.",
+    w1_envoiAuto: "— Envoi automatique, templates approuvés, reporting. Requiert un compte WhatsApp Business API chez Meta.",
+    w1_ouvreModele: "Ouvre WhatsApp avec le texte du modèle pré-rempli — clic final manuel.",
+    w1_envoiDirect: "Envoi direct sans ouvrir WhatsApp, messages trackés, auto 24/7.",
+    w1_confirmerNum: "Confirmer ce numéro (envoi d'un test)",
+    w1_identLocaux: "💡 Les identifiants restent en local (localStorage) — BARO n'envoie rien sans votre action.",
+    w1_mConfirm: "Bonjour {{client}} 👋 Votre commande {{ref}} est confirmée ✅ Montant : {{total}} {{sym}} Livraison prévue : {{delivery}} Merci pour votre confiance ! {{business}}",
+    w1_expedition: "Expédition / En route",
+    w1_mExpedition: "🚚 {{client}}, votre commande {{ref}} est en route ! Suivi : {{tracking}} Arrivée estimée : {{eta}} {{business}}",
+    w1_livConfirmee: "Livraison confirmée",
+    w1_mLivree: "✓ {{client}}, votre commande {{ref}} a bien été livrée. N'hésitez pas à nous donner votre avis 🌟 {{business}}",
+    w1_mFacture: "💳 Bonjour {{client}}, Votre facture {{ref}} : {{total}} {{sym}} Paiement : {{payment_link}} {{business}}",
+    w1_mStock: "⚠️ Alerte stock : {{article}} bientôt en rupture ({{stock}} {{unit}} restants).",
+    w1_promoNouv: "Promotion / nouveauté",
+    w1_mPromo: "🎉 {{client}}, offre spéciale chez {{business}} ! {{promo_text}} Valable jusqu'au {{expires}}.",
+    w1_mAnniv: "🎂 Joyeux anniversaire {{client}} ! Un cadeau vous attend chez {{business}} : {{gift}}.",
+    w1_autoConfirm: "Envoie le modèle \"Confirmation commande\" après chaque vente avec client",
+    w1_autoExped: "Envoie \"Expédition\" quand une commande boutique passe en dispatched",
+    w1_autoStock: "Envoie \"Alerte stock faible\" sur le numéro admin quand stock < seuil",
+    w1_entrepot: "📦 Entrepôt",
+    w1_maquis: "Maquis, restaurant, pâtisserie — matières premières et plats.",
+    w1_platsRecettes: "Vos plats avec leurs recettes",
+    w1_platsAide: "Créez un plat (ex : poulet braisé) avec sa composition : chaque vente décompte automatiquement les ingrédients du stock.",
+    w1_creerPlat: "Créer un plat →",
+    w1_qtesReelles: "Quantités réelles",
+    w1_qtesAide: "Kg, litres, décimales : 1,5 kg de riz se vend et se décompte tel quel.",
+    w1_retraitOuLiv: "Retrait sur place OU livraison",
+    w1_menuAide: "Votre menu en ligne : le client commande, paie le mode qui vous arrange — retrait seul possible, avec itinéraire.",
+    w1_cmdArrive: "La commande arrive dans l'app",
+    w1_cmdArriveAide: "En ligne : chaque commande passée sur votre page apparaît directement ici.",
+    w1_alerteMat: "Alerte matières premières",
+    w1_alerteMatAide: "Seuil sur la farine, l'huile, le gaz… BARO prévient avant le manque.",
+    w1_beneficeJour: "Bénéfice net du jour",
+    w1_beneficeAide: "CA − dépenses (loyer, gaz, salaires) = ce que vous gagnez vraiment.",
+    w1_toutExiste: "Chaque bouton mène à l'écran réel — tout ce qui est listé ici existe et fonctionne.",
+    w1_assoCompte: "Associez votre compte partenaire pour envoyer les commandes automatiquement",
+    w1_creezCompte: "1. Créez un compte partenaire sur",
+    w1_collezCi: "3. Collez-les ci-dessous — BARO enverra les commandes Glovo Partners automatiquement",
+    w1_desQueCmd: "Dès qu'une commande boutique est prête, un coursier est demandé",
+    w1_assignAuto: "Laisser Glovo Partners assigner automatiquement le livreur le plus proche",
+    w1_pasFacture: "Pas de facturation Glovo Partners — parfait pour valider la config",
+    w1_aucunFrais: "— aucun frais facturé, idéal pour vérifier le flux.",
+    w1_rueQuartier: "Rue, quartier, repère visuel",
+    w1_nouvelleRed: "Nouvelle réduction",
+    w1_creezCode: "Créez un code promo complet",
+    w1_typeRed: "Type de réduction",
+    w1_prodConcernes: "Produits concernés",
+    w1_limiteAide: "La réduction se désactive une fois cette limite atteinte. 0 = aucune limite",
+    w1_parClientAide: "Combien de fois un même client peut utiliser ce code. 0 = illimité",
+    w1_periodeValid: "Période de validité",
+    w1_creerRed: "Créer la réduction",
+    w1_zeroIllimite: "0 = illimité",
+    w1_genererCode: "Générer un code aléatoire",
     zz4_benefice: "Bénéfice",
     zz4_ventes: "Ventes",
     zz4_chiffreAffaires: "Chiffre d'affaires",
@@ -2574,6 +2638,70 @@ const LANGS = {
     version:'Version',
   },
   en: {
+    w1_lblConfirm: "Order confirmation",
+    w1_lblPaiement: "Payment request",
+    w1_lblStockStaff: "Low stock alert (team)",
+    w1_lblAnniv: "Customer birthday",
+    w1_creerPlat2: "Create a dish",
+    w1_lienCommandes: "Orders",
+    w1_lienStock: "Stock",
+    w1_collezCi2: "3. Paste them below — BARO will send {0} orders automatically",
+    w1_assignAuto2: "Let {0} assign the nearest courier automatically",
+    w1_pasFacture2: "No {0} billing — right for checking the setup",
+    w1_modeTest: "Test mode on",
+    w1_ouvreWa: "— Opens WhatsApp with the message ready. No sign-up.",
+    w1_envoiAuto: "— Automatic sending, approved templates, reporting. Requires a WhatsApp Business API account with Meta.",
+    w1_ouvreModele: "Opens WhatsApp with the template text ready — you tap send yourself.",
+    w1_envoiDirect: "Sends directly without opening WhatsApp, messages tracked, running 24/7.",
+    w1_confirmerNum: "Confirm this number (sends a test)",
+    w1_identLocaux: "💡 Credentials stay on this device (localStorage) — BARO sends nothing without your action.",
+    w1_mConfirm: "Hello {{client}} 👋 Your order {{ref}} is confirmed ✅ Amount: {{total}} {{sym}} Expected delivery: {{delivery}} Thank you for your trust! {{business}}",
+    w1_expedition: "Shipped / On the way",
+    w1_mExpedition: "🚚 {{client}}, your order {{ref}} is on its way! Tracking: {{tracking}} Estimated arrival: {{eta}} {{business}}",
+    w1_livConfirmee: "Delivery confirmed",
+    w1_mLivree: "✓ {{client}}, your order {{ref}} has been delivered. Do tell us what you think 🌟 {{business}}",
+    w1_mFacture: "💳 Hello {{client}}, Your invoice {{ref}}: {{total}} {{sym}} Payment: {{payment_link}} {{business}}",
+    w1_mStock: "⚠️ Stock alert: {{article}} running out soon ({{stock}} {{unit}} left).",
+    w1_promoNouv: "Promotion / new arrival",
+    w1_mPromo: "🎉 {{client}}, special offer at {{business}}! {{promo_text}} Valid until {{expires}}.",
+    w1_mAnniv: "🎂 Happy birthday {{client}}! A gift is waiting for you at {{business}}: {{gift}}.",
+    w1_autoConfirm: "Sends the \"Order confirmation\" template after each sale with a customer",
+    w1_autoExped: "Sends \"Shipped\" when a shop order moves to dispatched",
+    w1_autoStock: "Sends \"Low stock alert\" to the admin number when stock falls below the threshold",
+    w1_entrepot: "📦 Warehouse",
+    w1_maquis: "Eatery, restaurant, bakery — raw materials and dishes.",
+    w1_platsRecettes: "Your dishes with their recipes",
+    w1_platsAide: "Create a dish (e.g. grilled chicken) with its recipe: each sale takes the ingredients out of stock automatically.",
+    w1_creerPlat: "Create a dish →",
+    w1_qtesReelles: "Real quantities",
+    w1_qtesAide: "Kg, litres, decimals: 1.5 kg of rice is sold and deducted just as it is.",
+    w1_retraitOuLiv: "Collection on site OR delivery",
+    w1_menuAide: "Your menu online: the customer orders and pays the way that suits you — collection only is possible, with directions.",
+    w1_cmdArrive: "The order lands in the app",
+    w1_cmdArriveAide: "Online: every order placed on your page shows up right here.",
+    w1_alerteMat: "Raw material alert",
+    w1_alerteMatAide: "A threshold on flour, oil, gas… BARO warns you before you run out.",
+    w1_beneficeJour: "Net profit for the day",
+    w1_beneficeAide: "Revenue − expenses (rent, gas, wages) = what you actually earn.",
+    w1_toutExiste: "Every button leads to the real screen — everything listed here exists and works.",
+    w1_assoCompte: "Link your partner account to send orders automatically",
+    w1_creezCompte: "1. Create a partner account at",
+    w1_collezCi: "3. Paste them below — BARO will send Glovo Partners orders automatically",
+    w1_desQueCmd: "As soon as a shop order is ready, a courier is requested",
+    w1_assignAuto: "Let Glovo Partners assign the nearest courier automatically",
+    w1_pasFacture: "No Glovo Partners billing — right for checking the setup",
+    w1_aucunFrais: "— nothing is charged, right for checking the flow.",
+    w1_rueQuartier: "Street, neighbourhood, landmark",
+    w1_nouvelleRed: "New discount",
+    w1_creezCode: "Create a complete promo code",
+    w1_typeRed: "Discount type",
+    w1_prodConcernes: "Products covered",
+    w1_limiteAide: "The discount switches off once this limit is reached. 0 = no limit",
+    w1_parClientAide: "How many times one customer can use this code. 0 = unlimited",
+    w1_periodeValid: "Valid period",
+    w1_creerRed: "Create the discount",
+    w1_zeroIllimite: "0 = unlimited",
+    w1_genererCode: "Generate a random code",
     zz4_benefice: "Profit",
     zz4_ventes: "Sales",
     zz4_chiffreAffaires: "Revenue",
@@ -24179,13 +24307,13 @@ function vMetierGuide() {
       ['🔐', 'Téléphone partagé au comptoir', 'Code PIN au démarrage + journal d\'audit de qui a fait quoi.', "nav('security')", 'Sécurité'],
       ['📊', 'Le vrai bénéfice, pas le chiffre d\'affaires', 'Bilan net (dépenses déduites), export Excel/PDF pour le comptable (OHADA).', "nav('financial')", 'Bilan'],
     ]},
-    restaurant: { icon:'🍽️', label:'Restaurant', intro:'Maquis, restaurant, pâtisserie — matières premières et plats.', rows: [
-      ['🥘', 'Vos plats avec leurs recettes', 'Créez un plat (ex : poulet braisé) avec sa composition : chaque vente décompte automatiquement les ingrédients du stock.', "nav('add-product')", 'Créer un plat'],
-      ['⚖️', 'Quantités réelles', 'Kg, litres, décimales : 1,5 kg de riz se vend et se décompte tel quel.', "nav('pantry')", 'Mon stock'],
-      ['🛵', 'Retrait sur place OU livraison', 'Votre menu en ligne : le client commande, paie le mode qui vous arrange — retrait seul possible, avec itinéraire.', "nav('boutique')", 'Ma boutique en ligne'],
-      ['🔔', 'La commande arrive dans l\'app', 'En ligne : chaque commande passée sur votre page apparaît directement ici.', "nav('boutique')", 'Commandes'],
-      ['📉', 'Alerte matières premières', 'Seuil sur la farine, l\'huile, le gaz… BARO prévient avant le manque.', "nav('pantry')", 'Stock'],
-      ['📊', 'Bénéfice net du jour', 'CA − dépenses (loyer, gaz, salaires) = ce que vous gagnez vraiment.', "nav('financial')", 'Bilan'],
+    restaurant: { icon:'🍽️', label:'Restaurant', intro:t('w1_maquis'), rows: [
+      ['🥘', t('w1_platsRecettes'), t('w1_platsAide'), "nav('add-product')", t('w1_creerPlat2')],
+      ['⚖️', t('w1_qtesReelles'), t('w1_qtesAide'), "nav('pantry')", 'Mon stock'],
+      ['🛵', t('w1_retraitOuLiv'), t('w1_menuAide'), "nav('boutique')", 'Ma boutique en ligne'],
+      ['🔔', t('w1_cmdArrive'), t('w1_cmdArriveAide'), "nav('boutique')", t('w1_lienCommandes')],
+      ['📉', t('w1_alerteMat'), t('w1_alerteMatAide'), "nav('pantry')", t('w1_lienStock')],
+      ['📊', t('w1_beneficeJour'), t('w1_beneficeAide'), "nav('financial')", 'Bilan'],
     ]},
     boutique: { icon:'🏪', label:'Boutique', intro:'Vêtements, téléphones, cosmétiques, épicerie — achat-revente.', rows: [
       ['💰', 'La marge sous les yeux', 'Prix d\'achat + prix de vente = marge calculée partout, alerte marge faible.', "nav('pantry')", 'Mon stock'],
@@ -24231,7 +24359,7 @@ function vMetierGuide() {
         </div>
       </div>
     </div>`).join('')}
-    <div style="font-size:11.5px;color:var(--text-3);text-align:center;padding:8px 16px 16px;line-height:1.5">Chaque bouton mène à l'écran réel — tout ce qui est listé ici existe et fonctionne.</div>
+    <div style="font-size:11.5px;color:var(--text-3);text-align:center;padding:8px 16px 16px;line-height:1.5">${t('w1_toutExiste')}</div>
   </div>`;
 }
 
@@ -32291,8 +32419,8 @@ function vPromoForm() {
     <div class="page-header-row" style="margin-bottom:10px">
       <button class="back-btn-dark" onclick="S.editingPromoId=null;nav('marketing')">${IC.left}</button>
       <div style="flex:1">
-        <div class="sub-hero-title">${isEdit?'Modifier la réduction':'Nouvelle réduction'}</div>
-        <div class="sub-hero-sub">${isEdit?'Mise à jour du code promo':'Créez un code promo complet'}</div>
+        <div class="sub-hero-title">${isEdit?'Modifier la réduction':t('w1_nouvelleRed')}</div>
+        <div class="sub-hero-sub">${isEdit?'Mise à jour du code promo':t('w1_creezCode')}</div>
       </div>
     </div>
   </div>
@@ -32309,14 +32437,14 @@ function vPromoForm() {
         <label class="form-label">${t('w8_codePromo')} <span style="color:var(--danger)">*</span></label>
         <div style="display:flex;gap:8px;align-items:stretch">
           <input class="input" id="promo-code" value="${draft.code||''}" placeholder="Ex: NOEL25" style="flex:1 1 auto;text-transform:uppercase;font-family:monospace;font-weight:700;letter-spacing:1px;font-size:18px !important" oninput="this.dataset.manual='1';this.value=this.value.toUpperCase()">
-          <button type="button" class="btn btn-ghost" style="flex:0 0 56px;width:56px;min-height:48px;padding:0;font-size:20px;display:flex;align-items:center;justify-content:center" title="Générer un code aléatoire" onclick="$('promo-code').value=_genPromoCode($('promo-name').value||'CODE');$('promo-code').dataset.manual=''">🎲</button>
+          <button type="button" class="btn btn-ghost" style="flex:0 0 56px;width:56px;min-height:48px;padding:0;font-size:20px;display:flex;align-items:center;justify-content:center" title=t('w1_genererCode') onclick="$('promo-code').value=_genPromoCode($('promo-name').value||'CODE');$('promo-code').dataset.manual=''">🎲</button>
         </div>
         <div style="font-size:11px;color:var(--text-3);margin-top:4px">${t('x5_codeSaisiClients')}</div>
       </div>
     </div>
 
     <div class="card" style="margin-bottom:10px">
-      <div class="card-title">${IC.percent} Type de réduction <span style="color:var(--danger)">*</span></div>
+      <div class="card-title">${IC.percent} ${t('w1_typeRed')} <span style="color:var(--danger)">*</span></div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
         <label class="promo-type-opt ${draft.type==='percent'?'selected':''}" onclick="document.querySelectorAll('.promo-type-opt').forEach(e=>e.classList.remove('selected'));this.classList.add('selected');$('promo-type').value='percent';$('promo-value-unit').textContent='%';">
           <div style="font-size:22px;font-weight:800;color:var(--accent)">%</div>
@@ -32340,7 +32468,7 @@ function vPromoForm() {
     </div>
 
     <div class="card" style="margin-bottom:10px">
-      <div class="card-title">${IC.package} Produits concernés</div>
+      <div class="card-title">${IC.package} ${t('w1_prodConcernes')}</div>
       <div style="font-size:11px;color:var(--text-3);margin-bottom:8px">${t('w8_laissezDecoche')}</div>
       ${(S.products||[]).length === 0 ? `<div style="font-size:12px;color:var(--text-3);padding:8px 0">${t('w8_aucunProduitRed')}</div>` : `
       <div style="max-height:200px;overflow-y:auto;border:1px solid var(--border);border-radius:8px;padding:4px">
@@ -32361,18 +32489,18 @@ function vPromoForm() {
       <div class="card-title">${IC.users||IC.user} Limites d'utilisation</div>
       <div class="form-group">
         <label class="form-label">Utilisations maximum (total)</label>
-        <input class="input" id="promo-maxuses" type="number" min="0" value="${draft.maxUses||0}" placeholder="0 = illimité">
-        <div style="font-size:10px;color:var(--text-3);margin-top:2px">La réduction se désactive une fois cette limite atteinte. 0 = aucune limite</div>
+        <input class="input" id="promo-maxuses" type="number" min="0" value="${draft.maxUses||0}" placeholder=t('w1_zeroIllimite')>
+        <div style="font-size:10px;color:var(--text-3);margin-top:2px">${t('w1_limiteAide')}</div>
       </div>
       <div class="form-group">
         <label class="form-label">${t('w8_utilisationsMax')}</label>
-        <input class="input" id="promo-maxperclient" type="number" min="0" value="${draft.maxUsesPerClient||0}" placeholder="0 = illimité">
-        <div style="font-size:10px;color:var(--text-3);margin-top:2px">Combien de fois un même client peut utiliser ce code. 0 = illimité</div>
+        <input class="input" id="promo-maxperclient" type="number" min="0" value="${draft.maxUsesPerClient||0}" placeholder=t('w1_zeroIllimite')>
+        <div style="font-size:10px;color:var(--text-3);margin-top:2px">${t('w1_parClientAide')}</div>
       </div>
     </div>
 
     <div class="card" style="margin-bottom:10px">
-      <div class="card-title">${IC.calendar} Période de validité</div>
+      <div class="card-title">${IC.calendar} ${t('w1_periodeValid')}</div>
       <div class="form-group">
         <label class="form-label">${t('w8_dateDebut')}</label>
         <input class="input" id="promo-start" type="date" value="${draft.startDate||today}">
@@ -32402,7 +32530,7 @@ function vPromoForm() {
 
     <div style="display:flex;gap:8px">
       ${isEdit?`<button class="btn btn-ghost" style="color:var(--danger);border-color:var(--danger)" onclick="deletePromotion(${draft.id});nav('marketing')">${IC.trash||'🗑'} Supprimer</button>`:''}
-      <button class="btn btn-primary" style="flex:1" onclick="savePromotion()">${IC.check} ${isEdit?'Mettre à jour':'Créer la réduction'}</button>
+      <button class="btn btn-primary" style="flex:1" onclick="savePromotion()">${IC.check} ${isEdit?'Mettre à jour':t('w1_creerRed')}</button>
     </div>
   </div>`;
 }
@@ -32498,7 +32626,7 @@ function vPromoDetail() {
 
     ${(p.products||[]).length>0?`
     <div class="card" style="margin-bottom:10px">
-      <div class="card-title">${IC.package} Produits concernés (${p.products.length})</div>
+      <div class="card-title">${IC.package} ${t('w1_prodConcernes')} (${p.products.length})</div>
       ${p.products.map(id => {
         const pr = S.products.find(x=>x.id===id);
         if (!pr) return '';
@@ -37481,7 +37609,7 @@ function vDeliverySetup() {
       <button class="back-btn-dark" onclick="nav('integrations')">${IC.left}</button>
       <div style="flex:1">
         <div class="sub-hero-title">${meta.logo} Connexion ${meta.name}</div>
-        <div class="sub-hero-sub">${connected ? '✓ Déjà connecté — mise à jour possible' : 'Associez votre compte partenaire pour envoyer les commandes automatiquement'}</div>
+        <div class="sub-hero-sub">${connected ? '✓ Déjà connecté — mise à jour possible' : t('w1_assoCompte')}</div>
       </div>
     </div>
     <div style="display:flex;gap:8px">
@@ -37496,9 +37624,9 @@ function vDeliverySetup() {
         <div style="font-size:26px">${meta.logo}</div>
         <div style="flex:1;font-size:12px;color:var(--text-1);line-height:1.5">
           <strong style="color:${meta.accent}">${t('w8_commentIdents')}</strong><br>
-          1. Créez un compte partenaire sur <a href="${meta.portal}" target="_blank" rel="noopener noreferrer" style="color:${meta.accent};font-weight:600">${meta.portal}</a><br>
+          ${t('w1_creezCompte')} <a href="${meta.portal}" target="_blank" rel="noopener noreferrer" style="color:${meta.accent};font-weight:600">${meta.portal}</a><br>
           ${t('y4_recuperezIds').replace('{0}','<em>Store ID</em>').replace('{1}','<em>API Key</em>')}<br>
-          3. Collez-les ci-dessous — BARO enverra les commandes ${meta.name} automatiquement
+          ${t('w1_collezCi2').replace('{0}', meta.name)}
         </div>
       </div>
       <div style="display:flex;gap:6px;margin-top:10px">
@@ -37536,7 +37664,7 @@ function vDeliverySetup() {
       </div>
       <div style="margin-bottom:10px">
         <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">${t('w8_adresseRetrait')}</label>
-        <input id="ds-address" class="input" value="${(defaults.address||'').replace(/"/g,'&quot;')}" placeholder="Rue, quartier, repère visuel">
+        <input id="ds-address" class="input" value="${(defaults.address||'').replace(/"/g,'&quot;')}" placeholder=t('w1_rueQuartier')>
       </div>
       <div style="display:flex;gap:8px;margin-bottom:10px">
         <div style="flex:1">
@@ -37559,14 +37687,14 @@ function vDeliverySetup() {
       <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)">
         <div style="flex:1">
           <div style="font-weight:600;font-size:13px">${t('w8_envoiAutoCmd')}</div>
-          <div style="font-size:11px;color:var(--text-3)">Dès qu'une commande boutique est prête, un coursier est demandé</div>
+          <div style="font-size:11px;color:var(--text-3)">${t('w1_desQueCmd')}</div>
         </div>
         <label class="toggle-switch"><input type="checkbox" id="ds-autoSync" ${defaults.autoSync?'checked':''}><span class="toggle-track"></span></label>
       </div>
       <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)">
         <div style="flex:1">
           <div style="font-weight:600;font-size:13px">${t('w8_affectCoursier')}</div>
-          <div style="font-size:11px;color:var(--text-3)">Laisser ${meta.name} assigner automatiquement le livreur le plus proche</div>
+          <div style="font-size:11px;color:var(--text-3)">${t('w1_assignAuto2').replace('{0}', meta.name)}</div>
         </div>
         <label class="toggle-switch"><input type="checkbox" id="ds-autoAssign" ${defaults.autoAssign?'checked':''}><span class="toggle-track"></span></label>
       </div>
@@ -37580,7 +37708,7 @@ function vDeliverySetup() {
       <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0">
         <div style="flex:1">
           <div style="font-weight:600;font-size:13px">Mode sandbox (test)</div>
-          <div style="font-size:11px;color:var(--text-3)">Pas de facturation ${meta.name} — parfait pour valider la config</div>
+          <div style="font-size:11px;color:var(--text-3)">${t('w1_pasFacture2').replace('{0}', meta.name)}</div>
         </div>
         <label class="toggle-switch"><input type="checkbox" id="ds-sandbox" ${defaults.sandbox?'checked':''}><span class="toggle-track"></span></label>
       </div>
@@ -37596,7 +37724,7 @@ function vDeliverySetup() {
 
     <div class="card" style="margin-top:14px;background:#EFF6FF;border-color:#3B82F640;font-size:11px;color:#1E40AF;line-height:1.6">
       💡 <strong>Astuce :</strong> Après connexion, un bouton "${meta.name}" apparaît sur chaque commande boutique (onglet Boutique › Commandes). Un clic = coursier envoyé avec TOUS les détails (adresse, valeur, contact).
-      ${defaults.sandbox?'<br>🧪 <strong>Mode test actif</strong> — aucun frais facturé, idéal pour vérifier le flux.':''}
+      ${defaults.sandbox?'<br>🧪 <strong>'+t('w1_modeTest')+'</strong> '+t('w1_aucunFrais'):''}
     </div>
   </div>`;
 }
@@ -37893,13 +38021,13 @@ function _enqueueDelivery(provider, orderId, payload, result) {
 // WHATSAPP BUSINESS CLOUD API — configuration + envoi
 // ══════════════════════════════════════════════════════════════
 const WHATSAPP_DEFAULT_TEMPLATES = [
-  { id:'order_confirm',   label:'Confirmation commande',      enabled:true,  body:"Bonjour {{client}} 👋\n\nVotre commande {{ref}} est confirmée ✅\nMontant : {{total}} {{sym}}\nLivraison prévue : {{delivery}}\n\nMerci pour votre confiance !\n{{business}}" },
-  { id:'order_shipped',   label:'Expédition / En route',        enabled:true,  body:"🚚 {{client}}, votre commande {{ref}} est en route !\n\nSuivi : {{tracking}}\nArrivée estimée : {{eta}}\n\n{{business}}" },
-  { id:'order_delivered', label:'Livraison confirmée',          enabled:true,  body:"✓ {{client}}, votre commande {{ref}} a bien été livrée.\n\nN'hésitez pas à nous donner votre avis 🌟\n{{business}}" },
-  { id:'payment_request', label:'Demande de paiement',          enabled:true,  body:"💳 Bonjour {{client}},\n\nVotre facture {{ref}} : {{total}} {{sym}}\nPaiement : {{payment_link}}\n\n{{business}}" },
-  { id:'low_stock_alert', label:'Alerte stock faible (staff)',  enabled:false, body:"⚠️ Alerte stock : {{article}} bientôt en rupture ({{stock}} {{unit}} restants)." },
-  { id:'promo_push',      label:'Promotion / nouveauté',        enabled:false, body:"🎉 {{client}}, offre spéciale chez {{business}} !\n\n{{promo_text}}\n\nValable jusqu'au {{expires}}." },
-  { id:'birthday_wish',   label:'Anniversaire client',          enabled:false, body:"🎂 Joyeux anniversaire {{client}} !\nUn cadeau vous attend chez {{business}} : {{gift}}." },
+  { id:'order_confirm',   label:t('w1_lblConfirm'),      enabled:true,  body:"Bonjour {{client}} 👋\n\nVotre commande {{ref}} est confirmée ✅\nMontant : {{total}} {{sym}}\nLivraison prévue : {{delivery}}\n\nMerci pour votre confiance !\n{{business}}" },
+  { id:'order_shipped',   label:t('w1_expedition'),        enabled:true,  body:"🚚 {{client}}, votre commande {{ref}} est en route !\n\nSuivi : {{tracking}}\nArrivée estimée : {{eta}}\n\n{{business}}" },
+  { id:'order_delivered', label:t('w1_livConfirmee'),          enabled:true,  body:"✓ {{client}}, votre commande {{ref}} a bien été livrée.\n\nN'hésitez pas à nous donner votre avis 🌟\n{{business}}" },
+  { id:'payment_request', label:t('w1_lblPaiement'),          enabled:true,  body:"💳 Bonjour {{client}},\n\nVotre facture {{ref}} : {{total}} {{sym}}\nPaiement : {{payment_link}}\n\n{{business}}" },
+  { id:'low_stock_alert', label:t('w1_lblStockStaff'),  enabled:false, body:t('w1_mStock') },
+  { id:'promo_push',      label:t('w1_promoNouv'),        enabled:false, body:"🎉 {{client}}, offre spéciale chez {{business}} !\n\n{{promo_text}}\n\nValable jusqu'au {{expires}}." },
+  { id:'birthday_wish',   label:t('w1_lblAnniv'),          enabled:false, body:"🎂 Joyeux anniversaire {{client}} !\nUn cadeau vous attend chez {{business}} : {{gift}}." },
 ];
 
 function _getWhatsAppConfig() {
@@ -37935,8 +38063,8 @@ function vWhatsAppSetup() {
         <div style="font-size:24px">💡</div>
         <div style="flex:1;font-size:12px;color:var(--text-1);line-height:1.5">
           <strong style="color:#128C7E">Deux modes de fonctionnement :</strong><br>
-          <b>• Mode rapide (wa.me)</b> — Ouvre WhatsApp avec message pré-rempli. Aucune inscription.<br>
-          <b>• Mode pro (Meta Cloud API)</b> — Envoi automatique, templates approuvés, reporting. Requiert un compte WhatsApp Business API chez Meta.
+          <b>• Mode rapide (wa.me)</b> ${t('w1_ouvreWa')}<br>
+          <b>• Mode pro (Meta Cloud API)</b> ${t('w1_envoiAuto')}
         </div>
       </div>
       <div style="display:flex;gap:6px;margin-top:10px">
@@ -37951,14 +38079,14 @@ function vWhatsAppSetup() {
         <input type="radio" name="wa-mode" value="quick" ${(d.mode||'quick')==='quick'?'checked':''}>
         <div style="flex:1">
           <div style="font-weight:700;font-size:13px">⚡ Mode rapide (wa.me)</div>
-          <div style="font-size:11px;color:var(--text-3)">Ouvre WhatsApp avec le texte du modèle pré-rempli — clic final manuel.</div>
+          <div style="font-size:11px;color:var(--text-3)">${t('w1_ouvreModele')}</div>
         </div>
       </label>
       <label style="display:flex;align-items:center;gap:10px;padding:10px;border:1px solid ${d.mode==='business'?'#25D366':'var(--border)'};border-radius:8px;cursor:pointer">
         <input type="radio" name="wa-mode" value="business" ${d.mode==='business'?'checked':''}>
         <div style="flex:1">
           <div style="font-weight:700;font-size:13px">🚀 Mode pro (Meta Cloud API)</div>
-          <div style="font-size:11px;color:var(--text-3)">Envoi direct sans ouvrir WhatsApp, messages trackés, auto 24/7.</div>
+          <div style="font-size:11px;color:var(--text-3)">${t('w1_envoiDirect')}</div>
         </div>
       </label>
     </div>
@@ -37992,7 +38120,7 @@ function vWhatsAppSetup() {
         <input id="wa-token" class="input" type="password" value="${(d.token||'').replace(/"/g,'&quot;')}" placeholder="EAAG...">
       </div>
       <div style="font-size:11px;color:var(--text-3);padding:8px 10px;background:var(--gray-1);border-radius:6px">
-        💡 Les identifiants restent en local (localStorage) — BARO n'envoie rien sans votre action.
+        ${t('w1_identLocaux')}
       </div>
     </div>
 
@@ -38016,11 +38144,11 @@ function vWhatsAppSetup() {
     <div class="card" style="margin-bottom:10px">
       <div class="card-title">${t('x1_declencheursAuto')}</div>
       <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
-        <div><div style="font-weight:700;font-size:13px">${t('x1_envoiAutoVente')}</div><div style="font-size:11px;color:var(--text-3)">Envoie le modèle "Confirmation commande" après chaque vente avec client</div></div>
+        <div><div style="font-weight:700;font-size:13px">${t('x1_envoiAutoVente')}</div><div style="font-size:11px;color:var(--text-3)">${t('w1_autoConfirm')}</div></div>
         <input type="checkbox" id="wa-auto-sale" ${d.autoSale?'checked':''}>
       </label>
       <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
-        <div><div style="font-weight:700;font-size:13px">Envoi auto livraison</div><div style="font-size:11px;color:var(--text-3)">Envoie "Expédition" quand une commande boutique passe en dispatched</div></div>
+        <div><div style="font-weight:700;font-size:13px">Envoi auto livraison</div><div style="font-size:11px;color:var(--text-3)">${t('w1_autoExped')}</div></div>
         <input type="checkbox" id="wa-auto-ship" ${d.autoShip?'checked':''}>
       </label>
       <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 0">
@@ -38230,8 +38358,8 @@ const SMS_PROVIDERS = [
 ];
 
 const SMS_DEFAULT_TEMPLATES = [
-  { id:'order_confirm',   label:'Confirmation commande', enabled:true,  body:"{{business}}: Cmd {{ref}} confirmee. Total {{total}} {{sym}}. Merci!" },
-  { id:'payment_request', label:'Demande paiement',      enabled:true,  body:"{{business}}: Votre facture {{ref}} {{total}} {{sym}}. Payez: {{payment_link}}" },
+  { id:'order_confirm',   label:t('w1_lblConfirm'), enabled:true,  body:"{{business}}: Cmd {{ref}} confirmee. Total {{total}} {{sym}}. Merci!" },
+  { id:'payment_request', label:t('w1_lblPaiement'),      enabled:true,  body:"{{business}}: Votre facture {{ref}} {{total}} {{sym}}. Payez: {{payment_link}}" },
   { id:'otp_code',        label:'Code de verification',  enabled:true,  body:"{{business}}: Votre code est {{code}}. Valide 5 min." },
   { id:'promo_push',      label:'Promo flash',           enabled:false, body:"{{business}}: {{promo_text}} Offre valable jusqu'au {{expires}}." },
 ];
