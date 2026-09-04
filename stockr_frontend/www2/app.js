@@ -270,6 +270,27 @@ const API_BASE = (location.hostname === 'localhost' || location.hostname === '12
 // ── i18n ─────────────────────────────────────
 const LANGS = {
   fr: {
+    zv_importerVideo: "Importer une vidéo",
+    zv_videoLimite: "MP4 ou WebM · 6 Mo au maximum",
+    zv_ouAdresse: "Ou son adresse en ligne",
+    zv_fichierPrime: "Un fichier est importé : c'est lui qui s'affiche. Retirez-le pour utiliser l'adresse.",
+    zv_charge3g: "environ {0} s de chargement en 3G",
+    zv_retirer: "Retirer ce fichier",
+    zv_3d: "Modèle 3D",
+    zv_3dAide: "Un objet que le client fait tourner au doigt, posé au centre de la scène. Le mur de vignettes passe alors en arrière-plan.",
+    zv_importerModele: "Importer un modèle 3D",
+    zv_modeleLimite: "GLB ou GLTF · 8 Mo au maximum",
+    zv_modeleAdresseAide: "Une adresse https vers un fichier .glb ou .gltf déjà hébergé.",
+    zv_rotation: "Rotation automatique",
+    zv_rotationAide: "Le modèle tourne lentement sur lui-même. Le client peut toujours le manipuler au doigt.",
+    zv_3dPoids: "Afficher un modèle 3D charge une bibliothèque d'environ 300 ko en plus du fichier. Elle n'est chargée que sur les boutiques qui ont un modèle.",
+    zv_tropLourd: "Fichier de {0} — la limite est {1}. Réduisez-le, ou donnez son adresse en ligne.",
+    zv_lecture: "Lecture du fichier…",
+    zv_stockEchec: "Impossible de garder ce fichier dans ce navigateur",
+    zv_importe: "Vidéo importée",
+    zv_importeLourd: "Vidéo importée — comptez environ {0} s de chargement en 3G",
+    zv_modeleImporte: "Modèle 3D importé — environ {0} s de chargement en 3G",
+    zv_pasUnModele: "Il faut un fichier .glb ou .gltf",
     zt_environ: "Environ {0} par {1} au taux du jour — le prélèvement se fait en francs CFA.",
     zs_plansBaro: "Plans BARO",
     zs_planActif: "Plan actif",
@@ -2403,6 +2424,27 @@ const LANGS = {
     version:'Version',
   },
   en: {
+    zv_importerVideo: "Import a video",
+    zv_videoLimite: "MP4 or WebM · 6 MB at most",
+    zv_ouAdresse: "Or its online address",
+    zv_fichierPrime: "A file is imported: that is what shows. Remove it to use the address instead.",
+    zv_charge3g: "about {0}s to load on 3G",
+    zv_retirer: "Remove this file",
+    zv_3d: "3D model",
+    zv_3dAide: "An object the customer turns with a finger, set at the centre of the stage. The thumbnail wall then moves to the background.",
+    zv_importerModele: "Import a 3D model",
+    zv_modeleLimite: "GLB or GLTF · 8 MB at most",
+    zv_modeleAdresseAide: "An https address to a .glb or .gltf file already hosted somewhere.",
+    zv_rotation: "Automatic rotation",
+    zv_rotationAide: "The model turns slowly on itself. The customer can still handle it with a finger.",
+    zv_3dPoids: "Showing a 3D model loads a library of about 300 KB on top of the file itself. It is only loaded on shops that have a model.",
+    zv_tropLourd: "File is {0} — the limit is {1}. Shrink it, or give its online address instead.",
+    zv_lecture: "Reading the file…",
+    zv_stockEchec: "This browser could not keep the file",
+    zv_importe: "Video imported",
+    zv_importeLourd: "Video imported — expect about {0}s to load on 3G",
+    zv_modeleImporte: "3D model imported — about {0}s to load on 3G",
+    zv_pasUnModele: "A .glb or .gltf file is needed",
     zt_environ: "About {0} per {1} at today's rate — billing is in CFA francs.",
     zs_plansBaro: "BARO plans",
     zs_planActif: "Active plan",
@@ -25458,6 +25500,161 @@ function pickCinePhoto(onDone) {
   input.click();
 }
 
+// ── Fichiers lourds du film : video et modele 3D ─────────────────────
+// La vitrine generee est un fichier autonome. Un fichier importe y est
+// donc embarque en base64, ce qui l'alourdit d'un tiers. On mesure, on
+// affiche, et on refuse au-dela d'un seuil : mieux vaut un refus clair
+// qu'une boutique de neuf megaoctets qui ne s'ouvre jamais en 3G.
+const CINE_VIDEO_MAX  = 6 * 1024 * 1024;   // 6 Mo de fichier ~ 8 Mo embarques
+const CINE_VIDEO_DOUX = 2 * 1024 * 1024;   // au-dela, on previent
+const CINE_3D_MAX     = 8 * 1024 * 1024;
+
+function _poidsLisible(o) {
+  if (o >= 1024 * 1024) return (o / (1024 * 1024)).toFixed(1).replace('.', ',') + ' Mo';
+  return Math.round(o / 1024) + ' ko';
+}
+
+// Temps de chargement estime. La base64 ajoute un tiers au poids du
+// fichier, et une 3G honnete tourne autour de 400 ko/s.
+function _secondes3G(octets) {
+  return Math.max(1, Math.round((octets * 4 / 3) / (400 * 1024)));
+}
+
+function _fichierEnDataUrl(file) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = e => res(e.target.result);
+    r.onerror = () => rej(new Error('lecture'));
+    r.readAsDataURL(file);
+  });
+}
+
+function _choisirFichier(accept) {
+  return new Promise(res => {
+    const input = document.createElement('input');
+    input.type = 'file'; input.accept = accept; input.style.display = 'none';
+    document.body.appendChild(input);
+    const nettoie = () => { try { input.remove(); } catch (_) {} };
+    input.onchange = () => { const f = input.files && input.files[0]; nettoie(); res(f || null); };
+    setTimeout(() => { if (!input.files || !input.files.length) { nettoie(); res(null); } }, 120000);
+    input.click();
+  });
+}
+
+async function boutiqueCineImporteVideo() {
+  if (!_cineAutorise()) return;
+  const file = await _choisirFichier('video/mp4,video/webm,video/quicktime,video/*');
+  if (!file) return;
+  if (file.size > CINE_VIDEO_MAX) {
+    showToast(t('zv_tropLourd').replace('{0}', _poidsLisible(file.size))
+                               .replace('{1}', _poidsLisible(CINE_VIDEO_MAX)), 'error');
+    return;
+  }
+  showToast(t('zv_lecture'));
+  let data;
+  try { data = await _fichierEnDataUrl(file); }
+  catch (_) { showToast(t('zp_lectureEchouee'), 'error'); return; }
+
+  const bc = S.boutiqueConfig;
+  if (!bc.cine || typeof bc.cine !== 'object') bc.cine = {};
+  // L'ancienne video est retiree du stockage : sans cela chaque import
+  // laisserait un fichier orphelin de plusieurs megaoctets.
+  if (bc.cine.videoId) { try { await _vidDelete(bc.cine.videoId); } catch (_) {} }
+  const id = await _vidSave(file, { name: file.name, source: 'cine' });
+  if (!id) { showToast(t('zv_stockEchec'), 'error'); return; }
+
+  S.cineVideoData = data;
+  bc.cine.videoId = id;
+  bc.cine.videoNom = String(file.name || '').slice(0, 60);
+  bc.cine.videoTaille = file.size;
+  if (!_sauveBoutique(bc)) { delete bc.cine.videoId; return; }
+  haptic('success');
+  showToast(file.size > CINE_VIDEO_DOUX
+    ? t('zv_importeLourd').replace('{0}', _secondes3G(file.size))
+    : t('zv_importe'));
+  render(); _refreshBoutiqueLivePreview();
+}
+
+async function boutiqueCineRetireVideo() {
+  if (!_cineAutorise()) return;
+  const bc = S.boutiqueConfig;
+  if (!bc.cine) return;
+  if (bc.cine.videoId) { try { await _vidDelete(bc.cine.videoId); } catch (_) {} }
+  delete bc.cine.videoId; delete bc.cine.videoNom; delete bc.cine.videoTaille;
+  S.cineVideoData = null;
+  _sauveBoutique(bc);
+  haptic('tap'); render(); _refreshBoutiqueLivePreview();
+}
+
+async function boutiqueCineImporteModele() {
+  if (!_cineAutorise()) return;
+  const file = await _choisirFichier('.glb,.gltf,model/gltf-binary,model/gltf+json');
+  if (!file) return;
+  if (!/\.(glb|gltf)$/i.test(file.name || '')) {
+    showToast(t('zv_pasUnModele'), 'error'); return;
+  }
+  if (file.size > CINE_3D_MAX) {
+    showToast(t('zv_tropLourd').replace('{0}', _poidsLisible(file.size))
+                               .replace('{1}', _poidsLisible(CINE_3D_MAX)), 'error');
+    return;
+  }
+  showToast(t('zv_lecture'));
+  let data;
+  try { data = await _fichierEnDataUrl(file); }
+  catch (_) { showToast(t('zp_lectureEchouee'), 'error'); return; }
+  // Un .glb arrive souvent en application/octet-stream selon le systeme :
+  // on normalise le type pour que model-viewer l'accepte sans discuter.
+  data = data.replace(/^data:[^;]*;/, 'data:model/gltf-binary;');
+
+  const bc = S.boutiqueConfig;
+  if (!bc.cine || typeof bc.cine !== 'object') bc.cine = {};
+  if (bc.cine.modeleId) { try { await _vidDelete(bc.cine.modeleId); } catch (_) {} }
+  const id = await _vidSave(file, { name: file.name, source: 'cine3d' });
+  if (!id) { showToast(t('zv_stockEchec'), 'error'); return; }
+
+  S.cineModeleData = data;
+  bc.cine.modeleId = id;
+  bc.cine.modeleNom = String(file.name || '').slice(0, 60);
+  bc.cine.modeleTaille = file.size;
+  if (!_sauveBoutique(bc)) { delete bc.cine.modeleId; return; }
+  haptic('success');
+  showToast(t('zv_modeleImporte').replace('{0}', _secondes3G(file.size)));
+  render(); _refreshBoutiqueLivePreview();
+}
+
+async function boutiqueCineRetireModele() {
+  if (!_cineAutorise()) return;
+  const bc = S.boutiqueConfig;
+  if (!bc.cine) return;
+  if (bc.cine.modeleId) { try { await _vidDelete(bc.cine.modeleId); } catch (_) {} }
+  delete bc.cine.modeleId; delete bc.cine.modeleNom; delete bc.cine.modeleTaille;
+  S.cineModeleData = null;
+  _sauveBoutique(bc);
+  haptic('tap'); render(); _refreshBoutiqueLivePreview();
+}
+
+// Au demarrage : les fichiers vivent dans IndexedDB, la generation est
+// synchrone. On les remonte en memoire une fois, au chargement.
+async function _chargerMediasFilm() {
+  const c = (S.boutiqueConfig && S.boutiqueConfig.cine) || {};
+  const lire = async (id, prefixe) => {
+    if (!id) return null;
+    const rec = await _vidLoad(id);
+    if (!rec || !rec.blob) return null;
+    try {
+      const d = await _fichierEnDataUrl(rec.blob);
+      return prefixe ? d.replace(/^data:[^;]*;/, prefixe) : d;
+    } catch (_) { return null; }
+  };
+  try {
+    if (c.videoId)  S.cineVideoData  = await lire(c.videoId, 'data:video/mp4;');
+    if (c.modeleId) S.cineModeleData = await lire(c.modeleId, 'data:model/gltf-binary;');
+    if ((c.videoId && S.cineVideoData) || (c.modeleId && S.cineModeleData)) {
+      _refreshBoutiqueLivePreview();
+    }
+  } catch (_) { /* un media absent ne doit jamais empecher l'application de demarrer */ }
+}
+
 function boutiqueCineAjoutePhoto() {
   if (!_cineAutorise()) return;
   const bc = S.boutiqueConfig;
@@ -25889,8 +26086,23 @@ function generateBoutiqueSite(opts) {
   // La video de fond passe par le meme filtre que les autres liens : une
   // adresse https, rien d'autre. Elle est muette et en boucle — un son qui
   // demarre tout seul serait bloque par le navigateur de toute facon.
-  const _cineVideo = /^https:\/\/[^\s"'<>]+$/.test(String(CINE.video || '').trim())
+  // Deux origines possibles pour la video : un fichier importe (embarque
+  // dans la page) ou une adresse (chargee par le visiteur). Le fichier
+  // prime, parce que c'est le choix le plus recent du commercant.
+  const _cineVideoLien = /^https:\/\/[^\s"'<>]+$/.test(String(CINE.video || '').trim())
     ? String(CINE.video).trim() : '';
+  const _cineVideoFichier = (CINE.videoId && typeof S.cineVideoData === 'string'
+    && S.cineVideoData.slice(0, 11) === 'data:video/') ? S.cineVideoData : '';
+  const _cineVideo = _cineVideoFichier || _cineVideoLien;
+
+  // Le modele 3D, meme logique. La bibliotheque qui l'affiche pese environ
+  // 300 ko : elle n'est chargee que si un modele existe vraiment.
+  const _cine3dLien = /^https:\/\/[^\s"'<>]+\.(glb|gltf)$/i.test(String(CINE.modele || '').trim())
+    ? String(CINE.modele).trim() : '';
+  const _cine3dFichier = (CINE.modeleId && typeof S.cineModeleData === 'string'
+    && /^data:(model|application|octet)/.test(S.cineModeleData)) ? S.cineModeleData : '';
+  const _cine3d = _cine3dFichier || _cine3dLien;
+  const _cine3dTourne = CINE.modeleRotation !== false;
 
   // ── Studio d'animation (plan Entreprise) ──────────────────────────────
   // Vingt-deux reglages qui pilotent reellement le rendu. Chacun a un
@@ -26532,6 +26744,11 @@ ${items.map(x => _carte(x.p, x.idx)).join('\n')}
   <div class="cn-stage">
     ${_cineVideo ? `<video class="cn-video" autoplay muted loop playsinline preload="metadata"
       aria-hidden="true" src="${esc(_cineVideo)}"></video>` : ''}
+    ${_cine3d ? `<model-viewer class="cn-3d" src="${esc(_cine3d)}"
+      alt="${esc(_cineTitre)}" ${_cine3dTourne ? 'auto-rotate rotation-per-second="18deg"' : ''}
+      camera-controls touch-action="pan-y" disable-zoom interaction-prompt="none"
+      shadow-intensity="0.9" exposure="1.05" environment-image="neutral"
+      loading="eager"></model-viewer>` : ''}
     <div class="cn-room" aria-hidden="true"></div>
     <div class="cn-wall">${_cineItems}</div>
     <div class="cn-shutter" aria-hidden="true"><span class="cn-slat"></span></div>
@@ -27413,11 +27630,23 @@ ${_ruptureStyle === 'voile' ? `.pc-out .pc-imgwrap{filter:none;opacity:1}
    le contenu — si elle ne charge pas, la scene reste entiere. */
 .cn-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
   z-index:0;opacity:.55;pointer-events:none}
+/* Le modele 3D occupe la scene, devant le mur mais derriere le rideau :
+   il se decouvre en meme temps que la boutique. Il reste manipulable au
+   doigt une fois le rideau leve — c'est tout l'interet d'un modele. */
+.cn-3d{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:min(78vw,560px);height:min(56vh,460px);z-index:1;
+  --poster-color:transparent;background:transparent;
+  opacity:clamp(0,(var(--p) - .30)/.18,1)}
+@media(max-width:640px){.cn-3d{width:86vw;height:44vh}}
 .cn-room{position:absolute;inset:0;
   background:radial-gradient(120% 80% at 50% 112%, ${tc}26, transparent 62%),
              radial-gradient(90% 60% at 50% -12%, ${tc}1c, transparent 56%)}
 .cn-wall{position:absolute;inset:0;display:grid;grid-template-columns:repeat(4,1fr);
   gap:12px;padding:14vh 6vw;align-content:center;pointer-events:none}
+${_cine3d ? `
+/* Avec un modele au centre, le mur de vignettes passe en arriere-plan :
+   deux sujets qui se disputent le regard n'en valent aucun. */
+.cn-wall{opacity:.24;filter:saturate(.5)}` : ''}
 @media(max-width:640px){.cn-wall{grid-template-columns:repeat(2,1fr);gap:9px;padding:16vh 7vw}}
 .cn-it{--pi:clamp(0,(var(--p) - ${_decl.prod} - var(--i)*${_casc})/.2,1);--sens:1;
   position:relative;aspect-ratio:1/1;border-radius:16px;overflow:hidden;margin:0;
@@ -28933,6 +29162,8 @@ ${(T.revealTexte !== 'aucun' || T.chiffresAnimes) ? `<scr` + `ipt>(function(){
     nums.forEach(function(el){ion.observe(el);});
   }` : ''}
 })();</scr` + `ipt>` : ''}
+${_cine3d ? `<scr` + `ipt type="module"
+  src="https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></scr` + `ipt>` : ''}
 ${A.imageDerive ? `<scr` + `ipt>(function(){
   // Derive des photos : une variable par carte, mise a jour en une passe.
   // On ne lit les positions qu'une fois par frame et jamais pendant
@@ -29134,7 +29365,10 @@ function vBoutiqueEditor() {
         // defilent. Ouvert seulement quand la sequence est active — des
         // reglages sans effet visible ne valent rien.
         const C = Object.assign({ titre:'', message:'', bouton:'', source:'produits',
-          medias:[], video:'', metas:[], scene:'theatre' }, g('cine', {}) || {});
+          medias:[], video:'', metas:[], scene:'theatre',
+          videoId:'', videoNom:'', videoTaille:0,
+          modele:'', modeleId:'', modeleNom:'', modeleTaille:0, modeleRotation:true },
+          g('cine', {}) || {});
         const photos = Array.isArray(C.medias) ? C.medias : [];
         const metas = Array.isArray(C.metas) ? C.metas : [];
         const ech = v => String(v == null ? '' : v)
@@ -29188,13 +29422,52 @@ function vBoutiqueEditor() {
         </select></div>` : ''}
 
       <div class="bq-sub-title" style="margin-top:12px">${t('zp_video')}</div>
-      <div class="bq-fld bq-fld-large">
-        <label>${t('zp_videoLien')}</label>
+      ${C.videoId ? `<div class="bq-media">
+        <div class="bq-media-ic">🎞️</div>
+        <div class="bq-media-tx">
+          <strong>${ech(C.videoNom || t('zp_video'))}</strong>
+          <span>${_poidsLisible(C.videoTaille || 0)} · ${t('zv_charge3g').replace('{0}', _secondes3G(C.videoTaille || 0))}</span>
+        </div>
+        <button class="bq-media-x" onclick="boutiqueCineRetireVideo()"
+                aria-label="${ech(t('zv_retirer'))}">✕</button>
+      </div>` : `<button class="bq-media-add" onclick="boutiqueCineImporteVideo()">
+        <span>🎞️</span><b>${t('zv_importerVideo')}</b><i>${t('zv_videoLimite')}</i>
+      </button>`}
+      <div class="bq-fld bq-fld-large" style="margin-top:8px">
+        <label>${t('zv_ouAdresse')}</label>
         <input class="input" type="url" value="${ech(C.video)}"
                placeholder="https://…/ouverture.mp4"
                onchange="boutiqueEditSetCine('video',this.value)">
-        <div class="bq-hint2">${t('zp_videoAide')}</div>
-      </div>`;
+        <div class="bq-hint2">${C.videoId ? t('zv_fichierPrime') : t('zp_videoAide')}</div>
+      </div>
+
+      <div class="bq-sub-title" style="margin-top:12px">${t('zv_3d')}</div>
+      <div class="bq-hint2" style="margin:-4px 0 8px">${t('zv_3dAide')}</div>
+      ${C.modeleId ? `<div class="bq-media">
+        <div class="bq-media-ic">🧊</div>
+        <div class="bq-media-tx">
+          <strong>${ech(C.modeleNom || t('zv_3d'))}</strong>
+          <span>${_poidsLisible(C.modeleTaille || 0)} · ${t('zv_charge3g').replace('{0}', _secondes3G(C.modeleTaille || 0))}</span>
+        </div>
+        <button class="bq-media-x" onclick="boutiqueCineRetireModele()"
+                aria-label="${ech(t('zv_retirer'))}">✕</button>
+      </div>` : `<button class="bq-media-add" onclick="boutiqueCineImporteModele()">
+        <span>🧊</span><b>${t('zv_importerModele')}</b><i>${t('zv_modeleLimite')}</i>
+      </button>`}
+      <div class="bq-fld bq-fld-large" style="margin-top:8px">
+        <label>${t('zv_ouAdresse')}</label>
+        <input class="input" type="url" value="${ech(C.modele)}"
+               placeholder="https://…/produit.glb"
+               onchange="boutiqueEditSetCine('modele',this.value)">
+        <div class="bq-hint2">${t('zv_modeleAdresseAide')}</div>
+      </div>
+      ${(C.modeleId || C.modele) ? `
+      <label class="bq-cine ${C.modeleRotation !== false ? 'on' : ''}" style="margin-bottom:7px">
+        <input type="checkbox" ${C.modeleRotation !== false ? 'checked' : ''}
+               onchange="boutiqueEditSetCine('modeleRotation',this.checked)">
+        <span class="bq-cine-tx"><strong>${t('zv_rotation')}</strong><span>${t('zv_rotationAide')}</span></span>
+      </label>
+      <div class="bq-hint2">${t('zv_3dPoids')}</div>` : ''}`;
       })() : ''}
 
       ${(() => {
@@ -39677,6 +39950,10 @@ function __baroInit() {
   // consequence s'il echoue.
   try { _tauxAuDemarrage(); } catch (_) {}
   // Exposer au global pour les onclick inline
+  window.boutiqueCineImporteVideo  = boutiqueCineImporteVideo;
+  window.boutiqueCineRetireVideo   = boutiqueCineRetireVideo;
+  window.boutiqueCineImporteModele = boutiqueCineImporteModele;
+  window.boutiqueCineRetireModele  = boutiqueCineRetireModele;
   window.ouvrirDeroule        = ouvrirDeroule;
   window._choisirDeroule      = _choisirDeroule;
   window._fermerDeroule       = _fermerDeroule;
@@ -40165,6 +40442,10 @@ function __baroInit() {
     loadData(); // Charge les données en arrière-plan
     // Auto-reminder 6s après l'ouverture
     setTimeout(runBootReminders, 6000);
+    // Les fichiers lourds du film vivent dans IndexedDB. On les remonte en
+    // memoire sans bloquer le demarrage : la vitrine n'en a besoin qu'a la
+    // generation, et l'apercu se rafraichit tout seul quand ils arrivent.
+    setTimeout(() => { try { _chargerMediasFilm(); } catch (_) {} }, 900);
     // Vérifie périodiquement les posts programmés échus (toutes les 5 minutes)
     setInterval(checkDueScheduledPosts, 5 * 60 * 1000);
   } else {

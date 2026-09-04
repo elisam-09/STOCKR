@@ -5977,3 +5977,73 @@ body.vt-active .card { animation: none !important; }
   .dr-ov { align-items: center; padding: 24px; }
   .dr-sheet { border-radius: 18px; border-bottom: 1px solid var(--border); }
 }
+
+/* ── Fichiers lourds du film : vidéo et modèle 3D ──────────────────────
+   Une ligne par fichier importé, avec son poids réel et le temps de
+   chargement estimé. Le commerçant doit voir ce qu'il impose à son
+   client avant de publier, pas après.                                 */
+.bq-media {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 11px 12px;
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  background: var(--card-bg);
+}
+.bq-media-ic {
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  font-size: 17px;
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+.bq-media-tx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.bq-media-tx strong {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-1);
+  /* Un nom de fichier peut être très long : il se coupe plutôt que de
+     pousser le bouton de retrait hors de l'écran. */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.bq-media-tx span { font-size: 11px; color: var(--text-3); line-height: 1.35; }
+.bq-media-x {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-2);
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  font-family: inherit;
+}
+.bq-media-x:active { transform: scale(.9); }
+
+.bq-media-add {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 15px 12px;
+  border: 1.5px dashed var(--border);
+  border-radius: 13px;
+  background: var(--gray-1);
+  cursor: pointer;
+  font-family: inherit;
+}
+.bq-media-add span { font-size: 20px; line-height: 1; }
+.bq-media-add b { font-size: 13px; font-weight: 700; color: var(--text-1); }
+.bq-media-add i { font-style: normal; font-size: 10.5px; color: var(--text-3); }
+.bq-media-add:active { transform: scale(.985); }
