@@ -270,6 +270,160 @@ const API_BASE = (location.hostname === 'localhost' || location.hostname === '12
 // ── i18n ─────────────────────────────────────
 const LANGS = {
   fr: {
+    v_agentsIa: "✦ TES AGENTS IA",
+    v_tousArticles: "📦 Tous les articles",
+    v_articleAVendre: "Article à vendre",
+    v_enrVente: "Enregistrer une vente",
+    v_telechargerSite: "Télécharger le site",
+    v_apercuBoutique: "Aperçu boutique",
+    v_personnalisee: "Personnalisée",
+    v_utiliserFond: "Utiliser la couleur de fond choisie plus bas",
+    v_vendeursCode: "Vos vendeurs installent BARO sur leur téléphone, tapent ce code, et vendent depuis votre stock — chaque vente est enregistrée à leur nom, en temps réel.",
+    v_ajouterPhoto: "+ Ajouter une photo",
+    v_notesPrefs: "Notes, préférences…",
+    v_metaApp: "Créez une App Meta Developers → ajoutez Facebook Login → générez un Page Access Token longue durée pour votre Page Business.",
+    v_publiePromo: "Publie chaque nouvelle promo/soldes",
+    v_glovoApres: "Après connexion, un bouton \"Glovo Partners\" apparaît sur chaque commande boutique (onglet Boutique › Commandes). Un clic = coursier envoyé avec TOUS les détails (adresse, valeur, contact).",
+    v_confirmerNum: "Confirmer ce numéro (envoi d'un test)",
+    v_waGroupe: "Ajoutez des clients (avec téléphone) pour leur envoyer un message groupé.",
+    v_smsEnvoyez: "Envoyez SMS de confirmation, OTP, promo à vos clients",
+    v_smsCompte: ". Créez un compte, récupérez vos identifiants puis collez-les ci-dessous.",
+    v_smsSender: "Numéro / Sender ID émetteur",
+    v_smsPasserelle: "Passerelle SMS non configurée",
+    v_smsPourEnvoi: "Pour l'envoi",
+    v_smsMasse: "de masse, connectez Twilio, Vonage, Africa's Talking ou Orange CI. Sans passerelle, vous pouvez quand même ouvrir l'app SMS de votre téléphone avec tous les numéros pré-remplis.",
+    v_emailGroupe: "Ajoutez l'adresse email de vos clients pour leur écrire en groupe.",
+    v_ecomPush: "Pushez vos produits et récupérez les commandes automatiquement",
+    v_shopifyApp: "Créez une app privée dans Shopify Admin › Apps › Develop apps, activez l'API et copiez l'Access Token.",
+    v_domaineBq: "Domaine boutique (sans https)",
+    v_ecomEnvoie: "Envoie chaque nouveau produit BARO sur Shopify",
+    v_ecomStock: "Met à jour le stock dans les deux sens (vente BARO ⇄ Shopify)",
+    v_ecomCmd: "Récupère les commandes Shopify comme ventes BARO",
+    v_sheetsAppend: "Append automatique des ventes sur Google Sheets",
+    v_sheets1: "1) Créez un projet sur",
+    v_sheets3: "3) OAuth 2.0 Playground → générez un access_token (scope spreadsheets).",
+    v_sheets4: "4) Créez une feuille Google Sheets, copiez l'ID (entre /d/ et /edit).",
+    v_imprimante: "Imprimante ESC/POS générique",
+    v_maBoutiqueMaj: "MA BOUTIQUE",
+    v_merciVisite: "Merci de votre visite !",
+    v_webhookPerso: "Webhook personnalisé",
+    v_bearerToken: "Bearer token ou clé",
+    v_reductions: "Réductions",
+    v_bannieres: "Bannières",
+    v_promoOffrez: "Offrez des codes promo pour déclencher l'achat et stimuler vos ventes",
+    v_nouvelleBan: "Nouvelle bannière",
+    v_activer: "Activer",
+    v_creerBan: "Créer la bannière",
+    v_voirOffres: "Voir les offres",
+    v_popTitre: "-10% sur votre première commande !",
+    v_popTexte: "Utilisez le code BIENVENUE10 pour profiter de 10% de remise.",
+    v_popEntree: "À l'entrée",
+    v_popOuverture: "Dès l'ouverture",
+    v_popApresTemps: "Après temps",
+    v_popApresSec: "Après X secondes",
+    v_popApresScroll: "Après X% de scroll",
+    v_popSortie: "À la sortie",
+    v_popCreer: "Créer le popup",
+    v_popPlaceholder: "Utilisez le code BIENVENUE10...",
+    v_creerAvis: "Créer l'avis",
+    v_nouveauLien: "Nouveau lien tracé",
+    v_creerLien: "Créer le lien",
+    v_pxSuivez: "Suivez vos conversions publicitaires",
+    v_pxFb: "Ajoutez votre ID Pixel Facebook pour suivre le trafic",
+    v_pxIos: "Améliore le suivi des conversions (iOS 14.5+)",
+    v_pxTiktok: "Suivez le trafic et les conversions TikTok Ads",
+    v_pxGa: "Analyses détaillées du trafic de votre site",
+    v_pxGtm: "Gérez toutes vos balises de tracking",
+    v_pxSnap: "Trackez les campagnes Snap Ads",
+    v_enregistrer: "Enregistrer",
+    v_codeAvert: "Le code personnalisé est injecté tel quel. N'insérez que du code de confiance. Testez toujours avec l'aperçu avant de générer le site.",
+    v_votreCss: "/* Votre code CSS */",
+    v_apiUtilise: "Utilisé pour authentifier les appels vers l'API BARO (header",
+    v_apiGenerer: "Générer un token API",
+    v_apiPost: "BARO enverra un POST JSON à votre URL dès qu'un événement se produit.",
+    v_apiPremier: "Créez votre premier webhook pour recevoir des événements en temps réel.",
+    v_apiDeclenchez: "Déclenchez des actions BARO depuis vos outils d'automatisation externes.",
+    v_apiSecret: "Ne partagez jamais votre token. Chaque webhook possède un secret HMAC distinct pour signer les requêtes.",
+    v_fidProg: "Programme fidélité",
+    v_fidActiver: "Cliquez pour activer et fidéliser vos clients",
+    v_fidRecomp: "0 récompenses",
+    v_packVide: "Aucun produit dans le pack. Ajoutez-en ci-dessous.",
+    v_packCreer: "Créer le pack",
+    v_packEx1: "ex: Pack Famille, Pack Démarrage...",
+    v_packEx2: "ex: 3 savons + 1 shampoing à prix réduit",
+    v_expRapports: "Rapports professionnels imprimables (A4, en-tête coloré, stats)",
+    v_expCa: "CA, bénéfice, marge, évolution, catégories, top produits — 30 derniers jours",
+    v_expAstuce: "💡 Astuce : les PDF sont prêts à imprimer. Les fichiers .xls s'ouvrent dans Excel directement. Les CSV passent dans tout logiciel comptable.",
+    v_prevAide: "La prévision se construit sur votre historique réel. Enregistrez quelques ventes et cet écran se remplira tout seul.",
+    v_membreCode: "Le membre utilisera ce code pour se connecter sur l'appareil partagé.",
+    v_creerCompte: "Créer le compte",
+    v_multiStore: "Boutique du centre, comptoir du quartier, entrepôt… Créez vos emplacements : BARO compare leur chiffre d'affaires, leur stock et leurs meilleures ventes, ici, en un coup d'œil.",
+    v_nomClient: "Nom du client",
+    v_credEx: "ex : 2 boîtes Doliprane",
+    v_lotCollez: "Collez votre liste — créez des dizaines d'articles en un clic",
+    v_valeurVente: "Valeur de vente du stock",
+    v_margeFaible: "Produits avec marge < 15%",
+    v_entreeSerie: "Entrée/Sortie en série — enchaînez les articles sans quitter l'écran",
+    v_histMouv: "Historique des mouvements",
+    v_factQuel: "🌍 Quel fournisseur choisir ?",
+    v_factAvert: "💡 Pour une vérification 100% anti-fraude, un backend avec webhook est recommandé plus tard. Cette méthode (redirection) convient pour démarrer.",
+    v_gEntrepot: "📦 Entrepôt",
+    v_gPharma: "Médicaments, parapharmacie, cosmétiques — le stock sensible aux dates.",
+    v_gPerimes: "Fini les médicaments périmés",
+    v_gPerimesAide: "Marquez chaque produit « périssable » avec sa date : BARO vous alerte AVANT l'expiration, et le filtre Péremption du Stock montre tout ce qui approche.",
+    v_gVoirStock: "Voir mon stock →",
+    v_gRuptures: "Fini les ruptures",
+    v_gRupturesAide: "Donnez un seuil minimum à chaque produit (ex : 5 boîtes) : alerte automatique dès qu'on passe dessous.",
+    v_gAjouterProd: "Ajouter un produit →",
+    v_gScan: "Scan du code-barres",
+    v_gScanAide: "Scannez la boîte : nom, photo et catégorie se pré-remplissent — pas de saisie fastidieuse.",
+    v_gEssayerScan: "Essayer le scan →",
+    v_gReception: "Réception des livraisons en série",
+    v_gReceptionAide: "Le grossiste livre 30 références ? Stock → « ⚡ Entrée/Sortie » : cherchez, tapez la quantité, enchaînez — sans quitter l'écran.",
+    v_gOuvrirStock: "Ouvrir le stock →",
+    v_gInventaire: "Tout l'inventaire de départ en 1 session",
+    v_gInventaireAide: "Saisie en lot : collez ou tapez la liste complète (nom, quantité, prix), BARO crée tout d'un coup.",
+    v_gCodeEquipe: "Code d'équipe : chacune vend depuis son téléphone, chaque vente est enregistrée à son nom.",
+    v_gEquipe: "Équipe →",
+    v_gPartage: "Téléphone partagé au comptoir",
+    v_gPartageAide: "Code PIN au démarrage + journal d'audit de qui a fait quoi.",
+    v_gSecurite: "Sécurité →",
+    v_gVraiBenef: "Le vrai bénéfice, pas le chiffre d'affaires",
+    v_gVraiBenefAide: "Bilan net (dépenses déduites), export Excel/PDF pour le comptable (OHADA).",
+    v_onbReunit: "BARO réunit ton stock, tes ventes, tes clients et tes paiements dans une seule app — même sans connexion.",
+    v_wizEtape: "Étape 1 / 5",
+    v_wizAdapte: "BARO s'adapte à votre activité — vous pourrez changer plus tard.",
+    v_wizRevendeur: "Boutique, épicerie, quincaillerie, cosmétiques, pharmacie… j'achète et je revends",
+    v_wizFabricant: "Restaurant, pâtisserie, couture, artisanat… je fabrique à partir de matières",
+    v_wizLesDeux: "Les deux",
+    v_wizLesDeuxSub: "Je vends ET je fabrique (ex : boutique avec atelier)",
+    v_carre: "Carré 1:1",
+    v_creatorAstuce: "Astuce : touchez un élément sur l'image pour le modifier, glissez-le pour le déplacer.",
+    v_spChoisis: "⚪ Choisis UNE IA gratuite ci-dessous",
+    v_spActive: "🚀 Active une IA pour reconnaître TOUT produit",
+    v_spNimporte: "(n'importe laquelle ci-dessous) — Spectra détecte automatiquement le fournisseur. Tu pourras alors scanner PS5, iPhone, cosmétiques, n'importe quoi par photo ou vidéo.",
+    v_spRecommande: "RECOMMANDÉ",
+    v_spLlama: "Llama 4 Vision · gratuit, mondial, sans carte",
+    v_spPartout: "✅ Marche partout (Afrique incluse), aucune carte requise ·",
+    v_spPlusieurs: "Plusieurs modèles vision gratuits",
+    v_spModeles: "Modèles :free, sans carte ·",
+    v_spGoogle: "Vision Google · gratuit (selon pays)",
+    v_spPalier: "⚠ Palier gratuit indisponible dans certains pays ·",
+    v_spHorsLigne: ", Spectra reconnaît hors-ligne via codes-barres + dictionnaire de 300+ produits locaux.",
+    v_oaPour: ". Pour activer ces flux OAuth 2.0, vous devez créer vos propres identifiants gratuits chez Google/Apple et les coller ci-dessous.",
+    v_oaSansConfig: "Sans config : mode \"connexion simplifiée\" (saisie manuelle email+nom).",
+    v_oaNonConfig: "Non configuré",
+    v_oaProjet: "2. Créez un projet (ou utilisez un existant)",
+    v_oaCreez: "2. Créez un",
+    v_oaDomaine: "4. Ajoutez le domaine :",
+    v_oaServices: "6. Collez le Services ID ci-dessous",
+    v_oaPublics: ": les Client IDs sont publics (pas un secret) et stockés localement sur votre appareil.",
+    v_oaPopup: ": une fois configuré, les connexions s'ouvrent dans une popup/redirection réelle Google/Apple.",
+    v_ntEnvoie: "— envoie depuis votre Gmail/Outlook sans backend.",
+    v_ntCompte: "1. Créez un compte",
+    v_ntCopiez: "4. Copiez les IDs ci-dessous",
+    v_ntConnectez: "Connectez Twilio, Africa's Talking, Orange SMS API, ou tout webhook custom.",
+    v_ntCles: "🔒 Les clés sont stockées uniquement sur cet appareil. Pour un usage production multi-utilisateurs, recommandé de router via votre backend.",
     w1_lblConfirm: "Confirmation commande",
     w1_lblPaiement: "Demande de paiement",
     w1_lblStockStaff: "Alerte stock faible (équipe)",
@@ -2638,6 +2792,160 @@ const LANGS = {
     version:'Version',
   },
   en: {
+    v_agentsIa: "✦ YOUR AI AGENTS",
+    v_tousArticles: "📦 All items",
+    v_articleAVendre: "Item to sell",
+    v_enrVente: "Record a sale",
+    v_telechargerSite: "Download the site",
+    v_apercuBoutique: "Shop preview",
+    v_personnalisee: "Custom",
+    v_utiliserFond: "Use the background colour chosen below",
+    v_vendeursCode: "Your sellers install BARO on their phone, type this code, and sell from your stock — every sale is recorded under their name, in real time.",
+    v_ajouterPhoto: "+ Add a photo",
+    v_notesPrefs: "Notes, preferences…",
+    v_metaApp: "Create a Meta Developers app → add Facebook Login → generate a long-lived Page Access Token for your Business Page.",
+    v_publiePromo: "Posts every new promotion or sale",
+    v_glovoApres: "Once connected, a “Glovo Partners” button appears on every shop order (Shop › Orders tab). One tap = a courier sent with ALL the details (address, value, contact).",
+    v_confirmerNum: "Confirm this number (sends a test)",
+    v_waGroupe: "Add customers (with a phone number) to send them a group message.",
+    v_smsEnvoyez: "Send confirmation, one-time-code and promotional texts to your customers",
+    v_smsCompte: ". Create an account, get your credentials and paste them below.",
+    v_smsSender: "Sender number / Sender ID",
+    v_smsPasserelle: "SMS gateway not set up",
+    v_smsPourEnvoi: "For sending",
+    v_smsMasse: "in bulk, connect Twilio, Vonage, Africa's Talking or Orange CI. Without a gateway you can still open your phone's messaging app with every number filled in.",
+    v_emailGroupe: "Add your customers' email addresses to write to them as a group.",
+    v_ecomPush: "Push your products out and pull orders back automatically",
+    v_shopifyApp: "Create a private app in Shopify Admin › Apps › Develop apps, enable the API and copy the Access Token.",
+    v_domaineBq: "Shop domain (without https)",
+    v_ecomEnvoie: "Sends every new BARO product to Shopify",
+    v_ecomStock: "Keeps stock in step both ways (BARO sale ⇄ Shopify)",
+    v_ecomCmd: "Brings Shopify orders in as BARO sales",
+    v_sheetsAppend: "Sales appended to Google Sheets automatically",
+    v_sheets1: "1) Create a project at",
+    v_sheets3: "3) OAuth 2.0 Playground → generate an access_token (spreadsheets scope).",
+    v_sheets4: "4) Create a Google Sheet and copy its ID (between /d/ and /edit).",
+    v_imprimante: "Generic ESC/POS printer",
+    v_maBoutiqueMaj: "MY SHOP",
+    v_merciVisite: "Thank you for your visit!",
+    v_webhookPerso: "Custom webhook",
+    v_bearerToken: "Bearer token or key",
+    v_reductions: "Discounts",
+    v_bannieres: "Banners",
+    v_promoOffrez: "Offer promo codes to trigger purchases and lift your sales",
+    v_nouvelleBan: "New banner",
+    v_activer: "Switch on",
+    v_creerBan: "Create the banner",
+    v_voirOffres: "See the offers",
+    v_popTitre: "10% off your first order!",
+    v_popTexte: "Use the code WELCOME10 to get 10% off.",
+    v_popEntree: "On arrival",
+    v_popOuverture: "As soon as the page opens",
+    v_popApresTemps: "After a delay",
+    v_popApresSec: "After X seconds",
+    v_popApresScroll: "After X% of scrolling",
+    v_popSortie: "On leaving",
+    v_popCreer: "Create the pop-up",
+    v_popPlaceholder: "Use the code WELCOME10...",
+    v_creerAvis: "Create the review",
+    v_nouveauLien: "New tracked link",
+    v_creerLien: "Create the link",
+    v_pxSuivez: "Track your advertising conversions",
+    v_pxFb: "Add your Facebook Pixel ID to track traffic",
+    v_pxIos: "Improves conversion tracking (iOS 14.5+)",
+    v_pxTiktok: "Track TikTok Ads traffic and conversions",
+    v_pxGa: "Detailed analysis of your site's traffic",
+    v_pxGtm: "Manage all your tracking tags",
+    v_pxSnap: "Track Snap Ads campaigns",
+    v_enregistrer: "Save",
+    v_codeAvert: "Custom code is injected as-is. Only insert code you trust. Always test with the preview before generating the site.",
+    v_votreCss: "/* Your CSS */",
+    v_apiUtilise: "Used to authenticate calls to the BARO API (header",
+    v_apiGenerer: "Generate an API token",
+    v_apiPost: "BARO will send a JSON POST to your address whenever an event happens.",
+    v_apiPremier: "Create your first webhook to receive events in real time.",
+    v_apiDeclenchez: "Trigger BARO actions from your outside automation tools.",
+    v_apiSecret: "Never share your token. Each webhook has its own HMAC secret to sign requests.",
+    v_fidProg: "Loyalty programme",
+    v_fidActiver: "Tap to switch on and keep your customers coming back",
+    v_fidRecomp: "0 rewards",
+    v_packVide: "No products in the bundle. Add some below.",
+    v_packCreer: "Create the bundle",
+    v_packEx1: "e.g. Family bundle, Starter bundle...",
+    v_packEx2: "e.g. 3 soaps + 1 shampoo at a reduced price",
+    v_expRapports: "Professional printable reports (A4, coloured header, figures)",
+    v_expCa: "Revenue, profit, margin, trend, categories, top products — last 30 days",
+    v_expAstuce: "💡 Tip: the PDFs are ready to print. The .xls files open straight in Excel. The CSVs work in any accounting software.",
+    v_prevAide: "The forecast is built from your real history. Record a few sales and this screen fills in by itself.",
+    v_membreCode: "The member will use this code to sign in on the shared device.",
+    v_creerCompte: "Create the account",
+    v_multiStore: "Shop in the centre, neighbourhood counter, warehouse… Create your locations: BARO compares their revenue, their stock and their best sellers, right here, at a glance.",
+    v_nomClient: "Customer name",
+    v_credEx: "e.g. 2 boxes of paracetamol",
+    v_lotCollez: "Paste your list — create dozens of items in one tap",
+    v_valeurVente: "Sale value of the stock",
+    v_margeFaible: "Products with a margin below 15%",
+    v_entreeSerie: "Bulk in/out — work through items without leaving the screen",
+    v_histMouv: "Movement history",
+    v_factQuel: "🌍 Which provider should you pick?",
+    v_factAvert: "💡 For fully fraud-proof checking, a backend with a webhook is advisable later on. This method (redirection) is fine to start with.",
+    v_gEntrepot: "📦 Warehouse",
+    v_gPharma: "Medicines, health and beauty, cosmetics — stock that turns on dates.",
+    v_gPerimes: "No more expired medicines",
+    v_gPerimesAide: "Mark each product “perishable” with its date: BARO warns you BEFORE it expires, and the Expiry filter in Stock shows everything coming up.",
+    v_gVoirStock: "See my stock →",
+    v_gRuptures: "No more running out",
+    v_gRupturesAide: "Give each product a minimum threshold (e.g. 5 boxes): an alert fires as soon as you drop below it.",
+    v_gAjouterProd: "Add a product →",
+    v_gScan: "Barcode scanning",
+    v_gScanAide: "Scan the box: name, photo and category fill themselves in — no tedious typing.",
+    v_gEssayerScan: "Try scanning →",
+    v_gReception: "Taking in deliveries in bulk",
+    v_gReceptionAide: "The wholesaler drops off 30 items? Stock → “⚡ In/Out”: search, type the quantity, move on — without leaving the screen.",
+    v_gOuvrirStock: "Open stock →",
+    v_gInventaire: "Your whole opening inventory in one session",
+    v_gInventaireAide: "Bulk entry: paste or type the full list (name, quantity, price) and BARO creates it all at once.",
+    v_gCodeEquipe: "Team code: each person sells from their own phone, and every sale is recorded under their name.",
+    v_gEquipe: "Team →",
+    v_gPartage: "Phone shared at the counter",
+    v_gPartageAide: "A PIN at start-up, plus an audit log of who did what.",
+    v_gSecurite: "Security →",
+    v_gVraiBenef: "Real profit, not just revenue",
+    v_gVraiBenefAide: "Net result (expenses deducted), Excel/PDF export for the accountant (OHADA).",
+    v_onbReunit: "BARO brings your stock, sales, customers and payments together in one app — even with no connection.",
+    v_wizEtape: "Step 1 of 5",
+    v_wizAdapte: "BARO adapts to your line of business — you can change this later.",
+    v_wizRevendeur: "Shop, grocery, hardware, cosmetics, pharmacy… I buy and resell",
+    v_wizFabricant: "Restaurant, bakery, tailoring, crafts… I make things from materials",
+    v_wizLesDeux: "Both",
+    v_wizLesDeuxSub: "I sell AND I make (e.g. a shop with a workshop)",
+    v_carre: "Square 1:1",
+    v_creatorAstuce: "Tip: tap an element on the image to change it, drag it to move it.",
+    v_spChoisis: "⚪ Pick ONE free AI below",
+    v_spActive: "🚀 Switch on an AI to recognise ANY product",
+    v_spNimporte: "(any of them below) — Spectra detects the provider by itself. You can then scan a PS5, an iPhone, cosmetics, anything, by photo or video.",
+    v_spRecommande: "RECOMMENDED",
+    v_spLlama: "Llama 4 Vision · free, worldwide, no card",
+    v_spPartout: "✅ Works everywhere (Africa included), no card needed ·",
+    v_spPlusieurs: "Several free vision models",
+    v_spModeles: "Models marked :free, no card ·",
+    v_spGoogle: "Google Vision · free (depending on country)",
+    v_spPalier: "⚠ The free tier is not available in some countries ·",
+    v_spHorsLigne: ", Spectra recognises offline through barcodes plus a dictionary of 300+ local products.",
+    v_oaPour: ". To switch on these OAuth 2.0 flows you need to create your own free credentials at Google/Apple and paste them below.",
+    v_oaSansConfig: "With nothing set up: “simplified sign-in” mode (email and name typed by hand).",
+    v_oaNonConfig: "Not set up",
+    v_oaProjet: "2. Create a project (or use an existing one)",
+    v_oaCreez: "2. Create a",
+    v_oaDomaine: "4. Add the domain:",
+    v_oaServices: "6. Paste the Services ID below",
+    v_oaPublics: ": Client IDs are public (not a secret) and stored locally on your device.",
+    v_oaPopup: ": once set up, sign-ins open in a real Google/Apple pop-up or redirect.",
+    v_ntEnvoie: "— sends from your Gmail/Outlook with no backend.",
+    v_ntCompte: "1. Create an account",
+    v_ntCopiez: "4. Copy the IDs below",
+    v_ntConnectez: "Connect Twilio, Africa's Talking, the Orange SMS API, or any custom webhook.",
+    v_ntCles: "🔒 The keys are stored on this device only. For multi-user production use, routing through your own backend is advisable.",
     w1_lblConfirm: "Order confirmation",
     w1_lblPaiement: "Payment request",
     w1_lblStockStaff: "Low stock alert (team)",
@@ -7470,7 +7778,7 @@ function vPrevisions() {
       <div style="font-size:36px;margin-bottom:10px">📈</div>
       <div style="font-size:15px;font-weight:700;margin-bottom:6px">Pas encore assez de ventes</div>
       <div style="font-size:13px;color:var(--text-3);line-height:1.5">
-        La prévision se construit sur votre historique réel. Enregistrez quelques
+        ${t('v_prevAide')}
         ventes et cet écran se remplira tout seul.
       </div>
     </div>` : `
@@ -7857,7 +8165,7 @@ function vReorder() {
             ? 'Tous vos produits ont assez de stock au rythme actuel des ventes. Repassez ici quand le stock baisse.'
             : 'Enregistrez quelques ventes : BARO apprend le rythme de chaque produit et vous dira quoi recommander, combien, et quand.'}
         </div>
-        <button class="btn btn-primary" style="width:100%;max-width:280px" onclick="nav('sales')">${IC.plus} Enregistrer une vente</button>
+        <button class="btn btn-primary" style="width:100%;max-width:280px" onclick="nav('sales')">${IC.plus} ${t('v_enrVente')}</button>
       </div>
     </div>`;
   }
@@ -8185,7 +8493,7 @@ function vCreditForm() {
     <div class="card">
       <div class="form-group">
         <label class="form-label">Client</label>
-        <input class="input" list="credit-clients" placeholder="Nom du client" value="${(f.name||'').replace(/"/g,'&quot;')}" oninput="S.creditForm.name=this.value">
+        <input class="input" list="credit-clients" placeholder=t('v_nomClient') value="${(f.name||'').replace(/"/g,'&quot;')}" oninput="S.creditForm.name=this.value">
         <datalist id="credit-clients">${names}</datalist>
       </div>
       <div class="form-group">
@@ -8198,7 +8506,7 @@ function vCreditForm() {
       </div>
       <div class="form-group">
         <label class="form-label">Note (facultatif)</label>
-        <input class="input" placeholder="ex : 2 boîtes Doliprane" value="${(f.note||'').replace(/"/g,'&quot;')}" oninput="S.creditForm.note=this.value">
+        <input class="input" placeholder=t('v_credEx') value="${(f.note||'').replace(/"/g,'&quot;')}" oninput="S.creditForm.note=this.value">
       </div>
       <button class="btn btn-primary" style="width:100%;padding:13px;font-weight:800" onclick="saveCredit()">${t('x4_enregistrerCredit')}</button>
     </div>
@@ -12207,7 +12515,7 @@ function vOnboarding() {
       icon: '👋',
       accent: '#7C73FF',
       title: `Bienvenue, ${(S.session?.name || '').split(' ')[0] || 'toi'} !`,
-      text: 'BARO réunit ton stock, tes ventes, tes clients et tes paiements dans une seule app — même sans connexion.',
+      text: t('v_onbReunit'),
       visual: `
         <div class="ob-visual-row">
           <div class="ob-mini-card" style="animation-delay:.1s"><span style="font-size:20px">📦</span><span>Stock</span></div>
@@ -12311,12 +12619,12 @@ function vSetupWizard() {
   if (w.step === 0) {
     const choices = [
       ['reseller','🏪','Revendeur / Boutique','Boutique, épicerie, quincaillerie, cosmétiques, pharmacie… j\'achète et je revends'],
-      ['maker','🏭','Fabricant / Restaurant','Restaurant, pâtisserie, couture, artisanat… je fabrique à partir de matières'],
-      ['mixed','🔀','Les deux','Je vends ET je fabrique (ex : boutique avec atelier)'],
+      ['maker','🏭','Fabricant / Restaurant',t('v_wizFabricant')],
+      ['mixed','🔀',t('v_wizLesDeux'),t('v_wizLesDeuxSub')],
     ];
     body = `
       <div class="wiz-h1">${t('w9_quelMetier')}</div>
-      <div class="wiz-sub">BARO s'adapte à votre activité — vous pourrez changer plus tard.</div>
+      <div class="wiz-sub">${t('v_wizAdapte')}</div>
       <div class="wiz-choices">
         ${choices.map(([id,ic,ti,de]) => `
           <button class="wiz-choice ${w.type===id?'sel':''}" onclick="wizardSetType('${id}')">
@@ -13242,7 +13550,7 @@ function vHome() {
         <div style="background:rgba(255,255,255,.25);min-width:30px;height:30px;padding:0 8px;border-radius:999px;display:grid;place-items:center;font-weight:800;font-size:14px">${n}</div>
       </div>
     </div>`;})()}
-    <div class="section-hd" style="margin-top:4px"><div class="section-lbl" style="font-size:12px;letter-spacing:.5px;color:var(--text-3);font-weight:700">✦ TES AGENTS IA</div></div>
+    <div class="section-hd" style="margin-top:4px"><div class="section-lbl" style="font-size:12px;letter-spacing:.5px;color:var(--text-3);font-weight:700">${t('v_agentsIa')}</div></div>
     <div class="agent-card agent-sova" onclick="nav('sova')">
       <div class="agent-icon agent-icon-sova">${IC.sova}</div>
       <div class="agent-info">
@@ -13800,7 +14108,7 @@ function vPantry() {
         <div style="font-size:13px;font-weight:800;color:var(--success)">+${fmt(potentialProfit)}</div>
         <div style="font-size:9px;color:var(--text-3);margin-top:1px;font-weight:600;letter-spacing:.3px">${t('w1_benefPotentiel')}</div>
       </div>
-      <div style="text-align:center;padding:8px 4px;background:var(--gray-1);border-radius:8px;border:1px solid var(--border)" title="Valeur de vente du stock">
+      <div style="text-align:center;padding:8px 4px;background:var(--gray-1);border-radius:8px;border:1px solid var(--border)" title=t('v_valeurVente')>
         <div style="font-size:13px;font-weight:800;color:var(--accent)">${fmt(totalValue)}</div>
         <div style="font-size:9px;color:var(--text-3);margin-top:1px;font-weight:600;letter-spacing:.3px">${t('w2_valeurStock')}</div>
       </div>
@@ -13808,7 +14116,7 @@ function vPantry() {
         <div style="font-size:13px;font-weight:800;color:${outCount>0?'var(--danger)':'var(--text-3)'}">${outCount}</div>
         <div style="font-size:9px;color:var(--text-3);margin-top:1px;font-weight:600;letter-spacing:.3px">RUPTURE</div>
       </div>
-      <div style="text-align:center;padding:8px 4px;background:${lowMarginCount>0?'rgba(245,158,11,0.08)':'var(--gray-1)'};border-radius:8px;border:1px solid ${lowMarginCount>0?'rgba(245,158,11,0.25)':'var(--border)'};cursor:pointer" onclick="S.filter='margin-low';render()" title="Produits avec marge < 15%">
+      <div style="text-align:center;padding:8px 4px;background:${lowMarginCount>0?'rgba(245,158,11,0.08)':'var(--gray-1)'};border-radius:8px;border:1px solid ${lowMarginCount>0?'rgba(245,158,11,0.25)':'var(--border)'};cursor:pointer" onclick="S.filter='margin-low';render()" title=t('v_margeFaible')>
         <div style="font-size:13px;font-weight:800;color:${lowMarginCount>0?'var(--warning)':'var(--text-3)'}">${lowMarginCount}</div>
         <div style="font-size:9px;color:var(--text-3);margin-top:1px;font-weight:600;letter-spacing:.3px">MARGE FAIBLE</div>
       </div>
@@ -13855,8 +14163,8 @@ function vPantry() {
         <option value="expiry" ${sort==='expiry'?'selected':''}>${t('w1_peremption')}</option>
       </select>
       <button class="filter-chip" onclick="S.stockView=(S.stockView==='grid'?'list':'grid');render()" style="font-size:10px;padding:4px 10px;margin-left:auto" title="Affichage liste / grille">${S.stockView==='grid'?'☰ Liste':'▦ Grille'}</button>
-      <button class="filter-chip" onclick="openQuickStock()" style="font-size:10px;padding:4px 10px;color:var(--accent)" title="Entrée/Sortie en série — enchaînez les articles sans quitter l'écran">${t('w1_entreeSortie')}</button>
-      <button class="filter-chip" onclick="nav('stock-history')" style="font-size:10px;padding:4px 10px" title="Historique des mouvements">${IC.trending} Mouvements</button>
+      <button class="filter-chip" onclick="openQuickStock()" style="font-size:10px;padding:4px 10px;color:var(--accent)" title=t('v_entreeSerie')>${t('w1_entreeSortie')}</button>
+      <button class="filter-chip" onclick="nav('stock-history')" style="font-size:10px;padding:4px 10px" title=t('v_histMouv')>${IC.trending} Mouvements</button>
       ${S.locations.length > 1 ? `<button class="filter-chip" onclick="openStockTransfer()" style="font-size:10px;padding:4px 10px" title="Transférer entre emplacements">⇄ Transfert</button>` : ''}
     </div>` : ''}
     ${S.locations.length > 0 ? `
@@ -14148,7 +14456,7 @@ function vProducts() {
         <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
           <span class="status ${avail>0?'st-ok':'st-out'}">${avail>0?IC.check:IC.xmark} ${avail>0?avail+' packs dispo.':'Rupture'}</span>
           <div style="display:flex;gap:6px">
-            <button onclick="togglePackActive(${pk.id})" title="${pk.active===false?'Activer':'Désactiver'}" style="background:${pk.active!==false?'var(--accent-light)':'none'};border:1px solid ${pk.active!==false?'var(--accent)':'var(--gray-3)'};border-radius:6px;padding:4px 10px;cursor:pointer;font-size:11px;font-weight:700;color:${pk.active!==false?'var(--accent)':'var(--text-3)'}">${pk.active!==false?'✓ Actif':'○ Inactif'}</button>
+            <button onclick="togglePackActive(${pk.id})" title="${pk.active===false?t('v_activer'):'Désactiver'}" style="background:${pk.active!==false?'var(--accent-light)':'none'};border:1px solid ${pk.active!==false?'var(--accent)':'var(--gray-3)'};border-radius:6px;padding:4px 10px;cursor:pointer;font-size:11px;font-weight:700;color:${pk.active!==false?'var(--accent)':'var(--text-3)'}">${pk.active!==false?'✓ Actif':'○ Inactif'}</button>
             <button onclick="duplicatePack(${pk.id})" title="Dupliquer" style="background:none;border:1px solid var(--gray-3);border-radius:6px;padding:4px 8px;cursor:pointer;color:var(--text-2)">📋</button>
             <button onclick="editPack(${pk.id})" title="Modifier" style="background:none;border:1px solid var(--gray-3);border-radius:6px;padding:4px 8px;cursor:pointer;color:var(--text-2)">${IC.settings}</button>
             <button onclick="deletePack(${pk.id})" title="Supprimer" style="background:none;border:1px solid var(--gray-3);border-radius:6px;padding:4px 8px;cursor:pointer;color:var(--text-2)">${IC.trash}</button>
@@ -14231,7 +14539,7 @@ function vSales() {
 
     ${boutiqueCount > 0 ? `
     <div class="filter-row" style="margin-bottom:10px">
-      <button class="filter-chip ${!boutiqueFilter?'active':''}" onclick="S.saleBoutiqueFilter=false;render()">📦 Tous les articles (${allSellable.length})</button>
+      <button class="filter-chip ${!boutiqueFilter?'active':''}" onclick="S.saleBoutiqueFilter=false;render()">${t('v_tousArticles')} (${allSellable.length})</button>
       <button class="filter-chip ${boutiqueFilter?'active':''}" onclick="S.saleBoutiqueFilter=true;render()">🏪 Stocks boutique (${boutiqueCount})</button>
     </div>` : ''}
 
@@ -14272,7 +14580,7 @@ function vSales() {
           <button type="button" class="chip ${S.saleNewClient?'active':''}" onclick="S.saleNewClient=true;render()">${t('w2_nouveauClient')}</button>
         </div>
         ${S.saleNewClient ? `
-        <input class="input" type="text" id="sale-new-client-name" placeholder="Nom du client" style="margin-bottom:6px" value="${(S.saleNewClientName||'').replace(/"/g,'&quot;')}" oninput="S.saleNewClientName=this.value">
+        <input class="input" type="text" id="sale-new-client-name" placeholder=t('v_nomClient') style="margin-bottom:6px" value="${(S.saleNewClientName||'').replace(/"/g,'&quot;')}" oninput="S.saleNewClientName=this.value">
         <input class="input" type="tel" id="sale-new-client-phone" placeholder="Téléphone (optionnel)" value="${(S.saleNewClientPhone||'').replace(/"/g,'&quot;')}" oninput="S.saleNewClientPhone=this.value">
         ` : `
         <select class="input" id="sale-client" onchange="S.saleClientPick=this.value?(parseInt(this.value)||this.value):null">
@@ -14292,7 +14600,7 @@ function vSales() {
     <div class="card" style="margin-bottom:14px">
       <div class="card-title">${t('newSale')}${boutiqueFilter?' <span style="font-size:11px;color:var(--accent);font-weight:700">· Stocks boutique uniquement</span>':''}</div>
       <div class="form-group">
-        <label class="form-label">${bt==='reseller'?'Article à vendre':t('product')}</label>
+        <label class="form-label">${bt==='reseller'?t('v_articleAVendre'):t('product')}</label>
         <select class="input" id="sale-product">
           <option value="">${t('select')}</option>
           ${sellable.map(it => {
@@ -14316,7 +14624,7 @@ function vSales() {
           <button type="button" class="chip ${S.saleNewClient?'active':''}" onclick="S.saleNewClient=true;render()">${t('w2_nouveauClient')}</button>
         </div>
         ${S.saleNewClient ? `
-        <input class="input" type="text" id="sale-new-client-name" placeholder="Nom du client" style="margin-bottom:6px" value="${(S.saleNewClientName||'').replace(/"/g,'&quot;')}" oninput="S.saleNewClientName=this.value">
+        <input class="input" type="text" id="sale-new-client-name" placeholder=t('v_nomClient') style="margin-bottom:6px" value="${(S.saleNewClientName||'').replace(/"/g,'&quot;')}" oninput="S.saleNewClientName=this.value">
         <input class="input" type="tel" id="sale-new-client-phone" placeholder="Téléphone (optionnel)" value="${(S.saleNewClientPhone||'').replace(/"/g,'&quot;')}" oninput="S.saleNewClientPhone=this.value">
         ` : `
         <select class="input" id="sale-client" onchange="S.saleClientPick=this.value?(parseInt(this.value)||this.value):null">
@@ -14422,7 +14730,7 @@ function vSales() {
           <button type="button" class="chip ${S.multiNewClient?'active':''}" onclick="S.multiNewClient=true;render()">${t('w2_nouveauClient')}</button>
         </div>
         ${S.multiNewClient ? `
-        <input class="input" type="text" id="multi-new-client-name" placeholder="Nom du client" style="margin-bottom:6px" value="${(S.multiNewClientName||'').replace(/"/g,'&quot;')}" oninput="S.multiNewClientName=this.value">
+        <input class="input" type="text" id="multi-new-client-name" placeholder=t('v_nomClient') style="margin-bottom:6px" value="${(S.multiNewClientName||'').replace(/"/g,'&quot;')}" oninput="S.multiNewClientName=this.value">
         <input class="input" type="tel" id="multi-new-client-phone" placeholder="Téléphone (optionnel)" value="${(S.multiNewClientPhone||'').replace(/"/g,'&quot;')}" oninput="S.multiNewClientPhone=this.value">
         ` : `
         <select class="input" id="multi-client" onchange="S.multiClientPick=this.value?(parseInt(this.value)||this.value):null">
@@ -14459,7 +14767,7 @@ function vSales() {
       <div class="empty-title">${t('noSales')}</div>
       <div class="empty-text">${t('noSalesSub')}</div>
       ${(typeof bt_sellableItems==='function' && bt_sellableItems().length > 0)
-        ? `<button class="btn btn-primary" onclick="document.getElementById('view').scrollTo({top:0,behavior:'smooth'})">${IC.plus} Enregistrer une vente</button>`
+        ? `<button class="btn btn-primary" onclick="document.getElementById('view').scrollTo({top:0,behavior:'smooth'})">${IC.plus} ${t('v_enrVente')}</button>`
         : `<button class="btn btn-primary" onclick="nav('add')">${IC.plus} ${getBusinessType()==='reseller'?'Ajouter un produit':'Ajouter un article'}</button>`}
     </div>`;
       // ── Grouper les paniers (même cartId) ──
@@ -15449,7 +15757,7 @@ function vBulkAdd() {
   <div class="sub-hero">
     <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('add')">${IC.left}</button>
     <div class="sub-hero-title">${t('w2_saisieLot')}</div>
-    <div class="sub-hero-sub">Collez votre liste — créez des dizaines d'${isReseller?'articles':'articles'} en un clic</div>
+    <div class="sub-hero-sub">${t('v_lotCollez')}${isReseller?'articles':'articles'} en un clic</div>
   </div>
   <div class="container">
     <div class="card" style="margin-bottom:10px">
@@ -15703,7 +16011,7 @@ function vAdd() {
             ? `<img src="${f.image}" alt="" style="width:72px;height:72px;border-radius:14px;object-fit:cover;border:2px solid var(--border);box-shadow:var(--shadow-sm)">`
             : `<div style="width:72px;height:72px;border-radius:14px;background:var(--gray-1);border:2px dashed var(--gray-3);display:flex;align-items:center;justify-content:center;color:var(--text-3);font-size:24px">📷</div>`}
           <div style="display:flex;flex-direction:column;gap:6px">
-            <button type="button" class="btn btn-ghost" style="width:auto;padding:8px 16px;font-size:12px" onclick="uploadFormImage()">${f.image?'Changer la photo':'+ Ajouter une photo'}</button>
+            <button type="button" class="btn btn-ghost" style="width:auto;padding:8px 16px;font-size:12px" onclick="uploadFormImage()">${f.image?'Changer la photo':t('v_ajouterPhoto')}</button>
             ${f.image?`<button type="button" class="btn" style="width:auto;padding:4px 12px;font-size:11px;background:none;border:none;color:var(--danger);cursor:pointer" onclick="S.form.image='';render()">Retirer</button>`:''}
           </div>
         </div>
@@ -15856,7 +16164,7 @@ function vAddProduct() {
             ? `<img src="${S.productForm.image}" alt="" style="width:72px;height:72px;border-radius:14px;object-fit:cover;border:2px solid var(--border);box-shadow:var(--shadow-sm)">`
             : `<div style="width:72px;height:72px;border-radius:14px;background:var(--gray-1);border:2px dashed var(--gray-3);display:flex;align-items:center;justify-content:center;color:var(--text-3);font-size:24px">📷</div>`}
           <div style="display:flex;flex-direction:column;gap:6px">
-            <button type="button" class="btn btn-ghost" style="width:auto;padding:8px 16px;font-size:12px" onclick="uploadProductFormImage()">${S.productForm?.image?'Changer la photo':'+ Ajouter une photo'}</button>
+            <button type="button" class="btn btn-ghost" style="width:auto;padding:8px 16px;font-size:12px" onclick="uploadProductFormImage()">${S.productForm?.image?'Changer la photo':t('v_ajouterPhoto')}</button>
             ${S.productForm?.image?`<button type="button" class="btn" style="width:auto;padding:4px 12px;font-size:11px;background:none;border:none;color:var(--danger);cursor:pointer" onclick="S.productForm.image='';render()">Retirer</button>`:''}
           </div>
         </div>
@@ -15927,7 +16235,7 @@ function vEditProduct() {
             ? `<img src="${S.productForm?.image || p.image}" alt="" style="width:72px;height:72px;border-radius:14px;object-fit:cover;border:2px solid var(--border);box-shadow:var(--shadow-sm)">`
             : `<div style="width:72px;height:72px;border-radius:14px;background:var(--gray-1);border:2px dashed var(--gray-3);display:flex;align-items:center;justify-content:center;color:var(--text-3);font-size:24px">📷</div>`}
           <div style="display:flex;flex-direction:column;gap:6px">
-            <button type="button" class="btn btn-ghost" style="width:auto;padding:8px 16px;font-size:12px" onclick="uploadProductFormImage()">${(S.productForm?.image || p.image)?'Changer la photo':'+ Ajouter une photo'}</button>
+            <button type="button" class="btn btn-ghost" style="width:auto;padding:8px 16px;font-size:12px" onclick="uploadProductFormImage()">${(S.productForm?.image || p.image)?'Changer la photo':t('v_ajouterPhoto')}</button>
             ${(S.productForm?.image || p.image)?`<button type="button" class="btn" style="width:auto;padding:4px 12px;font-size:11px;background:none;border:none;color:var(--danger);cursor:pointer" onclick="S.productForm=S.productForm||{};S.productForm.image='';S.productForm.imageCleared=true;render()">Retirer</button>`:''}
           </div>
         </div>
@@ -16016,18 +16324,18 @@ function vPackForm() {
     <div class="card">
       <div class="form-group">
         <label class="form-label">${t('w9_nomPack')}</label>
-        <input class="input" type="text" placeholder="ex: Pack Famille, Pack Démarrage..." value="${(f.name||'').replace(/"/g,'&quot;')}" oninput="S.packForm.name=this.value">
+        <input class="input" type="text" placeholder=t('v_packEx1') value="${(f.name||'').replace(/"/g,'&quot;')}" oninput="S.packForm.name=this.value">
       </div>
       <div class="form-group">
         <label class="form-label">Description</label>
-        <textarea class="input" rows="2" placeholder="ex: 3 savons + 1 shampoing à prix réduit" oninput="S.packForm.description=this.value">${(f.description||'').replace(/</g,'&lt;')}</textarea>
+        <textarea class="input" rows="2" placeholder=t('v_packEx2') oninput="S.packForm.description=this.value">${(f.description||'').replace(/</g,'&lt;')}</textarea>
       </div>
 
       <div class="form-group">
         <label class="form-label">${t('w9_compositionPack')}</label>
         ${f.items.length === 0 ? `
         <div style="padding:14px;background:var(--gray-1);border:1px dashed var(--border);border-radius:var(--r-md);font-size:12px;color:var(--text-3);text-align:center;margin-bottom:10px">
-          Aucun produit dans le pack. Ajoutez-en ci-dessous.
+          ${t('v_packVide')}
         </div>` : `
         <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px">
           ${f.items.map(it => {
@@ -16106,7 +16414,7 @@ function vPackForm() {
 
       <div style="display:flex;gap:8px">
         <button class="btn btn-ghost" style="flex:1" onclick="resetPackForm();nav('products')">Annuler</button>
-        <button class="btn btn-primary" style="flex:2" onclick="savePack()">${isEdit?'Mettre à jour':'Créer le pack'}</button>
+        <button class="btn btn-primary" style="flex:2" onclick="savePack()">${isEdit?'Mettre à jour':t('v_packCreer')}</button>
       </div>
     </div>
   </div>`;
@@ -16293,7 +16601,7 @@ function vAddClient() {
       </div>
       <div class="form-group">
         <label class="form-label">${t('clientNotes')}</label>
-        <textarea class="input" id="client-notes" rows="3" placeholder="Notes, préférences…" style="resize:vertical"></textarea>
+        <textarea class="input" id="client-notes" rows="3" placeholder=t('v_notesPrefs') style="resize:vertical"></textarea>
       </div>
       <button class="btn btn-primary" onclick="saveClient()">${t('addClient')}</button>
     </div>
@@ -20831,7 +21139,7 @@ function vBillingSetup() {
     </div>
 
     <div class="card" style="margin-bottom:12px;background:linear-gradient(135deg,rgba(16,185,129,.08),transparent);border:1px solid rgba(16,185,129,.25)">
-      <div style="font-size:13px;font-weight:800;margin-bottom:6px">🌍 Quel fournisseur choisir ?</div>
+      <div style="font-size:13px;font-weight:800;margin-bottom:6px">${t('v_factQuel')}</div>
       <div style="font-size:12px;color:var(--text-2);line-height:1.7">
         🇨🇮 <strong>${t('x4_ciAfrique')}</strong> : <a href="https://cinetpay.com" target="_blank" rel="noopener noreferrer" style="color:var(--accent);font-weight:700">CinetPay</a>, <a href="https://paydunya.com" target="_blank" rel="noopener noreferrer" style="color:var(--accent);font-weight:700">PayDunya</a> ou <a href="https://www.wave.com/fr/business/" target="_blank" rel="noopener noreferrer" style="color:var(--accent);font-weight:700">Wave Business</a> → acceptent Wave, Orange Money, MoMo + cartes.<br>
         🌐 <strong>International</strong> : <a href="https://dashboard.stripe.com/payment-links" target="_blank" rel="noopener noreferrer" style="color:var(--accent);font-weight:700">Stripe Payment Links</a> (⚠ ne marche pas pour recevoir depuis la CI).
@@ -20858,7 +21166,7 @@ function vBillingSetup() {
       </div>
     </div>
     <div style="font-size:11px;color:var(--text-3);margin-top:12px;line-height:1.5;text-align:center">
-      💡 Pour une vérification 100% anti-fraude, un backend avec webhook est recommandé plus tard. Cette méthode (redirection) convient pour démarrer.
+      ${t('v_factAvert')}
     </div>
   </div>`;
 }
@@ -22557,7 +22865,7 @@ function vTeam() {
       ${!S.session?.isMember ? `
       <div class="card" style="margin-bottom:12px;background:linear-gradient(135deg,rgba(16,185,129,.10),transparent);border:1px solid rgba(16,185,129,.28)">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="font-size:18px">🔑</span><div style="font-weight:800;font-size:14px;color:var(--text-1)">${t('w7_codeEquipe')}</div></div>
-        <div style="font-size:12px;color:var(--text-3);line-height:1.55;margin-bottom:10px">Vos vendeurs installent BARO sur leur téléphone, tapent ce code, et vendent depuis votre stock — chaque vente est enregistrée à leur nom, en temps réel.</div>
+        <div style="font-size:12px;color:var(--text-3);line-height:1.55;margin-bottom:10px">${t('v_vendeursCode')}</div>
         ${(!USE_LOCAL && S.token) ? (S.teamCode ? `
         <div style="display:flex;align-items:center;gap:8px;background:var(--surface);border:1.5px dashed var(--accent);border-radius:10px;padding:12px 14px;margin-bottom:10px">
           <div style="flex:1 1 auto;min-width:0;font-family:monospace;font-size:19px;font-weight:800;letter-spacing:.5px;color:var(--accent);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${S.teamCode}</div>
@@ -23086,7 +23394,7 @@ function vAddTeamMember() {
       <div class="form-group">
         <label class="form-label">Code PIN (4 chiffres)</label>
         <input class="input" type="password" inputmode="numeric" maxlength="4" placeholder="••••" value="${f.pin || ''}" oninput="S.teamForm.pin=this.value.replace(/\\D/g,'').slice(0,4)">
-        <div style="font-size:11px;color:var(--text-3);margin-top:4px">Le membre utilisera ce code pour se connecter sur l'appareil partagé.</div>
+        <div style="font-size:11px;color:var(--text-3);margin-top:4px">${t('v_membreCode')}</div>
       </div>
       <div class="form-group" style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
         <div>
@@ -23109,7 +23417,7 @@ function vAddTeamMember() {
     </div>
     <div style="display:flex;gap:8px;margin-top:14px">
       <button class="btn btn-ghost" style="flex:1" onclick="nav('team')">Annuler</button>
-      <button class="btn btn-primary" style="flex:2" onclick="saveTeamMember()">${isEdit ? 'Enregistrer' : 'Créer le compte'}</button>
+      <button class="btn btn-primary" style="flex:2" onclick="saveTeamMember()">${isEdit ? t('v_enregistrer') : t('v_creerCompte')}</button>
       ${isEdit ? `<button class="btn" style="flex:1;background:#EF4444;color:#fff" onclick="deleteTeamMember(${f.id})">${t('x4_supprimer2')}</button>` : ''}
     </div>
   </div>`;
@@ -23159,21 +23467,21 @@ function vSpectraAISetup() {
   const isActive = active.length > 0;
   const provName = { groq:'Groq (Llama Vision)', openrouter:'OpenRouter', gemini:'Google Gemini' };
   const providers = [
-    { id:'groq', name:'Groq', sub:'Llama 4 Vision · gratuit, mondial, sans carte', badge:'RECOMMANDÉ', color:'#F55036', url:'https://console.groq.com/keys', prefix:'gsk_...', key:groq, note:'✅ Marche partout (Afrique incluse), aucune carte requise' },
-    { id:'openrouter', name:'OpenRouter', sub:'Plusieurs modèles vision gratuits', badge:'', color:'#6566F1', url:'https://openrouter.ai/keys', prefix:'sk-or-...', key:orouter, note:'Modèles :free, sans carte' },
-    { id:'gemini', name:'Google Gemini', sub:'Vision Google · gratuit (selon pays)', badge:'', color:'#4285F4', url:'https://aistudio.google.com/app/apikey', prefix:'AIza...', key:gemini, note:'⚠ Palier gratuit indisponible dans certains pays' },
+    { id:'groq', name:'Groq', sub:t('v_spLlama'), badge:t('v_spRecommande'), color:'#F55036', url:'https://console.groq.com/keys', prefix:'gsk_...', key:groq, note:'✅ Marche partout (Afrique incluse), aucune carte requise' },
+    { id:'openrouter', name:'OpenRouter', sub:t('v_spPlusieurs'), badge:'', color:'#6566F1', url:'https://openrouter.ai/keys', prefix:'sk-or-...', key:orouter, note:'Modèles :free, sans carte' },
+    { id:'gemini', name:'Google Gemini', sub:t('v_spGoogle'), badge:'', color:'#4285F4', url:'https://aistudio.google.com/app/apikey', prefix:'AIza...', key:gemini, note:'⚠ Palier gratuit indisponible dans certains pays' },
   ];
   return `
   <div class="sub-hero" style="background:linear-gradient(135deg,#7C3AED,#4285F4)">
     <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('spectra')">${IC.left}</button>
     <div class="sub-hero-title">✨ Spectra AI — Vision</div>
-    <div class="sub-hero-sub">${isActive ? '🟢 Activé : ' + active.map(p=>provName[p]).join(', ') : '⚪ Choisis UNE IA gratuite ci-dessous'}</div>
+    <div class="sub-hero-sub">${isActive ? '🟢 Activé : ' + active.map(p=>provName[p]).join(', ') : t('v_spChoisis')}</div>
   </div>
   <div class="container">
     <div class="card" style="margin-bottom:12px;border-left:4px solid ${isActive?'var(--success)':'var(--accent)'}">
-      <div style="font-size:14px;font-weight:800;margin-bottom:6px">${isActive ? '✅ IA vision active' : '🚀 Active une IA pour reconnaître TOUT produit'}</div>
+      <div style="font-size:14px;font-weight:800;margin-bottom:6px">${isActive ? '✅ IA vision active' : t('v_spActive')}</div>
       <div style="font-size:12.5px;color:var(--text-2);line-height:1.55">
-        Colle <strong>${t('x4_uneSeuleCle')}</strong> (n'importe laquelle ci-dessous) — Spectra détecte automatiquement le fournisseur. Tu pourras alors scanner PS5, iPhone, cosmétiques, n'importe quoi par photo ou vidéo.
+        Colle <strong>${t('x4_uneSeuleCle')}</strong> ${t('v_spNimporte')}
       </div>
     </div>
 
@@ -23197,7 +23505,7 @@ function vSpectraAISetup() {
 
     <div class="card" style="margin-top:6px;background:var(--gray-1);text-align:center;padding:16px">
       <div style="font-size:12px;color:var(--text-2);line-height:1.6">
-        💡 <strong>${t('x4_sansCle')}</strong>, Spectra reconnaît hors-ligne via codes-barres + dictionnaire de 300+ produits locaux.<br>
+        💡 <strong>${t('x4_sansCle')}</strong>${t('v_spHorsLigne')}<br>
         <strong>${t('x4_avecUneIA')}</strong>, reconnaissance de n'importe quel produit comme Google Lens.
       </div>
       <div style="font-size:11px;color:var(--text-3);margin-top:8px">${t('x4_clesRestentApp2')}</div>
@@ -23288,7 +23596,7 @@ function vOAuthSetup() {
         BARO ouvre <strong>${t('x3_vraiGoogle')}</strong> et <strong>${t('x3_vraiApple')}</strong>.
         Pour activer ces flux OAuth 2.0, vous devez créer vos propres identifiants gratuits chez Google/Apple et les coller ci-dessous.
         <br><br>
-        Sans config : mode "connexion simplifiée" (saisie manuelle email+nom).
+        ${t('v_oaSansConfig')}
       </div>
     </div>
 
@@ -23300,7 +23608,7 @@ function vOAuthSetup() {
         </div>
         <div style="flex:1">
           <div style="font-size:15px;font-weight:800;color:var(--text-1)">Google Sign-In</div>
-          <div style="font-size:11px;color:var(--text-2)">${googleId ? 'Configuré' : 'Non configuré'}</div>
+          <div style="font-size:11px;color:var(--text-2)">${googleId ? 'Configuré' : t('v_oaNonConfig')}</div>
         </div>
       </div>
 
@@ -23308,7 +23616,7 @@ function vOAuthSetup() {
         <summary style="cursor:pointer;font-size:12px;font-weight:700;color:#4285F4;padding:6px 0">${t('x3_commentClientId')}</summary>
         <div style="font-size:12px;color:var(--text-2);line-height:1.7;padding:8px 0 0 12px;border-left:2px solid #4285F4">
           1. Ouvrez <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener noreferrer" style="color:#4285F4;font-weight:700">console.cloud.google.com/apis/credentials</a><br>
-          2. Créez un projet (ou utilisez un existant)<br>
+          ${t('v_oaProjet')}<br>
           3. <strong>${t('x3_creerIdentifiants')}</strong> → <strong>ID client OAuth</strong><br>
           4. Type : <strong>Application Web</strong><br>
           5. <strong>${t('x3_originesJs')}</strong> : <code style="background:var(--gray-1);padding:2px 6px;border-radius:4px;font-size:11px;word-break:break-all">${origin}</code>
@@ -23336,7 +23644,7 @@ function vOAuthSetup() {
         </div>
         <div style="flex:1">
           <div style="font-size:15px;font-weight:800;color:var(--text-1)">Sign in with Apple</div>
-          <div style="font-size:11px;color:var(--text-2)">${appleId ? 'Configuré' : 'Non configuré'}</div>
+          <div style="font-size:11px;color:var(--text-2)">${appleId ? 'Configuré' : t('v_oaNonConfig')}</div>
         </div>
       </div>
 
@@ -23344,11 +23652,11 @@ function vOAuthSetup() {
         <summary style="cursor:pointer;font-size:12px;font-weight:700;color:var(--text-1);padding:6px 0">📖 Comment obtenir un Services ID Apple (compte dev $99/an requis)</summary>
         <div style="font-size:12px;color:var(--text-2);line-height:1.7;padding:8px 0 0 12px;border-left:2px solid var(--border)">
           1. Ouvrez <a href="https://developer.apple.com/account/resources/identifiers/list/serviceId" target="_blank" rel="noopener noreferrer" style="color:var(--accent);font-weight:700">developer.apple.com/account/resources/identifiers</a><br>
-          2. Créez un <strong>Services ID</strong> (ex: <code>com.votreapp.baro.web</code>)<br>
+          ${t('v_oaCreez')} <strong>Services ID</strong> (ex: <code>com.votreapp.baro.web</code>)<br>
           3. Activez <strong>Sign In with Apple</strong><br>
-          4. Ajoutez le domaine : <code style="background:var(--gray-1);padding:2px 6px;border-radius:4px;font-size:11px">${window.location.hostname}</code><br>
+          ${t('v_oaDomaine')} <code style="background:var(--gray-1);padding:2px 6px;border-radius:4px;font-size:11px">${window.location.hostname}</code><br>
           5. URL de retour : <code style="background:var(--gray-1);padding:2px 6px;border-radius:4px;font-size:11px;word-break:break-all">${redirect}</code><br>
-          6. Collez le Services ID ci-dessous
+          ${t('v_oaServices')}
         </div>
       </details>
 
@@ -23363,8 +23671,8 @@ function vOAuthSetup() {
 
     <div class="card" style="margin-top:14px;background:var(--gray-1);padding:14px">
       <div style="font-size:12px;color:var(--text-2);line-height:1.6">
-        🔒 <strong>${t('w2_securite')}</strong> : les Client IDs sont publics (pas un secret) et stockés localement sur votre appareil.<br>
-        ⚡ <strong>Astuce</strong> : une fois configuré, les connexions s'ouvrent dans une popup/redirection réelle Google/Apple.
+        🔒 <strong>${t('w2_securite')}</strong> ${t('v_oaPublics')}<br>
+        ⚡ <strong>Astuce</strong> ${t('v_oaPopup')}
       </div>
     </div>
   </div>`;
@@ -23476,16 +23784,16 @@ function vNotificationsSetup() {
     <div class="card" style="margin-bottom:12px;border-left:4px solid ${emailActive?'var(--success)':'#0EA5E9'}">
       <div style="font-size:15px;font-weight:800;color:var(--text-1);margin-bottom:6px">${t('w7_emailjs')}</div>
       <div style="font-size:12px;color:var(--text-2);line-height:1.6;margin-bottom:10px">
-        Service client-side gratuit <strong>200 emails/mois</strong> — envoie depuis votre Gmail/Outlook sans backend.
+        Service client-side gratuit <strong>200 emails/mois</strong> ${t('v_ntEnvoie')}
       </div>
 
       <details style="margin-bottom:10px">
         <summary style="cursor:pointer;font-size:12px;font-weight:700;color:#0EA5E9;padding:6px 0">📖 Setup (3 min)</summary>
         <div style="font-size:12px;color:var(--text-2);line-height:1.7;padding:8px 0 0 12px;border-left:2px solid #0EA5E9">
-          1. Créez un compte <a href="https://www.emailjs.com/" target="_blank" rel="noopener noreferrer" style="color:#0EA5E9;font-weight:700">emailjs.com</a> (gratuit)<br>
+          ${t('v_ntCompte')} <a href="https://www.emailjs.com/" target="_blank" rel="noopener noreferrer" style="color:#0EA5E9;font-weight:700">emailjs.com</a> (gratuit)<br>
           2. Ajoutez un <strong>Service</strong> ${t('y5_gmailConnectez')}<br>
           3. ${t('y5_avecVariables').replace('{0}','<strong>Template</strong>')} <code>{{to_email}}</code>, <code>{{to_name}}</code>, <code>{{code}}</code>, <code>{{purpose}}</code>, <code>{{expires_min}}</code><br>
-          4. Copiez les IDs ci-dessous<br>
+          ${t('v_ntCopiez')}<br>
           <strong style="color:var(--success)">Limite gratuite : 200 emails/mois</strong>
         </div>
       </details>
@@ -23508,7 +23816,7 @@ function vNotificationsSetup() {
     <div class="card" style="margin-bottom:12px;border-left:4px solid ${smsActive?'var(--success)':'#F59E0B'}">
       <div style="font-size:15px;font-weight:800;color:var(--text-1);margin-bottom:6px">📱 SMS via Webhook</div>
       <div style="font-size:12px;color:var(--text-2);line-height:1.6;margin-bottom:10px">
-        Connectez Twilio, Africa's Talking, Orange SMS API, ou tout webhook custom.
+        ${t('v_ntConnectez')}
       </div>
 
       <details style="margin-bottom:10px">
@@ -23535,7 +23843,7 @@ function vNotificationsSetup() {
 
     <div class="card" style="background:var(--gray-1);padding:14px">
       <div style="font-size:12px;color:var(--text-2);line-height:1.6">
-        🔒 Les clés sont stockées uniquement sur cet appareil. Pour un usage production multi-utilisateurs, recommandé de router via votre backend.
+        ${t('v_ntCles')}
       </div>
     </div>
   </div>`;
@@ -23712,7 +24020,7 @@ function _translateAuditAction(action) {
     stock_in:'Entrée stock', stock_out:'Sortie stock', transfer:'Transfert',
     delete_article:'Article supprimé',
     // Approbations
-    approve:'Approuver', reject:'Rejeter', activate:'Activer', deactivate:'Désactiver',
+    approve:'Approuver', reject:'Rejeter', activate:t('v_activer'), deactivate:'Désactiver',
     // Import/Export
     'export':'Exporter', 'import':'Importer', clear_audit_log:'Purge journal',
     import_shopify:'Import Shopify', import_woocommerce:'Import WooCommerce',
@@ -24297,15 +24605,15 @@ function vMetierGuide() {
   const bt = (typeof getBusinessType === 'function') ? getBusinessType() : 'reseller';
   const tab = S.metierTab || (bt === 'maker' ? 'restaurant' : 'pharma');
   const METIERS = {
-    pharma: { icon:'💊', label:'Pharmacie', intro:'Médicaments, parapharmacie, cosmétiques — le stock sensible aux dates.', rows: [
-      ['⏱', 'Fini les médicaments périmés', 'Marquez chaque produit « périssable » avec sa date : BARO vous alerte AVANT l\'expiration, et le filtre Péremption du Stock montre tout ce qui approche.', "nav('pantry')", 'Voir mon stock'],
-      ['📉', 'Fini les ruptures', 'Donnez un seuil minimum à chaque produit (ex : 5 boîtes) : alerte automatique dès qu\'on passe dessous.', "nav('add')", 'Ajouter un produit'],
-      ['📷', 'Scan du code-barres', 'Scannez la boîte : nom, photo et catégorie se pré-remplissent — pas de saisie fastidieuse.', "nav('add')", 'Essayer le scan'],
-      ['⚡', 'Réception des livraisons en série', 'Le grossiste livre 30 références ? Stock → « ⚡ Entrée/Sortie » : cherchez, tapez la quantité, enchaînez — sans quitter l\'écran.', "nav('pantry')", 'Ouvrir le stock'],
+    pharma: { icon:'💊', label:'Pharmacie', intro:t('v_gPharma'), rows: [
+      ['⏱', t('v_gPerimes'), 'Marquez chaque produit « périssable » avec sa date : BARO vous alerte AVANT l\'expiration, et le filtre Péremption du Stock montre tout ce qui approche.', "nav('pantry')", 'Voir mon stock'],
+      ['📉', t('v_gRuptures'), 'Donnez un seuil minimum à chaque produit (ex : 5 boîtes) : alerte automatique dès qu\'on passe dessous.', "nav('add')", 'Ajouter un produit'],
+      ['📷', t('v_gScan'), t('v_gScanAide'), "nav('add')", 'Essayer le scan'],
+      ['⚡', t('v_gReception'), 'Le grossiste livre 30 références ? Stock → « ⚡ Entrée/Sortie » : cherchez, tapez la quantité, enchaînez — sans quitter l\'écran.', "nav('pantry')", 'Ouvrir le stock'],
       ['🧾', 'Tout l\'inventaire de départ en 1 session', 'Saisie en lot : collez ou tapez la liste complète (nom, quantité, prix), BARO crée tout d\'un coup.', "nav('bulk-add')", 'Saisie en lot'],
       ['👥', 'Vendeuses de comptoir', 'Code d\'équipe : chacune vend depuis son téléphone, chaque vente est enregistrée à son nom.', "nav('team')", 'Équipe'],
-      ['🔐', 'Téléphone partagé au comptoir', 'Code PIN au démarrage + journal d\'audit de qui a fait quoi.', "nav('security')", 'Sécurité'],
-      ['📊', 'Le vrai bénéfice, pas le chiffre d\'affaires', 'Bilan net (dépenses déduites), export Excel/PDF pour le comptable (OHADA).', "nav('financial')", 'Bilan'],
+      ['🔐', t('v_gPartage'), 'Code PIN au démarrage + journal d\'audit de qui a fait quoi.', "nav('security')", 'Sécurité'],
+      ['📊', 'Le vrai bénéfice, pas le chiffre d\'affaires', t('v_gVraiBenefAide'), "nav('financial')", 'Bilan'],
     ]},
     restaurant: { icon:'🍽️', label:'Restaurant', intro:t('w1_maquis'), rows: [
       ['🥘', t('w1_platsRecettes'), t('w1_platsAide'), "nav('add-product')", t('w1_creerPlat2')],
@@ -24530,7 +24838,7 @@ function vAiChat() {
       <button class="back-btn-dark" onclick="nav('home')">${IC.left}</button>
       <div style="display:flex;gap:8px">
         ${chat.length?`<button class="back-btn-dark" style="width:auto;padding:0 12px;font-size:12px" onclick="clearAiChat()">🗑️ Effacer</button>`:''}
-        <button class="back-btn-dark" style="width:auto;padding:0 12px;font-size:12px" onclick="_aiSetupKey()">⚙️ ${hasKey?'IA activée':'Activer'}</button>
+        <button class="back-btn-dark" style="width:auto;padding:0 12px;font-size:12px" onclick="_aiSetupKey()">⚙️ ${hasKey?'IA activée':t('v_activer')}</button>
       </div>
     </div>
     <div class="sub-hero-title">🤖 BARO IA</div>
@@ -24633,7 +24941,7 @@ function vMultiStore() {
       <div class="card" style="text-align:center;padding:36px 20px">
         <div style="font-size:46px;margin-bottom:10px">🏬</div>
         <div style="font-size:16px;font-weight:800;color:var(--text-1);margin-bottom:6px">${t('x4_gerezPointsVente')}</div>
-        <div style="font-size:13px;color:var(--text-3);line-height:1.55;margin-bottom:16px">Boutique du centre, comptoir du quartier, entrepôt… Créez vos emplacements : BARO compare leur chiffre d'affaires, leur stock et leurs meilleures ventes, ici, en un coup d'œil.</div>
+        <div style="font-size:13px;color:var(--text-3);line-height:1.55;margin-bottom:16px">${t('v_multiStore')}</div>
         <button class="btn btn-primary" style="width:auto;padding:11px 22px" onclick="S.locationAdd=true;render()">${t('x4_creerEmplacement2')}</button>
       </div>
     ` : locs.length === 0 ? '' : `
@@ -24991,11 +25299,11 @@ function vExports() {
     <!-- Rapports PDF -->
     <div class="card" style="margin-bottom:12px">
       <div class="card-title" style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">📑</span> Rapports PDF</div>
-      <div style="font-size:12px;color:var(--text-3);margin-bottom:10px">Rapports professionnels imprimables (A4, en-tête coloré, stats)</div>
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:10px">${t('v_expRapports')}</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
         <button class="btn btn-ghost" onclick="S.period='30d';generateBilanReportPDF()" style="padding:12px;text-align:left;display:flex;flex-direction:column;align-items:flex-start;gap:2px;grid-column:1/-1;border:1.5px solid var(--accent);background:linear-gradient(135deg,rgba(124,115,255,.07),transparent)">
           <div style="font-weight:800;font-size:13px;color:var(--text-1)">${t('w7_bilanSigne')} <span style="font-size:10px;color:var(--accent);font-weight:700">${t('w7_recommande')}</span></div>
-          <div style="font-size:11px;color:var(--text-3)">CA, bénéfice, marge, évolution, catégories, top produits — 30 derniers jours</div>
+          <div style="font-size:11px;color:var(--text-3)">${t('v_expCa')}</div>
         </button>
         <button class="btn btn-ghost" onclick="generateStockReportPDF()" style="padding:12px;text-align:left;display:flex;flex-direction:column;align-items:flex-start;gap:2px">
           <div style="font-weight:700;font-size:13px;color:var(--text-1)">📦 Rapport Stock</div>
@@ -25059,7 +25367,7 @@ function vExports() {
 
     <!-- Infos -->
     <div style="padding:12px;background:var(--gray-1);border:1px solid var(--border);border-radius:var(--r-md);font-size:11px;color:var(--text-3)">
-      💡 Astuce : les PDF sont prêts à imprimer. Les fichiers .xls s'ouvrent dans Excel directement. Les CSV passent dans tout logiciel comptable.
+      ${t('v_expAstuce')}
     </div>
   </div>`;
 }
@@ -29835,7 +30143,7 @@ function vBoutiqueEditor() {
     <div class="bq-sec-title" style="margin-top:14px">${t('x2_couleurMarque')}</div>
     <div class="bq-swatches">
       ${colors.map(c => `<button class="bq-swatch ${tc===c.color?'sel':''}" style="background:${c.color}" title="${c.name}" onclick="boutiqueEditSet('themeColor','${c.color}');document.querySelectorAll('.bq-swatch[data-grp=brand]').forEach(s=>s.classList.remove('sel'));this.classList.add('sel')" data-grp="brand">${tc===c.color?'✓':''}</button>`).join('')}
-      <label class="bq-swatch bq-swatch-custom" title="Personnalisée">✎<input type="color" value="${tc}" onchange="boutiqueEditSet('themeColor',this.value)"></label>
+      <label class="bq-swatch bq-swatch-custom" title=t('v_personnalisee')>✎<input type="color" value="${tc}" onchange="boutiqueEditSet('themeColor',this.value)"></label>
     </div>
 
     ${(() => {
@@ -30184,7 +30492,7 @@ function vBoutiqueEditor() {
           <span class="bq-pal-sw" style="background:${p[2]}"><i style="background:${p[3]}"></i></span>
           <span class="bq-pal-nm">${p[1]}</span>
         </button>`).join('')}
-        <button class="bq-pal ${!_cur ? 'sel' : ''}" onclick="boutiqueEditSet('palette','')" title="Utiliser la couleur de fond choisie plus bas">
+        <button class="bq-pal ${!_cur ? 'sel' : ''}" onclick="boutiqueEditSet('palette','')" title=t('v_utiliserFond')>
           <span class="bq-pal-sw bq-pal-none">✕</span><span class="bq-pal-nm">${t('x2_aucune')}</span>
         </button>
       </div>`;
@@ -30661,13 +30969,13 @@ function vBoutiqueEditor() {
     <div class="page-header-row">
       <button class="back-btn" onclick="nav('boutique')">${IC.left}</button>
       <div class="page-title" style="font-size:17px">${t('x2_editeurVisuel')}</div>
-      <button class="fab" onclick="generateBoutiqueSite()" title="Télécharger le site">${IC.download||'⬇'}</button>
+      <button class="fab" onclick="generateBoutiqueSite()" title=t('v_telechargerSite')>${IC.download||'⬇'}</button>
     </div>
   </div>
   <div class="bq-editor">
     <div class="bq-preview-wrap">
       <div class="bq-phone">
-        <iframe id="bq-preview" class="bq-preview-frame" title="Aperçu boutique"></iframe>
+        <iframe id="bq-preview" class="bq-preview-frame" title=t('v_apercuBoutique')></iframe>
         <div class="bq-live-badge"><span class="bq-live-dot"></span> EN DIRECT</div>
       </div>
     </div>
@@ -30909,12 +31217,12 @@ function vBoutiquePixels() {
   const bc = S.boutiqueConfig;
   const px = bc.pixels = bc.pixels || {};
   const pixelDefs = [
-    {key:'facebookPixel',  name:'ID Pixel Facebook',              icon:'🔵', color:'#1877F2', placeholder:'1234567890',   desc:'Ajoutez votre ID Pixel Facebook pour suivre le trafic'},
-    {key:'facebookCapi',   name:"Jeton d'API de Conversion Facebook", icon:'🔵', color:'#1877F2', placeholder:'EAA...',      desc:'Améliore le suivi des conversions (iOS 14.5+)'},
-    {key:'tiktokPixel',    name:'ID Pixel TikTok',                icon:'⚫', color:'#000',    placeholder:'C1A...',       desc:'Suivez le trafic et les conversions TikTok Ads'},
-    {key:'googleAnalytics',name:'Google Analytics 4 ID',          icon:'🔴', color:'#E37400', placeholder:'G-XXXXXXXXXX', desc:'Analyses détaillées du trafic de votre site'},
-    {key:'googleTagMgr',   name:'Google Tag Manager',             icon:'🔴', color:'#4285F4', placeholder:'GTM-XXXXXXX',  desc:'Gérez toutes vos balises de tracking'},
-    {key:'snapPixel',      name:'ID Pixel Snapchat',              icon:'🟡', color:'#FFFC00', placeholder:'abc123',       desc:'Trackez les campagnes Snap Ads'},
+    {key:'facebookPixel',  name:'ID Pixel Facebook',              icon:'🔵', color:'#1877F2', placeholder:'1234567890',   desc:t('v_pxFb')},
+    {key:'facebookCapi',   name:"Jeton d'API de Conversion Facebook", icon:'🔵', color:'#1877F2', placeholder:'EAA...',      desc:t('v_pxIos')},
+    {key:'tiktokPixel',    name:'ID Pixel TikTok',                icon:'⚫', color:'#000',    placeholder:'C1A...',       desc:t('v_pxTiktok')},
+    {key:'googleAnalytics',name:'Google Analytics 4 ID',          icon:'🔴', color:'#E37400', placeholder:'G-XXXXXXXXXX', desc:t('v_pxGa')},
+    {key:'googleTagMgr',   name:'Google Tag Manager',             icon:'🔴', color:'#4285F4', placeholder:'GTM-XXXXXXX',  desc:t('v_pxGtm')},
+    {key:'snapPixel',      name:'ID Pixel Snapchat',              icon:'🟡', color:'#FFFC00', placeholder:'abc123',       desc:t('v_pxSnap')},
   ];
   const activeCount = pixelDefs.filter(p => px[p.key+'_enabled'] && px[p.key]).length + (px.customJs_enabled && px.customJs ? 1 : 0);
   return `
@@ -30923,7 +31231,7 @@ function vBoutiquePixels() {
       <button class="back-btn-dark" onclick="nav('boutique')">${IC.left}</button>
       <div style="flex:1">
         <div class="sub-hero-title">${t('w9_paramPixels')}</div>
-        <div class="sub-hero-sub">${activeCount>0?activeCount+' pixel'+(activeCount>1?'s':'')+' actif'+(activeCount>1?'s':''):'Suivez vos conversions publicitaires'}</div>
+        <div class="sub-hero-sub">${activeCount>0?activeCount+' pixel'+(activeCount>1?'s':'')+' actif'+(activeCount>1?'s':''):t('v_pxSuivez')}</div>
       </div>
     </div>
   </div>
@@ -30979,7 +31287,7 @@ function vBoutiquePixels() {
     </div>
 
     <div class="card" style="background:#EFF6FF;border-color:#3B82F640;margin-top:14px;font-size:11px;color:#1E40AF;line-height:1.6">
-      💡 <strong>Astuce :</strong> les pixels sont automatiquement injectés dans le site quand vous cliquez sur t('zz_genererHTML') depuis la page Boutique.
+      💡 <strong>Astuce :</strong> les pixels sont automatiquement injectés dans le site quand vous cliquez sur ${t('zz3_genererHtml')} depuis la page Boutique.
     </div>
   </div>`;
 }
@@ -31077,7 +31385,7 @@ function vBoutiqueCode() {
     </div>
 
     <div class="card" style="background:#FEF3C7;border-color:#F59E0B40;font-size:11px;color:#92400E;line-height:1.6">
-      <strong>⚠ Attention :</strong> Le code personnalisé est injecté tel quel. N'insérez que du code de confiance.
+      <strong>⚠ Attention :</strong> ${t('v_codeAvert')}
       Testez toujours avec l'aperçu avant de générer le site.
     </div>
   </div>`;
@@ -31676,7 +31984,7 @@ function _poBody(a) {
     <div class="qs-label" style="margin-top:14px">Avis clients ⭐</div>
     ${reviews.map((r,i) => `<div class="po-rev">
       <div style="display:flex;gap:6px;align-items:center">
-        <input class="input" value="${(r.author||'').replace(/"/g,'&quot;')}" placeholder="Nom du client" oninput="_poRevField(${i},'author',this.value)" style="flex:1">
+        <input class="input" value="${(r.author||'').replace(/"/g,'&quot;')}" placeholder=t('v_nomClient') oninput="_poRevField(${i},'author',this.value)" style="flex:1">
         <select class="input" onchange="_poRevField(${i},'rating',this.value)" style="width:64px;flex:0 0 auto">${[5,4,3,2,1].map(n=>`<option value="${n}" ${(+r.rating||5)===n?'selected':''}>${n}★</option>`).join('')}</select>
         <button class="po-del2" onclick="_poDelReview(${i})">🗑</button>
       </div>
@@ -31952,8 +32260,8 @@ function vMarketing() {
   const activePopups = popups.filter(p => p.active);
 
   const tabs = [
-    { id:'promos',    label:'Réductions', icon:'%',  count: activePromos.length },
-    { id:'banners',   label:'Bannières',  icon:'📢', count: activeBanners.length },
+    { id:'promos',    label:t('v_reductions'), icon:'%',  count: activePromos.length },
+    { id:'banners',   label:t('v_bannieres'),  icon:'📢', count: activeBanners.length },
     { id:'popups',    label:'Popups',     icon:'💬', count: activePopups.length },
     { id:'reviews',   label:'Avis',       icon:'⭐', count: reviews.filter(r=>r.approved).length },
     { id:'campaigns', label:'Campagnes',  icon:'📧', count: campaigns.length },
@@ -32012,7 +32320,7 @@ function _renderPromosTab(promos) {
     <div class="card" style="text-align:center;padding:24px">
       <div style="color:var(--text-3);margin-bottom:8px;font-size:32px">%</div>
       <div style="font-size:14px;font-weight:700;margin-bottom:4px">${t('x5_aucuneReduction')}</div>
-      <div style="font-size:12px;color:var(--text-3);margin-bottom:12px">Offrez des codes promo pour déclencher l'achat et stimuler vos ventes</div>
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:12px">${t('v_promoOffrez')}</div>
       <button class="btn btn-primary" style="max-width:220px;margin:0 auto" onclick="addPromotion()">${t('x5_creerReduction')}</button>
     </div>` : promos.map(p => {
       const now = new Date().toISOString().slice(0,10);
@@ -32134,11 +32442,11 @@ function _renderLoyaltyTab() {
   return `
     <div class="section-hd"><span class="section-lbl">${t('x3_programmeFidelite')}</span></div>
     <div class="loyalty-card" onclick="toggleLoyalty()">
-      <div class="loyalty-title">${IC.star} Programme fidélité</div>
-      <div class="loyalty-sub">${S.loyaltyConfig?.enabled ? 'Activé — cliquez pour désactiver' : 'Cliquez pour activer et fidéliser vos clients'}</div>
+      <div class="loyalty-title">${IC.star} ${t('v_fidProg')}</div>
+      <div class="loyalty-sub">${S.loyaltyConfig?.enabled ? 'Activé — cliquez pour désactiver' : t('v_fidActiver')}</div>
       <div style="margin-top:12px;display:flex;gap:8px;position:relative;flex-wrap:wrap">
         <div style="background:rgba(255,255,255,0.2);padding:8px 14px;border-radius:8px;font-size:12px;font-weight:700">1 ${sym()} = ${S.loyaltyConfig?.pointsPerFcfa||1} pt</div>
-        <div style="background:rgba(255,255,255,0.2);padding:8px 14px;border-radius:8px;font-size:12px;font-weight:700">${(S.loyaltyConfig?.rewards||[]).length} récompenses</div>
+        <div style="background:rgba(255,255,255,0.2);padding:8px 14px;border-radius:8px;font-size:12px;font-weight:700">${(S.loyaltyConfig?.rewards||[]).length} ${t('v_fidRecomp')}</div>
         <div style="background:rgba(255,255,255,0.2);padding:8px 14px;border-radius:8px;font-size:12px;font-weight:700">${tiers.length} paliers</div>
       </div>
     </div>
@@ -32282,7 +32590,7 @@ function _renderPopupsTab(popups) {
       <div style="font-size:12px;color:var(--text-3);margin-bottom:12px">${t('x5_offrezCodePromo')}</div>
       <button class="btn btn-primary" style="max-width:220px;margin:0 auto" onclick="addPopup()">${t('x5_creerPopup')}</button>
     </div>` : popups.map(p => {
-      const trigLabels = { entry:'À l\'entrée', scroll:`Au scroll ${p.triggerValue||50}%`, time:`Après ${p.triggerValue||5}s`, exit:'À la sortie' };
+      const trigLabels = { entry:'À l\'entrée', scroll:`Au scroll ${p.triggerValue||50}%`, time:`Après ${p.triggerValue||5}s`, exit:t('v_popSortie') };
       return `
     <div class="card" style="margin-bottom:8px;cursor:pointer" onclick="editPopup(${p.id})">
       <div style="display:flex;align-items:center;gap:12px">
@@ -32650,7 +32958,7 @@ function vPromoDetail() {
 
     <div style="display:flex;gap:8px;margin-bottom:8px">
       <button class="btn btn-primary" style="flex:1" onclick="editPromotion(${p.id})">${IC.edit||IC.settings} Modifier</button>
-      <button class="btn btn-ghost" style="flex:1" onclick="togglePromoActive(${p.id})">${p.active?'Désactiver':'Activer'}</button>
+      <button class="btn btn-ghost" style="flex:1" onclick="togglePromoActive(${p.id})">${p.active?'Désactiver':t('v_activer')}</button>
     </div>
     <button class="btn btn-ghost" style="color:var(--danger);border-color:var(--danger);width:100%" onclick="deletePromotion(${p.id})">${IC.trash||'🗑'} Supprimer</button>
   </div>`;
@@ -32799,7 +33107,7 @@ function vBannerForm() {
     <div class="page-header-row" style="margin-bottom:10px">
       <button class="back-btn-dark" onclick="S.editingBannerId=null;nav('marketing')">${IC.left}</button>
       <div style="flex:1">
-        <div class="sub-hero-title">${isEdit?'Modifier bannière':'Nouvelle bannière'}</div>
+        <div class="sub-hero-title">${isEdit?'Modifier bannière':t('v_nouvelleBan')}</div>
         <div class="sub-hero-sub">${t('w9_messageAffiche')}</div>
       </div>
     </div>
@@ -32843,7 +33151,7 @@ function vBannerForm() {
       <div class="card-title">Action (optionnel)</div>
       <div class="form-group">
         <label class="form-label">${t('w9_texteBouton')}</label>
-        <input class="input" id="bn-linktext" value="${draft.linkText||''}" placeholder="Voir les offres">
+        <input class="input" id="bn-linktext" value="${draft.linkText||''}" placeholder=t('v_voirOffres')>
       </div>
       <div class="form-group">
         <label class="form-label">Lien cible</label>
@@ -32882,7 +33190,7 @@ function vBannerForm() {
 
     <div style="display:flex;gap:8px">
       ${isEdit?`<button class="btn btn-ghost" style="color:var(--danger);border-color:var(--danger)" onclick="deleteBanner(${draft.id})">${t('x5_supprimerIcone')}</button>`:''}
-      <button class="btn btn-primary" style="flex:1" onclick="saveBanner()">${IC.check} ${isEdit?'Mettre à jour':'Créer la bannière'}</button>
+      <button class="btn btn-primary" style="flex:1" onclick="saveBanner()">${IC.check} ${isEdit?'Mettre à jour':t('v_creerBan')}</button>
     </div>
   </div>`;
 }
@@ -32951,7 +33259,7 @@ function vPopupForm() {
   const p = isEdit ? S.popups.find(x => x.id === S.editingPopupId) : null;
   const today = new Date().toISOString().slice(0,10);
   const plus30 = new Date(Date.now()+30*86400000).toISOString().slice(0,10);
-  const draft = p || { title:'-10% sur votre première commande !', message:'Utilisez le code BIENVENUE10 pour profiter de 10% de remise.', emoji:'🎉', trigger:'time', triggerValue:5, ctaText:'En profiter', ctaUrl:'', promoCode:'', bgColor:'#4F46E5', textColor:'#FFFFFF', active:true, showOnce:true, startDate:today, endDate:plus30 };
+  const draft = p || { title:t('v_popTitre'), message:t('v_popTexte'), emoji:'🎉', trigger:'time', triggerValue:5, ctaText:'En profiter', ctaUrl:'', promoCode:'', bgColor:'#4F46E5', textColor:'#FFFFFF', active:true, showOnce:true, startDate:today, endDate:plus30 };
   const promos = (S.promotions||[]).filter(x => x.active);
   return `
   <div class="sub-hero">
@@ -32990,7 +33298,7 @@ function vPopupForm() {
       </div>
       <div class="form-group">
         <label class="form-label">${t('w9_message')}</label>
-        <textarea class="input" id="pp-message" rows="3" oninput="$('pp-prev-message').textContent=this.value" placeholder="Utilisez le code BIENVENUE10...">${draft.message||''}</textarea>
+        <textarea class="input" id="pp-message" rows="3" oninput="$('pp-prev-message').textContent=this.value" placeholder=t('v_popPlaceholder')>${draft.message||''}</textarea>
       </div>
     </div>
 
@@ -32998,10 +33306,10 @@ function vPopupForm() {
       <div class="card-title">${t('w9_declencheur')}</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
         ${[
-          {id:'entry',label:"À l'entrée",ico:'👋',desc:"Dès l'ouverture"},
-          {id:'time',label:'Après temps',ico:'⏱️',desc:'Après X secondes'},
-          {id:'scroll',label:'Au scroll',ico:'📜',desc:'Après X% de scroll'},
-          {id:'exit',label:'À la sortie',ico:'👋',desc:'Intention de partir'},
+          {id:'entry',label:t('v_popEntree'),ico:'👋',desc:t('v_popOuverture')},
+          {id:'time',label:t('v_popApresTemps'),ico:'⏱️',desc:t('v_popApresSec')},
+          {id:'scroll',label:'Au scroll',ico:'📜',desc:t('v_popApresScroll')},
+          {id:'exit',label:t('v_popSortie'),ico:'👋',desc:'Intention de partir'},
         ].map(tg => `
         <label class="promo-type-opt ${draft.trigger===tg.id?'selected':''}" onclick="document.querySelectorAll('[data-pp-trig]').forEach(e=>e.classList.remove('selected'));this.classList.add('selected');$('pp-trigger').value='${tg.id}';document.getElementById('pp-trig-val-wrap').style.display=['time','scroll'].includes('${tg.id}')?'block':'none';$('pp-trig-val-lbl').textContent='${tg.id==='time'?'Secondes':tg.id==='scroll'?'% de scroll':''}'" data-pp-trig="${tg.id}">
           <div style="font-size:22px">${tg.ico}</div>
@@ -33062,7 +33370,7 @@ function vPopupForm() {
 
     <div style="display:flex;gap:8px">
       ${isEdit?`<button class="btn btn-ghost" style="color:var(--danger);border-color:var(--danger)" onclick="deletePopup(${draft.id})">${t('x5_supprimerIcone')}</button>`:''}
-      <button class="btn btn-primary" style="flex:1" onclick="savePopup()">${IC.check} ${isEdit?'Mettre à jour':'Créer le popup'}</button>
+      <button class="btn btn-primary" style="flex:1" onclick="savePopup()">${IC.check} ${isEdit?'Mettre à jour':t('v_popCreer')}</button>
     </div>
   </div>`;
 }
@@ -33178,7 +33486,7 @@ function vReviewForm() {
     </div>
     <div style="display:flex;gap:8px">
       ${isEdit?`<button class="btn btn-ghost" style="color:var(--danger);border-color:var(--danger)" onclick="deleteReview(${draft.id})">${t('x5_supprimerIcone')}</button>`:''}
-      <button class="btn btn-primary" style="flex:1" onclick="saveReview()">${IC.check} ${isEdit?'Mettre à jour':"Créer l'avis"}</button>
+      <button class="btn btn-primary" style="flex:1" onclick="saveReview()">${IC.check} ${isEdit?'Mettre à jour':t('v_creerAvis')}</button>
     </div>
   </div>`;
 }
@@ -33259,7 +33567,7 @@ function vTrackingForm() {
     <div class="page-header-row" style="margin-bottom:10px">
       <button class="back-btn-dark" onclick="S.editingTrackingId=null;nav('marketing')">${IC.left}</button>
       <div style="flex:1">
-        <div class="sub-hero-title">${isEdit?'Modifier lien':'Nouveau lien tracé'}</div>
+        <div class="sub-hero-title">${isEdit?'Modifier lien':t('v_nouveauLien')}</div>
         <div class="sub-hero-sub">${t('w9_identifierOrigine')}</div>
       </div>
     </div>
@@ -33297,7 +33605,7 @@ function vTrackingForm() {
     </div>
     <div style="display:flex;gap:8px">
       ${isEdit?`<button class="btn btn-ghost" style="color:var(--danger);border-color:var(--danger)" onclick="deleteTrackingLink(${draft.id})">${t('x5_supprimerIcone')}</button>`:''}
-      <button class="btn btn-primary" style="flex:1" onclick="saveTrackingLink()">${IC.check} ${isEdit?'Mettre à jour':'Créer le lien'}</button>
+      <button class="btn btn-primary" style="flex:1" onclick="saveTrackingLink()">${IC.check} ${isEdit?'Mettre à jour':t('v_creerLien')}</button>
     </div>
   </div>`;
 }
@@ -33840,7 +34148,7 @@ function applyVideoTemplate(tplId) {
 //   déplaçable au doigt/souris, redimensionnable. Export PNG net.
 // ══════════════════════════════════════════════════════════════
 const CE_RATIOS = {
-  square:   { w:1080, h:1080, label:'Carré 1:1' },
+  square:   { w:1080, h:1080, label:t('v_carre') },
   portrait: { w:1080, h:1350, label:'Post 4:5' },
   story:    { w:1080, h:1920, label:'Story 9:16' },
 };
@@ -33979,7 +34287,7 @@ function _ceBgPanel(cr, itemsWithImg) {
     ${itemsWithImg.length ? `
       <div class="ce-panel-hd" style="margin-top:14px"><span>${t('x5_ajouterPhotoProduit')}</span></div>
       <div class="ce-prodrow">${itemsWithImg.slice(0,12).map(p=>`<button class="ce-prod" style="background-image:url('${p.img}')" title="${p.name.replace(/"/g,'&quot;')}" onclick="_ceAddProductImg('${p.img}')"></button>`).join('')}</div>` : ''}
-    <div class="ce-hint" style="margin-top:12px">Astuce : touchez un élément sur l'image pour le modifier, glissez-le pour le déplacer.</div>`;
+    <div class="ce-hint" style="margin-top:12px">${t('v_creatorAstuce')}</div>`;
 }
 // ── Interactions ──
 function _ceStageTap(e) { if (e.target && e.target.id === 'ce-stage') { _creator().selected = null; render(); } }
@@ -35188,7 +35496,7 @@ const SOCIAL_PLATFORMS_META = {
     name:'Facebook Page', color:'#1877F2', logo:'📘',
     portal:'https://developers.facebook.com/apps/',
     docs:'https://developers.facebook.com/docs/pages-api/posts/',
-    help:"Créez une App Meta Developers → ajoutez Facebook Login → générez un Page Access Token longue durée pour votre Page Business.",
+    help:t('v_metaApp'),
     fields:[
       {id:'pageId', label:'Page ID', placeholder:'101234567890123', required:true},
       {id:'accessToken', label:'Page Access Token (long-lived)', placeholder:'EAAxxxxxxxxxxxxx', required:true, type:'password'},
@@ -35287,7 +35595,7 @@ function vSocialSetup() {
         <input type="checkbox" id="soc-auto-product" ${d.autoProduct?'checked':''}>
       </label>
       <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
-        <div><div style="font-weight:700;font-size:13px">Post auto promo</div><div style="font-size:11px;color:var(--text-3)">Publie chaque nouvelle promo/soldes</div></div>
+        <div><div style="font-weight:700;font-size:13px">Post auto promo</div><div style="font-size:11px;color:var(--text-3)">${t('v_publiePromo')}</div></div>
         <input type="checkbox" id="soc-auto-promo" ${d.autoPromo?'checked':''}>
       </label>
       <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 0">
@@ -36059,7 +36367,7 @@ function vApiSettings() {
     <div class="card" style="margin-bottom:10px">
       <div class="card-title">🔑 Token API personnel</div>
       <div style="font-size:12px;color:var(--text-3);margin-bottom:12px">
-        Utilisé pour authentifier les appels vers l'API BARO (header <code>Authorization: Bearer ...</code>).
+        ${t('v_apiUtilise')} <code>Authorization: Bearer ...</code>).
         ${api.createdAt?`<br>Créé le ${new Date(api.createdAt).toLocaleDateString('fr')}.`:''}
       </div>
       ${api.token ? `
@@ -36072,7 +36380,7 @@ function vApiSettings() {
         <button class="btn btn-ghost" style="color:var(--danger);border-color:var(--danger)40" onclick="revokeApiToken()">${t('w8_revoquer')}</button>
       </div>
       ` : `
-      <button class="btn btn-primary" style="width:100%" onclick="generateApiToken()">${IC.plus} Générer un token API</button>
+      <button class="btn btn-primary" style="width:100%" onclick="generateApiToken()">${IC.plus} ${t('v_apiGenerer')}</button>
       `}
     </div>
 
@@ -36083,13 +36391,13 @@ function vApiSettings() {
         <button class="btn btn-primary" style="font-size:11px;padding:6px 12px" onclick="addWebhook()">${IC.plus} Nouveau</button>
       </div>
       <div style="font-size:12px;color:var(--text-3);margin-bottom:12px">
-        BARO enverra un POST JSON à votre URL dès qu'un événement se produit.
+        ${t('v_apiPost')}
       </div>
       ${webhooks.length === 0 ? `
       <div class="empty" style="padding:26px 10px">
         <div class="empty-ico" style="font-size:36px">🪝</div>
         <div class="empty-text" style="margin-top:6px">${t('w8_aucunWebhook')}</div>
-        <div style="font-size:11px;color:var(--text-3);margin-top:4px">Créez votre premier webhook pour recevoir des événements en temps réel.</div>
+        <div style="font-size:11px;color:var(--text-3);margin-top:4px">${t('v_apiPremier')}</div>
       </div>
       ` : webhooks.map(w => `
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:8px">
@@ -36121,7 +36429,7 @@ function vApiSettings() {
     <div class="card" style="margin-bottom:10px">
       <div class="card-title">📨 Webhook entrant (Zapier / Make / n8n)</div>
       <div style="font-size:12px;color:var(--text-2);margin-bottom:10px">
-        Déclenchez des actions BARO depuis vos outils d'automatisation externes.
+        ${t('v_apiDeclenchez')}
       </div>
       <div style="background:var(--gray-1);padding:10px;border-radius:8px;font-family:monospace;font-size:11px;word-break:break-all;line-height:1.5">
         <div style="color:var(--accent);font-weight:700;margin-bottom:4px">POST</div>
@@ -36145,7 +36453,7 @@ function vApiSettings() {
     </div>
 
     <div class="card" style="background:#EFF6FF;border-color:#3B82F640;font-size:11px;color:#1E40AF;line-height:1.6">
-      💡 <strong>${t('x3_securite')}</strong> Ne partagez jamais votre token. Chaque webhook possède un secret HMAC distinct pour signer les requêtes.
+      💡 <strong>${t('x3_securite')}</strong> ${t('v_apiSecret')}
     </div>
   </div>`;
 }
@@ -37723,7 +38031,7 @@ function vDeliverySetup() {
     ` : ''}
 
     <div class="card" style="margin-top:14px;background:#EFF6FF;border-color:#3B82F640;font-size:11px;color:#1E40AF;line-height:1.6">
-      💡 <strong>Astuce :</strong> Après connexion, un bouton "${meta.name}" apparaît sur chaque commande boutique (onglet Boutique › Commandes). Un clic = coursier envoyé avec TOUS les détails (adresse, valeur, contact).
+      💡 <strong>Astuce :</strong> ${t('v_glovoApres')} "${meta.name}" apparaît sur chaque commande boutique (onglet Boutique › Commandes). Un clic = coursier envoyé avec TOUS les détails (adresse, valeur, contact).
       ${defaults.sandbox?'<br>🧪 <strong>'+t('w1_modeTest')+'</strong> '+t('w1_aucunFrais'):''}
     </div>
   </div>`;
@@ -38097,7 +38405,7 @@ function vWhatsAppSetup() {
         <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">${t('x1_numWaBusiness')}</label>
         <input id="wa-phone" class="input" value="${(d.phone||'').replace(/"/g,'&quot;')}" placeholder="+225 07 XX XX XX XX">
         ${(d.confirmed && d.confirmedPhone === d.phone) ? `<div style="display:flex;align-items:center;gap:6px;margin-top:7px;font-size:12px;color:#128C7E;font-weight:700">${t('x1_numConfirmeWa')}</div>`
-          : `<button class="btn btn-ghost" style="width:100%;margin-top:7px;font-size:12px;padding:8px;border:1px solid #25D36660;color:#128C7E" onclick="confirmWhatsAppNumber()">${IC.whatsapp} Confirmer ce numéro (envoi d'un test)</button>`}
+          : `<button class="btn btn-ghost" style="width:100%;margin-top:7px;font-size:12px;padding:8px;border:1px solid #25D36660;color:#128C7E" onclick="confirmWhatsAppNumber()">${IC.whatsapp} ${t('v_confirmerNum')}</button>`}
       </div>
       <div style="margin-bottom:10px">
         <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">${t('x1_nomSignature')}</label>
@@ -38381,7 +38689,7 @@ function vSmsSetup() {
       <button class="back-btn-dark" onclick="nav('integrations')">${IC.left}</button>
       <div style="flex:1">
         <div class="sub-hero-title">📨 SMS API</div>
-        <div class="sub-hero-sub">${connected ? `✓ Connecté — ${provider.name}` : 'Envoyez SMS de confirmation, OTP, promo à vos clients'}</div>
+        <div class="sub-hero-sub">${connected ? `✓ Connecté — ${provider.name}` : t('v_smsEnvoyez')}</div>
       </div>
     </div>
     <div style="display:flex;gap:8px">
@@ -38396,7 +38704,7 @@ function vSmsSetup() {
         <div style="font-size:24px">💡</div>
         <div style="flex:1;font-size:12px;color:var(--text-1);line-height:1.5">
           <strong style="color:#D97706">${t('x1_choisissezPasserelle')}</strong><br>
-          BARO supporte <b>Twilio</b>, <b>Vonage</b>, <b>Africa's Talking</b> ${t('y5_tarifsBas')} <b>Orange CI Pro</b>. Créez un compte, récupérez vos identifiants puis collez-les ci-dessous.
+          BARO supporte <b>Twilio</b>, <b>Vonage</b>, <b>Africa's Talking</b> ${t('y5_tarifsBas')} <b>Orange CI Pro</b>${t('v_smsCompte')}
         </div>
       </div>
       ${provider.url ? `<div style="margin-top:10px"><button class="btn btn-ghost" style="width:100%;font-size:11px;padding:7px" onclick="window.open('${provider.url}','_blank')">🌐 Ouvrir console ${provider.name}</button></div>`:''}
@@ -38412,7 +38720,7 @@ function vSmsSetup() {
     <div class="card" style="margin-bottom:10px">
       <div class="card-title">🔐 Identifiants ${provider.name}</div>
       ${provider.fields.map(f => {
-        const labels = { accountSid:'Account SID', authToken:'Auth Token', apiKey:'API Key', apiSecret:'API Secret', username:'Username', from:'Numéro / Sender ID émetteur', clientId:'Client ID', clientSecret:'Client Secret', endpoint:'URL endpoint HTTP', authHeader:'Header Authorization' };
+        const labels = { accountSid:'Account SID', authToken:'Auth Token', apiKey:'API Key', apiSecret:'API Secret', username:'Username', from:t('v_smsSender'), clientId:'Client ID', clientSecret:'Client Secret', endpoint:'URL endpoint HTTP', authHeader:'Header Authorization' };
         const placeholders = { accountSid:'ACxxxxx', authToken:'xxxxx', apiKey:'xxxxx', apiSecret:'xxxxx', username:'sandbox', from:'+225 07 XX XX XX XX ou BARO', clientId:'xxxxx', clientSecret:'xxxxx', endpoint:'https://sms.provider.com/send', authHeader:'Bearer xxxxx' };
         const secret = ['authToken','apiSecret','apiKey','clientSecret','authHeader'].includes(f);
         return `
@@ -38630,7 +38938,7 @@ function vWhatsappBroadcast() {
       <div class="card" style="text-align:center;padding:30px 18px">
         <div style="font-size:34px;margin-bottom:8px">📇</div>
         <div style="font-weight:800;margin-bottom:4px">${t('w9_aucunClientNum')}</div>
-        <div style="font-size:12px;color:var(--text-3);margin-bottom:14px">Ajoutez des clients (avec téléphone) pour leur envoyer un message groupé.</div>
+        <div style="font-size:12px;color:var(--text-3);margin-bottom:14px">${t('v_waGroupe')}</div>
         <button class="btn btn-primary" onclick="nav('add-client')">${t('w9_ajouterClient')}</button>
       </div>` : `
       <div class="card" style="margin-bottom:10px">
@@ -38742,7 +39050,7 @@ function vSmsBroadcast() {
       <button class="back-btn-dark" onclick="nav('integrations')">${IC.left}</button>
       <div style="flex:1">
         <div class="sub-hero-title">${t('w9_smsGroupe')}</div>
-        <div class="sub-hero-sub">${cfg ? 'Envoi automatique via votre passerelle' : 'Passerelle SMS non configurée'}</div>
+        <div class="sub-hero-sub">${cfg ? 'Envoi automatique via votre passerelle' : t('v_smsPasserelle')}</div>
       </div>
     </div>
     <div style="display:flex;gap:8px">
@@ -38758,7 +39066,7 @@ function vSmsBroadcast() {
           <div style="font-size:24px">⚙️</div>
           <div style="flex:1;font-size:12px;color:var(--text-1);line-height:1.5">
             <strong style="color:#4338CA">${t('w9_configPasserelle')}</strong><br>
-            Pour l'envoi <b>automatique</b> de masse, connectez Twilio, Vonage, Africa's Talking ou Orange CI. Sans passerelle, vous pouvez quand même ouvrir l'app SMS de votre téléphone avec tous les numéros pré-remplis.
+            ${t('v_smsPourEnvoi')} <b>automatique</b> ${t('v_smsMasse')}
           </div>
         </div>
         <button class="btn btn-primary" style="width:100%;margin-top:10px" onclick="nav('sms-setup')">${t('w9_configurerSms')}</button>
@@ -38896,7 +39204,7 @@ function vEmailBroadcast() {
       <div class="card" style="text-align:center;padding:30px 18px">
         <div style="font-size:34px;margin-bottom:8px">📭</div>
         <div style="font-weight:800;margin-bottom:4px">${t('w9_aucunClientEmail')}</div>
-        <div style="font-size:12px;color:var(--text-3);margin-bottom:14px">Ajoutez l'adresse email de vos clients pour leur écrire en groupe.</div>
+        <div style="font-size:12px;color:var(--text-3);margin-bottom:14px">${t('v_emailGroupe')}</div>
         <button class="btn btn-primary" onclick="nav('add-client')">${t('w9_ajouterClient')}</button>
       </div>` : `
       <div class="card" style="margin-bottom:10px">
@@ -38949,8 +39257,8 @@ function vEcommerceSetup() {
     name:'Shopify', color:'#95BF47', accent:'#5E8E3E',
     logo:'🛒', portal:'https://www.shopify.com/admin', docs:'https://shopify.dev/docs/api/admin-rest',
     keyLabel:'Admin API Access Token (shpat_...)', keyPlaceholder:'shpat_xxxxxxxxxxxxxxxx',
-    urlLabel:'Domaine boutique (sans https)', urlPlaceholder:'maboutique.myshopify.com',
-    help:"Créez une app privée dans Shopify Admin › Apps › Develop apps, activez l'API et copiez l'Access Token."
+    urlLabel:t('v_domaineBq'), urlPlaceholder:'maboutique.myshopify.com',
+    help:t('v_shopifyApp')
   } : provider === 'woocommerce' ? {
     name:'WooCommerce', color:'#7F54B3', accent:'#5A3E8C',
     logo:'🟣', portal:'https://woocommerce.com/my-account/', docs:'https://woocommerce.github.io/woocommerce-rest-api-docs/',
@@ -38972,7 +39280,7 @@ function vEcommerceSetup() {
       <button class="back-btn-dark" onclick="nav('integrations')">${IC.left}</button>
       <div style="flex:1">
         <div class="sub-hero-title">${meta.logo} Synchronisation ${meta.name}</div>
-        <div class="sub-hero-sub">${connected ? '✓ Connecté — sync bidirectionnelle active' : 'Pushez vos produits et récupérez les commandes automatiquement'}</div>
+        <div class="sub-hero-sub">${connected ? '✓ Connecté — sync bidirectionnelle active' : t('v_ecomPush')}</div>
       </div>
     </div>
     <div style="display:flex;gap:8px">
@@ -39268,7 +39576,7 @@ function vSheetsSetup() {
       <button class="back-btn-dark" onclick="nav('integrations')">${IC.left}</button>
       <div style="flex:1">
         <div class="sub-hero-title">📈 Google Sheets</div>
-        <div class="sub-hero-sub">${connected?'✓ Push temps réel actif':'Append automatique des ventes sur Google Sheets'}</div>
+        <div class="sub-hero-sub">${connected?'✓ Push temps réel actif':t('v_sheetsAppend')}</div>
       </div>
     </div>
     <div style="display:flex;gap:8px">
@@ -39283,10 +39591,10 @@ function vSheetsSetup() {
         <div style="font-size:26px">📈</div>
         <div style="flex:1;font-size:12px;color:var(--text-1);line-height:1.5">
           <strong style="color:#0F9D58">Comment obtenir l'Access Token ?</strong><br>
-          1) Créez un projet sur <em>Google Cloud Console</em> → activez <em>Google Sheets API</em>.<br>
+          ${t('v_sheets1')} <em>Google Cloud Console</em> → activez <em>Google Sheets API</em>.<br>
           2) OAuth consent screen → ajoutez scope <code>spreadsheets</code>.<br>
-          3) OAuth 2.0 Playground → générez un access_token (scope spreadsheets).<br>
-          4) Créez une feuille Google Sheets, copiez l'ID (entre /d/ et /edit).
+          ${t('v_sheets3')}<br>
+          ${t('v_sheets4')}
         </div>
       </div>
       <div style="display:flex;gap:6px;margin-top:10px">
@@ -39433,7 +39741,7 @@ function vPosSetup() {
     {id:'wizarpos', name:'WizarPOS Q2/Q3', endpoint:'http://127.0.0.1:9100'},
     {id:'ingenico', name:'Ingenico Link/2500', endpoint:'tcp://192.168.1.200:9100'},
     {id:'verifone', name:'Verifone V200c/X9', endpoint:'tcp://192.168.1.201:9100'},
-    {id:'generic',  name:'Imprimante ESC/POS générique', endpoint:'http://192.168.1.X:9100'},
+    {id:'generic',  name:t('v_imprimante'), endpoint:'http://192.168.1.X:9100'},
   ];
   return `
   <div class="sub-hero" style="background:linear-gradient(135deg,#4B5EFC30,#2E3A9610)">
@@ -39467,11 +39775,11 @@ function vPosSetup() {
       </div>
       <div style="margin-bottom:10px">
         <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">${t('x3_enteteTicket')}</label>
-        <input id="pos-header" class="input" value="${(d.header||S.session?.business||'').replace(/"/g,'&quot;')}" placeholder="MA BOUTIQUE">
+        <input id="pos-header" class="input" value="${(d.header||S.session?.business||'').replace(/"/g,'&quot;')}" placeholder=t('v_maBoutiqueMaj')>
       </div>
       <div style="margin-bottom:10px">
         <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">Pied de ticket (ex. Merci ! RC/NINEA…)</label>
-        <input id="pos-footer" class="input" value="${(d.footer||'Merci de votre visite !').replace(/"/g,'&quot;')}">
+        <input id="pos-footer" class="input" value="${(d.footer||t('v_merciVisite')).replace(/"/g,'&quot;')}">
       </div>
     </div>
 
@@ -39654,7 +39962,7 @@ function vComptaSetup() {
     {id:'cegid',  name:'Cegid Quadra / Cegid CI', endpoint:'https://api.cegid.com/accounting/v1/entries'},
     {id:'odoo',   name:'Odoo Accounting',         endpoint:'https://votre.odoo.com/web/dataset/call_kw/account.move/create'},
     {id:'saari',  name:'Saari Ciel',              endpoint:''},
-    {id:'webhook',name:'Webhook personnalisé',    endpoint:'https://votre-compta.com/api/ventes'},
+    {id:'webhook',name:t('v_webhookPerso'),    endpoint:'https://votre-compta.com/api/ventes'},
   ];
   return `
   <div class="sub-hero" style="background:linear-gradient(135deg,#F59E0B30,#D9770610)">
@@ -39687,7 +39995,7 @@ function vComptaSetup() {
       </div>
       <div style="margin-bottom:10px">
         <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">${t('x1_tokenCleApi')}</label>
-        <input id="cp-token" class="input" type="password" value="${(d.apiKey||'').replace(/"/g,'&quot;')}" placeholder="Bearer token ou clé">
+        <input id="cp-token" class="input" type="password" value="${(d.apiKey||'').replace(/"/g,'&quot;')}" placeholder=t('v_bearerToken')>
       </div>
       <div style="margin-bottom:10px">
         <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">NINEA / RCCM / IFU (fiscal)</label>
