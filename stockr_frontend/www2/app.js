@@ -270,6 +270,155 @@ const API_BASE = (location.hostname === 'localhost' || location.hostname === '12
 // ── i18n ─────────────────────────────────────
 const LANGS = {
   fr: {
+    u_codePl: "/* Votre code {0} */",
+    u_pixAide: "les pixels sont automatiquement injectés dans le site quand vous cliquez sur {0}",
+    u_cssPerso: "/* Votre code CSS */",
+    u_entrepotIntro: "Gros volumes, cartons, références — la logistique.",
+    u_mConfirm: "Bonjour {{client}} 👋\n\nVotre commande {{ref}} est confirmée ✅\nMontant : {{total}} {{sym}}\nLivraison prévue : {{delivery}}\n\nMerci pour votre confiance !\n{{business}}",
+    u_mExped: "🚚 {{client}}, votre commande {{ref}} est en route !\n\nSuivi : {{tracking}}\nArrivée estimée : {{eta}}\n\n{{business}}",
+    u_mLivree: "✓ {{client}}, votre commande {{ref}} a bien été livrée.\n\nN'hésitez pas à nous donner votre avis 🌟\n\n{{business}}",
+    u_mFacture: "💳 Bonjour {{client}},\n\nVotre facture {{ref}} : {{total}} {{sym}}\nPaiement : {{payment_link}}\n\n{{business}}",
+    u_mPromo: "🎉 {{client}}, offre spéciale chez {{business}} !\n\n{{promo_text}}\n\nValable jusqu'au {{expires}}.",
+    u_mAnniv: "🎂 Joyeux anniversaire {{client}} !\nUn cadeau vous attend chez {{business}} : {{gift}}.",
+    u_sFacture: "{{business}} : votre facture {{ref}} {{total}} {{sym}}. Payez : {{payment_link}}",
+    u_sCode: "{{business}} : votre code est {{code}}. Valable 5 min.",
+    u_sCodeLbl: "Code de vérification",
+    u_ajoutProd: "Ajouter un produit",
+    u_equipe: "Équipe",
+    u_securite: "Sécurité",
+    u_vendeuses: "Vendeuses de comptoir",
+    u_typeBoutique: "Boutique",
+    u_typeEntrepot: "Entrepôt",
+    u_etape: "Étape {0} / {1}",
+    u_etape12: "Étape 1/2",
+    u_activer: "Activer",
+    u_votre: "votre",
+    u_compte: "compte.",
+    u_ecomPush: "Envoie chaque nouveau produit BARO sur {0}",
+    u_ecomPull: "Récupère les commandes {0} comme ventes BARO",
+    y_spGroq: "✅ Marche partout (Afrique incluse), aucune carte requise",
+    y_spOr: "Modèles :free, sans carte",
+    y_spGem: "⚠ Palier gratuit indisponible dans certains pays",
+    y_ecomSync: "Met à jour le stock dans les deux sens (vente BARO ⇄ {0})",
+    y_ecomSyncT: "Stock synchronisé dans les deux sens",
+    y_autoStock: "Envoie « Alerte stock faible » sur le numéro administrateur quand le stock passe sous le seuil",
+    y_ajoutProd: "🏪 Ajouter un produit",
+    y_ajoutProdSimple: "Ajouter un produit",
+    y_ajoutArticle: "Ajouter un article",
+    x_perimAide: "Marquez chaque produit « périssable » avec sa date : BARO vous alerte AVANT l'expiration, et le filtre Péremption du Stock montre tout ce qui approche.",
+    x_seuilAide: "Donnez un seuil minimum à chaque produit (ex : 5 boîtes) : alerte automatique dès qu'on passe dessous.",
+    x_grossiste: "Le grossiste livre 30 références ? Stock → « ⚡ Entrée/Sortie » : cherchez, tapez la quantité, enchaînez — sans quitter l'écran.",
+    x_inventaire: "Tout l'inventaire de départ en 1 session",
+    x_saisieLot: "Saisie en lot : collez ou tapez la liste complète (nom, quantité, prix), BARO crée tout d'un coup.",
+    x_codeEquipe: "Code d'équipe : chacune vend depuis son téléphone, chaque vente est enregistrée à son nom.",
+    x_pinAudit: "Code PIN au démarrage + journal d'audit de qui a fait quoi.",
+    x_vraiBenef: "Le vrai bénéfice, pas le chiffre d'affaires",
+    x_wizRev: "Boutique, épicerie, quincaillerie, cosmétiques, pharmacie… j'achète et je revends",
+    x_voirStock2: "Voir mon stock",
+    x_ajoutProd2: "Ajouter un produit",
+    x_essayerScan2: "Essayer le scan",
+    x_ouvrirStock2: "Ouvrir le stock",
+    x_equipe2: "Équipe",
+    x_securite2: "Sécurité",
+    x_bilan2: "Bilan",
+    x_maBoutique2: "🏪 Ma boutique",
+    x_ecomPush2: "Envoie chaque nouveau produit BARO sur Shopify",
+    x_ecomSync2: "Met à jour le stock dans les deux sens (vente BARO ⇄ Shopify)",
+    x_ecomPull2: "Récupère les commandes Shopify comme ventes BARO",
+    x_autoStock2: "Envoie « Alerte stock faible » sur le numéro administrateur quand le stock passe sous le seuil",
+    x_popTitre2: "-10% sur votre première commande !",
+    x_spPartout2: "✅ Marche partout (Afrique incluse), aucune carte requise ·",
+    x_spModeles2: "Modèles :free, sans carte ·",
+    x_spPalier2: "⚠ Palier gratuit indisponible dans certains pays ·",
+    x_oaPour2: "Pour activer ces flux OAuth 2.0, vous devez créer vos propres identifiants gratuits chez Google/Apple et les coller ci-dessous.",
+    x_lignesDet2: "ligne(s) détectée(s)",
+    x_montantDu2: "Montant dû",
+    x_expClients2: "clients triés par CA avec paliers",
+    x_cssPerso2: "/* Votre code CSS */",
+    x_teamMois: "member(s) · {0} ce mois",
+    x_activer: "Activer",
+    x_enregistrer: "Enregistrer",
+    x_pixFin: "depuis la page Boutique.",
+    x_codeFin: "Testez toujours avec l'aperçu avant de générer le site.",
+    x_cssPerso: "/* Votre code CSS */",
+    x_prevFin: "ventes et cet écran se remplira tout seul.",
+    x_expClients: "clients triés par CA avec paliers",
+    x_montantDu: "Montant dû",
+    x_lignesDet: "ligne(s) détectée(s)",
+    x_maBoutique: "🏪 Ma boutique",
+    x_creeUn: "Créez un",
+    x_factPlan: "par forfait chez votre fournisseur, puis collez-le ici. Quand un client choisit un forfait, il paie sur la page sécurisée du fournisseur → l'argent arrive sur",
+    x_ton: "votre",
+    x_pasCi: "(⚠ ne fonctionne pas pour encaisser depuis la Côte d'Ivoire).",
+    x_factRetour: "par starter/enterprise selon le lien). Le forfait s'activera tout seul au retour.",
+    x_entrepot: "📦 Entrepôt",
+    x_perimAide: "Marquez chaque produit « périssable » avec sa date : BARO vous alerte AVANT l'expiration, et le filtre Péremption du Stock montre tout ce qui approche.",
+    x_voirStock: "Voir mon stock →",
+    x_seuilAide: "Donnez un seuil minimum à chaque produit (ex : 5 boîtes) : alerte automatique dès qu'on passe dessous.",
+    x_ajoutProd: "Ajouter un produit →",
+    x_essayerScan: "Essayer le scan →",
+    x_grossiste: "Le grossiste livre 30 références ? Stock → « ⚡ Entrée/Sortie » : cherchez, tapez la quantité, enchaînez — sans quitter l'écran.",
+    x_ouvrirStock: "Ouvrir le stock →",
+    x_inventaire: "Tout l'inventaire de départ en 1 session",
+    x_saisieLot: "Saisie en lot : collez ou tapez la liste complète (nom, quantité, prix), BARO crée tout d'un coup.",
+    x_codeEquipe: "Code d'équipe : chacune vend depuis son téléphone, chaque vente est enregistrée à son nom.",
+    x_equipeFleche: "Équipe →",
+    x_pinAudit: "Code PIN au démarrage + journal d'audit de qui a fait quoi.",
+    x_securite: "Sécurité →",
+    x_vraiBenef: "Le vrai bénéfice, pas le chiffre d'affaires",
+    x_etape: "Étape {0} / {1}",
+    x_wizRev: "Boutique, épicerie, quincaillerie, cosmétiques, pharmacie… j'achète et je revends",
+    x_spPartout: "✅ Marche partout (Afrique incluse), aucune carte requise ·",
+    x_spModeles: "Modèles :free, sans carte ·",
+    x_spPalier: "⚠ Palier gratuit indisponible dans certains pays ·",
+    x_oaPour: "Pour activer ces flux OAuth 2.0, vous devez créer vos propres identifiants gratuits chez Google/Apple et les coller ci-dessous.",
+    x_ecomPush: "Envoie chaque nouveau produit BARO sur Shopify",
+    x_ecomSync: "Met à jour le stock dans les deux sens (vente BARO ⇄ Shopify)",
+    x_ecomPull: "Récupère les commandes Shopify comme ventes BARO",
+    x_popTitre: "-10% sur votre première commande !",
+    x_autoStock: "Envoie « Alerte stock faible » sur le numéro administrateur quand le stock passe sous le seuil",
+    x_teamMois: "member(s) · {0} ce mois",
+    x_activer: "Activer",
+    x_enregistrer: "Enregistrer",
+    x_pixFin: "depuis la page Boutique.",
+    x_codeFin: "Testez toujours avec l'aperçu avant de générer le site.",
+    x_cssPerso: "/* Votre code CSS */",
+    x_prevFin: "ventes et cet écran se remplira tout seul.",
+    x_expClients: "clients triés par CA avec paliers",
+    x_montantDu: "Montant dû",
+    x_lignesDet: "ligne(s) détectée(s)",
+    x_maBoutique: "🏪 Ma boutique",
+    x_creeUn: "Créez un",
+    x_factPlan: "par forfait chez votre fournisseur, puis collez-le ici. Quand un client choisit un forfait, il paie sur la page sécurisée du fournisseur → l'argent arrive sur",
+    x_ton: "votre",
+    x_pasCi: "(⚠ ne fonctionne pas pour encaisser depuis la Côte d'Ivoire).",
+    x_factRetour: "par starter/enterprise selon le lien). Le forfait s'activera tout seul au retour.",
+    x_entrepot: "📦 Entrepôt",
+    x_perimAide: "Marquez chaque produit « périssable » avec sa date : BARO vous alerte AVANT l'expiration, et le filtre Péremption du Stock montre tout ce qui approche.",
+    x_voirStock: "Voir mon stock →",
+    x_seuilAide: "Donnez un seuil minimum à chaque produit (ex : 5 boîtes) : alerte automatique dès qu'on passe dessous.",
+    x_ajoutProd: "Ajouter un produit →",
+    x_essayerScan: "Essayer le scan →",
+    x_grossiste: "Le grossiste livre 30 références ? Stock → « ⚡ Entrée/Sortie » : cherchez, tapez la quantité, enchaînez — sans quitter l'écran.",
+    x_ouvrirStock: "Ouvrir le stock →",
+    x_inventaire: "Tout l'inventaire de départ en 1 session",
+    x_saisieLot: "Saisie en lot : collez ou tapez la liste complète (nom, quantité, prix), BARO crée tout d'un coup.",
+    x_codeEquipe: "Code d'équipe : chacune vend depuis son téléphone, chaque vente est enregistrée à son nom.",
+    x_equipeFleche: "Équipe →",
+    x_pinAudit: "Code PIN au démarrage + journal d'audit de qui a fait quoi.",
+    x_securite: "Sécurité →",
+    x_vraiBenef: "Le vrai bénéfice, pas le chiffre d'affaires",
+    x_etape: "Étape {0} / {1}",
+    x_wizRev: "Boutique, épicerie, quincaillerie, cosmétiques, pharmacie… j'achète et je revends",
+    x_spPartout: "✅ Marche partout (Afrique incluse), aucune carte requise ·",
+    x_spModeles: "Modèles :free, sans carte ·",
+    x_spPalier: "⚠ Palier gratuit indisponible dans certains pays ·",
+    x_oaPour: "Pour activer ces flux OAuth 2.0, vous devez créer vos propres identifiants gratuits chez Google/Apple et les coller ci-dessous.",
+    x_ecomPush: "Envoie chaque nouveau produit BARO sur Shopify",
+    x_ecomSync: "Met à jour le stock dans les deux sens (vente BARO ⇄ Shopify)",
+    x_ecomPull: "Récupère les commandes Shopify comme ventes BARO",
+    x_popTitre: "-10% sur votre première commande !",
+    x_autoStock: "Envoie « Alerte stock faible » sur le numéro administrateur quand le stock passe sous le seuil",
     v_agentsIa: "✦ TES AGENTS IA",
     v_tousArticles: "📦 Tous les articles",
     v_articleAVendre: "Article à vendre",
@@ -2792,6 +2941,155 @@ const LANGS = {
     version:'Version',
   },
   en: {
+    u_codePl: "/* Your {0} */",
+    u_pixAide: "the pixels are injected into the site automatically when you tap {0}",
+    u_cssPerso: "/* Your CSS */",
+    u_entrepotIntro: "Large volumes, cartons, references — the logistics side.",
+    u_mConfirm: "Hello {{client}} 👋\n\nYour order {{ref}} is confirmed ✅\nAmount: {{total}} {{sym}}\nExpected delivery: {{delivery}}\n\nThank you for your trust!\n{{business}}",
+    u_mExped: "🚚 {{client}}, your order {{ref}} is on its way!\n\nTracking: {{tracking}}\nEstimated arrival: {{eta}}\n\n{{business}}",
+    u_mLivree: "✓ {{client}}, your order {{ref}} has been delivered.\n\nDo tell us what you think 🌟\n\n{{business}}",
+    u_mFacture: "💳 Hello {{client}},\n\nYour invoice {{ref}}: {{total}} {{sym}}\nPayment: {{payment_link}}\n\n{{business}}",
+    u_mPromo: "🎉 {{client}}, special offer at {{business}}!\n\n{{promo_text}}\n\nValid until {{expires}}.",
+    u_mAnniv: "🎂 Happy birthday {{client}}!\nA gift is waiting for you at {{business}}: {{gift}}.",
+    u_sFacture: "{{business}}: your invoice {{ref}} {{total}} {{sym}}. Pay: {{payment_link}}",
+    u_sCode: "{{business}}: your code is {{code}}. Valid for 5 min.",
+    u_sCodeLbl: "Verification code",
+    u_ajoutProd: "Add a product",
+    u_equipe: "Team",
+    u_securite: "Security",
+    u_vendeuses: "Counter staff",
+    u_typeBoutique: "Shop",
+    u_typeEntrepot: "Warehouse",
+    u_etape: "Step {0} of {1}",
+    u_etape12: "Step 1 of 2",
+    u_activer: "Switch on",
+    u_votre: "your",
+    u_compte: "account.",
+    u_ecomPush: "Sends every new BARO product to {0}",
+    u_ecomPull: "Brings {0} orders in as BARO sales",
+    y_spGroq: "✅ Works everywhere (Africa included), no card needed",
+    y_spOr: "Models marked :free, no card",
+    y_spGem: "⚠ The free tier is not available in some countries",
+    y_ecomSync: "Keeps stock in step both ways (BARO sale ⇄ {0})",
+    y_ecomSyncT: "Stock synced both ways",
+    y_autoStock: "Sends “Low stock alert” to the admin number when stock falls below the threshold",
+    y_ajoutProd: "🏪 Add a product",
+    y_ajoutProdSimple: "Add a product",
+    y_ajoutArticle: "Add an item",
+    x_perimAide: "Mark each product “perishable” with its date: BARO warns you BEFORE it expires, and the Expiry filter in Stock shows everything coming up.",
+    x_seuilAide: "Give each product a minimum threshold (e.g. 5 boxes): an alert fires as soon as you drop below it.",
+    x_grossiste: "The wholesaler drops off 30 items? Stock → “⚡ In/Out”: search, type the quantity, move on — without leaving the screen.",
+    x_inventaire: "Your whole opening inventory in one session",
+    x_saisieLot: "Bulk entry: paste or type the full list (name, quantity, price) and BARO creates it all at once.",
+    x_codeEquipe: "Team code: each person sells from their own phone, and every sale is recorded under their name.",
+    x_pinAudit: "A PIN at start-up, plus an audit log of who did what.",
+    x_vraiBenef: "Real profit, not just revenue",
+    x_wizRev: "Shop, grocery, hardware, cosmetics, pharmacy… I buy and resell",
+    x_voirStock2: "See my stock",
+    x_ajoutProd2: "Add a product",
+    x_essayerScan2: "Try scanning",
+    x_ouvrirStock2: "Open stock",
+    x_equipe2: "Team",
+    x_securite2: "Security",
+    x_bilan2: "Summary",
+    x_maBoutique2: "🏪 My shop",
+    x_ecomPush2: "Sends every new BARO product to Shopify",
+    x_ecomSync2: "Keeps stock in step both ways (BARO sale ⇄ Shopify)",
+    x_ecomPull2: "Brings Shopify orders in as BARO sales",
+    x_autoStock2: "Sends “Low stock alert” to the admin number when stock falls below the threshold",
+    x_popTitre2: "10% off your first order!",
+    x_spPartout2: "✅ Works everywhere (Africa included), no card needed ·",
+    x_spModeles2: "Models marked :free, no card ·",
+    x_spPalier2: "⚠ The free tier is not available in some countries ·",
+    x_oaPour2: "To switch on these OAuth 2.0 flows you need to create your own free credentials at Google/Apple and paste them below.",
+    x_lignesDet2: "line(s) found",
+    x_montantDu2: "Amount owed",
+    x_expClients2: "customers sorted by revenue, with tiers",
+    x_cssPerso2: "/* Your CSS */",
+    x_teamMois: "member(s) · {0} this month",
+    x_activer: "Switch on",
+    x_enregistrer: "Save",
+    x_pixFin: "from the Shop page.",
+    x_codeFin: "Always test with the preview before generating the site.",
+    x_cssPerso: "/* Your CSS */",
+    x_prevFin: "sales and this screen will fill in by itself.",
+    x_expClients: "customers sorted by revenue, with tiers",
+    x_montantDu: "Amount owed",
+    x_lignesDet: "line(s) found",
+    x_maBoutique: "🏪 My shop",
+    x_creeUn: "Create a",
+    x_factPlan: "per plan with your provider, then paste it here. When a customer picks a plan they pay on the provider's secure page → the money lands in",
+    x_ton: "your",
+    x_pasCi: "(⚠ does not work for taking payments from Ivory Coast).",
+    x_factRetour: "by starter/enterprise depending on the link). The plan switches itself on when they come back.",
+    x_entrepot: "📦 Warehouse",
+    x_perimAide: "Mark each product “perishable” with its date: BARO warns you BEFORE it expires, and the Expiry filter in Stock shows everything coming up.",
+    x_voirStock: "See my stock →",
+    x_seuilAide: "Give each product a minimum threshold (e.g. 5 boxes): an alert fires as soon as you drop below it.",
+    x_ajoutProd: "Add a product →",
+    x_essayerScan: "Try scanning →",
+    x_grossiste: "The wholesaler drops off 30 items? Stock → “⚡ In/Out”: search, type the quantity, move on — without leaving the screen.",
+    x_ouvrirStock: "Open stock →",
+    x_inventaire: "Your whole opening inventory in one session",
+    x_saisieLot: "Bulk entry: paste or type the full list (name, quantity, price) and BARO creates it all at once.",
+    x_codeEquipe: "Team code: each person sells from their own phone, and every sale is recorded under their name.",
+    x_equipeFleche: "Team →",
+    x_pinAudit: "A PIN at start-up, plus an audit log of who did what.",
+    x_securite: "Security →",
+    x_vraiBenef: "Real profit, not just revenue",
+    x_etape: "Step {0} of {1}",
+    x_wizRev: "Shop, grocery, hardware, cosmetics, pharmacy… I buy and resell",
+    x_spPartout: "✅ Works everywhere (Africa included), no card needed ·",
+    x_spModeles: "Models marked :free, no card ·",
+    x_spPalier: "⚠ The free tier is not available in some countries ·",
+    x_oaPour: "To switch on these OAuth 2.0 flows you need to create your own free credentials at Google/Apple and paste them below.",
+    x_ecomPush: "Sends every new BARO product to Shopify",
+    x_ecomSync: "Keeps stock in step both ways (BARO sale ⇄ Shopify)",
+    x_ecomPull: "Brings Shopify orders in as BARO sales",
+    x_popTitre: "10% off your first order!",
+    x_autoStock: "Sends “Low stock alert” to the admin number when stock falls below the threshold",
+    x_teamMois: "member(s) · {0} this month",
+    x_activer: "Switch on",
+    x_enregistrer: "Save",
+    x_pixFin: "from the Shop page.",
+    x_codeFin: "Always test with the preview before generating the site.",
+    x_cssPerso: "/* Your CSS */",
+    x_prevFin: "sales and this screen will fill in by itself.",
+    x_expClients: "customers sorted by revenue, with tiers",
+    x_montantDu: "Amount owed",
+    x_lignesDet: "line(s) found",
+    x_maBoutique: "🏪 My shop",
+    x_creeUn: "Create a",
+    x_factPlan: "per plan with your provider, then paste it here. When a customer picks a plan they pay on the provider's secure page → the money lands in",
+    x_ton: "your",
+    x_pasCi: "(⚠ does not work for taking payments from Ivory Coast).",
+    x_factRetour: "by starter/enterprise depending on the link). The plan switches itself on when they come back.",
+    x_entrepot: "📦 Warehouse",
+    x_perimAide: "Mark each product “perishable” with its date: BARO warns you BEFORE it expires, and the Expiry filter in Stock shows everything coming up.",
+    x_voirStock: "See my stock →",
+    x_seuilAide: "Give each product a minimum threshold (e.g. 5 boxes): an alert fires as soon as you drop below it.",
+    x_ajoutProd: "Add a product →",
+    x_essayerScan: "Try scanning →",
+    x_grossiste: "The wholesaler drops off 30 items? Stock → “⚡ In/Out”: search, type the quantity, move on — without leaving the screen.",
+    x_ouvrirStock: "Open stock →",
+    x_inventaire: "Your whole opening inventory in one session",
+    x_saisieLot: "Bulk entry: paste or type the full list (name, quantity, price) and BARO creates it all at once.",
+    x_codeEquipe: "Team code: each person sells from their own phone, and every sale is recorded under their name.",
+    x_equipeFleche: "Team →",
+    x_pinAudit: "A PIN at start-up, plus an audit log of who did what.",
+    x_securite: "Security →",
+    x_vraiBenef: "Real profit, not just revenue",
+    x_etape: "Step {0} of {1}",
+    x_wizRev: "Shop, grocery, hardware, cosmetics, pharmacy… I buy and resell",
+    x_spPartout: "✅ Works everywhere (Africa included), no card needed ·",
+    x_spModeles: "Models marked :free, no card ·",
+    x_spPalier: "⚠ The free tier is not available in some countries ·",
+    x_oaPour: "To switch on these OAuth 2.0 flows you need to create your own free credentials at Google/Apple and paste them below.",
+    x_ecomPush: "Sends every new BARO product to Shopify",
+    x_ecomSync: "Keeps stock in step both ways (BARO sale ⇄ Shopify)",
+    x_ecomPull: "Brings Shopify orders in as BARO sales",
+    x_popTitre: "10% off your first order!",
+    x_autoStock: "Sends “Low stock alert” to the admin number when stock falls below the threshold",
     v_agentsIa: "✦ YOUR AI AGENTS",
     v_tousArticles: "📦 All items",
     v_articleAVendre: "Item to sell",
@@ -6108,7 +6406,7 @@ function _uid()             { return S.session?.id; }
 const LAUNCH_HIDDEN = new Set(['ai-chat', 'video-library']);
 function _isHidden(id) { return LAUNCH_HIDDEN.has(id); }
 
-// ── Sécurité : toute ouverture d'onglet externe reçoit 'noopener' ──────────
+// ── ${t('x_securite2')} : toute ouverture d'onglet externe reçoit 'noopener' ──────────
 // Sans cela, la page ouverte accède à window.opener et peut rediriger NOTRE
 // onglet vers une fausse page de connexion (détournement d'onglet inversé).
 // Exception : window.open('') — fenêtre vierge de même origine dans laquelle
@@ -6754,7 +7052,7 @@ function salesForPeriod() {
   if (S.period==='30d')   return S.sales.filter(s => new Date(s.date) >= new Date(now-30*86400000));
   return S.sales;
 }
-// Même découpage de période que les ventes, pour les dépenses du Bilan
+// Même découpage de période que les ventes, pour les dépenses du ${t('x_bilan2')}
 function expensesForPeriod() {
   const now = new Date();
   const list = S.expenses || [];
@@ -7779,7 +8077,7 @@ function vPrevisions() {
       <div style="font-size:15px;font-weight:700;margin-bottom:6px">Pas encore assez de ventes</div>
       <div style="font-size:13px;color:var(--text-3);line-height:1.5">
         ${t('v_prevAide')}
-        ventes et cet écran se remplira tout seul.
+        ${t('x_prevFin')}
       </div>
     </div>` : `
     ${urgents.length ? `
@@ -8501,7 +8799,7 @@ function vCreditForm() {
         <input class="input" type="tel" inputmode="tel" placeholder="ex : 07 00 00 00 00" value="${(f.phone||'').replace(/"/g,'&quot;')}" oninput="S.creditForm.phone=this.value">
       </div>
       <div class="form-group">
-        <label class="form-label">Montant dû (${sym()})</label>
+        <label class="form-label">${t('x_montantDu')} (${sym()})</label>
         <input class="input" type="number" inputmode="numeric" min="0" placeholder="ex : 5000" value="${f.amount!=null&&f.amount!==''?f.amount:''}" oninput="S.creditForm.amount=this.value">
       </div>
       <div class="form-group">
@@ -12412,7 +12710,7 @@ function _doRender() {
     'currency-convert': vCurrencyConvert,
     'previsions': vPrevisions,
     'reassort-auto': vReassortAuto,
-    // ── BATCH 5 : Équipe, Audit, Apparence, Sécurité, 2FA ──
+    // ── BATCH 5 : ${t('x_equipe2')}, Audit, Apparence, Sécurité, 2FA ──
     'team':             vTeam,
     'add-team-member':  vAddTeamMember,
     'audit-log':        vAuditLog,
@@ -12618,7 +12916,7 @@ function vSetupWizard() {
   let body = '';
   if (w.step === 0) {
     const choices = [
-      ['reseller','🏪','Revendeur / Boutique','Boutique, épicerie, quincaillerie, cosmétiques, pharmacie… j\'achète et je revends'],
+      ['reseller','🏪','Revendeur / Boutique',t('x_wizRev')],
       ['maker','🏭','Fabricant / Restaurant',t('v_wizFabricant')],
       ['mixed','🔀',t('v_wizLesDeux'),t('v_wizLesDeuxSub')],
     ];
@@ -12691,7 +12989,7 @@ function vSetupWizard() {
       <div class="wiz-progress"><div class="wiz-progress-bar" style="width:${pct}%"></div></div>
       ${w.step<total-1 ? `<button class="wiz-skip" onclick="wizardSkipAll()">Passer</button>` : `<span style="width:52px"></span>`}
     </div>
-    <div class="wiz-steplabel">Étape ${Math.min(w.step+1,total)} / ${total}</div>
+    <div class="wiz-steplabel">${t('u_etape').replace('{0}', Math.min(w.step+1,total)).replace('{1}', total)}</div>
     <div class="wiz-body" key="wiz-${w.step}">${body}</div>
   </div>`;
 }
@@ -12743,7 +13041,7 @@ function _wizardCommit() {
   // WhatsApp Business (mode rapide)
   if (w.wa) {
     if (!Array.isArray(S.integrationsConfig)) S.integrationsConfig = [];
-    const tpls = (typeof WHATSAPP_DEFAULT_TEMPLATES !== 'undefined') ? WHATSAPP_DEFAULT_TEMPLATES : [];
+    const tpls = (typeof WHATSAPP_DEFAULT_TEMPLATES_ === 'function') ? WHATSAPP_DEFAULT_TEMPLATES_() : [];
     const entry = { id:'whatsapp-business', name:'WhatsApp Business', connected:true, value:w.wa, date:new Date().toISOString(), detail:{ mode:'quick', phone:w.wa, signature:(w.biz||S.session?.business||''), templates: tpls } };
     const i = S.integrationsConfig.findIndex(c => c.id === 'whatsapp-business');
     if (i >= 0) S.integrationsConfig[i] = entry; else S.integrationsConfig.push(entry);
@@ -12774,7 +13072,7 @@ function vAuth() {
         <button onclick="setLang('en')" style="padding:4px 10px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid ${_lang==='en'?'var(--accent)':'var(--border)'};background:${_lang==='en'?'var(--accent-light)':'transparent'};color:${_lang==='en'?'var(--accent)':'var(--text-3)'}">EN</button>
       </div>
       <div class="auth-title">${isLogin ? t('login') : t('register')}</div>
-      <div class="auth-sub">${isLogin ? t('loginSub') : 'Étape 1/2'}</div>
+      <div class="auth-sub">${isLogin ? t('loginSub') : t('u_etape12')}</div>
 
       ${!isLogin ? `
       <div class="form-group">
@@ -13504,7 +13802,7 @@ function vHome() {
         ${S.locations.length > 0 ? `<div class="hero-location">
           <select class="location-select" onchange="setLocation(this.value?Number(this.value):null)" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);color:#fff;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:600;outline:none;cursor:pointer;-webkit-appearance:none;appearance:none">
             <option value="" style="color:#000">${t('allLocations')}</option>
-            ${S.locations.map(l => `<option value="${l.id}" style="color:#000" ${S.currentLocation===l.id?'selected':''}>${l.name}${l.type?' ('+({'store':'Boutique','warehouse':'Entrepôt','popup':'Pop-up'}[l.type]||l.type)+')':''}</option>`).join('')}
+            ${S.locations.map(l => `<option value="${l.id}" style="color:#000" ${S.currentLocation===l.id?'selected':''}>${l.name}${l.type?' ('+({'store':t('u_typeBoutique'),'warehouse':t('u_typeEntrepot'),'popup':'Pop-up'}[l.type]||l.type)+')':''}</option>`).join('')}
           </select>
         </div>` : ''}
       </div>
@@ -13599,7 +13897,7 @@ function vHome() {
           <div style="font-size:14px;font-weight:800">${t('w1_activerNotifs')}</div>
           <div style="font-size:12px;color:var(--text-3)">${t('w1_soisPrevenu')}</div>
         </div>
-        <button class="btn btn-primary" style="width:auto;padding:8px 14px;font-size:12px" onclick="requestNotifPermission()">Activer</button>
+        <button class="btn btn-primary" style="width:auto;padding:8px 14px;font-size:12px" onclick="requestNotifPermission()">${t('u_activer')}</button>
         <button class="btn" style="width:auto;padding:8px;font-size:16px;background:none;border:none;color:var(--text-3);cursor:pointer" onclick="localStorage.setItem('baro_notif_dismissed','1');render()" title="Plus tard">✕</button>
       </div>`;
     })()}
@@ -14090,7 +14388,7 @@ function vPantry() {
   const expCount = baseList.filter(a => { const e = getExpiryStatus(a.expiry); return e && e.days <= 30; }).length;
   const lowMarginCount = isReseller ? baseList.filter(a => { const p=a.price||0, c=a.purchasePrice||0; return p>0 && c>0 && ((p-c)/p)*100 < 15; }).length : 0;
 
-  const stockLabel = isReseller ? '🏪 Ma boutique' : (bt === 'maker' ? '🏭 Matières premières' : t('stock'));
+  const stockLabel = isReseller ? t('x_maBoutique2') : (bt === 'maker' ? '🏭 Matières premières' : t('stock'));
   return `
   <div class="page-header">
     <div class="page-header-row">
@@ -14181,7 +14479,7 @@ function vPantry() {
       <div class="empty-text">${S.articles.length===0 ? (isReseller?'Ajoutez votre premier produit pour commencer à vendre':t('noArticlesSub')) : t('noResultsSub')}</div>
       ${S.articles.length===0 ? `
       <div style="display:flex;flex-direction:column;gap:8px;align-items:center">
-        <button class="btn btn-primary" style="width:auto;padding:11px 24px" onclick="nav('add')">${isReseller?'🏪 Ajouter un produit':t('addArticle')}</button>
+        <button class="btn btn-primary" style="width:auto;padding:11px 24px" onclick="nav('add')">${isReseller?t('y_ajoutProd'):t('addArticle')}</button>
         <button class="btn btn-ghost" style="width:auto;padding:9px 18px;font-size:12.5px;border:1px solid var(--border)" onclick="nav('bulk-add')">⚡ Saisie rapide en lot <span style="color:var(--text-3)">— beaucoup d'articles</span></button>
         <button class="btn btn-ghost" style="width:auto;padding:8px 16px;font-size:12px" onclick="if(confirm('Charger 5 articles démo pour explorer l&apos;app ?')){loadDemoData();}">${t('w1_chargerExemples')}</button>
       </div>` : ''}
@@ -14768,7 +15066,7 @@ function vSales() {
       <div class="empty-text">${t('noSalesSub')}</div>
       ${(typeof bt_sellableItems==='function' && bt_sellableItems().length > 0)
         ? `<button class="btn btn-primary" onclick="document.getElementById('view').scrollTo({top:0,behavior:'smooth'})">${IC.plus} ${t('v_enrVente')}</button>`
-        : `<button class="btn btn-primary" onclick="nav('add')">${IC.plus} ${getBusinessType()==='reseller'?'Ajouter un produit':'Ajouter un article'}</button>`}
+        : `<button class="btn btn-primary" onclick="nav('add')">${IC.plus} ${getBusinessType()==='reseller'?t('y_ajoutProdSimple'):t('y_ajoutArticle')}</button>`}
     </div>`;
       // ── Grouper les paniers (même cartId) ──
       // Une SEULE passe : l'ancienne version relançait un filter() sur tout
@@ -15622,7 +15920,7 @@ function vDetail() {
         <span class="info-val" style="min-width:0;flex:1 1 auto;text-align:right">
           <select class="input" style="font-size:11px;padding:4px 8px;width:auto;max-width:100%;min-width:0;border-radius:6px" onchange="setArticleLocation(${art.id},parseInt(this.value)||null)">
             <option value="">${t('x4_nonAssigne')}</option>
-            ${S.locations.map(l => `<option value="${l.id}" ${art.locationId===l.id?'selected':''}>${l.name}${l.type?' ('+({'store':'Boutique','warehouse':'Entrepôt','popup':'Pop-up'}[l.type]||l.type)+')':''}</option>`).join('')}
+            ${S.locations.map(l => `<option value="${l.id}" ${art.locationId===l.id?'selected':''}>${l.name}${l.type?' ('+({'store':t('u_typeBoutique'),'warehouse':t('u_typeEntrepot'),'popup':'Pop-up'}[l.type]||l.type)+')':''}</option>`).join('')}
           </select>
         </span>
       </div>
@@ -15767,7 +16065,7 @@ function vBulkAdd() {
         <span style="font-size:11px;color:var(--text-3)">${t('x4_seulNomObligatoire')} <i>Carton vis M6 ; 4500 ; 30 ; REF-VIS-M6 ; Quincaillerie</i></span>
       </div>
       <textarea class="input" id="bulk-text" rows="9" style="resize:vertical;font-family:ui-monospace,monospace;font-size:13px;line-height:1.6" placeholder="Sac à dos ; 12000 ; 8 ; SAC-01 ; Bagagerie&#10;Stylo bleu ; 250 ; 200 ; STY-BL&#10;Carton lait ; 9000 ; 15 ; LAIT-1L ; Alimentaire" oninput="S.bulkText=this.value;_bulkRefresh()">${(S.bulkText||'').replace(/</g,'&lt;')}</textarea>
-      <div id="bulk-count" style="font-size:12px;color:var(--text-3);margin-top:6px">${rows.length} ligne(s) détectée(s)</div>
+      <div id="bulk-count" style="font-size:12px;color:var(--text-3);margin-top:6px">${rows.length} ${t('x_lignesDet')}</div>
     </div>
     <div class="card" id="bulk-preview-card" style="margin-bottom:10px;${rows.length?'':'display:none'}">
       <div class="card-title">${t('x4_apercu')} <span id="bulk-prev-n">(${rows.length})</span></div>
@@ -15785,7 +16083,7 @@ function _bulkPreviewHTML(rows) {
 }
 function _bulkRefresh() {
   const rows = _bulkParse(S.bulkText || '');
-  const c = document.getElementById('bulk-count');   if (c) c.textContent = `${rows.length} ligne(s) détectée(s)`;
+  const c = document.getElementById('bulk-count');   if (c) c.textContent = `${rows.length} ${t('x_lignesDet')}`;
   const pc = document.getElementById('bulk-preview-card'); if (pc) pc.style.display = rows.length ? '' : 'none';
   const pn = document.getElementById('bulk-prev-n'); if (pn) pn.textContent = `(${rows.length})`;
   const pv = document.getElementById('bulk-preview'); if (pv) pv.innerHTML = _bulkPreviewHTML(rows);
@@ -20456,7 +20754,7 @@ async function spectraFinish() {
   }
 }
 
-// Crée un article depuis Spectra en reprenant la photo scannée (modifiable
+// ${t('x_creeUn')} article depuis Spectra en reprenant la photo scannée (modifiable
 // ensuite via "Changer la photo" dans le formulaire). Pré-remplit aussi le nom
 // si Spectra l'a reconnu.
 function spectraToAddForm() {
@@ -21134,7 +21432,7 @@ function vBillingSetup() {
   <div class="container">
     <div class="card" style="margin-bottom:12px;border-left:4px solid var(--accent)">
       <div style="font-size:13px;color:var(--text-2);line-height:1.6">
-        Crée un <strong>lien de paiement</strong> par plan chez ton fournisseur, puis colle-le ici. Quand un client choisit un plan, il paie sur la page sécurisée du fournisseur → l'argent arrive sur <strong>ton</strong> compte.
+        ${t('x_creeUn')} <strong>lien de paiement</strong> ${t('x_factPlan')} <strong>${t('u_votre')}</strong> ${t('u_compte')}
       </div>
     </div>
 
@@ -21142,7 +21440,7 @@ function vBillingSetup() {
       <div style="font-size:13px;font-weight:800;margin-bottom:6px">${t('v_factQuel')}</div>
       <div style="font-size:12px;color:var(--text-2);line-height:1.7">
         🇨🇮 <strong>${t('x4_ciAfrique')}</strong> : <a href="https://cinetpay.com" target="_blank" rel="noopener noreferrer" style="color:var(--accent);font-weight:700">CinetPay</a>, <a href="https://paydunya.com" target="_blank" rel="noopener noreferrer" style="color:var(--accent);font-weight:700">PayDunya</a> ou <a href="https://www.wave.com/fr/business/" target="_blank" rel="noopener noreferrer" style="color:var(--accent);font-weight:700">Wave Business</a> → acceptent Wave, Orange Money, MoMo + cartes.<br>
-        🌐 <strong>International</strong> : <a href="https://dashboard.stripe.com/payment-links" target="_blank" rel="noopener noreferrer" style="color:var(--accent);font-weight:700">Stripe Payment Links</a> (⚠ ne marche pas pour recevoir depuis la CI).
+        🌐 <strong>International</strong> : <a href="https://dashboard.stripe.com/payment-links" target="_blank" rel="noopener noreferrer" style="color:var(--accent);font-weight:700">Stripe Payment Links</a> ${t('x_pasCi')}
       </div>
     </div>
 
@@ -21162,7 +21460,7 @@ function vBillingSetup() {
       <div style="font-size:12px;color:var(--text-2);line-height:1.6">
         ${t('y1_metsUriSur').replace('{0}','<strong>'+t('w8_urlRedirection')+'</strong>')}<br>
         <code style="background:var(--surface);padding:3px 8px;border-radius:6px;font-size:11px;display:inline-block;margin-top:4px;word-break:break-all">${location.origin}${location.pathname}?baro_paid=pro</code><br>
-        <span style="font-size:11px;color:var(--text-3)">(remplace <strong>pro</strong> par starter/enterprise selon le lien). Le plan s'activera tout seul au retour.</span>
+        <span style="font-size:11px;color:var(--text-3)">(remplace <strong>pro</strong> ${t('x_factRetour')}</span>
       </div>
     </div>
     <div style="font-size:11px;color:var(--text-3);margin-top:12px;line-height:1.5;text-align:center">
@@ -21671,7 +21969,7 @@ function editDailyGoal() {
 
         <div style="display:flex;gap:8px;margin-top:18px">
           <button type="button" class="btn btn-ghost" style="flex:1" onclick="saveGoalConfig('', '', '')">${t('x4_desactiverIcone')}</button>
-          <button type="button" class="btn btn-primary" style="flex:2" onclick="saveGoalConfig(document.getElementById('goal-value-input').value, document.getElementById('goal-modal').dataset.type||'${type}', document.getElementById('goal-modal').dataset.period||'${period}')">✓ Enregistrer</button>
+          <button type="button" class="btn btn-primary" style="flex:2" onclick="saveGoalConfig(document.getElementById('goal-value-input').value, document.getElementById('goal-modal').dataset.type||'${type}', document.getElementById('goal-modal').dataset.period||'${period}')">✓ ${t('x_enregistrer')}</button>
         </div>
       </div>
     </div>`;
@@ -22561,7 +22859,7 @@ function vSettings() {
           <div class="loc-card-ico" style="background:linear-gradient(135deg,#${c.split(',')[0].slice(1)},${c.split(',')[1]})">${IC.box}</div>
           <div class="loc-card-name">${l.name}</div>
           <div class="loc-card-count">${getLocationArticleCount(l.id)} ${t('articles').toLowerCase()}</div>
-          ${l.type ? `<div style="font-size:9px;text-transform:uppercase;color:var(--accent);font-weight:600;margin-top:2px">${l.type==='store'?'Boutique':l.type==='warehouse'?'Entrepôt':'Pop-up'}</div>` : ''}
+          ${l.type ? `<div style="font-size:9px;text-transform:uppercase;color:var(--accent);font-weight:600;margin-top:2px">${l.type==='store'?t('u_typeBoutique'):l.type==='warehouse'?t('u_typeEntrepot'):'Pop-up'}</div>` : ''}
           ${isActive?'<div class="loc-card-check">✓</div>':''}
           <button onclick="event.stopPropagation();removeLocation(${l.id})" class="loc-card-del">✕</button>
         </div>`;
@@ -23467,9 +23765,9 @@ function vSpectraAISetup() {
   const isActive = active.length > 0;
   const provName = { groq:'Groq (Llama Vision)', openrouter:'OpenRouter', gemini:'Google Gemini' };
   const providers = [
-    { id:'groq', name:'Groq', sub:t('v_spLlama'), badge:t('v_spRecommande'), color:'#F55036', url:'https://console.groq.com/keys', prefix:'gsk_...', key:groq, note:'✅ Marche partout (Afrique incluse), aucune carte requise' },
-    { id:'openrouter', name:'OpenRouter', sub:t('v_spPlusieurs'), badge:'', color:'#6566F1', url:'https://openrouter.ai/keys', prefix:'sk-or-...', key:orouter, note:'Modèles :free, sans carte' },
-    { id:'gemini', name:'Google Gemini', sub:t('v_spGoogle'), badge:'', color:'#4285F4', url:'https://aistudio.google.com/app/apikey', prefix:'AIza...', key:gemini, note:'⚠ Palier gratuit indisponible dans certains pays' },
+    { id:'groq', name:'Groq', sub:t('v_spLlama'), badge:t('v_spRecommande'), color:'#F55036', url:'https://console.groq.com/keys', prefix:'gsk_...', key:groq, note:t('y_spGroq') },
+    { id:'openrouter', name:'OpenRouter', sub:t('v_spPlusieurs'), badge:'', color:'#6566F1', url:'https://openrouter.ai/keys', prefix:'sk-or-...', key:orouter, note:t('y_spOr') },
+    { id:'gemini', name:'Google Gemini', sub:t('v_spGoogle'), badge:'', color:'#4285F4', url:'https://aistudio.google.com/app/apikey', prefix:'AIza...', key:gemini, note:t('y_spGem') },
   ];
   return `
   <div class="sub-hero" style="background:linear-gradient(135deg,#7C3AED,#4285F4)">
@@ -23594,7 +23892,7 @@ function vOAuthSetup() {
       <div style="font-size:14px;font-weight:800;color:#1E3A8A;margin-bottom:6px">ℹ️ Pourquoi configurer ?</div>
       <div style="font-size:12px;color:#3730A3;line-height:1.6">
         BARO ouvre <strong>${t('x3_vraiGoogle')}</strong> et <strong>${t('x3_vraiApple')}</strong>.
-        Pour activer ces flux OAuth 2.0, vous devez créer vos propres identifiants gratuits chez Google/Apple et les coller ci-dessous.
+        ${t('x_oaPour')}
         <br><br>
         ${t('v_oaSansConfig')}
       </div>
@@ -24606,14 +24904,14 @@ function vMetierGuide() {
   const tab = S.metierTab || (bt === 'maker' ? 'restaurant' : 'pharma');
   const METIERS = {
     pharma: { icon:'💊', label:'Pharmacie', intro:t('v_gPharma'), rows: [
-      ['⏱', t('v_gPerimes'), 'Marquez chaque produit « périssable » avec sa date : BARO vous alerte AVANT l\'expiration, et le filtre Péremption du Stock montre tout ce qui approche.', "nav('pantry')", 'Voir mon stock'],
-      ['📉', t('v_gRuptures'), 'Donnez un seuil minimum à chaque produit (ex : 5 boîtes) : alerte automatique dès qu\'on passe dessous.', "nav('add')", 'Ajouter un produit'],
-      ['📷', t('v_gScan'), t('v_gScanAide'), "nav('add')", 'Essayer le scan'],
-      ['⚡', t('v_gReception'), 'Le grossiste livre 30 références ? Stock → « ⚡ Entrée/Sortie » : cherchez, tapez la quantité, enchaînez — sans quitter l\'écran.', "nav('pantry')", 'Ouvrir le stock'],
-      ['🧾', 'Tout l\'inventaire de départ en 1 session', 'Saisie en lot : collez ou tapez la liste complète (nom, quantité, prix), BARO crée tout d\'un coup.', "nav('bulk-add')", 'Saisie en lot'],
-      ['👥', 'Vendeuses de comptoir', 'Code d\'équipe : chacune vend depuis son téléphone, chaque vente est enregistrée à son nom.', "nav('team')", 'Équipe'],
-      ['🔐', t('v_gPartage'), 'Code PIN au démarrage + journal d\'audit de qui a fait quoi.', "nav('security')", 'Sécurité'],
-      ['📊', 'Le vrai bénéfice, pas le chiffre d\'affaires', t('v_gVraiBenefAide'), "nav('financial')", 'Bilan'],
+      ['⏱', t('v_gPerimes'), t('x_perimAide'), "nav('pantry')", t('x_voirStock2')],
+      ['📉', t('v_gRuptures'), t('x_seuilAide'), "nav('add')", t('u_ajoutProd')],
+      ['📷', t('v_gScan'), t('v_gScanAide'), "nav('add')", t('x_essayerScan2')],
+      ['⚡', t('v_gReception'), t('x_grossiste'), "nav('pantry')", t('x_ouvrirStock2')],
+      ['🧾', t('x_inventaire'), t('x_saisieLot'), "nav('bulk-add')", 'Saisie en lot'],
+      ['👥', t('u_vendeuses'), t('x_codeEquipe'), "nav('team')", t('u_equipe')],
+      ['🔐', t('v_gPartage'), t('x_pinAudit'), "nav('security')", t('u_securite')],
+      ['📊', t('x_vraiBenef'), t('v_gVraiBenefAide'), "nav('financial')", 'Bilan'],
     ]},
     restaurant: { icon:'🍽️', label:'Restaurant', intro:t('w1_maquis'), rows: [
       ['🥘', t('w1_platsRecettes'), t('w1_platsAide'), "nav('add-product')", t('w1_creerPlat2')],
@@ -24636,7 +24934,7 @@ function vMetierGuide() {
       ['👥', 'Fichier clients', 'Qui vient souvent, qui doit revenir — relance WhatsApp en 1 tap.', "nav('clients')", 'Clients'],
       ['📊', 'Vos vrais revenus', 'Prestations − dépenses (loyer, produits, électricité) = bénéfice net.', "nav('financial')", 'Bilan'],
     ]},
-    entrepot: { icon:'📦', label:'Entrepôt', intro:'Gros volumes, cartons, références — la logistique.', rows: [
+    entrepot: { icon:'📦', label:t('u_typeEntrepot'), intro:t('u_entrepotIntro'), rows: [
       ['🧾', 'Gros catalogue en 1 session', 'Saisie en lot : référence, nom, quantité, prix — des dizaines de lignes d\'un coup.', "nav('bulk-add')", 'Saisie en lot'],
       ['⚡', 'Réceptions & expéditions en série', 'Stock → « ⚡ Entrée/Sortie » : enchaînez les références sans re-naviguer.', "nav('pantry')", 'Stock'],
       ['📍', 'Emplacements multiples', 'Dépôt A, Dépôt B, boutique : stock par emplacement + transferts tracés.', "nav('pantry')", 'Emplacements'],
@@ -25323,7 +25621,7 @@ function vExports() {
         </button>
         <button class="btn btn-ghost" onclick="generateClientsReportPDF()" style="padding:12px;text-align:left;display:flex;flex-direction:column;align-items:flex-start;gap:2px;grid-column:1/-1">
           <div style="font-weight:700;font-size:13px;color:var(--text-1)">👥 Rapport Clients (CRM)</div>
-          <div style="font-size:11px;color:var(--text-3)">${(S.clients||[]).length} clients triés par CA avec paliers</div>
+          <div style="font-size:11px;color:var(--text-3)">${(S.clients||[]).length} ${t('x_expClients')}</div>
         </button>
       </div>
     </div>
@@ -26151,7 +26449,7 @@ function annulerModeleVitrine() {
 // Réglage du studio d'animation. Les valeurs vivent sous bc.anim pour
 // rester groupées et ne pas polluer la configuration de la boutique.
 // ── Le film d'ouverture ───────────────────────────────────────────────
-// Enregistrer la vitrine peut echouer : les photos du film sont stockees
+// ${t('x_enregistrer')} la vitrine peut echouer : les photos du film sont stockees
 // en base64 dans le navigateur, et l'espace n'est pas infini. Quand c'est
 // le cas il faut le dire — sinon le commercant croit avoir enregistre.
 function _sauveBoutique(bc) {
@@ -31282,12 +31580,12 @@ function vBoutiquePixels() {
 
     <!-- ── Actions bas de page ── -->
     <div style="display:flex;gap:8px;margin-top:14px">
-      <button class="btn btn-primary" style="flex:1" onclick="savePixelConfig()">${IC.check} Enregistrer</button>
+      <button class="btn btn-primary" style="flex:1" onclick="savePixelConfig()">${IC.check} ${t('save')}</button>
       <button class="btn btn-ghost" onclick="resetPixelConfig()" style="color:var(--danger)">${t('w9_toutReinit')}</button>
     </div>
 
     <div class="card" style="background:#EFF6FF;border-color:#3B82F640;margin-top:14px;font-size:11px;color:#1E40AF;line-height:1.6">
-      💡 <strong>Astuce :</strong> les pixels sont automatiquement injectés dans le site quand vous cliquez sur ${t('zz3_genererHtml')} depuis la page Boutique.
+      💡 <strong>Astuce :</strong> ${t('u_pixAide').replace('{0}', t('zz3_genererHtml'))} ${t('x_pixFin')}
     </div>
   </div>`;
 }
@@ -31369,10 +31667,10 @@ function vBoutiqueCode() {
           <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" onclick="copyCustomCode('${tab}')">📑 Copier</button>
         </div>
       </div>
-      <textarea id="code-editor-${tab}" class="input" rows="14" style="font-family:'SF Mono',Consolas,monospace;font-size:12px;line-height:1.5;background:#1E1E1E;color:#D4D4D4;border:none;white-space:pre;overflow-x:auto;caret-color:#fff" placeholder="/* Votre code ${tabLabels[tab]} */" oninput="updateCustomCode('${tab}',this.value)">${cc[tab]||''}</textarea>
+      <textarea id="code-editor-${tab}" class="input" rows="14" style="font-family:'SF Mono',Consolas,monospace;font-size:12px;line-height:1.5;background:#1E1E1E;color:#D4D4D4;border:none;white-space:pre;overflow-x:auto;caret-color:#fff" placeholder="${t('u_codePl').replace('{0}', tabLabels[tab])}" oninput="updateCustomCode('${tab}',this.value)">${cc[tab]||''}</textarea>
       <div style="font-size:10px;color:var(--text-3);margin-top:4px">${t('zz4_caracteres').replace('{0}', (cc[tab]||'').length)}</div>
       <div style="display:flex;gap:6px;margin-top:10px">
-        <button class="btn btn-primary" style="flex:1" onclick="saveCustomCode('${tab}')">${IC.check} Enregistrer</button>
+        <button class="btn btn-primary" style="flex:1" onclick="saveCustomCode('${tab}')">${IC.check} ${t('save')}</button>
         <button class="btn btn-ghost" onclick="clearCustomCode('${tab}')" style="color:var(--danger)">🗑 Effacer</button>
       </div>
     </div>
@@ -31386,7 +31684,7 @@ function vBoutiqueCode() {
 
     <div class="card" style="background:#FEF3C7;border-color:#F59E0B40;font-size:11px;color:#92400E;line-height:1.6">
       <strong>⚠ Attention :</strong> ${t('v_codeAvert')}
-      Testez toujours avec l'aperçu avant de générer le site.
+      ${t('x_codeFin')}
     </div>
   </div>`;
 }
@@ -31991,7 +32289,7 @@ function _poBody(a) {
       <textarea class="input" rows="2" placeholder="Commentaire (ex: Très bon produit, conforme…)" oninput="_poRevField(${i},'text',this.value)" style="margin-top:6px;font-size:13px;resize:none">${(r.text||'').replace(/</g,'&lt;')}</textarea>
     </div>`).join('')}
     <button class="btn btn-ghost" style="width:100%;font-size:13px;margin-top:4px" onclick="_poAddReview()">${t('x5_ajouterAvisPlus')}</button>
-    <button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="_poSave()">✓ Enregistrer</button>`;
+    <button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="_poSave()">✓ ${t('save')}</button>`;
 }
 function _poAddImg() { pickItemImage(d => { const a = _optItem(); if (!a) return; if (!a.images) a.images = []; a.images.push(d); _renderProductOptions(); }); }
 function _poDelImg(i) { const a = _optItem(); if (a && a.images) { a.images.splice(i,1); _renderProductOptions(); } }
@@ -33183,7 +33481,7 @@ function vBannerForm() {
         <label class="toggle-switch"><input type="checkbox" id="bn-dismiss" ${draft.dismissible!==false?'checked':''}><span class="toggle-track"></span></label>
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px">
-        <div><div style="font-weight:700;font-size:13px">Activer</div><div style="font-size:11px;color:var(--text-3)">${t('w9_visibleImmediat')}</div></div>
+        <div><div style="font-weight:700;font-size:13px">${t('u_activer')}</div><div style="font-size:11px;color:var(--text-3)">${t('w9_visibleImmediat')}</div></div>
         <label class="toggle-switch"><input type="checkbox" id="bn-active" ${draft.active!==false?'checked':''}><span class="toggle-track"></span></label>
       </div>
     </div>
@@ -33294,7 +33592,7 @@ function vPopupForm() {
       </div>
       <div class="form-group">
         <label class="form-label">Titre <span style="color:var(--danger)">*</span></label>
-        <input class="input" id="pp-title" value="${draft.title||''}" oninput="$('pp-prev-title').textContent=this.value" placeholder="-10% sur votre première commande !">
+        <input class="input" id="pp-title" value="${draft.title||''}" oninput="$('pp-prev-title').textContent=this.value" placeholder="${t('x_popTitre')}">
       </div>
       <div class="form-group">
         <label class="form-label">${t('w9_message')}</label>
@@ -33363,7 +33661,7 @@ function vPopupForm() {
         <label class="toggle-switch"><input type="checkbox" id="pp-once" ${draft.showOnce!==false?'checked':''}><span class="toggle-track"></span></label>
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px">
-        <div><div style="font-weight:700;font-size:13px">Activer</div><div style="font-size:11px;color:var(--text-3)">${t('w9_visibleBoutique')}</div></div>
+        <div><div style="font-weight:700;font-size:13px">${t('u_activer')}</div><div style="font-size:11px;color:var(--text-3)">${t('w9_visibleBoutique')}</div></div>
         <label class="toggle-switch"><input type="checkbox" id="pp-active" ${draft.active!==false?'checked':''}><span class="toggle-track"></span></label>
       </div>
     </div>
@@ -38328,15 +38626,21 @@ function _enqueueDelivery(provider, orderId, payload, result) {
 // ══════════════════════════════════════════════════════════════
 // WHATSAPP BUSINESS CLOUD API — configuration + envoi
 // ══════════════════════════════════════════════════════════════
-const WHATSAPP_DEFAULT_TEMPLATES = [
-  { id:'order_confirm',   label:t('w1_lblConfirm'),      enabled:true,  body:"Bonjour {{client}} 👋\n\nVotre commande {{ref}} est confirmée ✅\nMontant : {{total}} {{sym}}\nLivraison prévue : {{delivery}}\n\nMerci pour votre confiance !\n{{business}}" },
-  { id:'order_shipped',   label:t('w1_expedition'),        enabled:true,  body:"🚚 {{client}}, votre commande {{ref}} est en route !\n\nSuivi : {{tracking}}\nArrivée estimée : {{eta}}\n\n{{business}}" },
-  { id:'order_delivered', label:t('w1_livConfirmee'),          enabled:true,  body:"✓ {{client}}, votre commande {{ref}} a bien été livrée.\n\nN'hésitez pas à nous donner votre avis 🌟\n{{business}}" },
-  { id:'payment_request', label:t('w1_lblPaiement'),          enabled:true,  body:"💳 Bonjour {{client}},\n\nVotre facture {{ref}} : {{total}} {{sym}}\nPaiement : {{payment_link}}\n\n{{business}}" },
+let _waTplCache = null, _waTplLang = null;
+function WHATSAPP_DEFAULT_TEMPLATES_() {
+  if (_waTplCache && _waTplLang === _lang) return _waTplCache;
+  _waTplLang = _lang;
+  _waTplCache = [
+  { id:'order_confirm',   label:t('w1_lblConfirm'),      enabled:true,  body:t('u_mConfirm') },
+  { id:'order_shipped',   label:t('w1_expedition'),        enabled:true,  body:t('u_mExped') },
+  { id:'order_delivered', label:t('w1_livConfirmee'),          enabled:true,  body:t('u_mLivree') },
+  { id:'payment_request', label:t('w1_lblPaiement'),          enabled:true,  body:t('u_mFacture') },
   { id:'low_stock_alert', label:t('w1_lblStockStaff'),  enabled:false, body:t('w1_mStock') },
-  { id:'promo_push',      label:t('w1_promoNouv'),        enabled:false, body:"🎉 {{client}}, offre spéciale chez {{business}} !\n\n{{promo_text}}\n\nValable jusqu'au {{expires}}." },
-  { id:'birthday_wish',   label:t('w1_lblAnniv'),          enabled:false, body:"🎂 Joyeux anniversaire {{client}} !\nUn cadeau vous attend chez {{business}} : {{gift}}." },
-];
+  { id:'promo_push',      label:t('w1_promoNouv'),        enabled:false, body:t('u_mPromo') },
+  { id:'birthday_wish',   label:t('w1_lblAnniv'),          enabled:false, body:t('u_mAnniv') },
+  ];
+  return _waTplCache;
+}
 
 function _getWhatsAppConfig() {
   const cfg = (S.integrationsConfig || []).find(c => c.id === 'whatsapp-business');
@@ -38348,7 +38652,7 @@ function vWhatsAppSetup() {
   const cfg = (S.integrationsConfig || []).find(c => c.id === 'whatsapp-business') || {};
   const d = cfg.detail || {};
   const connected = !!cfg.connected;
-  const tpls = Array.isArray(d.templates) && d.templates.length ? d.templates : WHATSAPP_DEFAULT_TEMPLATES;
+  const tpls = Array.isArray(d.templates) && d.templates.length ? d.templates : WHATSAPP_DEFAULT_TEMPLATES_();
   const biz = S.session?.business || 'Mon Commerce';
   return `
   <div class="sub-hero" style="background:linear-gradient(135deg,#25D36625,#128C7E10)">
@@ -38460,7 +38764,7 @@ function vWhatsAppSetup() {
         <input type="checkbox" id="wa-auto-ship" ${d.autoShip?'checked':''}>
       </label>
       <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 0">
-        <div><div style="font-weight:700;font-size:13px">${t('x1_alertesStaff')}</div><div style="font-size:11px;color:var(--text-3)">Envoie "Alerte stock faible" sur le numéro admin quand stock &lt; seuil</div></div>
+        <div><div style="font-weight:700;font-size:13px">${t('x1_alertesStaff')}</div><div style="font-size:11px;color:var(--text-3)">${t('y_autoStock')}</div></div>
         <input type="checkbox" id="wa-auto-stock" ${d.autoStock?'checked':''}>
       </label>
     </div>
@@ -38523,7 +38827,7 @@ function saveWhatsAppSetup() {
     autoSale:  document.getElementById('wa-auto-sale')?.checked || false,
     autoShip:  document.getElementById('wa-auto-ship')?.checked || false,
     autoStock: document.getElementById('wa-auto-stock')?.checked || false,
-    templates: WHATSAPP_DEFAULT_TEMPLATES.map(def => {
+    templates: WHATSAPP_DEFAULT_TEMPLATES_().map(def => {
       const en = document.querySelector(`.wa-tpl-enabled[data-id="${def.id}"]`);
       const body = document.querySelector(`.wa-tpl-body[data-id="${def.id}"]`);
       return { ...def, enabled: en ? en.checked : def.enabled, body: body ? body.value : def.body };
@@ -38665,12 +38969,18 @@ const SMS_PROVIDERS = [
   { id:'custom',    name:'API HTTP custom',  fields:['endpoint','authHeader','from'],  sendFn:'_sendSmsCustom',  url:'' },
 ];
 
-const SMS_DEFAULT_TEMPLATES = [
+let _smsTplCache = null, _smsTplLang = null;
+function SMS_DEFAULT_TEMPLATES_() {
+  if (_smsTplCache && _smsTplLang === _lang) return _smsTplCache;
+  _smsTplLang = _lang;
+  _smsTplCache = [
   { id:'order_confirm',   label:t('w1_lblConfirm'), enabled:true,  body:"{{business}}: Cmd {{ref}} confirmee. Total {{total}} {{sym}}. Merci!" },
-  { id:'payment_request', label:t('w1_lblPaiement'),      enabled:true,  body:"{{business}}: Votre facture {{ref}} {{total}} {{sym}}. Payez: {{payment_link}}" },
-  { id:'otp_code',        label:'Code de verification',  enabled:true,  body:"{{business}}: Votre code est {{code}}. Valide 5 min." },
+  { id:'payment_request', label:t('w1_lblPaiement'),      enabled:true,  body:t('u_sFacture') },
+  { id:'otp_code',        label:t('u_sCodeLbl'),  enabled:true,  body:t('u_sCode') },
   { id:'promo_push',      label:'Promo flash',           enabled:false, body:"{{business}}: {{promo_text}} Offre valable jusqu'au {{expires}}." },
-];
+  ];
+  return _smsTplCache;
+}
 
 function _getSmsConfig() {
   const cfg = (S.integrationsConfig || []).find(c => c.id === 'sms-api');
@@ -38682,7 +38992,7 @@ function vSmsSetup() {
   const d = cfg.detail || {};
   const connected = !!cfg.connected;
   const provider = SMS_PROVIDERS.find(p => p.id === d.provider) || SMS_PROVIDERS[0];
-  const tpls = Array.isArray(d.templates) && d.templates.length ? d.templates : SMS_DEFAULT_TEMPLATES;
+  const tpls = Array.isArray(d.templates) && d.templates.length ? d.templates : SMS_DEFAULT_TEMPLATES_();
   return `
   <div class="sub-hero" style="background:linear-gradient(135deg,#F59E0B25,#D9770610)">
     <div class="page-header-row" style="margin-bottom:10px">
@@ -38776,7 +39086,7 @@ function saveSmsSetup() {
   if (!detail.from) { showToast('Numéro / Sender ID émetteur obligatoire', 'error'); return; }
   detail.autoSale     = document.getElementById('sms-auto-sale')?.checked || false;
   detail.autoCampaign = document.getElementById('sms-auto-campaign')?.checked !== false;
-  detail.templates = SMS_DEFAULT_TEMPLATES.map(def => {
+  detail.templates = SMS_DEFAULT_TEMPLATES_().map(def => {
     const en = document.querySelector(`.sms-tpl-enabled[data-id="${def.id}"]`);
     const body = document.querySelector(`.sms-tpl-body[data-id="${def.id}"]`);
     return { ...def, enabled: en ? en.checked : def.enabled, body: body ? body.value : def.body };
@@ -39319,15 +39629,15 @@ function vEcommerceSetup() {
     <div class="card" style="margin-bottom:10px">
       <div class="card-title">⚙️ Options de synchronisation</div>
       <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
-        <div><div style="font-weight:700;font-size:13px">${t('y3_pushAutoCreation')}</div><div style="font-size:11px;color:var(--text-3)">Envoie chaque nouveau produit BARO sur ${meta.name}</div></div>
+        <div><div style="font-weight:700;font-size:13px">${t('y3_pushAutoCreation')}</div><div style="font-size:11px;color:var(--text-3)">${t('u_ecomPush').replace('{0}', meta.name)}</div></div>
         <input type="checkbox" id="ec-auto-push" ${d.autoPush?'checked':''}>
       </label>
       <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
-        <div><div style="font-weight:700;font-size:13px">Sync stock bidirectionnel</div><div style="font-size:11px;color:var(--text-3)">Met à jour le stock dans les deux sens (vente BARO ⇄ ${meta.name})</div></div>
+        <div><div style="font-weight:700;font-size:13px">${t('y_ecomSyncT')}</div><div style="font-size:11px;color:var(--text-3)">${t('y_ecomSync').replace('{0}', meta.name)}</div></div>
         <input type="checkbox" id="ec-sync-stock" ${d.syncStock?'checked':''}>
       </label>
       <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
-        <div><div style="font-weight:700;font-size:13px">Pull commandes</div><div style="font-size:11px;color:var(--text-3)">Récupère les commandes ${meta.name} comme ventes BARO</div></div>
+        <div><div style="font-weight:700;font-size:13px">Pull commandes</div><div style="font-size:11px;color:var(--text-3)">${t('u_ecomPull').replace('{0}', meta.name)}</div></div>
         <input type="checkbox" id="ec-pull-orders" ${d.pullOrders?'checked':''}>
       </label>
       <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 0">
