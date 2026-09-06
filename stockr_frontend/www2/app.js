@@ -270,6 +270,128 @@ const API_BASE = (location.hostname === 'localhost' || location.hostname === '12
 // ── i18n ─────────────────────────────────────
 const LANGS = {
   fr: {
+    zt_profit: "Bénéfice",
+    zs_matPremieres: "🏭 Matières premières",
+    zs_matPremiere: "Matière première",
+    zs_ingredient: "Ingrédient",
+    zs_emballage: "Emballage",
+    zs_consommable: "Consommable",
+    zs_nouvelleMat: "🏭 Nouvelle matière première",
+    zs_uniteMesure: "Unité de mesure",
+    zr_waConv: "WhatsApp ouvre une conversation pré-remplie — touchez « Envoyer » pour chaque client.",
+    zr_mailOuvre2: "Votre application mail s'ouvre — vérifiez puis envoyez.",
+    zr_actionN: "{0} action à traiter",
+    zr_actionsN: "{0} actions à traiter",
+    zr_nonAffecte: "Non affecté",
+    zr_mailSOuvre: "application mail s'ouvre — vérifiez puis envoyez.",
+    zr_ouvrirEmail: "📧 Ouvrir l'email groupé",
+    zr_aucunReassort: "Aucun réassort nécessaire",
+    zr_pasAssezVentes: "Pas encore assez de ventes",
+    zr_assezStock: "Tous vos produits ont assez de stock au rythme actuel des ventes. Repassez ici quand le stock baisse.",
+    zr_cloturerCaisse: "Clôturer la caisse",
+    zr_cloturer: "Clôturer",
+    zr_touchezEnvoyer: "ouchez « Envoyer » dans WhatsApp pour chaque client.",
+    zq_actionN: "{0} action à traiter aujourd'hui",
+    zq_actionsN: "{0} actions à traiter aujourd'hui",
+    zq_rembourse: "{0} remboursé",
+    zq_ouvrirSms: "📱 Ouvrir l'app SMS ({0} numéros)",
+    zq_enLigne: "en ligne",
+    zq_connectezVous: " : connectez-vous avec un compte serveur (ou créez-en un — vos données locales sont conservées et envoyées au serveur).",
+    zq_aRecouvrer: "{0} à recouvrer",
+    zq_journeeAide: "BARO réunit ici tout ce qui demande votre attention aujourd'hui, à partir de vos vraies données. Touchez une carte pour agir.",
+    zq_nomRemplace: "est remplacé par le nom de chaque client",
+    zq_ouvrirSuivant: "Ouvrir le suivant ({0}",
+    zq_bonjour: "Bonjour",
+    zq_bonApresMidi: "Bon après-midi",
+    zq_bonsoir: "Bonsoir",
+    z_photoArticle: "Photo de l'article",
+    z_creditN: "{0} crédit en cours",
+    z_creditsN: "{0} crédits en cours",
+    z_catChaussures: "Chaussures",
+    z_catAccess: "Accessoires",
+    z_catAlim: "Alimentaire",
+    z_catMaison: "Maison",
+    z_nouveau2: "Nouveau",
+    z_ceQueDoivent: "(ce que les clients vous doivent).",
+    z_rapVentes: "{0} vente(s) · période complète",
+    z_rapClients: "{0} {1} triés par chiffre d'affaires",
+    z_depensesN: "Dépenses ({0})",
+    z_baroPrevient: "BARO vous prévient",
+    z_avant: "avant",
+    z_nomProd2: "Nom du produit",
+    z_creditAide3: "Il est séparé du Bilan pour ne pas compter l'argent deux fois. « Encaisser » enregistre un remboursement, « Relancer » envoie un rappel WhatsApp.",
+    z_perimSens2: "à vos produits sensibles (médicaments, aliments, cosmétiques).",
+    z_catLoyer: "Loyer",
+    z_catElec: "Électricité & eau",
+    z_catTransport: "Transport",
+    z_catSalaires: "Salaires",
+    z_catAchats: "Achats",
+    z_catMarketing: "Marketing",
+    z_catAutre: "Autre",
+    z_nouveauProd: "🏪 Nouveau produit",
+    z_prixMarge: "Prix d'achat → Prix de vente → Marge calculée automatiquement",
+    z_photoProd: "Photo du produit",
+    z_nomProd: "Nom du produit *",
+    z_catTel: "Téléphones",
+    z_catVet: "Vêtements",
+    z_catCosm: "Cosmétiques",
+    z_catElec: "Électronique",
+    z_unite: "Unité (pièce, paire, lot…)",
+    z_refSku: "Référence / SKU / Code-barres",
+    z_revendAide: "Les revendeurs saisissent directement le prix d'achat et de vente. Pas besoin de créer un « produit » séparé.",
+    z_ajouterProd: "🏪 Ajouter le produit",
+    z_creditEnCours: "crédit en cours",
+    z_nouveauCredit: "Nouveau crédit",
+    z_enCours: "En cours",
+    z_regles: "Réglés",
+    z_aucunCredit: "Aucun crédit en cours",
+    z_creditAide: "Quand un client emporte sans payer tout de suite, notez-le ici : vous saurez toujours qui vous doit combien.",
+    z_creditAide2: "(ce que les clients vous doivent). Il est séparé du Bilan pour ne pas compter l'argent deux fois. « Encaisser » enregistre un remboursement, « Relancer » envoie un rappel WhatsApp.",
+    z_nouveauDevis: "📄 Nouveau devis",
+    z_clientNom: "Client (nom)",
+    z_designation: "Désignation",
+    z_qte: "Qté",
+    z_docDevis: "Nouveau devis",
+    z_docDevisSub: "Estimation PDF pour un client",
+    z_docFacture: "Facture / reçu",
+    z_docFactSub: "Depuis une vente — bouton Facture PDF",
+    z_docCatalogue: "Partager votre catalogue (PDF / image)",
+    z_docBilan: "Bilan financier signé",
+    z_docBilanSub: "CA · bénéfice net · marge · top produits",
+    z_docXls: "Toutes les tables en .xls",
+    z_docOhada: "OHADA, par table, intégrations",
+    z_expBilan: "Exporter le bilan en PDF",
+    z_elecEau: "💡 Électricité & eau",
+    z_aucuneDep: "Aucune dépense sur la période. Loyer, électricité, transport, salaires… enregistrez-les ici pour connaître votre bénéfice NET réel.",
+    z_depenses: "Dépenses",
+    z_pushCmd: "🔔 Notification de nouvelle commande",
+    z_serviceGratuit: "Service côté navigateur, gratuit",
+    z_idClientOauth: "ID client OAuth",
+    z_clientIdGoogle: "Client ID Google",
+    z_nouveauPack: "📦 Nouveau pack",
+    z_nouveauPopup: "Nouveau popup",
+    z_nouvelAvis: "Nouvel avis client",
+    z_nouveau: "Nouveau",
+    z_perimAjoutez: "Ajoutez une",
+    z_perimSensibles: "à vos produits sensibles (médicaments, aliments, cosmétiques). BARO vous prévient",
+    z_perimAvant: "qu'ils ne périment, calcule l'argent en jeu et vous aide à agir.",
+    z_reassortAide: "Enregistrez quelques ventes : BARO apprend le rythme de chaque produit et vous dira quoi recommander, combien, et quand.",
+    z_idees: "💡 Idées",
+    z_activerVision: "Activer l'IA vision",
+    z_reconnaitPs5: "Reconnaît une PS5, un iPhone, n'importe quoi — clé Groq gratuite, sans carte",
+    z_activerIa: "📖 Activer l'IA",
+    z_activerVisionG: "« Activer l'IA vision »",
+    z_spEtapes: "ci-dessus → champ Groq → collez (gsk_…) → Enregistrer → Tester.",
+    z_spPhotoVideo: "Photo, vidéo ou direct : Spectra reconnaît le nom exact (PS5, iPhone, Riz Maman…) et l'ajoute à votre stock. ✨",
+    z_activerMtn: "🚀 Activer maintenant",
+    z_scannerPhoto: "Scanner une photo",
+    z_detectTemps: "Détection temps réel",
+    z_detectMulti: "Détection multi-objets",
+    z_scannerStock: "Scanner le stock",
+    z_prendsPhoto: "Prenez une photo de votre stock (IA COCO-SSD, 80 classes)",
+    z_toutAJour: "tout est à jour",
+    z_aucuneAction: "Aucune action urgente : pas de rupture, rien à retirer, caisse clôturée, crédits suivis. Revenez après vos prochaines ventes.",
+    z_toutSePorte: "Tout se porte à merveille",
     u_codePl: "/* Votre code {0} */",
     u_pixAide: "les pixels sont automatiquement injectés dans le site quand vous cliquez sur {0}",
     u_cssPerso: "/* Votre code CSS */",
@@ -2941,6 +3063,128 @@ const LANGS = {
     version:'Version',
   },
   en: {
+    zt_profit: "Profit",
+    zs_matPremieres: "🏭 Raw materials",
+    zs_matPremiere: "Raw material",
+    zs_ingredient: "Ingredient",
+    zs_emballage: "Packaging",
+    zs_consommable: "Consumable",
+    zs_nouvelleMat: "🏭 New raw material",
+    zs_uniteMesure: "Unit of measure",
+    zr_waConv: "WhatsApp opens a ready-written conversation — tap “Send” for each customer.",
+    zr_mailOuvre2: "Your mail app opens — check it, then send.",
+    zr_actionN: "{0} thing to deal with",
+    zr_actionsN: "{0} things to deal with",
+    zr_nonAffecte: "Unassigned",
+    zr_mailSOuvre: "mail app opens — check it, then send.",
+    zr_ouvrirEmail: "📧 Open the group email",
+    zr_aucunReassort: "Nothing to reorder",
+    zr_pasAssezVentes: "Not enough sales yet",
+    zr_assezStock: "All your products have enough stock at the current pace of sales. Come back when stock drops.",
+    zr_cloturerCaisse: "Close the till",
+    zr_cloturer: "Close",
+    zr_touchezEnvoyer: "ap “Send” in WhatsApp for each customer.",
+    zq_actionN: "{0} thing to deal with today",
+    zq_actionsN: "{0} things to deal with today",
+    zq_rembourse: "{0} repaid",
+    zq_ouvrirSms: "📱 Open the messaging app ({0} numbers)",
+    zq_enLigne: "online",
+    zq_connectezVous: ": sign in with a server account (or create one — your local data is kept and sent to the server).",
+    zq_aRecouvrer: "{0} to collect",
+    zq_journeeAide: "BARO gathers here everything that needs your attention today, from your real data. Tap a card to act.",
+    zq_nomRemplace: "is replaced by each customer's name",
+    zq_ouvrirSuivant: "Open the next one ({0}",
+    zq_bonjour: "Good morning",
+    zq_bonApresMidi: "Good afternoon",
+    zq_bonsoir: "Good evening",
+    z_photoArticle: "Item photo",
+    z_creditN: "{0} credit outstanding",
+    z_creditsN: "{0} credits outstanding",
+    z_catChaussures: "Shoes",
+    z_catAccess: "Accessories",
+    z_catAlim: "Food",
+    z_catMaison: "Home",
+    z_nouveau2: "New",
+    z_ceQueDoivent: "(what your customers owe you).",
+    z_rapVentes: "{0} sale(s) · whole period",
+    z_rapClients: "{0} {1} sorted by revenue",
+    z_depensesN: "Expenses ({0})",
+    z_baroPrevient: "BARO warns you",
+    z_avant: "before",
+    z_nomProd2: "Product name",
+    z_creditAide3: "It is kept apart from the Summary so the money is not counted twice. “Collect” records a repayment, “Chase” sends a WhatsApp reminder.",
+    z_perimSens2: "to your date-sensitive products (medicines, food, cosmetics).",
+    z_catLoyer: "Rent",
+    z_catElec: "Electricity & water",
+    z_catTransport: "Transport",
+    z_catSalaires: "Wages",
+    z_catAchats: "Purchases",
+    z_catMarketing: "Marketing",
+    z_catAutre: "Other",
+    z_nouveauProd: "🏪 New product",
+    z_prixMarge: "Cost price → Sale price → Margin worked out for you",
+    z_photoProd: "Product photo",
+    z_nomProd: "Product name *",
+    z_catTel: "Phones",
+    z_catVet: "Clothing",
+    z_catCosm: "Cosmetics",
+    z_catElec: "Electronics",
+    z_unite: "Unit (piece, pair, batch…)",
+    z_refSku: "Reference / SKU / Barcode",
+    z_revendAide: "Resellers enter the cost and sale price directly. No need to create a separate “product”.",
+    z_ajouterProd: "🏪 Add the product",
+    z_creditEnCours: "credit outstanding",
+    z_nouveauCredit: "New credit",
+    z_enCours: "Outstanding",
+    z_regles: "Settled",
+    z_aucunCredit: "No credit outstanding",
+    z_creditAide: "When a customer takes goods without paying straight away, note it here: you will always know who owes you what.",
+    z_creditAide2: "(what your customers owe you). It is kept apart from the Summary so the money is not counted twice. “Collect” records a repayment, “Chase” sends a WhatsApp reminder.",
+    z_nouveauDevis: "📄 New quote",
+    z_clientNom: "Customer (name)",
+    z_designation: "Description",
+    z_qte: "Qty",
+    z_docDevis: "New quote",
+    z_docDevisSub: "A PDF estimate for a customer",
+    z_docFacture: "Invoice / receipt",
+    z_docFactSub: "From a sale — the PDF invoice button",
+    z_docCatalogue: "Share your catalogue (PDF / image)",
+    z_docBilan: "Signed financial summary",
+    z_docBilanSub: "Revenue · net profit · margin · top products",
+    z_docXls: "Every table as .xls",
+    z_docOhada: "OHADA, per table, integrations",
+    z_expBilan: "Export the summary as PDF",
+    z_elecEau: "💡 Electricity & water",
+    z_aucuneDep: "No expenses in this period. Rent, electricity, transport, wages… record them here to know your real NET profit.",
+    z_depenses: "Expenses",
+    z_pushCmd: "🔔 New order notification",
+    z_serviceGratuit: "Free browser-side service",
+    z_idClientOauth: "OAuth client ID",
+    z_clientIdGoogle: "Google Client ID",
+    z_nouveauPack: "📦 New bundle",
+    z_nouveauPopup: "New pop-up",
+    z_nouvelAvis: "New customer review",
+    z_nouveau: "New",
+    z_perimAjoutez: "Add an",
+    z_perimSensibles: "to your date-sensitive products (medicines, food, cosmetics). BARO warns you",
+    z_perimAvant: "before they expire, works out the money at stake and helps you act.",
+    z_reassortAide: "Record a few sales: BARO learns the pace of each product and will tell you what to reorder, how much, and when.",
+    z_idees: "💡 Ideas",
+    z_activerVision: "Switch on vision AI",
+    z_reconnaitPs5: "Recognises a PS5, an iPhone, anything — free Groq key, no card",
+    z_activerIa: "📖 Switch on the AI",
+    z_activerVisionG: "“Switch on vision AI”",
+    z_spEtapes: "above → Groq field → paste (gsk_…) → Save → Test.",
+    z_spPhotoVideo: "Photo, video or live: Spectra recognises the exact name (PS5, iPhone, Riz Maman…) and adds it to your stock. ✨",
+    z_activerMtn: "🚀 Switch it on now",
+    z_scannerPhoto: "Scan a photo",
+    z_detectTemps: "Real-time detection",
+    z_detectMulti: "Multi-object detection",
+    z_scannerStock: "Scan the stock",
+    z_prendsPhoto: "Take a photo of your stock (COCO-SSD AI, 80 classes)",
+    z_toutAJour: "everything is up to date",
+    z_aucuneAction: "Nothing urgent: nothing out of stock, nothing to collect, the till is closed, credits are tracked. Come back after your next sales.",
+    z_toutSePorte: "Everything is going well",
     u_codePl: "/* Your {0} */",
     u_pixAide: "the pixels are injected into the site automatically when you tap {0}",
     u_cssPerso: "/* Your CSS */",
@@ -6878,7 +7122,7 @@ async function loadData() {
       api('GET', '/api/clients/').catch(() => []),
       api('GET', '/api/expenses/').catch(() => null), // null = serveur sans dépenses / hors-ligne → on garde le local
     ]);
-    // Dépenses : le serveur fait foi pour ce qu'il connaît ; les saisies
+    // ${t('z_depenses')} : le serveur fait foi pour ce qu'il connaît ; les saisies
     // hors-ligne (sans serverId) sont conservées telles quelles.
     if (Array.isArray(srvExps)) {
       const srv = srvExps.map(e => ({ id: 'srv_' + e.id, serverId: e.id, label: e.label, amount: e.amount, category: e.category || 'Autre', date: e.date }));
@@ -7849,8 +8093,8 @@ function vExpiry() {
         <div style="font-size:52px;margin-bottom:12px">⏳</div>
         <div style="font-size:17px;font-weight:800;margin-bottom:8px">${t('w1_aucuneDatePer')}</div>
         <div style="font-size:13px;color:var(--text-2);line-height:1.55;max-width:300px;margin:0 auto 18px">
-          Ajoutez une <b>${t('w1_datePeremption')}</b> à vos produits sensibles (médicaments, aliments, cosmétiques).
-          BARO vous prévient <b>avant</b> qu'ils ne périment, calcule l'argent en jeu et vous aide à agir.
+          ${t('z_perimAjoutez')} <b>${t('w1_datePeremption')}</b> ${t('z_perimSens2')}
+          ${t('z_baroPrevient')} <b>${t('z_avant')}</b> ${t('z_perimAvant')}
         </div>
         <button class="btn btn-primary" style="width:100%;max-width:280px" onclick="nav('pantry')">${IC.package} Ouvrir mon stock</button>
       </div>
@@ -8457,11 +8701,11 @@ function vReorder() {
     <div class="container">
       <div class="card" style="text-align:center;padding:34px 22px">
         <div style="font-size:52px;margin-bottom:12px">✅</div>
-        <div style="font-size:17px;font-weight:800;margin-bottom:8px">${hasSalesData ? 'Aucun réassort nécessaire' : 'Pas encore assez de ventes'}</div>
+        <div style="font-size:17px;font-weight:800;margin-bottom:8px">${hasSalesData ? t('zr_aucunReassort') : t('zr_pasAssezVentes')}</div>
         <div style="font-size:13px;color:var(--text-2);line-height:1.55;max-width:300px;margin:0 auto 18px">
           ${hasSalesData
-            ? 'Tous vos produits ont assez de stock au rythme actuel des ventes. Repassez ici quand le stock baisse.'
-            : 'Enregistrez quelques ventes : BARO apprend le rythme de chaque produit et vous dira quoi recommander, combien, et quand.'}
+            ? t('zr_assezStock')
+            : t('z_reassortAide')}
         </div>
         <button class="btn btn-primary" style="width:100%;max-width:280px" onclick="nav('sales')">${IC.plus} ${t('v_enrVente')}</button>
       </div>
@@ -8834,7 +9078,7 @@ function vCredits() {
       </div>
       ${paid > 0 || !settled ? `
       <div style="height:5px;background:var(--gray-1);border-radius:3px;margin:10px 0 4px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${settled?'var(--success)':'var(--accent)'};border-radius:3px"></div></div>
-      <div style="font-size:10.5px;color:var(--text-3)">${fmt(paid)} ${sym()} remboursé${pct>0?` (${pct}%)`:''}</div>` : ''}
+      <div style="font-size:10.5px;color:var(--text-3)">${t('zq_rembourse').replace('{0}', fmt(paid)+' '+sym())}${pct>0?` (${pct}%)`:''}</div>` : ''}
       <div style="display:flex;gap:6px;margin-top:11px">
         ${!settled ? `<button class="btn" style="flex:1;padding:8px 4px;font-size:12px;font-weight:700;background:var(--accent);color:#fff;border:none" onclick="payCredit(${c.id})">💰 Encaisser</button>` : ''}
         <button class="btn" style="flex:1;padding:8px 4px;font-size:12px;font-weight:700;background:#25D36618;color:#128C4B;border:1px solid #25D36640" onclick="remindCredit(${c.id})">${IC.whatsapp||'💬'} Relancer</button>
@@ -8851,25 +9095,25 @@ function vCredits() {
     <div style="margin-top:14px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);border-radius:16px;padding:14px 16px;backdrop-filter:blur(10px)">
       <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.75);letter-spacing:.4px">${t('w1_ceQuOnVousDoit')}</div>
       <div style="font-size:30px;font-weight:800;color:#fff;margin-top:3px">${fmt(st.totalOwed)} <span style="font-size:15px;font-weight:600">${sym()}</span></div>
-      <div style="font-size:11.5px;color:rgba(255,255,255,.8);margin-top:3px">${st.openCount} crédit${st.openCount>1?'s':''} en cours</div>
+      <div style="font-size:11.5px;color:rgba(255,255,255,.8);margin-top:3px">${t(st.openCount>1?'z_creditsN':'z_creditN').replace('{0}', st.openCount)}</div>
     </div>
   </div>
   <div class="container">
-    <button class="btn btn-primary" style="width:100%;padding:12px;font-weight:800;margin-bottom:14px" onclick="S.creditForm={};nav('credit-add')">${IC.plus} Nouveau crédit</button>
+    <button class="btn btn-primary" style="width:100%;padding:12px;font-weight:800;margin-bottom:14px" onclick="S.creditForm={};nav('credit-add')">${IC.plus} ${t('z_nouveauCredit')}</button>
     <div style="display:flex;gap:7px;margin-bottom:12px">
-      <button onclick="S.creditTab='open';render()" style="flex:1;padding:8px;border-radius:10px;font-size:12.5px;font-weight:700;cursor:pointer;border:1.5px solid ${tab==='open'?'var(--accent)':'var(--border)'};background:${tab==='open'?'var(--accent)':'transparent'};color:${tab==='open'?'#fff':'var(--text-2)'}">En cours (${st.openCount})</button>
-      <button onclick="S.creditTab='settled';render()" style="flex:1;padding:8px;border-radius:10px;font-size:12.5px;font-weight:700;cursor:pointer;border:1.5px solid ${tab==='settled'?'var(--accent)':'var(--border)'};background:${tab==='settled'?'var(--accent)':'transparent'};color:${tab==='settled'?'#fff':'var(--text-2)'}">Réglés (${st.count-st.openCount})</button>
+      <button onclick="S.creditTab='open';render()" style="flex:1;padding:8px;border-radius:10px;font-size:12.5px;font-weight:700;cursor:pointer;border:1.5px solid ${tab==='open'?'var(--accent)':'var(--border)'};background:${tab==='open'?'var(--accent)':'transparent'};color:${tab==='open'?'#fff':'var(--text-2)'}">${t('z_enCours')} (${st.openCount})</button>
+      <button onclick="S.creditTab='settled';render()" style="flex:1;padding:8px;border-radius:10px;font-size:12.5px;font-weight:700;cursor:pointer;border:1.5px solid ${tab==='settled'?'var(--accent)':'var(--border)'};background:${tab==='settled'?'var(--accent)':'transparent'};color:${tab==='settled'?'#fff':'var(--text-2)'}">${t('z_regles')} (${st.count-st.openCount})</button>
     </div>
     ${shown.length ? shown.map(card).join('') : `
       <div class="card" style="text-align:center;padding:32px 20px">
         <div style="font-size:48px;margin-bottom:10px">📒</div>
-        <div style="font-size:15px;font-weight:800;margin-bottom:6px">${tab==='open'?'Aucun crédit en cours':'Aucun crédit réglé'}</div>
-        <div style="font-size:12.5px;color:var(--text-2);line-height:1.5;max-width:280px;margin:0 auto">${tab==='open'?'Quand un client emporte sans payer tout de suite, notez-le ici : vous saurez toujours qui vous doit combien.':'Les crédits entièrement remboursés apparaîtront ici.'}</div>
+        <div style="font-size:15px;font-weight:800;margin-bottom:6px">${tab==='open'?t('z_aucunCredit'):'Aucun crédit réglé'}</div>
+        <div style="font-size:12.5px;color:var(--text-2);line-height:1.5;max-width:280px;margin:0 auto">${tab==='open'?t('z_creditAide'):'Les crédits entièrement remboursés apparaîtront ici.'}</div>
       </div>`}
     <div class="card" style="margin-top:6px;background:transparent;border:1px dashed var(--border)">
       <div style="font-size:11.5px;color:var(--text-3);line-height:1.55">
-        <b style="color:var(--text-2)">${t('w1_bonASavoir')}</b> ${t('w2_ceCahierSuit')} <b>${t('w1_creances')}</b> (ce que les clients vous doivent).
-        Il est séparé du Bilan pour ne pas compter l'argent deux fois. « Encaisser » enregistre un remboursement, « Relancer » envoie un rappel WhatsApp.
+        <b style="color:var(--text-2)">${t('w1_bonASavoir')}</b> ${t('w2_ceCahierSuit')} <b>${t('w1_creances')}</b> ${t('z_ceQueDoivent')}
+        ${t('z_creditAide3')}
       </div>
     </div>
   </div>`;
@@ -8911,8 +9155,8 @@ function _todayActions() {
     if (tSales.length > 0 && !closedToday) {
       const ca = tSales.reduce((s, v) => s + (v.total || 0), 0);
       acts.push({ pri: 4, icon: '🧾', color: '#10B981',
-        title: 'Clôturer la caisse', detail: `${tSales.length} vente${tSales.length>1?'s':''} · ${fmt(ca)} ${sym()}`,
-        cta: 'caisse', label: 'Clôturer' });
+        title: t('zr_cloturerCaisse'), detail: `${tSales.length} vente${tSales.length>1?'s':''} · ${fmt(ca)} ${sym()}`,
+        cta: 'caisse', label: t('zr_cloturer') });
     }
   } catch(_){}
   // 4. Crédits clients en cours
@@ -8920,7 +9164,7 @@ function _todayActions() {
     const st = (typeof _creditsStats === 'function') ? _creditsStats() : { openCount: 0, totalOwed: 0 };
     if (st.openCount > 0) {
       acts.push({ pri: 5, icon: '📒', color: '#DC2626',
-        title: `${st.openCount} crédit${st.openCount>1?'s':''} en cours`, detail: `${fmt(st.totalOwed)} ${sym()} à recouvrer`,
+        title: t(st.openCount>1?'z_creditsN':'z_creditN').replace('{0}', st.openCount), detail: t('zq_aRecouvrer').replace('{0}', fmt(st.totalOwed)+' '+sym()),
         cta: 'credits', label: 'Voir' });
     }
   } catch(_){}
@@ -8931,13 +9175,13 @@ function _todayActionsCount() { try { return _todayActions().length; } catch(_) 
 function vToday() {
   const acts = _todayActions();
   const h = new Date().getHours();
-  const greeting = h < 12 ? 'Bonjour' : h < 18 ? 'Bon après-midi' : 'Bonsoir';
+  const greeting = h < 12 ? t('zq_bonjour') : h < 18 ? t('zq_bonApresMidi') : t('zq_bonsoir');
   const name = ((S.session && S.session.name) || '').split(' ')[0];
   return `
   <div class="sub-hero">
     <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('home')">${IC.left}</button>
     <div class="sub-hero-title">${t('w1_maJournee')}</div>
-    <div class="sub-hero-sub">${greeting}${name ? ' ' + name : ''} — ${acts.length ? acts.length + ' action' + (acts.length>1?'s':'') + ' à traiter' : 'tout est à jour'}</div>
+    <div class="sub-hero-sub">${greeting}${name ? ' ' + name : ''} — ${acts.length ? t(acts.length>1?'zr_actionsN':'zr_actionN').replace('{0}', acts.length) : t('z_toutAJour')}</div>
   </div>
   <div class="container">
     ${acts.length ? acts.map(a => `
@@ -8955,9 +9199,9 @@ function vToday() {
       <div class="card" style="text-align:center;padding:40px 22px">
         <div style="font-size:54px;margin-bottom:12px">✨</div>
         <div style="font-size:18px;font-weight:800;margin-bottom:8px">${t('w1_toutAJour')}</div>
-        <div style="font-size:13.5px;color:var(--text-2);line-height:1.55;max-width:300px;margin:0 auto">Aucune action urgente : pas de rupture, rien à retirer, caisse clôturée, crédits suivis. Revenez après vos prochaines ventes.</div>
+        <div style="font-size:13.5px;color:var(--text-2);line-height:1.55;max-width:300px;margin:0 auto">${t('z_aucuneAction')}</div>
       </div>`}
-    ${acts.length ? `<div class="card" style="margin-top:6px;background:transparent;border:1px dashed var(--border)"><div style="font-size:11.5px;color:var(--text-3);line-height:1.55"><b style="color:var(--text-2)">${t('w1_journeeUnEcran')}</b> BARO réunit ici tout ce qui demande votre attention aujourd'hui, à partir de vos vraies données. Touchez une carte pour agir.</div></div>` : ''}
+    ${acts.length ? `<div class="card" style="margin-top:6px;background:transparent;border:1px dashed var(--border)"><div style="font-size:11.5px;color:var(--text-3);line-height:1.55"><b style="color:var(--text-2)">${t('w1_journeeUnEcran')}</b> ${t('zq_journeeAide')}</div></div>` : ''}
   </div>`;
 }
 
@@ -10058,7 +10302,7 @@ function exportSalesXLSX() {
     s.clientName || '', s.paymentMethod || 'cash', s.promoName || ''
   ]);
   const total = S.sales.reduce((sum,s)=>sum+s.total, 0);
-  const sheet = _buildXlsSheet('Historique des ventes', ['Date','Produit','Qté','Total ('+sym()+')','Bénéfice','Client','Paiement','Promo'], rows, { totalRow: fmt(total)+' '+sym() });
+  const sheet = _buildXlsSheet('Historique des ventes', ['Date','Produit',t('z_qte'),'Total ('+sym()+')','Bénéfice','Client','Paiement','Promo'], rows, { totalRow: fmt(total)+' '+sym() });
   downloadXLSX(`stockr_ventes_${new Date().toISOString().slice(0,10)}.xls`, sheet);
 }
 function exportClientsXLSX() {
@@ -13844,7 +14088,7 @@ function vHome() {
     <div class="card card-tap" style="margin-bottom:14px;padding:0;overflow:hidden;display:flex;background:linear-gradient(135deg,var(--accent),#7C73FF);color:#fff;border:none" onclick="nav('today')">
       <div style="flex:1;padding:15px 16px;display:flex;align-items:center;gap:13px">
         <div style="font-size:26px">☀️</div>
-        <div style="flex:1;min-width:0"><div style="font-size:15px;font-weight:800">${t('w1_maJournee')}</div><div style="font-size:12.5px;opacity:.92">${n} action${n>1?'s':''} à traiter aujourd'hui</div></div>
+        <div style="flex:1;min-width:0"><div style="font-size:15px;font-weight:800">${t('w1_maJournee')}</div><div style="font-size:12.5px;opacity:.92">${t(n>1?'zq_actionsN':'zq_actionN').replace('{0}', n)}</div></div>
         <div style="background:rgba(255,255,255,.25);min-width:30px;height:30px;padding:0 8px;border-radius:999px;display:grid;place-items:center;font-weight:800;font-size:14px">${n}</div>
       </div>
     </div>`;})()}
@@ -13968,7 +14212,7 @@ function vHome() {
         ${transactionsPeriod>0 ? `<div style="display:flex;gap:14px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:11px;color:var(--text-3);flex-wrap:wrap">
           <span>📝 <strong style="color:var(--text-1)">${transactionsPeriod}</strong> vente${transactionsPeriod>1?'s':''}</span>
           <span>🛒 ${t('w4_panierMoyen')} <strong style="color:var(--text-1)">${fmt(avgBasket)} ${sym()}</strong></span>
-          <span>💰 Profit <strong style="color:var(--success)">+${fmt(todayProfitVal)} ${sym()}</strong></span>
+          <span>💰 ${t('zt_profit')} <strong style="color:var(--success)">+${fmt(todayProfitVal)} ${sym()}</strong></span>
         </div>` : `<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:11px;color:var(--text-3);text-align:center">${t('w2_aucuneVentePer')} <a href="#" onclick="nav('sales');return false" style="color:var(--accent);font-weight:600">${t('w1_enregistrerVente')}</a></div>`}
       </div>`;
     })()}
@@ -14388,7 +14632,7 @@ function vPantry() {
   const expCount = baseList.filter(a => { const e = getExpiryStatus(a.expiry); return e && e.days <= 30; }).length;
   const lowMarginCount = isReseller ? baseList.filter(a => { const p=a.price||0, c=a.purchasePrice||0; return p>0 && c>0 && ((p-c)/p)*100 < 15; }).length : 0;
 
-  const stockLabel = isReseller ? t('x_maBoutique2') : (bt === 'maker' ? '🏭 Matières premières' : t('stock'));
+  const stockLabel = isReseller ? t('x_maBoutique2') : (bt === 'maker' ? t('zs_matPremieres') : t('stock'));
   return `
   <div class="page-header">
     <div class="page-header-row">
@@ -15254,7 +15498,7 @@ function vFinancial() {
     <div class="period-tabs">
       ${periods.map(p=>`<button class="period-tab ${S.period===p.key?'active':''}" onclick="S.period='${p.key}';render()">${p.label}</button>`).join('')}
     </div>
-    <button class="btn btn-secondary" style="width:100%;margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:8px" onclick="generateBilanReportPDF()">${IC.pdf} Exporter le bilan en PDF</button>
+    <button class="btn btn-secondary" style="width:100%;margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:8px" onclick="generateBilanReportPDF()">${IC.pdf} ${t('z_expBilan')}</button>
     <div class="chart-card">
       <div class="chart-title">${t('revenueChart')}</div>
       <div class="chart-wrap"><canvas id="revenue-chart"></canvas></div>
@@ -15308,6 +15552,11 @@ function vFinancial() {
       const net = totalProfit - totalExp;
       const EXP_CATS = ['Loyer','Électricité & eau','Transport','Salaires','Achats','Marketing','Autre'];
       const catIco = { 'Loyer':'🏠','Électricité & eau':'💡','Transport':'🚚','Salaires':'👥','Achats':'📦','Marketing':'📣','Autre':'🧾' };
+// Le libelle affiche d'une categorie de depense. La cle, elle, ne bouge
+// jamais : elle est enregistree dans les depenses deja saisies.
+const catNom = (c) => ({ 'Loyer':t('z_catLoyer'), 'Électricité & eau':t('z_catElec'),
+  'Transport':t('z_catTransport'), 'Salaires':t('z_catSalaires'), 'Achats':t('z_catAchats'),
+  'Marketing':t('z_catMarketing'), 'Autre':t('z_catAutre') })[c] || c;
       return `
     <div class="card" style="margin-bottom:14px">
       <div class="card-title">${t('w1_depensesPeriode')}</div>
@@ -15315,11 +15564,11 @@ function vFinancial() {
       <div style="display:flex;gap:8px;margin-bottom:8px">
         <input class="input" type="number" id="exp-amount" inputmode="numeric" min="0" placeholder="Montant ${sym()}" style="flex:1;min-width:0" value="${S.expAmount!=null&&S.expAmount!==''?S.expAmount:''}" oninput="S.expAmount=this.value">
         <select class="input" id="exp-cat" style="flex:1;min-width:0" onchange="S.expCat=this.value">
-          ${EXP_CATS.map(c=>`<option value="${c}" ${S.expCat===c?'selected':''}>${catIco[c]} ${c}</option>`).join('')}
+          ${EXP_CATS.map(c=>`<option value="${c}" ${S.expCat===c?'selected':''}>${catIco[c]} ${catNom(c)}</option>`).join('')}
         </select>
       </div>
       <button class="btn btn-primary" style="width:100%;margin-bottom:10px" onclick="addExpense()">${t('w1_ajouterDepense')}</button>
-      ${exps.length === 0 ? `<div style="font-size:12px;color:var(--text-3);padding:4px 0 10px">Aucune dépense sur la période. Loyer, électricité, transport, salaires… enregistrez-les ici pour connaître votre bénéfice NET réel.</div>` : `
+      ${exps.length === 0 ? `<div style="font-size:12px;color:var(--text-3);padding:4px 0 10px">${t('z_aucuneDep')}</div>` : `
       <div style="display:flex;flex-direction:column;margin-bottom:10px">
         ${exps.slice(0,8).map(e=>`
         <div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--gray-1)">
@@ -15335,7 +15584,7 @@ function vFinancial() {
       </div>`}
       <div style="display:flex;flex-direction:column;gap:4px;background:var(--gray-1);border-radius:10px;padding:10px 12px">
         <div style="display:flex;justify-content:space-between;font-size:12.5px;color:var(--text-2)"><span>${t('w1_beneficeBrut')}</span><b style="color:var(--success)">+${fmt(totalProfit)} ${sym()}</b></div>
-        <div style="display:flex;justify-content:space-between;font-size:12.5px;color:var(--text-2)"><span>Dépenses (${exps.length})</span><b style="color:var(--danger)">−${fmt(totalExp)} ${sym()}</b></div>
+        <div style="display:flex;justify-content:space-between;font-size:12.5px;color:var(--text-2)"><span>${t('z_depensesN').replace('{0}', exps.length)}</span><b style="color:var(--danger)">−${fmt(totalExp)} ${sym()}</b></div>
         <div style="display:flex;justify-content:space-between;font-size:14px;border-top:1px solid var(--border);padding-top:6px;margin-top:2px"><b>${t('w1_beneficeNet')}</b><b style="color:${net>=0?'var(--success)':'var(--danger)'}">${net>=0?'':'−'}${fmt(Math.abs(net))} ${sym()}</b></div>
       </div>
     </div>`;
@@ -15445,8 +15694,12 @@ function sovaData() {
   return { preds: d.predictions||[], score: d.score||50, isNew: true, introKey: d.intro_key, revRisk: d.revenue_at_risk||0, revRiskList: d.revenue_at_risk_articles||[], producible: d.producible||[], blocked: d.blocked||[], tomorrow: d.tomorrow||null };
 }
 
-const SOVA_INTROS = {
-  excellent: [n=>`Tout se porte à merveille, ${n} !`, n=>`${n}, ton stock respire.`, n=>`Beau travail, ${n} — rien à signaler.`, n=>`Tout roule. SOVA veille.`, n=>`${n}, tes étagères sont heureuses.`],
+let _c_SOVA_INTROS = null, _l_SOVA_INTROS = null;
+function SOVA_INTROS_() {
+  if (_c_SOVA_INTROS && _l_SOVA_INTROS === _lang) return _c_SOVA_INTROS;
+  _l_SOVA_INTROS = _lang;
+  _c_SOVA_INTROS = {
+  excellent: [n=>`${t('z_toutSePorte')}, ${n} !`, n=>`${n}, ton stock respire.`, n=>`Beau travail, ${n} — rien à signaler.`, n=>`Tout roule. SOVA veille.`, n=>`${n}, tes étagères sont heureuses.`],
   good: [n=>`${n}, ça tient bien. Quelques détails à surveiller.`, n=>`Bonne santé globale, ${n}.`, n=>`Presque parfait, ${n} — juste quelques nuages.`, n=>`${n}, tes stocks sont stables.`, n=>`Tout va bien, ${n}. SOVA reste aux aguets.`],
   warning_one: [n=>`${n}, un article mérite ton attention.`, n=>`Attention, ${n} — SOVA a repéré quelque chose.`, n=>`${n}, un signal faible à ne pas ignorer.`, n=>`Presque tout va bien, ${n}. Mais il y a un "mais".`, n=>`${n}, un article te glisse entre les doigts.`],
   warning_multi: [n=>`${n}, quelques articles réclament ta vigilance.`, n=>`SOVA a des choses à te dire, ${n}.`, n=>`${n}, le tableau est bon — mais pas tout à fait.`, n=>`Quelques signaux, ${n}.`, n=>`${n}, SOVA a repéré plusieurs points à surveiller.`],
@@ -15454,7 +15707,9 @@ const SOVA_INTROS = {
   critical_multi: [n=>`${n}, plusieurs ruptures sont imminentes.`, n=>`Alerte rouge, ${n}. SOVA a besoin que tu agisses.`, n=>`${n}, le stock souffre. SOVA est là.`, n=>`Plusieurs articles critiques, ${n}.`, n=>`${n}, SOVA a les yeux grands ouverts.`],
   neutral: [n=>`${n}, SOVA analyse tes données.`, n=>`Bonjour ${n} — SOVA apprend tes habitudes.`, n=>`${n}, enregistre des ventes pour que SOVA s'affûte.`, n=>`Pas encore assez de données, ${n}. SOVA observe.`, n=>`${n}, SOVA prend ses marques.`],
 };
-function sovaIntro(key, name) { const arr = SOVA_INTROS[key]||SOVA_INTROS.neutral; return arr[new Date().getDate()%arr.length](name||'toi'); }
+  return _c_SOVA_INTROS;
+}
+function sovaIntro(key, name) { const arr = SOVA_INTROS_()[key]||SOVA_INTROS_().neutral; return arr[new Date().getDate()%arr.length](name||'toi'); }
 
 function sovaChartCoverage(preds) {
   const items = preds.filter(p=>p.daily_demand>0.01&&p.days_remaining!==null).sort((a,b)=>(a.days_remaining||99)-(b.days_remaining||99)).slice(0,12);
@@ -15596,7 +15851,7 @@ function vSova() {
   const alertPreds=preds.filter(p=>p.status==='critical'||p.status==='warning');
   const criticalPreds=preds.filter(p=>p.status==='critical');
   const warningPreds=preds.filter(p=>p.status==='warning');
-  const tabs=[{id:'overview',label:t('zz_apercu')},{id:'insights',label:'💡 Idées'},{id:'alerts',label:`Alertes${alertPreds.length>0?' · '+alertPreds.length:''}`},{id:'tomorrow',label:'Demain'},{id:'articles',label:'Articles'}];
+  const tabs=[{id:'overview',label:t('zz_apercu')},{id:'insights',label:t('z_idees')},{id:'alerts',label:`Alertes${alertPreds.length>0?' · '+alertPreds.length:''}`},{id:'tomorrow',label:'Demain'},{id:'articles',label:'Articles'}];
   const R=40,C=2*Math.PI*R,dash=(score/100)*C;
 
   function tabOverview() {
@@ -15971,7 +16226,7 @@ function vDetail() {
       </div>
       <div class="form-group">
         <label class="form-label">${t('x4_categorieIcone')}</label>
-        <input class="input" type="text" placeholder="Chaussures, Téléphones…" value="${(art.category||'').replace(/"/g,'&quot;')}" onchange="updateArticleField(${art.id},'category',this.value)">
+        <input class="input" type="text" placeholder="Chaussures, ${t('z_catTel')}…" value="${(art.category||'').replace(/"/g,'&quot;')}" onchange="updateArticleField(${art.id},'category',this.value)">
       </div>
       ${(S.suppliers || []).length ? `
       <div class="form-group">
@@ -16281,8 +16536,8 @@ function vAdd() {
   const isReseller = bt === 'reseller';
   const isMaker    = bt === 'maker';
   // Catégories rapides adaptées au profil
-  const resellerCats = ['Chaussures','Téléphones','Vêtements','Cosmétiques','Électronique','Accessoires','Alimentaire','Maison','Autre'];
-  const makerCats    = ['Matière première','Ingrédient','Emballage','Consommable','Autre'];
+  const resellerCats = [t('z_catChaussures'),t('z_catTel'),t('z_catVet'),t('z_catCosm'),t('z_catElec'),t('z_catAccess'),t('z_catAlim'),t('z_catMaison'),t('z_catAutre')];
+  const makerCats    = [t('zs_matPremiere'),t('zs_ingredient'),t('zs_emballage'),t('zs_consommable'),t('z_catAutre')];
   const cats = isReseller ? resellerCats : makerCats;
   // Marge live
   const ha = parseFloat(f.purchasePrice)||0;
@@ -16292,8 +16547,8 @@ function vAdd() {
   return `
   <div class="sub-hero">
     <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('pantry')">${IC.left}</button>
-    <div class="sub-hero-title">${isReseller?'🏪 Nouveau produit':isMaker?'🏭 Nouvelle matière première':t('newArticle')}</div>
-    <div class="sub-hero-sub">${isReseller?'Prix d\'achat → Prix de vente → Marge calculée automatiquement':t('addStockSub')}</div>
+    <div class="sub-hero-title">${isReseller?t('z_nouveauProd'):isMaker?t('zs_nouvelleMat'):t('newArticle')}</div>
+    <div class="sub-hero-sub">${isReseller?t('z_prixMarge'):t('addStockSub')}</div>
   </div>
   <div class="container">
     <button class="card card-tap" style="width:100%;margin-bottom:10px;display:flex;align-items:center;gap:12px;text-align:left;background:linear-gradient(135deg,rgba(124,115,255,.10),rgba(79,70,229,.04));border:1px solid rgba(124,115,255,.22);cursor:pointer" onclick="nav('bulk-add')">
@@ -16303,7 +16558,7 @@ function vAdd() {
     </button>
     <div class="card">
       <div class="form-group">
-        <label class="form-label">Photo ${isReseller?'du produit':'de l\'article'} <span style="color:var(--text-3);font-weight:400;text-transform:none">${t('x4_recommandeBoutique')}</span></label>
+        <label class="form-label">${isReseller?t('x4_photoProduit'):t('z_photoArticle')} <span style="color:var(--text-3);font-weight:400;text-transform:none">${t('x4_recommandeBoutique')}</span></label>
         <div style="display:flex;align-items:center;gap:12px">
           ${f.image
             ? `<img src="${f.image}" alt="" style="width:72px;height:72px;border-radius:14px;object-fit:cover;border:2px solid var(--border);box-shadow:var(--shadow-sm)">`
@@ -16315,7 +16570,7 @@ function vAdd() {
         </div>
       </div>
       <div class="form-group">
-        <label class="form-label">${isReseller?'Nom du produit':t('articleName')} *</label>
+        <label class="form-label">${isReseller?t('z_nomProd2'):t('articleName')} *</label>
         <input class="input" type="text" placeholder="${isReseller?'ex: Nike Air Max 42, iPhone 13, Robe wax…':'ex: Farine, Tissu, Bouteilles…'}" value="${f.name.replace(/"/g,'&quot;')}" oninput="S.form.name=this.value">
       </div>
 
@@ -16336,7 +16591,7 @@ function vAdd() {
       </div>` : ''}
 
       <div class="form-group">
-        <label class="form-label">${isReseller?'Unité (pièce, paire, lot…)':'Unité de mesure'}</label>
+        <label class="form-label">${isReseller?t('z_unite'):t('zs_uniteMesure')}</label>
         <div class="unit-combo" id="unit-combo-wrap">
           <input class="input" type="text" id="unit-input"
             placeholder="${isReseller?'ex: pcs, paire, lot...':'ex: kg, pcs, m...'}"
@@ -16364,7 +16619,7 @@ function vAdd() {
       </div>
 
       <div class="form-group">
-        <label class="form-label">${isReseller?'Référence / SKU / Code-barres':t('reference')}</label>
+        <label class="form-label">${isReseller?t('z_refSku'):t('reference')}</label>
         <div style="display:flex;gap:6px">
           <input id="art-ref-input" class="input" style="flex:1" type="text" placeholder="EAN-13, SKU, code interne…" value="${(f.ref||'').replace(/"/g,'&quot;')}" oninput="S.form.ref=this.value">
           <button type="button" class="btn btn-ghost" style="padding:0 14px;white-space:nowrap" onclick="scanBarcodeForArticle()" title="Scanner un code-barres">📷</button>
@@ -16438,9 +16693,9 @@ function vAdd() {
       </div>`}
 
       <div style="background:var(--gray-1);border:1px solid var(--border);border-radius:var(--r-md);padding:12px;font-size:12px;color:var(--text-3);margin-bottom:14px">
-        ${IC.info} ${isReseller?'Les revendeurs tracent directement le prix d\'achat et de vente. Pas besoin de créer un "produit" séparé.':t('alertAutoInfo')}
+        ${IC.info} ${isReseller?t('z_revendAide'):t('alertAutoInfo')}
       </div>
-      <button class="btn btn-primary" onclick="saveArticle()">${isReseller?'🏪 Ajouter le produit':t('addThisArticle')}</button>
+      <button class="btn btn-primary" onclick="saveArticle()">${isReseller?t('z_ajouterProd'):t('addThisArticle')}</button>
     </div>
   </div>`;
 }
@@ -16615,7 +16870,7 @@ function vPackForm() {
   return `
   <div class="sub-hero">
     <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('products')">${IC.left}</button>
-    <div class="sub-hero-title">${isEdit ? '📦 Modifier le pack' : '📦 Nouveau pack'}</div>
+    <div class="sub-hero-title">${isEdit ? '📦 Modifier le pack' : t('z_nouveauPack')}</div>
     <div class="sub-hero-sub">${isEdit ? f.name : 'Groupez plusieurs produits en un pack'}</div>
   </div>
   <div class="container">
@@ -23174,7 +23429,7 @@ function vTeam() {
           <button class="btn btn-ghost" style="flex:0 0 auto;width:auto;padding-left:16px;padding-right:16px;white-space:nowrap" onclick="resetTeamCode()">${t('w7_regenerer')}</button>
         </div>
         ` : `<button class="btn btn-primary" style="width:100%" onclick="loadTeamCode()">${t('w7_chargementCode')}</button>`) : `
-        <div style="font-size:12px;color:var(--text-3);background:var(--gray-1);border-radius:10px;padding:10px 12px;margin-bottom:10px">${t('y4_necessiteMode')} <strong>en ligne</strong> : connectez-vous avec un compte serveur (ou créez-en un — vos données locales sont conservées et envoyées au serveur).</div>
+        <div style="font-size:12px;color:var(--text-3);background:var(--gray-1);border-radius:10px;padding:10px 12px;margin-bottom:10px">${t('y4_necessiteMode')} <strong>${t('zq_enLigne')}</strong>${t('zq_connectezVous')}</div>
         <div style="display:flex;gap:8px">
           <button class="btn btn-primary" style="flex:1 1 auto;width:auto;min-width:0" onclick="doLogout()">Se connecter en ligne</button>
           <button class="btn btn-ghost" style="flex:0 0 auto;width:auto;padding-left:14px;padding-right:14px;white-space:nowrap" onclick="nav('settings')">Serveur</button>
@@ -23915,7 +24170,7 @@ function vOAuthSetup() {
         <div style="font-size:12px;color:var(--text-2);line-height:1.7;padding:8px 0 0 12px;border-left:2px solid #4285F4">
           1. Ouvrez <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener noreferrer" style="color:#4285F4;font-weight:700">console.cloud.google.com/apis/credentials</a><br>
           ${t('v_oaProjet')}<br>
-          3. <strong>${t('x3_creerIdentifiants')}</strong> → <strong>ID client OAuth</strong><br>
+          3. <strong>${t('x3_creerIdentifiants')}</strong> → <strong>${t('z_idClientOauth')}</strong><br>
           4. Type : <strong>Application Web</strong><br>
           5. <strong>${t('x3_originesJs')}</strong> : <code style="background:var(--gray-1);padding:2px 6px;border-radius:4px;font-size:11px;word-break:break-all">${origin}</code>
           <button class="btn btn-ghost" style="padding:4px 8px;font-size:11px;margin-left:6px" onclick="navigator.clipboard.writeText('${origin}');showToast('Copié','success')">📋</button><br>
@@ -23925,7 +24180,7 @@ function vOAuthSetup() {
         </div>
       </details>
 
-      <label class="form-label">Client ID Google</label>
+      <label class="form-label">${t('z_clientIdGoogle')}</label>
       <input id="google-client-id-input" class="input" type="text" placeholder="123456789-xxx.apps.googleusercontent.com" value="${googleId}" style="font-family:monospace;font-size:13px !important">
       <div style="display:flex;gap:8px;margin-top:10px">
         <button class="btn btn-ghost" style="flex:1" onclick="saveGoogleClientId()">${t('w7_enregistrer')}</button>
@@ -24061,7 +24316,7 @@ function vNotificationsSetup() {
 
     <!-- ── Push nouvelle commande (EN LIGNE) ── -->
     <div class="card" style="margin-bottom:12px;border-left:4px solid ${pushOn?'var(--success)':'#8B5CF6'};background:linear-gradient(135deg,rgba(139,92,246,.06),transparent)">
-      <div style="font-size:15px;font-weight:800;color:var(--text-1);margin-bottom:6px">🔔 Push nouvelle commande</div>
+      <div style="font-size:15px;font-weight:800;color:var(--text-1);margin-bottom:6px">${t('z_pushCmd')}</div>
       <div style="font-size:12px;color:var(--text-2);line-height:1.6;margin-bottom:10px">
         ${t('y2_notifBoutique').replace('{0}','<strong>'+t('y2_boutiqueEnLigne')+'</strong>').replace('{1}','<strong>'+t('w7_memeAppFermee')+'</strong>')}
       </div>
@@ -24082,7 +24337,7 @@ function vNotificationsSetup() {
     <div class="card" style="margin-bottom:12px;border-left:4px solid ${emailActive?'var(--success)':'#0EA5E9'}">
       <div style="font-size:15px;font-weight:800;color:var(--text-1);margin-bottom:6px">${t('w7_emailjs')}</div>
       <div style="font-size:12px;color:var(--text-2);line-height:1.6;margin-bottom:10px">
-        Service client-side gratuit <strong>200 emails/mois</strong> ${t('v_ntEnvoie')}
+        ${t('z_serviceGratuit')} <strong>200 emails/mois</strong> ${t('v_ntEnvoie')}
       </div>
 
       <details style="margin-bottom:10px">
@@ -25200,7 +25455,7 @@ function vMultiStore() {
   // "Non affecté" = ventes/articles sans emplacement (honnête)
   const rows = [...locs.map(l => ({ id: l.id, name: l.name, type: l.type, ...(_msStats(l.id, sales)) }))];
   const unassigned = _msStats(null, sales);
-  if (unassigned.nb > 0 || unassigned.nbArts > 0) rows.push({ id: null, name: 'Non affecté', type: 'other', ...unassigned });
+  if (unassigned.nb > 0 || unassigned.nbArts > 0) rows.push({ id: null, name: t('zr_nonAffecte'), type: 'other', ...unassigned });
   const totCA = rows.reduce((a, r) => a + r.ca, 0);
   const totNb = rows.reduce((a, r) => a + r.nb, 0);
   const totStock = rows.reduce((a, r) => a + r.stockVal, 0);
@@ -25481,12 +25736,12 @@ function vDevisForm() {
   return `
   <div class="sub-hero" style="background:linear-gradient(135deg,#7C3AED,#6366F1)">
     <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('documents')">${IC.left}</button>
-    <div class="sub-hero-title">📄 Nouveau devis</div>
+    <div class="sub-hero-title">${t('z_nouveauDevis')}</div>
     <div class="sub-hero-sub">Estimation professionnelle en PDF</div>
   </div>
   <div class="container">
     <div class="card" style="margin-bottom:12px">
-      <label class="form-label">Client (nom)</label>
+      <label class="form-label">${t('z_clientNom')}</label>
       <input class="input" id="dv-client" type="text" placeholder="ex : Pharmacie du Plateau" value="${(f.client||'').replace(/"/g,'&quot;')}" oninput="S.devisForm.client=this.value">
       <div style="display:flex;gap:8px;margin-top:10px">
         <div style="flex:1"><label class="form-label">${t('x4_validiteJours')}</label>
@@ -25498,8 +25753,8 @@ function vDevisForm() {
       <div id="dv-lines">
         ${f.items.map((it,i)=>`
         <div style="display:flex;gap:6px;margin-bottom:8px;align-items:center">
-          <input class="input" style="flex:2;min-width:0" placeholder="Désignation" value="${(it.name||'').replace(/"/g,'&quot;')}" oninput="S.devisForm.items[${i}].name=this.value;_dvTotal()">
-          <input class="input" style="flex:0 0 56px;width:56px;text-align:center" type="number" min="0" step="any" placeholder="Qté" value="${it.qty||''}" oninput="S.devisForm.items[${i}].qty=parseFloat(this.value)||0;_dvTotal()">
+          <input class="input" style="flex:2;min-width:0" placeholder=t('z_designation') value="${(it.name||'').replace(/"/g,'&quot;')}" oninput="S.devisForm.items[${i}].name=this.value;_dvTotal()">
+          <input class="input" style="flex:0 0 56px;width:56px;text-align:center" type="number" min="0" step="any" placeholder="${t('z_qte')}" value="${it.qty||''}" oninput="S.devisForm.items[${i}].qty=parseFloat(this.value)||0;_dvTotal()">
           <input class="input" style="flex:0 0 78px;width:78px;text-align:right" type="number" min="0" placeholder="Prix" value="${it.price||''}" oninput="S.devisForm.items[${i}].price=parseFloat(this.value)||0;_dvTotal()">
           ${f.items.length>1?`<button class="btn btn-ghost" style="flex:0 0 auto;width:auto;padding:0 10px;color:var(--danger)" onclick="S.devisForm.items.splice(${i},1);render()">✕</button>`:''}
         </div>`).join('')}
@@ -25556,20 +25811,20 @@ function vDocuments() {
   </div>
   <div class="container">
     <div class="settings-label" style="margin-bottom:8px">${t('x4_creerDocument')}</div>
-    ${card('📄','Nouveau devis','Estimation PDF pour un client'+(devisHist.length?` · ${devisHist.length} créé(s)`:''),"nav('devis-form')",'#7C3AED')}
-    ${card('🧾','Facture / reçu','Depuis une vente — bouton Facture PDF','nav(\'sales\')','#4F46E5')}
-    ${card('🛍️','Catalogue produits','Partager votre catalogue (PDF / image)','nav(\'catalog\')','#16A34A')}
+    ${card('📄',t('z_docDevis'),t('z_docDevisSub')+(devisHist.length?` · ${devisHist.length} créé(s)`:''),"nav('devis-form')",'#7C3AED')}
+    ${card('🧾',t('z_docFacture'),t('z_docFactSub'),'nav(\'sales\')','#4F46E5')}
+    ${card('🛍️','Catalogue produits',t('z_docCatalogue'),'nav(\'catalog\')','#16A34A')}
 
     <div class="settings-label" style="margin:16px 0 8px">Rapports professionnels (PDF)</div>
-    ${card('🧮','Bilan financier signé','CA · bénéfice net · marge · top produits',"S.period='30d';generateBilanReportPDF()",'#4F46E5')}
+    ${card('🧮',t('z_docBilan'),t('z_docBilanSub'),"S.period='30d';generateBilanReportPDF()",'#4F46E5')}
     ${card('📦','Rapport de stock',`${(S.articles||[]).length} article(s) · valeur & alertes`,'generateStockReportPDF()','#0EA5E9')}
-    ${card('💰','Rapport de ventes',`${nbSales} vente(s) · période complète`,"generateSalesReportPDF('all')",'#F59E0B')}
-    ${card('👥','Rapport clients (CRM)',`${(S.clients||[]).length} ${t('w4_clientsN')} triés par CA`,'generateClientsReportPDF()','#EC4899')}
+    ${card('💰','Rapport de ventes',t('z_rapVentes').replace('{0}', nbSales),"generateSalesReportPDF('all')",'#F59E0B')}
+    ${card('👥','Rapport clients (CRM)',t('z_rapClients').replace('{0}', (S.clients||[]).length).replace('{1}', t('w4_clientsN')),'generateClientsReportPDF()','#EC4899')}
 
     <div class="settings-label" style="margin:16px 0 8px">Exports (comptable / tableur)</div>
-    ${card('📗','Export Excel complet','Toutes les tables en .xls','exportFullXLSX()','#059669')}
+    ${card('📗','Export Excel complet',t('z_docXls'),'exportFullXLSX()','#059669')}
     ${card('📊','Tout en CSV','Format universel comptable','exportAllCSV()','#334155')}
-    ${card('📚','Plus d\'exports & options','OHADA, par table, intégrations','nav(\'exports\')','#64748B')}
+    ${card('📚','Plus d\'exports & options',t('z_docOhada'),'nav(\'exports\')','#64748B')}
 
     ${devisHist.length ? `
     <div class="settings-label" style="margin:16px 0 8px">${t('x4_devisRecents')}</div>
@@ -32429,7 +32684,7 @@ function vBoutiqueAnalytics() {
         return { name: l.name, ca: sl.reduce((a,s)=>a+(s.total||0),0), n: sl.length };
       });
       const unassigned = (S.sales||[]).filter(s => !s.locationId);
-      if (unassigned.length) rows.push({ name:'Non affecté', ca: unassigned.reduce((a,s)=>a+(s.total||0),0), n: unassigned.length });
+      if (unassigned.length) rows.push({ name:t('zr_nonAffecte'), ca: unassigned.reduce((a,s)=>a+(s.total||0),0), n: unassigned.length });
       rows.sort((a,b)=>b.ca-a.ca);
       const mx = Math.max(1, ...rows.map(r=>r.ca));
       return `
@@ -33564,7 +33819,7 @@ function vPopupForm() {
     <div class="page-header-row" style="margin-bottom:10px">
       <button class="back-btn-dark" onclick="S.editingPopupId=null;nav('marketing')">${IC.left}</button>
       <div style="flex:1">
-        <div class="sub-hero-title">${isEdit?'Modifier popup':'Nouveau popup'}</div>
+        <div class="sub-hero-title">${isEdit?'Modifier popup':t('z_nouveauPopup')}</div>
         <div class="sub-hero-sub">${t('w9_offreMiseAvant')}</div>
       </div>
     </div>
@@ -33744,7 +33999,7 @@ function vReviewForm() {
     <div class="page-header-row" style="margin-bottom:10px">
       <button class="back-btn-dark" onclick="S.editingReviewId=null;nav('marketing')">${IC.left}</button>
       <div style="flex:1">
-        <div class="sub-hero-title">${isEdit?'Modifier avis':'Nouvel avis client'}</div>
+        <div class="sub-hero-title">${isEdit?'Modifier avis':t('z_nouvelAvis')}</div>
         <div class="sub-hero-sub">${t('w9_temoignageAff')}</div>
       </div>
     </div>
@@ -34445,11 +34700,17 @@ function applyVideoTemplate(tplId) {
 //   Chaque élément (texte/prix/image/forme) est sélectionnable,
 //   déplaçable au doigt/souris, redimensionnable. Export PNG net.
 // ══════════════════════════════════════════════════════════════
-const CE_RATIOS = {
+let _c_CE_RATIOS = null, _l_CE_RATIOS = null;
+function CE_RATIOS_() {
+  if (_c_CE_RATIOS && _l_CE_RATIOS === _lang) return _c_CE_RATIOS;
+  _l_CE_RATIOS = _lang;
+  _c_CE_RATIOS = {
   square:   { w:1080, h:1080, label:t('v_carre') },
   portrait: { w:1080, h:1350, label:'Post 4:5' },
   story:    { w:1080, h:1920, label:'Story 9:16' },
 };
+  return _c_CE_RATIOS;
+}
 function _creator() {
   if (!S.creator) {
     S.creator = {
@@ -34462,7 +34723,7 @@ function _creator() {
   return S.creator;
 }
 function _ceStage() {
-  const r = CE_RATIOS[_creator().ratio] || CE_RATIOS.square;
+  const r = CE_RATIOS_()[_creator().ratio] || CE_RATIOS_().square;
   const availW = Math.min((window.innerWidth || 380) - 36, 420);
   const availH = (window.innerHeight || 720) * 0.44;
   let SW = availW, SH = SW * r.h / r.w;
@@ -34515,7 +34776,7 @@ function vCreator() {
     </div>
 
     <div class="ce-ratios">
-      ${Object.entries(CE_RATIOS).map(([k,r]) => `<button class="ce-ratio ${cr.ratio===k?'active':''}" onclick="_ceSetRatio('${k}')">${r.label}</button>`).join('')}
+      ${Object.entries(CE_RATIOS_()).map(([k,r]) => `<button class="ce-ratio ${cr.ratio===k?'active':''}" onclick="_ceSetRatio('${k}')">${r.label}</button>`).join('')}
     </div>
 
     <div class="ce-stage-wrap">
@@ -34735,7 +34996,7 @@ async function _ceExport() {
   const cr = _creator();
   if (!cr.elements.length && cr.bg.type !== 'image') { showToast('Ajoutez au moins un élément', 'info'); return; }
   showToast('Génération de l\'image…', 'info');
-  const r = CE_RATIOS[cr.ratio], EW=r.w, EH=r.h;
+  const r = CE_RATIOS_()[cr.ratio], EW=r.w, EH=r.h;
   const c = document.createElement('canvas'); c.width=EW; c.height=EH;
   const ctx = c.getContext('2d');
   if (cr.bg.type==='image' && cr.bg.img) { const im=await _ceLoadImg(cr.bg.img); if(im){_ceDrawCover(ctx,im,0,0,EW,EH);} else {ctx.fillStyle=cr.bg.c1;ctx.fillRect(0,0,EW,EH);} }
@@ -35789,7 +36050,11 @@ function _socialResultToast(channel, result) {
 }
 
 // ── SOCIAL MEDIA — PUBLICATION DIRECTE (Meta Graph / TikTok / Twitter v2) ──
-const SOCIAL_PLATFORMS_META = {
+let _c_SOCIAL_PLATFORMS_META = null, _l_SOCIAL_PLATFORMS_META = null;
+function SOCIAL_PLATFORMS_META_() {
+  if (_c_SOCIAL_PLATFORMS_META && _l_SOCIAL_PLATFORMS_META === _lang) return _c_SOCIAL_PLATFORMS_META;
+  _l_SOCIAL_PLATFORMS_META = _lang;
+  _c_SOCIAL_PLATFORMS_META = {
   facebook: {
     name:'Facebook Page', color:'#1877F2', logo:'📘',
     portal:'https://developers.facebook.com/apps/',
@@ -35841,10 +36106,12 @@ const SOCIAL_PLATFORMS_META = {
     ]
   },
 };
+  return _c_SOCIAL_PLATFORMS_META;
+}
 
 function vSocialSetup() {
   const pid = S.socialSetupPlatform || 'facebook';
-  const meta = SOCIAL_PLATFORMS_META[pid] || SOCIAL_PLATFORMS_META.facebook;
+  const meta = SOCIAL_PLATFORMS_META_()[pid] || SOCIAL_PLATFORMS_META_().facebook;
   const existing = (S.socialAccounts || []).find(a => a.platform === pid) || {};
   const d = existing.detail || {};
   const connected = !!existing.connected;
@@ -35911,7 +36178,7 @@ function vSocialSetup() {
 }
 
 function saveSocialSetup(platformId) {
-  const meta = SOCIAL_PLATFORMS_META[platformId];
+  const meta = SOCIAL_PLATFORMS_META_()[platformId];
   if (!meta) { showToast('Plateforme inconnue','error'); return; }
   const detail = {
     autoProduct: document.getElementById('soc-auto-product')?.checked || false,
@@ -35938,7 +36205,7 @@ async function testSocialConnection(platformId) {
   const acc = (S.socialAccounts || []).find(a => a.platform === platformId);
   const cfg = acc?.detail || {};
   // Pre-fill with form values if not saved yet
-  SOCIAL_PLATFORMS_META[platformId]?.fields.forEach(f => {
+  SOCIAL_PLATFORMS_META_()[platformId]?.fields.forEach(f => {
     const v = document.getElementById('soc-'+f.id)?.value.trim();
     if (v) cfg[f.id] = v;
   });
@@ -36686,7 +36953,7 @@ function vApiSettings() {
     <div class="card" style="margin-bottom:10px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
         <div class="card-title" style="margin-bottom:0">🔗 Webhooks sortants (${webhooks.length})</div>
-        <button class="btn btn-primary" style="font-size:11px;padding:6px 12px" onclick="addWebhook()">${IC.plus} Nouveau</button>
+        <button class="btn btn-primary" style="font-size:11px;padding:6px 12px" onclick="addWebhook()">${IC.plus} ${t('z_nouveau2')}</button>
       </div>
       <div style="font-size:12px;color:var(--text-3);margin-bottom:12px">
         ${t('v_apiPost')}
@@ -39259,10 +39526,10 @@ function vWhatsappBroadcast() {
           <button class="btn btn-ghost" style="font-size:11px;padding:5px 10px" onclick="_waBcastInsert('{business}')">+ {business}</button>
           ${promos.length ? `<button class="btn btn-ghost" style="font-size:11px;padding:5px 10px" onclick="_waBcastAddPromo()">+ Promo en cours</button>` : ''}
         </div>
-        <div style="font-size:11px;color:var(--text-3);margin-top:8px;line-height:1.4">💡 <b>{nom}</b> est remplacé par le nom de chaque client. WhatsApp ouvre une conversation pré-remplie — touchez « Envoyer » dans WhatsApp pour chaque client.</div>
+        <div style="font-size:11px;color:var(--text-3);margin-top:8px;line-height:1.4">💡 <b>{nom}</b> ${t('zq_nomRemplace')}. ${t('zr_waConv')}</div>
       </div>
       <div style="display:flex;gap:8px;margin-bottom:10px">
-        <button class="btn btn-primary" style="flex:1;background:#25D366" onclick="_waBcastNext()">${IC.whatsapp} Ouvrir le suivant (${clients.length - sentCount})</button>
+        <button class="btn btn-primary" style="flex:1;background:#25D366" onclick="_waBcastNext()">${IC.whatsapp} ${t('zq_ouvrirSuivant').replace('{0}', clients.length - sentCount)})</button>
         ${sentCount ? `<button class="btn btn-ghost" onclick="_waBcastReset()">${t('w9_reinit')}</button>` : ''}
       </div>
       <div class="card" style="padding:6px 0">
@@ -39401,7 +39668,7 @@ function vSmsBroadcast() {
       <button class="btn btn-primary" style="width:100%;margin-bottom:10px;background:#4F46E5" onclick="sendSmsBroadcast()" ${st.running?'disabled':''}>
         ${st.running ? '⏳ Envoi en cours…' : `📨 Envoyer à ${clients.length} client${clients.length>1?'s':''}`}
       </button>` : `
-      <button class="btn btn-primary" style="width:100%;margin-bottom:10px" onclick="_smsBcastNative()">📱 Ouvrir l'app SMS (${clients.length} numéros)</button>`}
+      <button class="btn btn-primary" style="width:100%;margin-bottom:10px" onclick="_smsBcastNative()">${t('zq_ouvrirSms').replace('{0}', clients.length)}</button>`}
       <div class="card" style="padding:6px 0">
         ${clients.map(c => {
           const r = st.results[c.id];
@@ -39524,9 +39791,9 @@ function vEmailBroadcast() {
       <div class="card" style="margin-bottom:10px">
         <div class="card-title">${t('w9_messageIcone')}</div>
         <textarea id="email-bcast-msg" class="input" rows="7" style="font-size:13px;line-height:1.5" oninput="S._emailBcast.msg=this.value">${st.msg.replace(/</g,'&lt;')}</textarea>
-        <div style="font-size:11px;color:var(--text-3);margin-top:8px;line-height:1.4">${t('y4_destinatairesBcc').replace('{0}','<b>'+t('y4_copieCachee')+'</b>')} Votre application mail s'ouvre — vérifiez puis envoyez.</div>
+        <div style="font-size:11px;color:var(--text-3);margin-top:8px;line-height:1.4">${t('y4_destinatairesBcc').replace('{0}','<b>'+t('y4_copieCachee')+'</b>')} ${t('zr_mailOuvre2')}</div>
       </div>
-      <button class="btn btn-primary" style="width:100%;margin-bottom:10px;background:#EA4335" onclick="_emailBcastSend()">📧 Ouvrir l'email groupé (${clients.length})</button>
+      <button class="btn btn-primary" style="width:100%;margin-bottom:10px;background:#EA4335" onclick="_emailBcastSend()">${t('zr_ouvrirEmail')} (${clients.length})</button>
       <div class="card" style="padding:6px 0">
         ${clients.map(c => `<div style="display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid var(--border)">
             <div style="width:30px;height:30px;border-radius:50%;background:var(--gray-1);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--text-2);font-size:13px">${(c.name||'?').charAt(0).toUpperCase()}</div>
@@ -40590,10 +40857,10 @@ function importProductsFromCSV() {
 // ── SPECTRA ENHANCED ─────────────────────────
 function vSpectraEnhanced() {
   const modes = [
-    { id:'photo',      icon:IC.camera,  label:'Photo scan',          desc:'Scanner une photo' },
+    { id:'photo',      icon:IC.camera,  label:'Photo scan',          desc:t('z_scannerPhoto') },
     { id:'barcode',    icon:IC.barcode, label:'Code-barres',         desc:'Scanner un code-barres' },
-    { id:'continuous', icon:IC.target,  label:'Scan continu',        desc:'Détection temps réel' },
-    { id:'yolo',       icon:IC.zap,     label:'YOLO IA',             desc:'Détection multi-objets' },
+    { id:'continuous', icon:IC.target,  label:'Scan continu',        desc:t('z_detectTemps') },
+    { id:'yolo',       icon:IC.zap,     label:'YOLO IA',             desc:t('z_detectMulti') },
   ];
   const scanHistory = S.spectraScanHistory || [];
 
@@ -40832,8 +41099,8 @@ function vSpectraEnhanced() {
       <div class="spectra-ai-banner off" onclick="nav('spectra-ai-setup')">
         <div class="spectra-ai-ic pulse">✨</div>
         <div style="flex:1;min-width:0">
-          <div class="spectra-ai-title">Activer l'IA vision <span class="spectra-ai-badge">GRATUIT 2 MIN</span></div>
-          <div class="spectra-ai-sub">Reconnaît PS5, iPhone, n'importe quoi — clé Groq gratuite, sans carte</div>
+          <div class="spectra-ai-title">${t('z_activerVision')} <span class="spectra-ai-badge">GRATUIT 2 MIN</span></div>
+          <div class="spectra-ai-sub">${t('z_reconnaitPs5')}</div>
         </div>
         <div style="color:#fff;opacity:.9">${IC.chevron}</div>
       </div>`;
@@ -40856,7 +41123,7 @@ function vSpectraEnhanced() {
 
     <details class="spectra-tuto" ${_spectraHasOwnKey()||localStorage.getItem('baro_spectra_tuto_seen')?'':'open'} ontoggle="if(this.open)localStorage.setItem('baro_spectra_tuto_seen','1')">
       <summary class="spectra-tuto-sum">
-        <span>📖 Activer l'IA <span style="font-weight:500;color:var(--text-3)">Groq gratuit · 2 min</span></span>
+        <span>${t('z_activerIa')} <span style="font-weight:500;color:var(--text-3)">Groq gratuit · 2 min</span></span>
         <span class="spectra-tuto-chev">${IC.chevron}</span>
       </summary>
       <div class="spectra-tuto-body">
@@ -40866,13 +41133,13 @@ function vSpectraEnhanced() {
         </div>
         <div class="spectra-step">
           <div class="spectra-step-n">2</div>
-          <div><div class="spectra-step-t">${t('x3_colleDansSpectra')}</div><div class="spectra-step-d">Touche <strong>« Activer l'IA vision »</strong> ci-dessus → champ Groq → colle (gsk_…) → Enregistrer → Tester.</div></div>
+          <div><div class="spectra-step-t">${t('x3_colleDansSpectra')}</div><div class="spectra-step-d">Touche <strong>${t('z_activerVisionG')}</strong> ${t('z_spEtapes')}</div></div>
         </div>
         <div class="spectra-step">
           <div class="spectra-step-n">3</div>
-          <div><div class="spectra-step-t">Scanne n'importe quel produit</div><div class="spectra-step-d">Photo, vidéo ou live : Spectra reconnaît le nom exact (PS5, iPhone, Riz Maman…) et l'ajoute à ton stock. ✨</div></div>
+          <div><div class="spectra-step-t">Scanne n'importe quel produit</div><div class="spectra-step-d">${t('z_spPhotoVideo')}</div></div>
         </div>
-        <button class="btn btn-primary" style="margin-top:6px;background:linear-gradient(135deg,#F55036,#7C3AED)" onclick="event.preventDefault();nav('spectra-ai-setup')">🚀 Activer maintenant</button>
+        <button class="btn btn-primary" style="margin-top:6px;background:linear-gradient(135deg,#F55036,#7C3AED)" onclick="event.preventDefault();nav('spectra-ai-setup')">${t('z_activerMtn')}</button>
         <div style="font-size:11px;color:var(--text-3);margin-top:10px;line-height:1.5">${t('x3_sansCleSpectra')} <strong>${t('x3_codeBarresDico')}</strong> de 300+ produits locaux (hors-ligne).</div>
       </div>
     </details>
@@ -40914,14 +41181,14 @@ function vSpectraEnhanced() {
           S.spectraMode==='barcode'?'Scanner code-barres':
           S.spectraMode==='continuous'?'Démarrer scan live':
           S.spectraMode==='yolo'?'Scanner YOLO IA':
-          'Scanner le stock'
+          t('z_scannerStock')
         }
       </button>
       <div style="font-size:11px;color:var(--text-3);margin-top:8px">${
         S.spectraMode==='continuous'?'Détection IA en temps réel sur flux caméra':
         S.spectraMode==='yolo'?'YOLO détecte et compte automatiquement chaque produit':
         S.spectraMode==='barcode'?'Scanne EAN-13, UPC, Code 128, QR… Native BarcodeDetector':
-        'Prends une photo de ton stock (IA COCO-SSD, 80 classes)'
+        t('z_prendsPhoto')
       }</div>
     </div>
 
