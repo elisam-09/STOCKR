@@ -270,6 +270,284 @@ const API_BASE = (location.hostname === 'localhost' || location.hostname === '12
 // ── i18n ─────────────────────────────────────
 const LANGS = {
   fr: {
+    zzf_actifRetirer: "Actif — Retirer",
+    zzf_demain: "Demain",
+    zzf_renvoyer: "Renvoyer",
+    zze_partagerCommande: "Partager la commande ({0})",
+    zze_partagerWa: "Partager sur WhatsApp",
+    zze_partagerReduc: "Partager la réduction",
+    zze_partagerLien: "Partager le lien",
+    zze_decouvrezBq: "Découvrez ma boutique en ligne 🛍️ : {0}",
+    zzd_changerDevise: "Changer de devise",
+    zzd_abonnement: "Abonnement",
+    zzd_fournisseurs: "Fournisseurs",
+    zzc_deconnecter: "Déconnecter",
+    zzc_ambre: "Ambre",
+    zzb_sandbox: "Mode sandbox (test)",
+    zzb_waRapide: "Mode rapide (wa.me)",
+    zzb_waPro: "Mode pro (Meta Cloud API)",
+    zzb_modeScan: "MODE DE SCAN",
+    zza_modeEnvoi: "Mode d'envoi",
+    zza_envoiAutoLiv: "Envoi auto à la livraison",
+    zza_tester: "Tester",
+    zza_testerEnvoi: "Tester l'envoi",
+    zza_fin: "Fin",
+    zza_perte: "Perte",
+    zza_date: "Date",
+    zza_dateMaj: "📅 Date mise à jour — {0}",
+    zza_dateRetiree: "Date retirée — {0}",
+    zza_dateLivEstim: "Date de livraison estimée",
+    zza_dateFin: "Date de fin",
+    zza_testerConn: "Tester la connexion",
+    zza_connexionApi: "Connexion API",
+    zza_perteAide: "« Perte » retire le stock périmé et l'enregistre comme perte dans votre Bilan (bénéfice net).",
+    zza_dateAide: "« Date » corrige la péremption. Les produits sont classés du plus urgent au moins urgent.",
+    zza_connexionA: "Connexion {0}",
+    zz9_atteint: "atteint",
+    zz9_atteintOk: "atteint ✓",
+    w4_venteN: "vente",
+    zz9_vendus: "vendu(s)",
+    zz9_prixAchat: "Prix d'achat",
+    zz9_prix: "Prix",
+    zz9_objectifAtteint: "🎉 Objectif atteint !",
+    zz8_salaires: "Salaires",
+    zz8_rupture: "RUPTURE",
+    zz8_meilleuresVentes: "Meilleures ventes",
+    zz8_nbVentes: "Nb ventes",
+    zz8_achatVersVente: "Prix d'achat → prix de vente",
+    zz8_prixVente: "Prix de vente",
+    zz8_multiPoints: "Multi-points de vente",
+    zz8_especes: "Espèces",
+    zz8_carte: "Carte",
+    zz8_redige: "✓ Rédigé",
+    zz8_conditionsVente: "Conditions de vente",
+    zz8_boutonCommander: "Bouton commander",
+    zz8_yangoMarket: "Yango Achat & Vente",
+    zz8_vous: "(vous)",
+    zz8_marquerRecue: "Marquer reçue",
+    zz8_waDefaut: "Bonjour {nom} 👋\n\n{0} a une nouveauté pour vous ! Passez nous voir 🙏",
+    zz8_smsDefaut: "{0} : bonjour {nom}, une offre vous attend ! Passez vite.",
+    zz8_mailObjet: "{0} — une nouveauté pour vous",
+    zz8_mailCorps: "Bonjour,\n\n{0} a le plaisir de vous présenter ses nouveautés. Passez nous voir ou répondez à cet email pour commander !\n\nÀ très vite,\nL'équipe {0}",
+    zz8_notreBoutique: "Notre boutique",
+    zz8_enStock: "en stock",
+    zz8_enJeu: "en jeu",
+    zz7_perimeDepuis: "Périmé depuis {0} j",
+    zz7_expireDans: "Expire dans {0} j",
+    zz7_aEcouler30: "{0} produit(s) à écouler sous 30 j",
+    zz7_solderAide: "« Solder » baisse réellement le prix de vente pour écouler vite.",
+    zz7_peremption: "Péremption",
+    zz7_nPerimes: "{0} produit(s) périmé(s)",
+    zz7_nBientot: "{0} bientôt périmé(s)",
+    zz7_aRetirer: "À retirer",
+    zz7_retirerEtEcouler: "À retirer · {0} à écouler",
+    zz7_solderAvant: "À solder avant péremption",
+    zz7_gerer: "Gérer",
+    zz7_aRecommander: "{0} produit(s) à recommander",
+    zz7_enRupture: "{0} en rupture de stock",
+    zz7_selonVentes: "Selon vos ventes récentes",
+    zz7_commander: "Commander",
+    zz7_voir: "Voir",
+    zz7_nonAttribue: "Non attribué",
+    zz7_sur: "sur",
+    zz7_relancerWa: "Relancer sur WhatsApp",
+    zz7_expediees: "Expédiées",
+    zz7_expediee: "Expédiée",
+    zz7_recues: "Reçues",
+    zz7_annulees: "Annulées",
+    zz5_aucunProduit: "Aucun produit en boutique",
+    zz5_premierProduit: "Ajoutez votre premier produit pour commencer à vendre",
+    zz5_pdfGenere: "Rapport PDF généré",
+    zz5_valeurAlertes: "{0} article(s) · valeur et alertes",
+    zz5_scannerCompter: "Scanner et compter",
+    zz5_exNoteDevis: "ex : livraison sous 5 jours, acompte 50 %…",
+    zz5_fefo: "Cet écran classe vos produits du plus urgent au moins urgent (méthode FEFO) pour vendre en priorité",
+    zz5_benefice: "bénéfice",
+    zz5_oauthScope: "2) Écran de consentement OAuth → ajoutez la portée {0}.",
+    zz5_smsPromo: "{{business}} : {{promo_text}} Offre valable jusqu'au {{expires}}.",
+    zz5_7jours: "7 jours",
+    zz5_ceMois: "Ce mois",
+    zz5_tout: "Tout",
+    zz5_global: "Global",
+    zz5_7derniers: "7 derniers jours",
+    zz5_30derniers: "30 derniers jours",
+    zz5_depuisDebut: "Depuis le début",
+    zz5_authentification: "Authentification",
+    zz5_parametres: "Paramètres",
+    zz5_operations: "opérations",
+    zz5_catalogueVide: "Aucun article en stock avec un prix de vente — ajoutez-en depuis Stock.",
+    zz6_ceMoisCi: "ce mois-ci",
+    zz6_rapportPdf: "Rapport PDF",
+    zz6_pdfSigne: "Rapport PDF signé ✓",
+    zz6_nJours: "{0} jours",
+    zz6_fefoFin: "ce qui périme bientôt — et ne jamais délivrer un produit expiré.",
+    zz6_ouvrirStock: "Ouvrir mon stock",
+    zz6_exp_expired: "Périmé",
+    zz6_exp_d7: "≤ 7 j",
+    zz6_exp_d30: "≤ 30 j",
+    zz6_exp_d90: "≤ 90 j",
+    zz6_exp_far: "Plus tard",
+    zy_rAdmin: "Administrateur",
+    zy_rAdminD: "Accès total + paramètres",
+    zy_rManager: "Responsable",
+    zy_rVendeur: "Vendeur",
+    zy_rMagasin: "Magasinier",
+    zy_rMagasinD: "Stock + audit IA",
+    zy_rCompta: "Comptable",
+    zy_rComptaD: "Rapports financiers",
+    zy_rAudit: "Auditeur",
+    zy_rAuditD: "Lecture seule",
+    zy_utilisateur: "Utilisateur",
+    zy_scanCB: "Scanner un code-barres",
+    zy_lotExemple: "Sac à dos ; 12000 ; 8 ; SAC-01 ; Bagagerie\nStylo bleu ; 250 ; 200 ; STY-BL\nCarton lait ; 9000 ; 15",
+    zy_exClient: "ex : Pharmacie du Plateau",
+    zy_compterTiroir: "compter le tiroir",
+    zy_exPromo: "Ex : Soldes de Noël",
+    zy_exDelai: "Ex : 24-48 h, 2-3 jours",
+    zy_sauvFichier: "Sans serveur : enregistrez TOUTES vos données (stock, ventes, clients, dépenses, boutique…) dans un fichier, puis restaurez-le sur un autre téléphone. Idéal pour changer d'appareil ou garder une copie de sécurité.",
+    zy_catProduits: "Catalogue produits",
+    zy_rapVentes: "Rapport de ventes",
+    zy_rapClients: "Rapport clients (CRM)",
+    zy_rapStock: "Rapport de stock",
+    zy_formatCompta: "Format universel comptable",
+    zy_ventes30: "Ventes 30 j",
+    zy_ventes7: "Ventes 7 j",
+    zy_moisCourant: "Mois courant",
+    zy_semCourante: "Semaine courante",
+    zy_exportsExcel: "Exports Excel",
+    zy_exportsCsv: "Exports CSV",
+    zy_fichiers: "Fichiers",
+    zy_ventes: "Ventes",
+    zy_clients: "Clients",
+    zy_sovaBeau: "Beau travail, {0} — rien à signaler.",
+    zy_sovaRespire: "{0}, ton stock respire.",
+    zy_sovaRoule: "Tout roule. SOVA veille.",
+    zy_dico300: "de plus de 300 produits locaux (hors ligne).",
+    zy_pushProduits: "Envoyer les produits",
+    zy_auScroll: "Au défilement {0} %",
+    zy_auScrollC: "Au défilement",
+    zy_apres: "Après {0} s",
+    zy_alEntree: "À l'entrée",
+    zy_politiqueRetour: "Politique de retour / remboursement",
+    zy_packSub: "Groupez plusieurs produits en un pack",
+    zy_pasAssezVentes: "Pas encore assez de ventes",
+    zy_pharmaDate: "chaque médicament a une date d'expiration.",
+    zy_ecartPositif: "Un écart positif = plus d'espèces que prévu, négatif = il en manque. (On suppose les dépenses payées en espèces.)",
+    zy_appleGuide: "Comment obtenir un Services ID Apple (compte développeur à 99 $/an requis)",
+    zy_urlRetour: "5. URL de retour :",
+    zy_ajoutezService: "2. Ajoutez un {0}",
+    zy_ajoutezPrix: "Ajoutez un prix de vente à cet article",
+    zy_roleManager: "Ventes + stock + rapports",
+    zy_roleVendeur: "Ventes uniquement",
+    zx_produits: "Produits",
+    zx_baroIa: "BARO IA — assistant",
+    zx_changerMembre: "Changer de membre",
+    zw_titre: "🎨 Apparence",
+    zw_ambiances: "✦ Ambiances",
+    zw_ambiancesAide: "Six accords complets : couleur, profondeur, coins, densité et police posés d'un seul geste. Tout reste modifiable ensuite.",
+    zw_annulerAmb: "Revenir aux réglages précédents",
+    zw_clair: "Clair",
+    zw_sombre: "Sombre",
+    zw_auto: "Auto",
+    zw_cIndigo: "Indigo",
+    zw_cVert: "Vert",
+    zw_cBleu: "Bleu",
+    zw_cOrange: "Orange",
+    zw_cRouge: "Rouge",
+    zw_cRose: "Rose",
+    zw_cViolet: "Violet",
+    zw_cTeal: "Turquoise",
+    zw_couleurLibre: "Une autre couleur",
+    zw_couleur2: "Seconde couleur de marque",
+    zw_couleur2Aide: "Le second ton des dégradés — en-têtes, boutons principaux, écran d'accueil. Sans réglage, elle se déduit de votre couleur principale.",
+    zw_couleur2Lbl: "Choisir la seconde couleur",
+    zw_auto2: "Revenir au calcul automatique",
+    zw_deduite: "Déduite",
+    zw_logo: "Votre logo",
+    zw_logoAide: "Il se pose dans un cadre à hauteur fixe et entre entier dedans : il ne peut être ni étiré ni écrasé. Un PNG garde sa transparence, un SVG reste vectoriel.",
+    zw_logoVide: "Aucun logo",
+    zw_logoAjouter: "Choisir un fichier",
+    zw_logoChanger: "Changer",
+    zw_logoRetirer: "Retirer",
+    zw_logoInfo: "Rapport largeur/hauteur conservé : {0}",
+    zw_vectoriel: "vectoriel",
+    zw_police: "Police de l'interface",
+    zw_policeAide: "Elle n'est téléchargée que si vous la choisissez. Si le réseau manque, le texte garde des proportions correctes.",
+    zw_petit: "Petit",
+    zw_moyen: "Moyen",
+    zw_grand: "Grand",
+    zw_compact: "Compact",
+    zw_normal: "Normal",
+    zw_spacieux: "Spacieux",
+    zw_contraste: "Contraste",
+    zw_contrasteAide: "Renforce la séparation entre le texte et le fond, utile en plein soleil.",
+    zw_doux: "Doux",
+    zw_standard: "Standard",
+    zw_net: "Net",
+    zw_profondeur: "Profondeur",
+    zw_profondeurAide: "Le relief général. « Plate » retire les ombres et laisse les traits porter la structure ; « Marquée » détache franchement les surfaces.",
+    zw_plate: "Plate",
+    zw_douce: "Douce",
+    zw_marquee: "Marquée",
+    zw_traits: "Épaisseur des traits",
+    zw_traitsAide: "Ce qui sépare une interface posée d'une interface dessinée.",
+    zw_traitFin: "Fin",
+    zw_traitMoyen: "Moyen",
+    zw_traitFort: "Marqué",
+    zw_translucide: "🫧 Transparence",
+    zw_verrePanneau: "Panneau translucide",
+    zw_grain: "Grain",
+    zw_grainAide: "Une texture très fine sur le fond, dessinée dans la page même — aucun fichier à télécharger.",
+    zw_grainLbl: "Ajouter du grain au fond",
+    zw_animLbl: "Couper les animations",
+    zw_vendreT: "Ce que le forfait Entreprise ajoute ici",
+    zw_vendreL: "Les six ambiances, votre logo dans l'application, cinq polices, la profondeur, l'épaisseur des traits, le grain et la seconde couleur de marque.",
+    zw_reinitQ: "Réinitialiser tous les réglages d'apparence, y compris le logo ?",
+    zw_reinitFait: "Apparence réinitialisée",
+    zw_pvVentes: "Ventes du jour",
+    zw_pvChamp: "Champ de saisie",
+    zw_pvBouton: "Enregistrer",
+    zw_pvEtiq: "En stock",
+    zv_fExcel: "Export Excel",
+    zv_fExcelQ: "Télécharger votre stock, vos ventes et vos clients dans un tableur, pour votre comptable ou votre banque.",
+    zv_fFid: "Programme de fidélité",
+    zv_fFidQ: "Attribuer des points à vos clients, définir des paliers et suivre qui revient le plus souvent.",
+    zv_fBons: "Bons de commande",
+    zv_fBonsQ: "Préparer vos commandes fournisseurs, suivre les réceptions et rapprocher ce qui a été livré de ce qui a été commandé.",
+    zv_fIdent: "Identité de l'application",
+    zv_fIdentQ: "Poser votre logo dans l'application, choisir la police, la profondeur et l'épaisseur des traits, et retirer la mention BARO de votre boutique.",
+    zv_fDom: "Nom de domaine",
+    zv_fDomQ: "Publier votre boutique sur votre propre adresse, au lieu d'une adresse en baro.shop.",
+    zv_fAna: "Analyses avancées",
+    zv_fAnaQ: "Cohortes de clients, marge par produit et par période, prévisions de réassort appuyées sur votre historique.",
+    zv_fReserve: "Fonction réservée",
+    zv_planGratuit: "Gratuit",
+    zv_planEntreprise: "Entreprise",
+    zv_fcfaMois: "F CFA par mois",
+    zv_paye: "payé",
+    zv_essai14: "essai 14 j",
+    zv_planPaye: "{0} activé — paiement reçu",
+    zv_planEssai: "Essai 14 jours activé — {0}",
+    zv_resilEnLigne: "Cet abonnement a été payé en ligne{0}.\n\nPour arrêter le renouvellement, utilisez le lien « gérer l'abonnement » dans l'email de reçu du paiement, ou contactez le support. L'application repassera automatiquement en plan Gratuit à la fin de la période payée.",
+    zu_amBaro: "BARO",
+    zu_amBaroP: "L'équilibre d'origine : indigo, clair, doux.",
+    zu_amEncre: "Encre",
+    zu_amEncreP: "Noir, plat, resserré. Aucun effet, tout au trait.",
+    zu_amSable: "Sable",
+    zu_amSableP: "Beige chaud, aéré, empattements. Posé et chaleureux.",
+    zu_amForet: "Forêt",
+    zu_amForetP: "Vert profond, relief marqué, traits appuyés.",
+    zu_amNuit: "Nuit",
+    zu_amNuitP: "Bleu sur fond sombre, coins doux, ombres généreuses.",
+    zu_amAtelier: "Atelier",
+    zu_amAtelierP: "Orange brûlé, angles nets, chasse fixe.",
+    zu_amApplique: "Ambiance « {0} » appliquée",
+    zu_amAnnule: "Réglages précédents rétablis",
+    zu_logoPose: "Logo posé",
+    zu_logoLourd: "Logo trop lourd. Essayez un fichier plus simple (PNG ou SVG, moins de 512 Ko une fois réduit).",
+    zu_logoErreur: "Fichier illisible. Formats acceptés : PNG, SVG, JPEG, WebP.",
+    zu_memPleine: "Mémoire du navigateur pleine — le réglage n'a pas pu être enregistré.",
+    zu_polSysteme: "Police du système",
     zt_profit: "Bénéfice",
     zs_matPremieres: "🏭 Matières premières",
     zs_matPremiere: "Matière première",
@@ -457,7 +735,7 @@ const LANGS = {
     x_montantDu2: "Montant dû",
     x_expClients2: "clients triés par CA avec paliers",
     x_cssPerso2: "/* Votre code CSS */",
-    x_teamMois: "member(s) · {0} ce mois",
+    x_teamMois: "membre(s) · {0} ce mois",
     x_activer: "Activer",
     x_enregistrer: "Enregistrer",
     x_pixFin: "depuis la page Boutique.",
@@ -499,7 +777,7 @@ const LANGS = {
     x_ecomPull: "Récupère les commandes Shopify comme ventes BARO",
     x_popTitre: "-10% sur votre première commande !",
     x_autoStock: "Envoie « Alerte stock faible » sur le numéro administrateur quand le stock passe sous le seuil",
-    x_teamMois: "member(s) · {0} ce mois",
+    x_teamMois: "membre(s) · {0} ce mois",
     x_activer: "Activer",
     x_enregistrer: "Enregistrer",
     x_pixFin: "depuis la page Boutique.",
@@ -3063,6 +3341,284 @@ const LANGS = {
     version:'Version',
   },
   en: {
+    zzf_actifRetirer: "On — Remove",
+    zzf_demain: "Tomorrow",
+    zzf_renvoyer: "Send again",
+    zze_partagerCommande: "Share the order ({0})",
+    zze_partagerWa: "Share on WhatsApp",
+    zze_partagerReduc: "Share the discount",
+    zze_partagerLien: "Share the link",
+    zze_decouvrezBq: "Come and see my online shop 🛍️: {0}",
+    zzd_changerDevise: "Change currency",
+    zzd_abonnement: "Subscription",
+    zzd_fournisseurs: "Suppliers",
+    zzc_deconnecter: "Disconnect",
+    zzc_ambre: "Amber",
+    zzb_sandbox: "Sandbox mode (test)",
+    zzb_waRapide: "Quick mode (wa.me)",
+    zzb_waPro: "Pro mode (Meta Cloud API)",
+    zzb_modeScan: "SCAN MODE",
+    zza_modeEnvoi: "Sending mode",
+    zza_envoiAutoLiv: "Auto-send on delivery",
+    zza_tester: "Test",
+    zza_testerEnvoi: "Send a test",
+    zza_fin: "End",
+    zza_perte: "Loss",
+    zza_date: "Date",
+    zza_dateMaj: "📅 Date updated — {0}",
+    zza_dateRetiree: "Date removed — {0}",
+    zza_dateLivEstim: "Estimated delivery date",
+    zza_dateFin: "End date",
+    zza_testerConn: "Test the connection",
+    zza_connexionApi: "API connection",
+    zza_perteAide: "“Loss” removes the expired stock and records it as a loss in your accounts (net profit).",
+    zza_dateAide: "“Date” corrects the expiry. Products are sorted from most to least urgent.",
+    zza_connexionA: "Connecting {0}",
+    zz9_atteint: "reached",
+    zz9_atteintOk: "reached ✓",
+    w4_venteN: "sale",
+    zz9_vendus: "sold",
+    zz9_prixAchat: "Cost price",
+    zz9_prix: "Price",
+    zz9_objectifAtteint: "🎉 Goal reached!",
+    zz8_salaires: "Salaries",
+    zz8_rupture: "OUT OF STOCK",
+    zz8_meilleuresVentes: "Best sellers",
+    zz8_nbVentes: "Sales count",
+    zz8_achatVersVente: "Cost price → selling price",
+    zz8_prixVente: "Selling price",
+    zz8_multiPoints: "Multiple outlets",
+    zz8_especes: "Cash",
+    zz8_carte: "Card",
+    zz8_redige: "✓ Written",
+    zz8_conditionsVente: "Terms of sale",
+    zz8_boutonCommander: "Order button",
+    zz8_yangoMarket: "Yango Buy & Sell",
+    zz8_vous: "(you)",
+    zz8_marquerRecue: "Mark as received",
+    zz8_waDefaut: "Hello {nom} 👋\n\n{0} has something new for you! Come and see us 🙏",
+    zz8_smsDefaut: "{0}: hello {nom}, an offer is waiting for you! Come by soon.",
+    zz8_mailObjet: "{0} — something new for you",
+    zz8_mailCorps: "Hello,\n\n{0} is pleased to show you what's new. Come and see us, or reply to this email to order!\n\nSee you soon,\nThe {0} team",
+    zz8_notreBoutique: "Our shop",
+    zz8_enStock: "in stock",
+    zz8_enJeu: "at stake",
+    zz7_perimeDepuis: "Expired {0} d ago",
+    zz7_expireDans: "Expires in {0} d",
+    zz7_aEcouler30: "{0} product(s) to clear within 30 d",
+    zz7_solderAide: "“Mark down” really does lower the selling price, so the stock moves fast.",
+    zz7_peremption: "Expiry",
+    zz7_nPerimes: "{0} expired product(s)",
+    zz7_nBientot: "{0} expiring soon",
+    zz7_aRetirer: "To pull from the shelf",
+    zz7_retirerEtEcouler: "To pull from the shelf · {0} to clear",
+    zz7_solderAvant: "Mark down before they expire",
+    zz7_gerer: "Handle",
+    zz7_aRecommander: "{0} product(s) to reorder",
+    zz7_enRupture: "{0} out of stock",
+    zz7_selonVentes: "Based on your recent sales",
+    zz7_commander: "Order",
+    zz7_voir: "View",
+    zz7_nonAttribue: "Unassigned",
+    zz7_sur: "of",
+    zz7_relancerWa: "Follow up on WhatsApp",
+    zz7_expediees: "Shipped",
+    zz7_expediee: "Shipped",
+    zz7_recues: "Received",
+    zz7_annulees: "Cancelled",
+    zz5_aucunProduit: "No products in the shop",
+    zz5_premierProduit: "Add your first product to start selling",
+    zz5_pdfGenere: "PDF report generated",
+    zz5_valeurAlertes: "{0} item(s) · value and alerts",
+    zz5_scannerCompter: "Scan and count",
+    zz5_exNoteDevis: "e.g. delivery within 5 days, 50% deposit…",
+    zz5_fefo: "This screen sorts your products from most to least urgent (FEFO method) so you sell first",
+    zz5_benefice: "profit",
+    zz5_oauthScope: "2) OAuth consent screen → add the {0} scope.",
+    zz5_smsPromo: "{{business}}: {{promo_text}} Offer valid until {{expires}}.",
+    zz5_7jours: "7 days",
+    zz5_ceMois: "This month",
+    zz5_tout: "All",
+    zz5_global: "Overall",
+    zz5_7derniers: "Last 7 days",
+    zz5_30derniers: "Last 30 days",
+    zz5_depuisDebut: "Since the start",
+    zz5_authentification: "Authentication",
+    zz5_parametres: "Settings",
+    zz5_operations: "operations",
+    zz5_catalogueVide: "No stock item has a selling price yet — add one from Stock.",
+    zz6_ceMoisCi: "this month",
+    zz6_rapportPdf: "PDF report",
+    zz6_pdfSigne: "PDF report signed ✓",
+    zz6_nJours: "{0} days",
+    zz6_fefoFin: "whatever expires soonest — and never hand out an expired product.",
+    zz6_ouvrirStock: "Open my stock",
+    zz6_exp_expired: "Expired",
+    zz6_exp_d7: "≤ 7 d",
+    zz6_exp_d30: "≤ 30 d",
+    zz6_exp_d90: "≤ 90 d",
+    zz6_exp_far: "Later",
+    zy_rAdmin: "Administrator",
+    zy_rAdminD: "Full access + settings",
+    zy_rManager: "Manager",
+    zy_rVendeur: "Salesperson",
+    zy_rMagasin: "Stock keeper",
+    zy_rMagasinD: "Stock + AI audit",
+    zy_rCompta: "Accountant",
+    zy_rComptaD: "Financial reports",
+    zy_rAudit: "Auditor",
+    zy_rAuditD: "Read only",
+    zy_utilisateur: "User",
+    zy_scanCB: "Scan a barcode",
+    zy_lotExemple: "Backpack ; 12000 ; 8 ; BAG-01 ; Luggage\nBlue pen ; 250 ; 200 ; PEN-BL\nMilk carton ; 9000 ; 15",
+    zy_exClient: "e.g. Plateau Pharmacy",
+    zy_compterTiroir: "count the drawer",
+    zy_exPromo: "e.g. Christmas sale",
+    zy_exDelai: "e.g. 24-48 h, 2-3 days",
+    zy_sauvFichier: "No server needed: save ALL your data (stock, sales, customers, expenses, shop…) to a file, then restore it on another phone. Ideal for changing devices or keeping a backup.",
+    zy_catProduits: "Product catalogue",
+    zy_rapVentes: "Sales report",
+    zy_rapClients: "Customer report (CRM)",
+    zy_rapStock: "Stock report",
+    zy_formatCompta: "Universal accounting format",
+    zy_ventes30: "Sales, 30 days",
+    zy_ventes7: "Sales, 7 days",
+    zy_moisCourant: "Current month",
+    zy_semCourante: "Current week",
+    zy_exportsExcel: "Excel exports",
+    zy_exportsCsv: "CSV exports",
+    zy_fichiers: "Files",
+    zy_ventes: "Sales",
+    zy_clients: "Customers",
+    zy_sovaBeau: "Nice work, {0} — nothing to report.",
+    zy_sovaRespire: "{0}, your stock is breathing easy.",
+    zy_sovaRoule: "All running smoothly. SOVA is watching.",
+    zy_dico300: "of more than 300 local products (offline).",
+    zy_pushProduits: "Send the products",
+    zy_auScroll: "On scroll, {0}%",
+    zy_auScrollC: "On scroll",
+    zy_apres: "After {0}s",
+    zy_alEntree: "On arrival",
+    zy_politiqueRetour: "Returns and refunds policy",
+    zy_packSub: "Group several products into one pack",
+    zy_pasAssezVentes: "Not enough sales yet",
+    zy_pharmaDate: "every medicine has an expiry date.",
+    zy_ecartPositif: "A positive gap = more cash than expected, negative = some is missing. (Expenses are assumed paid in cash.)",
+    zy_appleGuide: "How to get an Apple Services ID (a $99/year developer account is required)",
+    zy_urlRetour: "5. Return URL:",
+    zy_ajoutezService: "2. Add a {0}",
+    zy_ajoutezPrix: "Add a selling price to this item",
+    zy_roleManager: "Sales + stock + reports",
+    zy_roleVendeur: "Sales only",
+    zx_produits: "Products",
+    zx_baroIa: "BARO AI — assistant",
+    zx_changerMembre: "Switch member",
+    zw_titre: "🎨 Appearance",
+    zw_ambiances: "✦ Ambiences",
+    zw_ambiancesAide: "Six complete pairings: colour, depth, corners, density and typeface set in one move. Everything stays editable afterwards.",
+    zw_annulerAmb: "Go back to the previous settings",
+    zw_clair: "Light",
+    zw_sombre: "Dark",
+    zw_auto: "Auto",
+    zw_cIndigo: "Indigo",
+    zw_cVert: "Green",
+    zw_cBleu: "Blue",
+    zw_cOrange: "Orange",
+    zw_cRouge: "Red",
+    zw_cRose: "Pink",
+    zw_cViolet: "Purple",
+    zw_cTeal: "Teal",
+    zw_couleurLibre: "Another colour",
+    zw_couleur2: "Second brand colour",
+    zw_couleur2Aide: "The second tone in gradients — headers, primary buttons, the home screen. Left unset, it is derived from your main colour.",
+    zw_couleur2Lbl: "Pick the second colour",
+    zw_auto2: "Go back to the derived colour",
+    zw_deduite: "Derived",
+    zw_logo: "Your logo",
+    zw_logoAide: "It sits in a fixed-height frame and fits inside it whole: it cannot be stretched or squashed. A PNG keeps its transparency, an SVG stays vector.",
+    zw_logoVide: "No logo",
+    zw_logoAjouter: "Choose a file",
+    zw_logoChanger: "Change",
+    zw_logoRetirer: "Remove",
+    zw_logoInfo: "Width-to-height ratio kept: {0}",
+    zw_vectoriel: "vector",
+    zw_police: "Interface typeface",
+    zw_policeAide: "It is downloaded only if you pick it. With no network, the text keeps sound proportions.",
+    zw_petit: "Small",
+    zw_moyen: "Medium",
+    zw_grand: "Large",
+    zw_compact: "Compact",
+    zw_normal: "Normal",
+    zw_spacieux: "Spacious",
+    zw_contraste: "Contrast",
+    zw_contrasteAide: "Strengthens the separation between text and background — useful in bright sunlight.",
+    zw_doux: "Soft",
+    zw_standard: "Standard",
+    zw_net: "Sharp",
+    zw_profondeur: "Depth",
+    zw_profondeurAide: "The overall relief. “Flat” removes shadows and lets the lines carry the structure; “Strong” lifts surfaces clearly off the page.",
+    zw_plate: "Flat",
+    zw_douce: "Soft",
+    zw_marquee: "Strong",
+    zw_traits: "Line weight",
+    zw_traitsAide: "What separates an interface that is laid out from one that is drawn.",
+    zw_traitFin: "Thin",
+    zw_traitMoyen: "Medium",
+    zw_traitFort: "Bold",
+    zw_translucide: "🫧 Transparency",
+    zw_verrePanneau: "Translucent panel",
+    zw_grain: "Grain",
+    zw_grainAide: "A very fine texture over the background, drawn in the page itself — no file to download.",
+    zw_grainLbl: "Add grain to the background",
+    zw_animLbl: "Switch animations off",
+    zw_vendreT: "What the Enterprise plan adds here",
+    zw_vendreL: "The six ambiences, your logo inside the app, five typefaces, depth, line weight, grain and the second brand colour.",
+    zw_reinitQ: "Reset every appearance setting, including the logo?",
+    zw_reinitFait: "Appearance reset",
+    zw_pvVentes: "Sales today",
+    zw_pvChamp: "Input field",
+    zw_pvBouton: "Save",
+    zw_pvEtiq: "In stock",
+    zv_fExcel: "Excel export",
+    zv_fExcelQ: "Download your stock, sales and customers as a spreadsheet, for your accountant or your bank.",
+    zv_fFid: "Loyalty programme",
+    zv_fFidQ: "Give your customers points, set tiers, and see who comes back most often.",
+    zv_fBons: "Purchase orders",
+    zv_fBonsQ: "Prepare your supplier orders, track deliveries, and match what arrived against what you ordered.",
+    zv_fIdent: "App identity",
+    zv_fIdentQ: "Put your logo inside the app, choose the typeface, the depth and the line weight, and remove the BARO mention from your shop.",
+    zv_fDom: "Domain name",
+    zv_fDomQ: "Publish your shop on your own address instead of a baro.shop one.",
+    zv_fAna: "Advanced analytics",
+    zv_fAnaQ: "Customer cohorts, margin by product and by period, restock forecasts built on your own history.",
+    zv_fReserve: "Paid feature",
+    zv_planGratuit: "Free",
+    zv_planEntreprise: "Enterprise",
+    zv_fcfaMois: "CFA francs per month",
+    zv_paye: "paid",
+    zv_essai14: "14-day trial",
+    zv_planPaye: "{0} active — payment received",
+    zv_planEssai: "14-day trial started — {0}",
+    zv_resilEnLigne: "This subscription was paid online{0}.\n\nTo stop the renewal, use the “manage subscription” link in your payment receipt email, or contact support. The app will return to the Free plan on its own at the end of the paid period.",
+    zu_amBaro: "BARO",
+    zu_amBaroP: "The original balance: indigo, light, soft.",
+    zu_amEncre: "Ink",
+    zu_amEncreP: "Black, flat, tight. No effects, all line work.",
+    zu_amSable: "Sand",
+    zu_amSableP: "Warm beige, airy, serifs. Settled and welcoming.",
+    zu_amForet: "Forest",
+    zu_amForetP: "Deep green, strong relief, firm lines.",
+    zu_amNuit: "Night",
+    zu_amNuitP: "Blue on a dark ground, soft corners, generous shadows.",
+    zu_amAtelier: "Workshop",
+    zu_amAtelierP: "Burnt orange, sharp angles, monospaced.",
+    zu_amApplique: "“{0}” ambience applied",
+    zu_amAnnule: "Previous settings restored",
+    zu_logoPose: "Logo set",
+    zu_logoLourd: "Logo too heavy. Try a simpler file (PNG or SVG, under 512 KB once resized).",
+    zu_logoErreur: "File could not be read. Accepted formats: PNG, SVG, JPEG, WebP.",
+    zu_memPleine: "Browser storage is full — the setting could not be saved.",
+    zu_polSysteme: "System font",
     zt_profit: "Profit",
     zs_matPremieres: "🏭 Raw materials",
     zs_matPremiere: "Raw material",
@@ -6567,14 +7123,23 @@ const ROLE_PERMISSIONS = {
   auditor:    { readonly:true, audit:true },                             // Auditeur
 };
 
-const ROLE_LABELS = {
-  admin:      { name:'Admin',       icon:'👑', color:'#7C73FF', desc:'Accès total + paramètres' },
-  manager:    { name:'Manager',     icon:'🎯', color:'#0EA5E9', desc:'Ventes + Stocks + Rapports' },
-  vendor:     { name:'Vendeur',     icon:'💰', color:'#10B981', desc:'Ventes uniquement' },
-  warehouse:  { name:'Magasinier',  icon:'📦', color:'#F59E0B', desc:'Stocks + Audit IA' },
-  accountant: { name:'Comptable',   icon:'📊', color:'#6366F1', desc:'Rapports financiers' },
-  auditor:    { name:'Auditeur',    icon:'🔍', color:'#64748B', desc:'Lecture seule' },
-};
+// Les six rôles, dans la langue de l'interface. Un const les figeait au
+// chargement : « Vendeur » et « Magasinier » restaient français en
+// anglais, sur l'accueil, l'équipe et le journal d'audit.
+let _rlCache = null, _rlLang = null;
+function ROLE_LABELS_() {
+  if (_rlCache && _rlLang === _lang) return _rlCache;
+  _rlLang = _lang;
+  _rlCache = {
+    admin:      { name:t('zy_rAdmin'),   icon:'👑', color:'#7C73FF', desc:t('zy_rAdminD') },
+    manager:    { name:t('zy_rManager'), icon:'🎯', color:'#0EA5E9', desc:t('zy_roleManager') },
+    vendor:     { name:t('zy_rVendeur'), icon:'💰', color:'#10B981', desc:t('zy_roleVendeur') },
+    warehouse:  { name:t('zy_rMagasin'), icon:'📦', color:'#F59E0B', desc:t('zy_rMagasinD') },
+    accountant: { name:t('zy_rCompta'),  icon:'📊', color:'#6366F1', desc:t('zy_rComptaD') },
+    auditor:    { name:t('zy_rAudit'),   icon:'🔍', color:'#64748B', desc:t('zy_rAuditD') },
+  };
+  return _rlCache;
+}
 
 function getCurrentMember() {
   // Vendeur connecté en ligne via un code d'équipe : ses ventes lui sont attribuées.
@@ -6598,7 +7163,7 @@ function hasPermission(action) {
 function requirePermission(action, silent = false) {
   if (hasPermission(action)) return true;
   if (!silent && typeof showToast === 'function') {
-    const role = ROLE_LABELS[getCurrentRole()]?.name || 'Utilisateur';
+    const role = ROLE_LABELS_()[getCurrentRole()]?.name || t('zy_utilisateur');
     showToast(`🔒 Accès refusé — ${role} n'a pas le droit "${action}"`, 'error');
   }
   return false;
@@ -7621,7 +8186,7 @@ function __planShowMethodPicker(planKey, amount, active) {
           ${m.phone ? `<span style="font-size:11px;color:var(--text-3)">${m.phone}</span>` : ''}
         </button>
       `).join('')}
-      <button class="btn btn-ghost" style="width:100%;padding:10px;font-size:13px;color:var(--text-3);margin-top:4px" onclick="document.getElementById('__planMethodModal').remove()">Annuler</button>
+      <button class="btn btn-ghost" style="width:100%;padding:10px;font-size:13px;color:var(--text-3);margin-top:4px" onclick="document.getElementById('__planMethodModal').remove()">${t('cancel')}</button>
     </div>
   `;
   document.body.appendChild(modal);
@@ -7655,7 +8220,7 @@ function __planShowPaymentPicker(planKey, amount) {
       `).join('')}
       <div style="display:flex;gap:8px;margin-top:8px">
         <button class="btn btn-ghost" style="flex:1;padding:10px;font-size:12px" onclick="document.getElementById('__planPickerModal').remove();nav('payments-setup')">⚙️ Configurer</button>
-        <button class="btn btn-ghost" style="flex:1;padding:10px;font-size:12px;color:var(--text-3)" onclick="document.getElementById('__planPickerModal').remove()">Annuler</button>
+        <button class="btn btn-ghost" style="flex:1;padding:10px;font-size:12px;color:var(--text-3)" onclick="document.getElementById('__planPickerModal').remove()">${t('cancel')}</button>
       </div>
     </div>
   `;
@@ -7737,6 +8302,8 @@ const PLAN_LIMITS = {
   enterprise: { articles: Infinity, salesPerMonth: Infinity, locations: Infinity, spectraPerDay: Infinity, suppliers: Infinity, boutique: true, marketing: true, integrations: Infinity, excel: true,  loyalty: true,  purchaseOrders: true,  customDomain: true,  whiteLabel: true,  advancedAnalytics: true },
 };
 // Libellé lisible du plan (réutilisé par les verrous Entreprise)
+// Conserve pour compatibilite ; l'affichage passe par _planLabel(), qui
+// suit la langue.
 const PLAN_LABELS = { free:'Gratuit', starter:'Starter', pro:'Pro', enterprise:'Entreprise' };
 // Écran de verrouillage dédié aux fonctions réservées au plan Entreprise
 function _vEnterpriseLock(icon, title, desc, perks) {
@@ -7755,7 +8322,7 @@ function _vEnterpriseLock(icon, title, desc, perks) {
         ${perks.map(p => `<div style="display:flex;gap:9px;font-size:13px;padding:5px 0;color:var(--text-2)"><span style="color:#8B5CF6;font-weight:800">✓</span>${p}</div>`).join('')}
       </div>
       <button class="btn btn-primary" style="width:100%;max-width:300px;background:linear-gradient(135deg,#8B5CF6,#6366F1)" onclick="nav('pricing')">${t('x3_voirPlanEntreprise')}</button>
-      <div style="font-size:11.5px;color:var(--text-3);margin-top:12px">${t('x3_planActuel')} <b>${PLAN_LABELS[_currentPlan()]||_currentPlan()}</b></div>
+      <div style="font-size:11.5px;color:var(--text-3);margin-top:12px">${t('x3_planActuel')} <b>${_planLabel(_currentPlan())}</b></div>
     </div>
   </div>`;
 }
@@ -7792,7 +8359,7 @@ function _showPlanLimitModal(feature, limit, label) {
       <div style="text-align:center">
         <div style="font-size:48px;margin-bottom:8px">🚀</div>
         <div style="font-size:20px;font-weight:900;letter-spacing:-.3px">Limite ${label} atteinte</div>
-        <div style="font-size:13px;color:var(--text-3);margin-top:8px;line-height:1.55;max-width:320px;margin-left:auto;margin-right:auto">${t('y1_planLimite').replace('{0}','<strong>'+(plan === 'free' ? PLAN_LABELS.free : PLAN_LABELS[plan] || plan)+'</strong>').replace('{1}','<strong>'+limit+' '+label+'</strong>').replace('{2}','<strong>'+nextPlan+'</strong>')}</div>
+        <div style="font-size:13px;color:var(--text-3);margin-top:8px;line-height:1.55;max-width:320px;margin-left:auto;margin-right:auto">${t('y1_planLimite').replace('{0}','<strong>'+_planLabel(plan)+'</strong>').replace('{1}','<strong>'+limit+' '+label+'</strong>').replace('{2}','<strong>'+nextPlan+'</strong>')}</div>
       </div>
       <div class="card" style="border:2px solid var(--accent);background:linear-gradient(135deg,rgba(124,115,255,.08),transparent);margin:18px 0 12px">
         ${['♾️ Articles & ventes illimités (Pro)','📍 Plus d\'emplacements','🔍 Spectra IA illimité','🏪 Boutique en ligne + marketing'].map(f=>`<div style="display:flex;gap:8px;font-size:13px;padding:3px 0;color:var(--text-2)"><span style="color:var(--accent)">✓</span>${f}</div>`).join('')}
@@ -7808,30 +8375,46 @@ function _planHasFeature(feature) { return !!_planLimit(feature); }
 // ── Fonctions réservées : description honnête et plan minimum requis ────
 // Chaque entrée dit ce que la fonction fait vraiment, pas un argument de
 // vente : le commerçant doit pouvoir juger si ça vaut son argent.
-const _FEATURE_INFO = {
-  excel: {
-    icone: '📊', titre: 'Export Excel',
-    quoi: 'Télécharger votre stock, vos ventes et vos clients dans un tableur, pour votre comptable ou votre banque.',
-    minimum: 'starter',
-  },
-  loyalty: {
-    icone: '⭐', titre: 'Programme de fidélité',
-    quoi: 'Attribuer des points à vos clients, définir des paliers et suivre qui revient le plus souvent.',
-    minimum: 'pro',
-  },
-  purchaseOrders: {
-    icone: '📦', titre: 'Bons de commande',
-    quoi: 'Préparer vos commandes fournisseurs, suivre les réceptions et rapprocher ce qui a été livré de ce qui a été commandé.',
-    minimum: 'pro',
-  },
-};
+// Un const figerait la langue au chargement : la table est donc une
+// fonction, avec un cache invalidé quand la langue change.
+let _fiCache = null, _fiLang = null;
+function _FEATURE_INFO_() {
+  if (_fiCache && _fiLang === _lang) return _fiCache;
+  _fiLang = _lang;
+  _fiCache = {
+    excel:          { icone: '📊', titre: t('zv_fExcel'),  quoi: t('zv_fExcelQ'),  minimum: 'starter' },
+    loyalty:        { icone: '⭐', titre: t('zv_fFid'),    quoi: t('zv_fFidQ'),    minimum: 'pro' },
+    purchaseOrders: { icone: '📦', titre: t('zv_fBons'),   quoi: t('zv_fBonsQ'),   minimum: 'pro' },
+    whiteLabel:     { icone: '✦',  titre: t('zv_fIdent'),  quoi: t('zv_fIdentQ'),  minimum: 'enterprise' },
+    customDomain:   { icone: '🌐', titre: t('zv_fDom'),    quoi: t('zv_fDomQ'),    minimum: 'enterprise' },
+    advancedAnalytics: { icone: '📈', titre: t('zv_fAna'), quoi: t('zv_fAnaQ'),    minimum: 'enterprise' },
+  };
+  return _fiCache;
+}
+
+// Le libellé du plan suit la langue lui aussi : « Gratuit » restait
+// français sur toute l'application en mode anglais.
+function _planLabel(k) {
+  return k === 'free' ? t('zv_planGratuit')
+       : k === 'starter' ? 'Starter'
+       : k === 'pro' ? 'Pro'
+       : k === 'enterprise' ? t('zv_planEntreprise')
+       : String(k || '');
+}
+
+// Le prix d'un plan est un montant en francs CFA. L'afficher avec le
+// symbole du commerçant annonçait « 5 000 $ par mois ».
+function _prixPlanMois(planKey) {
+  const n = _PLAN_PRIX[planKey] || 0;
+  const p = (typeof _prixPlan === 'function') ? _prixPlan(n) : String(n);
+  return p + ' ' + t('zv_fcfaMois');
+}
 const _PLAN_ORDRE = ['free', 'starter', 'pro', 'enterprise'];
 const _PLAN_PRIX = { free: 0, starter: 5000, pro: 20000, enterprise: 100000 };
 
 // Écran plein pour une fonction verrouillée, quand elle occupe tout l'onglet
 function _vFeatureLock(feature) {
-  const info = _FEATURE_INFO[feature] || { icone: '🔒', titre: 'Fonction réservée', quoi: '', minimum: 'pro' };
-  const prix = _PLAN_PRIX[info.minimum];
+  const info = _FEATURE_INFO_()[feature] || { icone: '🔒', titre: t('zv_fReserve'), quoi: '', minimum: 'pro' };
   return `
   <div class="container" style="padding-top:22px">
     <div class="card" style="text-align:center;padding:30px 22px">
@@ -7840,18 +8423,18 @@ function _vFeatureLock(feature) {
       <div style="font-size:13.5px;color:var(--text-2);line-height:1.55;max-width:330px;margin:0 auto 18px">${info.quoi}</div>
       <div style="display:inline-flex;align-items:baseline;gap:6px;background:var(--gray-1);border:1px solid var(--border);border-radius:12px;padding:10px 16px;margin-bottom:18px">
         <span style="font-size:12px;color:var(--text-3)">${t('x4_aPartirDe')}</span>
-        <b style="font-size:16px;font-weight:800">${PLAN_LABELS[info.minimum]}</b>
-        <span style="font-size:12px;color:var(--text-3)">· ${fmt(prix)} ${sym()}/mois</span>
+        <b style="font-size:16px;font-weight:800">${_planLabel(info.minimum)}</b>
+        <span style="font-size:12px;color:var(--text-3)">· ${_prixPlanMois(info.minimum)}</span>
       </div>
       <button class="btn btn-primary" style="width:100%;max-width:300px" onclick="nav('pricing')">${t('x3_voirPlans')}</button>
-      <div style="font-size:11.5px;color:var(--text-3);margin-top:12px">${t('x4_votrePlan')} <b>${PLAN_LABELS[_currentPlan()] || _currentPlan()}</b></div>
+      <div style="font-size:11.5px;color:var(--text-3);margin-top:12px">${t('x4_votrePlan')} <b>${_planLabel(_currentPlan())}</b></div>
     </div>
   </div>`;
 }
 
 // Fenêtre pour une action ponctuelle verrouillée (un export, par exemple)
 function _showPlanFeatureModal(feature) {
-  const info = _FEATURE_INFO[feature] || { icone: '🔒', titre: 'Fonction réservée', quoi: '', minimum: 'pro' };
+  const info = _FEATURE_INFO_()[feature] || { icone: '🔒', titre: t('zv_fReserve'), quoi: '', minimum: 'pro' };
   haptic('warn');
   const old = document.getElementById('__planFeatModal'); if (old) old.remove();
   const modal = document.createElement('div');
@@ -7865,7 +8448,7 @@ function _showPlanFeatureModal(feature) {
         <div style="font-size:44px;margin-bottom:8px">${info.icone}</div>
         <div style="font-size:20px;font-weight:900;letter-spacing:-.3px">${info.titre}</div>
         <div style="font-size:13px;color:var(--text-3);margin-top:8px;line-height:1.55;max-width:330px;margin-left:auto;margin-right:auto">${info.quoi}</div>
-        <div style="font-size:13px;margin-top:14px">${t('x4_disponibleAPartir')} <b>${PLAN_LABELS[info.minimum]}</b> · ${fmt(_PLAN_PRIX[info.minimum])} ${sym()}/mois</div>
+        <div style="font-size:13px;margin-top:14px">${t('x4_disponibleAPartir')} <b>${_planLabel(info.minimum)}</b> · ${_prixPlanMois(info.minimum)}</div>
       </div>
       <button class="btn btn-primary" style="width:100%;margin-top:18px" onclick="document.getElementById('__planFeatModal').remove();nav('pricing')">${t('x3_voirPlans')}</button>
       <button class="btn btn-ghost" style="width:100%;margin-top:8px" onclick="document.getElementById('__planFeatModal').remove()">${t('x2_plusTard')}</button>
@@ -7883,8 +8466,10 @@ function _doActivatePlan(planKey, opts = {}) {
     paid: paid,
   };
   localStorage.setItem('baro_subscription', JSON.stringify(S.subscription));
-  logActivity('plan', t('planActivated') + ' ' + planKey.toUpperCase() + (paid?' (payé)':trial?' (essai 14j)':''));
-  showToast(paid ? `✅ ${planKey.toUpperCase()} activé — paiement reçu` : planKey === 'free' ? t('planActivated') : `🎁 Essai 14 jours activé — ${planKey.toUpperCase()}`, 'success');
+  logActivity('plan', t('planActivated') + ' ' + planKey.toUpperCase() + (paid ? ' (' + t('zv_paye') + ')' : trial ? ' (' + t('zv_essai14') + ')' : ''));
+  showToast(paid ? '✅ ' + t('zv_planPaye').replace('{0}', planKey.toUpperCase())
+          : planKey === 'free' ? t('planActivated')
+          : '🎁 ' + t('zv_planEssai').replace('{0}', planKey.toUpperCase()), 'success');
   render();
 }
 function cancelPlan() {
@@ -7892,7 +8477,7 @@ function cancelPlan() {
   // réinitialiser ici serait mensonger (le prélèvement continuerait, et la
   // synchro serveur réappliquerait le plan au prochain démarrage).
   if (S.subscription?.source === 'server') {
-    alert("Cet abonnement a été payé en ligne" + (S.subscription.provider === 'stripe' ? ' via Stripe' : S.subscription.provider === 'cinetpay' ? ' via CinetPay' : '') + ".\n\nPour arrêter le renouvellement, utilisez le lien « gérer l'abonnement » dans l'email de reçu du paiement, ou contactez le support. L'app repassera automatiquement en plan Gratuit à la fin de la période payée.");
+    alert(t('zv_resilEnLigne').replace('{0}', S.subscription.provider === 'stripe' ? ' via Stripe' : S.subscription.provider === 'cinetpay' ? ' via CinetPay' : ''));
     return;
   }
   if (!confirm(t('confirmCancel') + ' ?')) return;
@@ -7977,13 +8562,23 @@ function getExpiringArticles() {
 // ── CENTRE DE PÉREMPTIONS (FEFO) ───────────────────────────
 // Vital pour pharmacie / restaurant / cosmétiques : voir en un coup d'œil
 // l'argent immobilisé dans du stock qui va périmer, et agir dessus.
-const _EXP_BUCKETS = {
-  expired: { color:'#EF4444', label:'Périmé',   emoji:'⛔' },
-  d7:      { color:'#F97316', label:'≤ 7 j',    emoji:'🔥' },
-  d30:     { color:'#EAB308', label:'≤ 30 j',   emoji:'⏳' },
-  d90:     { color:'#10B981', label:'≤ 90 j',   emoji:'📅' },
-  far:     { color:'var(--text-3)', label:'Plus tard', emoji:'✅' },
+// Un const figerait la langue au chargement. Les couleurs et emojis ne
+// changent pas ; seul le libelle est relu a chaque acces, via un Proxy,
+// pour ne toucher aucun des dix-sept endroits qui lisent cette table.
+const _EXP_COULEURS = {
+  expired: { color:'#EF4444', emoji:'⛔' },
+  d7:      { color:'#F97316', emoji:'🔥' },
+  d30:     { color:'#EAB308', emoji:'⏳' },
+  d90:     { color:'#10B981', emoji:'📅' },
+  far:     { color:'var(--text-3)', emoji:'✅' },
 };
+const _EXP_BUCKETS = new Proxy(_EXP_COULEURS, {
+  get(cible, cle) {
+    const base = cible[cle];
+    if (!base) return base;
+    return Object.assign({}, base, { label: t('zz6_exp_' + String(cle)) });
+  },
+});
 function _expiryBucket(info) {
   if (!info) return 'far';
   if (info.status === 'expired') return 'expired';
@@ -8067,7 +8662,7 @@ function editExpiryDate(id) {
   a.expiry = val;
   if (val) a.perishable = true;
   _saveArticles();
-  showToast(val ? `📅 Date mise à jour — ${a.name}` : `Date retirée — ${a.name}`, 'success');
+  showToast(val ? t('zza_dateMaj').replace('{0}', a.name) : t('zza_dateRetiree').replace('{0}', a.name), 'success');
   render();
 }
 
@@ -8096,15 +8691,14 @@ function vExpiry() {
           ${t('z_perimAjoutez')} <b>${t('w1_datePeremption')}</b> ${t('z_perimSens2')}
           ${t('z_baroPrevient')} <b>${t('z_avant')}</b> ${t('z_perimAvant')}
         </div>
-        <button class="btn btn-primary" style="width:100%;max-width:280px" onclick="nav('pantry')">${IC.package} Ouvrir mon stock</button>
+        <button class="btn btn-primary" style="width:100%;max-width:280px" onclick="nav('pantry')">${IC.package} ${t('zz6_ouvrirStock')}</button>
       </div>
       <div class="card" style="margin-top:12px;background:linear-gradient(135deg,rgba(14,165,233,.08),transparent);border:1px solid rgba(14,165,233,.25)">
         <div style="display:flex;gap:11px;align-items:flex-start">
           <div style="font-size:24px">💊</div>
           <div style="font-size:12.5px;color:var(--text-2);line-height:1.55">
-            <b style="color:var(--text)">${t('w1_pourPharmacie')}</b> chaque médicament a une date d'expiration.
-            Cet écran classe vos produits du plus urgent au moins urgent (méthode FEFO) pour vendre en priorité
-            ce qui périme bientôt — et ne jamais délivrer un produit expiré.
+            <b style="color:var(--text)">${t('w1_pourPharmacie')}</b> ${t('zy_pharmaDate')}
+            ${t('zz5_fefo')} ${t('zz6_fefoFin')}
           </div>
         </div>
       </div>
@@ -8112,7 +8706,7 @@ function vExpiry() {
   }
 
   const chips = [
-    { k: 'all',     c: cnt.all,     color: 'var(--accent)', label: 'Tout' },
+    { k: 'all',     c: cnt.all,     color: 'var(--accent)', label: t('zz5_tout') },
     { k: 'expired', c: cnt.expired, color: _EXP_BUCKETS.expired.color, label: _EXP_BUCKETS.expired.label },
     { k: 'd7',      c: cnt.d7,      color: _EXP_BUCKETS.d7.color,      label: _EXP_BUCKETS.d7.label },
     { k: 'd30',     c: cnt.d30,     color: _EXP_BUCKETS.d30.color,     label: _EXP_BUCKETS.d30.label },
@@ -8123,9 +8717,9 @@ function vExpiry() {
   const card = (it) => {
     const a = it.ref, b = _EXP_BUCKETS[it.bucket], info = it.info;
     const dayTxt = !info ? '' :
-      (info.status === 'expired' ? `Périmé depuis ${info.days} j` :
+      (info.status === 'expired' ? t('zz7_perimeDepuis').replace('{0}', info.days) :
        info.days === 0 ? 'Expire aujourd\'hui' :
-       `Expire dans ${info.days} j`);
+       t('zz7_expireDans').replace('{0}', info.days));
     const soldable = (a.price || 0) > 0;
     return `
     <div class="card" style="padding:0;overflow:hidden;margin-bottom:10px;border:1px solid var(--border)">
@@ -8136,20 +8730,20 @@ function vExpiry() {
             <div style="min-width:0;flex:1">
               <div style="font-size:14.5px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a.name}</div>
               <div style="font-size:11.5px;color:var(--text-3);margin-top:2px">
-                ${a.category ? a.category + ' · ' : ''}${fmtQty(a.stock || 0)} ${a.unit || ''} en stock
+                ${a.category ? a.category + ' · ' : ''}${fmtQty(a.stock || 0)} ${a.unit || ''} ${t('zz8_enStock')}
               </div>
             </div>
             <span style="flex-shrink:0;font-size:11px;font-weight:800;color:#fff;background:${b.color};padding:4px 9px;border-radius:999px;white-space:nowrap">${b.emoji} ${dayTxt}</span>
           </div>
           <div style="display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap">
             <span style="font-size:11.5px;color:var(--text-3)">📆 ${fmtDate(a.expiry)}</span>
-            ${it.value > 0 ? `<span style="font-size:11.5px;font-weight:700;color:${it.bucket==='expired'||it.bucket==='d7'?b.color:'var(--text-2)'}">≈ ${fmt(it.value)} ${sym()} en jeu</span>` : ''}
+            ${it.value > 0 ? `<span style="font-size:11.5px;font-weight:700;color:${it.bucket==='expired'||it.bucket==='d7'?b.color:'var(--text-2)'}">≈ ${fmt(it.value)} ${sym()} ${t('zz8_enJeu')}</span>` : ''}
             ${a.clearance ? `<span style="font-size:10.5px;font-weight:800;color:#fff;background:#EC4899;padding:2px 7px;border-radius:6px">SOLDÉ −${a.clearance.pct}%</span>` : ''}
           </div>
           <div style="display:flex;gap:6px;margin-top:11px">
             <button class="btn" style="flex:1;padding:8px 4px;font-size:12px;font-weight:700;background:var(--gray-1);border:1px solid var(--border);color:${soldable?'var(--text)':'var(--text-3)'}" onclick="soldeExpiryItem(${a.id})">🏷️ Solder</button>
-            <button class="btn" style="flex:1;padding:8px 4px;font-size:12px;font-weight:700;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3);color:#EF4444" onclick="writeOffExpiry(${a.id})">🗑️ Perte</button>
-            <button class="btn" style="flex:1;padding:8px 4px;font-size:12px;font-weight:700;background:var(--gray-1);border:1px solid var(--border);color:var(--text)" onclick="editExpiryDate(${a.id})">📅 Date</button>
+            <button class="btn" style="flex:1;padding:8px 4px;font-size:12px;font-weight:700;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3);color:#EF4444" onclick="writeOffExpiry(${a.id})">🗑️ ${t('zza_perte')}</button>
+            <button class="btn" style="flex:1;padding:8px 4px;font-size:12px;font-weight:700;background:var(--gray-1);border:1px solid var(--border);color:var(--text)" onclick="editExpiryDate(${a.id})">📅 ${t('zza_date')}</button>
           </div>
         </div>
       </div>
@@ -8165,7 +8759,7 @@ function vExpiry() {
       <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.75);letter-spacing:.4px">${t('w1_argentARecuperer')}</div>
       <div style="font-size:30px;font-weight:800;color:#fff;margin-top:3px">${fmt(atRisk)} <span style="font-size:15px;font-weight:600">${sym()}</span></div>
       <div style="font-size:11.5px;color:rgba(255,255,255,.8);margin-top:3px">
-        ${dangerItems.length} produit${dangerItems.length>1?'s':''} à écouler sous 30 j${expiredValue>0?` · <span style="color:#FCA5A5;font-weight:700">${fmt(expiredValue)} ${sym()} déjà périmés</span>`:''}
+        ${t('zz7_aEcouler30').replace('{0}', dangerItems.length)}${expiredValue>0?` · <span style="color:#FCA5A5;font-weight:700">${fmt(expiredValue)} ${sym()} déjà périmés</span>`:''}
       </div>
     </div>
   </div>
@@ -8185,9 +8779,8 @@ function vExpiry() {
       shown.map(card).join('')}
     <div class="card" style="margin-top:6px;background:transparent;border:1px dashed var(--border)">
       <div style="font-size:11.5px;color:var(--text-3);line-height:1.55">
-        <b style="color:var(--text-2)">${t('w1_commentCaMarche')}</b> « Solder » baisse réellement le prix de vente pour écouler vite.
-        « Perte » retire le stock périmé et l'enregistre comme perte dans votre Bilan (bénéfice net).
-        « Date » corrige la péremption. Les produits sont classés du plus urgent au moins urgent.
+        <b style="color:var(--text-2)">${t('w1_commentCaMarche')}</b> ${t('zz7_solderAide')}
+        ${t('zza_perteAide')} ${t('zza_dateAide')}
       </div>
     </div>
   </div>`;
@@ -8318,7 +8911,7 @@ function vPrevisions() {
     ${d.liste.length === 0 ? `
     <div class="card" style="text-align:center;padding:28px 20px">
       <div style="font-size:36px;margin-bottom:10px">📈</div>
-      <div style="font-size:15px;font-weight:700;margin-bottom:6px">Pas encore assez de ventes</div>
+      <div style="font-size:15px;font-weight:700;margin-bottom:6px">${t('zy_pasAssezVentes')}</div>
       <div style="font-size:13px;color:var(--text-3);line-height:1.5">
         ${t('v_prevAide')}
         ${t('x_prevFin')}
@@ -8777,7 +9370,7 @@ function vReorder() {
   </div>
   <div style="position:fixed;left:0;right:0;bottom:0;z-index:40;max-width:520px;margin:0 auto;padding:10px 14px calc(10px + env(safe-area-inset-bottom));background:var(--surface,#fff);border-top:1px solid var(--border);display:flex;gap:8px;box-shadow:0 -6px 20px rgba(0,0,0,.06)">
     <button class="btn" style="flex-shrink:0;padding:12px 14px;font-weight:700;background:var(--gray-1);border:1px solid var(--border)" onclick="copyReorderList()">📋</button>
-    <button class="btn btn-primary" style="flex:1;padding:12px;font-weight:800;background:#25D366" onclick="shareReorderList()">${IC.whatsapp||'📤'} Partager la commande (${selectedCount})</button>
+    <button class="btn btn-primary" style="flex:1;padding:12px;font-weight:800;background:#25D366" onclick="shareReorderList()">${IC.whatsapp||'📤'} ${t('zze_partagerCommande').replace('{0}', selectedCount)}</button>
   </div>`;
 }
 
@@ -8785,7 +9378,7 @@ function vReorder() {
 // Rituel de tout commerce : en fin de journée, on totalise les ventes,
 // on ventile par mode de paiement, et on compte le tiroir pour vérifier.
 function _pmLabel(k) {
-  return ({ cash:'Espèces', wave:'Wave', orange:'Orange Money', moov:'Moov Money', mtn:'MTN MoMo', card:'Carte', mobile:'Mobile Money' })[k] || (k ? k.charAt(0).toUpperCase() + k.slice(1) : 'Autre');
+  return ({ cash:t('zz8_especes'), wave:'Wave', orange:'Orange Money', moov:'Moov Money', mtn:'MTN MoMo', card:t('zz8_carte'), mobile:'Mobile Money' })[k] || (k ? k.charAt(0).toUpperCase() + k.slice(1) : 'Autre');
 }
 function _pmEmoji(k) {
   return ({ cash:'💵', wave:'🌊', orange:'🟠', moov:'🔵', mtn:'🟡', card:'💳', mobile:'📱' })[k] || '💰';
@@ -8875,14 +9468,14 @@ function vCashClose() {
     <div style="margin-top:14px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);border-radius:16px;padding:14px 16px;backdrop-filter:blur(10px)">
       <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.75);letter-spacing:.4px">${t('w1_recettesJour')}</div>
       <div style="font-size:30px;font-weight:800;color:#fff;margin-top:3px">${fmt(d.totalCA)} <span style="font-size:15px;font-weight:600">${sym()}</span></div>
-      <div style="font-size:11.5px;color:rgba(255,255,255,.8);margin-top:3px">${d.count} vente${d.count>1?'s':''} · bénéfice ${fmt(d.totalProfit)} ${sym()}</div>
+      <div style="font-size:11.5px;color:rgba(255,255,255,.8);margin-top:3px">${d.count} ${d.count>1?t('w4_ventesN'):t('w4_venteN')} · ${t('zz5_benefice')} ${fmt(d.totalProfit)} ${sym()}</div>
     </div>
   </div>
   <div class="container">
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
       <span style="font-size:12px;font-weight:700;color:var(--text-2);flex-shrink:0">${t('w1_journee')}</span>
       <input class="input" type="date" value="${S.cashCloseDate}" max="${_todayISO()}" onchange="setCashDate(this.value)" style="flex:1">
-      ${isToday?'<span style="font-size:11px;font-weight:700;color:var(--success);background:rgba(16,185,129,.12);padding:4px 10px;border-radius:999px;flex-shrink:0">Aujourd\'hui</span>':''}
+      ${isToday?'<span style="font-size:11px;font-weight:700;color:var(--success);background:rgba(16,185,129,.12);padding:4px 10px;border-radius:999px;flex-shrink:0">'+t('zz4_aujourdhui')+'</span>':''}
     </div>
 
     ${alreadyClosed ? `
@@ -8925,13 +9518,13 @@ function vCashClose() {
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0;border-top:1px solid var(--border)">
         <label style="font-size:13px;font-weight:700">${t('w1_especesComptees')}</label>
-        <input class="input" type="number" inputmode="numeric" min="0" placeholder="compter le tiroir" value="${S.cashCounted!=null&&S.cashCounted!==''?S.cashCounted:''}" oninput="S.cashCounted=this.value;_cashRecalc()" style="width:150px;text-align:right">
+        <input class="input" type="number" inputmode="numeric" min="0" placeholder="${t('zy_compterTiroir')}" value="${S.cashCounted!=null&&S.cashCounted!==''?S.cashCounted:''}" oninput="S.cashCounted=this.value;_cashRecalc()" style="width:150px;text-align:right">
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 12px;margin-top:6px;background:var(--gray-1);border-radius:10px">
         <span style="font-size:13px;font-weight:800">${t('w1_ecartCaisse')}</span>
         <span id="cash-variance" style="font-size:16px;font-weight:800;color:var(--text-3)">—</span>
       </div>
-      <div style="font-size:10.5px;color:var(--text-3);margin-top:8px;line-height:1.5">Un écart positif = plus d'espèces que prévu, négatif = il en manque. (On suppose les dépenses payées en espèces.)</div>
+      <div style="font-size:10.5px;color:var(--text-3);margin-top:8px;line-height:1.5">${t('zy_ecartPositif')}</div>
     </div>
 
     <div style="display:flex;gap:8px;margin-bottom:16px">
@@ -9035,7 +9628,7 @@ function vCreditForm() {
     <div class="card">
       <div class="form-group">
         <label class="form-label">Client</label>
-        <input class="input" list="credit-clients" placeholder=t('v_nomClient') value="${(f.name||'').replace(/"/g,'&quot;')}" oninput="S.creditForm.name=this.value">
+        <input class="input" list="credit-clients" placeholder="${t('v_nomClient')}" value="${(f.name||'').replace(/"/g,'&quot;')}" oninput="S.creditForm.name=this.value">
         <datalist id="credit-clients">${names}</datalist>
       </div>
       <div class="form-group">
@@ -9048,7 +9641,7 @@ function vCreditForm() {
       </div>
       <div class="form-group">
         <label class="form-label">Note (facultatif)</label>
-        <input class="input" placeholder=t('v_credEx') value="${(f.note||'').replace(/"/g,'&quot;')}" oninput="S.creditForm.note=this.value">
+        <input class="input" placeholder="${t('v_credEx')}" value="${(f.note||'').replace(/"/g,'&quot;')}" oninput="S.creditForm.note=this.value">
       </div>
       <button class="btn btn-primary" style="width:100%;padding:13px;font-weight:800" onclick="saveCredit()">${t('x4_enregistrerCredit')}</button>
     </div>
@@ -9073,7 +9666,7 @@ function vCredits() {
         </div>
         <div style="text-align:right;flex-shrink:0">
           <div style="font-size:17px;font-weight:800;color:${settled?'var(--success)':'var(--danger)'}">${settled?'Réglé':fmt(reste)+' '+sym()}</div>
-          ${!settled?`<div style="font-size:10px;color:var(--text-3)">sur ${fmt(c.amount)} ${sym()}</div>`:''}
+          ${!settled?`<div style="font-size:10px;color:var(--text-3)">${t('zz7_sur')} ${fmt(c.amount)} ${sym()}</div>`:''}
         </div>
       </div>
       ${paid > 0 || !settled ? `
@@ -9131,9 +9724,13 @@ function _todayActions() {
     if (exp.length) {
       const expired = exp.filter(a => a.expiryInfo && a.expiryInfo.status === 'expired').length;
       acts.push({ pri: expired > 0 ? 0 : 2, icon: '⏳', color: '#EC4899',
-        title: expired > 0 ? `${expired} produit${expired>1?'s':''} périmé${expired>1?'s':''}` : `${exp.length} bientôt périmé${exp.length>1?'s':''}`,
-        detail: expired > 0 ? `À retirer${exp.length-expired>0?` · ${exp.length-expired} à écouler`:''}` : 'À solder avant péremption',
-        cta: 'peremptions', label: 'Gérer' });
+        title: expired > 0 ? t('zz7_nPerimes').replace('{0}', expired) : t('zz7_nBientot').replace('{0}', exp.length),
+        detail: expired > 0
+          ? (exp.length - expired > 0
+              ? t('zz7_retirerEtEcouler').replace('{0}', exp.length - expired)
+              : t('zz7_aRetirer'))
+          : t('zz7_solderAvant'),
+        cta: 'peremptions', label: t('zz7_gerer') });
     }
   } catch(_){}
   // 2. Réassort (rupture en priorité)
@@ -9142,9 +9739,9 @@ function _todayActions() {
     if (ro.length) {
       const rupture = ro.filter(i => i.urgency === 'rupture').length;
       acts.push({ pri: rupture > 0 ? 1 : 3, icon: '🔄', color: '#0EA5E9',
-        title: `${ro.length} produit${ro.length>1?'s':''} à recommander`,
-        detail: rupture > 0 ? `${rupture} en rupture de stock` : 'Selon vos ventes récentes',
-        cta: 'reassort', label: 'Commander' });
+        title: t('zz7_aRecommander').replace('{0}', ro.length),
+        detail: rupture > 0 ? t('zz7_enRupture').replace('{0}', rupture) : t('zz7_selonVentes'),
+        cta: 'reassort', label: t('zz7_commander') });
     }
   } catch(_){}
   // 3. Caisse non clôturée aujourd'hui (s'il y a eu des ventes)
@@ -9155,7 +9752,7 @@ function _todayActions() {
     if (tSales.length > 0 && !closedToday) {
       const ca = tSales.reduce((s, v) => s + (v.total || 0), 0);
       acts.push({ pri: 4, icon: '🧾', color: '#10B981',
-        title: t('zr_cloturerCaisse'), detail: `${tSales.length} vente${tSales.length>1?'s':''} · ${fmt(ca)} ${sym()}`,
+        title: t('zr_cloturerCaisse'), detail: `${tSales.length} ${tSales.length>1?t('w4_ventesN'):t('w4_venteN')} · ${fmt(ca)} ${sym()}`,
         cta: 'caisse', label: t('zr_cloturer') });
     }
   } catch(_){}
@@ -9165,7 +9762,7 @@ function _todayActions() {
     if (st.openCount > 0) {
       acts.push({ pri: 5, icon: '📒', color: '#DC2626',
         title: t(st.openCount>1?'z_creditsN':'z_creditN').replace('{0}', st.openCount), detail: t('zq_aRecouvrer').replace('{0}', fmt(st.totalOwed)+' '+sym()),
-        cta: 'credits', label: 'Voir' });
+        cta: 'credits', label: t('zz7_voir') });
     }
   } catch(_){}
   acts.sort((a, b) => a.pri - b.pri);
@@ -10535,7 +11132,7 @@ function generateStockReportPDF() {
   doc.setFontSize(8); doc.setTextColor(100,100,100);
   doc.text('Généré par BARO · ' + date, 105, 288, { align:'center' });
   doc.save(`rapport_stock_${new Date().toISOString().slice(0,10)}.pdf`);
-  showToast('Rapport PDF généré');
+  showToast(t('zz5_pdfGenere'));
 }
 
 function generateSalesReportPDF(period = 'all') {
@@ -10544,7 +11141,7 @@ function generateSalesReportPDF(period = 'all') {
   const doc = new jsPDF({ unit:'mm', format:'a4' });
   const biz = S.session?.business || S.session?.name || 'Mon Commerce';
   const date = new Date().toLocaleDateString(_loc(), { day:'numeric', month:'long', year:'numeric' });
-  const perLabel = {all:'Global', today:"Aujourd'hui", week:'7 derniers jours', month:'30 derniers jours'}[period] || 'Global';
+  const perLabel = {all:t('zz5_global'), today:t('zz4_aujourdhui'), week:t('zz5_7derniers'), month:t('zz5_30derniers')}[period] || t('zz5_global');
   // Filter
   let sales = S.sales.slice();
   const now = Date.now();
@@ -10565,7 +11162,7 @@ function generateSalesReportPDF(period = 'all') {
   const avgTicket = count ? Math.round(total / count) : 0;
   // Stat cards
   const cards = [
-    { label:'Ventes', val: count + ' opérations', color:[79,70,229] },
+    { label:t('zy_ventes'), val: count + ' ' + t('zz5_operations'), color:[79,70,229] },
     { label:'CA', val: fmt(total) + ' ' + sym(), color:[16,185,129] },
     { label:'Bénéfice', val: fmt(profit) + ' ' + sym(), color:[245,158,11] },
     { label:'Panier moyen', val: fmt(avgTicket) + ' ' + sym(), color:[139,92,246] },
@@ -10652,7 +11249,7 @@ function generateSalesReportPDF(period = 'all') {
   doc.setFontSize(8); doc.setTextColor(100,100,100);
   doc.text('Généré par BARO · ' + date, 105, 288, { align:'center' });
   doc.save(`rapport_ventes_${period}_${new Date().toISOString().slice(0,10)}.pdf`);
-  showToast('Rapport PDF généré');
+  showToast(t('zz5_pdfGenere'));
 }
 
 function generateClientsReportPDF() {
@@ -10723,7 +11320,7 @@ function generateBilanReportPDF() {
   const exps      = expensesForPeriod();
   const totalExp  = exps.reduce((s,e)=>s+(e.amount||0),0);
   const netProfit = totalProfit - totalExp;
-  const perLabel  = { today:"Aujourd'hui", '7d':'7 derniers jours', '30d':'30 derniers jours', all:'Depuis le début' }[S.period] || 'Global';
+  const perLabel  = { today:t('zz4_aujourdhui'), '7d':t('zz5_7derniers'), '30d':t('zz5_30derniers'), all:t('zz5_depuisDebut') }[S.period] || t('zz5_global');
 
   // Comparaison période précédente
   let compare = null;
@@ -11218,7 +11815,7 @@ function _articleSellable(a) {
 function openQuickSell(articleId) {
   const a = S.articles.find(x => x.id === articleId);
   if (!a) return;
-  if ((a.price||0) <= 0) { showToast('Ajoutez un prix de vente à cet article', 'info'); nav('detail',{selectedId:articleId}); return; }
+  if ((a.price||0) <= 0) { showToast(t('zy_ajoutezPrix'), 'info'); nav('detail',{selectedId:articleId}); return; }
   if ((a.stock||0) <= 0) { showToast('Stock épuisé pour ' + a.name, 'error'); return; }
   S._qs = { id: articleId, qty: 1, pay: 'cash', clientId: null };
   const existing = document.getElementById('qs-modal'); if (existing) existing.remove();
@@ -11249,7 +11846,7 @@ function _qsSetClient(v) { if (S._qs) { S._qs.clientId = v ? parseInt(v) : null;
 function _salePayChips() {
   const labels = { wave:'Wave', orange:'Orange', moov:'Moov', mtn:'MTN', paypal:'PayPal', visa:'Carte', gpay:'Google Pay', applepay:'Apple Pay', stripe:'Carte' };
   const active = (S.paymentMethods || []).filter(m => m.active);
-  const chips = [['cash','💵 Espèces']];
+  const chips = [['cash','💵 ' + t('zz8_especes')]];
   if (active.length) active.forEach(m => chips.push([m.provider, labels[m.provider] || m.name]));
   else [['wave','Wave'],['orange','Orange'],['moov','Moov'],['mtn','MTN']].forEach(c => chips.push(c));
   return chips;
@@ -12247,7 +12844,7 @@ function vCurrencyConvert() {
   return `
   <div class="sub-hero">
     <button class="back-btn-dark" style="margin-bottom:14px" onclick="S.currencyChange=null;nav('settings')">${IC.left} Annuler</button>
-    <h1>Changer de devise</h1>
+    <h1>${t('zzd_changerDevise')}</h1>
     <p>${c.deSym} → ${c.versSym}</p>
   </div>
   <div class="container">
@@ -13061,8 +13658,8 @@ function vOnboarding() {
       visual: `
         <div class="ob-visual-row">
           <div class="ob-mini-card" style="animation-delay:.1s"><span style="font-size:20px">📦</span><span>Stock</span></div>
-          <div class="ob-mini-card" style="animation-delay:.22s"><span style="font-size:20px">💰</span><span>Ventes</span></div>
-          <div class="ob-mini-card" style="animation-delay:.34s"><span style="font-size:20px">👥</span><span>Clients</span></div>
+          <div class="ob-mini-card" style="animation-delay:.22s"><span style="font-size:20px">💰</span><span>${t('zy_ventes')}</span></div>
+          <div class="ob-mini-card" style="animation-delay:.34s"><span style="font-size:20px">👥</span><span>${t('zy_clients')}</span></div>
         </div>`,
     },
     {
@@ -13105,7 +13702,7 @@ function vOnboarding() {
         ${slides.map((_, i) => `<span class="ob-dot ${i===slide?'active':''}" onclick="S.onboardSlide=${i};render()"></span>`).join('')}
       </div>
       ${slide < slides.length - 1
-        ? `<button class="btn btn-primary ob-next" onclick="onboardNext()">Suivant</button>`
+        ? `<button class="btn btn-primary ob-next" onclick="onboardNext()">${t('next')}</button>`
         : `<button class="btn btn-primary ob-next" onclick="finishOnboarding()">C'est parti !</button>`}
     </div>
   </div>`;
@@ -13160,8 +13757,8 @@ function vSetupWizard() {
   let body = '';
   if (w.step === 0) {
     const choices = [
-      ['reseller','🏪','Revendeur / Boutique',t('x_wizRev')],
-      ['maker','🏭','Fabricant / Restaurant',t('v_wizFabricant')],
+      ['reseller','🏪',t('zw_mRevendeur'),t('x_wizRev')],
+      ['maker','🏭',t('zw_mFabricant'),t('v_wizFabricant')],
       ['mixed','🔀',t('v_wizLesDeux'),t('v_wizLesDeuxSub')],
     ];
     body = `
@@ -13194,8 +13791,8 @@ function vSetupWizard() {
       <label class="wiz-label">Nom</label>
       <input id="wiz-prod-name" class="input" value="${(p.name||'').replace(/"/g,'&quot;')}" placeholder="${isMaker?'Ex : Farine':'Ex : Riz 25kg'}">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-        <div><label class="wiz-label">Prix de vente (${sym()})</label><input id="wiz-prod-price" class="input" type="number" inputmode="numeric" value="${p.price||''}" placeholder="15000"></div>
-        <div><label class="wiz-label">Prix d'achat (${sym()})</label><input id="wiz-prod-cost" class="input" type="number" inputmode="numeric" value="${p.cost||''}" placeholder="12000"></div>
+        <div><label class="wiz-label">${t('zz8_prixVente')} (${sym()})</label><input id="wiz-prod-price" class="input" type="number" inputmode="numeric" value="${p.price||''}" placeholder="15000"></div>
+        <div><label class="wiz-label">${t('zz9_prixAchat')} (${sym()})</label><input id="wiz-prod-cost" class="input" type="number" inputmode="numeric" value="${p.cost||''}" placeholder="12000"></div>
       </div>
       <label class="wiz-label">${t('w9_quantiteStock')}</label>
       <input id="wiz-prod-stock" class="input" type="number" inputmode="numeric" value="${p.stock||''}" placeholder="10">
@@ -13469,7 +14066,7 @@ function __showSocialModal(provider) {
           <input class="input" id="social-name-inp" type="text" autocomplete="name" placeholder="Prénom Nom" style="font-size:16px">
         </div>
         <div style="display:flex;gap:8px;margin-top:8px">
-          <button class="btn btn-ghost" style="flex:1" onclick="document.getElementById('social-login-modal').remove()">Annuler</button>
+          <button class="btn btn-ghost" style="flex:1" onclick="document.getElementById('social-login-modal').remove()">${t('cancel')}</button>
           <button class="btn btn-primary" style="flex:2;background:${brand.color};border-color:${brand.color}" onclick="__submitSocialLogin('${provider}')">${brand.icon} Se connecter</button>
         </div>
         <div style="text-align:center;margin-top:12px;font-size:11px;color:var(--text-3)">${t('x1_donneesLocales')}</div>
@@ -14024,18 +14621,26 @@ function vHome() {
   }
 
   const __currentMember = (typeof getCurrentMember === 'function') ? getCurrentMember() : null;
-  const __currentRoleInfo = __currentMember ? (ROLE_LABELS?.[__currentMember.role] || ROLE_LABELS?.admin) : null;
+  const __currentRoleInfo = __currentMember ? (ROLE_LABELS_()[__currentMember.role] || ROLE_LABELS_().admin) : null;
   const __hasTeam = (S.teamMembers||[]).length > 0;
-  const __businessLogo = localStorage.getItem('baro_logo') || localStorage.getItem('stockr_logo') || '';
+  // Le logo posé dans Apparence (plan Entreprise) prime : c'est celui
+  // que le commerçant a choisi pour l'application elle-même.
+  const __logoApp = (typeof _planHasFeature === 'function' && _planHasFeature('whiteLabel')
+                     && S.appearance && S.appearance.logo) ? S.appearance.logo : '';
+  const __businessLogo = __logoApp || localStorage.getItem('baro_logo') || localStorage.getItem('stockr_logo') || '';
+  // Un logo d'application garde son rapport : le cadre s'élargit pour
+  // lui au lieu de le recadrer. Un logo commercial reste dans son carré.
+  const __logoRatio = __logoApp ? (S.appearance.logoRatio || 1) : 1;
+  const __logoLarg = __logoApp ? Math.max(48, Math.min(132, Math.round(48 * __logoRatio))) : 48;
   const __bizName = (S.session?.business) || (S.session?.name) || '';
   const __bizInitials = (typeof initials === 'function') ? initials(__bizName) : (__bizName.charAt(0) || 'B').toUpperCase();
   return `
   <div class="hero anim">
     <div class="hero-top" style="align-items:flex-start;gap:12px">
-      <div class="home-logo-wrap" onclick="nav('appearance')" title=t('zz_modifLogo') style="cursor:pointer;flex-shrink:0">
+      <div class="home-logo-wrap" onclick="nav('appearance')" title="${t('zz_modifLogo')}" style="cursor:pointer;flex-shrink:0">
         ${__businessLogo
-          ? `<img src="${__businessLogo}" alt="logo" style="width:48px;height:48px;border-radius:12px;object-fit:cover;border:2px solid rgba(255,255,255,.25);box-shadow:0 4px 10px rgba(0,0,0,.2);background:rgba(255,255,255,.1)">`
-          : `<div style="width:48px;height:48px;border-radius:12px;background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;font-weight:900;box-shadow:0 4px 10px rgba(0,0,0,.2)">${__bizInitials}</div>`
+          ? `<img src="${__businessLogo}" alt="" style="width:${__logoLarg}px;height:48px;border-radius:var(--r-md);object-fit:contain;padding:${__logoApp ? '5px' : '0'};border:2px solid rgba(255,255,255,.25);box-shadow:0 4px 10px rgba(0,0,0,.2);background:rgba(255,255,255,.12)">`
+          : `<div style="width:48px;height:48px;border-radius:var(--r-md);background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;font-weight:900;box-shadow:0 4px 10px rgba(0,0,0,.2)">${__bizInitials}</div>`
         }
       </div>
       <div style="flex:1;min-width:0">
@@ -14051,8 +14656,8 @@ function vHome() {
         </div>` : ''}
       </div>
       <div style="display:flex;gap:8px">
-        ${_isHidden('ai-chat') ? '' : `<button class="hero-btn" onclick="nav('ai-chat')" title="BARO IA — Assistant" style="position:relative;font-size:17px">🤖</button>`}
-        ${__hasTeam ? `<button class="hero-btn" onclick="openMemberSwitcher()" title="Changer de membre" style="position:relative">👥</button>` : ''}
+        ${_isHidden('ai-chat') ? '' : `<button class="hero-btn" onclick="nav('ai-chat')" title="${t('zx_baroIa')}" style="position:relative;font-size:17px">🤖</button>`}
+        ${__hasTeam ? `<button class="hero-btn" onclick="openMemberSwitcher()" title="${t('zx_changerMembre')}" style="position:relative">👥</button>` : ''}
         <button class="hero-btn" onclick="nav('notifications')" style="position:relative">${IC.bell}${low.length>0?`<span style="position:absolute;top:-2px;right:-2px;width:18px;height:18px;border-radius:50%;background:var(--danger);color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center">${low.length}</span>`:''}</button>
         <button class="hero-btn" onclick="nav('settings')">${IC.settings}</button>
       </div>
@@ -14060,7 +14665,7 @@ function vHome() {
     <div class="hero-stats">
       <div class="hero-stat" onclick="nav('pantry')" style="cursor:pointer">
         <div class="hero-stat-val" data-count="${S.articles.length}">${S.articles.length}</div>
-        <div class="hero-stat-lbl">${isReseller?'Produits':t('articles')}</div>
+        <div class="hero-stat-lbl">${isReseller ? t('zx_produits') : t('articles')}</div>
       </div>
       <div class="hero-stat ${low.length>0?'warn':''}" onclick="nav('notifications')" style="cursor:pointer">
         <div class="hero-stat-val" data-count="${low.length}">${low.length}</div>
@@ -14200,17 +14805,17 @@ function vHome() {
             <div style="font-size:11px;color:var(--text-3);font-weight:600;letter-spacing:.3px;text-transform:uppercase">${emoji} ${t('zz3_objectif')} ${typeLbl} · ${periodLbl}</div>
             <div style="font-size:17px;font-weight:800;color:var(--text-1);margin-top:3px">${goalType==='sales'?current:fmt(current)} <span style="color:var(--text-3);font-weight:500;font-size:13px">/ ${goalType==='sales'?goal:fmt(goal)} ${unit}</span></div>
           </div>
-          <button class="btn" style="padding:6px 10px;font-size:11px;border:1px solid var(--border);background:var(--surface);color:var(--text-2);font-weight:600;cursor:pointer" onclick="editDailyGoal()" title=t('zz_modifObjectif')>⚙️</button>
+          <button class="btn" style="padding:6px 10px;font-size:11px;border:1px solid var(--border);background:var(--surface);color:var(--text-2);font-weight:600;cursor:pointer" onclick="editDailyGoal()" title="${t('zz_modifObjectif')}">⚙️</button>
         </div>
         <div style="height:9px;background:var(--gray-2);border-radius:5px;overflow:hidden;margin-bottom:8px;position:relative">
           <div style="height:100%;width:${pct}%;background:${barColor};border-radius:5px;transition:width .5s ease;box-shadow:${pct>=100?'0 0 8px rgba(16,185,129,.4)':'none'}"></div>
         </div>
         <div style="display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--text-3)">
-          <span style="font-weight:600;color:${pct>=100?'#10B981':'var(--text-2)'}">${pct}% ${pct>=100?'atteint ✓':'atteint'}</span>
-          <span style="font-weight:500">${remaining>0 ? `${t('zz3_reste')} <strong style="color:var(--text-1)">${goalType==='sales'?remaining+' ventes':fmt(remaining)+' '+unit}</strong>` : '🎉 Objectif atteint !'}</span>
+          <span style="font-weight:600;color:${pct>=100?'#10B981':'var(--text-2)'}">${pct}% ${pct>=100?t('zz9_atteintOk'):t('zz9_atteint')}</span>
+          <span style="font-weight:500">${remaining>0 ? `${t('zz3_reste')} <strong style="color:var(--text-1)">${goalType==='sales'?remaining+' '+t('zy_ventes').toLowerCase():fmt(remaining)+' '+unit}</strong>` : t('zz9_objectifAtteint')}</span>
         </div>
         ${transactionsPeriod>0 ? `<div style="display:flex;gap:14px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:11px;color:var(--text-3);flex-wrap:wrap">
-          <span>📝 <strong style="color:var(--text-1)">${transactionsPeriod}</strong> vente${transactionsPeriod>1?'s':''}</span>
+          <span>📝 <strong style="color:var(--text-1)">${transactionsPeriod}</strong> ${transactionsPeriod>1?t('w4_ventesN'):t('w4_venteN')}</span>
           <span>🛒 ${t('w4_panierMoyen')} <strong style="color:var(--text-1)">${fmt(avgBasket)} ${sym()}</strong></span>
           <span>💰 ${t('zt_profit')} <strong style="color:var(--success)">+${fmt(todayProfitVal)} ${sym()}</strong></span>
         </div>` : `<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:11px;color:var(--text-3);text-align:center">${t('w2_aucuneVentePer')} <a href="#" onclick="nav('sales');return false" style="color:var(--accent);font-weight:600">${t('w1_enregistrerVente')}</a></div>`}
@@ -14411,7 +15016,7 @@ function vHome() {
           </div>
         </div>
         ${topMember ? (() => {
-          const info = ROLE_LABELS[topMember.role] || ROLE_LABELS.vendor;
+          const info = ROLE_LABELS_()[topMember.role] || ROLE_LABELS_().vendor;
           return `
           <div style="display:flex;align-items:center;gap:10px;padding:10px;background:${info.color}10;border-radius:10px">
             <div style="width:32px;height:32px;border-radius:16px;background:${info.color}25;color:${info.color};display:flex;align-items:center;justify-content:center;font-size:16px">${info.icon}</div>
@@ -14546,7 +15151,7 @@ function vHome() {
     <div class="section-hd"><div class="section-lbl">${t('quickSale')}</div></div>
     <div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:8px">
       <button class="quick-sale-chip" style="border:1px dashed var(--accent)" onclick="S.saleMode='service';nav('sales')">
-        <span style="font-weight:700;font-size:12px">🧾 Prestation</span>
+        <span style="font-weight:700;font-size:12px">${t('y1_prestation')}</span>
         <span style="font-size:11px;color:var(--accent)">${t('w1_serviceSansStock')}</span>
       </button>
       ${S.products.slice(0,6).map(p => `
@@ -14650,15 +15255,15 @@ function vPantry() {
         <div style="font-size:13px;font-weight:800;color:var(--success)">+${fmt(potentialProfit)}</div>
         <div style="font-size:9px;color:var(--text-3);margin-top:1px;font-weight:600;letter-spacing:.3px">${t('w1_benefPotentiel')}</div>
       </div>
-      <div style="text-align:center;padding:8px 4px;background:var(--gray-1);border-radius:8px;border:1px solid var(--border)" title=t('v_valeurVente')>
+      <div style="text-align:center;padding:8px 4px;background:var(--gray-1);border-radius:8px;border:1px solid var(--border)" title="${t('v_valeurVente')}">
         <div style="font-size:13px;font-weight:800;color:var(--accent)">${fmt(totalValue)}</div>
         <div style="font-size:9px;color:var(--text-3);margin-top:1px;font-weight:600;letter-spacing:.3px">${t('w2_valeurStock')}</div>
       </div>
       <div style="text-align:center;padding:8px 4px;background:${outCount>0?'rgba(239,68,68,0.08)':'var(--gray-1)'};border-radius:8px;border:1px solid ${outCount>0?'rgba(239,68,68,0.25)':'var(--border)'};cursor:pointer" onclick="S.filter='out';render()">
         <div style="font-size:13px;font-weight:800;color:${outCount>0?'var(--danger)':'var(--text-3)'}">${outCount}</div>
-        <div style="font-size:9px;color:var(--text-3);margin-top:1px;font-weight:600;letter-spacing:.3px">RUPTURE</div>
+        <div style="font-size:9px;color:var(--text-3);margin-top:1px;font-weight:600;letter-spacing:.3px">${t('zz8_rupture')}</div>
       </div>
-      <div style="text-align:center;padding:8px 4px;background:${lowMarginCount>0?'rgba(245,158,11,0.08)':'var(--gray-1)'};border-radius:8px;border:1px solid ${lowMarginCount>0?'rgba(245,158,11,0.25)':'var(--border)'};cursor:pointer" onclick="S.filter='margin-low';render()" title=t('v_margeFaible')>
+      <div style="text-align:center;padding:8px 4px;background:${lowMarginCount>0?'rgba(245,158,11,0.08)':'var(--gray-1)'};border-radius:8px;border:1px solid ${lowMarginCount>0?'rgba(245,158,11,0.25)':'var(--border)'};cursor:pointer" onclick="S.filter='margin-low';render()" title="${t('v_margeFaible')}">
         <div style="font-size:13px;font-weight:800;color:${lowMarginCount>0?'var(--warning)':'var(--text-3)'}">${lowMarginCount}</div>
         <div style="font-size:9px;color:var(--text-3);margin-top:1px;font-weight:600;letter-spacing:.3px">MARGE FAIBLE</div>
       </div>
@@ -14670,7 +15275,7 @@ function vPantry() {
       </div>
       <div style="text-align:center;padding:8px 4px;background:${outCount>0?'rgba(239,68,68,0.08)':'var(--gray-1)'};border-radius:8px;border:1px solid ${outCount>0?'rgba(239,68,68,0.25)':'var(--border)'};cursor:pointer" onclick="S.filter='out';render()">
         <div style="font-size:14px;font-weight:800;color:${outCount>0?'var(--danger)':'var(--text-3)'}">${outCount}</div>
-        <div style="font-size:9px;color:var(--text-3);margin-top:1px;font-weight:600;letter-spacing:.3px">RUPTURE</div>
+        <div style="font-size:9px;color:var(--text-3);margin-top:1px;font-weight:600;letter-spacing:.3px">${t('zz8_rupture')}</div>
       </div>
       <div style="text-align:center;padding:8px 4px;background:${lowCount>0?'rgba(245,158,11,0.08)':'var(--gray-1)'};border-radius:8px;border:1px solid ${lowCount>0?'rgba(245,158,11,0.25)':'var(--border)'};cursor:pointer" onclick="S.filter='low';render()">
         <div style="font-size:14px;font-weight:800;color:${lowCount>0?'var(--warning)':'var(--text-3)'}">${lowCount}</div>
@@ -14691,7 +15296,7 @@ function vPantry() {
       <button class="filter-chip ${S.filter==='low'?'active':''}" onclick="S.filter='low';render()">${t('low')}</button>
       <button class="filter-chip ${S.filter==='ok'?'active':''}"  onclick="S.filter='ok';render()">${t('ok')}</button>
       ${isReseller && lowMarginCount > 0 ? `<button class="filter-chip ${S.filter==='margin-low'?'active':''}" onclick="S.filter='margin-low';render()" style="${S.filter==='margin-low'?'':'color:var(--warning)'}">⚠ Marge faible (${lowMarginCount})</button>` : ''}
-      ${expCount > 0 ? `<button class="filter-chip ${S.filter==='expiring'?'active':''}" onclick="S.filter='expiring';render()" style="${S.filter==='expiring'?'':'color:#EC4899'}">⏱ Péremption (${expCount})</button>` : ''}
+      ${expCount > 0 ? `<button class="filter-chip ${S.filter==='expiring'?'active':''}" onclick="S.filter='expiring';render()" style="${S.filter==='expiring'?'':'color:#EC4899'}">⏱ ${t('zz7_peremption')} (${expCount})</button>` : ''}
     </div>
     ${baseList.length > 0 ? `
     <div class="filter-row" style="margin-top:-4px;align-items:center">
@@ -14705,8 +15310,8 @@ function vPantry() {
         <option value="expiry" ${sort==='expiry'?'selected':''}>${t('w1_peremption')}</option>
       </select>
       <button class="filter-chip" onclick="S.stockView=(S.stockView==='grid'?'list':'grid');render()" style="font-size:10px;padding:4px 10px;margin-left:auto" title="Affichage liste / grille">${S.stockView==='grid'?'☰ Liste':'▦ Grille'}</button>
-      <button class="filter-chip" onclick="openQuickStock()" style="font-size:10px;padding:4px 10px;color:var(--accent)" title=t('v_entreeSerie')>${t('w1_entreeSortie')}</button>
-      <button class="filter-chip" onclick="nav('stock-history')" style="font-size:10px;padding:4px 10px" title=t('v_histMouv')>${IC.trending} Mouvements</button>
+      <button class="filter-chip" onclick="openQuickStock()" style="font-size:10px;padding:4px 10px;color:var(--accent)" title="${t('v_entreeSerie')}">${t('w1_entreeSortie')}</button>
+      <button class="filter-chip" onclick="nav('stock-history')" style="font-size:10px;padding:4px 10px" title="${t('v_histMouv')}">${IC.trending} Mouvements</button>
       ${S.locations.length > 1 ? `<button class="filter-chip" onclick="openStockTransfer()" style="font-size:10px;padding:4px 10px" title="Transférer entre emplacements">⇄ Transfert</button>` : ''}
     </div>` : ''}
     ${S.locations.length > 0 ? `
@@ -14719,8 +15324,8 @@ function vPantry() {
     ${list.length===0 ? `
     <div class="empty">
       <div class="empty-ico">${IC.inbox}</div>
-      <div class="empty-title">${S.articles.length===0 ? (isReseller?'Aucun produit en boutique':t('noArticles')) : t('noResults')}</div>
-      <div class="empty-text">${S.articles.length===0 ? (isReseller?'Ajoutez votre premier produit pour commencer à vendre':t('noArticlesSub')) : t('noResultsSub')}</div>
+      <div class="empty-title">${S.articles.length===0 ? (isReseller?t('zz5_aucunProduit'):t('noArticles')) : t('noResults')}</div>
+      <div class="empty-text">${S.articles.length===0 ? (isReseller?t('zz5_premierProduit'):t('noArticlesSub')) : t('noResultsSub')}</div>
       ${S.articles.length===0 ? `
       <div style="display:flex;flex-direction:column;gap:8px;align-items:center">
         <button class="btn btn-primary" style="width:auto;padding:11px 24px" onclick="nav('add')">${isReseller?t('y_ajoutProd'):t('addArticle')}</button>
@@ -14899,7 +15504,7 @@ function vProducts() {
       </div>
     </div>
     <div class="filter-row" style="margin-top:8px;margin-bottom:6px">
-      <button class="filter-chip ${tab==='products'?'active':''}" onclick="setProductsTab('products')">🏷️ Produits (${S.products.length})</button>
+      <button class="filter-chip ${tab==='products'?'active':''}" onclick="setProductsTab('products')">🏷️ ${t('zx_produits')} (${S.products.length})</button>
       <button class="filter-chip ${tab==='packs'?'active':''}" onclick="setProductsTab('packs')">📦 Packs (${packs.length})</button>
     </div>
     ${tab==='products' && S.products.length > 0 ? `
@@ -14935,7 +15540,7 @@ function vProducts() {
         <option value="price-desc" ${pSort==='price-desc'?'selected':''}>Prix ↓</option>
         <option value="price-asc" ${pSort==='price-asc'?'selected':''}>Prix ↑</option>
         <option value="margin" ${pSort==='margin'?'selected':''}>Meilleure marge</option>
-        <option value="best-seller" ${pSort==='best-seller'?'selected':''}>Meilleures ventes</option>
+        <option value="best-seller" ${pSort==='best-seller'?'selected':''}>${t('zz8_meilleuresVentes')}</option>
       </select>
     </div>` : ''}
     ${tab==='packs' && packs.length > 0 ? `
@@ -15076,7 +15681,7 @@ function vSales() {
     <div class="filter-row" style="margin-bottom:10px">
       <button class="filter-chip ${mode==='simple'?'active':''}" onclick="setSaleMode('simple')">${t('w2_venteRapide')}</button>
       <button class="filter-chip ${mode==='multi'?'active':''}" onclick="setSaleMode('multi')">${t('w2_panierMulti')}</button>
-      <button class="filter-chip ${mode==='service'?'active':''}" onclick="setSaleMode('service')">🧾 Prestation</button>
+      <button class="filter-chip ${mode==='service'?'active':''}" onclick="setSaleMode('service')">${t('y1_prestation')}</button>
     </div>
 
     ${boutiqueCount > 0 ? `
@@ -15122,7 +15727,7 @@ function vSales() {
           <button type="button" class="chip ${S.saleNewClient?'active':''}" onclick="S.saleNewClient=true;render()">${t('w2_nouveauClient')}</button>
         </div>
         ${S.saleNewClient ? `
-        <input class="input" type="text" id="sale-new-client-name" placeholder=t('v_nomClient') style="margin-bottom:6px" value="${(S.saleNewClientName||'').replace(/"/g,'&quot;')}" oninput="S.saleNewClientName=this.value">
+        <input class="input" type="text" id="sale-new-client-name" placeholder="${t('v_nomClient')}" style="margin-bottom:6px" value="${(S.saleNewClientName||'').replace(/"/g,'&quot;')}" oninput="S.saleNewClientName=this.value">
         <input class="input" type="tel" id="sale-new-client-phone" placeholder="Téléphone (optionnel)" value="${(S.saleNewClientPhone||'').replace(/"/g,'&quot;')}" oninput="S.saleNewClientPhone=this.value">
         ` : `
         <select class="input" id="sale-client" onchange="S.saleClientPick=this.value?(parseInt(this.value)||this.value):null">
@@ -15131,7 +15736,7 @@ function vSales() {
         </select>`}
       </div>
       <div class="form-group">
-        <label class="form-label">Mode de paiement</label>
+        <label class="form-label">${t('invoicePayment')}</label>
         <select class="input" id="sale-payment">
           <option value="cash">Especes</option>
           ${(S.paymentMethods||[]).filter(m=>m.active).map(m=>`<option value="${m.provider}">${m.name}</option>`).join('')}
@@ -15166,7 +15771,7 @@ function vSales() {
           <button type="button" class="chip ${S.saleNewClient?'active':''}" onclick="S.saleNewClient=true;render()">${t('w2_nouveauClient')}</button>
         </div>
         ${S.saleNewClient ? `
-        <input class="input" type="text" id="sale-new-client-name" placeholder=t('v_nomClient') style="margin-bottom:6px" value="${(S.saleNewClientName||'').replace(/"/g,'&quot;')}" oninput="S.saleNewClientName=this.value">
+        <input class="input" type="text" id="sale-new-client-name" placeholder="${t('v_nomClient')}" style="margin-bottom:6px" value="${(S.saleNewClientName||'').replace(/"/g,'&quot;')}" oninput="S.saleNewClientName=this.value">
         <input class="input" type="tel" id="sale-new-client-phone" placeholder="Téléphone (optionnel)" value="${(S.saleNewClientPhone||'').replace(/"/g,'&quot;')}" oninput="S.saleNewClientPhone=this.value">
         ` : `
         <select class="input" id="sale-client" onchange="S.saleClientPick=this.value?(parseInt(this.value)||this.value):null">
@@ -15175,7 +15780,7 @@ function vSales() {
         </select>`}
       </div>
       <div class="form-group">
-        <label class="form-label">Mode de paiement</label>
+        <label class="form-label">${t('invoicePayment')}</label>
         <select class="input" id="sale-payment">
           <option value="cash">Especes</option>
           ${(S.paymentMethods||[]).filter(m=>m.active).map(m=>`<option value="${m.provider}">${m.name}</option>`).join('')}
@@ -15272,7 +15877,7 @@ function vSales() {
           <button type="button" class="chip ${S.multiNewClient?'active':''}" onclick="S.multiNewClient=true;render()">${t('w2_nouveauClient')}</button>
         </div>
         ${S.multiNewClient ? `
-        <input class="input" type="text" id="multi-new-client-name" placeholder=t('v_nomClient') style="margin-bottom:6px" value="${(S.multiNewClientName||'').replace(/"/g,'&quot;')}" oninput="S.multiNewClientName=this.value">
+        <input class="input" type="text" id="multi-new-client-name" placeholder="${t('v_nomClient')}" style="margin-bottom:6px" value="${(S.multiNewClientName||'').replace(/"/g,'&quot;')}" oninput="S.multiNewClientName=this.value">
         <input class="input" type="tel" id="multi-new-client-phone" placeholder="Téléphone (optionnel)" value="${(S.multiNewClientPhone||'').replace(/"/g,'&quot;')}" oninput="S.multiNewClientPhone=this.value">
         ` : `
         <select class="input" id="multi-client" onchange="S.multiClientPick=this.value?(parseInt(this.value)||this.value):null">
@@ -15281,7 +15886,7 @@ function vSales() {
         </select>`}
       </div>
       <div class="form-group">
-        <label class="form-label">Mode de paiement</label>
+        <label class="form-label">${t('invoicePayment')}</label>
         <select class="input" id="multi-payment">
           <option value="cash">${t('y1_especes')}</option>
           ${(S.paymentMethods||[]).filter(m=>m.active).map(m=>`<option value="${m.provider}">${m.name}</option>`).join('')}
@@ -15352,7 +15957,7 @@ function vSales() {
       const _dayKey = d => new Date(d).toDateString();
       const _dayLabel = d => {
         const k = _dayKey(d);
-        if (k === new Date().toDateString()) return "Aujourd'hui";
+        if (k === new Date().toDateString()) return t('zz4_aujourdhui');
         if (k === new Date(Date.now() - 86400000).toDateString()) return 'Hier';
         return new Date(d).toLocaleDateString(_loc(), { weekday: 'long', day: 'numeric', month: 'long' });
       };
@@ -15474,7 +16079,7 @@ function vFinancial() {
   const _sellerBreakdown = (() => {
     if (!(S.teamMembers||[]).length) return null;
     const map = {};
-    filtered.forEach(s => { const n = s.memberName || 'Non attribué'; if (!map[n]) map[n] = { rev:0, count:0, profit:0 }; map[n].rev += (s.total||0); map[n].count += 1; map[n].profit += (s.profit||0); });
+    filtered.forEach(s => { const n = s.memberName || t('zz7_nonAttribue'); if (!map[n]) map[n] = { rev:0, count:0, profit:0 }; map[n].rev += (s.total||0); map[n].count += 1; map[n].profit += (s.profit||0); });
     const arr = Object.entries(map).map(([name,v]) => ({ name, ...v })).sort((a,b) => b.rev - a.rev);
     if (!arr.length) return null;
     return { arr, max: arr[0].rev || 1, total: arr.reduce((s,x)=>s+x.rev,0) };
@@ -15536,7 +16141,7 @@ function vFinancial() {
         const col = _CAT_COLORS[i % _CAT_COLORS.length];
         return `<div style="margin-bottom:10px">
           <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
-            <span style="font-size:13px;font-weight:600;color:var(--text-1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${m.name} <span style="color:var(--text-3);font-weight:500">· ${m.count} vente${m.count>1?'s':''}</span></span>
+            <span style="font-size:13px;font-weight:600;color:var(--text-1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${m.name} <span style="color:var(--text-3);font-weight:500">· ${m.count} ${m.count>1?t('w4_ventesN'):t('w4_venteN')}</span></span>
             <span style="font-size:12px;font-weight:700;color:${col};flex-shrink:0;margin-left:8px">${fmt(m.rev)} ${sym()} <span style="color:var(--text-3);font-weight:500">· ${pct}%</span></span>
           </div>
           <div style="height:8px;background:var(--gray-2);border-radius:5px;overflow:hidden">
@@ -15646,7 +16251,7 @@ const catNom = (c) => ({ 'Loyer':t('z_catLoyer'), 'Électricité & eau':t('z_cat
                 <div style="height:100%;width:${Math.max(4, Math.round((d.rev/maxTopRev)*100))}%;background:linear-gradient(90deg,var(--accent),#7C73FF);border-radius:3px;transition:width .6s cubic-bezier(.25,.46,.45,.94)"></div>
               </div>
               <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-3);margin-top:3px">
-                <span>${d.qty} vendus</span>
+                <span>${d.qty} ${t('zz9_vendus')}</span>
                 ${d.profit>0?`<span style="color:var(--success);font-weight:600">+${fmt(d.profit)} ${t('profitShort')}</span>`:''}
               </div>
             </div>
@@ -15678,7 +16283,7 @@ const catNom = (c) => ({ 'Loyer':t('z_catLoyer'), 'Électricité & eau':t('z_cat
     <div class="card" style="margin-top:14px;background:linear-gradient(135deg,var(--accent-light),var(--surface))">
       <div class="card-title" style="display:flex;align-items:center;gap:8px"><span style="font-size:16px">📊</span> Exports & Rapports</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-        <button class="btn btn-primary" onclick="generateSalesReportPDF(S.period==='today'?'today':S.period==='7d'?'week':S.period==='30d'?'month':'all')" style="padding:10px;font-size:12px">📑 Rapport PDF</button>
+        <button class="btn btn-primary" onclick="generateSalesReportPDF(S.period==='today'?'today':S.period==='7d'?'week':S.period==='30d'?'month':'all')" style="padding:10px;font-size:12px">📑 ${t('zz6_rapportPdf')}</button>
         <button class="btn btn-primary" onclick="exportSalesXLSX()" style="padding:10px;font-size:12px;background:linear-gradient(135deg,#059669,#0d9488)">📗 Excel</button>
         <button class="btn btn-ghost" onclick="nav('exports')" style="padding:10px;font-size:12px;grid-column:1/-1">${t('w1_tousExports')}</button>
       </div>
@@ -15699,7 +16304,7 @@ function SOVA_INTROS_() {
   if (_c_SOVA_INTROS && _l_SOVA_INTROS === _lang) return _c_SOVA_INTROS;
   _l_SOVA_INTROS = _lang;
   _c_SOVA_INTROS = {
-  excellent: [n=>`${t('z_toutSePorte')}, ${n} !`, n=>`${n}, ton stock respire.`, n=>`Beau travail, ${n} — rien à signaler.`, n=>`Tout roule. SOVA veille.`, n=>`${n}, tes étagères sont heureuses.`],
+  excellent: [n=>`${t('z_toutSePorte')}, ${n} !`, n=>t('zy_sovaRespire').replace('{0}', n), n=>t('zy_sovaBeau').replace('{0}', n), n=>t('zy_sovaRoule'), n=>`${n}, tes étagères sont heureuses.`],
   good: [n=>`${n}, ça tient bien. Quelques détails à surveiller.`, n=>`Bonne santé globale, ${n}.`, n=>`Presque parfait, ${n} — juste quelques nuages.`, n=>`${n}, tes stocks sont stables.`, n=>`Tout va bien, ${n}. SOVA reste aux aguets.`],
   warning_one: [n=>`${n}, un article mérite ton attention.`, n=>`Attention, ${n} — SOVA a repéré quelque chose.`, n=>`${n}, un signal faible à ne pas ignorer.`, n=>`Presque tout va bien, ${n}. Mais il y a un "mais".`, n=>`${n}, un article te glisse entre les doigts.`],
   warning_multi: [n=>`${n}, quelques articles réclament ta vigilance.`, n=>`SOVA a des choses à te dire, ${n}.`, n=>`${n}, le tableau est bon — mais pas tout à fait.`, n=>`Quelques signaux, ${n}.`, n=>`${n}, SOVA a repéré plusieurs points à surveiller.`],
@@ -15851,7 +16456,7 @@ function vSova() {
   const alertPreds=preds.filter(p=>p.status==='critical'||p.status==='warning');
   const criticalPreds=preds.filter(p=>p.status==='critical');
   const warningPreds=preds.filter(p=>p.status==='warning');
-  const tabs=[{id:'overview',label:t('zz_apercu')},{id:'insights',label:t('z_idees')},{id:'alerts',label:`Alertes${alertPreds.length>0?' · '+alertPreds.length:''}`},{id:'tomorrow',label:'Demain'},{id:'articles',label:'Articles'}];
+  const tabs=[{id:'overview',label:t('zz_apercu')},{id:'insights',label:t('z_idees')},{id:'alerts',label:`${t('alerts')}${alertPreds.length>0?' · '+alertPreds.length:''}`},{id:'tomorrow',label:t('zzf_demain')},{id:'articles',label:t('articles')}];
   const R=40,C=2*Math.PI*R,dash=(score/100)*C;
 
   function tabOverview() {
@@ -15880,7 +16485,7 @@ function vSova() {
     const now = Date.now(), DAY = 86400000;
     const sales = S.sales || [];
     if (sales.length < 3) {
-      return `<div class="sova-empty"><div class="sova-empty-title">💡 Pas encore assez de ventes</div><div class="sova-empty-sub">SOVA a besoin de quelques ventes pour te conseiller sur quoi pousser, garder ou laisser.</div></div>`;
+      return `<div class="sova-empty"><div class="sova-empty-title">💡 ${t('zy_pasAssezVentes')}</div><div class="sova-empty-sub">SOVA a besoin de quelques ventes pour te conseiller sur quoi pousser, garder ou laisser.</div></div>`;
     }
     // Stats par produit (nom)
     const st = {};
@@ -15996,7 +16601,7 @@ function _stockHistoryCard(art) {
       </div>
       ${soldTotal > 0 ? `<div style="display:flex;gap:8px;margin-top:6px">
         <div class="metric-card" style="flex:1"><div class="metric-val">${soldTotal}</div><div class="metric-lbl">Vendus (total)</div></div>
-        <div class="metric-card" style="flex:1"><div class="metric-val">${artSales.length}</div><div class="metric-lbl">Ventes</div></div>
+        <div class="metric-card" style="flex:1"><div class="metric-val">${artSales.length}</div><div class="metric-lbl">${t('zy_ventes')}</div></div>
       </div>` : ''}
     </div>`;
   }
@@ -16092,7 +16697,7 @@ function vDetail() {
 
     ${_articleSellable(art) ? `<div style="display:flex;gap:8px;margin-top:10px;align-items:stretch">
       <button class="qs-trigger" style="flex:1 1 auto;width:auto;margin-top:0;padding:0 14px;height:52px;font-size:15px" onclick="openQuickSell(${art.id})">${IC.dollar} Vendre — ${fmt(pv)} ${sym()}</button>
-      <button class="btn btn-ghost" style="flex:0 0 52px;width:52px;height:52px;padding:0;border:1px solid #25D36660;color:#128C7E" onclick="shareProductLink(${art.id})" title="Partager sur WhatsApp" aria-label="Partager sur WhatsApp">${IC.whatsapp}</button>
+      <button class="btn btn-ghost" style="flex:0 0 52px;width:52px;height:52px;padding:0;border:1px solid #25D36660;color:#128C7E" onclick="shareProductLink(${art.id})" title="${t('zze_partagerWa')}" aria-label="${t('zze_partagerWa')}">${IC.whatsapp}</button>
     </div>
     <button class="btn btn-ghost" style="width:100%;margin-top:8px;font-size:13px;border:1px solid var(--border)" onclick="openProductOptions(${art.id})">🛍️ Photos & variantes boutique${(art.images&&art.images.length)||(art.variants&&art.variants.length)?` · ${(art.images||[]).length+1} photo(s)${art.variants&&art.variants.length?` · ${art.variants.length} variante(s)`:''}`:''}</button>` : ''}
 
@@ -16216,11 +16821,11 @@ function vDetail() {
       ${isReseller ? `
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
         <div class="form-group">
-          <label class="form-label">Prix d'achat (${sym()})</label>
+          <label class="form-label">${t('zz9_prixAchat')} (${sym()})</label>
           <input class="input" type="number" step="10" min="0" value="${art.purchasePrice||0}" onchange="updateArticleField(${art.id},'purchasePrice',parseFloat(this.value)||0);render()">
         </div>
         <div class="form-group">
-          <label class="form-label">Prix de vente (${sym()})</label>
+          <label class="form-label">${t('zz8_prixVente')} (${sym()})</label>
           <input class="input" type="number" step="10" min="0" value="${art.price||0}" onchange="updateArticleField(${art.id},'price',parseFloat(this.value)||0);render()">
         </div>
       </div>
@@ -16310,7 +16915,7 @@ function vBulkAdd() {
   <div class="sub-hero">
     <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('add')">${IC.left}</button>
     <div class="sub-hero-title">${t('w2_saisieLot')}</div>
-    <div class="sub-hero-sub">${t('v_lotCollez')}${isReseller?'articles':'articles'} en un clic</div>
+    <div class="sub-hero-sub">${t('v_lotCollez')}</div>
   </div>
   <div class="container">
     <div class="card" style="margin-bottom:10px">
@@ -16319,7 +16924,7 @@ function vBulkAdd() {
         <span style="color:var(--text-3)">${t('x4_colonnesLot')}</span><br>
         <span style="font-size:11px;color:var(--text-3)">${t('x4_seulNomObligatoire')} <i>Carton vis M6 ; 4500 ; 30 ; REF-VIS-M6 ; Quincaillerie</i></span>
       </div>
-      <textarea class="input" id="bulk-text" rows="9" style="resize:vertical;font-family:ui-monospace,monospace;font-size:13px;line-height:1.6" placeholder="Sac à dos ; 12000 ; 8 ; SAC-01 ; Bagagerie&#10;Stylo bleu ; 250 ; 200 ; STY-BL&#10;Carton lait ; 9000 ; 15 ; LAIT-1L ; Alimentaire" oninput="S.bulkText=this.value;_bulkRefresh()">${(S.bulkText||'').replace(/</g,'&lt;')}</textarea>
+      <textarea class="input" id="bulk-text" rows="9" style="resize:vertical;font-family:ui-monospace,monospace;font-size:13px;line-height:1.6" placeholder="${t('zy_lotExemple').replace(/\n/g,'&#10;')}" oninput="S.bulkText=this.value;_bulkRefresh()">${(S.bulkText||'').replace(/</g,'&lt;')}</textarea>
       <div id="bulk-count" style="font-size:12px;color:var(--text-3);margin-top:6px">${rows.length} ${t('x_lignesDet')}</div>
     </div>
     <div class="card" id="bulk-preview-card" style="margin-bottom:10px;${rows.length?'':'display:none'}">
@@ -16622,7 +17227,7 @@ function vAdd() {
         <label class="form-label">${isReseller?t('z_refSku'):t('reference')}</label>
         <div style="display:flex;gap:6px">
           <input id="art-ref-input" class="input" style="flex:1" type="text" placeholder="EAN-13, SKU, code interne…" value="${(f.ref||'').replace(/"/g,'&quot;')}" oninput="S.form.ref=this.value">
-          <button type="button" class="btn btn-ghost" style="padding:0 14px;white-space:nowrap" onclick="scanBarcodeForArticle()" title="Scanner un code-barres">📷</button>
+          <button type="button" class="btn btn-ghost" style="padding:0 14px;white-space:nowrap" onclick="scanBarcodeForArticle()" title="${t('zy_scanCB')}">📷</button>
         </div>
       </div>
 
@@ -16634,14 +17239,14 @@ function vAdd() {
       <!-- Prix : adaptatif -->
       ${isReseller ? `
       <div style="background:linear-gradient(135deg,var(--accent)10,transparent);border:1px solid var(--accent);border-radius:var(--r-md);padding:14px;margin-bottom:14px">
-        <div style="font-weight:700;font-size:13px;color:var(--accent);margin-bottom:10px">💰 Prix d'achat → Prix de vente</div>
+        <div style="font-weight:700;font-size:13px;color:var(--accent);margin-bottom:10px">💰 ${t('zz8_achatVersVente')}</div>
         <div class="input-row" style="margin-bottom:0">
           <div>
-            <label class="form-label" style="font-size:11px">Prix d'achat (${sym()}) *</label>
+            <label class="form-label" style="font-size:11px">${t('zz9_prixAchat')} (${sym()}) *</label>
             <input class="input" id="art-ha-input" type="number" placeholder="0" step="100" value="${f.purchasePrice||0}" oninput="S.form.purchasePrice=this.value;updateArticleMarginPreview()">
           </div>
           <div>
-            <label class="form-label" style="font-size:11px">Prix de vente (${sym()}) *</label>
+            <label class="form-label" style="font-size:11px">${t('zz8_prixVente')} (${sym()}) *</label>
             <input class="input" id="art-pv-input" type="number" placeholder="0" step="100" value="${f.price||0}" oninput="S.form.price=this.value;updateArticleMarginPreview()">
           </div>
         </div>
@@ -16662,7 +17267,7 @@ function vAdd() {
       </div>` : `
       <div class="input-row form-group">
         <div>
-          <label class="form-label">Prix d'achat (${sym()})</label>
+          <label class="form-label">${t('zz9_prixAchat')} (${sym()})</label>
           <input class="input" type="number" placeholder="0" step="10" value="${f.purchasePrice||0}" oninput="S.form.purchasePrice=this.value">
         </div>
         <div>
@@ -16871,17 +17476,17 @@ function vPackForm() {
   <div class="sub-hero">
     <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('products')">${IC.left}</button>
     <div class="sub-hero-title">${isEdit ? '📦 Modifier le pack' : t('z_nouveauPack')}</div>
-    <div class="sub-hero-sub">${isEdit ? f.name : 'Groupez plusieurs produits en un pack'}</div>
+    <div class="sub-hero-sub">${isEdit ? f.name : t('zy_packSub')}</div>
   </div>
   <div class="container">
     <div class="card">
       <div class="form-group">
         <label class="form-label">${t('w9_nomPack')}</label>
-        <input class="input" type="text" placeholder=t('v_packEx1') value="${(f.name||'').replace(/"/g,'&quot;')}" oninput="S.packForm.name=this.value">
+        <input class="input" type="text" placeholder="${t('v_packEx1')}" value="${(f.name||'').replace(/"/g,'&quot;')}" oninput="S.packForm.name=this.value">
       </div>
       <div class="form-group">
         <label class="form-label">Description</label>
-        <textarea class="input" rows="2" placeholder=t('v_packEx2') oninput="S.packForm.description=this.value">${(f.description||'').replace(/</g,'&lt;')}</textarea>
+        <textarea class="input" rows="2" placeholder="${t('v_packEx2')}" oninput="S.packForm.description=this.value">${(f.description||'').replace(/</g,'&lt;')}</textarea>
       </div>
 
       <div class="form-group">
@@ -16966,7 +17571,7 @@ function vPackForm() {
       </label>
 
       <div style="display:flex;gap:8px">
-        <button class="btn btn-ghost" style="flex:1" onclick="resetPackForm();nav('products')">Annuler</button>
+        <button class="btn btn-ghost" style="flex:1" onclick="resetPackForm();nav('products')">${t('cancel')}</button>
         <button class="btn btn-primary" style="flex:2" onclick="savePack()">${isEdit?'Mettre à jour':t('v_packCreer')}</button>
       </div>
     </div>
@@ -17118,7 +17723,7 @@ function vClients() {
             ${st.count > 0 ? `<div class="article-meta" style="margin-top:2px">${st.count} ${t('purchases').toLowerCase()} · ${fmt(st.total)} ${sym()}</div>` : ''}
             ${c.loyaltyPoints > 0 ? `<div class="article-meta" style="margin-top:2px;color:var(--warning)">${IC.star} ${c.loyaltyPoints} pts fidelite</div>` : ''}
           </div>
-          ${_waPhone ? `<button class="cl-wa" title="Relancer sur WhatsApp" onclick="event.stopPropagation();window.open('https://wa.me/${_waPhone}?text='+encodeURIComponent('Bonjour ${(c.name||'').split(' ')[0].replace(/'/g,'')} 👋, merci pour votre confiance chez ${(S.session?.business||'notre boutique').replace(/'/g,'')} !'),'_blank')"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1 0 12 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-1.7-.1-.4-.1-.9-.3-1.6-.6-2.8-1.2-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.8s.7-2 .9-2.2c.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 1.9c.1.1.1.3 0 .5l-.3.5-.3.3c-.2.2-.3.4-.1.7.2.3.9 1.4 1.9 2.3 1.3 1.1 2.3 1.5 2.6 1.6.3.1.5.1.7-.1l.8-1c.2-.2.4-.2.6-.1l1.8.9c.3.1.5.2.5.3.1.2.1.7-.1 1.3z"/></svg></button>` : ''}
+          ${_waPhone ? `<button class="cl-wa" title="${t('zz7_relancerWa')}" onclick="event.stopPropagation();window.open('https://wa.me/${_waPhone}?text='+encodeURIComponent('Bonjour ${(c.name||'').split(' ')[0].replace(/'/g,'')} 👋, merci pour votre confiance chez ${(S.session?.business||'notre boutique').replace(/'/g,'')} !'),'_blank')"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1 0 12 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-1.7-.1-.4-.1-.9-.3-1.6-.6-2.8-1.2-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.8s.7-2 .9-2.2c.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 1.9c.1.1.1.3 0 .5l-.3.5-.3.3c-.2.2-.3.4-.1.7.2.3.9 1.4 1.9 2.3 1.3 1.1 2.3 1.5 2.6 1.6.3.1.5.1.7-.1l.8-1c.2-.2.4-.2.6-.1l1.8.9c.3.1.5.2.5.3.1.2.1.7-.1 1.3z"/></svg></button>` : ''}
           <div style="color:var(--gray-4)">${IC.chevron}</div>
         </div>
       </div>`;
@@ -17154,7 +17759,7 @@ function vAddClient() {
       </div>
       <div class="form-group">
         <label class="form-label">${t('clientNotes')}</label>
-        <textarea class="input" id="client-notes" rows="3" placeholder=t('v_notesPrefs') style="resize:vertical"></textarea>
+        <textarea class="input" id="client-notes" rows="3" placeholder="${t('v_notesPrefs')}" style="resize:vertical"></textarea>
       </div>
       <button class="btn btn-primary" onclick="saveClient()">${t('addClient')}</button>
     </div>
@@ -21158,7 +21763,7 @@ async function generateSpectraAuditPDF(){
     localStorage.setItem('stockr_spectra_audits', JSON.stringify(history));
   } catch(e){}
 
-  showToast('Rapport PDF signé ✓', 'success');
+  showToast(t('zz6_pdfSigne'), 'success');
 }
 
 // ── Scanner un code-barres pour remplir le champ "ref" d'un article ──
@@ -21220,7 +21825,7 @@ async function _grabBarcode(onCode){
       <video id="_bcscan-video" playsinline muted autoplay style="width:100%;height:100%;object-fit:cover"></video>
       <div style="position:absolute;inset:25% 10%;border:3px solid #E11D48;border-radius:8px"></div>
     </div>
-    <button id="_bcscan-close" style="margin-top:16px;padding:12px 24px;background:#fff;border:0;border-radius:8px;font-weight:700">Annuler</button>
+    <button id="_bcscan-close" style="margin-top:16px;padding:12px 24px;background:#fff;border:0;border-radius:8px;font-weight:700">${t('cancel')}</button>
   `;
   document.body.appendChild(modal);
   const video = modal.querySelector('#_bcscan-video');
@@ -21482,7 +22087,7 @@ function vAddOrder() {
         <input class="input" id="ord-lead" type="number" min="1" value="7" placeholder="7">
       </div>
       <div class="form-group">
-        <label class="form-label">Date de livraison estimee</label>
+        <label class="form-label">${t('zza_dateLivEstim')}</label>
         <input class="input" id="ord-delivery-date" type="date" value="${new Date(Date.now()+7*86400000).toISOString().slice(0,10)}">
       </div>
       <div class="form-group">
@@ -21895,7 +22500,7 @@ function vSupplierDetail() {
       const stLbl = { pending:'⏳ En attente', received:'✓ Reçue', cancelled:'✕ Annulée' };
       const stCol = { pending:'var(--warning)', received:'var(--success)', cancelled:'var(--danger)' };
       return `
-    <div class="section-hd" style="margin-top:14px"><span class="section-lbl">Commandes (${ords.length}) · ${fmt(totalSpent)} ${sym()}</span>
+    <div class="section-hd" style="margin-top:14px"><span class="section-lbl">${t('w1_lienCommandes')} (${ords.length}) · ${fmt(totalSpent)} ${sym()}</span>
       <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" onclick="nav('add-order')">+ Commander</button>
     </div>
     ${ords.slice(0,8).map(o => `
@@ -22162,7 +22767,7 @@ function editDailyGoal() {
     const type = modal.dataset.type || currentType;
     const period = modal.dataset.period || currentPeriod;
     const valueInput = modal.dataset.value;
-    const unit = type === 'sales' ? 'ventes' : sym();
+    const unit = type === 'sales' ? t('zy_ventes').toLowerCase() : sym();
     const periodLabel = period === 'day' ? 'jour' : period === 'week' ? 'semaine' : period === 'month' ? 'mois' : 'année';
     const periodMult = period === 'day' ? 1 : period === 'week' ? 7 : period === 'month' ? 30 : 365;
     const sug = type === 'revenue' ? sugCA * periodMult : type === 'profit' ? sugProfit * periodMult : sugSales * periodMult;
@@ -22190,7 +22795,7 @@ function editDailyGoal() {
             </button>
             <button type="button" class="goal-type-btn ${type==='sales'?'active':''}" style="padding:10px 6px;border-radius:8px;border:1.5px solid ${type==='sales'?'#EC4899':'var(--border)'};background:${type==='sales'?'rgba(236,72,153,0.08)':'var(--surface)'};cursor:pointer;text-align:center" onclick="__goalSetType('sales')">
               <div style="font-size:20px;margin-bottom:2px">🛒</div>
-              <div style="font-size:11px;font-weight:700;color:${type==='sales'?'#EC4899':'var(--text-2)'}">Nb ventes</div>
+              <div style="font-size:11px;font-weight:700;color:${type==='sales'?'#EC4899':'var(--text-2)'}">${t('zz8_nbVentes')}</div>
             </button>
           </div>
         </div>
@@ -22249,7 +22854,7 @@ function saveGoalConfig(value, type, period) {
     localStorage.setItem('stockr_daily_goal', String(num));
     if (type) localStorage.setItem('stockr_goal_type', type);
     if (period) localStorage.setItem('stockr_goal_period', period);
-    const unit = type === 'sales' ? 'ventes' : sym();
+    const unit = type === 'sales' ? t('zy_ventes').toLowerCase() : sym();
     const periodLabel = period === 'day' ? 'jour' : period === 'week' ? 'semaine' : 'mois';
     showToast(`🎯 Objectif : ${fmt(num)} ${unit} / ${periodLabel}`, 'success');
   }
@@ -22590,7 +23195,7 @@ function vCatalog() {
     </div>`).join('')}` : ''}
 
     <div class="section-hd" style="margin-top:8px"><div class="section-lbl">${t('selectProducts')}</div></div>
-    ${prods.length === 0 ? `<div class="card" style="text-align:center;padding:18px;color:var(--text-3);font-size:13px">${getBusinessType()==='reseller' ? 'Aucun article en stock avec un prix de vente — ajoutez-en depuis Stock.' : t('noProducts')}</div>` : prods.map(p => `
+    ${prods.length === 0 ? `<div class="card" style="text-align:center;padding:18px;color:var(--text-3);font-size:13px">${getBusinessType()==='reseller' ? t('zz5_catalogueVide') : t('noProducts')}</div>` : prods.map(p => `
     <div class="card card-tap" style="margin-bottom:4px" onclick="toggleCatalogProduct('${p.id}')">
       <div style="display:flex;align-items:center;gap:10px">
         <div style="width:22px;height:22px;border-radius:6px;border:2px solid ${S.catalogSelected.includes(p.id)?'var(--accent)':'var(--border)'};background:${S.catalogSelected.includes(p.id)?'var(--accent)':'transparent'};display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s">
@@ -23004,7 +23609,7 @@ function vSettings() {
       <div class="card" style="padding:14px;margin-top:10px">
         <div style="font-weight:800;font-size:13.5px;color:var(--text-1);margin-bottom:4px">${t('w2_sauvegardeFichier')}</div>
         <div style="font-size:12px;color:var(--text-3);line-height:1.55;margin-bottom:10px">
-          Sans serveur : enregistrez TOUTES vos données (stock, ventes, clients, dépenses, boutique…) dans un fichier, puis restaurez-le sur un autre téléphone. Idéal pour changer d'appareil ou faire une copie de sécurité.
+          ${t('zy_sauvFichier')}
         </div>
         <div style="display:flex;gap:8px">
           <button class="btn btn-primary" style="flex:1" onclick="exportBackupFile()">${t('w7_telecharger')}</button>
@@ -23217,7 +23822,7 @@ function vSettings() {
           <div class="settings-row-inner">
             <span class="settings-row-ico" style="color:#EC4899">🎨</span>
             <div>
-              <div class="settings-row-lbl">Apparence</div>
+              <div class="settings-row-lbl">${t('appearance')}</div>
               <div class="settings-row-sub">${t('w2_sousTitreApparence')}</div>
             </div>
           </div>
@@ -23248,7 +23853,7 @@ function vSettings() {
           <div class="settings-row-inner">
             <span class="settings-row-ico" style="color:#1E293B">📋</span>
             <div>
-              <div class="settings-row-lbl">Journal d'audit</div>
+              <div class="settings-row-lbl">${t('auditLogTitle')}</div>
               <div class="settings-row-sub">${t('zx_evEnregistres').replace('{0}', (S.auditLog||[]).length).replace('{1}', t('w4_evenements'))}</div>
             </div>
           </div>
@@ -23358,7 +23963,7 @@ function vTeam() {
   <div class="sub-hero" style="background:linear-gradient(135deg,var(--accent) 0%,var(--accent-dark,#4F46E5) 100%)">
     <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('more')">${IC.left}</button>
     <div class="sub-hero-title">${t('w7_equipePerf')}</div>
-    <div class="sub-hero-sub">${members.length} ${t('w4_collaborateurs')} · ${fmt(totalCA)} ${sym()} ce mois</div>
+    <div class="sub-hero-sub">${members.length} ${t('w4_collaborateurs')} · ${fmt(totalCA)} ${sym()} ${t('zz6_ceMoisCi')}</div>
   </div>
   <div class="container">
 
@@ -23387,7 +23992,7 @@ function vTeam() {
         </div>
         <div class="card" style="padding:10px;text-align:center">
           <div style="font-size:18px;font-weight:800;color:#F59E0B">${fmt(totalSalary/1000)}K</div>
-          <div style="font-size:10px;color:var(--text-3)">Salaires</div>
+          <div style="font-size:10px;color:var(--text-3)">${t('zz8_salaires')}</div>
         </div>
         <div class="card" style="padding:10px;text-align:center">
           <div style="font-size:18px;font-weight:800;color:#10B981">${fmt(totalCommissions/1000)}K</div>
@@ -23400,17 +24005,17 @@ function vTeam() {
         // Sans ça, tout reste à 0 : c'est LE réglage qui rend l'onglet Équipe utile.
         const cur = getCurrentMember();
         const isAdmin = !S.currentMemberId;
-        const info = ROLE_LABELS[cur.role] || ROLE_LABELS.vendor;
+        const info = ROLE_LABELS_()[cur.role] || ROLE_LABELS_().vendor;
         return `
         <div class="card" style="margin-bottom:12px;padding:12px 14px;background:linear-gradient(135deg,rgba(124,115,255,.10),transparent);border:1px solid rgba(124,115,255,.28)">
           <div style="font-size:11px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.3px;margin-bottom:8px">${t('w7_vendeurComptoir')}</div>
           <div style="display:flex;align-items:center;gap:10px">
             <div style="width:40px;height:40px;border-radius:20px;flex-shrink:0;background:${info.color}20;color:${info.color};display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800">${info.icon}</div>
             <div style="flex:1;min-width:0">
-              <div style="font-weight:800;font-size:14px;color:var(--text-1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${cur.name}${isAdmin?' (vous)':''}</div>
+              <div style="font-weight:800;font-size:14px;color:var(--text-1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${cur.name}${isAdmin?' '+t('zz8_vous'):''}</div>
               <div style="font-size:11px;color:var(--text-3)">${t('w7_ventesAttribuees')}</div>
             </div>
-            <button class="btn btn-primary" style="flex:0 0 auto;width:auto;padding:9px 14px;font-size:12.5px;white-space:nowrap" onclick="openMemberSwitcher()">Changer</button>
+            <button class="btn btn-primary" style="flex:0 0 auto;width:auto;padding:9px 14px;font-size:12.5px;white-space:nowrap" onclick="openMemberSwitcher()">${t('zw_logoChanger')}</button>
           </div>
         </div>`;
       })() : ''}
@@ -23425,7 +24030,7 @@ function vTeam() {
           <button class="btn btn-ghost" style="flex:0 0 auto;width:auto;padding:8px 14px;font-size:12px;white-space:nowrap" onclick="navigator.clipboard&&navigator.clipboard.writeText('${S.teamCode}');showToast('Code copié','success')">Copier</button>
         </div>
         <div style="display:flex;gap:8px">
-          <button class="btn btn-primary" style="flex:1 1 auto;width:auto;min-width:0;background:#25D366" onclick="shareTeamCode()">${IC.whatsapp||''} Partager</button>
+          <button class="btn btn-primary" style="flex:1 1 auto;width:auto;min-width:0;background:#25D366" onclick="shareTeamCode()">${IC.whatsapp||''} ${t('invoiceShare')}</button>
           <button class="btn btn-ghost" style="flex:0 0 auto;width:auto;padding-left:16px;padding-right:16px;white-space:nowrap" onclick="resetTeamCode()">${t('w7_regenerer')}</button>
         </div>
         ` : `<button class="btn btn-primary" style="width:100%" onclick="loadTeamCode()">${t('w7_chargementCode')}</button>`) : `
@@ -23449,7 +24054,7 @@ function vTeam() {
       ` : members.map((m, i) => {
         const st = _teamMemberStats(m.id);
         const commission = _teamCommission(m);
-        const roleInfo = ROLE_LABELS[m.role] || ROLE_LABELS.vendor;
+        const roleInfo = ROLE_LABELS_()[m.role] || ROLE_LABELS_().vendor;
         const perfColor = st.perfScore >= 70 ? '#10B981' : st.perfScore >= 40 ? '#F59E0B' : '#EF4444';
         return `
         <div class="card anim" style="margin-bottom:10px;animation-delay:${i*40}ms;padding:14px;cursor:pointer" onclick="openTeamMember('${String(m.id).replace(/[^\w-]/g,'')}')">
@@ -23475,8 +24080,8 @@ function vTeam() {
           </div>
           <!-- Stats grid -->
           <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;font-size:11px">
-            <div><div style="color:var(--text-3)">Ventes</div><div style="font-weight:700;color:var(--text-1)">${st.nbSales}</div></div>
-            <div><div style="color:var(--text-3)">Panier</div><div style="font-weight:700;color:var(--text-1)">${fmt(Math.round(st.avgBasket))}</div></div>
+            <div><div style="color:var(--text-3)">${t('zy_ventes')}</div><div style="font-weight:700;color:var(--text-1)">${st.nbSales}</div></div>
+            <div><div style="color:var(--text-3)">${t('ze_panier')}</div><div style="font-weight:700;color:var(--text-1)">${fmt(Math.round(st.avgBasket))}</div></div>
             <div><div style="color:var(--text-3)">CA</div><div style="font-weight:700;color:var(--accent)">${fmt(st.totalCA)}</div></div>
             <div><div style="color:var(--text-3)">Commission</div><div style="font-weight:700;color:#10B981">${fmt(commission)}</div></div>
           </div>
@@ -23493,7 +24098,7 @@ function vTeam() {
             .slice(0, 10)
             .map((m, i) => {
               const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i+1}.`;
-              const roleInfo = ROLE_LABELS[m.role] || ROLE_LABELS.vendor;
+              const roleInfo = ROLE_LABELS_()[m.role] || ROLE_LABELS_().vendor;
               return `
               <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">
                 <div style="font-size:18px;min-width:28px">${medal}</div>
@@ -23529,7 +24134,7 @@ function vTeam() {
         <div style="font-size:12px;color:var(--text-3);margin-bottom:12px">Horaires de travail de chaque membre.</div>
         ${members.length === 0 ? `<div style="text-align:center;padding:20px;color:var(--text-3);font-size:12px">${t('w7_aucunCollab')}</div>` :
           members.map(m => {
-            const roleInfo = ROLE_LABELS[m.role] || ROLE_LABELS.vendor;
+            const roleInfo = ROLE_LABELS_()[m.role] || ROLE_LABELS_().vendor;
             return `
             <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">
               <div style="font-size:20px">${roleInfo.icon}</div>
@@ -23713,7 +24318,7 @@ function createMeeting(existingId) {
         </div>
       </div>
       <div style="display:flex;gap:8px;margin-top:16px">
-        <button class="btn btn-ghost" style="flex:1" onclick="document.getElementById('meeting-modal').remove()">Annuler</button>
+        <button class="btn btn-ghost" style="flex:1" onclick="document.getElementById('meeting-modal').remove()">${t('cancel')}</button>
         <button class="btn btn-primary" style="flex:2" onclick="saveMeeting('${existingId || ''}')">✓ ${existing ? 'Mettre à jour' : 'Planifier'}</button>
       </div>
     </div>`;
@@ -23848,7 +24453,7 @@ function openMemberSwitcher() {
       <div style="font-size:12px;color:var(--text-3);margin-bottom:12px">${t('x4_selectionnezMembre')}</div>
       <div style="display:flex;flex-direction:column;gap:8px">
         ${choices.map(m => {
-          const info = ROLE_LABELS[m.role] || ROLE_LABELS.vendor;
+          const info = ROLE_LABELS_()[m.role] || ROLE_LABELS_().vendor;
           const isCur = m.id === currentId;
           const needsPin = m.id != null && !!m.pin;
           return `
@@ -23889,7 +24494,7 @@ function switchToMember(memberId) {
   }
   const m = getCurrentMember();
   logAudit('auth', 'member_switch', { memberName: m.name, role: m.role });
-  const info = ROLE_LABELS[m.role] || ROLE_LABELS.admin;
+  const info = ROLE_LABELS_()[m.role] || ROLE_LABELS_().admin;
   showToast(`${info.icon} ${m.name} (${info.name})`, 'success');
   const modal = document.getElementById('member-switcher-modal');
   if (modal) modal.remove();
@@ -23933,7 +24538,7 @@ function vAddTeamMember() {
       <div class="form-group">
         <label class="form-label">${t('w9_role')}</label>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-          ${Object.entries(ROLE_LABELS).filter(([k]) => k !== 'admin').map(([k, v]) => `
+          ${Object.entries(ROLE_LABELS_()).filter(([k]) => k !== 'admin').map(([k, v]) => `
             <button type="button" onclick="S.teamForm.role='${k}';render()" style="padding:12px 8px;border-radius:10px;border:2px solid ${f.role===k?v.color:'var(--border)'};background:${f.role===k?v.color+'15':'var(--card-bg)'};cursor:pointer;text-align:left;display:flex;align-items:center;gap:8px">
               <div style="font-size:22px">${v.icon}</div>
               <div style="flex:1;min-width:0">
@@ -23969,7 +24574,7 @@ function vAddTeamMember() {
       </label>
     </div>
     <div style="display:flex;gap:8px;margin-top:14px">
-      <button class="btn btn-ghost" style="flex:1" onclick="nav('team')">Annuler</button>
+      <button class="btn btn-ghost" style="flex:1" onclick="nav('team')">${t('cancel')}</button>
       <button class="btn btn-primary" style="flex:2" onclick="saveTeamMember()">${isEdit ? t('v_enregistrer') : t('v_creerCompte')}</button>
       ${isEdit ? `<button class="btn" style="flex:1;background:#EF4444;color:#fff" onclick="deleteTeamMember(${f.id})">${t('x4_supprimer2')}</button>` : ''}
     </div>
@@ -24051,7 +24656,7 @@ function vSpectraAISetup() {
       <input id="aikey-${p.id}" class="input" type="password" placeholder="${p.prefix}" value="${p.key}" autocomplete="off" style="font-family:monospace;font-size:13px !important">
       <div style="display:flex;gap:6px;margin-top:8px">
         <button class="btn btn-primary" style="flex:1;background:${p.color};border-color:${p.color};font-size:12px;padding:9px" onclick="saveAIKey('${p.id}')">${t('w7_enregistrer')}</button>
-        ${p.key?`<button class="btn btn-ghost" style="font-size:12px;padding:9px" onclick="testAIKey('${p.id}')">🧪 Tester</button>
+        ${p.key?`<button class="btn btn-ghost" style="font-size:12px;padding:9px" onclick="testAIKey('${p.id}')">🧪 ${t('zza_tester')}</button>
         <button class="btn btn-ghost" style="font-size:12px;padding:9px;color:var(--danger)" onclick="if(confirm('Supprimer cette clé ?')){localStorage.removeItem('stockr_${p.id}_key');showToast('Clé supprimée');render()}">🗑️</button>`:''}
       </div>
     </div>`).join('')}
@@ -24184,7 +24789,7 @@ function vOAuthSetup() {
       <input id="google-client-id-input" class="input" type="text" placeholder="123456789-xxx.apps.googleusercontent.com" value="${googleId}" style="font-family:monospace;font-size:13px !important">
       <div style="display:flex;gap:8px;margin-top:10px">
         <button class="btn btn-ghost" style="flex:1" onclick="saveGoogleClientId()">${t('w7_enregistrer')}</button>
-        ${googleId ? `<button class="btn btn-primary" style="flex:1;background:#4285F4;border-color:#4285F4" onclick="loginGoogle()">🧪 Tester</button>` : ''}
+        ${googleId ? `<button class="btn btn-primary" style="flex:1;background:#4285F4;border-color:#4285F4" onclick="loginGoogle()">🧪 ${t('zza_tester')}</button>` : ''}
       </div>
       ${googleId ? `<button class="btn btn-ghost" style="width:100%;margin-top:8px;color:var(--danger);border-color:var(--danger)" onclick="if(confirm('Supprimer le Client ID Google ?')){localStorage.removeItem('stockr_google_client_id');showToast('Supprimé','info');render()}">${t('w7_supprimer')}</button>` : ''}
     </div>
@@ -24202,13 +24807,13 @@ function vOAuthSetup() {
       </div>
 
       <details style="margin-bottom:10px">
-        <summary style="cursor:pointer;font-size:12px;font-weight:700;color:var(--text-1);padding:6px 0">📖 Comment obtenir un Services ID Apple (compte dev $99/an requis)</summary>
+        <summary style="cursor:pointer;font-size:12px;font-weight:700;color:var(--text-1);padding:6px 0">📖 ${t('zy_appleGuide')}</summary>
         <div style="font-size:12px;color:var(--text-2);line-height:1.7;padding:8px 0 0 12px;border-left:2px solid var(--border)">
           1. Ouvrez <a href="https://developer.apple.com/account/resources/identifiers/list/serviceId" target="_blank" rel="noopener noreferrer" style="color:var(--accent);font-weight:700">developer.apple.com/account/resources/identifiers</a><br>
           ${t('v_oaCreez')} <strong>Services ID</strong> (ex: <code>com.votreapp.baro.web</code>)<br>
           3. Activez <strong>Sign In with Apple</strong><br>
           ${t('v_oaDomaine')} <code style="background:var(--gray-1);padding:2px 6px;border-radius:4px;font-size:11px">${window.location.hostname}</code><br>
-          5. URL de retour : <code style="background:var(--gray-1);padding:2px 6px;border-radius:4px;font-size:11px;word-break:break-all">${redirect}</code><br>
+          ${t('zy_urlRetour')} <code style="background:var(--gray-1);padding:2px 6px;border-radius:4px;font-size:11px;word-break:break-all">${redirect}</code><br>
           ${t('v_oaServices')}
         </div>
       </details>
@@ -24217,7 +24822,7 @@ function vOAuthSetup() {
       <input id="apple-service-id-input" class="input" type="text" placeholder="com.votreapp.baro.web" value="${appleId}" style="font-family:monospace;font-size:13px !important">
       <div style="display:flex;gap:8px;margin-top:10px">
         <button class="btn btn-ghost" style="flex:1" onclick="saveAppleServiceId()">${t('w7_enregistrer')}</button>
-        ${appleId ? `<button class="btn btn-primary" style="flex:1;background:#000;border-color:#000" onclick="loginApple()">🧪 Tester</button>` : ''}
+        ${appleId ? `<button class="btn btn-primary" style="flex:1;background:#000;border-color:#000" onclick="loginApple()">🧪 ${t('zza_tester')}</button>` : ''}
       </div>
       ${appleId ? `<button class="btn btn-ghost" style="width:100%;margin-top:8px;color:var(--danger);border-color:var(--danger)" onclick="if(confirm('Supprimer le Services ID Apple ?')){localStorage.removeItem('stockr_apple_service_id');showToast('Supprimé','info');render()}">${t('w7_supprimer')}</button>` : ''}
     </div>
@@ -24344,7 +24949,7 @@ function vNotificationsSetup() {
         <summary style="cursor:pointer;font-size:12px;font-weight:700;color:#0EA5E9;padding:6px 0">📖 Setup (3 min)</summary>
         <div style="font-size:12px;color:var(--text-2);line-height:1.7;padding:8px 0 0 12px;border-left:2px solid #0EA5E9">
           ${t('v_ntCompte')} <a href="https://www.emailjs.com/" target="_blank" rel="noopener noreferrer" style="color:#0EA5E9;font-weight:700">emailjs.com</a> (gratuit)<br>
-          2. Ajoutez un <strong>Service</strong> ${t('y5_gmailConnectez')}<br>
+          ${t('zy_ajoutezService').replace('{0}', '<strong>Service</strong>')} ${t('y5_gmailConnectez')}<br>
           3. ${t('y5_avecVariables').replace('{0}','<strong>Template</strong>')} <code>{{to_email}}</code>, <code>{{to_name}}</code>, <code>{{code}}</code>, <code>{{purpose}}</code>, <code>{{expires_min}}</code><br>
           ${t('v_ntCopiez')}<br>
           <strong style="color:var(--success)">Limite gratuite : 200 emails/mois</strong>
@@ -24360,7 +24965,7 @@ function vNotificationsSetup() {
 
       <div style="display:flex;gap:8px;margin-top:12px">
         <button class="btn btn-ghost" style="flex:1" onclick="saveEmailJSConfig()">${t('w7_enregistrer')}</button>
-        ${emailActive ? `<button class="btn btn-primary" style="flex:1;background:#0EA5E9" onclick="testVerificationEmail()">🧪 Tester</button>` : ''}
+        ${emailActive ? `<button class="btn btn-primary" style="flex:1;background:#0EA5E9" onclick="testVerificationEmail()">🧪 ${t('zza_tester')}</button>` : ''}
       </div>
       ${emailActive ? `<button class="btn btn-ghost" style="width:100%;margin-top:8px;color:var(--danger);border-color:var(--danger)" onclick="if(confirm('Supprimer la config EmailJS ?')){['stockr_emailjs_service','stockr_emailjs_template','stockr_emailjs_public'].forEach(k=>localStorage.removeItem(k));showToast('Supprimé','info');render()}">${t('w7_supprimer')}</button>` : ''}
     </div>
@@ -24389,7 +24994,7 @@ function vNotificationsSetup() {
 
       <div style="display:flex;gap:8px;margin-top:12px">
         <button class="btn btn-ghost" style="flex:1" onclick="saveSMSConfig()">${t('w7_enregistrer')}</button>
-        ${smsActive ? `<button class="btn btn-primary" style="flex:1;background:#F59E0B" onclick="testVerificationSMS()">🧪 Tester</button>` : ''}
+        ${smsActive ? `<button class="btn btn-primary" style="flex:1;background:#F59E0B" onclick="testVerificationSMS()">🧪 ${t('zza_tester')}</button>` : ''}
       </div>
       ${smsActive ? `<button class="btn btn-ghost" style="width:100%;margin-top:8px;color:var(--danger);border-color:var(--danger)" onclick="if(confirm('Supprimer la config SMS ?')){['stockr_sms_webhook','stockr_sms_apikey'].forEach(k=>localStorage.removeItem(k));showToast('Supprimé','info');render()}">${t('w7_supprimer')}</button>` : ''}
     </div>
@@ -24614,9 +25219,9 @@ function _translateAuditAction(action) {
 }
 function _translateAuditCategory(cat) {
   if (!cat) return '';
-  const FR = { sale:'Ventes', stock:'Stock', member:'Équipe', team:'Équipe', auth:'Authentification',
-               settings:'Paramètres', product:'Produits', client:'Clients',
-               plan:'Abonnement', promo:'Promo', supplier:'Fournisseurs', order:'Commandes',
+  const FR = { sale:t('zy_ventes'), stock:t('z5_stock'), member:t('u_equipe'), team:t('u_equipe'), auth:t('zz5_authentification'),
+               settings:t('zz5_parametres'), product:t('zx_produits'), client:t('zy_clients'),
+               plan:t('zzd_abonnement'), promo:'Promo', supplier:t('zzd_fournisseurs'), order:t('w1_lienCommandes'),
                integration:'Intégration', marketing:'Marketing', boutique:'Boutique' };
   const EN = { sale:'Sales', stock:'Stock', member:'Team', team:'Team', auth:'Auth',
                settings:'Settings', product:'Products', client:'Clients',
@@ -24687,124 +25292,269 @@ function clearAuditLog() {
 }
 
 // ── APPEARANCE VIEW ────────────────────────────
+// Chaque bloc dit à quel forfait il appartient. Un réglage verrouillé
+// reste visible et manipulable du regard : on voit ce qu'on aurait,
+// on n'est pas devant une porte fermée sans fenêtre.
+function _blocRegl(titre, aide, corps, minPlan) {
+  const ouvert = !minPlan || _planHasFeature(minPlan === 'enterprise' ? 'whiteLabel' : 'loyalty');
+  const badge = ouvert ? '' :
+    `<span class="rg-lock" onclick="_showPlanFeatureModal('${minPlan === 'enterprise' ? 'whiteLabel' : 'loyalty'}')">${
+      minPlan === 'enterprise' ? t('zv_planEntreprise') : 'Pro'}</span>`;
+  return `
+    <div class="card rg-card${ouvert ? '' : ' rg-off'}" style="margin-bottom:12px">
+      <div class="rg-head">
+        <div class="card-title" style="margin:0">${titre}</div>
+        ${badge}
+      </div>
+      ${aide ? `<div class="rg-aide">${aide}</div>` : ''}
+      ${corps}
+    </div>`;
+}
+
+// Un choix parmi n. Le même dessin partout, au lieu de six variantes de
+// bouton écrites à la main dans l'ancien écran.
+function _choix(setter, cle, actuel, options, cols) {
+  return `<div class="rg-grid" style="grid-template-columns:repeat(${cols || options.length},1fr)">` +
+    options.map(o => {
+      const on = String(actuel) === String(o.v);
+      return `<button class="rg-opt${on ? ' on' : ''}" onclick="${setter}('${cle}','${o.v}')">
+        ${o.haut || ''}<span class="rg-lbl">${o.l}</span>
+      </button>`;
+    }).join('') + '</div>';
+}
+
 function vAppearance() {
   const a = S.appearance || {};
-  const COLORS = [
-    { id:'#6E5BFF', name:'Violet',  },
-    { id:'#10B981', name:'Vert',    },
-    { id:'#0EA5E9', name:'Bleu',    },
-    { id:'#F59E0B', name:'Orange',  },
-    { id:'#EF4444', name:'Rouge',   },
-    { id:'#EC4899', name:'Rose',    },
-    { id:'#8B5CF6', name:'Indigo',  },
-    { id:'#14B8A6', name:'Teal',    },
+  const ent = _planHasFeature('whiteLabel');
+  const pro = _planHasFeature('loyalty');
+  const acc = a.accentColor || '#4F46E5';
+
+  const COULEURS = [
+    { id:'#4F46E5', n:t('zw_cIndigo') }, { id:'#10B981', n:t('zw_cVert') },
+    { id:'#0EA5E9', n:t('zw_cBleu') },   { id:'#F59E0B', n:t('zw_cOrange') },
+    { id:'#EF4444', n:t('zw_cRouge') },  { id:'#EC4899', n:t('zw_cRose') },
+    { id:'#8B5CF6', n:t('zw_cViolet') }, { id:'#14B8A6', n:t('zw_cTeal') },
   ];
+  const gl = (a.glass == null) ? 60 : a.glass;
+
+  // ── L'aperçu vivant ──────────────────────────────────────────────
+  // Il ne simule rien : ce sont les vraies classes de l'application,
+  // donc il montre exactement ce que le reste des écrans affichera.
+  const apercu = `
+    <div class="rg-preview">
+      <div class="rg-pv-bar">
+        ${a.logo ? logoAppHTML(20) : '<b style="font-size:14px;letter-spacing:-.02em">BARO</b>'}
+        <span class="rg-pv-dot"></span>
+      </div>
+      <div class="rg-pv-body">
+        <div class="card rg-pv-card">
+          <div class="rg-pv-k">${t('zw_pvVentes')}</div>
+          <div class="rg-pv-v">128 400</div>
+        </div>
+        <input class="input rg-pv-in" value="${t('zw_pvChamp')}" readonly>
+        <div class="rg-pv-row">
+          <button class="btn btn-primary rg-pv-btn">${t('zw_pvBouton')}</button>
+          <span class="badge rg-pv-badge">${t('zw_pvEtiq')}</span>
+        </div>
+      </div>
+    </div>`;
+
+  // ── Les six ambiances ────────────────────────────────────────────
+  const ambiances = BARO_AMBIANCES().map(am => {
+    const on = a.ambiance === am.id;
+    return `<button class="amb${on ? ' on' : ''}" onclick="appliquerAmbiance('${am.id}')">
+      <span class="amb-swatch">
+        ${am.apercu.map(c => `<i style="background:${c}"></i>`).join('')}
+      </span>
+      <span class="amb-txt">
+        <b>${am.nom}</b>
+        <em>${am.pitch}</em>
+      </span>
+      ${on ? '<span class="amb-ok">✓</span>' : ''}
+    </button>`;
+  }).join('');
+
   return `
-  <div class="sub-hero" style="background:linear-gradient(135deg,${a.accentColor},${a.accentColor}CC)">
+  <div class="sub-hero" style="background:linear-gradient(135deg,${acc},var(--accent-2))">
     <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('settings')">${IC.left}</button>
-    <div class="sub-hero-title">🎨 Apparence</div>
+    <div class="sub-hero-title">${t('zw_titre')}</div>
     <div class="sub-hero-sub">${t('w7_apparenceSub')}</div>
   </div>
   <div class="container">
 
-    <!-- Thème -->
-    <div class="card" style="margin-bottom:12px">
-      <div class="card-title">${t('w7_theme')}</div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
-        ${[['light','☀️ Clair'],['dark','🌙 Sombre'],['auto','🔄 Auto']].map(([v,lbl]) => `
-          <button onclick="setAppearance('theme','${v}')" style="padding:16px 8px;border-radius:10px;border:2px solid ${a.theme===v?'var(--accent)':'var(--border)'};background:${a.theme===v?'var(--accent-light)':'var(--card-bg)'};cursor:pointer;font-size:13px;font-weight:700;color:${a.theme===v?'var(--accent)':'var(--text-1)'}">${lbl}</button>
-        `).join('')}
-      </div>
-    </div>
+    ${apercu}
 
-    <!-- Couleur principale -->
-    <div class="card" style="margin-bottom:12px">
-      <div class="card-title">${t('w7_couleurPrinc')}</div>
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
-        ${COLORS.map(c => `
-          <button onclick="setAppearance('accentColor','${c.id}')" style="padding:18px 4px;border-radius:10px;border:2px solid ${a.accentColor===c.id?c.id:'var(--border)'};background:${a.accentColor===c.id?c.id+'15':'var(--card-bg)'};cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px">
-            <div style="width:26px;height:26px;border-radius:13px;background:${c.id}"></div>
-            <div style="font-size:11px;font-weight:700;color:${a.accentColor===c.id?c.id:'var(--text-1)'}">${c.name}</div>
-          </button>
-        `).join('')}
-      </div>
-    </div>
+    <!-- ═══ Ambiances — Entreprise ═══ -->
+    ${_blocRegl(t('zw_ambiances'), t('zw_ambiancesAide'),
+      `<div class="amb-liste">${ambiances}</div>
+       ${S.ambianceAvant ? `<button class="btn btn-ghost" style="width:100%;margin-top:10px" onclick="annulerAmbiance()">${t('zw_annulerAmb')}</button>` : ''}`,
+      'enterprise')}
 
-    <!-- Taille police -->
-    <div class="card" style="margin-bottom:12px">
-      <div class="card-title">${t('w7_tailleTexte')}</div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
-        ${[['small','Petit','12px'],['medium','Moyen','14px'],['large','Grand','16px']].map(([v,lbl,sz]) => `
-          <button onclick="setAppearance('fontSize','${v}')" style="padding:12px 8px;border-radius:10px;border:2px solid ${a.fontSize===v?'var(--accent)':'var(--border)'};background:${a.fontSize===v?'var(--accent-light)':'var(--card-bg)'};cursor:pointer;font-weight:700;color:${a.fontSize===v?'var(--accent)':'var(--text-1)'}">
-            <div style="font-size:${sz}">Aa</div>
-            <div style="font-size:11px;margin-top:4px">${lbl}</div>
-          </button>
-        `).join('')}
-      </div>
-    </div>
+    <!-- ═══ Thème — tous les forfaits ═══ -->
+    ${_blocRegl(t('w7_theme'), '',
+      _choix('setAppearance', 'theme', a.theme, [
+        { v:'light', l:t('zw_clair'),  haut:'<span class="rg-ic">☀️</span>' },
+        { v:'dark',  l:t('zw_sombre'), haut:'<span class="rg-ic">🌙</span>' },
+        { v:'auto',  l:t('zw_auto'),   haut:'<span class="rg-ic">🔄</span>' },
+      ], 3))}
 
-    <!-- Contraste -->
-    <div class="card" style="margin-bottom:12px">
-      <div class="card-title">⚫ Contraste</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-        ${[['normal','Normal'],['high',t('zz_eleve')]].map(([v,lbl]) => `
-          <button onclick="setAppearance('contrast','${v}')" style="padding:14px 8px;border-radius:10px;border:2px solid ${a.contrast===v?'var(--accent)':'var(--border)'};background:${a.contrast===v?'var(--accent-light)':'var(--card-bg)'};cursor:pointer;font-size:13px;font-weight:700;color:${a.contrast===v?'var(--accent)':'var(--text-1)'}">${lbl}</button>
-        `).join('')}
+    <!-- ═══ Couleur — tous ; couleur libre en Pro ═══ -->
+    ${_blocRegl(t('w7_couleurPrinc'), '',
+      `<div class="rg-grid" style="grid-template-columns:repeat(4,1fr)">
+        ${COULEURS.map(c => `
+          <button class="rg-opt${acc === c.id ? ' on' : ''}" onclick="setAppearance('accentColor','${c.id}')"
+                  style="${acc === c.id ? `border-color:${c.id};background:color-mix(in srgb, ${c.id} 10%, transparent)` : ''}">
+            <span class="rg-pastille" style="background:${c.id}"></span>
+            <span class="rg-lbl">${c.n}</span>
+          </button>`).join('')}
       </div>
-    </div>
+      <div class="rg-libre${pro ? '' : ' rg-off'}">
+        <label>
+          <span>${t('zw_couleurLibre')}</span>
+          <input type="color" value="${acc}" ${pro ? '' : 'disabled'}
+                 onchange="setAppearance('accentColor',this.value)">
+        </label>
+        ${pro ? `<span class="rg-hex">${acc.toUpperCase()}</span>`
+              : `<span class="rg-lock" onclick="_showPlanFeatureModal('loyalty')">Pro</span>`}
+      </div>`)}
 
-    <!-- Densité -->
-    <div class="card" style="margin-bottom:12px">
-      <div class="card-title">${t('w7_densite')}</div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
-        ${[['compact','🔽 Compact'],['normal','⏸ Normal'],['spacious','🔼 Spacieux']].map(([v,lbl]) => `
-          <button onclick="setAppearance('density','${v}')" style="padding:14px 4px;border-radius:10px;border:2px solid ${a.density===v?'var(--accent)':'var(--border)'};background:${a.density===v?'var(--accent-light)':'var(--card-bg)'};cursor:pointer;font-size:11px;font-weight:700;color:${a.density===v?'var(--accent)':'var(--text-1)'}">${lbl}</button>
-        `).join('')}
+    <!-- ═══ Seconde couleur — Entreprise ═══ -->
+    ${_blocRegl(t('zw_couleur2'), t('zw_couleur2Aide'),
+      `<div class="rg-libre${ent ? '' : ' rg-off'}">
+        <label>
+          <span>${t('zw_couleur2Lbl')}</span>
+          <input type="color" value="${a.accentSecond || _lireVar('--accent-2') || '#6366F1'}"
+                 ${ent ? '' : 'disabled'} onchange="setIdentite('accentSecond',this.value)">
+        </label>
+        ${a.accentSecond
+          ? `<button class="rg-mini" onclick="setIdentite('accentSecond','')">${t('zw_auto2')}</button>`
+          : `<span class="rg-hex">${t('zw_deduite')}</span>`}
       </div>
-    </div>
+      <div class="rg-degrade" style="background:linear-gradient(90deg,${acc},${a.accentSecond || 'var(--accent-2)'})"></div>`,
+      'enterprise')}
 
-    <!-- ── Lot 147 : Outils de design (macOS Golden Gate) ── -->
-    <div class="settings-label" style="margin:18px 0 8px">✦ Outils de design</div>
-
-    <!-- Transparence Liquid Glass -->
-    <div class="card" style="margin-bottom:12px">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
-        <div class="card-title" style="margin:0">🫧 Transparence (Liquid Glass)</div>
-        <span id="glass-val" style="font-size:13px;font-weight:800;color:var(--accent)">${a.glass==null?60:a.glass}%</span>
-      </div>
-      <div style="font-size:12px;color:var(--text-3);line-height:1.5;margin-bottom:10px">${t('zz_translucideAide')}</div>
-      <!-- Aperçu en direct : un panneau de verre sur un fond coloré -->
-      <div style="position:relative;height:74px;border-radius:14px;overflow:hidden;margin-bottom:12px;background:linear-gradient(120deg,#7C3AED 0%,#EC4899 45%,#F59E0B 100%)">
-        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:space-around;padding:0 10px;color:#fff;font-weight:800;font-size:13px;text-shadow:0 1px 3px rgba(0,0,0,.3)"><span>🛍️</span><span>💰</span><span>📦</span><span>⭐</span></div>
-        <div id="glass-preview-panel" style="position:absolute;left:14px;right:14px;bottom:10px;height:30px;border-radius:9px;border:1px solid rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--text-1);backdrop-filter:blur(${Math.round(4+((a.glass==null?60:a.glass)/100)*28)}px);-webkit-backdrop-filter:blur(${Math.round(4+((a.glass==null?60:a.glass)/100)*28)}px);background:rgba(255,255,255,${(0.98-((a.glass==null?60:a.glass)/100)*0.43).toFixed(3)})">Panneau Liquid Glass</div>
-      </div>
-      <input type="range" min="0" max="100" step="5" value="${a.glass==null?60:a.glass}" oninput="setAppearanceLive('glass',this.value)" style="width:100%;accent-color:var(--accent);height:28px;cursor:pointer">
-    </div>
-
-    <!-- Rayon des coins -->
-    <div class="card" style="margin-bottom:12px">
-      <div class="card-title">${t('w7_rayonCoins')}</div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
-        ${[['soft','Doux','18px'],['standard','Standard','12px'],['sharp','Net','6px']].map(([v,lbl,r]) => `
-          <button onclick="setAppearance('radius','${v}')" style="padding:12px 6px;border-radius:${r};border:2px solid ${(a.radius||'standard')===v?'var(--accent)':'var(--border)'};background:${(a.radius||'standard')===v?'var(--accent-light)':'var(--card-bg)'};cursor:pointer;font-size:12.5px;font-weight:700;color:${(a.radius||'standard')===v?'var(--accent)':'var(--text-1)'};display:flex;flex-direction:column;align-items:center;gap:6px">
-            <span style="display:block;width:26px;height:20px;border:2px solid currentColor;border-radius:${r};opacity:.85"></span>${lbl}
-          </button>
-        `).join('')}
-      </div>
-    </div>
-
-    <!-- Réduire les animations -->
-    <div class="card" style="margin-bottom:12px">
-      <label style="display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer">
-        <div style="flex:1;min-width:0">
-          <div style="font-weight:800;font-size:13.5px;color:var(--text-1)">${t('w7_reduireAnim')}</div>
-          <div style="font-size:12px;color:var(--text-3);margin-top:2px;line-height:1.5">${t('zz_animCoupeAide')}</div>
+    <!-- ═══ Logo — Entreprise ═══ -->
+    ${_blocRegl(t('zw_logo'), t('zw_logoAide'),
+      `<div class="logo-zone">
+        <div class="logo-cadre">
+          ${a.logo ? logoAppHTML(40) : `<span class="logo-vide">${t('zw_logoVide')}</span>`}
         </div>
-        <span class="toggle-switch"><input type="checkbox" ${a.reduceMotion?'checked':''} onchange="setAppearance('reduceMotion',this.checked)"><span class="toggle-track"></span></span>
-      </label>
-    </div>
+        <div class="logo-actions">
+          <button class="btn btn-ghost" onclick="importerLogoApp()">${a.logo ? t('zw_logoChanger') : t('zw_logoAjouter')}</button>
+          ${a.logo ? `<button class="btn btn-ghost" onclick="retirerLogoApp()">${t('zw_logoRetirer')}</button>` : ''}
+        </div>
+      </div>
+      ${a.logo ? `<div class="rg-aide" style="margin:10px 0 0">${
+        t('zw_logoInfo').replace('{0}', a.logoRatio ? a.logoRatio.toFixed(2) : t('zw_vectoriel'))}</div>` : ''}`,
+      'enterprise')}
 
-    <!-- Reset -->
+    <!-- ═══ Typographie — Entreprise ═══ -->
+    ${_blocRegl(t('zw_police'), t('zw_policeAide'),
+      `<div class="pol-liste">
+        ${Object.keys(BARO_POLICES()).map(k => {
+          const inf = BARO_POLICES()[k];
+          const on = (a.font || 'inter') === k;
+          return `<button class="pol${on ? ' on' : ''}" onclick="setIdentite('font','${k}')">
+            <span class="pol-aa" style="font-family:${inf.pile}">Aa</span>
+            <span class="pol-n">${inf.nom}</span>
+          </button>`;
+        }).join('')}
+      </div>`, 'enterprise')}
+
+    <!-- ═══ Taille du texte — tous ═══ -->
+    ${_blocRegl(t('w7_tailleTexte'), '',
+      _choix('setAppearance', 'fontSize', a.fontSize || 'medium', [
+        { v:'small',  l:t('zw_petit'),  haut:'<span class="rg-aa" style="font-size:12px">Aa</span>' },
+        { v:'medium', l:t('zw_moyen'),  haut:'<span class="rg-aa" style="font-size:15px">Aa</span>' },
+        { v:'large',  l:t('zw_grand'),  haut:'<span class="rg-aa" style="font-size:18px">Aa</span>' },
+      ], 3))}
+
+    <!-- ═══ Densité — tous ═══ -->
+    ${_blocRegl(t('w7_densite'), '',
+      _choix('setAppearance', 'density', a.density || 'normal', [
+        { v:'compact',  l:t('zw_compact') },
+        { v:'normal',   l:t('zw_normal') },
+        { v:'spacious', l:t('zw_spacieux') },
+      ], 3))}
+
+    <!-- ═══ Contraste — tous ═══ -->
+    ${_blocRegl(t('zw_contraste'), t('zw_contrasteAide'),
+      _choix('setAppearance', 'contrast', a.contrast || 'normal', [
+        { v:'normal', l:t('zw_normal') },
+        { v:'high',   l:t('zz_eleve') },
+      ], 2))}
+
+    <!-- ═══ Rayon des coins — tous ═══ -->
+    ${_blocRegl(t('w7_rayonCoins'), '',
+      `<div class="rg-grid" style="grid-template-columns:repeat(3,1fr)">
+        ${[['soft', t('zw_doux'), '18px'], ['standard', t('zw_standard'), '10px'], ['sharp', t('zw_net'), '4px']]
+          .map(([v, l, r]) => {
+            const on = (a.radius || 'standard') === v;
+            return `<button class="rg-opt${on ? ' on' : ''}" style="border-radius:${r}" onclick="setAppearance('radius','${v}')">
+              <span class="rg-forme" style="border-radius:${r}"></span><span class="rg-lbl">${l}</span>
+            </button>`;
+          }).join('')}
+      </div>`)}
+
+    <!-- ═══ Profondeur — Entreprise ═══ -->
+    ${_blocRegl(t('zw_profondeur'), t('zw_profondeurAide'),
+      `<div class="rg-grid" style="grid-template-columns:repeat(3,1fr)">
+        ${[['plate', t('zw_plate'), 'none'],
+           ['douce', t('zw_douce'), 'var(--sh-2)'],
+           ['marquee', t('zw_marquee'), '0 8px 22px rgba(10,10,20,.22)']]
+          .map(([v, l, sh]) => {
+            const on = (a.depth || 'douce') === v;
+            return `<button class="rg-opt${on ? ' on' : ''}" onclick="setIdentite('depth','${v}')">
+              <span class="rg-forme" style="box-shadow:${sh};background:var(--surface)"></span><span class="rg-lbl">${l}</span>
+            </button>`;
+          }).join('')}
+      </div>`, 'enterprise')}
+
+    <!-- ═══ Épaisseur des traits — Entreprise ═══ -->
+    ${_blocRegl(t('zw_traits'), t('zw_traitsAide'),
+      `<div class="rg-grid" style="grid-template-columns:repeat(3,1fr)">
+        ${[['1', t('zw_traitFin')], ['1.5', t('zw_traitMoyen')], ['2', t('zw_traitFort')]]
+          .map(([v, l]) => {
+            const on = String(a.borderW || '1') === v;
+            return `<button class="rg-opt${on ? ' on' : ''}" onclick="setIdentite('borderW','${v}')">
+              <span class="rg-forme" style="border-width:${v}px"></span><span class="rg-lbl">${l}</span>
+            </button>`;
+          }).join('')}
+      </div>`, 'enterprise')}
+
+    <!-- ═══ Transparence — tous ═══ -->
+    ${_blocRegl(t('zw_translucide'), t('zz_translucideAide'),
+      `<div class="rg-slider-head"><span id="glass-val">${gl}%</span></div>
+      <div class="verre-demo">
+        <div class="verre-fond"><span>🛍️</span><span>💰</span><span>📦</span><span>⭐</span></div>
+        <div id="glass-preview-panel" class="verre-panneau"
+             style="backdrop-filter:blur(${Math.round(4 + (gl / 100) * 28)}px);-webkit-backdrop-filter:blur(${Math.round(4 + (gl / 100) * 28)}px);background:rgba(255,255,255,${(0.98 - (gl / 100) * 0.43).toFixed(3)})">${t('zw_verrePanneau')}</div>
+      </div>
+      <input type="range" min="0" max="100" step="5" value="${gl}" oninput="setAppearanceLive('glass',this.value)" class="rg-range">`)}
+
+    <!-- ═══ Grain — Entreprise ═══ -->
+    ${_blocRegl(t('zw_grain'), t('zw_grainAide'),
+      `<label class="rg-bascule">
+        <span>${t('zw_grainLbl')}</span>
+        <span class="toggle-switch"><input type="checkbox" ${a.grain ? 'checked' : ''}
+          onchange="setIdentite('grain',this.checked)"><span class="toggle-track"></span></span>
+      </label>`, 'enterprise')}
+
+    <!-- ═══ Animations — tous ═══ -->
+    ${_blocRegl(t('w7_reduireAnim'), t('zz_animCoupeAide'),
+      `<label class="rg-bascule">
+        <span>${t('zw_animLbl')}</span>
+        <span class="toggle-switch"><input type="checkbox" ${a.reduceMotion ? 'checked' : ''}
+          onchange="setAppearance('reduceMotion',this.checked)"><span class="toggle-track"></span></span>
+      </label>`)}
+
+    ${ent ? '' : `
+    <div class="card rg-vendre">
+      <div class="rg-vendre-t">${t('zw_vendreT')}</div>
+      <div class="rg-vendre-l">${t('zw_vendreL')}</div>
+      <button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="nav('pricing')">${t('x3_voirPlans')}</button>
+    </div>`}
+
     <div style="margin-top:14px">
       <button class="btn btn-ghost" style="width:100%" onclick="resetAppearance()">${t('w7_reinitReglages')}</button>
     </div>
@@ -24812,20 +25562,25 @@ function vAppearance() {
   </div>`;
 }
 
-function setAppearance(key, value) {
-  S.appearance[key] = value;
-  try { localStorage.setItem('stockr_appearance', JSON.stringify(S.appearance)); } catch(_){}
-  applyAppearance();
-  logAudit('settings', 'appearance_change', { [key]: value });
-  render();
+// Lit la valeur calculée d'une variable CSS — sert à montrer la couleur
+// déduite quand le commerçant n'en a pas posé une lui-même.
+function _lireVar(nom) {
+  try {
+    const v = getComputedStyle(document.documentElement).getPropertyValue(nom).trim();
+    return /^#[0-9A-Fa-f]{6}$/.test(v) ? v : '';
+  } catch (_) { return ''; }
 }
 
 function resetAppearance() {
-  if (!confirm('Réinitialiser tous les réglages d\'apparence ?')) return;
-  S.appearance = { theme:'light', accentColor:'#6E5BFF', fontSize:'medium', density:'normal', contrast:'normal', glass:60, radius:'standard', reduceMotion:false };
+  if (!confirm(t('zw_reinitQ'))) return;
+  // Le logo part aussi : « réinitialiser » doit vouloir dire ce qu'il dit.
+  S.appearance = { theme:'light', accentColor:'#4F46E5', fontSize:'medium', density:'normal',
+                   contrast:'normal', glass:60, radius:'standard', reduceMotion:false,
+                   depth:'douce', font:'inter', grain:false, borderW:'1' };
+  S.ambianceAvant = null;
   try { localStorage.setItem('stockr_appearance', JSON.stringify(S.appearance)); } catch(_){}
   applyAppearance();
-  showToast('Apparence réinitialisée', 'info');
+  showToast(t('zw_reinitFait'), 'info');
   render();
 }
 
@@ -24896,7 +25651,280 @@ function applyAppearance() {
   root.style.setProperty('--r-scale', String(rScale));
   // Réduire les animations
   root.setAttribute('data-reduce-motion', a.reduceMotion ? '1' : '0');
+
+  // ── Identité de l'application (plan Entreprise) ─────────────────────
+  // Ces réglages ne touchent aucune classe une par une : ils reposent
+  // les jetons que toute la feuille utilise désormais. Un seul geste
+  // retouche l'application entière, et rien ne peut se désaccorder.
+  const ent = (typeof _planHasFeature === 'function') && _planHasFeature('whiteLabel');
+
+  // Profondeur. « plate » met --sh-scale à 0 : les ombres bâties sur les
+  // jetons s'effacent d'elles-mêmes, les bordures prennent le relais.
+  const prof = ent ? (a.depth || 'douce') : 'douce';
+  root.style.setProperty('--sh-scale',
+    prof === 'plate' ? '0' : prof === 'marquee' ? '1.55' : '1');
+  root.setAttribute('data-depth', prof);
+
+  // Police d'interface. La pile de repli reste complète : si la police
+  // choisie ne charge pas, le texte garde des proportions correctes.
+  const pol = ent ? (a.font || 'inter') : 'inter';
+  root.style.setProperty('--font', (BARO_POLICES()[pol] || BARO_POLICES().inter).pile);
+  if (pol !== 'inter' && pol !== 'system') _chargerPolice(pol);
+  root.setAttribute('data-police', pol);
+
+  // Grain : une texture très fine, dessinée en SVG dans l'adresse même.
+  // Aucun fichier à télécharger, aucune requête réseau.
+  root.setAttribute('data-grain', (ent && a.grain) ? '1' : '0');
+
+  // Couleur de marque secondaire : le second palier des dégradés. Sans
+  // elle, la feuille la déduit de l'accent — le dégradé reste accordé.
+  if (ent && a.accentSecond) {
+    root.style.setProperty('--accent-2', a.accentSecond);
+    document.body && document.body.style.setProperty('--accent-2', a.accentSecond);
+  } else {
+    root.style.removeProperty('--accent-2');
+    document.body && document.body.style.removeProperty('--accent-2');
+  }
+
+  // Épaisseur des traits : ce qui sépare une interface posée d'une
+  // interface dessinée.
+  root.style.setProperty('--bd-w', (ent && a.borderW ? a.borderW : '1') + 'px');
 }
+
+// ── Les cinq polices d'interface ──────────────────────────────────────
+// Chacune est chargée seulement si elle est choisie : rien ne part sur
+// le réseau tant que le commerçant reste sur Inter, déjà embarquée.
+function BARO_POLICES() {
+  return {
+    inter:   { nom:'Inter',            web:'',
+               pile:"'Inter', -apple-system, BlinkMacSystemFont, sans-serif" },
+    system:  { nom:t('zu_polSysteme'), web:'',
+               pile:"-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" },
+    grotesk: { nom:'Space Grotesk',    web:'Space+Grotesk:wght@400;500;600;700',
+               pile:"'Space Grotesk', 'Inter', -apple-system, sans-serif" },
+    serif:   { nom:'Instrument Serif', web:'Instrument+Serif:ital@0;1',
+               pile:"'Instrument Serif', Georgia, 'Times New Roman', serif" },
+    mono:    { nom:'IBM Plex Mono',    web:'IBM+Plex+Mono:wght@400;500;600;700',
+               pile:"'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace" },
+  };
+}
+
+// La feuille de police n'est posée qu'une fois, et seulement pour la
+// police retenue. Si le réseau manque, la pile de repli tient l'écran.
+function _chargerPolice(id) {
+  const inf = BARO_POLICES()[id];
+  if (!inf || !inf.web) return;
+  const cle = 'baro-police-' + id;
+  if (document.getElementById(cle)) return;
+  const el = document.createElement('link');
+  el.id = cle; el.rel = 'stylesheet';
+  el.href = 'https://fonts.googleapis.com/css2?family=' + inf.web + '&display=swap';
+  document.head.appendChild(el);
+}
+
+// ── Six ambiances, cohérentes de bout en bout ─────────────────────────
+// Comme les modèles de vitrine : un point de départ, pas un cadre fermé.
+// Chaque réglage reste modifiable ensuite, et le retour en arrière est
+// réel — l'état précédent est capturé avant d'écrire.
+function BARO_AMBIANCES() {
+  return [
+    { id:'baro',    nom:t('zu_amBaro'),    pitch:t('zu_amBaroP'),
+      apercu:['#4F46E5','#FAFAFC','#0A0A0A'],
+      r:{ accentColor:'#4F46E5', accentSecond:'#6366F1', theme:'light', depth:'douce',
+          radius:'standard', density:'normal', font:'inter', grain:false, borderW:'1' } },
+    { id:'encre',   nom:t('zu_amEncre'),   pitch:t('zu_amEncreP'),
+      apercu:['#E9E9EC','#111318','#FFFFFF'],
+      r:{ accentColor:'#E9E9EC', accentSecond:'#9AA0AE', theme:'dark', depth:'plate',
+          radius:'sharp', density:'compact', font:'grotesk', grain:true, borderW:'1' } },
+    { id:'sable',   nom:t('zu_amSable'),   pitch:t('zu_amSableP'),
+      apercu:['#9A6F3C','#F5F0E6','#2B241C'],
+      r:{ accentColor:'#9A6F3C', accentSecond:'#C9A96E', theme:'light', depth:'douce',
+          radius:'soft', density:'spacious', font:'serif', grain:true, borderW:'1' } },
+    { id:'foret',   nom:t('zu_amForet'),   pitch:t('zu_amForetP'),
+      apercu:['#0F7A5A','#F2F6F3','#0B1F18'],
+      r:{ accentColor:'#0F7A5A', accentSecond:'#2E9B78', theme:'light', depth:'marquee',
+          radius:'standard', density:'normal', font:'inter', grain:false, borderW:'1.5' } },
+    { id:'nuit',    nom:t('zu_amNuit'),    pitch:t('zu_amNuitP'),
+      apercu:['#4F8BFF','#0D1017','#EAF0FF'],
+      r:{ accentColor:'#4F8BFF', accentSecond:'#7FA8FF', theme:'dark', depth:'marquee',
+          radius:'soft', density:'normal', font:'inter', grain:false, borderW:'1' } },
+    { id:'atelier', nom:t('zu_amAtelier'), pitch:t('zu_amAtelierP'),
+      apercu:['#C2410C','#FBF7F4','#1C1917'],
+      r:{ accentColor:'#C2410C', accentSecond:'#EA580C', theme:'light', depth:'plate',
+          radius:'sharp', density:'compact', font:'mono', grain:false, borderW:'2' } },
+  ];
+}
+
+function _identiteAutorisee() {
+  if (typeof _planHasFeature !== 'function' || _planHasFeature('whiteLabel')) return true;
+  if (typeof _showPlanFeatureModal === 'function') _showPlanFeatureModal('whiteLabel');
+  return false;
+}
+
+function _sauveApparence() {
+  try {
+    localStorage.setItem('stockr_appearance', JSON.stringify(S.appearance));
+    return true;
+  } catch (e) {
+    // Le logo est la seule pièce lourde ici : on le dit franchement au
+    // lieu de laisser le réglage disparaître au prochain démarrage.
+    showToast(t('zu_memPleine'), 'error');
+    return false;
+  }
+}
+
+function appliquerAmbiance(id) {
+  if (!_identiteAutorisee()) return;
+  const am = BARO_AMBIANCES().find(x => x.id === id);
+  if (!am) return;
+  const cles = Object.keys(am.r);
+  const avant = {};
+  cles.forEach(k => { avant[k] = (S.appearance[k] === undefined) ? null : S.appearance[k]; });
+  S.ambianceAvant = { avant: avant, ambianceAvant: S.appearance.ambiance || null };
+  cles.forEach(k => { S.appearance[k] = am.r[k]; });
+  S.appearance.ambiance = id;
+  _sauveApparence();
+  _chargerPolice(am.r.font);
+  applyAppearance();
+  haptic('success');
+  showToast(t('zu_amApplique').replace('{0}', am.nom));
+  render();
+}
+
+function annulerAmbiance() {
+  const sauv = S.ambianceAvant;
+  if (!sauv) return;
+  Object.keys(sauv.avant).forEach(k => {
+    if (sauv.avant[k] === null) delete S.appearance[k];
+    else S.appearance[k] = sauv.avant[k];
+  });
+  if (sauv.ambianceAvant) S.appearance.ambiance = sauv.ambianceAvant;
+  else delete S.appearance.ambiance;
+  S.ambianceAvant = null;
+  _sauveApparence();
+  applyAppearance();
+  haptic('tap');
+  showToast(t('zu_amAnnule'));
+  render();
+}
+
+function setIdentite(cle, val) {
+  if (!_identiteAutorisee()) return;
+  S.appearance[cle] = val;
+  // Un réglage à la main sort de l'ambiance : la pastille ne doit pas
+  // rester allumée sur un préréglage qui n'est plus celui affiché.
+  if (cle !== 'logo' && cle !== 'logoRatio') delete S.appearance.ambiance;
+  if (cle === 'font') _chargerPolice(val);
+  _sauveApparence();
+  applyAppearance();
+  haptic('tap');
+  render();
+}
+
+// ── Le logo de l'application ──────────────────────────────────────────
+// Deux formats, deux traitements. Un SVG passe tel quel : il est
+// vectoriel, il ne peut pas se dégrader. Un PNG ou un JPEG est redessiné
+// au plus grand côté de 512 px et ressort en PNG — donc la transparence
+// survit, ce qui n'est pas le cas de la fonction photo de la vitrine,
+// qui ré-encode en JPEG.
+const LOGO_MAX = 512 * 1024;   // 512 Ko une fois encodé
+
+function importerLogoApp() {
+  if (!_identiteAutorisee()) return;
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/png,image/svg+xml,image/jpeg,image/webp';
+  input.style.display = 'none';
+  document.body.appendChild(input);
+  const nettoyer = () => { try { input.remove(); } catch (_) {} };
+  input.onchange = () => {
+    const file = input.files && input.files[0];
+    if (!file) { nettoyer(); return; }
+    const lecteur = new FileReader();
+    lecteur.onerror = () => { nettoyer(); showToast(t('zu_logoErreur'), 'error'); };
+    lecteur.onload = (ev) => {
+      const brut = String(ev.target.result || '');
+      // Le SVG garde sa nature : redessiner un vecteur serait le perdre.
+      if (file.type === 'image/svg+xml') {
+        nettoyer();
+        if (brut.length > LOGO_MAX) { showToast(t('zu_logoLourd'), 'error'); return; }
+        _poserLogo(brut, 0);
+        return;
+      }
+      const img = new Image();
+      img.onerror = () => { nettoyer(); showToast(t('zu_logoErreur'), 'error'); };
+      img.onload = () => {
+        nettoyer();
+        try {
+          const MAX = 512;
+          const k = Math.min(1, MAX / Math.max(img.width, img.height));
+          const cv = document.createElement('canvas');
+          cv.width  = Math.max(1, Math.round(img.width  * k));
+          cv.height = Math.max(1, Math.round(img.height * k));
+          // Pas de fond peint : ce qui était transparent le reste.
+          cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+          const png = cv.toDataURL('image/png');
+          if (png.length > LOGO_MAX) { showToast(t('zu_logoLourd'), 'error'); return; }
+          _poserLogo(png, img.width / img.height);
+        } catch (_) { showToast(t('zu_logoErreur'), 'error'); }
+      };
+      img.src = brut;
+    };
+    lecteur.readAsDataURL(file);
+  };
+  input.click();
+}
+
+function _poserLogo(data, ratio) {
+  const avant = S.appearance.logo;
+  S.appearance.logo = data;
+  S.appearance.logoRatio = ratio ? Math.round(ratio * 100) / 100 : 0;
+  if (!_sauveApparence()) {
+    // L'écriture a échoué : on remet exactement l'état d'avant plutôt
+    // que d'afficher un logo qui aura disparu au redémarrage.
+    if (avant) S.appearance.logo = avant; else delete S.appearance.logo;
+    return;
+  }
+  haptic('success');
+  showToast(t('zu_logoPose'));
+  render();
+}
+
+function retirerLogoApp() {
+  if (!_identiteAutorisee()) return;
+  delete S.appearance.logo;
+  delete S.appearance.logoRatio;
+  _sauveApparence();
+  haptic('tap');
+  render();
+}
+
+// Le logo, posé dans un cadre à hauteur fixe. « contain » garantit que
+// l'image entre entière dans le cadre sans jamais être étirée : un logo
+// large reste large, un logo carré reste carré.
+function logoAppHTML(hauteur) {
+  const src = S.appearance && S.appearance.logo;
+  if (!src) return '';
+  const h = hauteur || 28;
+  return '<img src="' + src + '" alt="" style="height:' + h + 'px;width:auto;' +
+         'max-width:min(100%,' + Math.round(h * 5) + 'px);object-fit:contain;display:block" />';
+}
+// Un réglage d'apparence, enregistré puis appliqué. Cette fonction se
+// trouvait entre l'ancien écran et resetAppearance ; la réécriture de
+// l'écran l'avait emportée avec elle, et tous les boutons de réglage
+// tombaient sur « setAppearance is not defined ».
+function setAppearance(key, value) {
+  if (!S.appearance) S.appearance = {};
+  S.appearance[key] = value;
+  // Un réglage à la main sort de l'ambiance : la pastille ne doit pas
+  // rester allumée sur un préréglage qui n'est plus celui affiché.
+  if (S.appearance.ambiance) delete S.appearance.ambiance;
+  try { localStorage.setItem('stockr_appearance', JSON.stringify(S.appearance)); } catch(_){}
+  applyAppearance();
+  try { logAudit('settings', 'appearance_change', { [key]: value }); } catch(_){}
+  render();
+}
+
 // Applique un réglage « live » (curseur) sans re-render complet — garde le drag fluide
 function setAppearanceLive(key, value) {
   if (!S.appearance) S.appearance = {};
@@ -25463,11 +26491,11 @@ function vMultiStore() {
   const best = ranked[0];
   const maxCA = Math.max(1, ...rows.map(r => r.ca));
   const TYPE_ICON = { store:'🏪', warehouse:'🏭', popup:'⛺', other:'📍' };
-  const PLABEL = { today:"Aujourd'hui", week:'7 jours', month:'Ce mois', all:'Tout' };
+  const PLABEL = { today:t('zz4_aujourdhui'), week:t('zz5_7jours'), month:t('zz5_ceMois'), all:t('zz5_tout') };
   return `
   <div class="sub-hero" style="background:linear-gradient(135deg,#4F46E5,#7C3AED)">
     <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('more')">${IC.left}</button>
-    <div class="sub-hero-title">🏬 Multi-points de vente</div>
+    <div class="sub-hero-title">🏬 ${t('zz8_multiPoints')}</div>
     <div class="sub-hero-sub">${locs.length} ${t('w4_emplacements')} · ${fmt(totCA)} ${sym()} · ${totNb} vente(s)</div>
   </div>
   <div class="container">
@@ -25485,7 +26513,7 @@ function vMultiStore() {
           </select>
         </div>
         <div style="display:flex;gap:8px">
-          <button class="btn btn-ghost" style="flex:1;min-width:0;white-space:nowrap" onclick="S.locationAdd=false;render()">Annuler</button>
+          <button class="btn btn-ghost" style="flex:1;min-width:0;white-space:nowrap" onclick="S.locationAdd=false;render()">${t('cancel')}</button>
           <button class="btn btn-primary" style="flex:2;min-width:0;font-weight:700;white-space:nowrap" onclick="addLocation()">${t('x4_creerEmplacement')}</button>
         </div>
       </div>` : ''}
@@ -25510,7 +26538,7 @@ function vMultiStore() {
         </div>
         <div class="card" style="padding:12px;text-align:center">
           <div style="font-size:17px;font-weight:800;color:#0EA5E9">${totNb}</div>
-          <div style="font-size:10px;color:var(--text-3);margin-top:2px">Ventes</div>
+          <div style="font-size:10px;color:var(--text-3);margin-top:2px">${t('zy_ventes')}</div>
         </div>
         <div class="card" style="padding:12px;text-align:center">
           <div style="font-size:17px;font-weight:800;color:#10B981">${fmt(totStock)}</div>
@@ -25546,7 +26574,7 @@ function vMultiStore() {
           </div>
           <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;font-size:11px">
             <div><div style="color:var(--text-3)">${t('x1_benefice')}</div><div style="font-weight:700;color:#10B981">${fmt(r.profit)}</div></div>
-            <div><div style="color:var(--text-3)">Articles</div><div style="font-weight:700;color:var(--text-1)">${r.nbArts}</div></div>
+            <div><div style="color:var(--text-3)">${t('articles')}</div><div style="font-weight:700;color:var(--text-1)">${r.nbArts}</div></div>
             <div><div style="color:var(--text-3)">Stock bas</div><div style="font-weight:700;color:${r.lowCount>0?'#F59E0B':'var(--text-1)'}">${r.lowCount}</div></div>
           </div>
         </div>`;
@@ -25579,12 +26607,12 @@ function vMore() {
     canAdmin ? { id:'team',  icon:IC.users,      label:t('w3_equipe'),                         sub:`${teamCount} ${t('w4_collaborateurs')}`, color:'#7C73FF', badge: teamCount || null } : null,
     canAudit ? { id:'audit-log', icon:IC.list||IC.grid, label:t('auditLogTitle'),          sub:`${auditCount} ${t('w4_evenements')}`, color:'#1E293B' } : null,
     { id:'clients',         icon:IC.users,      label:t('clients')||'Clients',          sub:`${S.clients.length} ${t('w4_clientsN')}${loyaltyClients>0?' · '+loyaltyClients+' fid.':''}`, color:'#0ea5e9' },
-    { id:'boutique',        icon:IC.shop,       label:t('boutique')||'Boutique',        sub:boutiquePending>0?`${boutiquePending} ${t('w4_commandes')} !`:'Boutique en ligne',  color:'#4F46E5', badge: S.boutiqueConfig?.published ? '●' : (boutiquePending||null) },
-    { id:'marketing',       icon:IC.megaphone,  label:t('marketing')||'Marketing',     sub:`${activePromos} ${t('w4_promos')}`, color:'#dc2626', badge: activePromos || null },
-    { id:'loyalty',         icon:IC.star,       label:t('w3_fidelite'),                       sub:S.loyaltyConfig?.enabled?`${loyaltyClients} clients`:t('w3_desactive'),  color:'#F59E0B', badge: S.loyaltyConfig?.enabled ? '●' : null },
+    { id:'boutique',        icon:IC.shop,       label:t('boutique'),        sub:boutiquePending>0?`${boutiquePending} ${t('w4_commandes')} !`:t('zs_boutiqueEnLigne'),  color:'#4F46E5', badge: S.boutiqueConfig?.published ? '●' : (boutiquePending||null) },
+    { id:'marketing',       icon:IC.megaphone,  label:t('marketing'),     sub:`${activePromos} ${t('w4_promos')}`, color:'#dc2626', badge: activePromos || null },
+    { id:'loyalty',         icon:IC.star,       label:t('w3_fidelite'),                       sub:S.loyaltyConfig?.enabled?`${loyaltyClients} ${t('zy_clients').toLowerCase()}`:t('w3_desactive'),  color:'#F59E0B', badge: S.loyaltyConfig?.enabled ? '●' : null },
     { id:'social-media',    icon:IC.share2,     label:t('socialMedia')||'Reseaux',     sub:`${connectedSocial} ${t('w4_connectes')}${scheduledPostsCount>0?' · '+scheduledPostsCount+' prog.':''}`, color:'#e1306c', badge: scheduledPostsCount || null },
     { id:'payments-setup',  icon:IC.wallet,     label:t('payments')||'Paiements',      sub:`${activePayments} ${t('w4_actifs')}`, color:'#ff6600' },
-    { id:'purchase-orders', icon:IC.truck,      label:t('purchaseOrders')||'Commandes', sub:`${pendingOrders} ${t('w4_enAttente')}`, color:'#059669', badge: pendingOrders || null },
+    { id:'purchase-orders', icon:IC.truck,      label:t('purchaseOrders'), sub:`${pendingOrders} ${t('w4_enAttente')}`, color:'#059669', badge: pendingOrders || null },
     { id:'integrations',    icon:IC.link,       label:t('integrations')||'Integrations', sub:`${(S.integrationsConfig||[]).filter(i=>i.connected).length} ${t('w4_actifs')}`,  color:'#7c3aed' },
     { id:'suppliers',       icon:IC.package,    label:t('suppliers')||'Fournisseurs',  sub:`${S.suppliers.length} ${t('w4_enregistres')}`, color:'#0891b2' },
     { id:'reassort',        icon:'🔄',          label:t('w3_reassort'),           sub:t('w3_reassortSub'), color:'#0EA5E9', badge: (()=>{try{return _reorderData(S.reorderWindow||30).items.length||null;}catch(_){return null;}})() },
@@ -25594,7 +26622,7 @@ function vMore() {
     { id:'credits',         icon:'📒',          label:t('w3_credits'),                sub:t('w3_creditsSub'), color:'#DC2626', badge: (()=>{try{return _creditsStats().openCount||null;}catch(_){return null;}})() },
     { id:'peremptions',     icon:'⏳',          label:t('w3_peremptions'),                    sub:t('w3_peremptionsSub'), color:'#EC4899', badge: (S.articles||[]).filter(a=>{const e=getExpiryStatus(a.expiry);return e&&e.days<=30;}).length || null },
     { id:'stock-history',   icon:IC.trending,   label:t('stockHistory')||'Mouvements', sub:`${S.stockMovements.length} entrees`, color:'#334155' },
-    { id:'spectra',         icon:IC.camera,     label:'Spectra AI',                    sub:'Scanner & compter',        color:'#6366f1' },
+    { id:'spectra',         icon:IC.camera,     label:'Spectra AI',                    sub:t('zz5_scannerCompter'),        color:'#6366f1' },
     { id:'catalog',         icon:IC.pdf,        label:t('catalog')||'Catalogue',       sub:'WhatsApp & PDF',           color:'#16a34a' },
     { id:'documents',       icon:'📁',          label:'Documents',                     sub:'Devis · factures · rapports · exports', color:'#0d9488' },
     { id:'pricing',         icon:IC.star,       label:t('pricing')||'Tarifs',          sub:t('myPlan')||'Mon plan',    color:'#eab308' },
@@ -25742,7 +26770,7 @@ function vDevisForm() {
   <div class="container">
     <div class="card" style="margin-bottom:12px">
       <label class="form-label">${t('z_clientNom')}</label>
-      <input class="input" id="dv-client" type="text" placeholder="ex : Pharmacie du Plateau" value="${(f.client||'').replace(/"/g,'&quot;')}" oninput="S.devisForm.client=this.value">
+      <input class="input" id="dv-client" type="text" placeholder="${t('zy_exClient')}" value="${(f.client||'').replace(/"/g,'&quot;')}" oninput="S.devisForm.client=this.value">
       <div style="display:flex;gap:8px;margin-top:10px">
         <div style="flex:1"><label class="form-label">${t('x4_validiteJours')}</label>
           <input class="input" id="dv-valid" type="number" min="1" value="${f.validDays}" oninput="S.devisForm.validDays=parseInt(this.value)||15"></div>
@@ -25753,9 +26781,9 @@ function vDevisForm() {
       <div id="dv-lines">
         ${f.items.map((it,i)=>`
         <div style="display:flex;gap:6px;margin-bottom:8px;align-items:center">
-          <input class="input" style="flex:2;min-width:0" placeholder=t('z_designation') value="${(it.name||'').replace(/"/g,'&quot;')}" oninput="S.devisForm.items[${i}].name=this.value;_dvTotal()">
+          <input class="input" style="flex:2;min-width:0" placeholder="${t('z_designation')}" value="${(it.name||'').replace(/"/g,'&quot;')}" oninput="S.devisForm.items[${i}].name=this.value;_dvTotal()">
           <input class="input" style="flex:0 0 56px;width:56px;text-align:center" type="number" min="0" step="any" placeholder="${t('z_qte')}" value="${it.qty||''}" oninput="S.devisForm.items[${i}].qty=parseFloat(this.value)||0;_dvTotal()">
-          <input class="input" style="flex:0 0 78px;width:78px;text-align:right" type="number" min="0" placeholder="Prix" value="${it.price||''}" oninput="S.devisForm.items[${i}].price=parseFloat(this.value)||0;_dvTotal()">
+          <input class="input" style="flex:0 0 78px;width:78px;text-align:right" type="number" min="0" placeholder="${t('zz9_prix')}" value="${it.price||''}" oninput="S.devisForm.items[${i}].price=parseFloat(this.value)||0;_dvTotal()">
           ${f.items.length>1?`<button class="btn btn-ghost" style="flex:0 0 auto;width:auto;padding:0 10px;color:var(--danger)" onclick="S.devisForm.items.splice(${i},1);render()">✕</button>`:''}
         </div>`).join('')}
       </div>
@@ -25763,7 +26791,7 @@ function vDevisForm() {
     </div>
     <div class="card" style="margin-bottom:12px">
       <label class="form-label">Note (optionnel)</label>
-      <textarea class="input" id="dv-note" rows="2" placeholder="ex : Livraison sous 5 jours, acompte 50%…" style="resize:none" oninput="S.devisForm.note=this.value">${(f.note||'').replace(/</g,'&lt;')}</textarea>
+      <textarea class="input" id="dv-note" rows="2" placeholder="${t('zz5_exNoteDevis')}" style="resize:none" oninput="S.devisForm.note=this.value">${(f.note||'').replace(/</g,'&lt;')}</textarea>
     </div>
     <div style="display:flex;align-items:center;justify-content:space-between;padding:0 4px 12px">
       <span style="font-size:13px;color:var(--text-3)">${t('x4_totalEstime')}</span>
@@ -25813,17 +26841,17 @@ function vDocuments() {
     <div class="settings-label" style="margin-bottom:8px">${t('x4_creerDocument')}</div>
     ${card('📄',t('z_docDevis'),t('z_docDevisSub')+(devisHist.length?` · ${devisHist.length} créé(s)`:''),"nav('devis-form')",'#7C3AED')}
     ${card('🧾',t('z_docFacture'),t('z_docFactSub'),'nav(\'sales\')','#4F46E5')}
-    ${card('🛍️','Catalogue produits',t('z_docCatalogue'),'nav(\'catalog\')','#16A34A')}
+    ${card('🛍️',t('zy_catProduits'),t('z_docCatalogue'),'nav(\'catalog\')','#16A34A')}
 
     <div class="settings-label" style="margin:16px 0 8px">Rapports professionnels (PDF)</div>
     ${card('🧮',t('z_docBilan'),t('z_docBilanSub'),"S.period='30d';generateBilanReportPDF()",'#4F46E5')}
-    ${card('📦','Rapport de stock',`${(S.articles||[]).length} article(s) · valeur & alertes`,'generateStockReportPDF()','#0EA5E9')}
-    ${card('💰','Rapport de ventes',t('z_rapVentes').replace('{0}', nbSales),"generateSalesReportPDF('all')",'#F59E0B')}
-    ${card('👥','Rapport clients (CRM)',t('z_rapClients').replace('{0}', (S.clients||[]).length).replace('{1}', t('w4_clientsN')),'generateClientsReportPDF()','#EC4899')}
+    ${card('📦',t('zy_rapStock'),t('zz5_valeurAlertes').replace('{0}',(S.articles||[]).length),'generateStockReportPDF()','#0EA5E9')}
+    ${card('💰',t('zy_rapVentes'),t('z_rapVentes').replace('{0}', nbSales),"generateSalesReportPDF('all')",'#F59E0B')}
+    ${card('👥',t('zy_rapClients'),t('z_rapClients').replace('{0}', (S.clients||[]).length).replace('{1}', t('w4_clientsN')),'generateClientsReportPDF()','#EC4899')}
 
     <div class="settings-label" style="margin:16px 0 8px">Exports (comptable / tableur)</div>
     ${card('📗','Export Excel complet',t('z_docXls'),'exportFullXLSX()','#059669')}
-    ${card('📊','Tout en CSV','Format universel comptable','exportAllCSV()','#334155')}
+    ${card('📊',t('w7_toutCsv'),t('zy_formatCompta'),'exportAllCSV()','#334155')}
     ${card('📚','Plus d\'exports & options',t('z_docOhada'),'nav(\'exports\')','#64748B')}
 
     ${devisHist.length ? `
@@ -25859,23 +26887,23 @@ function vExports() {
           <div style="font-size:11px;color:var(--text-3)">${t('v_expCa')}</div>
         </button>
         <button class="btn btn-ghost" onclick="generateStockReportPDF()" style="padding:12px;text-align:left;display:flex;flex-direction:column;align-items:flex-start;gap:2px">
-          <div style="font-weight:700;font-size:13px;color:var(--text-1)">📦 Rapport Stock</div>
+          <div style="font-weight:700;font-size:13px;color:var(--text-1)">📦 ${t('zy_rapStock')}</div>
           <div style="font-size:11px;color:var(--text-3)">${S.articles.length} articles · ${fmt(stockValue)} ${sym()}</div>
         </button>
         <button class="btn btn-ghost" onclick="generateSalesReportPDF('all')" style="padding:12px;text-align:left;display:flex;flex-direction:column;align-items:flex-start;gap:2px">
-          <div style="font-weight:700;font-size:13px;color:var(--text-1)">💰 Rapport Ventes</div>
+          <div style="font-weight:700;font-size:13px;color:var(--text-1)">💰 ${t('zy_rapVentes')}</div>
           <div style="font-size:11px;color:var(--text-3)">${S.sales.length} ${t('w4_ventesN')} · ${fmt(totalCA)} ${sym()}</div>
         </button>
         <button class="btn btn-ghost" onclick="generateSalesReportPDF('month')" style="padding:12px;text-align:left;display:flex;flex-direction:column;align-items:flex-start;gap:2px">
-          <div style="font-weight:700;font-size:13px;color:var(--text-1)">📆 Ventes 30j</div>
-          <div style="font-size:11px;color:var(--text-3)">Mois courant</div>
+          <div style="font-weight:700;font-size:13px;color:var(--text-1)">📆 ${t('zy_ventes30')}</div>
+          <div style="font-size:11px;color:var(--text-3)">${t('zy_moisCourant')}</div>
         </button>
         <button class="btn btn-ghost" onclick="generateSalesReportPDF('week')" style="padding:12px;text-align:left;display:flex;flex-direction:column;align-items:flex-start;gap:2px">
-          <div style="font-weight:700;font-size:13px;color:var(--text-1)">🗓️ Ventes 7j</div>
-          <div style="font-size:11px;color:var(--text-3)">Semaine courante</div>
+          <div style="font-weight:700;font-size:13px;color:var(--text-1)">🗓️ ${t('zy_ventes7')}</div>
+          <div style="font-size:11px;color:var(--text-3)">${t('zy_semCourante')}</div>
         </button>
         <button class="btn btn-ghost" onclick="generateClientsReportPDF()" style="padding:12px;text-align:left;display:flex;flex-direction:column;align-items:flex-start;gap:2px;grid-column:1/-1">
-          <div style="font-weight:700;font-size:13px;color:var(--text-1)">👥 Rapport Clients (CRM)</div>
+          <div style="font-weight:700;font-size:13px;color:var(--text-1)">👥 ${t('zy_rapClients')}</div>
           <div style="font-size:11px;color:var(--text-3)">${(S.clients||[]).length} ${t('x_expClients')}</div>
         </button>
       </div>
@@ -25883,25 +26911,25 @@ function vExports() {
 
     <!-- Excel / XLSX -->
     <div class="card" style="margin-bottom:12px">
-      <div class="card-title" style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">📗</span> Exports Excel</div>
-      <div style="font-size:12px;color:var(--text-3);margin-bottom:10px">Fichiers <strong>.xls</strong> ${t('y5_ouvrablesExcel')}</div>
+      <div class="card-title" style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">📗</span> ${t('zy_exportsExcel')}</div>
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:10px">${t('zy_fichiers')} <strong>.xls</strong> ${t('y5_ouvrablesExcel')}</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-        <button class="btn btn-primary" onclick="exportArticlesXLSX()" style="padding:11px">📦 Articles</button>
-        <button class="btn btn-primary" onclick="exportProductsXLSX()" style="padding:11px">🏷️ Produits</button>
-        <button class="btn btn-primary" onclick="exportSalesXLSX()" style="padding:11px">💰 Ventes</button>
-        <button class="btn btn-primary" onclick="exportClientsXLSX()" style="padding:11px">👥 Clients</button>
+        <button class="btn btn-primary" onclick="exportArticlesXLSX()" style="padding:11px">📦 ${t('articles')}</button>
+        <button class="btn btn-primary" onclick="exportProductsXLSX()" style="padding:11px">🏷️ ${t('zx_produits')}</button>
+        <button class="btn btn-primary" onclick="exportSalesXLSX()" style="padding:11px">💰 ${t('zy_ventes')}</button>
+        <button class="btn btn-primary" onclick="exportClientsXLSX()" style="padding:11px">👥 ${t('zy_clients')}</button>
       </div>
       <button class="btn btn-primary" onclick="exportFullXLSX()" style="margin-top:10px;background:linear-gradient(135deg,#059669,#0d9488);width:100%">${t('w7_exportComplet')}</button>
     </div>
 
     <!-- CSV -->
     <div class="card" style="margin-bottom:12px">
-      <div class="card-title" style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">📄</span> Exports CSV</div>
+      <div class="card-title" style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">📄</span> ${t('zy_exportsCsv')}</div>
       <div style="font-size:12px;color:var(--text-3);margin-bottom:10px">${t('w7_formatUniversel')}</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-        <button class="btn btn-ghost" onclick="exportArticlesCSV()">Articles CSV</button>
-        <button class="btn btn-ghost" onclick="exportProductsCSV()">Produits CSV</button>
-        <button class="btn btn-ghost" onclick="exportSalesCSV()">Ventes CSV</button>
+        <button class="btn btn-ghost" onclick="exportArticlesCSV()">${t('articles')} CSV</button>
+        <button class="btn btn-ghost" onclick="exportProductsCSV()">${t('zx_produits')} CSV</button>
+        <button class="btn btn-ghost" onclick="exportSalesCSV()">${t('zy_ventes')} CSV</button>
         <button class="btn btn-ghost" onclick="exportAllCSV()">${t('w7_toutCsv')}</button>
       </div>
     </div>
@@ -25982,7 +27010,7 @@ function _bqPerf() {
 
 function vBoutique() {
   if (!_planHasFeature('boutique')) {
-    return _vProLock('🏪', 'Boutique en ligne', 'Crée une vraie boutique en ligne (page web + panier WhatsApp) que tes clients visitent pour commander.', ['🏪 Boutique en ligne personnalisable', '🎨 Éditeur visuel en direct', '🛒 Panier + commande WhatsApp', '📦 Articles & ventes illimités', '🔍 Spectra IA vision illimité']);
+    return _vProLock('🏪', t('zs_boutiqueEnLigne'), 'Crée une vraie boutique en ligne (page web + panier WhatsApp) que tes clients visitent pour commander.', ['🏪 Boutique en ligne personnalisable', '🎨 Éditeur visuel en direct', '🛒 Panier + commande WhatsApp', '📦 Articles & ventes illimités', '🔍 Spectra IA vision illimité']);
   }
   const bc = S.boutiqueConfig || (S.boutiqueConfig = {});
   if (!Array.isArray(bc.articles)) bc.articles = [];
@@ -26031,7 +27059,7 @@ function vBoutique() {
     <div style="display:flex;gap:8px">
       <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${vitrineCount}</div><div class="hero-stat-lbl">${bt==='reseller'?'Articles':bt==='maker'?'Produits':'En vitrine'}</div></div>
       <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${pendingOrders.length}</div><div class="hero-stat-lbl">${t('w8_aTraiter')}</div></div>
-      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${bc.visits || 0}</div><div class="hero-stat-lbl">Visites</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${bc.visits || 0}</div><div class="hero-stat-lbl">${t('boutiqueVisits')}</div></div>
     </div>
   </div>
   <div class="container">
@@ -26116,7 +27144,7 @@ function vBoutique() {
 
     ${(() => {
       const isEnt = _planHasFeature('whiteLabel');
-      const planNm = PLAN_LABELS[_currentPlan()] || _currentPlan();
+      const planNm = _planLabel(_currentPlan());
       const rows = [
         [t('zw_cmpVitrine'), true, true],
         [t('zw_cmpPanier'), true, true],
@@ -26134,7 +27162,7 @@ function vBoutique() {
       <div style="padding:14px 15px;background:linear-gradient(135deg,rgba(139,92,246,.14),transparent);display:flex;align-items:center;gap:10px">
         <div style="font-size:20px">◆</div>
         <div style="flex:1;min-width:0">
-          <div style="font-size:14.5px;font-weight:800">Pro &amp; Entreprise</div>
+          <div style="font-size:14.5px;font-weight:800">Pro &amp; ${t('zv_planEntreprise')}</div>
           <div style="font-size:11.5px;color:var(--text-3)">${t('x4_votrePlan')} <b style="color:${isEnt?'#8B5CF6':'var(--text-2)'}">${planNm}</b></div>
         </div>
         ${!isEnt ? `<button class="btn" style="flex-shrink:0;padding:7px 13px;font-size:11.5px;font-weight:800;background:linear-gradient(135deg,#8B5CF6,#6366F1);color:#fff;border:none" onclick="nav('pricing')">Passer</button>` : `<span style="flex-shrink:0;font-size:10.5px;font-weight:800;color:#fff;background:linear-gradient(135deg,#8B5CF6,#6366F1);padding:5px 11px;border-radius:999px">${t('zz_actif')}</span>`}
@@ -26168,7 +27196,7 @@ function vBoutique() {
       </div>
       <div class="form-group">
         <label class="form-label">Description</label>
-        <input class="input" value="${bc.description || ''}" oninput="updateBoutiqueConfig('description',this.value)" placeholder=t('zz_decrivezBq')>
+        <input class="input" value="${bc.description || ''}" oninput="updateBoutiqueConfig('description',this.value)" placeholder="${t('zz_decrivezBq')}">
       </div>
       <div class="form-group" style="border-top:1px solid var(--border);padding-top:12px;margin-top:4px">
         <label class="form-label" style="display:flex;align-items:center;justify-content:space-between">
@@ -26233,12 +27261,12 @@ function vBoutique() {
           ${[
             {id:'indigo',  color:'#4F46E5', name:'Indigo'},
             {id:'emerald', color:'#059669', name:t('zw_emeraude')},
-            {id:'rose',    color:'#E11D48', name:'Rose'},
-            {id:'amber',   color:'#D97706', name:'Ambre'},
+            {id:'rose',    color:'#E11D48', name:t('zw_cRose')},
+            {id:'amber',   color:'#D97706', name:t('zzc_ambre')},
             {id:'sky',     color:'#0284C7', name:'Ciel'},
-            {id:'purple',  color:'#7C3AED', name:'Violet'},
+            {id:'purple',  color:'#7C3AED', name:t('zw_cViolet')},
             {id:'orange',  color:'#EA580C', name:'Orange'},
-            {id:'teal',    color:'#0D9488', name:'Turquoise'},
+            {id:'teal',    color:'#0D9488', name:t('zw_cTeal')},
           ].map(c => `
           <div onclick="updateBoutiqueConfig('themeColor','${c.color}');render()" style="cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px">
             <div style="width:36px;height:36px;border-radius:50%;background:${c.color};border:3px solid ${(bc.themeColor||'#4F46E5')===c.color?'#000':'transparent'};transition:.2s"></div>
@@ -26278,7 +27306,7 @@ function vBoutique() {
       <button class="boutique-tool-card" onclick="nav('boutique-appearance')">
         <div class="btc-ico" style="background:#4F46E510;color:#4F46E5">🎨</div>
         <div class="btc-txt">
-          <div class="btc-title">Apparence</div>
+          <div class="btc-title">${t('appearance')}</div>
           <div class="btc-sub">${t('w8_themeCouleursOrg')}</div>
         </div>
       </button>
@@ -26307,7 +27335,7 @@ function vBoutique() {
         <div class="btc-ico" style="background:#64748B10;color:#64748B">📋</div>
         <div class="btc-txt">
           <div class="btc-title">CGV & Retours</div>
-          <div class="btc-sub">${bc.conditions ? '✓ Rédigé' : 'Conditions de vente'}</div>
+          <div class="btc-sub">${bc.conditions ? t('zz8_redige') : t('zz8_conditionsVente')}</div>
         </div>
       </button>
       <button class="boutique-tool-card" onclick="nav('boutique-faq')">
@@ -26353,7 +27381,7 @@ function vBoutique() {
       </div>
       <div class="bgen-actions" style="margin-top:8px">
         <button class="btn btn-ghost bgen-btn-ghost" onclick="showBoutiqueQR()">${IC.qrcode} QR code</button>
-        <button class="btn bgen-btn-ghost" style="background:#25D366;color:#fff" onclick="shareBoutiqueWhatsApp()">${IC.whatsapp} Partager</button>
+        <button class="btn bgen-btn-ghost" style="background:#25D366;color:#fff" onclick="shareBoutiqueWhatsApp()">${IC.whatsapp} ${t('invoiceShare')}</button>
       </div>
       ${bc.siteGenerated ? `
       <div class="bgen-status">
@@ -26434,7 +27462,7 @@ function vBoutique() {
     </div>`}
     ` : ''}
 
-    <div class="section-hd"><span class="section-lbl">Partager</span></div>
+    <div class="section-hd"><span class="section-lbl">${t('invoiceShare')}</span></div>
     <div class="card" style="margin-bottom:14px">
       <div style="display:flex;gap:8px">
         <button class="btn btn-primary" style="flex:1" onclick="shareBoutiqueWhatsApp()">${IC.whatsapp} WhatsApp</button>
@@ -26467,7 +27495,7 @@ function vBoutique() {
       ${o.status==='pending'?`
       <div style="display:flex;gap:6px;margin-top:10px">
         <button class="btn btn-primary" style="flex:1;font-size:12px;padding:8px" onclick="updateOrderStatus(${o.id},'confirmed')">Confirmer</button>
-        <button class="btn btn-ghost" style="font-size:12px;padding:8px" onclick="updateOrderStatus(${o.id},'cancelled')">Annuler</button>
+        <button class="btn btn-ghost" style="font-size:12px;padding:8px" onclick="updateOrderStatus(${o.id},'cancelled')">${t('cancel')}</button>
       </div>`:o.status==='confirmed'?`
       <div style="display:flex;gap:6px;margin-top:10px">
         <button class="btn btn-primary" style="flex:1;font-size:12px;padding:8px" onclick="updateOrderStatus(${o.id},'delivered')">Marquer livree</button>
@@ -30621,9 +31649,9 @@ function vBoutiqueEditor() {
     </div></div>`;
   }
   const colors = [
-    {color:'#4F46E5',name:'Indigo'},{color:'#7C3AED',name:'Violet'},{color:'#059669',name:'Vert'},
-    {color:'#2563EB',name:'Bleu'},{color:'#EA580C',name:'Orange'},{color:'#DC2626',name:'Rouge'},
-    {color:'#F472B6',name:'Rose'},{color:'#0891B2',name:'Cyan'},{color:'#D97706',name:'Ambre'},
+    {color:'#4F46E5',name:t('zw_cIndigo')},{color:'#7C3AED',name:t('zw_cViolet')},{color:'#059669',name:t('zw_cVert')},
+    {color:'#2563EB',name:t('zw_cBleu')},{color:'#EA580C',name:t('zw_cOrange')},{color:'#DC2626',name:t('zw_cRouge')},
+    {color:'#F472B6',name:t('zw_cRose')},{color:'#0891B2',name:'Cyan'},{color:'#D97706',name:t('zzc_ambre')},
     {color:'#1f2937',name:'Ardoise'},{color:'#000000',name:'Noir'},
   ];
   const fonts = [
@@ -30638,7 +31666,7 @@ function vBoutiqueEditor() {
     { id:'style',   label:'🎨 Style' },
     { id:'layout',  label:'📐 Mise en page' },
     { id:'content', label:'✍️ Contenu' },
-    { id:'products',label:'📦 Produits' },
+    { id:'products',label:'📦 ' + t('zx_produits') },
   ];
   const optBtn = (key, val, label, isActive) =>
     `<button class="bq-opt ${isActive?'bq-opt-active':''}" data-bq-key="${key}" data-bq-val="${val}" onclick="boutiqueEditSet('${key}','${val}')">${label}</button>`;
@@ -30672,7 +31700,7 @@ function vBoutiqueEditor() {
     </div>`;
     const actif = g('modeleActif', '');
     return `
-    <div class="bq-sec-title">${t('zm_titre')} <span class="bq-badge-ent">Entreprise</span></div>
+    <div class="bq-sec-title">${t('zm_titre')} <span class="bq-badge-ent">${t('zv_planEntreprise')}</span></div>
     <div class="bq-hint2" style="margin:-4px 0 9px">${t('zm_aide')}</div>
     <div class="bq-modeles">
       ${BARO_MODELES().map(m => `
@@ -30696,7 +31724,7 @@ function vBoutiqueEditor() {
     <div class="bq-sec-title" style="margin-top:14px">${t('x2_couleurMarque')}</div>
     <div class="bq-swatches">
       ${colors.map(c => `<button class="bq-swatch ${tc===c.color?'sel':''}" style="background:${c.color}" title="${c.name}" onclick="boutiqueEditSet('themeColor','${c.color}');document.querySelectorAll('.bq-swatch[data-grp=brand]').forEach(s=>s.classList.remove('sel'));this.classList.add('sel')" data-grp="brand">${tc===c.color?'✓':''}</button>`).join('')}
-      <label class="bq-swatch bq-swatch-custom" title=t('v_personnalisee')>✎<input type="color" value="${tc}" onchange="boutiqueEditSet('themeColor',this.value)"></label>
+      <label class="bq-swatch bq-swatch-custom" title="${t('v_personnalisee')}">✎<input type="color" value="${tc}" onchange="boutiqueEditSet('themeColor',this.value)"></label>
     </div>
 
     ${(() => {
@@ -30723,7 +31751,7 @@ function vBoutiqueEditor() {
           <div class="bq-lock-tx"><strong>${t('z3_lockStudioTitre')}</strong><span>${t('z3_lockStudioTx')}</span></div>
         </div>`;
       }
-      return `<div class="bq-sec-title">${t('z6_clairSombre')} <span class="bq-badge-ent">Entreprise</span></div>
+      return `<div class="bq-sec-title">${t('z6_clairSombre')} <span class="bq-badge-ent">${t('zv_planEntreprise')}</span></div>
       <div class="bq-studio">
         <div class="bq-fld bq-fld-large"><label>${t('z6_modeAffichage')}</label>
           <select class="input" onchange="boutiqueEditSet('themeMode',this.value)">
@@ -30740,7 +31768,7 @@ function vBoutiqueEditor() {
           <div class="bq-hint2">${t('z6_versionClaireAide')}</div></div>` : ''}
       </div>
 
-      <div class="bq-sec-title" style="margin-top:14px">${t('x2_sequenceOuverture')} <span class="bq-badge-ent">Entreprise</span></div>
+      <div class="bq-sec-title" style="margin-top:14px">${t('x2_sequenceOuverture')} <span class="bq-badge-ent">${t('zv_planEntreprise')}</span></div>
       <label class="bq-cine ${g('cinema', false) ? 'on' : ''}">
         <input type="checkbox" ${g('cinema', false) ? 'checked' : ''} onchange="boutiqueEditSet('cinema', this.checked)">
         <span class="bq-cine-tx">
@@ -30882,7 +31910,7 @@ function vBoutiqueEditor() {
         const curseurSel = (k, liste) => `<div class="bq-fld"><label>${liste.titre}</label>
           <select class="input" onchange="boutiqueEditSetAnim('${k}',this.value)">${opts(k, liste.v)}</select></div>`;
         return `
-      <div class="bq-sec-title">${t('z3_studio')} <span class="bq-badge-ent">Entreprise</span></div>
+      <div class="bq-sec-title">${t('z3_studio')} <span class="bq-badge-ent">${t('zv_planEntreprise')}</span></div>
 
       <div class="bq-sub-title">${t('z3_sequence')}</div>
       <div class="bq-studio">
@@ -31039,13 +32067,13 @@ function vBoutiqueEditor() {
       </div>` : ''}`;
       })()}
 
-      <div class="bq-sec-title">${t('x2_paletteComplete')} <span class="bq-badge-ent">Entreprise</span></div>
+      <div class="bq-sec-title">${t('x2_paletteComplete')} <span class="bq-badge-ent">${t('zv_planEntreprise')}</span></div>
       <div class="bq-pals">
         ${_pals.map(p => `<button class="bq-pal ${_cur === p[0] ? 'sel' : ''}" onclick="boutiqueEditSet('palette','${p[0]}')" title="${p[4]}">
           <span class="bq-pal-sw" style="background:${p[2]}"><i style="background:${p[3]}"></i></span>
           <span class="bq-pal-nm">${p[1]}</span>
         </button>`).join('')}
-        <button class="bq-pal ${!_cur ? 'sel' : ''}" onclick="boutiqueEditSet('palette','')" title=t('v_utiliserFond')>
+        <button class="bq-pal ${!_cur ? 'sel' : ''}" onclick="boutiqueEditSet('palette','')" title="${t('v_utiliserFond')}">
           <span class="bq-pal-sw bq-pal-none">✕</span><span class="bq-pal-nm">${t('x2_aucune')}</span>
         </button>
       </div>`;
@@ -31069,7 +32097,7 @@ function vBoutiqueEditor() {
       ${optBtn('borderStyle','square',t('z3_carres'), g('borderStyle','rounded')==='square')}
     </div>
 
-    <div class="bq-sec-title">Bouton commander</div>
+    <div class="bq-sec-title">${t('zz8_boutonCommander')}</div>
     <div class="bq-opts">
       ${optBtn('orderBtnStyle','whatsapp','Vert WhatsApp', g('orderBtnStyle','whatsapp')==='whatsapp')}
       ${optBtn('orderBtnStyle','brand','Couleur marque', g('orderBtnStyle','whatsapp')==='brand')}
@@ -31107,7 +32135,7 @@ function vBoutiqueEditor() {
       <select class="input" onchange="boutiqueEditSetMep('${k}',this.value)">${opts(k, liste)}</select>
       ${aide ? `<div class="bq-hint2">${aide}</div>` : ''}</div>`;
     return `
-    <div class="bq-sec-title">${t('zd_studioMep')} <span class="bq-badge-ent">Entreprise</span></div>
+    <div class="bq-sec-title">${t('zd_studioMep')} <span class="bq-badge-ent">${t('zv_planEntreprise')}</span></div>
 
     <div class="bq-sub-title">${t('ze_grPage')}</div>
     <div class="bq-studio">
@@ -31228,7 +32256,7 @@ function vBoutiqueEditor() {
     <div class="bq-lock" onclick="nav('pricing')">
       <div class="bq-lock-tx"><strong>${t('z7_lockTitre')}</strong><span>${t('z7_lockTx')}</span></div>
     </div>` : `
-    <div class="bq-sec-title">${t('z7_composeur')} <span class="bq-badge-ent">Entreprise</span></div>
+    <div class="bq-sec-title">${t('z7_composeur')} <span class="bq-badge-ent">${t('zv_planEntreprise')}</span></div>
     <div class="bq-hint2" style="margin:-4px 0 8px">${t('z7_composeurAide')}</div>
     <div class="bq-prod-list">
       ${_ordreBq.map((k, i) => {
@@ -31395,7 +32423,7 @@ function vBoutiqueEditor() {
     <div class="bq-lock" onclick="nav('pricing')">
       <div class="bq-lock-tx"><strong>${t('z8_lockTitre')}</strong><span>${t('z8_lockTx')}</span></div>
     </div>` : `
-    <div class="bq-sec-title">${t('z8_collections')} <span class="bq-badge-ent">Entreprise</span></div>
+    <div class="bq-sec-title">${t('z8_collections')} <span class="bq-badge-ent">${t('zv_planEntreprise')}</span></div>
     <div class="bq-hint2" style="margin:-4px 0 8px">${t('z8_collectionsAide')}</div>
     ${_colsBq.map((c, i) => {
       const nom = String(c && c.nom || '').trim();
@@ -31454,7 +32482,7 @@ function vBoutiqueEditor() {
         <select class="input" onchange="boutiqueEditSet('${k}',this.value)">${opB(k, liste)}</select>
         ${aide ? `<div class="bq-hint2">${aide}</div>` : ''}</div>`;
       return `
-    <div class="bq-sec-title" style="margin-top:14px">${t('zf_contenuStudio')} <span class="bq-badge-ent">Entreprise</span></div>
+    <div class="bq-sec-title" style="margin-top:14px">${t('zf_contenuStudio')} <span class="bq-badge-ent">${t('zv_planEntreprise')}</span></div>
 
     <div class="bq-sub-title">${t('ze_grCartes')}</div>
     <div class="bq-studio">
@@ -31522,13 +32550,13 @@ function vBoutiqueEditor() {
     <div class="page-header-row">
       <button class="back-btn" onclick="nav('boutique')">${IC.left}</button>
       <div class="page-title" style="font-size:17px">${t('x2_editeurVisuel')}</div>
-      <button class="fab" onclick="generateBoutiqueSite()" title=t('v_telechargerSite')>${IC.download||'⬇'}</button>
+      <button class="fab" onclick="generateBoutiqueSite()" title="${t('v_telechargerSite')}">${IC.download||'⬇'}</button>
     </div>
   </div>
   <div class="bq-editor">
     <div class="bq-preview-wrap">
       <div class="bq-phone">
-        <iframe id="bq-preview" class="bq-preview-frame" title=t('v_apercuBoutique')></iframe>
+        <iframe id="bq-preview" class="bq-preview-frame" title="${t('v_apercuBoutique')}"></iframe>
         <div class="bq-live-badge"><span class="bq-live-dot"></span> EN DIRECT</div>
       </div>
     </div>
@@ -31588,13 +32616,13 @@ function vBoutiqueAppearance() {
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         ${[
           {color:'#FCD34D',name:'Jaune'},
-          {color:'#059669',name:'Vert'},
+          {color:'#059669',name:t('zw_cVert')},
           {color:'#EA580C',name:'Orange'},
-          {color:'#2563EB',name:'Bleu'},
-          {color:'#F472B6',name:'Rose'},
+          {color:'#2563EB',name:t('zw_cBleu')},
+          {color:'#F472B6',name:t('zw_cRose')},
           {color:'#4F46E5',name:'Indigo'},
           {color:'#000000',name:'Noir'},
-          {color:'#DC2626',name:'Rouge'},
+          {color:'#DC2626',name:t('zw_cRouge')},
         ].map(c => `
         <div onclick="updateBoutiqueConfig('themeColor','${c.color}');render()" style="cursor:pointer;width:48px;height:48px;border-radius:50%;background:${c.color};border:3px solid ${(bc.themeColor||'#4F46E5')===c.color?'#000':'transparent'};display:flex;align-items:center;justify-content:center;color:${c.color==='#FCD34D'||c.color==='#FFFFFF'?'#000':'#fff'};transition:.2s;position:relative">${(bc.themeColor||'#4F46E5')===c.color?'✓':''}</div>`).join('')}
         <label style="cursor:pointer;width:48px;height:48px;border-radius:50%;border:2px dashed var(--border);display:flex;align-items:center;justify-content:center;color:var(--text-3);position:relative">
@@ -31624,10 +32652,10 @@ function vBoutiqueAppearance() {
         <select class="input" style="flex:1" onchange="updateBoutiqueConfig('buttonAnimation',this.value)">
           ${[
             {id:'none',name:t('x2_aucune')},
-            {id:'rebond',name:'Rebond'},
-            {id:'pulse',name:'Pulsation'},
-            {id:'shake',name:'Secousse'},
-            {id:'glow',name:'Lueur'},
+            {id:'rebond',name:t('zx_anRebond')},
+            {id:'pulse',name:t('zx_anPulse')},
+            {id:'shake',name:t('zx_anSecousse')},
+            {id:'glow',name:t('zx_anLueur')},
           ].map(a => `<option value="${a.id}" ${animation===a.id?'selected':''}>${a.name}</option>`).join('')}
         </select>
       </div>
@@ -31685,7 +32713,7 @@ function vBoutiqueDomain() {
     <div class="page-header-row" style="margin-bottom:10px">
       <button class="back-btn-dark" onclick="nav('boutique')">${IC.left}</button>
       <div style="flex:1">
-        <div class="sub-hero-title">Nom de domaine</div>
+        <div class="sub-hero-title">${t('zv_fDom')}</div>
         <div class="sub-hero-sub">${t('w9_personnalisezUrl')}</div>
       </div>
     </div>
@@ -31995,7 +33023,7 @@ function vBoutiqueSEO() {
       <div style="font-size:12px;color:var(--text-3);margin-bottom:10px">${t('zz2_annonceAide').replace('{0}', sym())}</div>
       <div class="form-group">
         <label class="form-label">${t('zz_texteAnnonce')}</label>
-        <input class="input" value="${(bc.announcement||'').replace(/"/g,'&quot;')}" oninput="updateBoutiqueConfig('announcement',this.value)" placeholder=t('zz_exAnnonce')>
+        <input class="input" value="${(bc.announcement||'').replace(/"/g,'&quot;')}" oninput="updateBoutiqueConfig('announcement',this.value)" placeholder="${t('zz_exAnnonce')}">
       </div>
       <label style="display:flex;align-items:center;gap:8px;margin-top:10px;cursor:pointer">
         <input type="checkbox" ${bc.announcementActive?'checked':''} onchange="updateBoutiqueConfig('announcementActive',this.checked);render()">
@@ -32014,16 +33042,16 @@ function vBoutiqueSEO() {
       </div>
       <div class="form-group">
         <label class="form-label">Description SEO (150-160 car.)</label>
-        <textarea class="input" rows="3" oninput="updateBoutiqueConfig('seoDescription',this.value)" placeholder=t('zz_exDescSeo')>${bc.seoDescription||''}</textarea>
+        <textarea class="input" rows="3" oninput="updateBoutiqueConfig('seoDescription',this.value)" placeholder="${t('zz_exDescSeo')}">${bc.seoDescription||''}</textarea>
         <div style="font-size:10px;color:${(bc.seoDescription||'').length>160?'var(--danger)':'var(--text-3)'};margin-top:2px">${(bc.seoDescription||'').length}/160</div>
       </div>
       <div class="form-group">
         <label class="form-label">${t('w9_motsCles')}</label>
-        <input class="input" value="${(bc.seoKeywords||'').replace(/"/g,'&quot;')}" oninput="updateBoutiqueConfig('seoKeywords',this.value)" placeholder=t('zz_exMotsCles')>
+        <input class="input" value="${(bc.seoKeywords||'').replace(/"/g,'&quot;')}" oninput="updateBoutiqueConfig('seoKeywords',this.value)" placeholder="${t('zz_exMotsCles')}">
       </div>
       <div class="form-group">
         <label class="form-label">Image de partage (URL)</label>
-        <input class="input" value="${(bc.ogImage||'').replace(/"/g,'&quot;')}" oninput="updateBoutiqueConfig('ogImage',this.value)" placeholder=t('zz_exImageOg')>
+        <input class="input" value="${(bc.ogImage||'').replace(/"/g,'&quot;')}" oninput="updateBoutiqueConfig('ogImage',this.value)" placeholder="${t('zz_exImageOg')}">
         <div style="font-size:10px;color:var(--text-3);margin-top:2px">${t('w9_partageSocial')}</div>
       </div>
 
@@ -32089,7 +33117,7 @@ function vBoutiqueHours() {
         <div style="width:80px;font-weight:600;font-size:13px">${h.day}</div>
         ${h.closed ? `
           <div style="flex:1;color:var(--text-3);font-size:12px;font-style:italic">${t('w9_ferme')}</div>
-          <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" onclick="toggleHourClosed(${i})">Ouvrir</button>
+          <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" onclick="toggleHourClosed(${i})">${t('zh_ouvrir')}</button>
         ` : `
           <input type="time" class="input" value="${h.open||''}" oninput="updateHour(${i},'open',this.value)" style="width:90px;padding:6px 8px">
           <span style="color:var(--text-3)">→</span>
@@ -32103,15 +33131,15 @@ function vBoutiqueHours() {
       <div class="card-title">${t('zz_livraisonTitre')}</div>
       <div class="form-group">
         <label class="form-label">${t('w9_delaiLivraison')}</label>
-        <input class="input" value="${(bc.deliveryTime||'').replace(/"/g,'&quot;')}" oninput="updateBoutiqueConfig('deliveryTime',this.value)" placeholder="Ex: 24-48h, 2-3 jours">
+        <input class="input" value="${(bc.deliveryTime||'').replace(/"/g,'&quot;')}" oninput="updateBoutiqueConfig('deliveryTime',this.value)" placeholder="${t('zy_exDelai')}">
       </div>
       <div class="form-group">
         <label class="form-label">${t('zz2_livGratuite').replace('{0}', sym())}</label>
-        <input class="input" type="number" value="${bc.freeDeliveryFrom||0}" oninput="updateBoutiqueConfig('freeDeliveryFrom',parseFloat(this.value)||0)" placeholder=t('zz_zeroDesactive')>
+        <input class="input" type="number" value="${bc.freeDeliveryFrom||0}" oninput="updateBoutiqueConfig('freeDeliveryFrom',parseFloat(this.value)||0)" placeholder="${t('zz_zeroDesactive')}">
       </div>
       <div class="form-group">
         <label class="form-label">${t('w9_infosCompl')}</label>
-        <textarea class="input" rows="3" oninput="updateBoutiqueConfig('deliveryInfo',this.value)" placeholder=t('zz_exDelaiLiv')>${bc.deliveryInfo||''}</textarea>
+        <textarea class="input" rows="3" oninput="updateBoutiqueConfig('deliveryInfo',this.value)" placeholder="${t('zz_exDelaiLiv')}">${bc.deliveryInfo||''}</textarea>
       </div>
     </div>
 
@@ -32150,16 +33178,16 @@ function vBoutiquePolicies() {
         <div class="card-title" style="margin-bottom:0">${t('x5_cgv')}</div>
         <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" onclick="loadCgvTemplate()">${t('x5_modele2')}</button>
       </div>
-      <textarea class="input" rows="10" oninput="updateBoutiqueConfig('conditions',this.value)" placeholder=t('zz_exCgv')>${bc.conditions||''}</textarea>
+      <textarea class="input" rows="10" oninput="updateBoutiqueConfig('conditions',this.value)" placeholder="${t('zz_exCgv')}">${bc.conditions||''}</textarea>
       <div style="font-size:10px;color:var(--text-3);margin-top:4px">${t('zz4_caracteres').replace('{0}', (bc.conditions||'').length)}</div>
     </div>
 
     <div class="card" style="margin-bottom:10px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-        <div class="card-title" style="margin-bottom:0">🔄 Politique de retour / remboursement</div>
+        <div class="card-title" style="margin-bottom:0">🔄 ${t('zy_politiqueRetour')}</div>
         <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" onclick="loadReturnTemplate()">${t('x5_modele2')}</button>
       </div>
-      <textarea class="input" rows="6" oninput="updateBoutiqueConfig('returnPolicy',this.value)" placeholder=t('zz_exRetours')>${bc.returnPolicy||''}</textarea>
+      <textarea class="input" rows="6" oninput="updateBoutiqueConfig('returnPolicy',this.value)" placeholder="${t('zz_exRetours')}">${bc.returnPolicy||''}</textarea>
     </div>
 
     <button class="btn btn-primary" style="width:100%" onclick="showToast('✓ Politiques enregistrées');nav('boutique')">${t('zz_enrRetour')}</button>
@@ -32463,8 +33491,8 @@ function showBoutiqueQR() {
       <button class="btn btn-ghost" style="flex:1" onclick="navigator.clipboard&&navigator.clipboard.writeText('${safeUrl}');showToast('Lien copié !')">📋 Copier</button>
       <button class="btn btn-primary" style="flex:1" onclick="window.open('${qrSrc}','_blank')">${t('x5_telechargerIcone')}</button>
     </div>
-    <button class="btn" style="width:100%;margin-top:8px;background:#25D366;color:#fff" onclick="window.open('https://wa.me/?text='+encodeURIComponent('Découvrez ma boutique en ligne 🛍️ : ${safeUrl}'),'_blank')">${IC.whatsapp} Partager le lien</button>
-    <button class="btn btn-ghost" style="width:100%;margin-top:6px;font-size:12px" onclick="document.getElementById('bq-qr-modal').remove()">Fermer</button>
+    <button class="btn" style="width:100%;margin-top:8px;background:#25D366;color:#fff" onclick="window.open('https://wa.me/?text='+encodeURIComponent(t('zze_decouvrezBq').replace('{0}','${safeUrl}')),'_blank')">${IC.whatsapp} ${t('zze_partagerLien')}</button>
+    <button class="btn btn-ghost" style="width:100%;margin-top:6px;font-size:12px" onclick="document.getElementById('bq-qr-modal').remove()">${t('zg_fermer')}</button>
   </div>`;
   document.body.appendChild(modal);
 }
@@ -32537,7 +33565,7 @@ function _poBody(a) {
     <div class="qs-label" style="margin-top:14px">Avis clients ⭐</div>
     ${reviews.map((r,i) => `<div class="po-rev">
       <div style="display:flex;gap:6px;align-items:center">
-        <input class="input" value="${(r.author||'').replace(/"/g,'&quot;')}" placeholder=t('v_nomClient') oninput="_poRevField(${i},'author',this.value)" style="flex:1">
+        <input class="input" value="${(r.author||'').replace(/"/g,'&quot;')}" placeholder="${t('v_nomClient')}" oninput="_poRevField(${i},'author',this.value)" style="flex:1">
         <select class="input" onchange="_poRevField(${i},'rating',this.value)" style="width:64px;flex:0 0 auto">${[5,4,3,2,1].map(n=>`<option value="${n}" ${(+r.rating||5)===n?'selected':''}>${n}★</option>`).join('')}</select>
         <button class="po-del2" onclick="_poDelReview(${i})">🗑</button>
       </div>
@@ -32623,7 +33651,7 @@ function vBoutiqueAnalytics() {
   <div class="container">
     <div class="metric-grid">
       <div class="metric-card"><div class="metric-val">${fmt(caBoutique)}</div><div class="metric-lbl">${t('zz_caBoutique')}</div></div>
-      <div class="metric-card"><div class="metric-val">${nbOrders}</div><div class="metric-lbl">Commandes</div></div>
+      <div class="metric-card"><div class="metric-val">${nbOrders}</div><div class="metric-lbl">${t('w1_lienCommandes')}</div></div>
       <div class="metric-card"><div class="metric-val">${fmt(panierMoyen)}</div><div class="metric-lbl">${t('w4_panierMoyen')}</div></div>
       <div class="metric-card"><div class="metric-val">${vitrine.length}</div><div class="metric-lbl">En vitrine</div></div>
     </div>
@@ -32654,7 +33682,7 @@ function vBoutiqueAnalytics() {
       ${topProds.map((p,i) => { const w = Math.max(4, Math.round((p.rev/topMax)*100)); const col = _CC[i%_CC.length];
         return `<div style="margin-bottom:10px">
           <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
-            <span style="font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.name} <span style="color:var(--text-3);font-weight:500">· ${p.qty} vendu${p.qty>1?'s':''}</span></span>
+            <span style="font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.name} <span style="color:var(--text-3);font-weight:500">· ${p.qty} ${t('zz9_vendus')}</span></span>
             <span style="font-size:12px;font-weight:700;color:${col};flex-shrink:0;margin-left:8px">${fmt(p.rev)} ${sym()}</span>
           </div>
           <div style="height:8px;background:var(--gray-2);border-radius:5px;overflow:hidden"><div style="height:100%;width:${w}%;background:linear-gradient(90deg,${col},${col}cc);border-radius:5px"></div></div>
@@ -32695,7 +33723,7 @@ function vBoutiqueAnalytics() {
       </div>
       ${rows.length ? rows.map(r => `<div style="margin-bottom:9px">
         <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
-          <span style="font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${String(r.name).replace(/</g,'&lt;')} <span style="color:var(--text-3);font-weight:500">· ${r.n} vente${r.n>1?'s':''}</span></span>
+          <span style="font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${String(r.name).replace(/</g,'&lt;')} <span style="color:var(--text-3);font-weight:500">· ${r.n} ${r.n>1?t('w4_ventesN'):t('w4_venteN')}</span></span>
           <b style="font-size:12px;flex-shrink:0;margin-left:8px;color:#8B5CF6">${fmt(r.ca)} ${sym()}</b>
         </div>
         <div style="height:8px;background:var(--gray-2);border-radius:5px;overflow:hidden"><div style="height:100%;width:${Math.max(4,Math.round(r.ca/mx*100))}%;background:linear-gradient(90deg,#8B5CF6,#6366F1);border-radius:5px"></div></div>
@@ -32817,7 +33845,7 @@ function vMarketing() {
     { id:'banners',   label:t('v_bannieres'),  icon:'📢', count: activeBanners.length },
     { id:'popups',    label:'Popups',     icon:'💬', count: activePopups.length },
     { id:'reviews',   label:'Avis',       icon:'⭐', count: reviews.filter(r=>r.approved).length },
-    { id:'campaigns', label:'Campagnes',  icon:'📧', count: campaigns.length },
+    { id:'campaigns', label:t('campaigns'),  icon:'📧', count: campaigns.length },
     { id:'tracking',  label:'Liens',      icon:'🔗', count: tracking.length },
     { id:'loyalty',   label:t('w3_fidelite'),   icon:'🎁', count: (S.loyaltyConfig?.rewards||[]).length },
   ];
@@ -32827,7 +33855,7 @@ function vMarketing() {
     <div class="page-header-row" style="margin-bottom:14px">
       <button class="back-btn-dark" onclick="nav('more')">${IC.left}</button>
       <div style="flex:1">
-        <div class="sub-hero-title">Centre Marketing</div>
+        <div class="sub-hero-title">${t('marketingTitle')}</div>
         <div class="sub-hero-sub">${t('w8_toutOutilsVente')}</div>
       </div>
     </div>
@@ -32895,7 +33923,7 @@ function _renderPromosTab(promos) {
       </div>
       <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end">
         <span class="promo-status ${statusCls}" onclick="event.stopPropagation();togglePromoActive(${p.id})">${statusLabel}</span>
-        <button style="font-size:10px;color:var(--accent);background:none;border:none;cursor:pointer" onclick="event.stopPropagation();sharePromoWhatsApp(${p.id})">${IC.whatsapp} Partager</button>
+        <button style="font-size:10px;color:var(--accent);background:none;border:none;cursor:pointer" onclick="event.stopPropagation();sharePromoWhatsApp(${p.id})">${IC.whatsapp} ${t('invoiceShare')}</button>
       </div>
     </div>`;}).join('')}`;
 }
@@ -33143,7 +34171,7 @@ function _renderPopupsTab(popups) {
       <div style="font-size:12px;color:var(--text-3);margin-bottom:12px">${t('x5_offrezCodePromo')}</div>
       <button class="btn btn-primary" style="max-width:220px;margin:0 auto" onclick="addPopup()">${t('x5_creerPopup')}</button>
     </div>` : popups.map(p => {
-      const trigLabels = { entry:'À l\'entrée', scroll:`Au scroll ${p.triggerValue||50}%`, time:`Après ${p.triggerValue||5}s`, exit:t('v_popSortie') };
+      const trigLabels = { entry:t('zy_alEntree'), scroll:t('zy_auScroll').replace('{0}', p.triggerValue||50), time:t('zy_apres').replace('{0}', p.triggerValue||5), exit:t('v_popSortie') };
       return `
     <div class="card" style="margin-bottom:8px;cursor:pointer" onclick="editPopup(${p.id})">
       <div style="display:flex;align-items:center;gap:12px">
@@ -33238,7 +34266,7 @@ function _renderTrackingTab(tracking) {
       </div>
       <div style="display:flex;gap:6px;margin-top:8px">
         <button class="btn btn-ghost" style="flex:1;font-size:11px;padding:6px" onclick="copyTrackingLink(${tk.id})">${IC.check} Copier</button>
-        <button class="btn btn-ghost" style="flex:1;font-size:11px;padding:6px" onclick="shareTrackingLink(${tk.id})">${IC.whatsapp} Partager</button>
+        <button class="btn btn-ghost" style="flex:1;font-size:11px;padding:6px" onclick="shareTrackingLink(${tk.id})">${IC.whatsapp} ${t('invoiceShare')}</button>
         <button class="btn btn-ghost" style="font-size:11px;padding:6px;color:var(--danger)" onclick="deleteTrackingLink(${tk.id})">🗑</button>
       </div>
     </div>`).join('')}`;
@@ -33288,17 +34316,17 @@ function vPromoForm() {
   <div class="container">
 
     <div class="card" style="margin-bottom:10px">
-      <div class="card-title">${IC.tag||IC.percent} Informations</div>
+      <div class="card-title">${IC.tag||IC.percent} ${t('infoTitle')}</div>
       <div class="form-group">
-        <label class="form-label">Nom <span style="color:var(--danger)">*</span></label>
-        <input class="input" id="promo-name" value="${draft.name||''}" placeholder="Ex: Soldes de Noël" oninput="if(!$('promo-code').dataset.manual)$('promo-code').value=_genPromoCode(this.value)">
+        <label class="form-label">${t('campaignName')} <span style="color:var(--danger)">*</span></label>
+        <input class="input" id="promo-name" value="${draft.name||''}" placeholder="${t('zy_exPromo')}" oninput="if(!$('promo-code').dataset.manual)$('promo-code').value=_genPromoCode(this.value)">
         <div style="font-size:10px;color:var(--text-3);margin-top:2px">${t('x5_nomInterne')}</div>
       </div>
       <div class="form-group">
         <label class="form-label">${t('w8_codePromo')} <span style="color:var(--danger)">*</span></label>
         <div style="display:flex;gap:8px;align-items:stretch">
           <input class="input" id="promo-code" value="${draft.code||''}" placeholder="Ex: NOEL25" style="flex:1 1 auto;text-transform:uppercase;font-family:monospace;font-weight:700;letter-spacing:1px;font-size:18px !important" oninput="this.dataset.manual='1';this.value=this.value.toUpperCase()">
-          <button type="button" class="btn btn-ghost" style="flex:0 0 56px;width:56px;min-height:48px;padding:0;font-size:20px;display:flex;align-items:center;justify-content:center" title=t('w1_genererCode') onclick="$('promo-code').value=_genPromoCode($('promo-name').value||'CODE');$('promo-code').dataset.manual=''">🎲</button>
+          <button type="button" class="btn btn-ghost" style="flex:0 0 56px;width:56px;min-height:48px;padding:0;font-size:20px;display:flex;align-items:center;justify-content:center" title="${t('w1_genererCode')}" onclick="$('promo-code').value=_genPromoCode($('promo-name').value||'CODE');$('promo-code').dataset.manual=''">🎲</button>
         </div>
         <div style="font-size:11px;color:var(--text-3);margin-top:4px">${t('x5_codeSaisiClients')}</div>
       </div>
@@ -33350,12 +34378,12 @@ function vPromoForm() {
       <div class="card-title">${IC.users||IC.user} Limites d'utilisation</div>
       <div class="form-group">
         <label class="form-label">Utilisations maximum (total)</label>
-        <input class="input" id="promo-maxuses" type="number" min="0" value="${draft.maxUses||0}" placeholder=t('w1_zeroIllimite')>
+        <input class="input" id="promo-maxuses" type="number" min="0" value="${draft.maxUses||0}" placeholder="${t('w1_zeroIllimite')}">
         <div style="font-size:10px;color:var(--text-3);margin-top:2px">${t('w1_limiteAide')}</div>
       </div>
       <div class="form-group">
         <label class="form-label">${t('w8_utilisationsMax')}</label>
-        <input class="input" id="promo-maxperclient" type="number" min="0" value="${draft.maxUsesPerClient||0}" placeholder=t('w1_zeroIllimite')>
+        <input class="input" id="promo-maxperclient" type="number" min="0" value="${draft.maxUsesPerClient||0}" placeholder="${t('w1_zeroIllimite')}">
         <div style="font-size:10px;color:var(--text-3);margin-top:2px">${t('w1_parClientAide')}</div>
       </div>
     </div>
@@ -33367,11 +34395,11 @@ function vPromoForm() {
         <input class="input" id="promo-start" type="date" value="${draft.startDate||today}">
       </div>
       <div class="form-group">
-        <label class="form-label">Date de fin</label>
+        <label class="form-label">${t('zza_dateFin')}</label>
         <input class="input" id="promo-end" type="date" value="${draft.endDate||plus30}">
       </div>
       <div style="display:flex;gap:6px;flex-wrap:wrap">
-        ${[{l:'7 jours',d:7},{l:'14 jours',d:14},{l:'30 jours',d:30},{l:'90 jours',d:90}].map(q=>`
+        ${[7,14,30,90].map(d=>({l:t('zz6_nJours').replace('{0}',d),d:d})).map(q=>`
         <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" onclick="const d=new Date();$('promo-start').value=d.toISOString().slice(0,10);d.setDate(d.getDate()+${q.d});$('promo-end').value=d.toISOString().slice(0,10)">${q.l}</button>`).join('')}
       </div>
     </div>
@@ -33463,7 +34491,7 @@ function vPromoDetail() {
     <div style="display:flex;gap:8px">
       <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${valueDisp}</div><div class="hero-stat-lbl">${t('x2_reduction')}</div></div>
       <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${p.usageCount||0}</div><div class="hero-stat-lbl">Utilisations</div></div>
-      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${nbClients}</div><div class="hero-stat-lbl">Clients</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${nbClients}</div><div class="hero-stat-lbl">${t('zy_clients')}</div></div>
     </div>
   </div>
   <div class="container">
@@ -33480,7 +34508,7 @@ function vPromoDetail() {
       <div class="info-row"><span class="info-lbl">Type</span><span class="info-val">${p.type==='fixed'?'Montant fixe':'Pourcentage'}</span></div>
       <div class="info-row"><span class="info-lbl">Valeur</span><span class="info-val" style="color:var(--accent);font-weight:800">${valueDisp}</span></div>
       <div class="info-row"><span class="info-lbl">${t('x4_periode')}</span><span class="info-val">${p.startDate} → ${p.endDate}</span></div>
-      <div class="info-row"><span class="info-lbl">Produits</span><span class="info-val">${(p.products||[]).length===0?'Tous':p.products.length+' spécifique(s)'}</span></div>
+      <div class="info-row"><span class="info-lbl">${t('zx_produits')}</span><span class="info-val">${(p.products||[]).length===0?'Tous':p.products.length+' spécifique(s)'}</span></div>
       <div class="info-row"><span class="info-lbl">Max total</span><span class="info-val">${p.maxUses>0?p.maxUses:'Illimité'}</span></div>
       <div class="info-row"><span class="info-lbl">Max / client</span><span class="info-val">${p.maxUsesPerClient>0?p.maxUsesPerClient:'Illimité'}</span></div>
     </div>
@@ -33500,7 +34528,7 @@ function vPromoDetail() {
     </div>`:''}
 
     <div class="card" style="margin-bottom:10px">
-      <div class="card-title">${IC.share||IC.whatsapp} Partager la réduction</div>
+      <div class="card-title">${IC.share||IC.whatsapp} ${t('zze_partagerReduc')}</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
         <button class="btn btn-ghost" onclick="sharePromoWhatsApp(${p.id})" style="background:#25D36610;color:#25D366;border-color:#25D36640">${IC.whatsapp} WhatsApp</button>
         <button class="btn btn-ghost" onclick="sharePromoSMS(${p.id})">${IC.smartphone||IC.phone} SMS</button>
@@ -33647,13 +34675,13 @@ function vBannerForm() {
   const draft = b || { text:t('z1_exBanniere'), subText:'', emoji:'🚚', bgColor:'#4F46E5', textColor:'#FFFFFF', linkUrl:'', linkText:'', active:true, startDate:today, endDate:plus30, position:'top', dismissible:true };
   const colors = [
     {bg:'#4F46E5', fg:'#fff', name:'Indigo'},
-    {bg:'#059669', fg:'#fff', name:'Vert'},
-    {bg:'#DC2626', fg:'#fff', name:'Rouge'},
+    {bg:'#059669', fg:'#fff', name:t('zw_cVert')},
+    {bg:'#DC2626', fg:'#fff', name:t('zw_cRouge')},
     {bg:'#F59E0B', fg:'#fff', name:'Orange'},
     {bg:'#000000', fg:'#fff', name:'Noir'},
     {bg:'#FFFFFF', fg:'#000', name:'Blanc'},
-    {bg:'#7C3AED', fg:'#fff', name:'Violet'},
-    {bg:'#0284C7', fg:'#fff', name:'Bleu'},
+    {bg:'#7C3AED', fg:'#fff', name:t('zw_cViolet')},
+    {bg:'#0284C7', fg:'#fff', name:t('zw_cBleu')},
   ];
   return `
   <div class="sub-hero">
@@ -33678,7 +34706,7 @@ function vBannerForm() {
     <div class="card" style="margin-bottom:10px">
       <div class="card-title">Contenu</div>
       <div class="form-group">
-        <label class="form-label">Texte <span style="color:var(--danger)">*</span></label>
+        <label class="form-label">${t('z7_texteBloc')} <span style="color:var(--danger)">*</span></label>
         <input class="input" id="bn-text" value="${draft.text||''}" placeholder="${t('z1_exBanniere')}" oninput="$('bn-prev-text').textContent=this.value">
       </div>
       <div class="form-group">
@@ -33704,7 +34732,7 @@ function vBannerForm() {
       <div class="card-title">Action (optionnel)</div>
       <div class="form-group">
         <label class="form-label">${t('w9_texteBouton')}</label>
-        <input class="input" id="bn-linktext" value="${draft.linkText||''}" placeholder=t('v_voirOffres')>
+        <input class="input" id="bn-linktext" value="${draft.linkText||''}" placeholder="${t('v_voirOffres')}">
       </div>
       <div class="form-group">
         <label class="form-label">Lien cible</label>
@@ -33729,7 +34757,7 @@ function vBannerForm() {
       </div>
       <div style="display:flex;gap:8px">
         <div class="form-group" style="flex:1"><label class="form-label">${t('w9_debut')}</label><input class="input" type="date" id="bn-start" value="${draft.startDate||today}"></div>
-        <div class="form-group" style="flex:1"><label class="form-label">Fin</label><input class="input" type="date" id="bn-end" value="${draft.endDate||plus30}"></div>
+        <div class="form-group" style="flex:1"><label class="form-label">${t('zza_fin')}</label><input class="input" type="date" id="bn-end" value="${draft.endDate||plus30}"></div>
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px">
         <div><div style="font-weight:700;font-size:13px">Bouton fermer</div><div style="font-size:11px;color:var(--text-3)">${t('w9_visiteurMasquer')}</div></div>
@@ -33851,7 +34879,7 @@ function vPopupForm() {
       </div>
       <div class="form-group">
         <label class="form-label">${t('w9_message')}</label>
-        <textarea class="input" id="pp-message" rows="3" oninput="$('pp-prev-message').textContent=this.value" placeholder=t('v_popPlaceholder')>${draft.message||''}</textarea>
+        <textarea class="input" id="pp-message" rows="3" oninput="$('pp-prev-message').textContent=this.value" placeholder="${t('v_popPlaceholder')}">${draft.message||''}</textarea>
       </div>
     </div>
 
@@ -33861,7 +34889,7 @@ function vPopupForm() {
         ${[
           {id:'entry',label:t('v_popEntree'),ico:'👋',desc:t('v_popOuverture')},
           {id:'time',label:t('v_popApresTemps'),ico:'⏱️',desc:t('v_popApresSec')},
-          {id:'scroll',label:'Au scroll',ico:'📜',desc:t('v_popApresScroll')},
+          {id:'scroll',label:t('zy_auScrollC'),ico:'📜',desc:t('v_popApresScroll')},
           {id:'exit',label:t('v_popSortie'),ico:'👋',desc:'Intention de partir'},
         ].map(tg => `
         <label class="promo-type-opt ${draft.trigger===tg.id?'selected':''}" onclick="document.querySelectorAll('[data-pp-trig]').forEach(e=>e.classList.remove('selected'));this.classList.add('selected');$('pp-trigger').value='${tg.id}';document.getElementById('pp-trig-val-wrap').style.display=['time','scroll'].includes('${tg.id}')?'block':'none';$('pp-trig-val-lbl').textContent='${tg.id==='time'?'Secondes':tg.id==='scroll'?'% de scroll':''}'" data-pp-trig="${tg.id}">
@@ -33909,7 +34937,7 @@ function vPopupForm() {
     <div class="card" style="margin-bottom:10px">
       <div style="display:flex;gap:8px">
         <div class="form-group" style="flex:1"><label class="form-label">${t('w9_debut')}</label><input class="input" type="date" id="pp-start" value="${draft.startDate||today}"></div>
-        <div class="form-group" style="flex:1"><label class="form-label">Fin</label><input class="input" type="date" id="pp-end" value="${draft.endDate||plus30}"></div>
+        <div class="form-group" style="flex:1"><label class="form-label">${t('zza_fin')}</label><input class="input" type="date" id="pp-end" value="${draft.endDate||plus30}"></div>
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px">
         <div><div style="font-weight:700;font-size:13px">${t('w9_afficherUneFois')}</div><div style="font-size:11px;color:var(--text-3)">${t('w9_parVisiteur')}</div></div>
@@ -34127,7 +35155,7 @@ function vTrackingForm() {
   </div>
   <div class="container">
     <div class="card" style="margin-bottom:10px">
-      <div class="card-title">Informations</div>
+      <div class="card-title">${t('infoTitle')}</div>
       <div class="form-group">
         <label class="form-label">${t('w9_nomCampagne')} <span style="color:var(--danger)">*</span></label>
         <input class="input" id="tk-name" value="${draft.name||''}" placeholder="Ex: Pub Facebook Soldes Janvier">
@@ -34545,7 +35573,7 @@ function schedulePost() {
           <textarea class="input" id="sched-caption" rows="3" style="font-size:16px" placeholder="Votre message..."></textarea>
         </div>
         <div style="display:flex;gap:8px;margin-top:12px">
-          <button class="btn btn-ghost" style="flex:1" onclick="document.getElementById('sched-modal').remove()">Annuler</button>
+          <button class="btn btn-ghost" style="flex:1" onclick="document.getElementById('sched-modal').remove()">${t('cancel')}</button>
           <button class="btn btn-primary" style="flex:2" onclick="__saveScheduledPost()">📅 Programmer</button>
         </div>
       </div>
@@ -34788,8 +35816,8 @@ function vCreator() {
 
     <div class="ce-add">
       <button class="ce-add-btn" onclick="_ceAddTitle()">＋ Titre</button>
-      <button class="ce-add-btn" onclick="_ceAddText()">＋ Texte</button>
-      <button class="ce-add-btn" onclick="_ceAddPrice()">＋ Prix</button>
+      <button class="ce-add-btn" onclick="_ceAddText()">＋ ${t('z7_texteBloc')}</button>
+      <button class="ce-add-btn" onclick="_ceAddPrice()">＋ ${t('zz9_prix')}</button>
       <button class="ce-add-btn" onclick="_ceAddShape('rect')">▭ Forme</button>
       <button class="ce-add-btn" onclick="_ceAddShape('circle')">● Cercle</button>
       <label class="ce-add-btn">📷 Image<input type="file" accept="image/*" style="display:none" onchange="_ceUploadImage(event)"></label>
@@ -35827,7 +36855,7 @@ async function playVideoFromLibrary(id) {
   const modal = document.createElement('div');
   modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:10010;display:flex;align-items:center;justify-content:center;padding:20px';
   modal.onclick = () => modal.remove();
-  modal.innerHTML = `<div onclick="event.stopPropagation()" style="max-width:640px;width:100%"><video src="${url}" controls autoplay style="width:100%;border-radius:12px;background:#000"></video><button class="btn btn-primary" style="width:100%;margin-top:10px" onclick="this.parentElement.parentElement.remove()">Fermer</button></div>`;
+  modal.innerHTML = `<div onclick="event.stopPropagation()" style="max-width:640px;width:100%"><video src="${url}" controls autoplay style="width:100%;border-radius:12px;background:#000"></video><button class="btn btn-primary" style="width:100%;margin-top:10px" onclick="this.parentElement.parentElement.remove()">${t('zg_fermer')}</button></div>`;
   document.body.appendChild(modal);
 }
 async function publishVideoFromLibrary(id) {
@@ -35914,7 +36942,7 @@ function vSocialMedia() {
         <div class="social-name">${p.name}</div>
         <div class="social-stat">${acc?.connected ? acc.username||'Connecte' : 'Non connecte'}</div>
         <button class="social-btn ${acc?.connected?'connected':''}" onclick="toggleSocialAccount('${p.id}','${p.name}')">
-          ${acc?.connected ? 'Deconnecter' : 'Connecter'}
+          ${acc?.connected ? t('zzc_deconnecter') : t('zg_connecter')}
         </button>
       </div>`;}).join('')}
     </div>
@@ -35986,7 +37014,7 @@ function vSocialMedia() {
       <button class="btn btn-primary" style="font-size:12px" onclick="schedulePost()">${t('w9_programmerPub')}</button>
     </div>`}
     ${published.length > 0 ? `
-    <div class="section-hd"><span class="section-lbl">Historique (${published.length})</span></div>
+    <div class="section-hd"><span class="section-lbl">${t('history')} (${published.length})</span></div>
     ${published.slice(0,8).map(p => `
     <div class="sale-item" style="margin-bottom:4px">
       <div class="sale-dot" style="background:${p.channel==='whatsapp'?'#25D366':p.channel==='facebook'?'#1877F2':'var(--accent)'}"></div>
@@ -36125,7 +37153,7 @@ function vSocialSetup() {
       </div>
     </div>
     <div style="display:flex;gap:8px">
-      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${connected?'✓':'—'}</div><div class="hero-stat-lbl">Statut</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${connected?'✓':'—'}</div><div class="hero-stat-lbl">${t('orderStatus')}</div></div>
       <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${(S.scheduledPosts||[]).filter(p=>p.channel===pid&&p.status==='published').length}</div><div class="hero-stat-lbl">${t('y3_publies')}</div></div>
       <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${(S.scheduledPosts||[]).filter(p=>p.channel===pid&&p.status==='scheduled').length}</div><div class="hero-stat-lbl">${t('y3_programmes')}</div></div>
     </div>
@@ -36170,7 +37198,7 @@ function vSocialSetup() {
     </div>
 
     <div style="display:flex;gap:8px;margin-bottom:12px">
-      <button class="btn btn-ghost" style="flex:1" onclick="testSocialConnection('${pid}')">🧪 Tester</button>
+      <button class="btn btn-ghost" style="flex:1" onclick="testSocialConnection('${pid}')">🧪 ${t('zza_tester')}</button>
       <button class="btn btn-primary" style="flex:1" onclick="saveSocialSetup('${pid}')">${t('w7_enregistrer')}</button>
     </div>
     ${connected ? `<button class="btn" style="width:100%;color:var(--danger);border:1px solid var(--danger);background:transparent" onclick="toggleSocialAccount('${pid}','${meta.name}')">🔌 Déconnecter ${meta.name}</button>` : ''}
@@ -36428,7 +37456,7 @@ function vPayments() {
     </div>
     <div style="display:flex;gap:8px">
       <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${methods.filter(m=>m.active).length}</div><div class="hero-stat-lbl">Actifs</div></div>
-      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${S.paymentHistory.length}</div><div class="hero-stat-lbl">Paiements</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${S.paymentHistory.length}</div><div class="hero-stat-lbl">${t('payments')}</div></div>
       <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${fmt(S.paymentHistory.reduce((s,p)=>s+(p.amount||0),0))}</div><div class="hero-stat-lbl">Total</div></div>
     </div>
   </div>
@@ -36453,12 +37481,12 @@ function vPayments() {
       </div>
       ${isActive && method.verified && method.verifiedPhone === method.phone ? `<div style="font-size:9px;color:var(--success);font-weight:800;margin-top:2px">${t('w8_numVerifie')}</div>` : ''}
       <div style="margin-top:8px;text-align:center">
-        <span style="font-size:10px;padding:3px 10px;border-radius:6px;font-weight:700;${isActive?`background:${prov.color}15;color:${prov.color}`:'background:var(--gray-1);color:var(--text-3)'}">${isActive?'Actif — Retirer':'Configurer'}</span>
+        <span style="font-size:10px;padding:3px 10px;border-radius:6px;font-weight:700;${isActive?`background:${prov.color}15;color:${prov.color}`:'background:var(--gray-1);color:var(--text-3)'}">${isActive?t('zzf_actifRetirer'):t('paymentSetup')}</span>
       </div>
     </div>`;}).join('')}
     </div>
 
-    <div class="section-hd"><span class="section-lbl">Historique</span></div>
+    <div class="section-hd"><span class="section-lbl">${t('history')}</span></div>
     ${S.paymentHistory.length === 0 ? `
     <div class="card" style="text-align:center;padding:20px"><div style="color:var(--text-3);font-size:13px">${t('w8_aucunPaiementRecu')}</div></div>
     ` : S.paymentHistory.slice(0,10).map(ph => `
@@ -36535,7 +37563,7 @@ function setupPayment(providerId, providerName) {
           <div style="font-size:11px;color:var(--text-3);margin-top:4px">${t('x1_stockeeChiffree')}</div>
         </div>` : ''}
         <div style="display:flex;gap:8px;margin-top:16px">
-          <button class="btn btn-ghost" style="flex:1" onclick="document.getElementById('pay-setup-modal').remove()">Annuler</button>
+          <button class="btn btn-ghost" style="flex:1" onclick="document.getElementById('pay-setup-modal').remove()">${t('cancel')}</button>
           <button class="btn btn-primary" style="flex:2" onclick="__savePaymentSetup('${providerId}','${providerName.replace(/'/g,'\\\'')}')">✓ Activer</button>
         </div>
         ${currentMethod.active ? `
@@ -36981,7 +38009,7 @@ function vApiSettings() {
           ${(w.events||[]).map(e => `<span style="background:var(--accent-light);color:var(--accent);padding:2px 8px;border-radius:6px;font-size:10px;font-weight:600">${evtLabel(e)}</span>`).join('')}
         </div>` : `<div style="font-size:11px;color:var(--text-3);font-style:italic">${t('y5_aucunEvenement')}</div>`}
         <div style="display:flex;gap:6px;margin-top:10px">
-          <button class="btn btn-ghost" style="flex:1;font-size:11px;padding:6px" onclick="testWebhook('${w.id}')">🧪 Tester</button>
+          <button class="btn btn-ghost" style="flex:1;font-size:11px;padding:6px" onclick="testWebhook('${w.id}')">🧪 ${t('zza_tester')}</button>
           <button class="btn btn-ghost" style="font-size:11px;padding:6px" onclick="editWebhook('${w.id}')">✏️</button>
           <button class="btn btn-ghost" style="font-size:11px;padding:6px" onclick="copyWebhookEndpoint('${w.id}')">📋</button>
           <button class="btn btn-ghost" style="font-size:11px;padding:6px;color:var(--danger)" onclick="deleteWebhook('${w.id}')">🗑</button>
@@ -37792,7 +38820,7 @@ function BARO_INTEGRATIONS_() {
   { id:'jumia', name:'Jumia Seller', desc:t('w5_dJumia'), color:'#F68B1E', icon:IC.globe, category:'ecommerce',
     pays:['CI','SN','NG','GH','KE','EG','MA','TN','UG','DZ'], niveau:'lien',
     setupType:'url', setupLabel:'Lien vendeur Jumia', setupPlaceholder:'https://vendeur.jumia.ci/...', url:'https://vendeur.jumia.ci/' },
-  { id:'yango-market', name:'Yango Achat & Vente', desc:t('w5_dYangoMarket'), color:'#FF4D00', icon:IC.shop, category:'ecommerce',
+  { id:'yango-market', name:t('zz8_yangoMarket'), desc:t('w5_dYangoMarket'), color:'#FF4D00', icon:IC.shop, category:'ecommerce',
     pays:['CI','SN','CM','GH','ZM'], niveau:'lien',
     setupType:'account', setupLabel:'ID Vendeur Yango Market', setupPlaceholder:'YMK-XXXXX', url:'https://market.yango.com/' },
   { id:'facebook-shop', name:'Facebook & Instagram Shop', desc:t('w5_dFacebook'), color:'#0866FF', icon:IC.shop, category:'ecommerce',
@@ -38481,12 +39509,12 @@ function vDeliverySetup() {
     <div class="page-header-row" style="margin-bottom:10px">
       <button class="back-btn-dark" onclick="nav('integrations')">${IC.left}</button>
       <div style="flex:1">
-        <div class="sub-hero-title">${meta.logo} Connexion ${meta.name}</div>
+        <div class="sub-hero-title">${meta.logo} ${t('zza_connexionA').replace('{0}', meta.name)}</div>
         <div class="sub-hero-sub">${connected ? '✓ Déjà connecté — mise à jour possible' : t('w1_assoCompte')}</div>
       </div>
     </div>
     <div style="display:flex;gap:8px">
-      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${connected?'✓':'—'}</div><div class="hero-stat-lbl">Statut</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${connected?'✓':'—'}</div><div class="hero-stat-lbl">${t('orderStatus')}</div></div>
       <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${defaults.city}</div><div class="hero-stat-lbl">Ville</div></div>
       <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${defaults.sandbox?'TEST':'LIVE'}</div><div class="hero-stat-lbl">Mode</div></div>
     </div>
@@ -38537,7 +39565,7 @@ function vDeliverySetup() {
       </div>
       <div style="margin-bottom:10px">
         <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">${t('w8_adresseRetrait')}</label>
-        <input id="ds-address" class="input" value="${(defaults.address||'').replace(/"/g,'&quot;')}" placeholder=t('w1_rueQuartier')>
+        <input id="ds-address" class="input" value="${(defaults.address||'').replace(/"/g,'&quot;')}" placeholder="${t('w1_rueQuartier')}">
       </div>
       <div style="display:flex;gap:8px;margin-bottom:10px">
         <div style="flex:1">
@@ -38580,7 +39608,7 @@ function vDeliverySetup() {
       </div>
       <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0">
         <div style="flex:1">
-          <div style="font-weight:600;font-size:13px">Mode sandbox (test)</div>
+          <div style="font-weight:600;font-size:13px">${t('zzb_sandbox')}</div>
           <div style="font-size:11px;color:var(--text-3)">${t('w1_pasFacture2').replace('{0}', meta.name)}</div>
         </div>
         <label class="toggle-switch"><input type="checkbox" id="ds-sandbox" ${defaults.sandbox?'checked':''}><span class="toggle-track"></span></label>
@@ -38931,7 +39959,7 @@ function vWhatsAppSetup() {
       </div>
     </div>
     <div style="display:flex;gap:8px">
-      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${connected?'✓':'—'}</div><div class="hero-stat-lbl">Statut</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${connected?'✓':'—'}</div><div class="hero-stat-lbl">${t('orderStatus')}</div></div>
       <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${tpls.filter(x=>x.enabled).length}</div><div class="hero-stat-lbl">${t('x1_modeles')}</div></div>
       <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${d.mode==='business'?'META':'wa.me'}</div><div class="hero-stat-lbl">Mode</div></div>
     </div>
@@ -38942,8 +39970,8 @@ function vWhatsAppSetup() {
         <div style="font-size:24px">💡</div>
         <div style="flex:1;font-size:12px;color:var(--text-1);line-height:1.5">
           <strong style="color:#128C7E">Deux modes de fonctionnement :</strong><br>
-          <b>• Mode rapide (wa.me)</b> ${t('w1_ouvreWa')}<br>
-          <b>• Mode pro (Meta Cloud API)</b> ${t('w1_envoiAuto')}
+          <b>• ${t('zzb_waRapide')}</b> ${t('w1_ouvreWa')}<br>
+          <b>• ${t('zzb_waPro')}</b> ${t('w1_envoiAuto')}
         </div>
       </div>
       <div style="display:flex;gap:6px;margin-top:10px">
@@ -38953,18 +39981,18 @@ function vWhatsAppSetup() {
     </div>
 
     <div class="card" style="margin-bottom:10px">
-      <div class="card-title">🔧 Mode d'envoi</div>
+      <div class="card-title">🔧 ${t('zza_modeEnvoi')}</div>
       <label style="display:flex;align-items:center;gap:10px;padding:10px;border:1px solid ${(d.mode||'quick')==='quick'?'#25D366':'var(--border)'};border-radius:8px;margin-bottom:6px;cursor:pointer">
         <input type="radio" name="wa-mode" value="quick" ${(d.mode||'quick')==='quick'?'checked':''}>
         <div style="flex:1">
-          <div style="font-weight:700;font-size:13px">⚡ Mode rapide (wa.me)</div>
+          <div style="font-weight:700;font-size:13px">⚡ ${t('zzb_waRapide')}</div>
           <div style="font-size:11px;color:var(--text-3)">${t('w1_ouvreModele')}</div>
         </div>
       </label>
       <label style="display:flex;align-items:center;gap:10px;padding:10px;border:1px solid ${d.mode==='business'?'#25D366':'var(--border)'};border-radius:8px;cursor:pointer">
         <input type="radio" name="wa-mode" value="business" ${d.mode==='business'?'checked':''}>
         <div style="flex:1">
-          <div style="font-weight:700;font-size:13px">🚀 Mode pro (Meta Cloud API)</div>
+          <div style="font-weight:700;font-size:13px">🚀 ${t('zzb_waPro')}</div>
           <div style="font-size:11px;color:var(--text-3)">${t('w1_envoiDirect')}</div>
         </div>
       </label>
@@ -39027,7 +40055,7 @@ function vWhatsAppSetup() {
         <input type="checkbox" id="wa-auto-sale" ${d.autoSale?'checked':''}>
       </label>
       <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
-        <div><div style="font-weight:700;font-size:13px">Envoi auto livraison</div><div style="font-size:11px;color:var(--text-3)">${t('w1_autoExped')}</div></div>
+        <div><div style="font-weight:700;font-size:13px">${t('zza_envoiAutoLiv')}</div><div style="font-size:11px;color:var(--text-3)">${t('w1_autoExped')}</div></div>
         <input type="checkbox" id="wa-auto-ship" ${d.autoShip?'checked':''}>
       </label>
       <label style="display:flex;justify-content:space-between;align-items:center;padding:10px 0">
@@ -39037,7 +40065,7 @@ function vWhatsAppSetup() {
     </div>
 
     <div style="display:flex;gap:8px;margin-bottom:12px">
-      <button class="btn btn-ghost" style="flex:1" onclick="testWhatsAppConnection()">🧪 Tester l'envoi</button>
+      <button class="btn btn-ghost" style="flex:1" onclick="testWhatsAppConnection()">🧪 ${t('zza_testerEnvoi')}</button>
       <button class="btn btn-primary" style="flex:1" onclick="saveWhatsAppSetup()">${t('w7_enregistrer')}</button>
     </div>
     ${connected ? `<button class="btn" style="width:100%;color:var(--danger);border:1px solid var(--danger);background:transparent" onclick="disconnectIntegration('whatsapp-business','WhatsApp Business')">${t('x1_deconnecterWa')}</button>` : ''}
@@ -39244,7 +40272,7 @@ function SMS_DEFAULT_TEMPLATES_() {
   { id:'order_confirm',   label:t('w1_lblConfirm'), enabled:true,  body:"{{business}}: Cmd {{ref}} confirmee. Total {{total}} {{sym}}. Merci!" },
   { id:'payment_request', label:t('w1_lblPaiement'),      enabled:true,  body:t('u_sFacture') },
   { id:'otp_code',        label:t('u_sCodeLbl'),  enabled:true,  body:t('u_sCode') },
-  { id:'promo_push',      label:'Promo flash',           enabled:false, body:"{{business}}: {{promo_text}} Offre valable jusqu'au {{expires}}." },
+  { id:'promo_push',      label:'Promo flash',           enabled:false, body:t('zz5_smsPromo') },
   ];
   return _smsTplCache;
 }
@@ -39270,8 +40298,8 @@ function vSmsSetup() {
       </div>
     </div>
     <div style="display:flex;gap:8px">
-      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${connected?'✓':'—'}</div><div class="hero-stat-lbl">Statut</div></div>
-      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${provider.name.split(' ')[0]}</div><div class="hero-stat-lbl">Fournisseur</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${connected?'✓':'—'}</div><div class="hero-stat-lbl">${t('orderStatus')}</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${provider.name.split(' ')[0]}</div><div class="hero-stat-lbl">${t('z2_fournisseur')}</div></div>
       <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${tpls.filter(t=>t.enabled).length}</div><div class="hero-stat-lbl">${t('x1_modeles')}</div></div>
     </div>
   </div>
@@ -39288,7 +40316,7 @@ function vSmsSetup() {
     </div>
 
     <div class="card" style="margin-bottom:10px">
-      <div class="card-title">📡 Fournisseur</div>
+      <div class="card-title">📡 ${t('z2_fournisseur')}</div>
       <select id="sms-provider" class="input" onchange="S.smsSetupProvider=this.value;render()">
         ${SMS_PROVIDERS.map(p => `<option value="${p.id}" ${(d.provider||SMS_PROVIDERS[0].id)===p.id?'selected':''}>${p.name}</option>`).join('')}
       </select>
@@ -39484,7 +40512,7 @@ function _waNormalize(p) {
 function _waBcastState() {
   if (!S._waBcast) {
     const biz = (S.session && S.session.business) || 'notre boutique';
-    S._waBcast = { msg: `Bonjour {nom} 👋\n\n${biz} a une nouveauté pour vous ! Passez nous voir 🙏`, sent: {} };
+    S._waBcast = { msg: t('zz8_waDefaut').replace('{0}', biz), sent: {} };
   }
   return S._waBcast;
 }
@@ -39505,7 +40533,7 @@ function vWhatsappBroadcast() {
       </div>
     </div>
     <div style="display:flex;gap:8px">
-      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${clients.length}</div><div class="hero-stat-lbl">Clients</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${clients.length}</div><div class="hero-stat-lbl">${t('zy_clients')}</div></div>
       <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${sentCount}</div><div class="hero-stat-lbl">${t('w9_envoyes')}</div></div>
       <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${pct}%</div><div class="hero-stat-lbl">Progression</div></div>
     </div>
@@ -39541,7 +40569,7 @@ function vWhatsappBroadcast() {
               <div style="font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${(c.name||'Client').replace(/</g,'&lt;')}</div>
               <div style="font-size:11px;color:var(--text-3)">${c.phone}</div>
             </div>
-            <button class="btn ${done?'btn-ghost':'btn-secondary'}" style="padding:6px 12px;font-size:12px" onclick="_waBcastSendOne('${c.id}')">${done?'Renvoyer':'Envoyer'}</button>
+            <button class="btn ${done?'btn-ghost':'btn-secondary'}" style="padding:6px 12px;font-size:12px" onclick="_waBcastSendOne('${c.id}')">${done?t('zzf_renvoyer'):t('campaignSend')}</button>
           </div>`;
         }).join('')}
       </div>`}
@@ -39610,7 +40638,7 @@ function _waBcastReset() {
 function _smsBcastState() {
   if (!S._smsBcast) {
     const biz = (S.session && S.session.business) || 'Notre boutique';
-    S._smsBcast = { msg: `${biz}: bonjour {nom}, une offre vous attend ! Passez vite.`, running: false, results: {} };
+    S._smsBcast = { msg: t('zz8_smsDefaut').replace('{0}', biz), running: false, results: {} };
   }
   return S._smsBcast;
 }
@@ -39631,7 +40659,7 @@ function vSmsBroadcast() {
       </div>
     </div>
     <div style="display:flex;gap:8px">
-      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${clients.length}</div><div class="hero-stat-lbl">Clients</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${clients.length}</div><div class="hero-stat-lbl">${t('zy_clients')}</div></div>
       <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${okCount}</div><div class="hero-stat-lbl">${t('w9_envoyes')}</div></div>
       <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${failCount}</div><div class="hero-stat-lbl">${t('w9_echecs')}</div></div>
     </div>
@@ -39753,8 +40781,8 @@ function _emailBcastState() {
   if (!S._emailBcast) {
     const biz = (S.session && S.session.business) || 'Notre boutique';
     S._emailBcast = {
-      subject: `${biz} — une nouveauté pour vous`,
-      msg: `Bonjour,\n\n${biz} a le plaisir de vous présenter ses nouveautés. Passez nous voir ou répondez à cet email pour commander !\n\nÀ très vite,\nL'équipe ${biz}`,
+      subject: t('zz8_mailObjet').replace('{0}', biz),
+      msg: t('zz8_mailCorps').split('{0}').join(biz),
     };
   }
   return S._emailBcast;
@@ -39861,8 +40889,8 @@ function vEcommerceSetup() {
       </div>
     </div>
     <div style="display:flex;gap:8px">
-      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${connected?'✓':'—'}</div><div class="hero-stat-lbl">Statut</div></div>
-      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${productsCount}</div><div class="hero-stat-lbl">Produits</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${connected?'✓':'—'}</div><div class="hero-stat-lbl">${t('orderStatus')}</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${productsCount}</div><div class="hero-stat-lbl">${t('zx_produits')}</div></div>
       <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${alreadySynced}</div><div class="hero-stat-lbl">${t('y3_dejaSync')}</div></div>
     </div>
   </div>
@@ -39916,7 +40944,7 @@ function vEcommerceSetup() {
     <div class="card" style="margin-bottom:10px">
       <div class="card-title">🚀 Actions manuelles</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px">
-        <button class="btn btn-primary" style="font-size:12px;padding:10px" onclick="ecommerceSyncProducts('${provider}')">⬆️ Push produits</button>
+        <button class="btn btn-primary" style="font-size:12px;padding:10px" onclick="ecommerceSyncProducts('${provider}')">⬆️ ${t('zy_pushProduits')}</button>
         <button class="btn btn-ghost" style="font-size:12px;padding:10px" onclick="ecommercePullOrders('${provider}')">⬇️ Pull commandes</button>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
@@ -39926,7 +40954,7 @@ function vEcommerceSetup() {
     </div>
 
     <div style="display:flex;gap:8px;margin-bottom:12px">
-      <button class="btn btn-ghost" style="flex:1" onclick="testEcommerceConnection('${provider}')">🧪 Tester connexion</button>
+      <button class="btn btn-ghost" style="flex:1" onclick="testEcommerceConnection('${provider}')">🧪 ${t('zza_testerConn')}</button>
       <button class="btn btn-primary" style="flex:1" onclick="saveEcommerceSetup('${provider}')">${t('w7_enregistrer')}</button>
     </div>
     ${connected ? `<button class="btn" style="width:100%;color:var(--danger);border:1px solid var(--danger);background:transparent" onclick="disconnectIntegration('${provider}','${meta.name}')">🔌 Déconnecter ${meta.name}</button>` : ''}
@@ -40157,7 +41185,7 @@ function vSheetsSetup() {
       </div>
     </div>
     <div style="display:flex;gap:8px">
-      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${connected?'✓':'—'}</div><div class="hero-stat-lbl">Statut</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${connected?'✓':'—'}</div><div class="hero-stat-lbl">${t('orderStatus')}</div></div>
       <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${d.pushedCount||0}</div><div class="hero-stat-lbl">Lignes push</div></div>
       <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${d.lastPush?fmtDate(d.lastPush).slice(0,5):'—'}</div><div class="hero-stat-lbl">Dernier</div></div>
     </div>
@@ -40169,7 +41197,7 @@ function vSheetsSetup() {
         <div style="flex:1;font-size:12px;color:var(--text-1);line-height:1.5">
           <strong style="color:#0F9D58">Comment obtenir l'Access Token ?</strong><br>
           ${t('v_sheets1')} <em>Google Cloud Console</em> → activez <em>Google Sheets API</em>.<br>
-          2) OAuth consent screen → ajoutez scope <code>spreadsheets</code>.<br>
+          ${t('zz5_oauthScope').replace('{0}','<code>spreadsheets</code>')}<br>
           ${t('v_sheets3')}<br>
           ${t('v_sheets4')}
         </div>
@@ -40217,7 +41245,7 @@ function vSheetsSetup() {
     </div>
 
     <div style="display:flex;gap:8px;margin-bottom:12px">
-      <button class="btn btn-ghost" style="flex:1" onclick="testSheetsConnection()">🧪 Tester</button>
+      <button class="btn btn-ghost" style="flex:1" onclick="testSheetsConnection()">🧪 ${t('zza_tester')}</button>
       <button class="btn btn-primary" style="flex:1" onclick="saveSheetsSetup()">${t('w7_enregistrer')}</button>
     </div>
     ${connected ? `<button class="btn" style="width:100%;color:var(--danger);border:1px solid var(--danger);background:transparent" onclick="disconnectIntegration('google-sheets','Google Sheets')">${t('x1_deconnecter')}</button>` : ''}
@@ -40330,7 +41358,7 @@ function vPosSetup() {
       </div>
     </div>
     <div style="display:flex;gap:8px">
-      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${connected?'✓':'—'}</div><div class="hero-stat-lbl">Statut</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${connected?'✓':'—'}</div><div class="hero-stat-lbl">${t('orderStatus')}</div></div>
       <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${d.printedCount||0}</div><div class="hero-stat-lbl">Tickets</div></div>
       <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${d.model?d.model.slice(0,6):'—'}</div><div class="hero-stat-lbl">${t('x3_modele')}</div></div>
     </div>
@@ -40352,7 +41380,7 @@ function vPosSetup() {
       </div>
       <div style="margin-bottom:10px">
         <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">${t('x3_enteteTicket')}</label>
-        <input id="pos-header" class="input" value="${(d.header||S.session?.business||'').replace(/"/g,'&quot;')}" placeholder=t('v_maBoutiqueMaj')>
+        <input id="pos-header" class="input" value="${(d.header||S.session?.business||'').replace(/"/g,'&quot;')}" placeholder="${t('v_maBoutiqueMaj')}">
       </div>
       <div style="margin-bottom:10px">
         <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">Pied de ticket (ex. Merci ! RC/NINEA…)</label>
@@ -40385,7 +41413,7 @@ function vPosSetup() {
     </div>
 
     <div style="display:flex;gap:8px;margin-bottom:12px">
-      <button class="btn btn-ghost" style="flex:1" onclick="testPosConnection()">🧪 Tester connexion</button>
+      <button class="btn btn-ghost" style="flex:1" onclick="testPosConnection()">🧪 ${t('zza_testerConn')}</button>
       <button class="btn btn-primary" style="flex:1" onclick="savePosSetup()">${t('w7_enregistrer')}</button>
     </div>
     ${connected ? `<button class="btn" style="width:100%;color:var(--danger);border:1px solid var(--danger);background:transparent" onclick="disconnectIntegration('pos','Caisse POS')">${t('x1_deconnecter')}</button>` : ''}
@@ -40551,7 +41579,7 @@ function vComptaSetup() {
       </div>
     </div>
     <div style="display:flex;gap:8px">
-      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${connected?'✓':'—'}</div><div class="hero-stat-lbl">Statut</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${connected?'✓':'—'}</div><div class="hero-stat-lbl">${t('orderStatus')}</div></div>
       <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${d.pushedCount||0}</div><div class="hero-stat-lbl">${t('x1_ecritures')}</div></div>
       <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${d.provider||'—'}</div><div class="hero-stat-lbl">Logiciel</div></div>
     </div>
@@ -40565,14 +41593,14 @@ function vComptaSetup() {
     </div>
 
     <div class="card" style="margin-bottom:10px">
-      <div class="card-title">🔐 Connexion API</div>
+      <div class="card-title">🔐 ${t('zza_connexionApi')}</div>
       <div style="margin-bottom:10px">
         <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">Endpoint (URL)</label>
         <input id="cp-endpoint" class="input" value="${(d.endpoint||'').replace(/"/g,'&quot;')}" placeholder="https://api.sage.com/...">
       </div>
       <div style="margin-bottom:10px">
         <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">${t('x1_tokenCleApi')}</label>
-        <input id="cp-token" class="input" type="password" value="${(d.apiKey||'').replace(/"/g,'&quot;')}" placeholder=t('v_bearerToken')>
+        <input id="cp-token" class="input" type="password" value="${(d.apiKey||'').replace(/"/g,'&quot;')}" placeholder="${t('v_bearerToken')}">
       </div>
       <div style="margin-bottom:10px">
         <label style="font-size:11px;color:var(--text-3);display:block;margin-bottom:3px">NINEA / RCCM / IFU (fiscal)</label>
@@ -40609,7 +41637,7 @@ function vComptaSetup() {
     </div>
 
     <div style="display:flex;gap:8px;margin-bottom:12px">
-      <button class="btn btn-ghost" style="flex:1" onclick="testComptaConnection()">🧪 Tester</button>
+      <button class="btn btn-ghost" style="flex:1" onclick="testComptaConnection()">🧪 ${t('zza_tester')}</button>
       <button class="btn btn-primary" style="flex:1" onclick="saveComptaSetup()">${t('w7_enregistrer')}</button>
     </div>
     ${connected ? `<button class="btn" style="width:100%;color:var(--danger);border:1px solid var(--danger);background:transparent" onclick="disconnectIntegration('comptabilite','Comptabilité OHADA')">${t('x1_deconnecter')}</button>` : ''}
@@ -40858,8 +41886,8 @@ function importProductsFromCSV() {
 function vSpectraEnhanced() {
   const modes = [
     { id:'photo',      icon:IC.camera,  label:'Photo scan',          desc:t('z_scannerPhoto') },
-    { id:'barcode',    icon:IC.barcode, label:'Code-barres',         desc:'Scanner un code-barres' },
-    { id:'continuous', icon:IC.target,  label:'Scan continu',        desc:t('z_detectTemps') },
+    { id:'barcode',    icon:IC.barcode, label:'Code-barres',         desc:t('zy_scanCB') },
+    { id:'continuous', icon:IC.target,  label:t('spectraContinuous'),        desc:t('z_detectTemps') },
     { id:'yolo',       icon:IC.zap,     label:'YOLO IA',             desc:t('z_detectMulti') },
   ];
   const scanHistory = S.spectraScanHistory || [];
@@ -40975,7 +42003,7 @@ function vSpectraEnhanced() {
       </div>
       <div style="display:flex;gap:8px;margin-top:12px">
         <button class="btn btn-primary" style="flex:1" onclick="spectraCaptureFromContinuous()">${IC.check} Capturer + OCR</button>
-        <button class="btn btn-ghost" style="flex:1" onclick="spectraReset()">Annuler</button>
+        <button class="btn btn-ghost" style="flex:1" onclick="spectraReset()">${t('cancel')}</button>
       </div>
       <div style="margin-top:10px;font-size:11px;color:var(--text-3);text-align:center">
         💡 OCR lit la marque/label sur l'emballage pour identifier le produit précisément
@@ -41001,7 +42029,7 @@ function vSpectraEnhanced() {
       <div style="display:flex;gap:8px;margin-top:12px">
         <input type="file" id="spectra-file" accept="image/*" capture="environment" style="display:none" onchange="spectraOnFile(this)">
         <button class="btn btn-ghost" style="flex:1" onclick="document.getElementById('spectra-file').click()">${t('y3_photoALaPlace')}</button>
-        <button class="btn btn-ghost" style="flex:1" onclick="spectraReset()">Annuler</button>
+        <button class="btn btn-ghost" style="flex:1" onclick="spectraReset()">${t('cancel')}</button>
       </div>
     </div>`;
   }
@@ -41129,7 +42157,7 @@ function vSpectraEnhanced() {
       <div class="spectra-tuto-body">
         <div class="spectra-step">
           <div class="spectra-step-n">1</div>
-          <div><div class="spectra-step-t">${t('x3_creeCleGroq')}</div><div class="spectra-step-d">Ouvre <a href="https://console.groq.com/keys" target="_blank" rel="noopener noreferrer" style="color:var(--accent);font-weight:700">console.groq.com/keys</a> → connecte-toi (Google/email) → « Create API Key ». <strong>${t('x3_gratuitSansCarte')}</strong></div></div>
+          <div><div class="spectra-step-t">${t('x3_creeCleGroq')}</div><div class="spectra-step-d">Ouvre <a href="https://console.groq.com/keys" target="_blank" rel="noopener noreferrer" style="color:var(--accent);font-weight:700">console.groq.com/keys</a> ${t('y3_connecteToi')} <strong>${t('x3_gratuitSansCarte')}</strong></div></div>
         </div>
         <div class="spectra-step">
           <div class="spectra-step-n">2</div>
@@ -41140,11 +42168,11 @@ function vSpectraEnhanced() {
           <div><div class="spectra-step-t">Scanne n'importe quel produit</div><div class="spectra-step-d">${t('z_spPhotoVideo')}</div></div>
         </div>
         <button class="btn btn-primary" style="margin-top:6px;background:linear-gradient(135deg,#F55036,#7C3AED)" onclick="event.preventDefault();nav('spectra-ai-setup')">${t('z_activerMtn')}</button>
-        <div style="font-size:11px;color:var(--text-3);margin-top:10px;line-height:1.5">${t('x3_sansCleSpectra')} <strong>${t('x3_codeBarresDico')}</strong> de 300+ produits locaux (hors-ligne).</div>
+        <div style="font-size:11px;color:var(--text-3);margin-top:10px;line-height:1.5">${t('x3_sansCleSpectra')} <strong>${t('x3_codeBarresDico')}</strong> ${t('zy_dico300')}</div>
       </div>
     </details>
 
-    <div class="section-hd"><span class="section-lbl" style="color:#7c3aed;font-weight:800;letter-spacing:.5px">✦ MODE DE SCAN</span></div>
+    <div class="section-hd"><span class="section-lbl" style="color:#7c3aed;font-weight:800;letter-spacing:.5px">✦ ${t('zzb_modeScan')}</span></div>
     <div class="spectra-mode-grid">
       ${modes.map(m => `
       <div class="spectra-mode-btn ${S.spectraMode===m.id?'active':''}" onclick="S.spectraMode='${m.id}';render()">
@@ -41252,7 +42280,7 @@ function vPurchaseOrdersEnhanced() {
       <button class="fab" onclick="nav('add-order')">${IC.plus}</button>
     </div>
     <div style="display:flex;gap:8px">
-      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${pending.length}</div><div class="hero-stat-lbl">En attente</div></div>
+      <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${pending.length}</div><div class="hero-stat-lbl">${t('orderPending')}</div></div>
       <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${shipped.length}</div><div class="hero-stat-lbl">${t('y3_expediees')}</div></div>
       <div class="hero-stat" style="flex:1"><div class="hero-stat-val">${received.length}</div><div class="hero-stat-lbl">${t('y3_recues')}</div></div>
     </div>
@@ -41271,7 +42299,7 @@ function vPurchaseOrdersEnhanced() {
     ${['pending','shipped','received','cancelled'].map(status => {
       const filtered = orders.filter(o=>o.status===status);
       if (filtered.length===0) return '';
-      const labels = {pending:'En attente',shipped:'Expédiées',received:'Reçues',cancelled:'Annulées'};
+      const labels = {pending:t('orderPending'),shipped:t('zz7_expediees'),received:t('zz7_recues'),cancelled:t('zz7_annulees')};
       const colors = {pending:'var(--warning)',shipped:'var(--accent)',received:'var(--success)',cancelled:'var(--danger)'};
       return `
     <div class="section-hd"><span class="section-lbl">${labels[status]} (${filtered.length})</span></div>
@@ -41302,11 +42330,11 @@ function vPurchaseOrdersEnhanced() {
       <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:9px;color:var(--text-3)"><span>${t('y3_commandee')}</span><span>${t('y3_expediee')}</span><span>${t('y3_livree')}</span></div>`:''}
       ${status==='pending'?`
       <div style="display:flex;gap:6px;margin-top:10px">
-        <button class="btn btn-ghost" style="flex:1;padding:8px;font-size:12px" onclick="markOrderShipped(${o.id})">${IC.truck} Expédiée</button>
-        <button class="btn btn-primary" style="flex:1;padding:8px;font-size:12px" onclick="receiveOrder(${o.id})">${IC.check} Reçue</button>
+        <button class="btn btn-ghost" style="flex:1;padding:8px;font-size:12px" onclick="markOrderShipped(${o.id})">${IC.truck} ${t('zz7_expediee')}</button>
+        <button class="btn btn-primary" style="flex:1;padding:8px;font-size:12px" onclick="receiveOrder(${o.id})">${IC.check} ${t('orderReceived')}</button>
       </div>`:''}
       ${status==='shipped'?`
-      <div style="margin-top:10px"><button class="btn btn-primary" style="padding:8px;font-size:12px" onclick="receiveOrder(${o.id})">${IC.check} Marquer reçue</button></div>`:''}
+      <div style="margin-top:10px"><button class="btn btn-primary" style="padding:8px;font-size:12px" onclick="receiveOrder(${o.id})">${IC.check} ${t('zz8_marquerRecue')}</button></div>`:''}
     </div>`;}).join('')}`;}).join('')}`}
   </div>`;
 }
