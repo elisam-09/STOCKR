@@ -270,6 +270,29 @@ const API_BASE = (location.hostname === 'localhost' || location.hostname === '12
 // ── i18n ─────────────────────────────────────
 const LANGS = {
   fr: {
+    zpy_erreurTitre: "Paiement momentanément indisponible",
+    zpy_annule: "Paiement annulé — aucun montant n'a été prélevé.",
+    zpy_connexionRequise: "Connectez-vous à votre compte en ligne pour gérer votre abonnement.",
+    zpy_verification: "Paiement terminé — confirmation en cours auprès du serveur…",
+    zpy_toujoursRien: "La confirmation n'est pas encore arrivée. Votre forfait s'activera tout seul dès sa réception : rouvrez l'app dans quelques minutes.",
+    zpy_synchro: "Forfait {0} activé — paiement confirmé",
+    zpy_expire: "Votre abonnement est terminé — retour au forfait Gratuit",
+    zpy_essaiTermine: "Votre essai {0} est terminé — retour au forfait Gratuit",
+    zpy_essaiDejaUtilise: "Essai gratuit déjà utilisé pour ce forfait",
+    zpy_essai14: "Essai gratuit 14 jours",
+    zpy_payer: "Payer maintenant — {0}",
+    zpy_forfait: "Forfait {0}",
+    zpy_indispoTitre: "Paiement en ligne pas encore ouvert",
+    zpy_indispoFerme: "Le paiement en ligne n'est pas encore activé sur BARO : aucun montant ne vous sera demandé tant qu'il ne l'est pas. En attendant, l'essai gratuit de 14 jours vous donne tout le forfait.",
+    zpy_indispoConnexion: "Souscrire demande un compte en ligne : connectez-vous d'abord, puis revenez ici.",
+    zpy_indispoErreur: "Le serveur de paiement n'a pas répondu. Réessayez dans un instant.",
+    zpy_cinetpayResil: "Cet abonnement a été payé pour une période, sans prélèvement automatique : il n'y a rien à résilier. Il s'arrêtera de lui-même à sa date de fin.",
+    zpy_portailIndispo: "Impossible d'ouvrir la gestion de l'abonnement",
+    zpy_gererResilier: "Gérer ou résilier mon abonnement",
+    zpy_carteStripe: "carte bancaire (paiement sécurisé par Stripe)",
+    zpy_paiementBientot: "Paiement en ligne bientôt disponible — essai gratuit de 14 jours en attendant",
+    zpy_declare: "Merci. Votre forfait s'activera dès que le paiement sera confirmé par le serveur.",
+    zpy_essaiJusqu: "Essai gratuit jusqu'au {0}",
     zzh_rythmeAide: "Unités vendues par jour de semaine, sur tout votre historique. Le jour le plus fort est {0}.",
     zzh_parSemaine: "{0} / semaine",
     zzh_stock: "stock",
@@ -3409,6 +3432,29 @@ const LANGS = {
     version:'Version',
   },
   en: {
+    zpy_erreurTitre: "Payment temporarily unavailable",
+    zpy_annule: "Payment cancelled — nothing was charged.",
+    zpy_connexionRequise: "Sign in to your online account to manage your subscription.",
+    zpy_verification: "Payment complete — confirming with the server…",
+    zpy_toujoursRien: "The confirmation hasn't arrived yet. Your plan will switch on by itself as soon as it does: reopen the app in a few minutes.",
+    zpy_synchro: "{0} plan active — payment confirmed",
+    zpy_expire: "Your subscription has ended — back to the Free plan",
+    zpy_essaiTermine: "Your {0} trial has ended — back to the Free plan",
+    zpy_essaiDejaUtilise: "Free trial already used for this plan",
+    zpy_essai14: "14-day free trial",
+    zpy_payer: "Pay now — {0}",
+    zpy_forfait: "{0} plan",
+    zpy_indispoTitre: "Online payment not open yet",
+    zpy_indispoFerme: "Online payment isn't switched on for BARO yet: you won't be asked for any money until it is. Meanwhile, the 14-day free trial gives you the whole plan.",
+    zpy_indispoConnexion: "Subscribing needs an online account: sign in first, then come back here.",
+    zpy_indispoErreur: "The payment server didn't answer. Try again in a moment.",
+    zpy_cinetpayResil: "This subscription was paid for one period, with no automatic charge: there is nothing to cancel. It will stop by itself on its end date.",
+    zpy_portailIndispo: "Could not open subscription management",
+    zpy_gererResilier: "Manage or cancel my subscription",
+    zpy_carteStripe: "bank card (secure payment by Stripe)",
+    zpy_paiementBientot: "Online payment coming soon — 14-day free trial in the meantime",
+    zpy_declare: "Thank you. Your plan will switch on as soon as the payment is confirmed by the server.",
+    zpy_essaiJusqu: "Free trial until {0}",
     zzh_rythmeAide: "Units sold by day of the week, over your whole history. The busiest day is {0}.",
     zzh_parSemaine: "{0} / week",
     zzh_stock: "stock",
@@ -8196,22 +8242,89 @@ function _billingLinkFor(planKey, billing) {
   const links = _billingLinks();
   return links[planKey]?.[billing] || links[planKey]?.monthly || '';
 }
-// Au retour du paiement : ?baro_paid=pro → active le plan
+// Au retour d'une page de paiement. L'adresse ne prouve RIEN : n'importe
+// qui pouvait taper « ?baro_paid=enterprise » et obtenir le forfait payé.
+// Le forfait ne s'active plus que lorsque le serveur a reçu la
+// confirmation signée du fournisseur de paiement.
 function _handlePaymentReturn() {
   try {
     const params = new URLSearchParams(location.search);
-    const paid = params.get('baro_paid');
-    if (paid && ['starter','pro','enterprise'].includes(paid)) {
-      _doActivatePlan(paid, { trial: false, paid: true });
-      showToast(`✅ Paiement reçu — plan ${paid.toUpperCase()} activé !`, 'success');
-      // Nettoie l'URL
-      params.delete('baro_paid');
-      const clean = location.pathname + (params.toString() ? '?' + params.toString() : '');
-      history.replaceState(null, '', clean);
-      return true;
-    }
-  } catch(_) {}
+    const retour = params.get('billing');
+    const ancien = params.get('baro_paid');
+    if (!retour && !ancien) return false;
+    params.delete('billing'); params.delete('baro_paid');
+    history.replaceState(null, '', location.pathname + (params.toString() ? '?' + params.toString() : '') + location.hash);
+    if (retour === 'cancel') { setTimeout(() => showToast(t('zpy_annule'), 'info'), 600); return true; }
+    if (retour === 'portal') { setTimeout(() => { try { _syncBillingStatus(); } catch (_) {} }, 800); return true; }
+    // Paiement terminé (ou ancien lien) : on attend la confirmation serveur.
+    setTimeout(() => _attendreConfirmationPaiement(0), 1200);
+    return true;
+  } catch (_) {}
   return false;
+}
+
+// Le webhook du fournisseur peut arriver quelques secondes après le retour
+// sur l'app : on interroge le serveur toutes les 3 s pendant une minute.
+async function _attendreConfirmationPaiement(essai) {
+  if (USE_LOCAL || !S.token) { showToast(t('zpy_connexionRequise'), 'info'); return; }
+  if (essai === 0) showToast(t('zpy_verification'), '');
+  try { await _syncBillingStatus(); } catch (_) {}
+  if (S.subscription && S.subscription.source === 'server' && S.subscription.plan !== 'free') { render(); return; }
+  if (essai >= 20) { showToast(t('zpy_toujoursRien'), 'info'); return; }
+  setTimeout(() => _attendreConfirmationPaiement(essai + 1), 3000);
+}
+
+// Essais : un par forfait et par compte, sur cet appareil.
+function _essaisUtilises() {
+  try { return JSON.parse(localStorage.getItem('baro_essais') || '{}') || {}; } catch (_) { return {}; }
+}
+function _cleEssai() {
+  return String((S.session && (S.session.id || S.session.email)) || 'local');
+}
+function _essaiPris(planKey) {
+  return !!((_essaisUtilises()[_cleEssai()] || {})[planKey]);
+}
+
+// Paiement impossible pour l'instant : on le dit, sans rien activer.
+function __planPaiementIndisponible(planKey, raison, detail) {
+  const old = document.getElementById('__planIndispoModal'); if (old) old.remove();
+  const texte = raison === 'connexion' ? t('zpy_indispoConnexion')
+    : raison === 'erreur' ? t('zpy_indispoErreur') : t('zpy_indispoFerme');
+  const esc = v => String(v == null ? '' : v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const modal = document.createElement('div');
+  modal.id = '__planIndispoModal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px';
+  modal.onclick = e => { if (e.target === modal) modal.remove(); };
+  modal.innerHTML = `
+    <div style="background:var(--surface);border-radius:var(--r-xl);padding:24px;max-width:400px;width:100%">
+      <div style="font-size:18px;font-weight:900;color:var(--text-1);text-align:center">${raison === 'erreur' ? t('zpy_erreurTitre') : t('zpy_indispoTitre')}</div>
+      <div style="font-size:13px;color:var(--text-2);line-height:1.6;margin:10px 0 16px;text-align:center">${texte}</div>
+      ${raison === 'erreur' && detail ? `<div style="font-size:11px;color:var(--text-2);margin:-6px 0 14px;text-align:center">${esc(detail)}</div>` : ''}
+      ${_essaiPris(planKey)
+        ? `<div style="font-size:12px;color:var(--text-2);text-align:center;margin-bottom:10px">${t('zpy_essaiDejaUtilise')}</div>`
+        : `<button class="btn btn-primary" style="width:100%;padding:13px;font-weight:800;margin-bottom:8px" onclick="__planStartTrial('${planKey}')">🎁 ${t('zpy_essai14')}</button>`}
+      <button class="btn btn-ghost" style="width:100%;padding:11px" onclick="document.getElementById('__planIndispoModal').remove()">${t('zg_fermer')}</button>
+    </div>`;
+  document.body.appendChild(modal);
+}
+
+async function _ouvrirPortailAbonnement() {
+  if (USE_LOCAL || !S.token) { showToast(t('zpy_connexionRequise'), 'info'); return; }
+  try {
+    const r = await api('POST', '/api/billing/portal', {});
+    if (r && r.url) { location.href = r.url; return; }
+    showToast(t('zpy_portailIndispo'), 'error');
+  } catch (e) {
+    showToast(t('zpy_portailIndispo') + (e && e.message ? ' — ' + e.message : ''), 'error');
+  }
+}
+
+function _moyensPaiementTexte() {
+  const cf = S.billingConfigured;
+  if (cf && cf.stripe && cf.cinetpay) return t('zs_paiement') + ' : ' + t('zs_carte') + ' · Wave · Orange Money · MTN · Moov';
+  if (cf && cf.stripe) return t('zs_paiement') + ' : ' + t('zpy_carteStripe');
+  if (cf && cf.cinetpay) return t('zs_paiement') + ' : Wave · Orange Money · MTN · Moov';
+  return t('zpy_paiementBientot');
 }
 
 function activatePlan(planKey) {
@@ -8229,7 +8342,8 @@ function activatePlan(planKey) {
   const labels = { starter:'Starter', pro:'Professional', enterprise:'Enterprise' };
   const billing = S.subscription.billing || 'monthly';
   const price = prices[planKey]?.[billing] || 0;
-  const label = labels[planKey] || planKey;
+  const label = _planLabel(planKey);
+  const essaiPris = _essaiPris(planKey);
 
   // Modal de choix
   const modal = document.createElement('div');
@@ -8239,17 +8353,17 @@ function activatePlan(planKey) {
     <div style="background:var(--surface);border-radius:20px;padding:24px;max-width:420px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3);animation:slideUp .3s">
       <div style="text-align:center;margin-bottom:18px">
         <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#7C3AED);display:inline-flex;align-items:center;justify-content:center;font-size:32px;margin-bottom:10px">💎</div>
-        <div style="font-size:20px;font-weight:900;color:var(--text-1)">Plan ${label}</div>
-        <div style="font-size:14px;color:var(--text-3);margin-top:4px">${fmt(price)} ${sym()} / ${billing==='yearly'?'an':'mois'}</div>
+        <div style="font-size:20px;font-weight:900;color:var(--text-1)">${t('zpy_forfait').replace('{0}', label)}</div>
+        <div style="font-size:14px;color:var(--text-2);margin-top:4px">${_prixPlan(price)} FCFA / ${billing==='yearly' ? t('zs_an') : t('zs_mois')}</div>
       </div>
-      <button class="btn btn-primary" style="width:100%;padding:14px;font-size:15px;font-weight:800;margin-bottom:8px" onclick="__planStartTrial('${planKey}')">
-        🎁 Essai gratuit 14 jours
+      ${essaiPris
+        ? `<div style="font-size:12px;color:var(--text-2);text-align:center;margin-bottom:10px">${t('zpy_essaiDejaUtilise')}</div>`
+        : `<button class="btn btn-primary" style="width:100%;padding:14px;font-size:15px;font-weight:800;margin-bottom:8px" onclick="__planStartTrial('${planKey}')">🎁 ${t('zpy_essai14')}</button>`}
+      <button class="btn btn-ghost" style="width:100%;padding:14px;font-size:15px;font-weight:700;border:2px solid var(--accent);color:var(--text-1);margin-bottom:8px" onclick="__planPayNow('${planKey}', ${price})">
+        💳 ${t('zpy_payer').replace('{0}', _prixPlan(price) + ' FCFA')}
       </button>
-      <button class="btn btn-ghost" style="width:100%;padding:14px;font-size:15px;font-weight:700;border:2px solid var(--accent);color:var(--accent);margin-bottom:8px" onclick="__planPayNow('${planKey}', ${price})">
-        💳 Payer maintenant — ${fmt(price)} ${sym()}
-      </button>
-      <button class="btn btn-ghost" style="width:100%;padding:10px;font-size:13px;color:var(--text-3)" onclick="__planConfirmClose()">
-        Annuler
+      <button class="btn btn-ghost" style="width:100%;padding:10px;font-size:13px;color:var(--text-2)" onclick="__planConfirmClose()">
+        ${t('cancel')}
       </button>
     </div>
   `;
@@ -8261,49 +8375,33 @@ function __planConfirmClose() {
 }
 function __planStartTrial(planKey) {
   __planConfirmClose();
+  const m = document.getElementById('__planIndispoModal'); if (m) m.remove();
+  if (_essaiPris(planKey)) { showToast(t('zpy_essaiDejaUtilise'), 'info'); return; }
+  const u = _essaisUtilises();
+  u[_cleEssai()] = Object.assign({}, u[_cleEssai()], { [planKey]: new Date().toISOString() });
+  try { localStorage.setItem('baro_essais', JSON.stringify(u)); } catch (_) {}
   _doActivatePlan(planKey, { trial: true });
 }
 async function __planPayNow(planKey, amount) {
   __planConfirmClose();
   const billing = S.subscription.billing || 'monthly';
-  // 0) Checkout serveur (Stripe abonnement / CinetPay) — le vrai débit automatique.
-  //    Actif dès que le backend est déployé avec les clés de paiement.
-  if (!USE_LOCAL && S.token) {
-    try {
-      const ck = await api('POST', '/api/billing/checkout', { plan: planKey, billing });
-      if (ck && ck.url) {
-        try { window.open(ck.url, '_blank'); } catch(_) { location.href = ck.url; }
-        showToast('Page de paiement sécurisée ouverte (' + (ck.provider || 'paiement') + ')', '');
-        return;
-      }
-    } catch(e) {
-      // 501 = paiement non configuré côté serveur → replis locaux ci-dessous (honnête)
-      if (!/non configur/i.test(e.message || '')) { showToast(e.message, 'error'); }
+  // Le seul chemin qui débite réellement ET prouve le paiement : le checkout
+  // serveur (Stripe / CinetPay), confirmé par un webhook signé. Les anciens
+  // replis (lien de paiement, Mobile Money puis « Oui, j'ai payé ») activaient
+  // le forfait sur simple déclaration.
+  if (USE_LOCAL || !S.token) { __planPaiementIndisponible(planKey, 'connexion'); return; }
+  try {
+    const ck = await api('POST', '/api/billing/checkout', { plan: planKey, billing });
+    if (ck && ck.url) {
+      // Même onglet : au retour, l'app vérifie le paiement auprès du serveur.
+      location.href = ck.url;
+      return;
     }
+    __planPaiementIndisponible(planKey, 'ferme');
+  } catch (e) {
+    const msg = (e && e.message) || '';
+    __planPaiementIndisponible(planKey, /non configur|501/i.test(msg) ? 'ferme' : 'erreur', msg);
   }
-  // 1) Lien de paiement hébergé configuré (Stripe/CinetPay/PayDunya/Wave) → page sécurisée
-  const link = _billingLinkFor(planKey, billing);
-  if (link) {
-    try { window.open(link, '_blank'); } catch(_) { location.href = link; }
-    // Au retour (redirect ?baro_paid=plan), le plan s'active automatiquement.
-    // En attendant, propose la confirmation manuelle (fallback si pas de redirect).
-    setTimeout(() => __planShowConfirmModal(planKey, amount, 'lien'), 1200);
-    return;
-  }
-  // 2) Sinon : Mobile Money / PayPal (USSD + confirmation)
-  const active = (S.paymentMethods||[]).filter(m => m.active);
-  if (active.length === 0) {
-    // Pas de moyen configuré → ouvrir directement le choix des providers populaires
-    __planShowPaymentPicker(planKey, amount);
-    return;
-  }
-  // 1 seule méthode → l'utiliser directement
-  if (active.length === 1) {
-    await __planProcessPayment(active[0].provider, planKey, amount);
-    return;
-  }
-  // Plusieurs méthodes → afficher un choix visuel
-  __planShowMethodPicker(planKey, amount, active);
 }
 
 // Sélecteur visuel des moyens de paiement configurés
@@ -8399,8 +8497,8 @@ async function __planProcessPayment(providerId, planKey, amount) {
     setTimeout(() => __planShowConfirmModal(planKey, amount, providerId), 1200);
     return;
   }
-  // Pour PaymentRequest W3C (gpay/applepay/card) : activation immédiate
-  _doActivatePlan(planKey, { trial: false, paid: true });
+  // Un paiement W3C sans serveur ne prouve rien : pas d'activation locale.
+  __planPaiementIndisponible(planKey, 'ferme');
 }
 
 // Modal de confirmation post-paiement (mobile money / PayPal)
@@ -8420,7 +8518,7 @@ function __planShowConfirmModal(planKey, amount, providerId) {
       <div style="background:var(--bg);border-radius:10px;padding:12px;margin-bottom:14px;font-size:12px;color:var(--text-2);line-height:1.5">
         <strong>⚠️ Important :</strong> ${isLink ? 'Termine le paiement sur la page ouverte. Si elle te redirige vers l\'app, le plan s\'active automatiquement. Sinon clique "Oui" une fois payé.' : 'Ne cliquez sur "Oui" que si le paiement a bien été débité sur votre ' + (providerId === 'paypal' ? 'PayPal' : 'Mobile Money') + '. Vous recevrez un SMS de confirmation.'}
       </div>
-      <button class="btn btn-primary" style="width:100%;padding:14px;font-size:15px;font-weight:800;margin-bottom:8px" onclick="document.getElementById('__planConfirmPayModal').remove();_doActivatePlan('${planKey}', { trial:false, paid:true });logActivity('payment','Plan ${planKey} payé via ${providerId} — ${amount} FCFA')">
+      <button class="btn btn-primary" style="width:100%;padding:14px;font-size:15px;font-weight:800;margin-bottom:8px" onclick="document.getElementById('__planConfirmPayModal').remove();showToast(t('zpy_declare'),'info')">
         ✅ Oui, paiement effectué
       </button>
       <button class="btn btn-ghost" style="width:100%;padding:12px;font-size:13px;color:var(--danger);border:1px solid var(--danger)" onclick="document.getElementById('__planConfirmPayModal').remove();showToast('Paiement annulé — réessayez','info')">
@@ -8464,7 +8562,21 @@ function _vEnterpriseLock(icon, title, desc, perks, retour) {
     </div>
   </div>`;
 }
-function _currentPlan() { return (S.subscription && S.subscription.plan) || 'free'; }
+function _currentPlan() {
+  const sub = S.subscription;
+  if (!sub || !sub.plan) return 'free';
+  // Un essai a une fin. Elle était affichée mais jamais appliquée : les
+  // « 14 jours » donnaient le forfait pour toujours.
+  if (sub.plan !== 'free' && sub.trialEnd && !sub.paid && sub.source !== 'server'
+      && new Date(sub.trialEnd).getTime() < Date.now()) {
+    const fini = sub.plan;
+    S.subscription = { plan: 'free', activated: null, billing: sub.billing || 'monthly', essaiTermine: fini };
+    try { localStorage.setItem('baro_subscription', JSON.stringify(S.subscription)); } catch (_) {}
+    setTimeout(() => { try { showToast(t('zpy_essaiTermine').replace('{0}', _planLabel(fini)), 'info'); } catch (_) {} }, 400);
+    return 'free';
+  }
+  return sub.plan;
+}
 function _planLimit(feature) {
   const lim = PLAN_LIMITS[_currentPlan()] || PLAN_LIMITS.free;
   return lim[feature];
@@ -8615,7 +8727,10 @@ function cancelPlan() {
   // réinitialiser ici serait mensonger (le prélèvement continuerait, et la
   // synchro serveur réappliquerait le plan au prochain démarrage).
   if (S.subscription?.source === 'server') {
-    alert(t('zv_resilEnLigne').replace('{0}', S.subscription.provider === 'stripe' ? ' via Stripe' : S.subscription.provider === 'cinetpay' ? ' via CinetPay' : ''));
+    // Stripe : prélèvement automatique → portail de gestion (résiliation en
+    // ligne). CinetPay : paiement de la période, rien ne se renouvelle.
+    if (S.subscription.provider === 'stripe') { _ouvrirPortailAbonnement(); return; }
+    alert(t('zpy_cinetpayResil'));
     return;
   }
   if (!confirm(t('confirmCancel') + ' ?')) return;
@@ -8638,6 +8753,7 @@ async function _syncBillingStatus() {
   try {
     const st = await api('GET', '/api/billing/status');
     if (!st || !st.plan) return;
+    S.billingConfigured = st.configured || null;
     const cur = S.subscription || {};
     if (st.status === 'active' && st.plan !== 'free') {
       if (cur.plan !== st.plan || cur.source !== 'server') {
@@ -8651,7 +8767,7 @@ async function _syncBillingStatus() {
           source: 'server',
         };
         localStorage.setItem('baro_subscription', JSON.stringify(S.subscription));
-        showToast(`✅ Abonnement ${st.plan.toUpperCase()} synchronisé depuis le serveur`, 'success');
+        showToast('✅ ' + t('zpy_synchro').replace('{0}', _planLabel(st.plan)), 'success');
         render();
       } else if (cur.expires !== st.expires) {
         S.subscription = { ...cur, expires: st.expires || null };
@@ -8660,7 +8776,7 @@ async function _syncBillingStatus() {
     } else if (['expired', 'cancelled', 'past_due'].includes(st.status) && cur.source === 'server' && cur.plan !== 'free') {
       S.subscription = { plan: 'free', activated: null, billing: cur.billing || 'monthly' };
       localStorage.setItem('baro_subscription', JSON.stringify(S.subscription));
-      showToast('Votre abonnement a expiré — plan Gratuit', 'info');
+      showToast(t('zpy_expire'), 'info');
       render();
     }
   } catch (e) { /* hors-ligne ou backend absent : on garde l'état local, sans bruit */ }
@@ -22560,6 +22676,7 @@ function vPricing() { return vSubscription(); } // Fusion : /pricing === /subscr
 
 // ── SUBSCRIPTION — 4 plans BARO ─────────────────
 function vSubscription() {
+  _currentPlan();   // applique la fin d'un essai avant d'afficher
   const sub = S.subscription;
   const isActive = sub.plan !== 'free';
   const trialDays = sub.trialEnd ? Math.max(0, Math.ceil((new Date(sub.trialEnd) - Date.now()) / 86400000)) : 0;
@@ -22576,8 +22693,8 @@ function vSubscription() {
   const planMeta = {
     free:       { label:t('zs_gratuit'), color:'#64748B', emoji:'🎁', desc:t('zs_dFree') },
     starter:    { label:'Starter', color:'#0EA5E9', emoji:'🚀', desc:t('zs_dStarter') },
-    pro:        { label:'Professional', color:'var(--accent)', emoji:'💎', desc:t('zs_dPro'), popular:true },
-    enterprise: { label:'Enterprise', color:'var(--success)', emoji:'🏢', desc:t('zs_dEnterprise') },
+    pro:        { label:_planLabel('pro'), color:'var(--accent)', emoji:'💎', desc:t('zs_dPro'), popular:true },
+    enterprise: { label:_planLabel('enterprise'), color:'var(--success)', emoji:'🏢', desc:t('zs_dEnterprise') },
   };
 
   return `
@@ -22622,7 +22739,9 @@ function vSubscription() {
         <span style="color:var(--text-2)">${f}</span>
       </div>`).join('')}
       <div style="display:flex;gap:8px;margin-top:16px">
-        <button class="btn btn-ghost" style="flex:1;color:var(--danger);border-color:var(--danger)" onclick="cancelPlan()">${t('x4_resilier')}</button>
+        ${sub.source === 'server' && sub.provider === 'stripe'
+          ? `<button class="btn btn-ghost" style="flex:1" onclick="_ouvrirPortailAbonnement()">${t('zpy_gererResilier')}</button>`
+          : `<button class="btn btn-ghost" style="flex:1;color:var(--danger);border-color:var(--danger)" onclick="cancelPlan()">${t('x4_resilier')}</button>`}
       </div>
     </div>` : ''}
 
@@ -22668,13 +22787,12 @@ function vSubscription() {
         ✅ ${t('zs_tousIncluent')}
       </div>
       <div style="font-size:11px;color:var(--text-3);margin-top:8px;line-height:1.5">
-        💳 ${t('zs_paiement')} : Wave · Orange Money · Moov · MTN MoMo · ${t('zs_carte')} · PayPal · Google Pay · Apple Pay<br>
+        💳 ${_moyensPaiementTexte()}<br>
         🔒 ${t('zs_resiliable')}
       </div>
       <div style="font-size:11px;color:var(--accent);margin-top:6px;font-weight:700">support@baro.app</div>
     </div>
 
-    <button class="btn btn-ghost" style="margin-top:12px;font-size:12px;color:var(--text-3)" onclick="nav('billing-setup')">⚙️ ${t('zs_configEncaissement')}</button>
   </div>`;
 }
 
@@ -23945,7 +24063,7 @@ function vSettings() {
                 const sub = S.subscription || {};
                 const d = s => new Date(s).toLocaleDateString(_lang==='en'?'en-US':'fr-FR', { day:'numeric', month:'long', year:'numeric' });
                 if (sub.source === 'server' && sub.expires) return `Payé · renouvellement le ${d(sub.expires)}`;
-                if (sub.trialEnd && new Date(sub.trialEnd) > new Date()) return `Essai gratuit jusqu'au ${d(sub.trialEnd)}`;
+                if (sub.trialEnd && new Date(sub.trialEnd) > new Date()) return t('zpy_essaiJusqu').replace('{0}', d(sub.trialEnd));
                 return t('subscriptionManage');
               })()}</div>
             </div>

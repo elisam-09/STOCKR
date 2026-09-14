@@ -131,6 +131,37 @@ def billing_checkout(user):
     return jsonify({'error': "Paiement non configuré : ajoutez STRIPE_SECRET_KEY ou CINETPAY_API_KEY + CINETPAY_SITE_ID dans les variables d'environnement du serveur."}), 501
 
 
+# ── Gérer ou résilier (portail client Stripe) ──
+# En France, un abonnement souscrit en ligne doit pouvoir se résilier en
+# ligne, simplement (« résiliation en trois clics », en vigueur depuis
+# 2023). Le portail Stripe le fait : moyen de paiement, factures,
+# résiliation. Il doit avoir été enregistré une fois dans le tableau de
+# bord Stripe (Paramètres → Facturation → Portail client) en mode réel.
+@billing_bp.route('/portal', methods=['POST'])
+@token_required
+def billing_portal(user):
+    if not _stripe_key():
+        return jsonify({'error': "Stripe n'est pas configuré sur le serveur."}), 501
+    if user.billing_provider != 'stripe' or not user.billing_customer_id:
+        return jsonify({'error': "Aucun abonnement Stripe à gérer pour ce compte."}), 404
+    form = {
+        'customer': user.billing_customer_id,
+        'return_url': _frontend_url() + '/?billing=portal',
+    }
+    req = urllib.request.Request(
+        'https://api.stripe.com/v1/billing_portal/sessions',
+        data=urllib.parse.urlencode(form).encode(),
+        headers={'Authorization': 'Bearer ' + _stripe_key(),
+                 'Content-Type': 'application/x-www-form-urlencoded'},
+        method='POST')
+    try:
+        with urllib.request.urlopen(req, timeout=20) as r:
+            session = json.loads(r.read().decode())
+        return jsonify({'url': session['url']})
+    except urllib.error.HTTPError as e:
+        return jsonify({'error': 'Stripe a refusé l\'ouverture du portail', 'detail': e.read().decode()[:300]}), 502
+
+
 def _activate(user_id, plan, cycle, provider, customer_id=None):
     """Active un plan pour un utilisateur (appelé uniquement par les webhooks vérifiés)."""
     user = User.query.get(int(user_id))
