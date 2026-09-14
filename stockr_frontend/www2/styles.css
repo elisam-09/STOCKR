@@ -37,6 +37,11 @@
      Le plan Entreprise peut le poser a la main.                       */
   --accent-2: color-mix(in srgb, var(--accent) 62%, #FFFFFF);
   --bd-w: 1px;
+  --on-accent: #FFFFFF;
+  --accent-sur: var(--accent);
+  --accent-hero: var(--accent);
+  --accent-2-sur: var(--accent-2);
+  --on-accent-soft: rgba(255,255,255,.72);
   --r-scale: 1;
   --sh-scale: 1;
   --r-xs:   calc(4px  * var(--r-scale));
@@ -190,7 +195,7 @@
 [data-theme="dark"] .chip,
 [data-theme="dark"] .filter-chip { background: var(--card-bg); border-color: var(--border); color: var(--text-2); }
 [data-theme="dark"] .chip.active,
-[data-theme="dark"] .filter-chip.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+[data-theme="dark"] .filter-chip.active { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
 [data-theme="dark"] .btn-ghost { background: var(--card-bg); border-color: var(--border); color: var(--text-1); }
 [data-theme="dark"] .btn-ghost:hover { background: var(--gray-2); }
 [data-theme="dark"] .sub-hero { background: linear-gradient(135deg, #1A1E2A 0%, #11141C 100%); }
@@ -200,7 +205,7 @@
 [data-theme="dark"] .status { background: var(--gray-2); }
 [data-theme="dark"] .progress { background: var(--gray-2); }
 [data-theme="dark"] .toggle-btn { background: var(--card-bg); color: var(--text-2); }
-[data-theme="dark"] .toggle-btn.t-active { background: var(--accent); color: #fff; }
+[data-theme="dark"] .toggle-btn.t-active { background: var(--accent); color: var(--on-accent); }
 [data-theme="dark"] .search-wrap .input-search { background: var(--card-bg); border-color: var(--border); color: var(--text-1); }
 [data-theme="dark"] .info-row { border-color: var(--border); }
 [data-theme="dark"] .info-lbl { color: var(--text-3); }
@@ -381,7 +386,8 @@ body.view-entering .anim { animation: fadeUp 0.3s cubic-bezier(0.2, 0, 0, 1) bot
 
 /* ── Hero ───────────────────────────────────── */
 .hero {
-  background: linear-gradient(140deg, #0f0a2e 0%, #1e1b4b 30%, #312e81 60%, var(--accent) 100%);
+  background: linear-gradient(140deg, #0f0a2e 0%, #1e1b4b 30%, #312e81 60%,
+              var(--accent-hero, var(--accent)) 100%);
   color: var(--white);
   padding: 52px 20px 22px;
   border-radius: 0 0 var(--r-xl) var(--r-xl);
@@ -408,7 +414,7 @@ body.view-entering .anim { animation: fadeUp 0.3s cubic-bezier(0.2, 0, 0, 1) bot
   animation: subHeroPulse 12s ease-in-out infinite reverse;
 }
 .hero-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; position: relative; z-index: 1; }
-.hero-greeting { font-size: 12px; color: rgba(255,255,255,0.5); font-weight: 500; margin-bottom: 2px; }
+.hero-greeting { font-size: 12px; color: rgba(255,255,255,0.86); font-weight: 500; margin-bottom: 2px; }
 .hero-name { font-size: 26px; font-weight: 800; color: var(--white); line-height: 1.1; }
 
 .hero-btn {
@@ -442,7 +448,7 @@ body.view-entering .anim { animation: fadeUp 0.3s cubic-bezier(0.2, 0, 0, 1) bot
   50%      { box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 0 12px 2px rgba(239,68,68,0.3); }
 }
 .hero-stat-val  { font-size: 20px; font-weight: 900; color: var(--white); line-height: 1; margin-bottom: 2px; letter-spacing: -0.5px; }
-.hero-stat-lbl  { font-size: 9px; color: rgba(255,255,255,0.55); font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; }
+.hero-stat-lbl  { font-size: 9px; color: rgba(255,255,255,0.88); font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; }
 
 /* ── Sub-page Header ────────────────────────── */
 .page-header {
@@ -703,8 +709,10 @@ select.input { cursor: pointer; }
 }
 .btn:active { transform: scale(0.97); }
 .btn-primary {
-  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 60%, var(--accent-2) 100%);
-  color: var(--white); width: 100%;
+  background: linear-gradient(135deg, var(--accent-sur, var(--accent)) 0%,
+              var(--accent-2-sur, var(--accent-2)) 60%,
+              var(--accent-2-sur, var(--accent-2)) 100%);
+  color: var(--on-accent); width: 100%;
   box-shadow: 0 8px 24px -10px color-mix(in srgb, var(--accent) 55%, transparent), 0 2px 4px color-mix(in srgb, var(--accent) 15%, transparent);
   position: relative; overflow: hidden;
   letter-spacing: 0.2px;
@@ -737,15 +745,15 @@ select.input { cursor: pointer; }
 .chip-row { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin: 6px 0 8px; }
 .chip { background: var(--gray-1); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 5px 12px; font-size: 12px; font-weight: 700; cursor: pointer; color: var(--text-2); transition: all var(--t); }
 .chip:active { transform: scale(0.94); }
-.chip.active { background: var(--accent); border-color: var(--accent); color: white; }
+.chip.active { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
 
 /* ── Action Toggle ──────────────────────────── */
 .action-toggle { display: flex; gap: 8px; margin-bottom: 14px; }
 .toggle-btn { flex: 1; padding: 12px; background: var(--gray-1); border: 1px solid var(--border); border-radius: var(--r-md); cursor: pointer; text-align: center; transition: all var(--t); }
 .toggle-btn.t-active { background: var(--accent); border-color: var(--accent); }
-.toggle-btn.t-active .toggle-label { color: var(--white); }
+.toggle-btn.t-active .toggle-label { color: var(--on-accent); }
 .toggle-ico   { display: flex; justify-content: center; margin-bottom: 4px; color: var(--text); }
-.toggle-btn.t-active .toggle-ico { color: var(--white); }
+.toggle-btn.t-active .toggle-ico { color: var(--on-accent); }
 .toggle-label { font-size: 12px; font-weight: 700; color: var(--text-2); }
 
 /* ── Info Row ───────────────────────────────── */
@@ -867,13 +875,14 @@ select.input { cursor: pointer; }
 .rank-item { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--gray-2); }
 .rank-item:last-child { border-bottom: none; }
 .rank-num  { width: 24px; height: 24px; border-radius: 50%; background: var(--gray-1); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; color: var(--text-2); flex-shrink: 0; }
-.rank-num.r1 { background: var(--accent); color: var(--white); border-color: var(--accent); }
+.rank-num.r1 { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
 .rank-name { flex: 1; font-weight: 600; font-size: 13px; }
 .rank-rev  { font-weight: 800; font-size: 13px; }
 
 /* ── Sub-hero ───────────────────────────────── */
 .sub-hero {
-  background: linear-gradient(140deg, #0f0a2e 0%, #1e1b4b 30%, #312e81 60%, var(--accent) 100%);
+  background: linear-gradient(140deg, #0f0a2e 0%, #1e1b4b 30%, #312e81 60%,
+              var(--accent-hero, var(--accent)) 100%);
   color: var(--white); padding: max(52px, calc(env(safe-area-inset-top) + 22px)) 20px 24px;
   border-radius: 0 0 var(--r-xl) var(--r-xl);
   position: relative; overflow: hidden;
@@ -902,7 +911,7 @@ select.input { cursor: pointer; }
   50% { transform: scale(1.15); opacity: 0.75; }
 }
 .sub-hero-title { font-size: 22px; font-weight: 800; margin-bottom: 2px; position: relative; z-index: 1; letter-spacing: -0.3px; }
-.sub-hero-sub   { font-size: 12px; color: rgba(255,255,255,0.62); position: relative; z-index: 1; font-weight: 500; }
+.sub-hero-sub   { font-size: 12px; color: rgba(255,255,255,0.90); position: relative; z-index: 1; font-weight: 500; }
 .sub-hero-big   {
   font-size: 36px; font-weight: 900; margin: 8px 0 2px;
   position: relative; z-index: 1; letter-spacing: -1.2px;
@@ -4016,29 +4025,29 @@ input[name="code"].promo,
    ═══════════════════════════════════════════════════════════════ */
 .hero {
   background: linear-gradient(140deg,
-    color-mix(in srgb, var(--accent) 85%, #0a0a2e) 0%,
-    color-mix(in srgb, var(--accent) 70%, #000) 40%,
-    var(--accent) 100%
+    color-mix(in srgb, var(--accent-hero, var(--accent)) 85%, #0a0a2e) 0%,
+    color-mix(in srgb, var(--accent-hero, var(--accent)) 70%, #000) 40%,
+    var(--accent-hero, var(--accent)) 100%
   );
 }
 [data-theme="dark"] .hero,
 body.dark .hero {
   background: linear-gradient(140deg,
-    color-mix(in srgb, var(--accent) 25%, #050318) 0%,
-    color-mix(in srgb, var(--accent) 45%, #0f0e2a) 40%,
-    color-mix(in srgb, var(--accent) 75%, #1e1b4b) 100%
+    color-mix(in srgb, var(--accent-hero, var(--accent)) 25%, #050318) 0%,
+    color-mix(in srgb, var(--accent-hero, var(--accent)) 45%, #0f0e2a) 40%,
+    color-mix(in srgb, var(--accent-hero, var(--accent)) 75%, #1e1b4b) 100%
   ) !important;
 }
 [data-theme="dark"] .sub-hero,
 body.dark .sub-hero {
   background: linear-gradient(140deg,
-    color-mix(in srgb, var(--accent) 20%, #0f1115) 0%,
-    color-mix(in srgb, var(--accent) 40%, #181B23) 100%
+    color-mix(in srgb, var(--accent-hero, var(--accent)) 20%, #0f1115) 0%,
+    color-mix(in srgb, var(--accent-hero, var(--accent)) 40%, #181B23) 100%
   ) !important;
 }
 /* Fallback pour anciens navigateurs sans color-mix */
 @supports not (background: color-mix(in srgb, red, blue)) {
-  .hero { background: linear-gradient(140deg, var(--accent-dark) 0%, var(--accent) 60%, var(--accent-muted) 100%); }
+  .hero { background: linear-gradient(140deg, var(--accent-dark) 0%, var(--accent-hero, var(--accent)) 60%, var(--accent-muted) 100%); }
   [data-theme="dark"] .hero, body.dark .hero { background: linear-gradient(140deg, #050318 0%, #0f0e2a 30%, var(--accent-dark) 60%, var(--accent) 100%) !important; }
   [data-theme="dark"] .sub-hero, body.dark .sub-hero { background: linear-gradient(140deg, #0f1115 0%, var(--accent-dark) 100%) !important; }
 }

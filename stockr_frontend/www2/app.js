@@ -25375,7 +25375,7 @@ function vAppearance() {
   }).join('');
 
   return `
-  <div class="sub-hero" style="background:linear-gradient(135deg,${acc},var(--accent-2))">
+  <div class="sub-hero">
     <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('settings')">${IC.left}</button>
     <div class="sub-hero-title">${t('zw_titre')}</div>
     <div class="sub-hero-sub">${t('w7_apparenceSub')}</div>
@@ -25689,6 +25689,77 @@ function applyAppearance() {
   // Épaisseur des traits : ce qui sépare une interface posée d'une
   // interface dessinée.
   root.style.setProperty('--bd-w', (ent && a.borderW ? a.borderW : '1') + 'px');
+
+  // ── Le texte posé sur l'accent ──────────────────────────────────────
+  // Il était écrit en blanc en dur. Avec un accent clair, le titre de
+  // l'en-tête mesurait 1.21 de contraste : illisible. Ce jeton choisit
+  // le blanc ou l'encre selon la luminance réelle de la couleur, donc
+  // aucun accent ne peut plus rendre un texte illisible.
+  // Les deux couleurs comptent : les dégradés vont de l'une à l'autre,
+  // et le texte doit tenir sur toute leur longueur.
+  const lum = (hex) => {
+    const h = String(hex || '').replace('#', '');
+    if (h.length !== 6) return 0;
+    const c = [0, 2, 4].map(i => {
+      const v = parseInt(h.slice(i, i + 2), 16) / 255;
+      return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+    });
+    return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+  };
+  const accHex = a.accentColor || '#4F46E5';
+  const acc2Hex = (ent && a.accentSecond) ? a.accentSecond : accHex;
+  // On retient la plus CLAIRE des deux : c'est le pire cas pour du
+  // texte blanc, donc celle qui doit décider.
+  const pire = Math.max(lum(accHex), lum(acc2Hex));
+  // Seuil issu du rapport WCAG : au-delà, le blanc ne passe plus.
+  const surAccent = pire > 0.38 ? '#16181F' : '#FFFFFF';
+  root.style.setProperty('--on-accent', surAccent);
+  root.style.setProperty('--on-accent-soft',
+    surAccent === '#FFFFFF' ? 'rgba(255,255,255,.72)' : 'rgba(22,24,31,.72)');
+  document.body && document.body.style.setProperty('--on-accent', surAccent);
+
+  // Choisir la couleur du texte ne suffit pas pour les teintes moyennes :
+  // un vert d'eau ou un orange brûlé ne passent le seuil ni en blanc ni
+  // en encre. Mesuré : 3.46 sur le second ton de « Forêt ». On corrige
+  // donc la SURFACE, pas le texte — la couleur est poussée par petits
+  // pas jusqu'à ce que le rapport atteigne 4.5, et pas plus loin : la
+  // teinte reste celle qu'a choisie le commerçant.
+  const rapport = (l1, l2) => (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+  const lumTexte = lum(surAccent);
+  const ajuste = (hex) => {
+    const h = String(hex || '').replace('#', '');
+    if (h.length !== 6) return hex;
+    let rgb = [0, 2, 4].map(i => parseInt(h.slice(i, i + 2), 16));
+    // Vers le noir si le texte est blanc, vers le blanc s'il est sombre.
+    const cible = (surAccent === '#FFFFFF') ? 0 : 255;
+    for (let pas = 0; pas < 24; pas++) {
+      const hx = '#' + rgb.map(v => Math.round(v).toString(16).padStart(2, '0')).join('');
+      if (rapport(lum(hx), lumTexte) >= 4.5) return hx;
+      rgb = rgb.map(v => v + (cible - v) * 0.08);
+    }
+    return '#' + rgb.map(v => Math.round(v).toString(16).padStart(2, '0')).join('');
+  };
+  root.style.setProperty('--accent-sur', ajuste(accHex));
+  root.style.setProperty('--accent-2-sur', ajuste(acc2Hex));
+
+  // Les bandeaux d'en-tête (.hero, .sub-hero) portent du texte blanc par
+  // construction : ce sont des bandeaux sombres, et l'accent n'occupe que
+  // la fin du dégradé. Il leur faut donc une version de l'accent qui
+  // tienne le blanc — sans la ternir quand ce n'est pas nécessaire.
+  // Un indigo n'est pas touché (blanc dessus : 6.29) ; un accent presque
+  // blanc est assombri jusqu'à passer, et pas au-delà.
+  const versBlanc = (hex) => {
+    const h = String(hex || '').replace('#', '');
+    if (h.length !== 6) return hex;
+    let rgb = [0, 2, 4].map(i => parseInt(h.slice(i, i + 2), 16));
+    for (let pas = 0; pas < 24; pas++) {
+      const hx = '#' + rgb.map(v => Math.round(v).toString(16).padStart(2, '0')).join('');
+      if (rapport(lum(hx), 1) >= 5.5) return hx;
+      rgb = rgb.map(v => v * 0.9);
+    }
+    return '#' + rgb.map(v => Math.round(v).toString(16).padStart(2, '0')).join('');
+  };
+  root.style.setProperty('--accent-hero', versBlanc(accHex));
 }
 
 // ── Les cinq polices d'interface ──────────────────────────────────────
