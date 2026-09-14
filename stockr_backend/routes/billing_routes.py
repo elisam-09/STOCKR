@@ -78,6 +78,10 @@ def billing_checkout(user):
             'line_items[0][price_data][product_data][name]': PLANS[plan]['label'],
             'subscription_data[metadata][user_id]': str(user.id),
             'subscription_data[metadata][plan]': plan,
+            # Sans la période ici, chaque renouvellement annuel était lu
+            # comme mensuel : l'abonné payait un an et perdait son forfait
+            # au bout de 32 jours.
+            'subscription_data[metadata][cycle]': cycle,
         }
         req = urllib.request.Request(
             'https://api.stripe.com/v1/checkout/sessions',
@@ -139,7 +143,12 @@ def _activate(user_id, plan, cycle, provider, customer_id=None):
         user.billing_customer_id = str(customer_id)
     # Marge de 2 jours pour couvrir les délais de renouvellement
     days = 367 if cycle == 'yearly' else 32
-    user.plan_expires = datetime.utcnow() + timedelta(days=days)
+    nouvelle = datetime.utcnow() + timedelta(days=days)
+    # Stripe n'ordonne pas ses événements : « invoice.paid » peut arriver
+    # après « checkout.session.completed ». Une échéance déjà plus lointaine
+    # pour le même forfait n'est donc jamais raccourcie.
+    if not (user.plan == plan and user.plan_expires and user.plan_expires > nouvelle):
+        user.plan_expires = nouvelle
     db.session.commit()
     return True
 
@@ -175,7 +184,7 @@ def stripe_webhook():
         sub_meta = ((obj.get('parent') or {}).get('subscription_details') or {}).get('metadata') or {}
         uid, plan = sub_meta.get('user_id'), sub_meta.get('plan')
         if uid and plan:
-            _activate(uid, plan, 'monthly', 'stripe', obj.get('customer'))
+            _activate(uid, plan, sub_meta.get('cycle', 'monthly'), 'stripe', obj.get('customer'))
     elif etype in ('customer.subscription.deleted', 'invoice.payment_failed'):
         customer = obj.get('customer')
         if customer:
