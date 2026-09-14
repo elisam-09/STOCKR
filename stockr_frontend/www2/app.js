@@ -270,6 +270,74 @@ const API_BASE = (location.hostname === 'localhost' || location.hostname === '12
 // ── i18n ─────────────────────────────────────
 const LANGS = {
   fr: {
+    zzh_rythmeAide: "Unités vendues par jour de semaine, sur tout votre historique. Le jour le plus fort est {0}.",
+    zzh_parSemaine: "{0} / semaine",
+    zzh_stock: "stock",
+    zzh_ruptureDans: "Rupture dans {0} j",
+    zzh_commander: "Commander {0}",
+    zzh_fragile: "Seulement {0} vente(s) enregistrée(s) sur {1} semaine(s) — cette estimation est fragile.",
+    zzh_autres: "{0} autres articles suivis",
+    zzg_prevDesc: "Anticipez vos ruptures avant qu'elles arrivent. Calculé sur vos ventes réelles — semaines récentes pondérées, tendance et rythme hebdomadaire.",
+    zzg_prevP1: "Date de rupture estimée par article",
+    zzg_prevP2: "Tendance : ce qui monte, ce qui s'effondre",
+    zzg_prevP3: "Quantité à commander pour couvrir le délai fournisseur",
+    zzg_prevP4: "Niveau de confiance affiché — jamais de chiffre inventé",
+    zzg_domTitre: "Domaine personnalisé",
+    zzg_domDesc: "Faites vivre votre boutique sur votre propre adresse (ex : mapharmacie.ci) au lieu d'un sous-domaine BARO.",
+    zzg_domP1: "Votre nom de domaine à vous",
+    zzg_domP2: "Certificat HTTPS automatique",
+    zzg_domP3: "Meilleur référencement Google",
+    zzg_domP4: "Image de marque professionnelle",
+    zzg_beaucoup: "beaucoup d'articles",
+    zzg_exBoutique: "Boutique du centre",
+    zzg_exComptoir: "Comptoir du quartier",
+    zzg_compExport: ", comparaison et export.",
+    zrc_titre: "Radar clients",
+    zrc_sousTitre: "Qui décroche, d'après son propre rythme d'achat",
+    zrc_menuSub: "Clients qui décrochent · relance WhatsApp",
+    zrc_lockDesc: "Chaque client a son rythme : l'un passe tous les 3 jours, l'autre tous les mois. Le radar repère ceux qui ont dépassé LEUR habitude, avant qu'ils ne partent chez un concurrent.",
+    zrc_perk1: "Rythme d'achat calculé pour chaque client",
+    zrc_perk2: "Chiffre d'affaires mensuel en jeu, client par client",
+    zrc_perk3: "Relance WhatsApp préremplie en un geste",
+    zrc_perk4: "Taux de retour des nouveaux clients, mois par mois",
+    zrc_client: "Client",
+    zrc_videT: "Aucune vente rattachée à un client",
+    zrc_videL: "Le radar lit les ventes où un client est choisi. Associez le client au moment de la vente : son rythme apparaîtra dès sa troisième visite.",
+    zrc_aRelancer: "à relancer",
+    zrc_decroches: "décrochés",
+    zrc_enJeuMois: "par mois en jeu",
+    zrc_couverture: "{0} % de vos ventes sont rattachées à un client ({1} sur {2}). Les ventes anonymes ne comptent pas.",
+    zrc_secRetard: "À relancer maintenant",
+    zrc_aucunRetard: "Personne n'a dépassé son rythme habituel. 👌",
+    zrc_secPerdus: "Décrochés",
+    zrc_perdusAide: "Absents depuis plus de trois fois leur rythme habituel. Une relance a encore une chance, mais elle doit donner une raison de revenir.",
+    zrc_secReguliers: "Réguliers",
+    zrc_rythme: "Vient tous les ~{0} j · dernier achat il y a {1} j",
+    zrc_tousLes: "Vient tous les ~{0} j",
+    zrc_parMois: "par mois d'habitude",
+    zrc_relancer: "Relancer",
+    zrc_relancerEncore: "Relancer encore",
+    zrc_relanceLe: "Relancé le {0}",
+    zrc_ajouterNumero: "Ajouter un numéro",
+    zrc_pasNumero: "Ce client n'a pas de numéro de téléphone.",
+    zrc_message: "Bonjour {0} 👋 Ça fait un moment qu'on ne vous a pas vu chez {1}. On a pensé à vous — passez nous voir !",
+    zrc_messageSans: "Bonjour {0} 👋 Ça fait un moment qu'on ne vous a pas vu. On a pensé à vous — passez nous voir !",
+    zrc_messageManque: "Bonjour {0} 👋 Vous nous manquez ! Une offre spéciale vous attend chez {1}.",
+    zrc_envoyerWa: "Envoyer un message WhatsApp",
+    zrc_attenduLe: "Attendu vers le {0}",
+    zrc_attenduJours: "Attendu ces jours-ci",
+    zrc_secCohortes: "Les nouveaux clients reviennent-ils ?",
+    zrc_cohortesAide: "Chaque ligne regroupe les clients venus pour la première fois ce mois-là. M+1 : la part d'entre eux revenue le mois suivant.",
+    zrc_colMois: "1re visite",
+    zrc_colNouveaux: "Nouveaux",
+    zrc_petitesCohortes: "Sur moins de 5 clients, un pourcentage bouge beaucoup : lisez-le comme une tendance, pas comme une mesure.",
+    zrc_secSansRythme: "Pas encore de rythme",
+    zrc_uneVisite: "clients venus une seule fois",
+    zrc_deuxVisites: "clients venus deux fois",
+    zrc_sansRythmeAide: "Un rythme se calcule à partir de trois visites. En dessous, le radar ne devine pas.",
+    zrc_jourTitre1: "1 client à relancer",
+    zrc_jourTitreN: "{0} clients à relancer",
+    zrc_jourDetail: "{0} par mois en jeu",
     zzf_actifRetirer: "Actif — Retirer",
     zzf_demain: "Demain",
     zzf_renvoyer: "Renvoyer",
@@ -519,7 +587,7 @@ const LANGS = {
     zv_fDom: "Nom de domaine",
     zv_fDomQ: "Publier votre boutique sur votre propre adresse, au lieu d'une adresse en baro.shop.",
     zv_fAna: "Analyses avancées",
-    zv_fAnaQ: "Cohortes de clients, marge par produit et par période, prévisions de réassort appuyées sur votre historique.",
+    zv_fAnaQ: "Radar clients (qui décroche d'après son propre rythme, relance WhatsApp, retour des nouveaux clients), prévision de demande et réassort automatique, tout calculé sur votre historique.",
     zv_fReserve: "Fonction réservée",
     zv_planGratuit: "Gratuit",
     zv_planEntreprise: "Entreprise",
@@ -3341,6 +3409,74 @@ const LANGS = {
     version:'Version',
   },
   en: {
+    zzh_rythmeAide: "Units sold by day of the week, over your whole history. The busiest day is {0}.",
+    zzh_parSemaine: "{0} / week",
+    zzh_stock: "stock",
+    zzh_ruptureDans: "Out of stock in {0} d",
+    zzh_commander: "Order {0}",
+    zzh_fragile: "Only {0} sale(s) recorded over {1} week(s) — this estimate is fragile.",
+    zzh_autres: "{0} more items tracked",
+    zzg_prevDesc: "See stock-outs coming before they happen. Built on your real sales — recent weeks weighted more, trend and weekly rhythm.",
+    zzg_prevP1: "Estimated stock-out date for each item",
+    zzg_prevP2: "Trend: what is rising, what is collapsing",
+    zzg_prevP3: "Quantity to order to cover the supplier's lead time",
+    zzg_prevP4: "Confidence level shown — never an invented figure",
+    zzg_domTitre: "Custom domain",
+    zzg_domDesc: "Run your shop on your own address (e.g. mypharmacy.ci) instead of a BARO sub-domain.",
+    zzg_domP1: "A domain name of your own",
+    zzg_domP2: "Automatic HTTPS certificate",
+    zzg_domP3: "Better Google ranking",
+    zzg_domP4: "A professional brand image",
+    zzg_beaucoup: "lots of items",
+    zzg_exBoutique: "Town-centre shop",
+    zzg_exComptoir: "Neighbourhood counter",
+    zzg_compExport: ", comparison and export.",
+    zrc_titre: "Customer radar",
+    zrc_sousTitre: "Who is drifting away, judged against their own buying rhythm",
+    zrc_menuSub: "Drifting customers · WhatsApp follow-up",
+    zrc_lockDesc: "Every customer has their own rhythm: one comes every 3 days, another once a month. The radar spots the ones who have gone past THEIR habit, before they move to a competitor.",
+    zrc_perk1: "A buying rhythm worked out for each customer",
+    zrc_perk2: "Monthly revenue at stake, customer by customer",
+    zrc_perk3: "Pre-filled WhatsApp follow-up in one tap",
+    zrc_perk4: "Return rate of new customers, month by month",
+    zrc_client: "Customer",
+    zrc_videT: "No sale linked to a customer yet",
+    zrc_videL: "The radar reads the sales where a customer is chosen. Link the customer when you record the sale: their rhythm shows from the third visit.",
+    zrc_aRelancer: "to follow up",
+    zrc_decroches: "drifted away",
+    zrc_enJeuMois: "a month at stake",
+    zrc_couverture: "{0}% of your sales are linked to a customer ({1} of {2}). Anonymous sales are not counted.",
+    zrc_secRetard: "Follow up now",
+    zrc_aucunRetard: "Nobody has gone past their usual rhythm. 👌",
+    zrc_secPerdus: "Drifted away",
+    zrc_perdusAide: "Away for more than three times their usual rhythm. A follow-up still has a chance, but it has to give them a reason to come back.",
+    zrc_secReguliers: "Regulars",
+    zrc_rythme: "Comes every ~{0} d · last purchase {1} d ago",
+    zrc_tousLes: "Comes every ~{0} d",
+    zrc_parMois: "a month, usually",
+    zrc_relancer: "Follow up",
+    zrc_relancerEncore: "Follow up again",
+    zrc_relanceLe: "Followed up on {0}",
+    zrc_ajouterNumero: "Add a number",
+    zrc_pasNumero: "This customer has no phone number.",
+    zrc_message: "Hello {0} 👋 We haven't seen you at {1} for a while. We thought of you — do drop by!",
+    zrc_messageSans: "Hello {0} 👋 We haven't seen you for a while. We thought of you — do drop by!",
+    zrc_messageManque: "Hello {0} 👋 We miss you! A special offer is waiting for you at {1}.",
+    zrc_envoyerWa: "Send a WhatsApp message",
+    zrc_attenduLe: "Expected around {0}",
+    zrc_attenduJours: "Expected any day now",
+    zrc_secCohortes: "Do new customers come back?",
+    zrc_cohortesAide: "Each row groups the customers who came for the first time that month. M+1: the share of them who came back the following month.",
+    zrc_colMois: "1st visit",
+    zrc_colNouveaux: "New",
+    zrc_petitesCohortes: "With fewer than 5 customers a percentage swings a lot: read it as a trend, not a measurement.",
+    zrc_secSansRythme: "No rhythm yet",
+    zrc_uneVisite: "customers who came only once",
+    zrc_deuxVisites: "customers who came twice",
+    zrc_sansRythmeAide: "A rhythm needs three visits. Below that, the radar does not guess.",
+    zrc_jourTitre1: "1 customer to follow up",
+    zrc_jourTitreN: "{0} customers to follow up",
+    zrc_jourDetail: "{0} a month at stake",
     zzf_actifRetirer: "On — Remove",
     zzf_demain: "Tomorrow",
     zzf_renvoyer: "Send again",
@@ -3590,7 +3726,7 @@ const LANGS = {
     zv_fDom: "Domain name",
     zv_fDomQ: "Publish your shop on your own address instead of a baro.shop one.",
     zv_fAna: "Advanced analytics",
-    zv_fAnaQ: "Customer cohorts, margin by product and by period, restock forecasts built on your own history.",
+    zv_fAnaQ: "Customer radar (who is drifting away against their own rhythm, WhatsApp follow-up, return of new customers), demand forecast and automatic restock, all built on your own history.",
     zv_fReserve: "Paid feature",
     zv_planGratuit: "Free",
     zv_planEntreprise: "Enterprise",
@@ -7841,9 +7977,11 @@ function itemAvatar(item, extraStyle = '') {
   return `<div class="article-avatar" style="${extraStyle}">${initials(item?.name || '?')}</div>`;
 }
 function stockStatus(stock, min) {
-  if (stock === 0) return { label:'Rupture', cls:'st-out', icon:IC.xmark, bar:'out' };
-  if (stock < min) return { label:'Faible',  cls:'st-low', icon:IC.warn,  bar:'low' };
-  return               { label:'OK',       cls:'st-ok',  icon:IC.check, bar:''    };
+  // Les clés outOfStock / low / ok existaient : le libellé restait « Faible »
+  // sur la pastille de chaque article, en anglais aussi.
+  if (stock === 0) return { label:t('outOfStock'), cls:'st-out', icon:IC.xmark, bar:'out' };
+  if (stock < min) return { label:t('low'),        cls:'st-low', icon:IC.warn,  bar:'low' };
+  return               { label:t('ok'),         cls:'st-ok',  icon:IC.check, bar:''    };
 }
 function productMaxMake(product) {
   // Garde : un produit hérité (ou importé) peut ne pas avoir de composition —
@@ -8306,10 +8444,10 @@ const PLAN_LIMITS = {
 // suit la langue.
 const PLAN_LABELS = { free:'Gratuit', starter:'Starter', pro:'Pro', enterprise:'Entreprise' };
 // Écran de verrouillage dédié aux fonctions réservées au plan Entreprise
-function _vEnterpriseLock(icon, title, desc, perks) {
+function _vEnterpriseLock(icon, title, desc, perks, retour) {
   return `
   <div class="sub-hero" style="background:linear-gradient(140deg,#0b0a1f,#1b1650 55%,#3b2fa8)">
-    <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('boutique')">${IC.left}</button>
+    <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('${retour || 'boutique'}')">${IC.left}</button>
     <div class="sub-hero-title">${icon} ${title}</div>
     <div class="sub-hero-sub">${t('x3_reserveEntreprise')}</div>
   </div>
@@ -8883,22 +9021,274 @@ function _previsionsData() {
   return { liste, profilJour, joursHistorique, nbVentes: (S.sales || []).length };
 }
 
+// ── RADAR CLIENTS (plan Entreprise) ───────────────────────────────────
+// Chaque client est comparé à SON rythme : la médiane des écarts entre ses
+// visites. Un seuil unique (« absent depuis 30 jours ») se tromperait dans
+// les deux sens — il accuserait le client mensuel et raterait le client
+// quotidien qui ne vient plus depuis dix jours.
+
+// Numéro au format international pour wa.me. La Côte d'Ivoire (depuis
+// 2021) et le Bénin (depuis 2024) GARDENT le 0 initial après l'indicatif :
+// +225 07 12 34 56 78. Le retirer ouvrait une conversation vers un numéro
+// qui n'existe pas.
+function _waNumero(tel) {
+  let d = String(tel || '').replace(/\D/g, '');
+  if (!d) return '';
+  if (d.startsWith('00')) d = d.slice(2);
+  const pays = (S.session && S.session.country) || 'CI';
+  const IND = { CI:'225', SN:'221', ML:'223', BF:'226', BJ:'229', TG:'228', NE:'227', GN:'224',
+                CM:'237', GA:'241', CG:'242', CD:'243', FR:'33', BE:'32', MA:'212', TN:'216', DZ:'213' };
+  const ind = IND[pays];
+  if (!ind || d.startsWith(ind)) return d;
+  if (pays === 'CI' || pays === 'BJ') return d.length <= 10 ? ind + d : d;
+  if (d.startsWith('0')) return ind + d.slice(1);
+  return d.length <= 9 ? ind + d : d;
+}
+
+function _rcEsc(v) {
+  return String(v == null ? '' : v).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function _radarRelances() {
+  try { return JSON.parse(localStorage.getItem('baro_radar_relances') || '{}') || {}; }
+  catch (_) { return {}; }
+}
+
+function _radarClients() {
+  const DAY = 86400000, now = Date.now();
+  const ventes = S.sales || [];
+  const parClient = {};
+  let liees = 0;
+  ventes.forEach(v => {
+    if (!v.clientId) return;
+    const dt = new Date(v.date);
+    if (isNaN(dt.getTime())) return;
+    liees++;
+    const id = String(v.clientId);
+    // Une visite = un client, un jour. Deux passages le même jour, ou un
+    // panier de cinq lignes, ne font pas cinq visites.
+    const jour = dt.getFullYear() + '-' + dt.getMonth() + '-' + dt.getDate();
+    const cl = parClient[id] || (parClient[id] = { id, visites: {}, nomVente: v.clientName || '' });
+    const vi = cl.visites[jour] || (cl.visites[jour] = {
+      t: new Date(dt.getFullYear(), dt.getMonth(), dt.getDate()).getTime(), total: 0 });
+    vi.total += Number(v.total) || 0;
+  });
+
+  const relances = _radarRelances();
+  const regulier = [], retard = [], perdu = [], deuxVisites = [], uneVisite = [], tous = [];
+  Object.values(parClient).forEach(cl => {
+    const vis = Object.values(cl.visites).sort((a, b) => a.t - b.t);
+    const fiche = (S.clients || []).find(x => String(x.id) === cl.id) || null;
+    const total = vis.reduce((a, x) => a + x.total, 0);
+    const base = {
+      id: cl.id, fiche,
+      nom: (fiche && fiche.name) || cl.nomVente || t('zrc_client'),
+      tel: (fiche && fiche.phone) || '',
+      visites: vis.length, total, panier: total / vis.length,
+      premiere: vis[0].t, derniere: vis[vis.length - 1].t,
+      depuis: Math.max(0, Math.floor((now - vis[vis.length - 1].t) / DAY)),
+      relance: relances[cl.id] || null,
+      dates: vis.map(x => x.t),
+    };
+    tous.push(base);
+    // En dessous de trois visites, il n'y a pas de rythme : le radar ne
+    // devine pas, il le dit.
+    if (vis.length === 1) { uneVisite.push(base); return; }
+    if (vis.length === 2) { deuxVisites.push(base); return; }
+    const ecarts = [];
+    for (let i = 1; i < vis.length; i++) ecarts.push(Math.max(1, Math.round((vis[i].t - vis[i - 1].t) / DAY)));
+    ecarts.sort((a, b) => a - b);
+    const m = ecarts.length % 2
+      ? ecarts[(ecarts.length - 1) / 2]
+      : (ecarts[ecarts.length / 2 - 1] + ecarts[ecarts.length / 2]) / 2;
+    base.rythme = Math.max(1, Math.round(m));
+    base.parMois = Math.round(base.panier * Math.min(30, 30 / base.rythme));
+    base.ratio = base.depuis / base.rythme;
+    base.attendu = base.derniere + base.rythme * DAY;
+    if (base.ratio <= 1.5) regulier.push(base);
+    else if (base.ratio <= 3) retard.push(base);
+    else perdu.push(base);
+  });
+
+  // Un client relancé il y a moins de 7 jours descend en fin de liste : on
+  // ne relance pas deux fois la même personne dans la semaine.
+  const recent = x => !!(x.relance && (now - new Date(x.relance).getTime()) < 7 * DAY);
+  const tri = (a, b) => (recent(a) - recent(b)) || (b.parMois - a.parMois);
+  retard.sort(tri); perdu.sort(tri);
+  regulier.sort((a, b) => a.attendu - b.attendu);
+  const enJeu = retard.concat(perdu).reduce((a, x) => a + x.parMois, 0);
+
+  // Cohortes : les clients groupés par mois de première visite, et la part
+  // revenue un, deux, trois mois plus tard. Un mois pas encore écoulé
+  // reste vide — il n'est pas compté comme un échec.
+  const moisCle = ts => { const dt = new Date(ts); return dt.getFullYear() * 12 + dt.getMonth(); };
+  const actuel = moisCle(now);
+  const cohortes = [];
+  for (let k = 5; k >= 0; k--) {
+    const cle = actuel - k;
+    const membres = tous.filter(x => moisCle(x.premiere) === cle);
+    const retours = [1, 2, 3].map(dec => {
+      if (!membres.length || cle + dec > actuel) return null;
+      const n = membres.filter(x => x.dates.some(ts => moisCle(ts) === cle + dec)).length;
+      return Math.round(n / membres.length * 100);
+    });
+    cohortes.push({ cle, taille: membres.length, retours, date: new Date(Math.floor(cle / 12), cle % 12, 1) });
+  }
+
+  return { regulier, retard, perdu, deuxVisites, uneVisite, enJeu, cohortes, recent,
+           liees, totalVentes: ventes.length, nbClients: tous.length };
+}
+
+function radarRelancer(id) {
+  if (!_planHasFeature('advancedAnalytics')) { _showPlanFeatureModal('advancedAnalytics'); return; }
+  const dd = _radarClients();
+  const cl = dd.retard.concat(dd.perdu, dd.regulier).find(x => x.id === String(id));
+  if (!cl) return;
+  const num = _waNumero(cl.tel);
+  if (!num) { showToast(t('zrc_pasNumero'), 'error'); return; }
+  const prenom = String(cl.nom).trim().split(/\s+/)[0] || '';
+  const boutique = (S.session && S.session.business) || '';
+  const msg = (boutique ? t('zrc_message') : t('zrc_messageSans'))
+    .replace('{0}', prenom).replace('{1}', boutique);
+  const r = _radarRelances();
+  r[cl.id] = new Date().toISOString();
+  try { localStorage.setItem('baro_radar_relances', JSON.stringify(r)); } catch (_) {}
+  try { logAudit('clients', 'radar_relance', { client: cl.id }); } catch (_) {}
+  window.open('https://wa.me/' + num + '?text=' + encodeURIComponent(msg), '_blank');
+  render();
+}
+
+// Le bouton de la fiche client, qui écrivait son message en français en dur.
+function _waClientManque(id) {
+  const cl = (S.clients || []).find(x => String(x.id) === String(id));
+  if (!cl) return;
+  const num = _waNumero(cl.phone);
+  if (!num) { showToast(t('zrc_pasNumero'), 'error'); return; }
+  const prenom = String(cl.name || '').trim().split(/\s+/)[0] || '';
+  const boutique = (S.session && S.session.business) || '';
+  const msg = (boutique ? t('zrc_messageManque') : t('zrc_messageSans'))
+    .replace('{0}', prenom).replace('{1}', boutique);
+  window.open('https://wa.me/' + num + '?text=' + encodeURIComponent(msg), '_blank');
+}
+
+function vRadarClients() {
+  if (!_planHasFeature('advancedAnalytics')) {
+    return _vEnterpriseLock('🎯', t('zrc_titre'), t('zrc_lockDesc'),
+      [t('zrc_perk1'), t('zrc_perk2'), t('zrc_perk3'), t('zrc_perk4')], 'more');
+  }
+  const dd = _radarClients();
+  const DAY = 86400000, now = Date.now();
+  const dateCourte = ts => new Date(ts).toLocaleDateString(_loc(), { day: 'numeric', month: 'short' });
+  const couverture = dd.totalVentes ? Math.round(dd.liees / dd.totalVentes * 100) : 0;
+  const cibleFiche = id => (/^\d+$/.test(id) ? id : "'" + id + "'");
+
+  const ligne = (cl, etat) => {
+    const recent = dd.recent(cl);
+    const num = _waNumero(cl.tel);
+    return `
+      <div class="rc-row${recent ? ' rc-fait' : ''}">
+        <div class="rc-av rc-${etat}">${_rcEsc(initials(cl.nom))}</div>
+        <div class="rc-mid">
+          <div class="rc-nom">${_rcEsc(cl.nom)}</div>
+          <div class="rc-info">${t('zrc_rythme').replace('{0}', cl.rythme).replace('{1}', cl.depuis)}</div>
+          ${recent ? `<div class="rc-relance">✓ ${t('zrc_relanceLe').replace('{0}', dateCourte(new Date(cl.relance).getTime()))}</div>` : ''}
+        </div>
+        <div class="rc-right">
+          <div class="rc-val">${fmt(cl.parMois)} ${sym()}</div>
+          <div class="rc-valsub">${t('zrc_parMois')}</div>
+          ${num
+            ? `<button class="rc-wa" onclick="radarRelancer('${cl.id}')">${IC.whatsapp || ''}<span>${recent ? t('zrc_relancerEncore') : t('zrc_relancer')}</span></button>`
+            : `<button class="rc-nonum" onclick="nav('client-detail',{selectedClientId:${cibleFiche(cl.id)}})">${t('zrc_ajouterNumero')}</button>`}
+        </div>
+      </div>`;
+  };
+
+  const corps = dd.nbClients === 0 ? `
+    <div class="card rc-vide">
+      <div class="rc-vide-ic">🎯</div>
+      <div class="rc-vide-t">${t('zrc_videT')}</div>
+      <div class="rc-vide-l">${t('zrc_videL')}</div>
+    </div>` : `
+    <div class="card rc-resume">
+      <div class="rc-stat"><b>${dd.retard.length}</b><span>${t('zrc_aRelancer')}</span></div>
+      <div class="rc-stat"><b>${dd.perdu.length}</b><span>${t('zrc_decroches')}</span></div>
+      <div class="rc-stat"><b>${fmt(dd.enJeu)}</b><span>${sym()} ${t('zrc_enJeuMois')}</span></div>
+    </div>
+    <div class="rc-note">${t('zrc_couverture').replace('{0}', couverture).replace('{1}', dd.liees).replace('{2}', dd.totalVentes)}</div>
+
+    <div class="section-hd"><div class="section-lbl">${t('zrc_secRetard')} (${dd.retard.length})</div></div>
+    ${dd.retard.length
+      ? `<div class="card rc-liste">${dd.retard.map(x => ligne(x, 'retard')).join('')}</div>`
+      : `<div class="card rc-calme">${t('zrc_aucunRetard')}</div>`}
+
+    ${dd.perdu.length ? `
+    <div class="section-hd"><div class="section-lbl">${t('zrc_secPerdus')} (${dd.perdu.length})</div></div>
+    <div class="rc-aide">${t('zrc_perdusAide')}</div>
+    <div class="card rc-liste">${dd.perdu.map(x => ligne(x, 'perdu')).join('')}</div>` : ''}
+
+    ${dd.regulier.length ? `
+    <div class="section-hd"><div class="section-lbl">${t('zrc_secReguliers')} (${dd.regulier.length})</div></div>
+    <div class="card rc-liste">
+      ${dd.regulier.slice(0, 8).map(x => `
+        <div class="rc-row">
+          <div class="rc-av rc-regulier">${_rcEsc(initials(x.nom))}</div>
+          <div class="rc-mid">
+            <div class="rc-nom">${_rcEsc(x.nom)}</div>
+            <div class="rc-info">${t('zrc_tousLes').replace('{0}', x.rythme)}</div>
+          </div>
+          <div class="rc-right"><div class="rc-attendu">${x.attendu <= now ? t('zrc_attenduJours') : t('zrc_attenduLe').replace('{0}', dateCourte(x.attendu))}</div></div>
+        </div>`).join('')}
+    </div>` : ''}
+
+    <div class="section-hd"><div class="section-lbl">${t('zrc_secCohortes')}</div></div>
+    <div class="card">
+      <div class="rc-aide rc-aide-carte">${t('zrc_cohortesAide')}</div>
+      <div class="rc-coh-wrap"><table class="rc-coh">
+        <thead><tr><th>${t('zrc_colMois')}</th><th>${t('zrc_colNouveaux')}</th><th>M+1</th><th>M+2</th><th>M+3</th></tr></thead>
+        <tbody>${dd.cohortes.map(h => `
+          <tr>
+            <td class="rc-coh-m">${h.date.toLocaleDateString(_loc(), { month: 'short', year: '2-digit' })}</td>
+            <td class="rc-coh-n">${h.taille}</td>
+            ${h.retours.map(p => p === null
+              ? `<td class="rc-coh-na">—</td>`
+              : `<td class="rc-coh-c" style="--rc-p:${Math.min(40, Math.round(p * 0.4))}%">${p}%</td>`).join('')}
+          </tr>`).join('')}
+        </tbody>
+      </table></div>
+      ${dd.cohortes.some(h => h.taille > 0 && h.taille < 5) ? `<div class="rc-aide rc-aide-bas">${t('zrc_petitesCohortes')}</div>` : ''}
+    </div>
+
+    <div class="section-hd"><div class="section-lbl">${t('zrc_secSansRythme')}</div></div>
+    <div class="card rc-sans">
+      <div><b>${dd.uneVisite.length}</b> ${t('zrc_uneVisite')}</div>
+      <div><b>${dd.deuxVisites.length}</b> ${t('zrc_deuxVisites')}</div>
+      <div class="rc-aide rc-aide-bas">${t('zrc_sansRythmeAide')}</div>
+    </div>`;
+
+  return `
+  <div class="sub-hero">
+    <button class="back-btn-dark" style="margin-bottom:14px" onclick="nav('more')">${IC.left}</button>
+    <div class="sub-hero-title">🎯 ${t('zrc_titre')}</div>
+    <div class="sub-hero-sub">${t('zrc_sousTitre')}</div>
+  </div>
+  <div class="container">${corps}</div>`;
+}
+
 function vPrevisions() {
   if (!_planHasFeature('advancedAnalytics')) {
-    return _vEnterpriseLock('📈', 'Prévision de demande',
-      'Anticipez vos ruptures avant qu’elles arrivent. Calculé sur vos ventes réelles — semaines récentes pondérées, tendance et rythme hebdomadaire.',
-      ['Date de rupture estimée par article',
-       'Tendance : ce qui monte, ce qui s’effondre',
-       'Quantité à commander pour couvrir le délai fournisseur',
-       'Niveau de confiance affiché — jamais de chiffre inventé']);
+    return _vEnterpriseLock('📈', t('w5_prevTitre'), t('zzg_prevDesc'),
+      [t('zzg_prevP1'), t('zzg_prevP2'), t('zzg_prevP3'), t('zzg_prevP4')], 'more');
   }
   const d = _previsionsData();
-  const JOURS = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+  // Lundi en premier, comme le profil calculé. Le 5 janvier 2026 est un lundi.
+  const JOURS = [0, 1, 2, 3, 4, 5, 6].map(i =>
+    new Date(2026, 0, 5 + i).toLocaleDateString(_loc(), { weekday: 'short' }).replace('.', ''));
   const maxJour = Math.max(...d.profilJour, 1);
   const urgents = d.liste.filter(p => isFinite(p.joursRestants) && p.joursRestants <= 14);
   const budget = urgents.reduce((s, p) => s + p.valeurCommande, 0);
-  const pastille = c => c === 'bonne' ? '<span class="pv-conf ok">confiance bonne</span>'
-    : c === 'moyenne' ? '<span class="pv-conf moy">confiance moyenne</span>'
+  const pastille = c => c === 'bonne' ? `<span class="pv-conf ok">${t('w5_confBonne')}</span>`
+    : c === 'moyenne' ? `<span class="pv-conf moy">${t('w5_confMoyenne')}</span>`
     : `<span class="pv-conf bas">${t('y1_peuDonnees')}</span>`;
 
   return `
@@ -8937,8 +9327,7 @@ function vPrevisions() {
           </div>`).join('')}
       </div>
       <div style="font-size:11.5px;color:var(--text-3);margin-top:10px;line-height:1.45">
-        Unités vendues par jour de semaine, sur tout votre historique.
-        Le jour le plus fort est <b>${JOURS[d.profilJour.indexOf(maxJour)]}</b>.
+        ${t('zzh_rythmeAide').replace('{0}', '<b>' + JOURS[d.profilJour.indexOf(maxJour)] + '</b>')}
       </div>
     </div>
 
@@ -8949,23 +9338,23 @@ function vPrevisions() {
           <div style="min-width:0;flex:1">
             <div style="font-size:14.5px;font-weight:700">${p.article.name}</div>
             <div style="font-size:12px;color:var(--text-3);margin-top:2px">
-              ${p.parSemaine.toFixed(1)} / semaine · stock ${fmtQty(p.article.stock)} ${p.article.unit}
+              ${t('zzh_parSemaine').replace('{0}', p.parSemaine.toLocaleString(_loc(), { maximumFractionDigits: 1 }))} · ${t('zzh_stock')} ${fmtQty(p.article.stock)} ${p.article.unit}
             </div>
           </div>
           ${p.tendance == null ? '' : `<div class="pv-trend ${p.tendance >= 0 ? 'up' : 'down'}">${p.tendance >= 0 ? '▲' : '▼'} ${Math.abs(p.tendance)}%</div>`}
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px">
           ${isFinite(p.joursRestants) ? `<span class="pv-tag ${p.joursRestants <= 7 ? 'danger' : p.joursRestants <= 14 ? 'warn' : ''}">
-            Rupture dans ${Math.max(0, Math.round(p.joursRestants))} j${p.dateRupture ? ` · ${p.dateRupture.toLocaleDateString(_lang === 'en' ? 'en-US' : 'fr-FR', { day: 'numeric', month: 'short' })}` : ''}</span>` : ''}
-          ${p.aCommander > 0 ? `<span class="pv-tag">Commander ${p.aCommander} ${p.article.unit}</span>` : ''}
+            ${t('zzh_ruptureDans').replace('{0}', Math.max(0, Math.round(p.joursRestants)))}${p.dateRupture ? ` · ${p.dateRupture.toLocaleDateString(_loc(), { day: 'numeric', month: 'short' })}` : ''}</span>` : ''}
+          ${p.aCommander > 0 ? `<span class="pv-tag">${t('zzh_commander').replace('{0}', p.aCommander)} ${p.article.unit}</span>` : ''}
           ${pastille(p.confiance)}
         </div>
         ${p.confiance === 'faible' ? `<div style="font-size:11.5px;color:var(--text-3);margin-top:8px;line-height:1.4">
-          Seulement ${p.evenements} vente${p.evenements > 1 ? 's' : ''} enregistrée${p.evenements > 1 ? 's' : ''} sur ${p.semainesDispo} semaine${p.semainesDispo > 1 ? 's' : ''} — cette estimation est fragile.
+          ${t('zzh_fragile').replace('{0}', p.evenements).replace('{1}', p.semainesDispo)}
         </div>` : ''}
       </div>`).join('')}
     ${d.liste.length > 40 ? `<div style="text-align:center;font-size:12px;color:var(--text-3);padding:8px">
-      ${d.liste.length - 40} autres articles suivis</div>` : ''}
+      ${t('zzh_autres').replace('{0}', d.liste.length - 40)}</div>` : ''}
     `}
   </div>`;
 }
@@ -8982,7 +9371,7 @@ function vPrevisions() {
 function vReassortAuto() {
   if (!_planHasFeature('advancedAnalytics')) {
     return _vEnterpriseLock('🤝', t('z2_titre'), t('z2_pitch'),
-      [t('z2_perk1'), t('z2_perk2'), t('z2_perk3'), t('z2_perk4')]);
+      [t('z2_perk1'), t('z2_perk2'), t('z2_perk3'), t('z2_perk4')], 'more');
   }
   const d = _reassortAuto(S.reorderWindow || 30);
   const URG = { rupture: ['#DC2626', t('z2_rupture')], urgent: ['#D97706', t('z2_urgent')], soon: ['#0EA5E9', t('z2_bientot')] };
@@ -9599,7 +9988,7 @@ function remindCredit(id) {
   const c = _credits().find(x => String(x.id) === String(id));
   if (!c) return;
   const reste = _creditReste(c);
-  const phone = (c.phone || '').replace(/\D/g, '').replace(/^0/, '225');
+  const phone = _waNumero(c.phone);
   const biz = (S.session && S.session.business) || '';
   const msg = `Bonjour ${c.clientName} 👋\nPetit rappel amical : il reste ${fmt(reste)} ${sym()} à régler${biz ? ` chez ${biz}` : ''}. Merci !`;
   if (phone) window.open(`https://wa.me/${phone}?text=` + encodeURIComponent(msg), '_blank');
@@ -9763,6 +10152,19 @@ function _todayActions() {
       acts.push({ pri: 5, icon: '📒', color: '#DC2626',
         title: t(st.openCount>1?'z_creditsN':'z_creditN').replace('{0}', st.openCount), detail: t('zq_aRecouvrer').replace('{0}', fmt(st.totalOwed)+' '+sym()),
         cta: 'credits', label: t('zz7_voir') });
+    }
+  } catch(_){}
+  // 5. Radar clients (Entreprise) : ceux qui ont dépassé leur propre rythme
+  try {
+    if (_planHasFeature('advancedAnalytics')) {
+      const rc = _radarClients();
+      const aFaire = rc.retard.filter(x => !rc.recent(x));
+      if (aFaire.length) {
+        acts.push({ pri: 3, icon: '🎯', color: '#E11D48',
+          title: t(aFaire.length > 1 ? 'zrc_jourTitreN' : 'zrc_jourTitre1').replace('{0}', aFaire.length),
+          detail: t('zrc_jourDetail').replace('{0}', fmt(aFaire.reduce((a, x) => a + x.parMois, 0)) + ' ' + sym()),
+          cta: 'radar-clients', label: t('zz7_voir') });
+      }
     }
   } catch(_){}
   acts.sort((a, b) => a.pri - b.pri);
@@ -13550,6 +13952,7 @@ function _doRender() {
     'exports': vExports,
     'currency-convert': vCurrencyConvert,
     'previsions': vPrevisions,
+    'radar-clients': vRadarClients,
     'reassort-auto': vReassortAuto,
     // ── BATCH 5 : ${t('x_equipe2')}, Audit, Apparence, Sécurité, 2FA ──
     'team':             vTeam,
@@ -15329,7 +15732,7 @@ function vPantry() {
       ${S.articles.length===0 ? `
       <div style="display:flex;flex-direction:column;gap:8px;align-items:center">
         <button class="btn btn-primary" style="width:auto;padding:11px 24px" onclick="nav('add')">${isReseller?t('y_ajoutProd'):t('addArticle')}</button>
-        <button class="btn btn-ghost" style="width:auto;padding:9px 18px;font-size:12.5px;border:1px solid var(--border)" onclick="nav('bulk-add')">⚡ Saisie rapide en lot <span style="color:var(--text-3)">— beaucoup d'articles</span></button>
+        <button class="btn btn-ghost" style="width:auto;padding:9px 18px;font-size:12.5px;border:1px solid var(--border)" onclick="nav('bulk-add')">${t('w2_saisieLot')} <span style="color:var(--text-2)">— ${t('zzg_beaucoup')}</span></button>
         <button class="btn btn-ghost" style="width:auto;padding:8px 16px;font-size:12px" onclick="if(confirm('Charger 5 articles démo pour explorer l&apos;app ?')){loadDemoData();}">${t('w1_chargerExemples')}</button>
       </div>` : ''}
     </div>` : (() => {
@@ -17158,7 +17561,7 @@ function vAdd() {
   <div class="container">
     <button class="card card-tap" style="width:100%;margin-bottom:10px;display:flex;align-items:center;gap:12px;text-align:left;background:linear-gradient(135deg,rgba(124,115,255,.10),rgba(79,70,229,.04));border:1px solid rgba(124,115,255,.22);cursor:pointer" onclick="nav('bulk-add')">
       <div style="width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#7C73FF,#4F46E5);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">⚡</div>
-      <div style="flex:1"><div style="font-weight:800;font-size:14px;color:var(--text-1)">Saisie rapide en lot</div><div style="font-size:12px;color:var(--text-3)">${t('x4_beaucoupArticles')}</div></div>
+      <div style="flex:1"><div style="font-weight:800;font-size:14px;color:var(--text-1)">${t('w2_saisieLot').replace('⚡ ', '')}</div><div style="font-size:12px;color:var(--text-3)">${t('x4_beaucoupArticles')}</div></div>
       <div style="color:var(--accent)">${IC.chevron}</div>
     </button>
     <div class="card">
@@ -17834,7 +18237,7 @@ function vClientDetail() {
   for (let i=5;i>=0;i--){ const d=new Date(); d.setMonth(d.getMonth()-i); months.push({ key:d.getFullYear()+'-'+d.getMonth(), label:d.toLocaleDateString('fr',{month:'short'}), total:0 }); }
   clientSales.forEach(s => { const d=new Date(s.date); const k=d.getFullYear()+'-'+d.getMonth(); const m=months.find(x=>x.key===k); if(m) m.total+=s.total||0; });
   const maxMonth = Math.max(...months.map(m=>m.total), 1);
-  const waNum = (client.phone||'').replace(/\D/g,'').replace(/^0/,'225');
+  const waNum = _waNumero(client.phone);
 
   return `
   <div class="sub-hero">
@@ -17900,7 +18303,7 @@ function vClientDetail() {
           <div style="font-size:12px;color:var(--text-3)">Pas d'achat depuis ${daysSince} jours — propose-lui une offre</div>
         </div>
       </div>
-      <button class="btn btn-primary" style="margin-top:10px;background:#25D366" onclick="window.open('https://wa.me/${waNum}?text='+encodeURIComponent('Bonjour ${client.name.replace(/'/g,'')} 👋 Vous nous manquez ! Une offre spéciale vous attend chez ${(S.session?.business||'').replace(/'/g,'')}.'),'_blank')">${IC.whatsapp} Envoyer un message WhatsApp</button>
+      <button class="btn btn-primary" style="margin-top:10px;background:#25D366" onclick="_waClientManque('${client.id}')">${IC.whatsapp} ${t('zrc_envoyerWa')}</button>
     </div>` : ''}
 
     ${S.loyaltyConfig?.enabled ? (() => {
@@ -26689,6 +27092,7 @@ function vMore() {
     { id:'reassort',        icon:'🔄',          label:t('w3_reassort'),           sub:t('w3_reassortSub'), color:'#0EA5E9', badge: (()=>{try{return _reorderData(S.reorderWindow||30).items.length||null;}catch(_){return null;}})() },
     { id:'reassort-auto',   icon:'🤝',          label:t('z2_titre'),                    sub:_planHasFeature('advancedAnalytics') ? t('z2_sousTitre') : 'Entreprise · ' + t('z2_sousTitre'), color:'#0891b2', badge: (()=>{try{const d=_reassortAuto(S.reorderWindow||30);return d.groupes.filter(g=>g.id!==null).length||null;}catch(_){return null;}})() },
     { id:'previsions',      icon:'📈',          label:t('w3_prevision'),           sub:_planHasFeature('advancedAnalytics') ? t('w3_previsionSub') : t('w3_previsionLock'), color:'#8B5CF6', badge: (()=>{try{return _previsionsData().liste.filter(p=>isFinite(p.joursRestants)&&p.joursRestants<=14).length||null;}catch(_){return null;}})() },
+    { id:'radar-clients',   icon:'🎯',          label:t('zrc_titre'),                sub:_planHasFeature('advancedAnalytics') ? t('zrc_menuSub') : t('zv_planEntreprise') + ' · ' + t('zrc_menuSub'), color:'#E11D48', badge: (()=>{try{ if(!_planHasFeature('advancedAnalytics')) return null; const r=_radarClients(); return r.retard.filter(x=>!r.recent(x)).length||null; }catch(_){return null;}})() },
     { id:'caisse',          icon:'🧾',          label:t('w3_cloture'),              sub:t('w3_clotureSub'), color:'#059669' },
     { id:'credits',         icon:'📒',          label:t('w3_credits'),                sub:t('w3_creditsSub'), color:'#DC2626', badge: (()=>{try{return _creditsStats().openCount||null;}catch(_){return null;}})() },
     { id:'peremptions',     icon:'⏳',          label:t('w3_peremptions'),                    sub:t('w3_peremptionsSub'), color:'#EC4899', badge: (S.articles||[]).filter(a=>{const e=getExpiryStatus(a.expiry);return e&&e.days<=30;}).length || null },
@@ -32773,9 +33177,8 @@ function vBoutiqueAppearance() {
 // ═══════════════════════════════════════════════
 function vBoutiqueDomain() {
   if (!_planHasFeature('customDomain')) {
-    return _vEnterpriseLock('🌐', 'Domaine personnalisé',
-      "Faites vivre votre boutique sur votre propre adresse (ex : mapharmacie.ci) au lieu d'un sous-domaine BARO.",
-      ['Votre nom de domaine à vous', 'Certificat HTTPS automatique', 'Meilleur référencement Google', 'Image de marque professionnelle']);
+    return _vEnterpriseLock('🌐', t('zzg_domTitre'), t('zzg_domDesc'),
+      [t('zzg_domP1'), t('zzg_domP2'), t('zzg_domP3'), t('zzg_domP4')]);
   }
   const bc = S.boutiqueConfig;
   const verified = bc.customDomainVerified;
@@ -33768,11 +34171,11 @@ function vBoutiqueAnalytics() {
     <div class="card" style="margin-bottom:12px;position:relative;overflow:hidden">
       <div class="card-title">${t('x2_analyticsAvances')}</div>
       <div style="filter:blur(3px);pointer-events:none;user-select:none" aria-hidden="true">
-        ${['Boutique du centre','Comptoir quartier','Entrepôt'].map((n,i)=>`<div style="display:flex;justify-content:space-between;padding:7px 0;font-size:13px"><span>${n}</span><b>${fmt([84000,52000,31000][i])} ${sym()}</b></div>`).join('')}
+        ${[t('zzg_exBoutique'),t('zzg_exComptoir'),t('u_typeEntrepot')].map((n,i)=>`<div style="display:flex;justify-content:space-between;padding:7px 0;font-size:13px"><span>${n}</span><b>${fmt([84000,52000,31000][i])} ${sym()}</b></div>`).join('')}
       </div>
       <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;background:linear-gradient(180deg,rgba(255,255,255,.55),var(--surface) 78%);padding:14px;text-align:center">
         <div style="font-size:10.5px;font-weight:800;color:#fff;background:linear-gradient(135deg,#8B5CF6,#6366F1);padding:4px 11px;border-radius:999px;letter-spacing:.5px">◆ ENTREPRISE</div>
-        <div style="font-size:12.5px;color:var(--text-2);max-width:270px;line-height:1.5">${t('x2_revenusDetailles')} <b>${t('x2_parPointVente')}</b>, comparaison et export.</div>
+        <div style="font-size:12.5px;color:var(--text-2);max-width:270px;line-height:1.5">${t('x2_revenusDetailles')} <b>${t('x2_parPointVente')}</b>${t('zzg_compExport')}</div>
         <button class="btn" style="padding:8px 16px;font-size:12px;font-weight:800;background:linear-gradient(135deg,#8B5CF6,#6366F1);color:#fff;border:none" onclick="nav('pricing')">${t('x2_debloquer')}</button>
       </div>
     </div>`;

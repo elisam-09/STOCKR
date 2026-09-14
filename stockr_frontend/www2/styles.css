@@ -6328,3 +6328,81 @@ body.vt-active .card { animation: none !important; }
   .logo-zone { flex-direction: column; align-items: stretch; }
   .logo-cadre { width: 100%; }
 }
+
+/* ══════════════════════════════════════════════════════════════════════
+   RADAR CLIENTS (plan Entreprise)
+   L'etat d'un client se lit par un anneau de couleur et par le texte,
+   jamais par une couleur de texte seule : lisible en clair, en sombre et
+   quel que soit l'accent choisi.
+   ══════════════════════════════════════════════════════════════════ */
+.card.rc-resume,
+[data-theme="dark"] .card.rc-resume,
+body.dark .card.rc-resume {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;
+  padding: 16px 10px; border: none;
+  background: linear-gradient(140deg, #0f0a2e 0%,
+              color-mix(in srgb, var(--accent-hero, var(--accent)) 70%, #0f0a2e) 100%);
+}
+.rc-stat { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 4px; min-width: 0; }
+.rc-stat b { font-size: 24px; font-weight: 900; letter-spacing: -.03em; color: #fff; line-height: 1.05; }
+.rc-stat span { font-size: 10.5px; font-weight: 600; color: rgba(255,255,255,.9); line-height: 1.3; }
+.rc-note, .rc-aide { font-size: 11.5px; line-height: 1.5; color: var(--text-2); margin: 8px 2px 4px; }
+.rc-aide-carte { margin: 0 0 10px; }
+.rc-aide-bas { margin: 10px 0 0; }
+.card.rc-liste { padding: 2px 0; }
+.rc-row {
+  display: flex; align-items: center; gap: 11px;
+  padding: 11px 14px;
+  border-bottom: var(--bd-w) solid var(--border);
+}
+.rc-row:last-child { border-bottom: none; }
+.rc-row.rc-fait { opacity: .6; }
+.rc-av {
+  flex: none; width: 38px; height: 38px; border-radius: 50%;
+  display: grid; place-items: center;
+  font-size: 13px; font-weight: 800; color: var(--text-1);
+  background: var(--gray-1);
+  box-shadow: inset 0 0 0 2.5px var(--rc-anneau, var(--border));
+}
+.rc-av.rc-retard   { --rc-anneau: #F59E0B; }
+.rc-av.rc-perdu    { --rc-anneau: #EF4444; }
+.rc-av.rc-regulier { --rc-anneau: #10B981; }
+.rc-mid { flex: 1; min-width: 0; }
+.rc-nom { font-size: 14px; font-weight: 700; color: var(--text-1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rc-info { font-size: 11.5px; color: var(--text-2); margin-top: 2px; line-height: 1.35; }
+.rc-relance { font-size: 11px; font-weight: 700; color: var(--text-2); margin-top: 3px; }
+.rc-right { flex: none; display: flex; flex-direction: column; align-items: flex-end; gap: 2px; text-align: right; }
+.rc-val { font-size: 13.5px; font-weight: 800; color: var(--text-1); white-space: nowrap; }
+.rc-valsub { font-size: 10px; color: var(--text-2); }
+.rc-wa {
+  margin-top: 5px; border: none; cursor: pointer; font: inherit;
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11.5px; font-weight: 800;
+  padding: 6px 11px; border-radius: var(--r-pill);
+  /* Vert WhatsApp avec une encre sombre : le blanc sur ce vert mesure 2.0 */
+  background: #25D366; color: #052E1B;
+}
+.rc-wa svg { width: 13px; height: 13px; flex: none; }
+.rc-wa:active { transform: scale(.96); }
+.rc-nonum {
+  margin-top: 5px; cursor: pointer; font: inherit;
+  font-size: 11px; font-weight: 700;
+  padding: 5px 10px; border-radius: var(--r-pill);
+  border: var(--bd-w) solid var(--border); background: transparent; color: var(--text-1);
+}
+.rc-attendu { font-size: 11.5px; font-weight: 700; color: var(--text-2); white-space: nowrap; }
+.card.rc-calme { font-size: 13px; color: var(--text-2); text-align: center; padding: 16px; }
+.rc-coh-wrap { overflow-x: auto; }
+.rc-coh { width: 100%; border-collapse: separate; border-spacing: 3px; font-size: 12px; }
+.rc-coh th { font-size: 10.5px; font-weight: 700; color: var(--text-2); text-align: center; padding: 4px 2px; }
+.rc-coh td { text-align: center; padding: 8px 3px; border-radius: var(--r-sm); color: var(--text-1); font-weight: 700; }
+.rc-coh td.rc-coh-m { text-align: left; font-weight: 600; color: var(--text-2); white-space: nowrap; }
+.rc-coh td.rc-coh-n { font-weight: 600; }
+.rc-coh td.rc-coh-c { background: color-mix(in srgb, var(--accent) var(--rc-p, 0%), var(--gray-1)); }
+.rc-coh td.rc-coh-na { color: var(--text-2); font-weight: 500; }
+.card.rc-sans { font-size: 13px; color: var(--text-1); line-height: 1.8; }
+.rc-sans b { font-weight: 800; }
+.card.rc-vide { text-align: center; padding: 30px 22px; }
+.rc-vide-ic { font-size: 40px; margin-bottom: 8px; }
+.rc-vide-t { font-size: 16px; font-weight: 800; color: var(--text-1); margin-bottom: 6px; }
+.rc-vide-l { font-size: 13px; color: var(--text-2); line-height: 1.55; max-width: 320px; margin: 0 auto; }
