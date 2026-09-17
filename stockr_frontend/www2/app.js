@@ -270,6 +270,39 @@ const API_BASE = (location.hostname === 'localhost' || location.hostname === '12
 // ── i18n ─────────────────────────────────────
 const LANGS = {
   fr: {
+    zbl_miseEnForme: "Mise en forme",
+    zbl_tTexte: "Texte",
+    zbl_tColonnes: "Colonnes",
+    zbl_tChiffres: "Chiffres",
+    zbl_tCitation: "Citation",
+    zbl_tImage: "Photo",
+    zbl_tGalerie: "Galerie",
+    zbl_tListe: "Liste",
+    zbl_tBandeau: "Bandeau",
+    zbl_uneParLigne: "Une ligne par élément — « Titre | texte »",
+    zbl_exLignes: "Livraison rapide | Partout à Abidjan en 24 h\nPaiement mobile | Wave, Orange Money, MTN",
+    zbl_auteur: "Signature",
+    zbl_auteurPl: "ex : Awa K., cliente depuis 2019",
+    zbl_photo: "Photo",
+    zbl_photos: "Photos",
+    zbl_choisirPhoto: "Choisir une photo",
+    zbl_ajouterPhoto: "Ajouter une photo",
+    zbl_maxPhotos: "Six photos au maximum",
+    zbl_fond: "Fond",
+    zbl_fCarte: "Carte",
+    zbl_fUni: "Sans cadre",
+    zbl_fAccent: "Votre couleur",
+    zbl_fSombre: "Sombre",
+    zbl_align: "Alignement",
+    zbl_aCentre: "Centré",
+    zbl_aGauche: "À gauche",
+    zbl_bouton: "Bouton d'action (facultatif)",
+    zbl_boutonPl: "ex : Voir nos produits",
+    zbl_cibleProduits: "Aller aux produits",
+    zbl_cibleWa: "Écrire sur WhatsApp",
+    zbl_cibleContact: "Aller au contact",
+    zbl_cibleLien: "Une adresse web",
+    zbl_memPleine: "Mémoire du navigateur pleine — la photo n'a pas pu être enregistrée.",
     zpy_erreurTitre: "Paiement momentanément indisponible",
     zpy_annule: "Paiement annulé — aucun montant n'a été prélevé.",
     zpy_connexionRequise: "Connectez-vous à votre compte en ligne pour gérer votre abonnement.",
@@ -1940,7 +1973,7 @@ const LANGS = {
     z7_composeur: "Composition de la page",
     z7_composeurAide: "Déplacez les sections, masquez celles qui ne vous servent pas. La grille de produits reste toujours affichée.",
     z7_lockTitre: "Composition de la page réservée au plan Entreprise",
-    z7_lockTx: "Choisir l'ordre des sections, en masquer, et ajouter jusqu'à six blocs de texte à vous — histoire de la maison, engagement qualité, conditions. Voir les plans →",
+    z7_lockTx: "Choisir l'ordre des sections, en masquer, et composer jusqu'à douze sections à vous — colonnes, chiffres clés, citation client, photo, galerie, liste, bandeau d'appel. Voir les plans →",
     z7_secProduits: "Grille de produits",
     z7_secEtapes: "Comment ça marche",
     z7_secServices: "Bandeau de services",
@@ -1958,14 +1991,14 @@ const LANGS = {
     z7_blocLibre: "Bloc à vous",
     z7_blocSansTitre: "Bloc sans titre",
     z7_blocsLibres: "Vos propres blocs",
-    z7_blocsAide: "Un titre et un texte, placés où vous voulez dans la page. Six au maximum.",
+    z7_blocsAide: "Un titre, un texte, une mise en forme (colonnes, chiffres, citation, photo, galerie, liste, bandeau), un fond et un bouton. Douze au maximum, placés où vous voulez dans la page.",
     z7_titreBloc: "Titre du bloc",
     z7_titreBlocPl: "Notre engagement",
     z7_texteBloc: "Texte",
     z7_texteBlocPl: "Ce que vous voulez dire à vos clients, en quelques lignes.",
     z7_supprimerBloc: "Supprimer ce bloc",
     z7_ajouterBloc: "Ajouter un bloc",
-    z7_maxBlocs: "Six blocs au maximum",
+    z7_maxBlocs: "Douze blocs au maximum",
     z7_produitsObligatoire: "La grille de produits ne peut pas être masquée",
     z7_zonesLivraison: "Zones de livraison",
     z7_titreAccroche: "Titre d'accroche",
@@ -3432,6 +3465,39 @@ const LANGS = {
     version:'Version',
   },
   en: {
+    zbl_miseEnForme: "Layout",
+    zbl_tTexte: "Text",
+    zbl_tColonnes: "Columns",
+    zbl_tChiffres: "Figures",
+    zbl_tCitation: "Quote",
+    zbl_tImage: "Photo",
+    zbl_tGalerie: "Gallery",
+    zbl_tListe: "List",
+    zbl_tBandeau: "Banner",
+    zbl_uneParLigne: "One line per item — “Heading | text”",
+    zbl_exLignes: "Fast delivery | Anywhere in Abidjan within 24 h\nMobile payment | Wave, Orange Money, MTN",
+    zbl_auteur: "Signature",
+    zbl_auteurPl: "e.g. Awa K., customer since 2019",
+    zbl_photo: "Photo",
+    zbl_photos: "Photos",
+    zbl_choisirPhoto: "Choose a photo",
+    zbl_ajouterPhoto: "Add a photo",
+    zbl_maxPhotos: "Six photos at most",
+    zbl_fond: "Background",
+    zbl_fCarte: "Card",
+    zbl_fUni: "No frame",
+    zbl_fAccent: "Your colour",
+    zbl_fSombre: "Dark",
+    zbl_align: "Alignment",
+    zbl_aCentre: "Centred",
+    zbl_aGauche: "Left",
+    zbl_bouton: "Action button (optional)",
+    zbl_boutonPl: "e.g. See our products",
+    zbl_cibleProduits: "Go to the products",
+    zbl_cibleWa: "Write on WhatsApp",
+    zbl_cibleContact: "Go to contact",
+    zbl_cibleLien: "A web address",
+    zbl_memPleine: "Browser storage is full — the photo could not be saved.",
     zpy_erreurTitre: "Payment temporarily unavailable",
     zpy_annule: "Payment cancelled — nothing was charged.",
     zpy_connexionRequise: "Sign in to your online account to manage your subscription.",
@@ -5102,7 +5168,7 @@ const LANGS = {
     z7_composeur: "Page composition",
     z7_composeurAide: "Move sections around, hide the ones you don't need. The product grid always stays.",
     z7_lockTitre: "Page composition, Enterprise plan only",
-    z7_lockTx: "Choose the order of your sections, hide any of them, and add up to six blocks of your own text — your story, your quality promise, your terms. See the plans →",
+    z7_lockTx: "Choose the order of the sections, hide some, and compose up to twelve sections of your own — columns, key figures, a customer quote, a photo, a gallery, a list, a call-to-action banner. See the plans →",
     z7_secProduits: "Product grid",
     z7_secEtapes: "How it works",
     z7_secServices: "Services strip",
@@ -5120,14 +5186,14 @@ const LANGS = {
     z7_blocLibre: "Your own block",
     z7_blocSansTitre: "Untitled block",
     z7_blocsLibres: "Your own blocks",
-    z7_blocsAide: "A heading and some text, placed wherever you like on the page. Six at most.",
+    z7_blocsAide: "A heading, some text, a layout (columns, figures, quote, photo, gallery, list, banner), a background and a button. Twelve at most, placed wherever you like on the page.",
     z7_titreBloc: "Block heading",
     z7_titreBlocPl: "Our promise",
     z7_texteBloc: "Text",
     z7_texteBlocPl: "What you want to tell your customers, in a few lines.",
     z7_supprimerBloc: "Delete this block",
     z7_ajouterBloc: "Add a block",
-    z7_maxBlocs: "Six blocks at most",
+    z7_maxBlocs: "Twelve blocks at most",
     z7_produitsObligatoire: "The product grid cannot be hidden",
     z7_zonesLivraison: "Delivery areas",
     z7_titreAccroche: "Headline",
@@ -28711,19 +28777,67 @@ function _bqSauveBoutique() {
   try { localStorage.setItem('baro_boutique', JSON.stringify(S.boutiqueConfig)); } catch (_) {}
 }
 
+// Les photos des blocs vivent dans la meme cle localStorage que le reste de
+// la boutique : si le navigateur refuse d'ecrire, on le dit et on retire la
+// photo, au lieu de la laisser disparaitre au prochain demarrage.
+function _bqSauveSur() {
+  try { localStorage.setItem('baro_boutique', JSON.stringify(S.boutiqueConfig)); return true; }
+  catch (e) { showToast(t('zbl_memPleine'), 'error'); return false; }
+}
+
 function boutiqueAjouteBloc() {
   const bc = S.boutiqueConfig;
   if (!Array.isArray(bc.blocs)) bc.blocs = [];
-  if (bc.blocs.length >= 6) { showToast(t('z7_maxBlocs')); return; }
-  bc.blocs.push({ titre: '', texte: '' });
-  try { localStorage.setItem('baro_boutique', JSON.stringify(bc)); } catch (_) {}
+  if (bc.blocs.length >= 12) { showToast(t('z7_maxBlocs')); return; }
+  bc.blocs.push({ titre: '', texte: '', type: 'texte', fond: 'carte', align: 'centre' });
+  _bqSauveSur();
+  haptic('tap'); render(); _refreshBoutiqueLivePreview();
+}
+
+function boutiqueSetBlocType(i, type) {
+  const bc = S.boutiqueConfig;
+  if (!Array.isArray(bc.blocs) || !bc.blocs[i]) return;
+  bc.blocs[i].type = String(type || 'texte');
+  _bqSauveSur();
+  haptic('tap'); render(); _refreshBoutiqueLivePreview();
+}
+
+function boutiqueBlocPhoto(i) {
+  if (typeof _planHasFeature === 'function' && !_planHasFeature('whiteLabel')) {
+    if (typeof _showPlanFeatureModal === 'function') _showPlanFeatureModal('whiteLabel');
+    return;
+  }
+  if (typeof pickCinePhoto !== 'function') return;
+  pickCinePhoto(data => {
+    const bc = S.boutiqueConfig;
+    const b = Array.isArray(bc.blocs) ? bc.blocs[i] : null;
+    if (!b) return;
+    if (String(b.type) === 'galerie') {
+      b.images = (Array.isArray(b.images) ? b.images : []).concat([data]).slice(0, 6);
+      if (!_bqSauveSur()) { b.images.pop(); return; }
+    } else {
+      const avant = b.image;
+      b.image = data;
+      if (!_bqSauveSur()) { if (avant) b.image = avant; else delete b.image; return; }
+    }
+    haptic('success'); render(); _refreshBoutiqueLivePreview();
+  });
+}
+
+function boutiqueBlocPhotoSuppr(i, j) {
+  const bc = S.boutiqueConfig;
+  const b = Array.isArray(bc.blocs) ? bc.blocs[i] : null;
+  if (!b) return;
+  if (j < 0) delete b.image;
+  else if (Array.isArray(b.images)) b.images.splice(j, 1);
+  _bqSauveSur();
   haptic('tap'); render(); _refreshBoutiqueLivePreview();
 }
 function boutiqueSetBloc(i, champ, val) {
   const bc = S.boutiqueConfig;
   if (!Array.isArray(bc.blocs) || !bc.blocs[i]) return;
   bc.blocs[i][champ] = val;
-  try { localStorage.setItem('baro_boutique', JSON.stringify(bc)); } catch (_) {}
+  _bqSauveSur();
   _refreshBoutiqueLivePreview();
 }
 function boutiqueSupprimeBloc(i) {
@@ -28888,6 +29002,20 @@ function generateBoutiqueSite(opts) {
 
   const categories = [...new Set(shopProds.map(p => p.category || 'Autres'))];
   const tc = bc.themeColor || '#4F46E5';
+  // La couleur de marque peut être claire (un jaune, un beige) : le texte
+  // posé dessus doit alors passer en encre. Calculé ici, avant la feuille
+  // de style — qui s'écrit plus haut que la section des blocs.
+  const _tcClair = (() => {
+    // Calcul autonome : le _lumOf de cette fonction est declare plus bas,
+    // et l'appeler ici tomberait dans sa zone morte temporelle.
+    const h = String(tc || '').replace('#', '');
+    if (h.length !== 6) return false;
+    const f = v => (v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4));
+    const L = 0.2126 * f(parseInt(h.slice(0, 2), 16) / 255)
+            + 0.7152 * f(parseInt(h.slice(2, 4), 16) / 255)
+            + 0.0722 * f(parseInt(h.slice(4, 6), 16) / 255);
+    return L >= 0.4;
+  })();
   // ── Options avancées de l'éditeur visuel (toutes avec défaut raisonnable) ──
   const gridCols   = bc.gridCols || 2;                       // 1 | 2 | 3
   const heroStyle  = bc.heroStyle || 'classic';              // classic | minimal | banner
@@ -30482,6 +30610,35 @@ ${_ruptureStyle === 'voile' ? `.pc-out .pc-imgwrap{filter:none;opacity:1}
 .about-section{background:#fff;border-radius:16px;padding:20px;margin:14px 0;box-shadow:0 2px 10px rgba(0,0,0,.04);border:1px solid rgba(0,0,0,.04)}
 .about-section .pay-section-title{text-align:center}
 .about-text{font-size:14px;line-height:1.65;color:#555;text-align:center;margin:0}
+.bq-blk{margin:14px 0}
+.bq-blk.f-carte{background:#fff;border:1px solid rgba(0,0,0,.05);border-radius:16px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+.bq-blk.f-uni{padding:6px 2px}
+.bq-blk.f-accent{background:${tc}12;border:1px solid ${tc}33;border-radius:16px;padding:20px}
+.bq-blk.f-sombre{background:#14141b;border-radius:16px;padding:22px}
+.bq-blk.f-sombre .bq-blk-tx,.bq-blk.f-sombre .bq-num-lb,.bq-blk.f-sombre .bq-list li,.bq-blk.f-sombre .bq-quote,.bq-blk.f-sombre .bq-col-t{color:#e8e9ee}
+.bq-blk.a-gauche{text-align:left}
+.bq-blk.a-centre{text-align:center}
+.bq-blk-tx{font-size:14px;line-height:1.65;color:var(--tx2);margin:0}
+.bq-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:16px;text-align:left}
+.bq-col-t{font-weight:800;font-size:14px;margin:0 0 4px}
+.bq-nums{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:16px}
+.bq-num{font-size:30px;font-weight:900;letter-spacing:-.02em;color:${tc};line-height:1.1}
+.bq-num-lb{font-size:12.5px;color:var(--tx2);margin-top:2px;line-height:1.4}
+.bq-quote{font-size:17px;line-height:1.55;font-style:italic;margin:0}
+.bq-quote-a{font-size:12.5px;font-weight:700;margin-top:8px;color:var(--tx2)}
+.bq-media{display:grid;grid-template-columns:1fr;gap:16px;align-items:center;text-align:left}
+.bq-media img{width:100%;height:auto;border-radius:12px;display:block}
+.bq-gal{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-top:12px}
+.bq-gal img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:10px;display:block}
+.bq-list{list-style:none;padding:0;margin:0;display:grid;gap:9px;text-align:left}
+.bq-list li{display:flex;gap:10px;font-size:14px;line-height:1.5;color:var(--tx2)}
+.bq-list li::before{content:'✓';color:${tc};font-weight:900;flex:none}
+.bq-bandeau{background:linear-gradient(135deg,${tc},${tc}cc);border-radius:18px;padding:26px 22px;text-align:center;margin:16px 0;color:${_tcClair ? '#14141b' : '#fff'}}
+.bq-bd-t{font-size:20px;font-weight:900;letter-spacing:-.02em;margin-bottom:8px}
+.bq-bandeau .bq-blk-tx{color:${_tcClair ? 'rgba(20,20,27,.82)' : 'rgba(255,255,255,.92)'}}
+.bq-btn{display:inline-block;margin-top:15px;background:${tc};color:${_tcClair ? '#14141b' : '#fff'};font-weight:800;font-size:13.5px;padding:12px 22px;border-radius:999px;text-decoration:none}
+.bq-bandeau .bq-btn{background:${_tcClair ? '#14141b' : '#fff'};color:${_tcClair ? '#fff' : '#14141b'}}
+@media(min-width:720px){.bq-media.deux{grid-template-columns:1fr 1fr}}
 .contact-section{background:#fff;border-radius:16px;padding:18px;margin:14px 0;box-shadow:0 2px 10px rgba(0,0,0,.04);border:1px solid rgba(0,0,0,.04)}
 .contact-section .pay-section-title{text-align:center}
 .contact-rows{display:flex;flex-direction:column;gap:8px;max-width:340px;margin:0 auto}
@@ -30992,14 +31149,61 @@ ${prodsGrille}
 
   _colSecs.forEach(c => { SEC[c.cle] = c.html; });
 
-  // Blocs libres ecrits par le commercant (plan Entreprise)
+  // Blocs libres ecrits par le commercant (plan Entreprise) : huit mises
+  // en forme, un fond, un alignement, et un bouton d'action facultatif.
   const _blocs = (_palAllowed && Array.isArray(bc.blocs)) ? bc.blocs : [];
+  const _blkLignes = (txt) => String(txt || '').split('\n').map(x => x.trim()).filter(Boolean);
+  const _blkBouton = (b) => {
+    const lbl = String(b && b.btnTexte || '').trim();
+    if (!lbl) return '';
+    const cible = String(b && b.btnCible || 'produits');
+    let href = '#produits';
+    if (cible === 'whatsapp') href = waLink || '#produits';
+    else if (cible === 'contact') href = '#contact';
+    else if (/^https?:\/\//i.test(cible)) href = cible;
+    const externe = /^https?:\/\//i.test(href);
+    return `<a class="bq-btn" href="${esc(href)}"${externe ? ' target="_blank" rel="noopener noreferrer"' : ''}>${esc(lbl)}</a>`;
+  };
   _blocs.forEach((b, i) => {
+    const type = String(b && b.type || 'texte');
     const titre = String(b && b.titre || '').trim();
     const texte = String(b && b.texte || '').trim();
-    if (!titre && !texte) return;
-    SEC['bloc' + i] = `${titre ? `<div class="sec-eyebrow reveal"><span>${esc(titre)}</span></div>` : ''}
-${texte ? `<div class="about-section reveal"><p class="about-text">${esc(texte).replace(/\n/g,'<br>')}</p></div>` : ''}`;
+    const images = (Array.isArray(b && b.images) ? b.images : []).filter(x => typeof x === 'string' && x.slice(0, 11) === 'data:image/');
+    const image = (typeof (b && b.image) === 'string' && b.image.slice(0, 11) === 'data:image/') ? b.image : '';
+    const bouton = _blkBouton(b);
+    if (!titre && !texte && !image && !images.length && !bouton) return;
+    const fond = ['carte', 'uni', 'accent', 'sombre'].includes(String(b && b.fond)) ? b.fond : 'carte';
+    const align = String(b && b.align) === 'gauche' ? 'gauche' : 'centre';
+    const lignes = _blkLignes(texte);
+    const par = texte ? `<p class="bq-blk-tx">${esc(texte).replace(/\n/g, '<br>')}</p>` : '';
+    let corps = par;
+    if (type === 'colonnes') {
+      corps = `<div class="bq-cols">${lignes.map(ln => {
+        const part = ln.split('|');
+        const tt = part.length > 1 ? part.shift().trim() : '';
+        return `<div>${tt ? `<div class="bq-col-t">${esc(tt)}</div>` : ''}<p class="bq-blk-tx">${esc(part.join('|').trim())}</p></div>`;
+      }).join('')}</div>`;
+    } else if (type === 'chiffres') {
+      corps = `<div class="bq-nums">${lignes.map(ln => {
+        const part = ln.split('|');
+        const nb = part.shift().trim();
+        return `<div><div class="bq-num">${esc(nb)}</div><div class="bq-num-lb">${esc(part.join('|').trim())}</div></div>`;
+      }).join('')}</div>`;
+    } else if (type === 'citation') {
+      const aut = String(b && b.auteur || '').trim();
+      corps = `<blockquote class="bq-quote">« ${esc(texte)} »</blockquote>${aut ? `<div class="bq-quote-a">— ${esc(aut)}</div>` : ''}`;
+    } else if (type === 'liste') {
+      corps = `<ul class="bq-list">${lignes.map(ln => `<li><span>${esc(ln)}</span></li>`).join('')}</ul>`;
+    } else if (type === 'image') {
+      corps = `<div class="bq-media${image ? ' deux' : ''}">${image ? `<img src="${image}" alt="${esc(titre)}" loading="lazy">` : ''}<div>${par}</div></div>`;
+    } else if (type === 'galerie') {
+      corps = `${par}${images.length ? `<div class="bq-gal">${images.map((im, j) => `<img src="${im}" alt="${esc(titre)} ${j + 1}" loading="lazy">`).join('')}</div>` : ''}`;
+    }
+    const interne = type === 'bandeau'
+      ? `<div class="bq-bandeau reveal">${titre ? `<div class="bq-bd-t">${esc(titre)}</div>` : ''}${corps}${bouton}</div>`
+      : `${titre ? `<div class="sec-eyebrow reveal"><span>${esc(titre)}</span></div>` : ''}
+<div class="bq-blk f-${fond} a-${align} reveal">${corps}${bouton}</div>`;
+    SEC['bloc' + i] = interne;
   });
 
   const _defaut = ['produits'].concat(_colSecs.map(c => c.cle))
@@ -32878,15 +33082,67 @@ function vBoutiqueEditor() {
 
     <div class="bq-sec-title" style="margin-top:14px">${t('z7_blocsLibres')}</div>
     <div class="bq-hint2" style="margin:-4px 0 8px">${t('z7_blocsAide')}</div>
-    ${_blocsBq.map((b, i) => `
+    ${_blocsBq.map((b, i) => {
+      const _a = v => String(v == null ? '' : v).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+      const ty = String(b.type || 'texte');
+      const TY = [['texte','📝',t('zbl_tTexte')],['colonnes','▦',t('zbl_tColonnes')],['chiffres','①',t('zbl_tChiffres')],
+                  ['citation','❝',t('zbl_tCitation')],['image','🖼',t('zbl_tImage')],['galerie','🗂',t('zbl_tGalerie')],
+                  ['liste','✓',t('zbl_tListe')],['bandeau','🎯',t('zbl_tBandeau')]];
+      const lignesType = ty === 'colonnes' || ty === 'chiffres' || ty === 'liste';
+      const imgs = Array.isArray(b.images) ? b.images : [];
+      return `
     <div class="bq-perso" style="border-top:1.5px solid var(--accent);border-radius:12px;margin-bottom:9px">
-      <div class="bq-fld bq-fld-large"><label>${t('z7_titreBloc')} ${i + 1}</label>
-        <input class="input" type="text" value="${String(b.titre||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;')}"
-               placeholder="${t('z7_titreBlocPl')}" oninput="boutiqueSetBloc(${i},'titre',this.value)"></div>
-      <div class="bq-fld bq-fld-large"><label>${t('z7_texteBloc')}</label>
-        <textarea class="input" rows="3" placeholder="${t('z7_texteBlocPl')}" oninput="boutiqueSetBloc(${i},'texte',this.value)">${String(b.texte||'').replace(/&/g,'&amp;').replace(/</g,'&lt;')}</textarea></div>
+      <div class="bq-fld bq-fld-large"><label>${t('zbl_miseEnForme')} · ${t('z7_titreBloc')} ${i + 1}</label>
+        <div class="rg-grid" style="grid-template-columns:repeat(4,1fr)">
+          ${TY.map(([id, ico, lbl]) => `<button class="rg-opt${ty === id ? ' on' : ''}" onclick="boutiqueSetBlocType(${i},'${id}')"><span class="rg-ic">${ico}</span><span class="rg-lbl">${lbl}</span></button>`).join('')}
+        </div>
+      </div>
+      <div class="bq-fld bq-fld-large"><label>${t('z7_titreBloc')}</label>
+        <input class="input" type="text" value="${_a(b.titre)}" placeholder="${t('z7_titreBlocPl')}" oninput="boutiqueSetBloc(${i},'titre',this.value)"></div>
+      ${ty === 'galerie' ? '' : `
+      <div class="bq-fld bq-fld-large"><label>${lignesType ? t('zbl_uneParLigne') : t('z7_texteBloc')}</label>
+        <textarea class="input" rows="${lignesType ? 4 : 3}" placeholder="${lignesType ? t('zbl_exLignes') : t('z7_texteBlocPl')}" oninput="boutiqueSetBloc(${i},'texte',this.value)">${_a(b.texte)}</textarea></div>`}
+      ${ty === 'citation' ? `
+      <div class="bq-fld bq-fld-large"><label>${t('zbl_auteur')}</label>
+        <input class="input" type="text" value="${_a(b.auteur)}" placeholder="${t('zbl_auteurPl')}" oninput="boutiqueSetBloc(${i},'auteur',this.value)"></div>` : ''}
+      ${ty === 'image' ? `
+      <div class="bq-fld bq-fld-large"><label>${t('zbl_photo')}</label>
+        <div style="display:flex;gap:9px;align-items:center">
+          ${b.image ? `<img src="${b.image}" alt="" style="width:64px;height:64px;object-fit:cover;border-radius:10px;border:1px solid var(--border)">` : ''}
+          <button class="btn btn-ghost" style="flex:1;padding:9px" onclick="boutiqueBlocPhoto(${i})">${b.image ? t('zw_logoChanger') : t('zbl_choisirPhoto')}</button>
+          ${b.image ? `<button class="btn btn-ghost" style="padding:9px" onclick="boutiqueBlocPhotoSuppr(${i},-1)">${t('zw_logoRetirer')}</button>` : ''}
+        </div></div>` : ''}
+      ${ty === 'galerie' ? `
+      <div class="bq-fld bq-fld-large"><label>${t('zbl_photos')} (${imgs.length}/6)</label>
+        <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:8px">
+          ${imgs.map((im, j) => `<span style="position:relative;display:inline-block"><img src="${im}" alt="" style="width:56px;height:56px;object-fit:cover;border-radius:9px;border:1px solid var(--border)"><button onclick="boutiqueBlocPhotoSuppr(${i},${j})" style="position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;border:none;background:var(--danger);color:#fff;font-size:12px;font-weight:800;cursor:pointer;line-height:1">×</button></span>`).join('')}
+        </div>
+        ${imgs.length < 6 ? `<button class="btn btn-ghost" style="width:100%;padding:9px" onclick="boutiqueBlocPhoto(${i})">+ ${t('zbl_ajouterPhoto')}</button>` : `<div class="bq-hint2">${t('zbl_maxPhotos')}</div>`}
+      </div>` : ''}
+      ${ty === 'bandeau' ? '' : `
+      <div class="bq-fld bq-fld-large"><label>${t('zbl_fond')}</label>
+        <div class="rg-grid" style="grid-template-columns:repeat(4,1fr)">
+          ${[['carte',t('zbl_fCarte')],['uni',t('zbl_fUni')],['accent',t('zbl_fAccent')],['sombre',t('zbl_fSombre')]].map(([id, lbl]) => `<button class="rg-opt${(b.fond||'carte') === id ? ' on' : ''}" onclick="boutiqueSetBloc(${i},'fond','${id}');render()"><span class="rg-lbl">${lbl}</span></button>`).join('')}
+        </div></div>
+      <div class="bq-fld bq-fld-large"><label>${t('zbl_align')}</label>
+        <div class="rg-grid" style="grid-template-columns:repeat(2,1fr)">
+          ${[['centre',t('zbl_aCentre')],['gauche',t('zbl_aGauche')]].map(([id, lbl]) => `<button class="rg-opt${(b.align||'centre') === id ? ' on' : ''}" onclick="boutiqueSetBloc(${i},'align','${id}');render()"><span class="rg-lbl">${lbl}</span></button>`).join('')}
+        </div></div>`}
+      <div class="bq-fld bq-fld-large"><label>${t('zbl_bouton')}</label>
+        <input class="input" type="text" value="${_a(b.btnTexte)}" placeholder="${t('zbl_boutonPl')}" oninput="boutiqueSetBloc(${i},'btnTexte',this.value)">
+        ${String(b.btnTexte||'').trim() ? `
+        <select class="input" style="margin-top:8px" onchange="boutiqueSetBloc(${i},'btnCible',this.value);render()">
+          ${[['produits',t('zbl_cibleProduits')],['whatsapp',t('zbl_cibleWa')],['contact',t('zbl_cibleContact')],['lien',t('zbl_cibleLien')]].map(([id, lbl]) => {
+            const courant = /^https?:\/\//i.test(String(b.btnCible||'')) ? 'lien' : (b.btnCible || 'produits');
+            return `<option value="${id}" ${courant === id ? 'selected' : ''}>${lbl}</option>`;
+          }).join('')}
+        </select>
+        ${/^https?:\/\//i.test(String(b.btnCible||'')) || b.btnCible === 'lien' ? `
+        <input class="input" style="margin-top:8px" type="url" value="${/^https?:\/\//i.test(String(b.btnCible||'')) ? _a(b.btnCible) : ''}" placeholder="https://…" oninput="boutiqueSetBloc(${i},'btnCible',this.value)">` : ''}` : ''}
+      </div>
       <button class="bq-perso-reset" onclick="boutiqueSupprimeBloc(${i})">${t('z7_supprimerBloc')}</button>
-    </div>`).join('')}
+    </div>`;
+    }).join('')}
     <button class="btn btn-ghost" style="margin-bottom:4px" onclick="boutiqueAjouteBloc()">+ ${t('z7_ajouterBloc')}</button>`;
 
   const contentTab = `
