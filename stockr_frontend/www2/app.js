@@ -270,6 +270,28 @@ const API_BASE = (location.hostname === 'localhost' || location.hostname === '12
 // ── i18n ─────────────────────────────────────
 const LANGS = {
   fr: {
+    zct_enDirect: "EN DIRECT",
+    zct_bandeau: "Bandeau d'annonce (haut de page)",
+    zct_bandeauPl: "ex : 🚚 Livraison gratuite dès 25 000 FCFA",
+    zct_lienVideo: "lien MP4 ou YouTube",
+    zct_heroVideoAide: "La vidéo se joue en fond de l'accroche, muette et en boucle. Laissez vide pour une accroche classique.",
+    zct_titreSectionPl: "Titre de la section (ex : découvrez notre atelier)",
+    zct_midVideoAide: "Grande vidéo regardable avec le son, entre les produits et la section À propos — présentation, atelier, démonstration…",
+    zct_aproposPl: "Présentez votre commerce : votre histoire, ce qui vous rend unique…",
+    zct_services: "Services et atouts",
+    zct_servicesPl: "🚚 Livraison rapide\n💳 Paiement mobile\n✅ Produits garantis",
+    zct_contact: "Contact (bas de page)",
+    zct_telPl: "📞 Téléphone (ex : +225 07 00 00 00 00)",
+    zct_emailPl: "✉️ E-mail (ex : contact@boutique.ci)",
+    zct_adressePl: "📍 Adresse ou quartier (ex : Cocody, Abidjan)",
+    zid_titre: "Identité de l'app",
+    zid_aide: "Votre app a une identité : couleur, coins, police, clair ou sombre, logo. Ce bouton la pose sur la vitrine — vos clients voient alors le même commerce des deux côtés.",
+    zid_bouton: "Reprendre l'identité de l'app",
+    zid_annuler: "Revenir aux réglages précédents de la vitrine",
+    zid_note: "Les listes de polices ne sont pas les mêmes des deux côtés : la plus proche est choisie. Tout reste modifiable ensuite, réglage par réglage.",
+    zid_fait: "Identité de l'app appliquée à la vitrine",
+    zid_faitLogo: "Identité et logo de l'app appliqués à la vitrine",
+    zid_annule: "Réglages précédents de la vitrine rétablis",
     zbl_miseEnForme: "Mise en forme",
     zbl_tTexte: "Texte",
     zbl_tColonnes: "Colonnes",
@@ -3465,6 +3487,28 @@ const LANGS = {
     version:'Version',
   },
   en: {
+    zct_enDirect: "LIVE",
+    zct_bandeau: "Announcement bar (top of page)",
+    zct_bandeauPl: "e.g. 🚚 Free delivery over 25,000 CFA",
+    zct_lienVideo: "MP4 or YouTube link",
+    zct_heroVideoAide: "The video plays behind the headline, muted and looping. Leave empty for a plain headline.",
+    zct_titreSectionPl: "Section heading (e.g. see our workshop)",
+    zct_midVideoAide: "A large video, watchable with sound, between the products and the About section — a presentation, your workshop, a demonstration…",
+    zct_aproposPl: "Introduce your business: your story, what makes you different…",
+    zct_services: "Services and strengths",
+    zct_servicesPl: "🚚 Fast delivery\n💳 Mobile payment\n✅ Guaranteed products",
+    zct_contact: "Contact (page footer)",
+    zct_telPl: "📞 Phone (e.g. +225 07 00 00 00 00)",
+    zct_emailPl: "✉️ Email (e.g. contact@shop.ci)",
+    zct_adressePl: "📍 Address or area (e.g. Cocody, Abidjan)",
+    zid_titre: "App identity",
+    zid_aide: "Your app has an identity: colour, corners, typeface, light or dark, logo. This button applies it to the shop — your customers then see the same business on both sides.",
+    zid_bouton: "Apply the app's identity",
+    zid_annuler: "Go back to the shop's previous settings",
+    zid_note: "The two typeface lists are not the same: the closest one is chosen. Everything stays editable afterwards, setting by setting.",
+    zid_fait: "The app's identity has been applied to the shop",
+    zid_faitLogo: "The app's identity and logo have been applied to the shop",
+    zid_annule: "The shop's previous settings have been restored",
     zbl_miseEnForme: "Layout",
     zbl_tTexte: "Text",
     zbl_tColonnes: "Columns",
@@ -28372,6 +28416,69 @@ function appliquerModeleVitrine(id) {
   _refreshBoutiqueLivePreview();
 }
 
+// ── Reprendre l'identité de l'app sur la vitrine (plan Entreprise) ────
+// Un seul geste pose la couleur, les coins, la police, le clair/sombre et
+// le logo de l'app sur la vitrine. L'état précédent est capturé avant
+// d'écrire : le retour en arrière est réel, pas une promesse.
+function boutiqueReprendreIdentiteApp() {
+  if (typeof _planHasFeature === 'function' && !_planHasFeature('whiteLabel')) {
+    if (typeof _showPlanFeatureModal === 'function') _showPlanFeatureModal('whiteLabel');
+    return;
+  }
+  const bc = S.boutiqueConfig || (S.boutiqueConfig = {});
+  const a = S.appearance || {};
+  // Les polices de l'app et celles de la vitrine ne sont pas les mêmes
+  // listes. On prend la plus proche disponible — et l'écran le dit.
+  const POL = { inter: ['Inter', 'Inter'], system: ['Inter', 'Inter'],
+                grotesk: ['Montserrat', 'Inter'], serif: ['Playfair Display', 'Lato'],
+                mono: ['Inter', 'Inter'] };
+  const COINS = { sharp: 'anguleux', standard: 'doux', soft: 'ronds' };
+  const avant = {
+    themeColor: bc.themeColor, palette: bc.palette, paletteLight: bc.paletteLight,
+    coins: bc.coins, headingFont: bc.headingFont, bodyFont: bc.bodyFont,
+    fontFamily: bc.fontFamily, logo: localStorage.getItem('baro_logo'),
+  };
+  if (a.accentColor) bc.themeColor = a.accentColor;
+  // L'ambiance « Sable » de l'app a un fond chaud : la vitrine a le même en
+  // crème. Sinon, sombre appelle « nuit », clair appelle « clair ».
+  bc.palette = a.ambiance === 'sable' ? 'creme' : (a.theme === 'dark' ? 'nuit' : 'clair');
+  bc.paletteLight = a.ambiance === 'sable' ? 'creme' : 'clair';
+  bc.coins = COINS[a.radius || 'standard'] || 'doux';
+  const pol = POL[a.font || 'inter'] || POL.inter;
+  bc.headingFont = pol[0];
+  bc.bodyFont = pol[1];
+  bc.fontFamily = pol[1];
+  let logoPose = false;
+  if (a.logo) {
+    try { localStorage.setItem('baro_logo', a.logo); logoPose = true; }
+    catch (_) { showToast(t('zbl_memPleine'), 'error'); }
+  }
+  S.bqIdentiteAvant = avant;
+  _bqSauveSur();
+  haptic('success');
+  showToast(t(logoPose ? 'zid_faitLogo' : 'zid_fait'));
+  render();
+  _refreshBoutiqueLivePreview();
+}
+
+function annulerIdentiteBoutique() {
+  const av = S.bqIdentiteAvant;
+  if (!av) return;
+  const bc = S.boutiqueConfig || (S.boutiqueConfig = {});
+  ['themeColor', 'palette', 'paletteLight', 'coins', 'headingFont', 'bodyFont', 'fontFamily']
+    .forEach(k => { if (av[k] === undefined || av[k] === null) delete bc[k]; else bc[k] = av[k]; });
+  try {
+    if (av.logo == null) localStorage.removeItem('baro_logo');
+    else localStorage.setItem('baro_logo', av.logo);
+  } catch (_) {}
+  S.bqIdentiteAvant = null;
+  _bqSauveSur();
+  haptic('tap');
+  showToast(t('zid_annule'));
+  render();
+  _refreshBoutiqueLivePreview();
+}
+
 function annulerModeleVitrine() {
   const sauv = S.modeleAvant;
   if (!sauv) return;
@@ -32518,6 +32625,14 @@ function vBoutiqueEditor() {
 
   const styleTab = `
     ${modelesUI}
+    ${(typeof _planHasFeature === 'function' && _planHasFeature('whiteLabel')) ? `
+    <div class="bq-sec-title" style="margin-top:14px">${t('zid_titre')} <span class="bq-badge-ent">${t('zv_planEntreprise')}</span></div>
+    <div class="bq-studio">
+      <div class="bq-hint2" style="margin:0 0 9px">${t('zid_aide')}</div>
+      <button class="btn btn-ghost" style="width:100%" onclick="boutiqueReprendreIdentiteApp()">${t('zid_bouton')}</button>
+      ${S.bqIdentiteAvant ? `<button class="bq-perso-reset" style="margin:9px 0 0" onclick="annulerIdentiteBoutique()">${t('zid_annuler')}</button>` : ''}
+      <div class="bq-hint2" style="margin:9px 0 0">${t('zid_note')}</div>
+    </div>` : ''}
     <div class="bq-sec-title" style="margin-top:14px">${t('x2_couleurMarque')}</div>
     <div class="bq-swatches">
       ${colors.map(c => `<button class="bq-swatch ${tc===c.color?'sel':''}" style="background:${c.color}" title="${c.name}" onclick="boutiqueEditSet('themeColor','${c.color}');document.querySelectorAll('.bq-swatch[data-grp=brand]').forEach(s=>s.classList.remove('sel'));this.classList.add('sel')" data-grp="brand">${tc===c.color?'✓':''}</button>`).join('')}
@@ -33151,25 +33266,25 @@ function vBoutiqueEditor() {
     <input class="input" value="${(bc.heroTitle||'').replace(/"/g,'&quot;')}" placeholder="${(bc.name||t('zz_maBoutique')).replace(/"/g,'&quot;')}" oninput="boutiqueEditText('heroTitle',this.value)">
     <div class="bq-sec-title">${t('z7_sousTitre')}</div>
     <input class="input" value="${(bc.heroSubtitle||'').replace(/"/g,'&quot;')}" placeholder="${t('z4_heroSub').replace(/"/g,'&quot;')}" oninput="boutiqueEditText('heroSubtitle',this.value)">
-    <div class="bq-sec-title">Bandeau d'annonce (haut de page)</div>
-    <input class="input" value="${(bc.announceText||'').replace(/"/g,'&quot;')}" placeholder="ex : 🚚 Livraison gratuite dès 25 000 FCFA" oninput="boutiqueEditText('announceText',this.value)">
+    <div class="bq-sec-title">${t('zct_bandeau')}</div>
+    <input class="input" value="${(bc.announceText||'').replace(/"/g,'&quot;')}" placeholder="${t('zct_bandeauPl')}" oninput="boutiqueEditText('announceText',this.value)">
     <div class="bq-sec-title">${t('x2_texteBoutonCmd')}</div>
-    <input class="input" value="${(bc.orderBtnText||'').replace(/"/g,'&quot;')}" placeholder="+ Ajouter au panier" oninput="boutiqueEditText('orderBtnText',this.value)">
-    <div class="bq-sec-title" style="margin-top:18px">${t('x2_videoAccroche')} <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--text-3)">· lien MP4 ou YouTube</span></div>
+    <input class="input" value="${(bc.orderBtnText||'').replace(/"/g,'&quot;')}" placeholder="${t('z4_ajouterPanier')}" oninput="boutiqueEditText('orderBtnText',this.value)">
+    <div class="bq-sec-title" style="margin-top:18px">${t('x2_videoAccroche')} <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--text-3)">· ${t('zct_lienVideo')}</span></div>
     <input class="input" value="${(bc.heroVideo||'').replace(/"/g,'&quot;')}" placeholder="https://… .mp4  ou  https://youtu.be/…" oninput="boutiqueEditText('heroVideo',this.value)">
-    <div style="font-size:11px;color:var(--text-3);margin-top:4px">Animation façon Apple : la vidéo se joue en fond du hero (muette, en boucle). Laissez vide pour un hero classique.</div>
-    <div class="bq-sec-title" style="margin-top:18px">${t('x2_sectionVideo')} <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--text-3)">· lien MP4 ou YouTube</span></div>
-    <input class="input" value="${(bc.midVideoTitle||'').replace(/"/g,'&quot;')}" placeholder="Titre de la section (ex : Découvrez notre atelier)" oninput="boutiqueEditText('midVideoTitle',this.value)">
+    <div style="font-size:11px;color:var(--text-2);margin-top:4px">${t('zct_heroVideoAide')}</div>
+    <div class="bq-sec-title" style="margin-top:18px">${t('x2_sectionVideo')} <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--text-3)">· ${t('zct_lienVideo')}</span></div>
+    <input class="input" value="${(bc.midVideoTitle||'').replace(/"/g,'&quot;')}" placeholder="${t('zct_titreSectionPl')}" oninput="boutiqueEditText('midVideoTitle',this.value)">
     <input class="input" style="margin-top:8px" value="${(bc.midVideo||'').replace(/"/g,'&quot;')}" placeholder="https://… .mp4  ou  https://youtu.be/…" oninput="boutiqueEditText('midVideo',this.value)">
-    <div style="font-size:11px;color:var(--text-3);margin-top:4px">Grande vidéo regardable (avec le son) entre les produits et la section À propos — présentation, atelier, démonstration…</div>
+    <div style="font-size:11px;color:var(--text-2);margin-top:4px">${t('zct_midVideoAide')}</div>
     <div class="bq-sec-title" style="margin-top:18px">${t('x2_aproposBoutique')}</div>
-    <textarea class="input" rows="3" style="resize:vertical;font-family:inherit" placeholder="Présentez votre commerce : votre histoire, ce qui vous rend unique…" oninput="boutiqueEditText('aboutText',this.value)">${(bc.aboutText||'').replace(/</g,'&lt;')}</textarea>
-    <div class="bq-sec-title" style="margin-top:18px">Services / Atouts <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--text-3)">${t('x2_unParLigne')}</span></div>
-    <textarea class="input" rows="3" style="resize:vertical;font-family:inherit" placeholder="🚚 Livraison rapide&#10;💳 Paiement mobile&#10;✅ Produits garantis" oninput="boutiqueEditText('servicesText',this.value)">${(bc.servicesText||'').replace(/</g,'&lt;')}</textarea>
-    <div class="bq-sec-title" style="margin-top:18px">Contact (section bas de page)</div>
-    <input class="input" value="${(bc.contactPhone||'').replace(/"/g,'&quot;')}" placeholder="📞 Téléphone (ex : +225 07 00 00 00 00)" oninput="boutiqueEditText('contactPhone',this.value)">
-    <input class="input" style="margin-top:8px" value="${(bc.contactEmail||'').replace(/"/g,'&quot;')}" placeholder="✉️ Email (ex : contact@boutique.ci)" oninput="boutiqueEditText('contactEmail',this.value)">
-    <input class="input" style="margin-top:8px" value="${(bc.contactAddress||'').replace(/"/g,'&quot;')}" placeholder="📍 Adresse / quartier (ex : Cocody, Abidjan)" oninput="boutiqueEditText('contactAddress',this.value)">
+    <textarea class="input" rows="3" style="resize:vertical;font-family:inherit" placeholder="${t('zct_aproposPl')}" oninput="boutiqueEditText('aboutText',this.value)">${(bc.aboutText||'').replace(/</g,'&lt;')}</textarea>
+    <div class="bq-sec-title" style="margin-top:18px">${t('zct_services')} <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--text-3)">${t('x2_unParLigne')}</span></div>
+    <textarea class="input" rows="3" style="resize:vertical;font-family:inherit" placeholder="${t('zct_servicesPl').replace(/\n/g,'&#10;')}" oninput="boutiqueEditText('servicesText',this.value)">${(bc.servicesText||'').replace(/</g,'&lt;')}</textarea>
+    <div class="bq-sec-title" style="margin-top:18px">${t('zct_contact')}</div>
+    <input class="input" value="${(bc.contactPhone||'').replace(/"/g,'&quot;')}" placeholder="${t('zct_telPl')}" oninput="boutiqueEditText('contactPhone',this.value)">
+    <input class="input" style="margin-top:8px" value="${(bc.contactEmail||'').replace(/"/g,'&quot;')}" placeholder="${t('zct_emailPl')}" oninput="boutiqueEditText('contactEmail',this.value)">
+    <input class="input" style="margin-top:8px" value="${(bc.contactAddress||'').replace(/"/g,'&quot;')}" placeholder="${t('zct_adressePl')}" oninput="boutiqueEditText('contactAddress',this.value)">
     <div class="bq-sec-title" style="margin-top:18px">${t('x2_reseauxSociauxEd')} <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--text-3)">· liens complets</span></div>
     <input class="input" value="${(bc.socialFacebook||'').replace(/"/g,'&quot;')}" placeholder="📘 Facebook (https://facebook.com/…)" oninput="boutiqueEditText('socialFacebook',this.value)">
     <input class="input" style="margin-top:8px" value="${(bc.socialInstagram||'').replace(/"/g,'&quot;')}" placeholder="📸 Instagram (https://instagram.com/…)" oninput="boutiqueEditText('socialInstagram',this.value)">
@@ -33406,7 +33521,7 @@ function vBoutiqueEditor() {
     <div class="bq-preview-wrap">
       <div class="bq-phone">
         <iframe id="bq-preview" class="bq-preview-frame" title="${t('v_apercuBoutique')}"></iframe>
-        <div class="bq-live-badge"><span class="bq-live-dot"></span> EN DIRECT</div>
+        <div class="bq-live-badge"><span class="bq-live-dot"></span> ${t('zct_enDirect')}</div>
       </div>
     </div>
     <div class="bq-tabbar">
